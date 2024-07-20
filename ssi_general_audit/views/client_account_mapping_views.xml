@@ -49,12 +49,24 @@
 
             </xpath>
             <xpath expr="//group[@name='header_right']" position="inside">
-                <field name="date_start" />
-                <field name="date_end" />
-                <field name="previous_date_start" />
-                <field name="previous_date_end" />
-                <field name="interim_date_start" />
-                <field name="interim_date_end" />
+                <label for="date_start" string="Audit Period" />
+                <div class="o_row">
+                    <field name="date_start" class="oe_inline" />
+                    <span class="oe_inline">To</span>
+                    <field name="date_end" class="oe_inline" />
+                </div>
+                <label for="previous_date_start" string="Previous Audit Period" />
+                <div class="o_row">
+                    <field name="previous_date_start" class="oe_inline" />
+                    <span class="oe_inline">To</span>
+                    <field name="previous_date_end" class="oe_inline" />
+                </div>
+                <label for="interim_date_start" string="Interim Audit Period" />
+                <div class="o_row">
+                    <field name="interim_date_start" class="oe_inline" />
+                    <span class="oe_inline">To</span>
+                    <field name="interim_date_end" class="oe_inline" />
+                </div>
             </xpath>
             <xpath expr="//page[@name='note']" position="before">
                 <page name="mapping" string="Account Mappings">

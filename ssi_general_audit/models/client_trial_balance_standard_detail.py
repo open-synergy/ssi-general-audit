@@ -28,7 +28,7 @@ class ClientTrialBalanceStandardDetail(models.Model):
         "trial_balance_id.detail_ids.credit",
     )
     def _compute_balance(self):
-        obj_detail = self.env["client_trial_balance_detail"]
+        obj_detail = self.env["client_trial_balance.detail"]
         for document in self:
             balance = opening_balance = debit = credit = 0.0
             criteria = [

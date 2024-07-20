@@ -439,7 +439,7 @@ class ClientTrialBalance(models.Model):
     def _reload_account(self):
         self.ensure_one()
         ClientAccount = self.env["client_account"]
-        Detail = self.env["client_trial_balance_detail"]
+        Detail = self.env["client_trial_balance.detail"]
         criteria = [
             ("partner_id", "=", self.partner_id.id),
         ]
@@ -469,7 +469,7 @@ class ClientTrialBalance(models.Model):
             "account_type": {},
             "account_group": {},
         }
-        StandardDetail = self.env["client_trial_balance_standard_detail"]
+        StandardDetail = self.env["client_trial_balance.standard_detail"]
         criteria = [
             ("trial_balance_id", "=", self.id),
         ]

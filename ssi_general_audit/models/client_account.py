@@ -35,11 +35,14 @@ class ClientAccount(models.Model):
         required=False,
         ondelete="restrict",
     )
+    group_id = fields.Many2one(
+        string="Account Group",
+        related="type_id.group_id",
+        store=True,
+    )
     normal_balance = fields.Selection(
-        string="Normal Balance",
         related="type_id.normal_balance",
-        stored=True,
-        required=False,
+        store=True,
     )
 
     @api.onchange(

@@ -13,7 +13,34 @@
         />
         <field name="mode">primary</field>
         <field name="arch" type="xml">
-            <data />
+            <data>
+                <xpath expr="//field[@name='code']" position="after">
+                    <field name="group_id" />
+                    <field name="normal_balance" />
+                    <filter
+                        name="dom_debit"
+                        string="Debit"
+                        domain="[('normal_balance','=','dr')]"
+                    />
+                    <filter
+                        name="dom_credit"
+                        string="Credit"
+                        domain="[('normal_balance','=','cr')]"
+                    />
+                    <group name="group_main">
+                        <filter
+                            name="grp_group_id"
+                            string="Account Group"
+                            context="{'group_by':'group_id'}"
+                        />
+                        <filter
+                            name="grp_normal_balance"
+                            string="Normal Balance"
+                            context="{'group_by':'normal_balance'}"
+                        />
+                    </group>
+                </xpath>
+            </data>
         </field>
     </record>
 
@@ -29,6 +56,10 @@
             <data>
                 <xpath expr="//field[@name='code']" position="before">
                     <field name="sequence" widget="handle" />
+                </xpath>
+                <xpath expr="//field[@name='name']" position="after">
+                    <field name="group_id" />
+                    <field name="normal_balance" />
                 </xpath>
             </data>
         </field>
