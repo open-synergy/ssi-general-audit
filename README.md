@@ -14,7 +14,11 @@ ssi-general-audit
 
 [//]: # (addons)
 
-This part will be replaced when running the oca-gen-addons-table script from OCA/maintainer-tools.
+Available addons
+----------------
+addon | version | maintainers | summary
+--- | --- | --- | ---
+[ssi_general_audit](ssi_general_audit/) | 14.0.1.0.0 |  | General Audit
 
 [//]: # (end addons)
 
