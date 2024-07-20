@@ -13,7 +13,7 @@
     "depends": [
         "ssi_accountant_report",
         "ssi_master_data_mixin",
-        "ssi_transaction_partner",
+        "ssi_transaction_partner_mixin",
         "ssi_transaction_confirm_mixin",
         "ssi_transaction_cancel_mixin",
         "ssi_transaction_done_mixin",
