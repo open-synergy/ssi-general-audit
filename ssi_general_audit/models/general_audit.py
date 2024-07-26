@@ -418,7 +418,8 @@ class GeneralAudit(models.Model):
     def _compute_account_mapping_id(self):
         for record in self:
             result = False
-            criteria = [("general_audit_id", "=", record.id), ("state", "=", "done")]
+            # TODO: Check
+            criteria = [("general_audit_id", "=", record.id)]
             mappings = self.env["client_account_mapping"].search(criteria)
 
             if len(mappings) > 0:
@@ -723,7 +724,7 @@ class GeneralAudit(models.Model):
             Detail.create(
                 {
                     "general_audit_id": self.id,
-                    "account_id": account.id,
+                    "account_id": account.account_id.id,
                 }
             )
 

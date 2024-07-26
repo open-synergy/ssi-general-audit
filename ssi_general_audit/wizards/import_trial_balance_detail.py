@@ -38,7 +38,7 @@ class ImportTrialBalanceDetail(models.TransientModel):
 
     def _update_trial_balance_detail(self, row):
         self.ensure_one()
-        Detail = self.env["client_trial_balance_detail"]
+        Detail = self.env["client_trial_balance.detail"]
         criteria = [
             ("trial_balance_id", "=", self.trial_balance_id.id),
             ("account_id.code", "=", row[0]),
