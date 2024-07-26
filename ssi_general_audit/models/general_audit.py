@@ -724,7 +724,7 @@ class GeneralAudit(models.Model):
             Detail.create(
                 {
                     "general_audit_id": self.id,
-                    "account_id": account.id,
+                    "account_id": account.account_id.id,
                 }
             )
 
