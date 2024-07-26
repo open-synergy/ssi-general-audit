@@ -33,6 +33,9 @@ class GeneralAuditGroupDetail(models.Model):
         "general_audit_id.home_trial_balance_id",
         "general_audit_id.interim_trial_balance_id",
         "general_audit_id.previous_trial_balance_id",
+        "general_audit_id.home_trial_balance_id.state",
+        "general_audit_id.interim_trial_balance_id.state",
+        "general_audit_id.previous_trial_balance_id.state",
     )
     def _compute_group_line(self):
         GroupDetail = self.env["client_trial_balance.group_detail"]
