@@ -35,6 +35,9 @@ class GeneralAuditStandardDetail(models.Model):
         "general_audit_id.home_trial_balance_id",
         "general_audit_id.interim_trial_balance_id",
         "general_audit_id.previous_trial_balance_id",
+        "general_audit_id.home_trial_balance_id.state",
+        "general_audit_id.interim_trial_balance_id.state",
+        "general_audit_id.previous_trial_balance_id.state",
     )
     def _compute_standard_line(self):
         StandardDetail = self.env["client_trial_balance.standard_detail"]
@@ -85,6 +88,7 @@ class GeneralAuditStandardDetail(models.Model):
 
     @api.depends(
         "general_audit_id.adjustment_entry_ids",
+        "general_audit_id.adjustment_entry_ids.state",
         "general_audit_id.adjustment_entry_ids.detail_ids.account_id",
         "general_audit_id.adjustment_entry_ids.detail_ids.debit",
         "general_audit_id.adjustment_entry_ids.detail_ids.credit",

@@ -734,10 +734,7 @@ class GeneralAudit(models.Model):
 
     def _reload_standard_account(self):
         self.ensure_one()
-        standard_details = (
-            self.detail_ids.mapped("account_id.type_id")
-            + self.account_type_set_id.detail_ids
-        )
+        standard_details = self.account_type_set_id.detail_ids
         StandardDetail = self.env["general_audit.standard_detail"]
         self.standard_detail_ids.unlink()
         for standard_detail in standard_details:
