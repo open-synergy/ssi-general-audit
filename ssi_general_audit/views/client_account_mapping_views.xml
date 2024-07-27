@@ -55,14 +55,30 @@
                     <span class="oe_inline">To</span>
                     <field name="date_end" class="oe_inline" />
                 </div>
-                <label for="previous_date_start" string="Previous Audit Period" />
-                <div class="o_row">
+                <field name="need_previous" widget="boolean_toggle" />
+                <label
+                        for="previous_date_start"
+                        string="Previous Audit Period"
+                        attrs="{'invisible': [('need_previous', '=', False)]}"
+                    />
+                <div
+                        class="o_row"
+                        attrs="{'invisible': [('need_previous', '=', False)]}"
+                    >
                     <field name="previous_date_start" class="oe_inline" />
                     <span class="oe_inline">To</span>
                     <field name="previous_date_end" class="oe_inline" />
                 </div>
-                <label for="interim_date_start" string="Interim Audit Period" />
-                <div class="o_row">
+                <field name="need_interim" widget="boolean_toggle" />
+                <label
+                        for="interim_date_start"
+                        string="Interim Audit Period"
+                        attrs="{'invisible': [('need_interim', '=', False)]}"
+                    />
+                <div
+                        class="o_row"
+                        attrs="{'invisible': [('need_interim', '=', False)]}"
+                    >
                     <field name="interim_date_start" class="oe_inline" />
                     <span class="oe_inline">To</span>
                     <field name="interim_date_end" class="oe_inline" />

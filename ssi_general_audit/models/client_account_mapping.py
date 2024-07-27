@@ -96,6 +96,11 @@ class ClientAccountMapping(models.Model):
         store=True,
         readonly=True,
     )
+    need_interim = fields.Boolean(
+        related="general_audit_id.need_interim",
+        store=True,
+        readonly=True,
+    )
     interim_date_start = fields.Date(
         string="Interim Start Date",
         related="general_audit_id.interim_date_start",
@@ -105,6 +110,11 @@ class ClientAccountMapping(models.Model):
     interim_date_end = fields.Date(
         string="Interim End Date",
         related="general_audit_id.interim_date_end",
+        store=True,
+        readonly=True,
+    )
+    need_previous = fields.Boolean(
+        related="general_audit_id.need_previous",
         store=True,
         readonly=True,
     )
