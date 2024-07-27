@@ -169,24 +169,24 @@ class ClientAccountMapping(models.Model):
         _super = super(ClientAccountMapping, self)
         _super._compute_policy()
 
-    # @api.onchange("general_audit_id")
-    # def onchange_account_mapping_ids(self):
-    #     self.update({"account_mapping_ids": [(5, 0, 0)]})
-    #     Account = self.env["accountant.client_account"]
-    #     if self.general_audit_id:
-    #         result = []
-    #         criteria = [("partner_id", "=", self.partner_id.id)]
-    #         for account in Account.search(criteria):
-    #             result.append(
-    #                 (
-    #                     0,
-    #                     0,
-    #                     {
-    #                         "account_id": account.id,
-    #                     },
-    #                 )
-    #             )
-    #         self.update({"account_mapping_ids": result})
+    def action_open_account(self):
+        for record in self:
+            result = record._open_action()
+        return result
+
+    def _open_action(self):
+        self.ensure_one()
+        waction = self.env.ref("ssi_general_audit.client_account_action").read()[0]
+        waction.update(
+            {
+                "view_mode": "tree,form",
+                "domain": [("id", "in", self.mapped("detail_ids.account_id.id"))],
+                "context": {
+                    "default_partner_id": self.partner_id.id,
+                },
+            }
+        )
+        return waction
 
     @ssi_decorator.pre_confirm_check()
     def _check_mapping(self):
