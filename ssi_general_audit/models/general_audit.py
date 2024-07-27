@@ -101,9 +101,19 @@ class GeneralAudit(models.Model):
             ],
         },
     )
+    need_interim = fields.Boolean(
+        string="Need Interim",
+        required=True,
+        readonly=True,
+        states={
+            "draft": [
+                ("readonly", False),
+            ],
+        },
+    )
     interim_date_start = fields.Date(
         string="Interim Start Date",
-        required=True,
+        required=False,
         readonly=True,
         states={
             "draft": [
@@ -113,6 +123,16 @@ class GeneralAudit(models.Model):
     )
     interim_date_end = fields.Date(
         string="Interim End Date",
+        required=False,
+        readonly=True,
+        states={
+            "draft": [
+                ("readonly", False),
+            ],
+        },
+    )
+    need_previous = fields.Boolean(
+        string="Need Previous",
         required=True,
         readonly=True,
         states={
@@ -593,7 +613,11 @@ class GeneralAudit(models.Model):
 
     def _check_previous_tb_exist(self):
         self.ensure_one()
-        if not self.previous_trial_balance_id and self.state == "confirm":
+        if (
+            not self.previous_trial_balance_id
+            and self.state == "confirm"
+            and self.need_previous
+        ):
             error_message = """
             Context: Confirming general audit
             Database ID: %s
@@ -606,12 +630,33 @@ class GeneralAudit(models.Model):
 
     def _check_previous_tb_done(self):
         self.ensure_one()
-        if self.state == "confirm" and self.previous_trial_balance_id.state != "done":
+        if (
+            self.state == "confirm"
+            and self.previous_trial_balance_id.state != "done"
+            and self.need_previous
+        ):
             error_message = """
             Context: Confirming general audit
             Database ID: %s
             Problem: Previous trial balance is not finished
             Solution: Finish Previous trial balance
+            """ % (
+                self.id
+            )
+            raise ValidationError(_(error_message))
+
+    def _check_interim_tb_exists(self):
+        self.ensure_one()
+        if (
+            not self.interim_trial_balance_id
+            and self.state == "confirm"
+            and self.need_previous
+        ):
+            error_message = """
+            Context: Confirming general audit
+            Database ID: %s
+            Problem: No interim trial balance
+            Solution: Create interim trial balance
             """ % (
                 self.id
             )
@@ -623,6 +668,7 @@ class GeneralAudit(models.Model):
             self.interim_trial_balance_id
             and self.interim_trial_balance_id.state != "done"
             and self.state == "confirm"
+            and self.need_interim
         ):
             error_message = """
             Context: Confirming general audit
