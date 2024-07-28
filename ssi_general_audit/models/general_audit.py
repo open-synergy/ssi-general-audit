@@ -390,6 +390,12 @@ class GeneralAudit(models.Model):
         inverse_name="general_audit_id",
         readonly=True,
     )
+    account_adjustment_ids = fields.One2many(
+        string="Account Adjustment",
+        comodel_name="general_audit.account_adjustment",
+        inverse_name="general_audit_id",
+        readonly=True,
+    )
     group_adjustment_ids = fields.One2many(
         string="Group Adjustment",
         comodel_name="general_audit.group_adjustment",
