@@ -94,20 +94,20 @@
                         attrs="{'invisible': [('trial_balance_type','=','extrapolation')]}"
                     >
                         <button
-                            name="%(import_trial_balance_detail_action)d"
-                            type="action"
-                            string="Detail"
-                            class="oe_highlight"
-                            icon="fa-upload"
-                            states="open"
-                            style="margin-right:4px"
-                        />
-                        <button
                             name="action_reload_account"
                             type="object"
                             string="Account"
                             class="oe_highlight"
                             icon="fa-refresh"
+                            states="open"
+                            style="margin-right:4px"
+                        />
+                        <button
+                            name="%(import_trial_balance_detail_action)d"
+                            type="action"
+                            string="Account"
+                            class="oe_highlight"
+                            icon="fa-upload"
                             states="open"
                         />
                         <field name="detail_ids" colspan="1" col="2" nolabel="1" />
