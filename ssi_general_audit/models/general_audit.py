@@ -809,6 +809,33 @@ class GeneralAudit(models.Model):
                 }
             )
 
+    def action_reload_computation(self):
+        for record in self.sudo():
+            record._reload_computation()
+
+    @ssi_decorator.post_open_action()
+    def _reload_computation(self):
+        self.ensure_one()
+        Computation = self.env["general_audit.computation"]
+        self.computation_ids.unlink()
+        if self.account_type_set_id:
+            for detail in self.account_type_set_id.computation_ids:
+                data = {
+                    "general_audit_id": self.id,
+                    "computation_item_id": detail.computation_id.id,
+                    "sequence": detail.sequence,
+                }
+                Computation.create(data)
+
+    def action_recompute_computation(self):
+        for record in self.sudo():
+            record._recompute_computation()
+
+    def _recompute_computation(self):
+        self.ensure_one()
+        for computation in self.computation_ids:
+            computation._compute_computation()
+
     @ssi_decorator.insert_on_form_view()
     def _insert_form_element(self, view_arch):
         if self._automatically_insert_view_element:

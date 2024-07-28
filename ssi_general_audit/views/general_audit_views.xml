@@ -200,6 +200,23 @@
                             nolabel="1"
                             force_save="1"
                         />
+                    <button
+                            name="action_reload_computation"
+                            string="Computation"
+                            type="object"
+                            icon="fa-refresh"
+                            class="oe_highlight"
+                            style="margin-right:4px"
+                            attrs="{'invisible':[('state','not in',['draft','open'])]}"
+                        />
+                    <button
+                            name="action_recompute_computation"
+                            string="Computation Value"
+                            type="object"
+                            icon="fa-calculator"
+                            class="oe_highlight"
+                            attrs="{'invisible':[('state','not in',['draft','open'])]}"
+                        />
                     <field
                             name="computation_ids"
                             colspan="1"
