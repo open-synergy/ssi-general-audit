@@ -55,14 +55,30 @@
                     <span class="oe_inline">To</span>
                     <field name="date_end" class="oe_inline" />
                 </div>
-                <label for="previous_date_start" string="Previous Audit Period" />
-                <div class="o_row">
+                <field name="need_previous" widget="boolean_toggle" />
+                <label
+                        for="previous_date_start"
+                        string="Previous Audit Period"
+                        attrs="{'invisible': [('need_previous', '=', False)]}"
+                    />
+                <div
+                        class="o_row"
+                        attrs="{'invisible': [('need_previous', '=', False)]}"
+                    >
                     <field name="previous_date_start" class="oe_inline" />
                     <span class="oe_inline">To</span>
                     <field name="previous_date_end" class="oe_inline" />
                 </div>
-                <label for="interim_date_start" string="Interim Audit Period" />
-                <div class="o_row">
+                <field name="need_interim" widget="boolean_toggle" />
+                <label
+                        for="interim_date_start"
+                        string="Interim Audit Period"
+                        attrs="{'invisible': [('need_interim', '=', False)]}"
+                    />
+                <div
+                        class="o_row"
+                        attrs="{'invisible': [('need_interim', '=', False)]}"
+                    >
                     <field name="interim_date_start" class="oe_inline" />
                     <span class="oe_inline">To</span>
                     <field name="interim_date_end" class="oe_inline" />
@@ -73,13 +89,22 @@
                     <button
                             name="%(import_client_account_action)d"
                             type="action"
-                            string="Import Accounts"
+                            string="Accounts"
                             class="oe_highlight"
                             icon="fa-upload"
                             attrs="{'invisible':[('state','!=','open')]}"
+                            style="margin-right:4px"
+                        />
+                    <button
+                            name="action_open_account"
+                            type="object"
+                            string="Accounts"
+                            class="oe_highlight"
+                            icon="fa-bars"
+                            attrs="{'invisible':[('state','!=','open')]}"
                         />
                     <field name="detail_ids">
-                        <tree editable="top" create="false" delete="false">
+                        <tree editable="top">
                             <field name="sequence" invisible="1" />
                             <field name="code" />
                             <field name="account_id" />

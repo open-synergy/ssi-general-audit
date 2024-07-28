@@ -158,3 +158,76 @@ class GeneralAuditDetail(models.Model):
             record.home_line_id = home_result
             record.interim_line_id = interim_result
             record.previous_line_id = previous_result
+
+    @api.depends(
+        "general_audit_id.adjustment_entry_ids",
+        "general_audit_id.adjustment_entry_ids.state",
+        "general_audit_id.adjustment_entry_ids.detail_ids.account_id",
+        "general_audit_id.adjustment_entry_ids.detail_ids.debit",
+        "general_audit_id.adjustment_entry_ids.detail_ids.credit",
+    )
+    def _compute_adjustment_id(self):
+        StandardAdjustment = self.env["general_audit.account_adjustment"]
+        for record in self:
+            result = False
+            criteria = [
+                ("general_audit_id", "=", record.general_audit_id.id),
+                ("account_id", "=", record.account_id.id),
+            ]
+            standard_adjustments = StandardAdjustment.search(criteria)
+            if len(standard_adjustments) > 0:
+                result = standard_adjustments[0]
+            record.adjustment_id = result
+
+    adjustment_id = fields.Many2one(
+        string="Adjustment",
+        comodel_name="general_audit.account_adjustment",
+        readonly=True,
+        compute="_compute_adjustment_id",
+        store=True,
+    )
+
+    adjustment_debit = fields.Monetary(
+        string="Adjustment Debit",
+        related="adjustment_id.debit",
+        store=True,
+        currency_field="currency_id",
+    )
+    adjustment_credit = fields.Monetary(
+        string="Adjustment Credit",
+        related="adjustment_id.credit",
+        store=True,
+        currency_field="currency_id",
+    )
+
+    @api.depends(
+        "adjustment_id",
+        "account_id",
+        "adjustment_debit",
+        "adjustment_credit",
+        "home_statement_balance",
+    )
+    def _compute_adjustment_audited_balance(self):
+        for record in self:
+            adjustment = audited = 0.0
+            if record.type_id:
+                if record.type_id.normal_balance == "dr":
+                    adjustment = record.adjustment_debit - record.adjustment_credit
+                else:
+                    adjustment = record.adjustment_credit - record.adjustment_debit
+            audited = record.home_statement_balance + adjustment
+            record.audited_balance = audited
+            record.adjustment_balance = adjustment
+
+    adjustment_balance = fields.Monetary(
+        string="Adjustment Balance",
+        compute="_compute_adjustment_audited_balance",
+        store=True,
+        currency_field="currency_id",
+    )
+    audited_balance = fields.Monetary(
+        string="Audited Balance",
+        compute="_compute_adjustment_audited_balance",
+        store=True,
+        currency_field="currency_id",
+    )

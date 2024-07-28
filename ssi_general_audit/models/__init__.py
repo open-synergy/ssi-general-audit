@@ -20,6 +20,7 @@ from . import (
     client_adjustment_entry,
     client_adjustment_entry_detail,
     general_audit_computation,
+    general_audit_account_adjustment,
     general_audit_adjustment,
     general_audit_group_adjustment,
     general_audit_worksheet_control_additional,

@@ -101,9 +101,19 @@ class GeneralAudit(models.Model):
             ],
         },
     )
+    need_interim = fields.Boolean(
+        string="Need Interim",
+        required=True,
+        readonly=True,
+        states={
+            "draft": [
+                ("readonly", False),
+            ],
+        },
+    )
     interim_date_start = fields.Date(
         string="Interim Start Date",
-        required=True,
+        required=False,
         readonly=True,
         states={
             "draft": [
@@ -113,6 +123,16 @@ class GeneralAudit(models.Model):
     )
     interim_date_end = fields.Date(
         string="Interim End Date",
+        required=False,
+        readonly=True,
+        states={
+            "draft": [
+                ("readonly", False),
+            ],
+        },
+    )
+    need_previous = fields.Boolean(
+        string="Need Previous",
         required=True,
         readonly=True,
         states={
@@ -370,6 +390,12 @@ class GeneralAudit(models.Model):
         inverse_name="general_audit_id",
         readonly=True,
     )
+    account_adjustment_ids = fields.One2many(
+        string="Account Adjustment",
+        comodel_name="general_audit.account_adjustment",
+        inverse_name="general_audit_id",
+        readonly=True,
+    )
     group_adjustment_ids = fields.One2many(
         string="Group Adjustment",
         comodel_name="general_audit.group_adjustment",
@@ -593,7 +619,11 @@ class GeneralAudit(models.Model):
 
     def _check_previous_tb_exist(self):
         self.ensure_one()
-        if not self.previous_trial_balance_id and self.state == "confirm":
+        if (
+            not self.previous_trial_balance_id
+            and self.state == "confirm"
+            and self.need_previous
+        ):
             error_message = """
             Context: Confirming general audit
             Database ID: %s
@@ -606,12 +636,33 @@ class GeneralAudit(models.Model):
 
     def _check_previous_tb_done(self):
         self.ensure_one()
-        if self.state == "confirm" and self.previous_trial_balance_id.state != "done":
+        if (
+            self.state == "confirm"
+            and self.previous_trial_balance_id.state != "done"
+            and self.need_previous
+        ):
             error_message = """
             Context: Confirming general audit
             Database ID: %s
             Problem: Previous trial balance is not finished
             Solution: Finish Previous trial balance
+            """ % (
+                self.id
+            )
+            raise ValidationError(_(error_message))
+
+    def _check_interim_tb_exists(self):
+        self.ensure_one()
+        if (
+            not self.interim_trial_balance_id
+            and self.state == "confirm"
+            and self.need_previous
+        ):
+            error_message = """
+            Context: Confirming general audit
+            Database ID: %s
+            Problem: No interim trial balance
+            Solution: Create interim trial balance
             """ % (
                 self.id
             )
@@ -623,6 +674,7 @@ class GeneralAudit(models.Model):
             self.interim_trial_balance_id
             and self.interim_trial_balance_id.state != "done"
             and self.state == "confirm"
+            and self.need_interim
         ):
             error_message = """
             Context: Confirming general audit
@@ -762,6 +814,33 @@ class GeneralAudit(models.Model):
                     "group_id": group.id,
                 }
             )
+
+    def action_reload_computation(self):
+        for record in self.sudo():
+            record._reload_computation()
+
+    @ssi_decorator.post_open_action()
+    def _reload_computation(self):
+        self.ensure_one()
+        Computation = self.env["general_audit.computation"]
+        self.computation_ids.unlink()
+        if self.account_type_set_id:
+            for detail in self.account_type_set_id.computation_ids:
+                data = {
+                    "general_audit_id": self.id,
+                    "computation_item_id": detail.computation_id.id,
+                    "sequence": detail.sequence,
+                }
+                Computation.create(data)
+
+    def action_recompute_computation(self):
+        for record in self.sudo():
+            record._recompute_computation()
+
+    def _recompute_computation(self):
+        self.ensure_one()
+        for computation in self.computation_ids:
+            computation._compute_computation()
 
     @ssi_decorator.insert_on_form_view()
     def _insert_form_element(self, view_arch):
