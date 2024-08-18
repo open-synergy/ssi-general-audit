@@ -18,7 +18,7 @@ Available addons
 ----------------
 addon | version | maintainers | summary
 --- | --- | --- | ---
-[ssi_general_audit](ssi_general_audit/) | 14.0.2.3.0 |  | General Audit
+[ssi_general_audit](ssi_general_audit/) | 14.0.2.4.0 |  | General Audit
 
 [//]: # (end addons)
 
