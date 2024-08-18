@@ -38,7 +38,7 @@ class ClientAccountTypeComputationItem(models.Model):
         "computation_id",
     )
     def onchange_python_code_code(self):
-        self.python_code_code = "result = 0.0"
+        self.python_code = "result = 0.0"
         if self.computation_id:
             computation = self.computation_id
-            self.python_code_code = computation.python_code
+            self.python_code = computation.python_code

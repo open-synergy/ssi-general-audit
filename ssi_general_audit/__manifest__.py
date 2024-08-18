@@ -28,9 +28,6 @@
         "data/sequence_template_data.xml",
         "data/policy_template_data.xml",
         "data/approval_template_data.xml",
-        "data/client_account_group_data.xml",
-        "data/client_account_type_data.xml",
-        "data/trial_balance_computation_item_data.xml",
         "data/general_audit_worksheet_type_category_data.xml",
         "menu.xml",
         "wizards/import_client_account.xml",
@@ -58,6 +55,6 @@
         "views/general_audit_worksheet_mixin_views.xml",
     ],
     "demo": [
-        "demo/client_account_type_set_demo.xml",
+        # "demo/client_account_type_set_demo.xml",
     ],
 }
