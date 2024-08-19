@@ -1,0 +1,365 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!-- Copyright 2022 OpenSynergy Indonesia
+     Copyright 2022 PT. Simetri Sinergi Indonesia
+     License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl-3.0-standalone.html). -->
+<odoo>
+<data>
+<!-- General Audit Worksheet: Preliminary Materiality (d9d2b44) -->
+<record id="policy_template_general_audit_ws_d9d2b44" model="policy.template">
+    <field name="name">Standard</field>
+    <field
+                name="model_id"
+                ref="ssi_general_audit_worksheet_preliminary_materiality.model_general_audit_ws_d9d2b44"
+            />
+    <field
+                name="state_field_id"
+                search="[('model_id.model','=','general_audit_ws_d9d2b44'),('name','=','state')]"
+            />
+    <field name="sequence" eval="100" />
+    <field name="python_code">result=True</field>
+</record>
+
+<!-- General Audit Worksheet: Preliminary Materiality (d9d2b44): Start -->
+<record
+            id="policy_template_general_audit_ws_d9d2b44_open"
+            model="policy.template_detail"
+        >
+    <field name="template_id" ref="policy_template_general_audit_ws_d9d2b44" />
+    <field
+                name="field_id"
+                search="[('model_id.model','=','general_audit_ws_d9d2b44'),('name','=','open_ok')]"
+            />
+    <field name="restrict_state" eval="1" />
+    <field
+                name="state_ids"
+                search="[('field_id.model_id.model','=','general_audit_ws_d9d2b44'),('value','=','draft')]"
+            />
+    <field name="restrict_user" eval="1" />
+    <field name="computation_method">use_group</field>
+    <field
+                name="group_ids"
+                eval="[(6,0,[ref('ssi_general_audit_worksheet_preliminary_materiality.general_audit_ws_d9d2b44_user_group')])]"
+            />
+    <field name="restrict_additional" eval="0" />
+</record>
+
+<!--  General Audit Worksheet: Preliminary Materiality (d9d2b44): Confirm -->
+<record
+            id="policy_template_general_audit_ws_d9d2b44_confirm"
+            model="policy.template_detail"
+        >
+    <field name="template_id" ref="policy_template_general_audit_ws_d9d2b44" />
+    <field
+                name="field_id"
+                search="[('model_id.model','=','general_audit_ws_d9d2b44'),('name','=','confirm_ok')]"
+            />
+    <field name="restrict_state" eval="1" />
+    <field
+                name="state_ids"
+                search="[('field_id.model_id.model','=','general_audit_ws_d9d2b44'),('value','=','open')]"
+            />
+    <field name="restrict_user" eval="1" />
+    <field name="computation_method">use_group</field>
+    <field
+                name="group_ids"
+                eval="[(6,0,[ref('ssi_general_audit_worksheet_preliminary_materiality.general_audit_ws_d9d2b44_user_group')])]"
+            />
+    <field name="restrict_additional" eval="0" />
+</record>
+
+<!--  General Audit Worksheet: Preliminary Materiality (d9d2b44): Cancel -->
+<record
+            id="policy_template_general_audit_ws_d9d2b44_cancel"
+            model="policy.template_detail"
+        >
+    <field name="template_id" ref="policy_template_general_audit_ws_d9d2b44" />
+    <field
+                name="field_id"
+                search="[('model_id.model','=','general_audit_ws_d9d2b44'),('name','=','cancel_ok')]"
+            />
+    <field name="restrict_state" eval="1" />
+    <field
+                name="state_ids"
+                search="[('field_id.model_id.model','=','general_audit_ws_d9d2b44'),('value','in',['draft','open','done'])]"
+            />
+            <field name="restrict_user" eval="1" />
+            <field name="computation_method">use_group</field>
+            <field
+                name="group_ids"
+                eval="[(6,0,[ref('ssi_general_audit_worksheet_preliminary_materiality.general_audit_ws_d9d2b44_validator_group')])]"
+            />
+            <field name="restrict_additional" eval="0" />
+</record>
+
+<!--  General Audit Worksheet: Preliminary Materiality (d9d2b44): Restart -->
+<record
+            id="policy_template_general_audit_ws_d9d2b44_restart"
+            model="policy.template_detail"
+        >
+    <field name="template_id" ref="policy_template_general_audit_ws_d9d2b44" />
+    <field
+                name="field_id"
+                search="[('model_id.model','=','general_audit_ws_d9d2b44'),('name','=','restart_ok')]"
+            />
+    <field name="restrict_state" eval="1" />
+    <field
+                name="state_ids"
+                search="[('field_id.model_id.model','=','general_audit_ws_d9d2b44'),('value','in',['cancel','reject'])]"
+            />
+            <field name="restrict_user" eval="1" />
+            <field name="computation_method">use_group</field>
+            <field
+                name="group_ids"
+                eval="[(6,0,[ref('ssi_general_audit_worksheet_preliminary_materiality.general_audit_ws_d9d2b44_validator_group')])]"
+            />
+            <field name="restrict_additional" eval="0" />
+</record>
+
+<!--  General Audit Worksheet: Preliminary Materiality (d9d2b44): Reject -->
+<record
+            id="policy_template_general_audit_ws_d9d2b44_reject"
+            model="policy.template_detail"
+        >
+    <field name="template_id" ref="policy_template_general_audit_ws_d9d2b44" />
+    <field
+                name="field_id"
+                search="[('model_id.model','=','general_audit_ws_d9d2b44'),('name','=','reject_ok')]"
+            />
+    <field name="restrict_state" eval="1" />
+    <field
+                name="state_ids"
+                search="[('field_id.model_id.model','=','general_audit_ws_d9d2b44'),('value','=','confirm')]"
+            />
+    <field name="restrict_user" eval="0" />
+    <field name="restrict_additional" eval="1" />
+    <field name="additional_python_code">result = False
+if env.user.id in document.active_approver_user_ids.ids:
+    result = True</field>
+</record>
+
+<!--  General Audit Worksheet: Preliminary Materiality (d9d2b44): Approve -->
+<record
+            id="policy_template_general_audit_ws_d9d2b44_approve"
+            model="policy.template_detail"
+        >
+    <field name="template_id" ref="policy_template_general_audit_ws_d9d2b44" />
+    <field
+                name="field_id"
+                search="[('model_id.model','=','general_audit_ws_d9d2b44'),('name','=','approve_ok')]"
+            />
+    <field name="restrict_state" eval="1" />
+    <field
+                name="state_ids"
+                search="[('field_id.model_id.model','=','general_audit_ws_d9d2b44'),('value','=','confirm')]"
+            />
+    <field name="restrict_user" eval="0" />
+    <field name="restrict_additional" eval="1" />
+    <field name="additional_python_code">result = False
+if env.user.id in document.active_approver_user_ids.ids:
+    result = True</field>
+</record>
+
+<!--  General Audit Worksheet: Preliminary Materiality (d9d2b44): Manual Number -->
+<record
+            id="policy_template_general_audit_ws_d9d2b44_manual_number"
+            model="policy.template_detail"
+        >
+    <field name="template_id" ref="policy_template_general_audit_ws_d9d2b44" />
+    <field
+                name="field_id"
+                search="[('model_id.model','=','general_audit_ws_d9d2b44'),('name','=','manual_number_ok')]"
+            />
+    <field name="restrict_state" eval="1" />
+    <field
+                name="state_ids"
+                search="[('field_id.model_id.model','=','general_audit_ws_d9d2b44'),('value','=','draft')]"
+            />
+    <field name="restrict_user" eval="1" />
+    <field name="computation_method">use_group</field>
+    <field
+                name="group_ids"
+                eval="[(6,0,[ref('ssi_general_audit_worksheet_preliminary_materiality.general_audit_ws_d9d2b44_validator_group')])]"
+            />
+    <field name="restrict_additional" eval="0" />
+</record>
+
+<!-- General Audit Worksheet: Preliminary Materiality Account Mapping (6dcda0e) -->
+<record id="policy_template_general_audit_ws_6dcda0e" model="policy.template">
+    <field name="name">Standard</field>
+    <field
+                name="model_id"
+                ref="ssi_general_audit_worksheet_preliminary_materiality.model_general_audit_ws_6dcda0e"
+            />
+    <field
+                name="state_field_id"
+                search="[('model_id.model','=','general_audit_ws_6dcda0e'),('name','=','state')]"
+            />
+    <field name="sequence" eval="100" />
+    <field name="python_code">result=True</field>
+</record>
+
+<!-- General Audit Worksheet: Preliminary Materiality Account Mapping (6dcda0e): Start -->
+<record
+            id="policy_template_general_audit_ws_6dcda0e_open"
+            model="policy.template_detail"
+        >
+    <field name="template_id" ref="policy_template_general_audit_ws_6dcda0e" />
+    <field
+                name="field_id"
+                search="[('model_id.model','=','general_audit_ws_6dcda0e'),('name','=','open_ok')]"
+            />
+    <field name="restrict_state" eval="1" />
+    <field
+                name="state_ids"
+                search="[('field_id.model_id.model','=','general_audit_ws_6dcda0e'),('value','=','draft')]"
+            />
+    <field name="restrict_user" eval="1" />
+    <field name="computation_method">use_group</field>
+    <field
+                name="group_ids"
+                eval="[(6,0,[ref('ssi_general_audit_worksheet_preliminary_materiality.general_audit_ws_6dcda0e_user_group')])]"
+            />
+    <field name="restrict_additional" eval="0" />
+</record>
+
+<!--  General Audit Worksheet: Preliminary Materiality Account Mapping (6dcda0e): Confirm -->
+<record
+            id="policy_template_general_audit_ws_6dcda0e_confirm"
+            model="policy.template_detail"
+        >
+    <field name="template_id" ref="policy_template_general_audit_ws_6dcda0e" />
+    <field
+                name="field_id"
+                search="[('model_id.model','=','general_audit_ws_6dcda0e'),('name','=','confirm_ok')]"
+            />
+    <field name="restrict_state" eval="1" />
+    <field
+                name="state_ids"
+                search="[('field_id.model_id.model','=','general_audit_ws_6dcda0e'),('value','=','open')]"
+            />
+    <field name="restrict_user" eval="1" />
+    <field name="computation_method">use_group</field>
+    <field
+                name="group_ids"
+                eval="[(6,0,[ref('ssi_general_audit_worksheet_preliminary_materiality.general_audit_ws_6dcda0e_user_group')])]"
+            />
+    <field name="restrict_additional" eval="0" />
+</record>
+
+<!--  General Audit Worksheet: Preliminary Materiality Account Mapping (6dcda0e): Cancel -->
+<record
+            id="policy_template_general_audit_ws_6dcda0e_cancel"
+            model="policy.template_detail"
+        >
+    <field name="template_id" ref="policy_template_general_audit_ws_6dcda0e" />
+    <field
+                name="field_id"
+                search="[('model_id.model','=','general_audit_ws_6dcda0e'),('name','=','cancel_ok')]"
+            />
+    <field name="restrict_state" eval="1" />
+    <field
+                name="state_ids"
+                search="[('field_id.model_id.model','=','general_audit_ws_6dcda0e'),('value','in',['draft','open','done'])]"
+            />
+            <field name="restrict_user" eval="1" />
+            <field name="computation_method">use_group</field>
+            <field
+                name="group_ids"
+                eval="[(6,0,[ref('ssi_general_audit_worksheet_preliminary_materiality.general_audit_ws_6dcda0e_validator_group')])]"
+            />
+            <field name="restrict_additional" eval="0" />
+</record>
+
+<!--  General Audit Worksheet: Preliminary Materiality Account Mapping (6dcda0e): Restart -->
+<record
+            id="policy_template_general_audit_ws_6dcda0e_restart"
+            model="policy.template_detail"
+        >
+    <field name="template_id" ref="policy_template_general_audit_ws_6dcda0e" />
+    <field
+                name="field_id"
+                search="[('model_id.model','=','general_audit_ws_6dcda0e'),('name','=','restart_ok')]"
+            />
+    <field name="restrict_state" eval="1" />
+    <field
+                name="state_ids"
+                search="[('field_id.model_id.model','=','general_audit_ws_6dcda0e'),('value','in',['cancel','reject'])]"
+            />
+            <field name="restrict_user" eval="1" />
+            <field name="computation_method">use_group</field>
+            <field
+                name="group_ids"
+                eval="[(6,0,[ref('ssi_general_audit_worksheet_preliminary_materiality.general_audit_ws_6dcda0e_validator_group')])]"
+            />
+            <field name="restrict_additional" eval="0" />
+</record>
+
+<!--  General Audit Worksheet: Preliminary Materiality Account Mapping (6dcda0e): Reject -->
+<record
+            id="policy_template_general_audit_ws_6dcda0e_reject"
+            model="policy.template_detail"
+        >
+    <field name="template_id" ref="policy_template_general_audit_ws_6dcda0e" />
+    <field
+                name="field_id"
+                search="[('model_id.model','=','general_audit_ws_6dcda0e'),('name','=','reject_ok')]"
+            />
+    <field name="restrict_state" eval="1" />
+    <field
+                name="state_ids"
+                search="[('field_id.model_id.model','=','general_audit_ws_6dcda0e'),('value','=','confirm')]"
+            />
+    <field name="restrict_user" eval="0" />
+    <field name="restrict_additional" eval="1" />
+    <field name="additional_python_code">result = False
+if env.user.id in document.active_approver_user_ids.ids:
+    result = True</field>
+</record>
+
+<!--  General Audit Worksheet: Preliminary Materiality Account Mapping (6dcda0e): Approve -->
+<record
+            id="policy_template_general_audit_ws_6dcda0e_approve"
+            model="policy.template_detail"
+        >
+    <field name="template_id" ref="policy_template_general_audit_ws_6dcda0e" />
+    <field
+                name="field_id"
+                search="[('model_id.model','=','general_audit_ws_6dcda0e'),('name','=','approve_ok')]"
+            />
+    <field name="restrict_state" eval="1" />
+    <field
+                name="state_ids"
+                search="[('field_id.model_id.model','=','general_audit_ws_6dcda0e'),('value','=','confirm')]"
+            />
+    <field name="restrict_user" eval="0" />
+    <field name="restrict_additional" eval="1" />
+    <field name="additional_python_code">result = False
+if env.user.id in document.active_approver_user_ids.ids:
+    result = True</field>
+</record>
+
+<!--  General Audit Worksheet: Preliminary Materiality Account Mapping (6dcda0e): Manual Number -->
+<record
+            id="policy_template_general_audit_ws_6dcda0e_manual_number"
+            model="policy.template_detail"
+        >
+    <field name="template_id" ref="policy_template_general_audit_ws_6dcda0e" />
+    <field
+                name="field_id"
+                search="[('model_id.model','=','general_audit_ws_6dcda0e'),('name','=','manual_number_ok')]"
+            />
+    <field name="restrict_state" eval="1" />
+    <field
+                name="state_ids"
+                search="[('field_id.model_id.model','=','general_audit_ws_6dcda0e'),('value','=','draft')]"
+            />
+    <field name="restrict_user" eval="1" />
+    <field name="computation_method">use_group</field>
+    <field
+                name="group_ids"
+                eval="[(6,0,[ref('ssi_general_audit_worksheet_preliminary_materiality.general_audit_ws_6dcda0e_validator_group')])]"
+            />
+    <field name="restrict_additional" eval="0" />
+</record>
+</data>
+</odoo>

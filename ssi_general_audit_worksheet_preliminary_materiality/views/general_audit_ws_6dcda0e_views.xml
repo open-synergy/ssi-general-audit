@@ -1,0 +1,91 @@
+<?xml version="1.0" ?>
+<!-- Copyright 2022 OpenSynergy Indonesia
+     Copyright 2022 PT. Simetri Sinergi Indonesia
+     License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl-3.0-standalone.html). -->
+<odoo>
+
+    <record id="general_audit_ws_6dcda0e_view_search" model="ir.ui.view">
+        <field name="name">general_audit_ws_6dcda0e form</field>
+        <field name="model">general_audit_ws_6dcda0e</field>
+        <field
+            name="inherit_id"
+            ref="ssi_general_audit.general_audit_worksheet_mixin_view_search"
+        />
+        <field name="mode">primary</field>
+        <field name="arch" type="xml">
+            <data />
+        </field>
+    </record>
+
+    <record id="general_audit_ws_6dcda0e_view_tree" model="ir.ui.view">
+        <field name="name">general_audit_ws_6dcda0e tree</field>
+        <field name="model">general_audit_ws_6dcda0e</field>
+        <field name="mode">primary</field>
+        <field
+            name="inherit_id"
+            ref="ssi_general_audit.general_audit_worksheet_mixin_view_tree"
+        />
+        <field name="arch" type="xml">
+            <data>
+            </data>
+        </field>
+    </record>
+
+    <record id="general_audit_ws_6dcda0e_view_form" model="ir.ui.view">
+        <field name="name">general_audit_ws_6dcda0e form</field>
+        <field name="model">general_audit_ws_6dcda0e</field>
+        <field name="mode">primary</field>
+        <field
+            name="inherit_id"
+            ref="ssi_general_audit.general_audit_worksheet_mixin_view_form"
+        />
+        <field name="arch" type="xml">
+            <data>
+                <xpath expr="//page[1]" position="before">
+                    <page name="materiality" string="Materiality">
+                        <group name="materiality_1" colspan="4" col="2">
+                            <field
+                                name="worksheet_d9d2b44_id"
+                                domain="[('general_audit_id','=',general_audit_id)]"
+                            />
+                            <field name="materiality_type" />
+                            <field name="base" />
+                        </group>
+                        <field name="materiality_mapping_ids" force_save="1">
+                            <tree editable="top">
+                                <field name="sequence" widget="handle" />
+                                <field name="standard_detail_id" invisible="1" />
+                                <field name="currency_id" invisible="1" />
+                                <field name="type_id" />
+                                <field name="balance" />
+                                <field name="materiality" />
+                                <field name="use_specific_materiality" />
+                                <field name="specific_materiality" />
+                                <field name="specific_materiality_reason" />
+                                <field name="final_materiality" />
+                            </tree>
+                        </field>
+                    </page>
+                </xpath>
+            </data>
+        </field>
+    </record>
+
+    <record id="general_audit_ws_6dcda0e_action" model="ir.actions.act_window">
+        <field name="name">Preliminary Materiality Account Mapping</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">general_audit_ws_6dcda0e</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+    <menuitem
+        id="general_audit_ws_6dcda0e_menu"
+        name="Preliminary Materiality Account Mapping"
+        parent="ssi_general_audit.menu_general_audit_risk_assesment"
+        action="general_audit_ws_6dcda0e_action"
+        sequence="1301"
+        groups="general_audit_ws_6dcda0e_viewer_group"
+    />
+
+
+</odoo>
