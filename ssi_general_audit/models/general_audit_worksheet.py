@@ -164,18 +164,3 @@ class GeneralAuditWorksheet(models.Model):
             ],
         },
     )
-    state = fields.Selection(
-        string="State",
-        selection=[
-            ("draft", "Draft"),
-            ("open", "In Progress"),
-            ("confirm", "Waiting for Approval"),
-            ("done", "Done"),
-            ("reject", "Rejected"),
-            ("cancel", "Cancelled"),
-        ],
-        copy=False,
-        default="draft",
-        required=True,
-        readonly=True,
-    )
