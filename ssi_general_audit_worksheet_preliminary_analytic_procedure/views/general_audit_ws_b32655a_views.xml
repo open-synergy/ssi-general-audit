@@ -1,0 +1,142 @@
+<?xml version="1.0" ?>
+<!-- Copyright 2022 OpenSynergy Indonesia
+     Copyright 2022 PT. Simetri Sinergi Indonesia
+     License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl-3.0-standalone.html). -->
+<odoo>
+
+    <record id="general_audit_ws_b32655a_view_search" model="ir.ui.view">
+        <field name="name">general_audit_ws_b32655a form</field>
+        <field name="model">general_audit_ws_b32655a</field>
+        <field
+            name="inherit_id"
+            ref="ssi_general_audit.general_audit_worksheet_mixin_view_search"
+        />
+        <field name="mode">primary</field>
+        <field name="arch" type="xml">
+            <data />
+        </field>
+    </record>
+
+    <record id="general_audit_ws_b32655a_view_tree" model="ir.ui.view">
+        <field name="name">general_audit_ws_b32655a tree</field>
+        <field name="model">general_audit_ws_b32655a</field>
+        <field name="mode">primary</field>
+        <field
+            name="inherit_id"
+            ref="ssi_general_audit.general_audit_worksheet_mixin_view_tree"
+        />
+        <field name="arch" type="xml">
+            <data>
+            </data>
+        </field>
+    </record>
+
+    <record id="general_audit_ws_b32655a_view_form" model="ir.ui.view">
+        <field name="name">general_audit_ws_b32655a form</field>
+        <field name="model">general_audit_ws_b32655a</field>
+        <field name="mode">primary</field>
+        <field
+            name="inherit_id"
+            ref="ssi_general_audit.general_audit_worksheet_mixin_view_form"
+        />
+        <field name="arch" type="xml">
+            <data>
+                <xpath expr="//page[1]" position="before">
+                    <page name="analysis" string="Analysis">
+                        <field name="analysis_ids" force_save="1">
+                            <tree editable="top">
+                                <field name="sequence" widget="handle" />
+                                <field name="standard_detail_id" invisible="1" />
+                                <field name="type_id" />
+                                <field name="computation_item_id" optional="hide" />
+                                <field
+                                    name="general_audit_computation_item_id"
+                                    invisible="1"
+                                />
+                                <field name="currency_id" invisible="1" />
+                                <field
+                                    name="interim_balance"
+                                    string="Int. ∑"
+                                    optional="hide"
+                                />
+                                <field
+                                    name="interim_base_figure"
+                                    string="Int. b"
+                                    optional="hide"
+                                />
+                                <field name="interim_vertical_analysis" string="Int." />
+                                <field
+                                    name="extrapolation_balance"
+                                    string="Ext. ∑"
+                                    optional="hide"
+                                />
+                                <field
+                                    name="extrapolation_base_figure"
+                                    string="Ext. b"
+                                    optional="hide"
+                                />
+                                <field
+                                    name="extrapolation_vertical_analysis"
+                                    string="Ext."
+                                />
+                                <field
+                                    name="previous_balance"
+                                    string="Prev. ∑"
+                                    optional="hide"
+                                />
+                                <field
+                                    name="previous_base_figure"
+                                    string="Prev. b"
+                                    optional="hide"
+                                />
+                                <field
+                                    name="previous_vertical_analysis"
+                                    string="Prev."
+                                />
+                                <field name="extrapolation_change" string="Ext. Δ" />
+                                <field
+                                    name="extrapolation_change_percent"
+                                    string="Ext. %"
+                                />
+                                <field name="interim_change" string="Int. Δ" />
+                                <field name="interim_change_percent" string="Int. %" />
+                                <field name="industry_average" string="Industry μ" />
+                                <field
+                                    name="vertical_need_attention"
+                                    string="Ver"
+                                    widget="boolean_toggle"
+                                />
+                                <field
+                                    name="horizontal_need_attention"
+                                    string="Hor"
+                                    widget="boolean_toggle"
+                                />
+                                <field name="explanation" string="Explanation" />
+                            </tree>
+                        </field>
+                    </page>
+                </xpath>
+            </data>
+        </field>
+    </record>
+
+    <record id="general_audit_ws_b32655a_action" model="ir.actions.act_window">
+        <field
+            name="name"
+        >Preliminary Analytic Procedure - Vertical and Horizontal Analysis</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">general_audit_ws_b32655a</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+    <menuitem
+        id="general_audit_ws_b32655a_menu"
+        name="Preliminary Analytic Procedure - Vertical and Horizontal Analysis"
+        parent="ssi_general_audit.menu_general_audit_risk_assesment"
+        action="general_audit_ws_b32655a_action"
+        sequence="1401"
+        groups="general_audit_ws_b32655a_viewer_group"
+    />
+
+
+</odoo>
