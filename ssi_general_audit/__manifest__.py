@@ -37,6 +37,7 @@
         "views/client_account_views.xml",
         "views/client_account_type_set_views.xml",
         "views/trial_balance_computation_item_views.xml",
+        "views/client_financial_ratio_views.xml",
         "views/general_audit_worksheet_type_category_views.xml",
         "views/general_audit_worksheet_type_views.xml",
         "views/general_audit_worksheet_conclusion_views.xml",

@@ -31,6 +31,10 @@ class ClientAccountType(models.Model):
         required=True,
         default="dr",
     )
+    analytic_procedure_computation_item_id = fields.Many2one(
+        string="Computation Item for Analytic Procedure",
+        comodel_name="trial_balance_computation_item",
+    )
     python_code = fields.Text(
         string="Python Code",
         required=True,
