@@ -2,7 +2,8 @@
 # Copyright 2022 PT. Simetri Sinergi Indonesia
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl-3.0-standalone.html).
 
-from odoo import api, fields, models
+from odoo import _, api, fields, models
+from odoo.exceptions import ValidationError
 
 
 class GeneralAuditWorksheet(models.Model):
@@ -150,7 +151,6 @@ class GeneralAuditWorksheet(models.Model):
         states={
             "open": [
                 ("readonly", False),
-                ("required", True),
             ],
         },
     )
@@ -160,7 +160,52 @@ class GeneralAuditWorksheet(models.Model):
         states={
             "open": [
                 ("readonly", False),
-                ("required", True),
             ],
         },
     )
+
+    @api.constrains(
+        "state",
+    )
+    def _constrains_state_change_confirm(self):
+        for record in self.sudo():
+            if record.state == "confirm":
+                if not record._check_conclusion():
+                    error_message = _(
+                        """
+                    Context: Confirm worksheet
+                    Database ID: %s
+                    Problem: Conclusion is not set
+                    Solution: Choose conclusion
+                    """
+                        % (self.id)
+                    )
+                    raise ValidationError(error_message)
+
+                if not record._check_conclusion_explanation():
+                    error_message = _(
+                        """
+                    Context: Confirm worksheet
+                    Database ID: %s
+                    Problem: Conclusion explanation is not set
+                    Solution: Fill conclusion explanation
+                    """
+                        % (self.id)
+                    )
+                    raise ValidationError(error_message)
+
+    def _check_conclusion(self):
+        self.ensure_one()
+        result = True
+        if not self.conclusion_id:
+            result = False
+
+        return result
+
+    def _check_conclusion_explanation(self):
+        self.ensure_one()
+        result = True
+        if not self.conclusion:
+            result = False
+
+        return result
