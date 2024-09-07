@@ -11,6 +11,7 @@ setuptools.setup(
         'odoo14-addon-ssi_general_audit',
         'odoo14-addon-ssi_general_audit_worksheet_preliminary_analytic_procedure',
         'odoo14-addon-ssi_general_audit_worksheet_preliminary_materiality',
+        'odoo14-addon-ssi_general_audit_worksheet_understanding_entity',
     ],
     classifiers=[
         'Programming Language :: Python',
