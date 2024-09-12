@@ -7,6 +7,7 @@ from . import (
     client_account_type,
     client_account,
     client_financial_ratio,
+    client_business_process,
     trial_balance_computation_item,
     client_account_type_set,
     client_account_type_computation_item,
