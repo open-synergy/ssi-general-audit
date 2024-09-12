@@ -408,6 +408,13 @@ class GeneralAudit(models.Model):
         inverse_name="general_audit_id",
         readonly=True,
     )
+    account_type_ids = fields.Many2many(
+        string="Account Types",
+        comodel_name="client_account_type",
+        compute="_compute_account_type_ids",
+        store=False,
+        compute_sudo=True,
+    )
 
     @api.model
     def _get_policy_field(self):
@@ -436,6 +443,14 @@ class GeneralAudit(models.Model):
     def _compute_policy(self):
         _super = super(GeneralAudit, self)
         _super._compute_policy()
+
+    @api.depends(
+        "standard_detail_ids",
+        "standard_detail_ids.type_id",
+    )
+    def _compute_account_type_ids(self):
+        for record in self:
+            record.account_type_ids = record.standard_detail_ids.mapped("type_id")
 
     @api.depends(
         "account_mapping_ids",

@@ -87,6 +87,11 @@ class GeneralAuditWorksheetMixin(models.AbstractModel):
             ],
         },
     )
+    account_type_ids = fields.Many2many(
+        string="Account Types",
+        related="general_audit_id.account_type_ids",
+        store=False,
+    )
     state = fields.Selection(
         string="State",
         selection=[
