@@ -5,4 +5,6 @@
 from . import (
     general_audit_ws_e78a3c6,
     general_audit_ws_e78a3c6_organization_structure,
+    general_audit_ws_a13a30e,
+    general_audit_ws_a13a30e_detail,
 )
