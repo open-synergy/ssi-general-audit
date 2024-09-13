@@ -50,7 +50,7 @@
                             <field name="business_environment_id" />
                         </group>
                         <field name="detail_ids">
-                            <tree editable="top">
+                            <tree>
                                 <field name="sequence" widget="handle" />
                                 <field name="understanding_result" />
                                 <field name="impact_to_financial_report" />
@@ -60,6 +60,36 @@
                                     domain="[('id','in',parent.account_type_ids)]"
                                 />
                             </tree>
+                            <form>
+                                <group name="detail" colspan="4" col="2">
+                                    <separator
+                                        string="Understanding Result"
+                                        colspan="2"
+                                    />
+                                    <field
+                                        name="understanding_result"
+                                        nolabel="1"
+                                        colspan="2"
+                                    />
+                                    <separator
+                                        string="Impact to Financial Report"
+                                        colspan="2"
+                                    />
+                                    <field
+                                        name="impact_to_financial_report"
+                                        nolabel="1"
+                                        colspan="2"
+                                    />
+                                    <separator string="Related Accounts" colspan="2" />
+                                    <field
+                                        name="related_account_type_ids"
+                                        widget="many2many_tags"
+                                        domain="[('id','in',parent.account_type_ids)]"
+                                        nolabel="1"
+                                        colspan="2"
+                                    />
+                                </group>
+                            </form>
                         </field>
                     </page>
                 </xpath>

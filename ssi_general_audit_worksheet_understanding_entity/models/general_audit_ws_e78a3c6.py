@@ -26,3 +26,8 @@ class GeneralAuditWSe78a3c6(models.Model):
             ],
         },
     )
+    organization_structure_image = fields.Image(
+        "Organization Structure Image",
+        max_width=1920,
+        max_height=1920,
+    )
