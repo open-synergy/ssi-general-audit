@@ -19,4 +19,6 @@ from . import (
     general_audit_ws_c0d0898_detail,
     general_audit_ws_f6a227,
     general_audit_ws_f6a227_detail,
+    general_audit_ws_c0e0eec,
+    general_audit_ws_c0e0eec_detail,
 )

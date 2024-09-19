@@ -1,0 +1,180 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!-- Copyright 2022 OpenSynergy Indonesia
+     Copyright 2022 PT. Simetri Sinergi Indonesia
+     License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl). -->
+<odoo>
+<record id="policy_template_general_audit_ws_c0e0eec" model="policy.template">
+    <field name="name">Standard</field>
+    <field name="model_id" ref="model_general_audit_ws_c0e0eec" />
+    <field
+            name="state_field_id"
+            search="[('model_id.model','=','general_audit_ws_c0e0eec'),('name','=','state')]"
+        />
+    <field name="sequence" eval="100" />
+    <field name="python_code">result=True</field>
+</record>
+
+<!-- Start -->
+<record
+        id="policy_template_general_audit_ws_c0e0eec_open"
+        model="policy.template_detail"
+    >
+    <field name="template_id" ref="policy_template_general_audit_ws_c0e0eec" />
+    <field
+            name="field_id"
+            search="[('model_id.model','=','general_audit_ws_c0e0eec'),('name','=','open_ok')]"
+        />
+    <field name="restrict_state" eval="1" />
+    <field
+            name="state_ids"
+            search="[('field_id.model_id.model','=','general_audit_ws_c0e0eec'),('value','=','draft')]"
+        />
+    <field name="restrict_user" eval="1" />
+    <field name="computation_method">use_group</field>
+    <field
+            name="group_ids"
+            eval="[(6,0,[ref('general_audit_ws_c0e0eec_user_group')])]"
+        />
+    <field name="restrict_additional" eval="0" />
+</record>
+
+<!-- Confirm -->
+<record
+        id="policy_template_general_audit_ws_c0e0eec_confirm"
+        model="policy.template_detail"
+    >
+    <field name="template_id" ref="policy_template_general_audit_ws_c0e0eec" />
+    <field
+            name="field_id"
+            search="[('model_id.model','=','general_audit_ws_c0e0eec'),('name','=','confirm_ok')]"
+        />
+    <field name="restrict_state" eval="1" />
+    <field
+            name="state_ids"
+            search="[('field_id.model_id.model','=','general_audit_ws_c0e0eec'),('value','=','open')]"
+        />
+    <field name="restrict_user" eval="1" />
+    <field name="computation_method">use_group</field>
+    <field
+            name="group_ids"
+            eval="[(6,0,[ref('general_audit_ws_c0e0eec_user_group')])]"
+        />
+    <field name="restrict_additional" eval="0" />
+</record>
+
+<!-- Cancel -->
+<record
+        id="policy_template_general_audit_ws_c0e0eec_cancel"
+        model="policy.template_detail"
+    >
+    <field name="template_id" ref="policy_template_general_audit_ws_c0e0eec" />
+    <field
+            name="field_id"
+            search="[('model_id.model','=','general_audit_ws_c0e0eec'),('name','=','cancel_ok')]"
+        />
+    <field name="restrict_state" eval="1" />
+    <field
+            name="state_ids"
+            search="[('field_id.model_id.model','=','general_audit_ws_c0e0eec'),('value','in',['draft','open','done'])]"
+        />
+            <field name="restrict_user" eval="1" />
+            <field name="computation_method">use_group</field>
+            <field
+            name="group_ids"
+            eval="[(6,0,[ref('general_audit_ws_c0e0eec_validator_group')])]"
+        />
+            <field name="restrict_additional" eval="0" />
+</record>
+
+<!-- Restart -->
+<record
+        id="policy_template_general_audit_ws_c0e0eec_restart"
+        model="policy.template_detail"
+    >
+    <field name="template_id" ref="policy_template_general_audit_ws_c0e0eec" />
+    <field
+            name="field_id"
+            search="[('model_id.model','=','general_audit_ws_c0e0eec'),('name','=','restart_ok')]"
+        />
+    <field name="restrict_state" eval="1" />
+    <field
+            name="state_ids"
+            search="[('field_id.model_id.model','=','general_audit_ws_c0e0eec'),('value','in',['cancel','reject'])]"
+        />
+            <field name="restrict_user" eval="1" />
+            <field name="computation_method">use_group</field>
+            <field
+            name="group_ids"
+            eval="[(6,0,[ref('general_audit_ws_c0e0eec_validator_group')])]"
+        />
+            <field name="restrict_additional" eval="0" />
+</record>
+
+<!-- Reject -->
+<record
+        id="policy_template_general_audit_ws_c0e0eec_reject"
+        model="policy.template_detail"
+    >
+    <field name="template_id" ref="policy_template_general_audit_ws_c0e0eec" />
+    <field
+            name="field_id"
+            search="[('model_id.model','=','general_audit_ws_c0e0eec'),('name','=','reject_ok')]"
+        />
+    <field name="restrict_state" eval="1" />
+    <field
+            name="state_ids"
+            search="[('field_id.model_id.model','=','general_audit_ws_c0e0eec'),('value','=','confirm')]"
+        />
+    <field name="restrict_user" eval="0" />
+    <field name="restrict_additional" eval="1" />
+    <field name="additional_python_code">result = False
+if env.user.id in document.active_approver_user_ids.ids:
+    result = True</field>
+</record>
+
+<!-- Approve -->
+<record
+        id="policy_template_general_audit_ws_c0e0eec_approve"
+        model="policy.template_detail"
+    >
+    <field name="template_id" ref="policy_template_general_audit_ws_c0e0eec" />
+    <field
+            name="field_id"
+            search="[('model_id.model','=','general_audit_ws_c0e0eec'),('name','=','approve_ok')]"
+        />
+    <field name="restrict_state" eval="1" />
+    <field
+            name="state_ids"
+            search="[('field_id.model_id.model','=','general_audit_ws_c0e0eec'),('value','=','confirm')]"
+        />
+    <field name="restrict_user" eval="0" />
+    <field name="restrict_additional" eval="1" />
+    <field name="additional_python_code">result = False
+if env.user.id in document.active_approver_user_ids.ids:
+    result = True</field>
+</record>
+
+<!-- Manual Number -->
+<record
+        id="policy_template_general_audit_ws_c0e0eec_manual_number"
+        model="policy.template_detail"
+    >
+    <field name="template_id" ref="policy_template_general_audit_ws_c0e0eec" />
+    <field
+            name="field_id"
+            search="[('model_id.model','=','general_audit_ws_c0e0eec'),('name','=','manual_number_ok')]"
+        />
+    <field name="restrict_state" eval="1" />
+    <field
+            name="state_ids"
+            search="[('field_id.model_id.model','=','general_audit_ws_c0e0eec'),('value','=','draft')]"
+        />
+    <field name="restrict_user" eval="1" />
+    <field name="computation_method">use_group</field>
+    <field
+            name="group_ids"
+            eval="[(6,0,[ref('general_audit_ws_c0e0eec_validator_group')])]"
+        />
+    <field name="restrict_additional" eval="0" />
+</record>
+</odoo>
