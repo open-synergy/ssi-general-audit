@@ -1,0 +1,96 @@
+<?xml version="1.0" ?>
+<!-- Copyright 2022 OpenSynergy Indonesia
+     Copyright 2022 PT. Simetri Sinergi Indonesia
+     License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl-3.0-standalone.html). -->
+<odoo>
+
+    <record id="general_audit_ws_c0e0eec_view_search" model="ir.ui.view">
+        <field name="name">general_audit_ws_c0e0eec search</field>
+        <field name="model">general_audit_ws_c0e0eec</field>
+        <field
+            name="inherit_id"
+            ref="ssi_general_audit.general_audit_worksheet_mixin_view_search"
+        />
+        <field name="mode">primary</field>
+        <field name="arch" type="xml">
+            <data />
+        </field>
+    </record>
+
+    <record id="general_audit_ws_c0e0eec_view_tree" model="ir.ui.view">
+        <field name="name">general_audit_ws_c0e0eec tree</field>
+        <field name="model">general_audit_ws_c0e0eec</field>
+        <field name="mode">primary</field>
+        <field
+            name="inherit_id"
+            ref="ssi_general_audit.general_audit_worksheet_mixin_view_tree"
+        />
+        <field name="arch" type="xml">
+            <data>
+            </data>
+        </field>
+    </record>
+
+    <record id="general_audit_ws_c0e0eec_view_form" model="ir.ui.view">
+        <field name="name">general_audit_ws_c0e0eec form</field>
+        <field name="model">general_audit_ws_c0e0eec</field>
+        <field name="mode">primary</field>
+        <field
+            name="inherit_id"
+            ref="ssi_general_audit.general_audit_worksheet_mixin_view_form"
+        />
+        <field name="arch" type="xml">
+            <data>
+                <xpath expr="//page[1]" position="before">
+                    <page name="detail" string="Details">
+                        <field name="detail_ids">
+                            <tree>
+                                <field name="category_id" />
+                                <field name="factor_id" />
+                                <field name="indicator_id" />
+                                <field
+                                    name="related_account_type_ids"
+                                    widget="many2many_tags"
+                                    domain="[('id','in',parent.account_type_ids)]"
+                                />
+                            </tree>
+                            <form>
+                                <group name="detail" colspan="4" col="2">
+                                    <field name="category_id" />
+                                    <field name="factor_id" />
+                                    <field name="indicator_id" />
+                                    <field name="tcgw" />
+                                    <field name="management" />
+                                    <field name="other" />
+                                    <field
+                                        name="related_account_type_ids"
+                                        widget="many2many_tags"
+                                        domain="[('id','in',parent.account_type_ids)]"
+                                    />
+                                </group>
+                            </form>
+                        </field>
+                    </page>
+                </xpath>
+            </data>
+        </field>
+    </record>
+
+    <record id="general_audit_ws_c0e0eec_action" model="ir.actions.act_window">
+        <field name="name">Fraud Factor Analysis</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">general_audit_ws_c0e0eec</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+    <menuitem
+        id="general_audit_ws_c0e0eec_menu"
+        name="Fraud Factor Analysis"
+        parent="ssi_general_audit.menu_general_audit_risk_assesment"
+        action="general_audit_ws_c0e0eec_action"
+        sequence="1503"
+        groups="general_audit_ws_c0e0eec_viewer_group"
+    />
+
+
+</odoo>

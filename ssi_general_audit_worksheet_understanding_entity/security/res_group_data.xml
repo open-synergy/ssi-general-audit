@@ -40,4 +40,40 @@
         />
 </record>
 
+<record id="general_audit_fraud_factor_category_group" model="res.groups">
+    <field name="name">General Audit Fraud Factor Category</field>
+    <field
+            name="category_id"
+            ref="ssi_accountant.accountant_configurator_module_category"
+        />
+    <field
+            name="users"
+            eval="[(4, ref('base.user_root')), (4, ref('base.user_admin'))]"
+        />
+</record>
+
+<record id="general_audit_fraud_factor_group" model="res.groups">
+    <field name="name">General Audit Fraud Factor</field>
+    <field
+            name="category_id"
+            ref="ssi_accountant.accountant_configurator_module_category"
+        />
+    <field
+            name="users"
+            eval="[(4, ref('base.user_root')), (4, ref('base.user_admin'))]"
+        />
+</record>
+
+<record id="general_audit_fraud_factor_indicator_group" model="res.groups">
+    <field name="name">General Audit Fraud Factor Indicator</field>
+    <field
+            name="category_id"
+            ref="ssi_accountant.accountant_configurator_module_category"
+        />
+    <field
+            name="users"
+            eval="[(4, ref('base.user_root')), (4, ref('base.user_admin'))]"
+        />
+</record>
+
 </odoo>
