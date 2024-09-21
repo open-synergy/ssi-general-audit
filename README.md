@@ -19,6 +19,7 @@ Available addons
 addon | version | maintainers | summary
 --- | --- | --- | ---
 [ssi_general_audit](ssi_general_audit/) | 14.0.2.11.0 |  | General Audit
+[ssi_general_audit_worksheet_inherent_risk](ssi_general_audit_worksheet_inherent_risk/) | 14.0.1.7.0 |  | General Audit Worksheet - Inherent Risk
 [ssi_general_audit_worksheet_preliminary_analytic_procedure](ssi_general_audit_worksheet_preliminary_analytic_procedure/) | 14.0.1.0.0 |  | General Audit Worksheet - Preliminary Analytic Procedure
 [ssi_general_audit_worksheet_preliminary_materiality](ssi_general_audit_worksheet_preliminary_materiality/) | 14.0.1.0.0 |  | General Audit Worksheet - Preliminary Materiality
 [ssi_general_audit_worksheet_understanding_entity](ssi_general_audit_worksheet_understanding_entity/) | 14.0.1.7.0 |  | General Audit Worksheet - Understanding Entity and It's Environment
