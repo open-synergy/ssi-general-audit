@@ -61,6 +61,26 @@
                                     widget="boolean_toggle"
                                 />
                             </tree>
+                            <form>
+                                <group name="detail_1" colspan="4" col="2">
+                                    <field name="sequence" widget="handle" />
+                                    <field name="regulation_id" />
+                                    <field
+                                        name="item_id"
+                                        domain="[('regulation_id','=',regulation_id)]"
+                                    />
+                                    <field
+                                        name="related_account_type_ids"
+                                        domain="[('id','in',parent.account_type_ids)]"
+                                        widget="many2many_tags"
+                                    />
+                                    <field name="standard_detail_ids" invisible="0" />
+                                    <field
+                                        name="significant_impact"
+                                        widget="boolean_toggle"
+                                    />
+                                </group>
+                            </form>
                         </field>
                     </page>
                 </xpath>
