@@ -71,6 +71,7 @@
         "views/general_audit_ws_c0d0898_views.xml",
         "views/general_audit_ws_f6a227_views.xml",
         "views/general_audit_ws_c0e0eec_views.xml",
+        "views/general_audit_standard_detail_views.xml",
     ],
     "demo": [],
 }

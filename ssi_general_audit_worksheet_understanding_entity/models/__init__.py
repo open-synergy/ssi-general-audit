@@ -21,4 +21,5 @@ from . import (
     general_audit_ws_f6a227_detail,
     general_audit_ws_c0e0eec,
     general_audit_ws_c0e0eec_detail,
+    general_audit_standard_detail,
 )
