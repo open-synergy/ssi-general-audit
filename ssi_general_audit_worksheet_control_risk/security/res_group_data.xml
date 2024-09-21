@@ -41,7 +41,55 @@
 </record>
 
 <record id="general_audit_general_control_set_group" model="res.groups">
-    <field name="name">General Audit General Set Indicator</field>
+    <field name="name">General Audit General Control Set</field>
+    <field
+            name="category_id"
+            ref="ssi_accountant.accountant_configurator_module_category"
+        />
+    <field
+            name="users"
+            eval="[(4, ref('base.user_root')), (4, ref('base.user_admin'))]"
+        />
+</record>
+
+<record id="general_audit_it_control_category_group" model="res.groups">
+    <field name="name">General Audit IT Control Category</field>
+    <field
+            name="category_id"
+            ref="ssi_accountant.accountant_configurator_module_category"
+        />
+    <field
+            name="users"
+            eval="[(4, ref('base.user_root')), (4, ref('base.user_admin'))]"
+        />
+</record>
+
+<record id="general_audit_it_control_group" model="res.groups">
+    <field name="name">General Audit IT Control</field>
+    <field
+            name="category_id"
+            ref="ssi_accountant.accountant_configurator_module_category"
+        />
+    <field
+            name="users"
+            eval="[(4, ref('base.user_root')), (4, ref('base.user_admin'))]"
+        />
+</record>
+
+<record id="general_audit_it_control_indicator_group" model="res.groups">
+    <field name="name">General Audit IT Control Indicator</field>
+    <field
+            name="category_id"
+            ref="ssi_accountant.accountant_configurator_module_category"
+        />
+    <field
+            name="users"
+            eval="[(4, ref('base.user_root')), (4, ref('base.user_admin'))]"
+        />
+</record>
+
+<record id="general_audit_it_control_set_group" model="res.groups">
+    <field name="name">General Audit IT Control Set</field>
     <field
             name="category_id"
             ref="ssi_accountant.accountant_configurator_module_category"

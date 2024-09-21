@@ -1,0 +1,102 @@
+<?xml version="1.0" ?>
+<!-- Copyright 2022 OpenSynergy Indonesia
+     Copyright 2022 PT. Simetri Sinergi Indonesia
+     License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl-3.0-standalone.html). -->
+<odoo>
+
+    <record id="general_audit_ws_f63f569_view_search" model="ir.ui.view">
+        <field name="name">general_audit_ws_f63f569 form</field>
+        <field name="model">general_audit_ws_f63f569</field>
+        <field
+            name="inherit_id"
+            ref="ssi_general_audit.general_audit_worksheet_mixin_view_search"
+        />
+        <field name="mode">primary</field>
+        <field name="arch" type="xml">
+            <data />
+        </field>
+    </record>
+
+    <record id="general_audit_ws_f63f569_view_tree" model="ir.ui.view">
+        <field name="name">general_audit_ws_f63f569 tree</field>
+        <field name="model">general_audit_ws_f63f569</field>
+        <field name="mode">primary</field>
+        <field
+            name="inherit_id"
+            ref="ssi_general_audit.general_audit_worksheet_mixin_view_tree"
+        />
+        <field name="arch" type="xml">
+            <data>
+            </data>
+        </field>
+    </record>
+
+    <record id="general_audit_ws_f63f569_view_form" model="ir.ui.view">
+        <field name="name">general_audit_ws_f63f569 form</field>
+        <field name="model">general_audit_ws_f63f569</field>
+        <field name="mode">primary</field>
+        <field
+            name="inherit_id"
+            ref="ssi_general_audit.general_audit_worksheet_mixin_view_form"
+        />
+        <field name="arch" type="xml">
+            <data>
+                <xpath expr="//page[1]" position="before">
+                    <page name="control" string="Control">
+                        <group name="control" colspan="4" col="1">
+                            <field name="set_id" />
+                        </group>
+                        <field name="detail_ids">
+                            <tree create="false" delete="false">
+                                <field name="category_id" />
+                                <field name="control_id" />
+                                <field name="result" />
+                            </tree>
+                            <form>
+                                <group name="detail_1" colspan="4" col="1">
+                                    <field name="control_id" />
+                                    <field name="category_id" />
+                                    <field name="result" />
+                                    <field name="explanation" />
+                                </group>
+                                <field name="indicator_ids">
+                                    <tree create="false" delete="false">
+                                        <field name="indicator_id" />
+                                        <field name="result" />
+                                    </tree>
+                                    <form>
+                                        <group name="indicator_1" colspan="4" col="1">
+                                            <field name="control_id" />
+                                            <field name="category_id" />
+                                            <field name="indicator_id" />
+                                            <field name="result" />
+                                            <field name="explanation" />
+                                        </group>
+                                    </form>
+                                </field>
+                            </form>
+                        </field>
+                    </page>
+                </xpath>
+            </data>
+        </field>
+    </record>
+
+    <record id="general_audit_ws_f63f569_action" model="ir.actions.act_window">
+        <field name="name">IT Control Evaluations</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">general_audit_ws_f63f569</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+    <menuitem
+        id="general_audit_ws_f63f569_menu"
+        name="IT Control Evaluations"
+        parent="ssi_general_audit.menu_general_audit_risk_assesment"
+        action="general_audit_ws_f63f569_action"
+        sequence="1503"
+        groups="general_audit_ws_f63f569_viewer_group"
+    />
+
+
+</odoo>
