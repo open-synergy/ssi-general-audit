@@ -36,6 +36,26 @@ class GeneralAuditWSA418D89Detail(models.Model):
         related="standard_detail_id.sequence",
         store=True,
     )
+    inherent_risk_factor_without_impact_ids = fields.Many2many(
+        string="Inherent Risk Factor Without Direct Impact",
+        comodel_name="general_audit_inherent_risk_factor",
+        relation="rel_general_audit_ws_a418d89_detail_2_without_impact",
+        column1="detail_id",
+        column2="inherent_risk_factor_id",
+        domain=[
+            ("direct_impact", "=", False),
+        ],
+    )
+    inherent_risk_factor_with_impact_ids = fields.Many2many(
+        string="Inherent Risk Factor With Direct Impact",
+        comodel_name="general_audit_inherent_risk_factor",
+        relation="rel_general_audit_ws_a418d89_detail_2_with_impact",
+        column1="detail_id",
+        column2="inherent_risk_factor_id",
+        domain=[
+            ("direct_impact", "=", False),
+        ],
+    )
     inherent_risk_factor_a = fields.Boolean(
         string="Inherent Risk Factor A",
         default=False,
@@ -120,11 +140,7 @@ class GeneralAuditWSA418D89Detail(models.Model):
     @api.depends(
         "likelihood_risk_occuring",
         "impact_of_risk",
-        "inherent_risk_factor_f",
-        "inherent_risk_factor_g",
-        "inherent_risk_factor_h",
-        "inherent_risk_factor_i",
-        "inherent_risk_factor_j",
+        "inherent_risk_factor_with_impact_ids",
         "fraud_risk",
         "other_significant_risk_factor",
     )
@@ -135,13 +151,9 @@ class GeneralAuditWSA418D89Detail(models.Model):
                 if record.impact_of_risk == "high":
                     inherent_risk = "high"
                     if (
-                        record.inherent_risk_factor_f
-                        or record.inherent_risk_factor_g
-                        or record.inherent_risk_factor_h
-                        or record.inherent_risk_factor_i
-                        or record.inherent_risk_factor_j
-                        or record.fraud_risk
-                    ) or record.other_significant_risk_factor:
+                        record.inherent_risk_factor_with_impact_ids
+                        or record.other_significant_risk_factor
+                    ):
                         significant_risk = True
                 elif record.impact_of_risk == "low":
                     inherent_risk = "medium"

@@ -9,36 +9,36 @@ from odoo.addons.ssi_decorator import ssi_decorator
 
 class GeneralAuditWSA418D89(models.Model):
     _name = "general_audit_ws_a418d89"
-    _description = "Inherent Risk (a418d89)"
+    _description = "Account Level Inherent Risk (a418d89)"
     _inherit = [
         "general_audit_worksheet_mixin",
     ]
     _type_xml_id = "ssi_general_audit_worksheet_inherent_risk." "worksheet_type_a418d89"
 
-    risk_material_missstatement = fields.Selection(
-        string="Risk Material Misstatement",
-        selection=[
-            ("low", "Low"),
-            ("medium", "Medium"),
-            ("high", "High"),
-        ],
-        readonly=True,
-        required=False,
-        states={
-            "open": [
-                ("readonly", False),
-            ],
-        },
-    )
-    auditor_respons = fields.Text(
-        string="Auditor Respons",
-        readonly=True,
-        states={
-            "open": [
-                ("readonly", False),
-            ],
-        },
-    )
+    # risk_material_missstatement = fields.Selection(
+    #     string="Risk Material Misstatement",
+    #     selection=[
+    #         ("low", "Low"),
+    #         ("medium", "Medium"),
+    #         ("high", "High"),
+    #     ],
+    #     readonly=True,
+    #     required=False,
+    #     states={
+    #         "open": [
+    #             ("readonly", False),
+    #         ],
+    #     },
+    # )
+    # auditor_respons = fields.Text(
+    #     string="Auditor Respons",
+    #     readonly=True,
+    #     states={
+    #         "open": [
+    #             ("readonly", False),
+    #         ],
+    #     },
+    # )
     detail_ids = fields.One2many(
         string="Details",
         comodel_name="general_audit_ws_a418d89.detail",

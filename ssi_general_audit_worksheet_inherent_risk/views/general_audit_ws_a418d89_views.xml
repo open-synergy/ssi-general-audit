@@ -43,106 +43,18 @@
             <data>
                 <xpath expr="//page[1]" position="before">
                     <page name="inherent_risk" string="Inherent Risks">
-                        <group name="inherent_risk_1" colspan="4" col="2">
-                            <field name="risk_material_missstatement" />
-                            <field name="auditor_respons" />
-                        </group>
-                        <group name="inherent_risk_2" colspan="4" col="1">
-                            <label
-                                for="detail_ids"
-                                string="A. Merupakan transaksi yang tidak sering terjadi"
-                            />
-                            <label
-                                for="detail_ids"
-                                string="B. Salah saji yang dikoreksi pada perilde lalu (jika ada)"
-                            />
-                            <label
-                                for="detail_ids"
-                                string="C. Rentan terhadap perubahan lingkungan bisnis"
-                            />
-                            <label
-                                for="detail_ids"
-                                string="D. Terdapat kontijensi yang teridenti-fikasi"
-                            />
-                            <label
-                                for="detail_ids"
-                                string="E. Berdampak pada kerugian"
-                            />
-                            <label
-                                for="detail_ids"
-                                string="F. Akun mendapat perhatian khusus atas akuntansi pelaporan"
-                            />
-                            <label
-                                for="detail_ids"
-                                string="G. Akun yang memiliki kerumitan kompleks"
-                            />
-                            <label
-                                for="detail_ids"
-                                string="H. Akun transaksi dengan pihak berelasi yang signifikan"
-                            />
-                            <label
-                                for="detail_ids"
-                                string="I. Akun yang diukur mengguna-kan estimasi"
-                            />
-                            <label
-                                for="detail_ids"
-                                string="J. Akun yang signifikan yang tidak rutin"
-                            />
-                        </group>
                         <field name="detail_ids">
                         <tree create="false" delete="false">
                             <field name="standard_detail_id" invisible="1" />
                             <field name="currency_id" invisible="1" />
                             <field name="type_id" />
                             <field
-                                    name="inherent_risk_factor_a"
-                                    string="A"
-                                    optional="show"
+                                    name="inherent_risk_factor_without_impact_ids"
+                                    widget="many2many_tags"
                                 />
                             <field
-                                    name="inherent_risk_factor_b"
-                                    string="B"
-                                    optional="show"
-                                />
-                            <field
-                                    name="inherent_risk_factor_c"
-                                    string="C"
-                                    optional="show"
-                                />
-                            <field
-                                    name="inherent_risk_factor_d"
-                                    string="D"
-                                    optional="show"
-                                />
-                            <field
-                                    name="inherent_risk_factor_e"
-                                    string="E"
-                                    optional="show"
-                                />
-                            <field
-                                    name="inherent_risk_factor_f"
-                                    string="F"
-                                    optional="show"
-                                />
-                            <field
-                                    name="inherent_risk_factor_g"
-                                    string="G"
-                                    optional="show"
-                                />
-                            <field
-                                    name="inherent_risk_factor_h"
-                                    string="H"
-                                    optional="show"
-                                />
-                            <field
-                                    name="inherent_risk_factor_i"
-                                    string="I"
-                                    optional="show"
-                                />
-                            <field
-                                    name="inherent_risk_factor_j"
-                                    string="J"
-                                    optional="show"
+                                    name="inherent_risk_factor_with_impact_ids"
+                                    widget="many2many_tags"
                                 />
                             <field name="fraud_risk" optional="show" />
                             <field name="likelihood_risk_occuring" optional="show" />
@@ -165,74 +77,26 @@
                                         />
                                         <field name="currency_id" invisible="1" />
                                     </group>
-                                    <group name="header_2" colspan="4" col="1">
-                                        <field
-                                            name="inherent_risk_factor_a"
-                                            string="A. Merupakan transaksi yang tidak sering terjadi"
-                                            widget="boolean_toggle"
-                                        />
-                                        <field
-                                            name="inherent_risk_factor_b"
-                                            string="B. Salah saji yang dikoreksi pada perilde lalu (jika ada)"
-                                            widget="boolean_toggle"
-                                        />
-                                        <field
-                                            name="inherent_risk_factor_c"
-                                            string="C. Rentan terhadap perubahan lingkungan bisnis"
-                                            widget="boolean_toggle"
-                                        />
-                                        <field
-                                            name="inherent_risk_factor_d"
-                                            string="D. Terdapat kontijensi yang teridenti-fikasi"
-                                            widget="boolean_toggle"
-                                        />
-                                        <field
-                                            name="inherent_risk_factor_e"
-                                            string="E. Berdampak pada kerugian"
-                                            widget="boolean_toggle"
-                                        />
-                                        <field
-                                            name="inherent_risk_factor_f"
-                                            string="F. Akun mendapat perhatian khusus atas akuntansi pelaporan"
-                                            widget="boolean_toggle"
-                                        />
-                                        <field
-                                            name="inherent_risk_factor_g"
-                                            string="G. Akun yang memiliki kerumitan kompleks"
-                                            widget="boolean_toggle"
-                                        />
-                                        <field
-                                            name="inherent_risk_factor_h"
-                                            string="H. Akun transaksi dengan pihak berelasi yang signifikan"
-                                            widget="boolean_toggle"
-                                        />
-                                        <field
-                                            name="inherent_risk_factor_i"
-                                            string="I. Akun yang diukur mengguna-kan estimasi"
-                                            widget="boolean_toggle"
-                                        />
-                                        <field
-                                            name="inherent_risk_factor_j"
-                                            string="J. Akun yang signifikan yang tidak rutin"
-                                            widget="boolean_toggle"
-                                        />
-
-                                    </group>
                                     <group name="header_3" colspan="4" col="1">
+                                        <field
+                                            name="inherent_risk_factor_without_impact_ids"
+                                            widget="many2many_checkboxes"
+                                        />
+                                        <field
+                                            name="inherent_risk_factor_with_impact_ids"
+                                            widget="many2many_checkboxes"
+                                        />
                                         <field name="fraud_risk" />
                                         <field name="likelihood_risk_occuring" />
                                         <field name="impact_of_risk" />
                                         <field name="inherent_risk" force_save="1" />
                                         <field name="other_significant_risk_factor" />
-                                        <field name="significant_risk" force_save="1" />
-                                    </group>
-                                    <group
-                                        name="footer"
-                                        colspan="4"
-                                        col="2"
-                                        string="Note"
-                                    >
-                                        <field name="note" nolabel="1" />
+                                        <field name="note" />
+                                        <field
+                                            name="significant_risk"
+                                            readonly="1"
+                                            force_save="1"
+                                        />
                                     </group>
                                 </sheet>
                             </form>
@@ -244,7 +108,7 @@
     </record>
 
     <record id="general_audit_ws_a418d89_action" model="ir.actions.act_window">
-        <field name="name">Inherent Risk</field>
+        <field name="name">Account Level Inherent Risks</field>
         <field name="type">ir.actions.act_window</field>
         <field name="res_model">general_audit_ws_a418d89</field>
         <field name="view_mode">tree,form</field>
@@ -252,7 +116,7 @@
 
     <menuitem
         id="general_audit_ws_a418d89_menu"
-        name="Inherent Risk"
+        name="Account Level Inherent Risks"
         parent="ssi_general_audit.menu_general_audit_risk_assesment"
         action="general_audit_ws_a418d89_action"
         sequence="1503"
