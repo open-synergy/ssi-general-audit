@@ -29,14 +29,15 @@ class GeneralAuditWSF63F569Indicator(models.Model):
     )
     indicator_id = fields.Many2one(
         string="Indicator",
-        comodel_name="general_audit_general_control_indicator",
+        comodel_name="general_audit_it_control_indicator",
         required=True,
     )
     result = fields.Selection(
         string="Result",
         selection=[
-            ("adequate", "Adequate"),
-            ("inadequate", "Inadequate"),
+            ("yes", "Yes"),
+            ("no", "No"),
+            ("na", "N/A"),
         ],
     )
     explanation = fields.Text(

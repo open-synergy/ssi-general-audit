@@ -11,6 +11,7 @@ from . import (
     general_audit_it_control,
     general_audit_it_control_indicator,
     general_audit_it_control_set,
+    general_audit_assersion_type,
     general_audit_ws_d3d2719,
     general_audit_ws_d3d2719_detail,
     general_audit_ws_d3d2719_indicator,
