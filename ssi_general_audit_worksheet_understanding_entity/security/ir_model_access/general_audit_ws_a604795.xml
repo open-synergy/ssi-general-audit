@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!-- Copyright 2022 OpenSynergy Indonesia
+     Copyright 2022 PT. Simetri Sinergi Indonesia
+     License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl). -->
+<odoo>
+<record id="general_audit_ws_a604795_all_access" model="ir.model.access">
+    <field name="name">general_audit_ws_a604795 - all</field>
+    <field name="model_id" ref="model_general_audit_ws_a604795" />
+    <field name="perm_read" eval="1" />
+    <field name="perm_create" eval="0" />
+    <field name="perm_write" eval="0" />
+    <field name="perm_unlink" eval="0" />
+</record>
+<record id="general_audit_ws_a604795_user_access" model="ir.model.access">
+    <field name="name">general_audit_ws_a604795 - user</field>
+    <field name="model_id" ref="model_general_audit_ws_a604795" />
+    <field name="group_id" ref="general_audit_ws_a604795_user_group" />
+    <field name="perm_read" eval="1" />
+    <field name="perm_create" eval="1" />
+    <field name="perm_write" eval="1" />
+    <field name="perm_unlink" eval="1" />
+</record>
+
+<record id="general_audit_ws_a604795_detail_all_access" model="ir.model.access">
+    <field name="name">general_audit_ws_a604795.detail - all</field>
+    <field name="model_id" ref="model_general_audit_ws_a604795_detail" />
+    <field name="perm_read" eval="1" />
+    <field name="perm_create" eval="0" />
+    <field name="perm_write" eval="0" />
+    <field name="perm_unlink" eval="0" />
+</record>
+<record id="general_audit_ws_a604795_detail_user_access" model="ir.model.access">
+    <field name="name">general_audit_ws_a604795.detail - user</field>
+    <field name="model_id" ref="model_general_audit_ws_a604795_detail" />
+    <field name="group_id" ref="general_audit_ws_a604795_user_group" />
+    <field name="perm_read" eval="1" />
+    <field name="perm_create" eval="1" />
+    <field name="perm_write" eval="1" />
+    <field name="perm_unlink" eval="1" />
+</record>
+
+<record
+        id="general_audit_ws_a604795_business_function_all_access"
+        model="ir.model.access"
+    >
+    <field name="name">general_audit_ws_a604795.business_function - all</field>
+    <field name="model_id" ref="model_general_audit_ws_a604795_business_function" />
+    <field name="perm_read" eval="1" />
+    <field name="perm_create" eval="0" />
+    <field name="perm_write" eval="0" />
+    <field name="perm_unlink" eval="0" />
+</record>
+<record
+        id="general_audit_ws_a604795_business_function_user_access"
+        model="ir.model.access"
+    >
+    <field name="name">general_audit_ws_a604795.business_function - user</field>
+    <field name="model_id" ref="model_general_audit_ws_a604795_business_function" />
+    <field name="group_id" ref="general_audit_ws_a604795_user_group" />
+    <field name="perm_read" eval="1" />
+    <field name="perm_create" eval="1" />
+    <field name="perm_write" eval="1" />
+    <field name="perm_unlink" eval="1" />
+</record>
+</odoo>

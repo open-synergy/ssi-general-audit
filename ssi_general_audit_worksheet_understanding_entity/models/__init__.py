@@ -3,8 +3,12 @@
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl-3.0-standalone.html).
 
 from . import (
+    general_audit_class_transaction,
+    general_audit_business_function,
+    general_audit_business_document,
     general_audit_going_concern_category,
     general_audit_going_concern,
+    general_audit_expert_type,
     general_audit_fs_preparation_step,
     general_audit_fraud_factor_category,
     general_audit_fraud_factor,
@@ -21,5 +25,14 @@ from . import (
     general_audit_ws_f6a227_detail,
     general_audit_ws_c0e0eec,
     general_audit_ws_c0e0eec_detail,
+    general_audit_ws_a604795,
+    general_audit_ws_a604795_detail,
+    general_audit_ws_a604795_business_function,
+    general_audit_ws_ae11f7e,
+    general_audit_ws_ae11f7e_expert,
+    general_audit_ws_ae11f7e_previous_audit_information,
+    general_audit_ws_ae11f7e_previous_other_information,
+    general_audit_ws_ae11f7e_other_information,
     general_audit_standard_detail,
+    general_audit,
 )

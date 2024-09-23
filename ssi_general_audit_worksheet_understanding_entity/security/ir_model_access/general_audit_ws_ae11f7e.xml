@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!-- Copyright 2022 OpenSynergy Indonesia
+     Copyright 2022 PT. Simetri Sinergi Indonesia
+     License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl). -->
+<odoo>
+<record id="general_audit_ws_ae11f7e_all_access" model="ir.model.access">
+    <field name="name">general_audit_ws_ae11f7e - all</field>
+    <field name="model_id" ref="model_general_audit_ws_ae11f7e" />
+    <field name="perm_read" eval="1" />
+    <field name="perm_create" eval="0" />
+    <field name="perm_write" eval="0" />
+    <field name="perm_unlink" eval="0" />
+</record>
+<record id="general_audit_ws_ae11f7e_user_access" model="ir.model.access">
+    <field name="name">general_audit_ws_ae11f7e - user</field>
+    <field name="model_id" ref="model_general_audit_ws_ae11f7e" />
+    <field name="group_id" ref="general_audit_ws_ae11f7e_user_group" />
+    <field name="perm_read" eval="1" />
+    <field name="perm_create" eval="1" />
+    <field name="perm_write" eval="1" />
+    <field name="perm_unlink" eval="1" />
+</record>
+
+<record id="general_audit_ws_ae11f7e_expert_all_access" model="ir.model.access">
+    <field name="name">general_audit_ws_ae11f7e.expert - all</field>
+    <field name="model_id" ref="model_general_audit_ws_ae11f7e_expert" />
+    <field name="perm_read" eval="1" />
+    <field name="perm_create" eval="0" />
+    <field name="perm_write" eval="0" />
+    <field name="perm_unlink" eval="0" />
+</record>
+<record id="general_audit_ws_ae11f7e_expert_user_access" model="ir.model.access">
+    <field name="name">general_audit_ws_ae11f7e.expert - user</field>
+    <field name="model_id" ref="model_general_audit_ws_ae11f7e_expert" />
+    <field name="group_id" ref="general_audit_ws_ae11f7e_user_group" />
+    <field name="perm_read" eval="1" />
+    <field name="perm_create" eval="1" />
+    <field name="perm_write" eval="1" />
+    <field name="perm_unlink" eval="1" />
+</record>
+
+<record id="general_audit_ws_ae11f7e_prev_audit_all_access" model="ir.model.access">
+    <field name="name">general_audit_ws_ae11f7e.previous_audit_information - all</field>
+    <field
+            name="model_id"
+            ref="model_general_audit_ws_ae11f7e_previous_audit_information"
+        />
+    <field name="perm_read" eval="1" />
+    <field name="perm_create" eval="0" />
+    <field name="perm_write" eval="0" />
+    <field name="perm_unlink" eval="0" />
+</record>
+<record id="general_audit_ws_ae11f7e_prev_audit_user_access" model="ir.model.access">
+    <field
+            name="name"
+        >general_audit_ws_ae11f7e.previous_audit_information - user</field>
+    <field
+            name="model_id"
+            ref="model_general_audit_ws_ae11f7e_previous_audit_information"
+        />
+    <field name="group_id" ref="general_audit_ws_ae11f7e_user_group" />
+    <field name="perm_read" eval="1" />
+    <field name="perm_create" eval="1" />
+    <field name="perm_write" eval="1" />
+    <field name="perm_unlink" eval="1" />
+</record>
+
+<record id="general_audit_ws_ae11f7e_prev_other_all_access" model="ir.model.access">
+    <field name="name">general_audit_ws_ae11f7e.previous_other_information - all</field>
+    <field
+            name="model_id"
+            ref="model_general_audit_ws_ae11f7e_previous_other_information"
+        />
+    <field name="perm_read" eval="1" />
+    <field name="perm_create" eval="0" />
+    <field name="perm_write" eval="0" />
+    <field name="perm_unlink" eval="0" />
+</record>
+<record id="general_audit_ws_ae11f7e_prev_other_user_access" model="ir.model.access">
+    <field
+            name="name"
+        >general_audit_ws_ae11f7e.previous_other_information - user</field>
+    <field
+            name="model_id"
+            ref="model_general_audit_ws_ae11f7e_previous_other_information"
+        />
+    <field name="group_id" ref="general_audit_ws_ae11f7e_user_group" />
+    <field name="perm_read" eval="1" />
+    <field name="perm_create" eval="1" />
+    <field name="perm_write" eval="1" />
+    <field name="perm_unlink" eval="1" />
+</record>
+
+<record id="general_audit_ws_ae11f7e_other_all_access" model="ir.model.access">
+    <field name="name">general_audit_ws_ae11f7e.other_information - all</field>
+    <field name="model_id" ref="model_general_audit_ws_ae11f7e_other_information" />
+    <field name="perm_read" eval="1" />
+    <field name="perm_create" eval="0" />
+    <field name="perm_write" eval="0" />
+    <field name="perm_unlink" eval="0" />
+</record>
+<record id="general_audit_ws_ae11f7e_other_user_access" model="ir.model.access">
+    <field name="name">general_audit_ws_ae11f7e.other_information - user</field>
+    <field name="model_id" ref="model_general_audit_ws_ae11f7e_other_information" />
+    <field name="group_id" ref="general_audit_ws_ae11f7e_user_group" />
+    <field name="perm_read" eval="1" />
+    <field name="perm_create" eval="1" />
+    <field name="perm_write" eval="1" />
+    <field name="perm_unlink" eval="1" />
+</record>
+</odoo>

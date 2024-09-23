@@ -10,4 +10,4 @@ class ClientBusinessProcess(models.Model):
     _inherit = [
         "mixin.master_data",
     ]
-    _description = "Client Business Process"
+    _description = "Client Business Cycle"
