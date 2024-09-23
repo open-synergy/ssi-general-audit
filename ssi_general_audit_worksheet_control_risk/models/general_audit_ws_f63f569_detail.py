@@ -17,8 +17,8 @@ class GeneralAuditWSF63F569Detail(models.Model):
         ondelete="cascade",
     )
     control_id = fields.Many2one(
-        string="General Control",
-        comodel_name="general_audit_general_control",
+        string="IT Control",
+        comodel_name="general_audit_it_control",
         required=True,
     )
     category_id = fields.Many2one(
@@ -29,8 +29,9 @@ class GeneralAuditWSF63F569Detail(models.Model):
     result = fields.Selection(
         string="Result",
         selection=[
-            ("adequate", "Adequate"),
-            ("inadequate", "Inadequate"),
+            ("yes", "Yes"),
+            ("no", "No"),
+            ("na", "N/A"),
         ],
     )
     explanation = fields.Text(

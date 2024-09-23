@@ -9,15 +9,15 @@ from odoo.addons.ssi_decorator import ssi_decorator
 
 class GeneralAuditWSF63F569(models.Model):
     _name = "general_audit_ws_f63f569"
-    _description = "General Control Evaluation (f63f569)"
+    _description = "IT Control Evaluation (f63f569)"
     _inherit = [
         "general_audit_worksheet_mixin",
     ]
     _type_xml_id = "ssi_general_audit_worksheet_control_risk." "worksheet_type_f63f569"
 
     set_id = fields.Many2one(
-        string="General Control Set",
-        comodel_name="general_audit_general_control_set",
+        string="IT Control Set",
+        comodel_name="general_audit_it_control_set",
         readonly=True,
         states={
             "draft": [
@@ -53,14 +53,14 @@ class GeneralAuditWSF63F569(models.Model):
         self.detail_ids.unlink()
         Detail = self.env["general_audit_ws_f63f569.detail"]
         Indicator = self.env["general_audit_ws_f63f569.indicator"]
-        general_control_set = self.set_id
-        for control in general_control_set.general_control_ids:
+        control_set = self.set_id
+        for control in control_set.it_control_ids:
             data = {
                 "worksheet_id": self.id,
                 "control_id": control.id,
             }
             detail = Detail.create(data)
-            for indicator in general_control_set.general_control_indicator_ids.filtered(
+            for indicator in control_set.it_control_indicator_ids.filtered(
                 lambda r: r.control_id.id == control.id
             ):
                 data = {

@@ -32,6 +32,7 @@
         "data/approval_template/general_audit_ws_f63f569.xml",
         "data/general_audit_worksheet_type_data.xml",
         "menu.xml",
+        "views/general_audit_assersion_type_views.xml",
         "views/general_audit_general_control_category_views.xml",
         "views/general_audit_general_control_views.xml",
         "views/general_audit_general_control_indicator_views.xml",
