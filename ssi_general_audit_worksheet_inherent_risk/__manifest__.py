@@ -14,6 +14,8 @@
     ],
     "data": [
         "security/ir_module_category_data.xml",
+        "security/res_group_data.xml",
+        "security/ir.model.access.csv",
         "security/res_group/general_audit_ws_a418d89.xml",
         "security/ir_model_access/general_audit_ws_a418d89.xml",
         "security/ir_rule/general_audit_ws_a418d89.xml",
@@ -22,6 +24,7 @@
         "data/policy_template/general_audit_ws_a418d89.xml",
         "data/approval_template/general_audit_ws_a418d89.xml",
         "data/general_audit_worksheet_type_data.xml",
+        "views/general_audit_inherent_risk_factor_views.xml",
         "views/general_audit_ws_a418d89_views.xml",
         "views/general_audit_standard_detail_views.xml",
     ],
