@@ -53,48 +53,8 @@ class GeneralAuditWSA418D89Detail(models.Model):
         column1="detail_id",
         column2="inherent_risk_factor_id",
         domain=[
-            ("direct_impact", "=", False),
+            ("direct_impact", "=", True),
         ],
-    )
-    inherent_risk_factor_a = fields.Boolean(
-        string="Inherent Risk Factor A",
-        default=False,
-    )
-    inherent_risk_factor_b = fields.Boolean(
-        string="Inherent Risk Factor B",
-        default=False,
-    )
-    inherent_risk_factor_c = fields.Boolean(
-        string="Inherent Risk Factor C",
-        default=False,
-    )
-    inherent_risk_factor_d = fields.Boolean(
-        string="Inherent Risk Factor D",
-        default=False,
-    )
-    inherent_risk_factor_e = fields.Boolean(
-        string="Inherent Risk Factor E",
-        default=False,
-    )
-    inherent_risk_factor_f = fields.Boolean(
-        string="Inherent Risk Factor F",
-        default=False,
-    )
-    inherent_risk_factor_g = fields.Boolean(
-        string="Inherent Risk Factor G",
-        default=False,
-    )
-    inherent_risk_factor_h = fields.Boolean(
-        string="Inherent Risk Factor H",
-        default=False,
-    )
-    inherent_risk_factor_i = fields.Boolean(
-        string="Inherent Risk Factor I",
-        default=False,
-    )
-    inherent_risk_factor_j = fields.Boolean(
-        string="Inherent Risk Factor J",
-        default=False,
     )
     fraud_risk = fields.Boolean(
         string="Fraud Risk", related="standard_detail_id.fraud_impacted", store=True
