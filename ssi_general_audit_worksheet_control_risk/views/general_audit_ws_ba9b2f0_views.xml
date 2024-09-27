@@ -1,0 +1,126 @@
+<?xml version="1.0" ?>
+<!-- Copyright 2022 OpenSynergy Indonesia
+     Copyright 2022 PT. Simetri Sinergi Indonesia
+     License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl-3.0-standalone.html). -->
+<odoo>
+
+    <record id="general_audit_ws_ba9b2f0_view_search" model="ir.ui.view">
+        <field name="name">general_audit_ws_ba9b2f0 form</field>
+        <field name="model">general_audit_ws_ba9b2f0</field>
+        <field
+            name="inherit_id"
+            ref="ssi_general_audit.general_audit_worksheet_mixin_view_search"
+        />
+        <field name="mode">primary</field>
+        <field name="arch" type="xml">
+            <data />
+        </field>
+    </record>
+
+    <record id="general_audit_ws_ba9b2f0_view_tree" model="ir.ui.view">
+        <field name="name">general_audit_ws_ba9b2f0 tree</field>
+        <field name="model">general_audit_ws_ba9b2f0</field>
+        <field name="mode">primary</field>
+        <field
+            name="inherit_id"
+            ref="ssi_general_audit.general_audit_worksheet_mixin_view_tree"
+        />
+        <field name="arch" type="xml">
+            <data>
+                <xpath expr="//field[@name='partner_id']" position="after">
+                    <field name="account_type_id" />
+                </xpath>
+            </data>
+        </field>
+    </record>
+
+    <record id="general_audit_ws_ba9b2f0_view_form" model="ir.ui.view">
+        <field name="name">general_audit_ws_ba9b2f0 form</field>
+        <field name="model">general_audit_ws_ba9b2f0</field>
+        <field name="mode">primary</field>
+        <field
+            name="inherit_id"
+            ref="ssi_general_audit.general_audit_worksheet_mixin_view_form"
+        />
+        <field name="arch" type="xml">
+            <data>
+                <xpath expr="//page[1]" position="before">
+                    <page name="detail" string="Details">
+                        <group name="detail_1" colspan="4" col="1">
+                            <field
+                                name="significant_risk_account_type_ids"
+                                invisible="1"
+                            />
+                            <field
+                                name="account_type_id"
+                                domain="[('id','in',significant_risk_account_type_ids)]"
+                            />
+                            <field name="standard_detail_id" invisible="1" />
+                        </group>
+                        <field name="detail_ids">
+                            <tree>
+                                <field name="sequence" widget="handle" />
+                                <field name="key_internal_control_id" />
+                                <field name="name" />
+                                <field name="frequency" />
+                                <field name="rely_on_control" />
+                                <field name="toc_analysis" />
+                                <field name="result" />
+                            </tree>
+                            <form>
+                                <group name="detail_2" colspan="4" col="2">
+                                    <field name="sequence" />
+                                    <field
+                                        name="key_internal_control_id"
+                                        domain="[('account_type_id','=',parent.account_type_id)]"
+                                    />
+                                    <field name="name" />
+                                    <field name="frequency" />
+                                </group>
+                                <separator string="Risk Identification" />
+                                <field name="risk_identification_ids">
+                                    <tree editable="bottom">
+                                        <field name="sequence" widget="handle" />
+                                        <field name="name" />
+                                    </tree>
+                                </field>
+                                <separator string="Risk Identification" />
+                                <field name="what_can_go_wrong_ids">
+                                    <tree editable="bottom">
+                                        <field name="sequence" widget="handle" />
+                                        <field name="name" />
+                                    </tree>
+                                </field>
+                                <group name="detail_3" colspan="4" col="2">
+                                    <field name="documentation" />
+                                    <field name="rely_on_control" />
+                                    <field name="toc_analysis" />
+                                    <field name="toc_reference" />
+                                    <field name="result" />
+                                </group>
+                            </form>
+                        </field>
+                    </page>
+                </xpath>
+            </data>
+        </field>
+    </record>
+
+    <record id="general_audit_ws_ba9b2f0_action" model="ir.actions.act_window">
+        <field name="name">Standard Account Internal Controls</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">general_audit_ws_ba9b2f0</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+    <menuitem
+        id="general_audit_ws_ba9b2f0_menu"
+        name="Standard Account Internal Controls"
+        parent="ssi_general_audit.menu_general_audit_risk_assesment"
+        action="general_audit_ws_ba9b2f0_action"
+        sequence="1503"
+        groups="general_audit_ws_ba9b2f0_viewer_group"
+    />
+
+
+</odoo>

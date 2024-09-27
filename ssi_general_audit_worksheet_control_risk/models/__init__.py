@@ -5,6 +5,7 @@
 from . import (
     general_audit_control_activity,
     general_audit_key_internal_control,
+    general_audit_account_key_internal_control,
     general_audit_general_control_category,
     general_audit_general_control,
     general_audit_general_control_indicator,
@@ -24,4 +25,8 @@ from . import (
     general_audit_ws_eabdaad_detail,
     general_audit_ws_eabdaad_risk_identification,
     general_audit_ws_eabdaad_what_can_go_wrong,
+    general_audit_ws_ba9b2f0,
+    general_audit_ws_ba9b2f0_detail,
+    general_audit_ws_ba9b2f0_risk_identification,
+    general_audit_ws_ba9b2f0_what_can_go_wrong,
 )
