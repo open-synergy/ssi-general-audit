@@ -13,6 +13,7 @@ setuptools.setup(
         'odoo14-addon-ssi_general_audit_worksheet_inherent_risk',
         'odoo14-addon-ssi_general_audit_worksheet_preliminary_analytic_procedure',
         'odoo14-addon-ssi_general_audit_worksheet_preliminary_materiality',
+        'odoo14-addon-ssi_general_audit_worksheet_romm',
         'odoo14-addon-ssi_general_audit_worksheet_understanding_entity',
     ],
     classifiers=[
