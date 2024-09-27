@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!-- Copyright 2022 OpenSynergy Indonesia
+     Copyright 2022 PT. Simetri Sinergi Indonesia
+     License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl). -->
+<odoo>
+<record id="general_audit_ws_eabdaad_all_access" model="ir.model.access">
+    <field name="name">general_audit_ws_eabdaad - all</field>
+    <field name="model_id" ref="model_general_audit_ws_eabdaad" />
+    <field name="perm_read" eval="1" />
+    <field name="perm_create" eval="0" />
+    <field name="perm_write" eval="0" />
+    <field name="perm_unlink" eval="0" />
+</record>
+<record id="general_audit_ws_eabdaad_user_access" model="ir.model.access">
+    <field name="name">general_audit_ws_eabdaad - user</field>
+    <field name="model_id" ref="model_general_audit_ws_eabdaad" />
+    <field name="group_id" ref="general_audit_ws_eabdaad_user_group" />
+    <field name="perm_read" eval="1" />
+    <field name="perm_create" eval="1" />
+    <field name="perm_write" eval="1" />
+    <field name="perm_unlink" eval="1" />
+</record>
+
+<record id="general_audit_ws_eabdaad_detail_all_access" model="ir.model.access">
+    <field name="name">general_audit_ws_eabdaad.detail - all</field>
+    <field name="model_id" ref="model_general_audit_ws_eabdaad_detail" />
+    <field name="perm_read" eval="1" />
+    <field name="perm_create" eval="0" />
+    <field name="perm_write" eval="0" />
+    <field name="perm_unlink" eval="0" />
+</record>
+<record id="general_audit_ws_eabdaad_detail_user_access" model="ir.model.access">
+    <field name="name">general_audit_ws_eabdaad.detail - user</field>
+    <field name="model_id" ref="model_general_audit_ws_eabdaad_detail" />
+    <field name="group_id" ref="general_audit_ws_eabdaad_user_group" />
+    <field name="perm_read" eval="1" />
+    <field name="perm_create" eval="1" />
+    <field name="perm_write" eval="1" />
+    <field name="perm_unlink" eval="1" />
+</record>
+
+<record
+        id="general_audit_ws_eabdaad_risk_identification_all_access"
+        model="ir.model.access"
+    >
+    <field name="name">general_audit_ws_eabdaad.risk_identification - all</field>
+    <field name="model_id" ref="model_general_audit_ws_eabdaad_risk_identification" />
+    <field name="perm_read" eval="1" />
+    <field name="perm_create" eval="0" />
+    <field name="perm_write" eval="0" />
+    <field name="perm_unlink" eval="0" />
+</record>
+<record
+        id="general_audit_ws_eabdaad_risk_identification_user_access"
+        model="ir.model.access"
+    >
+    <field name="name">general_audit_ws_eabdaad.risk_identification - user</field>
+    <field name="model_id" ref="model_general_audit_ws_eabdaad_risk_identification" />
+    <field name="group_id" ref="general_audit_ws_eabdaad_user_group" />
+    <field name="perm_read" eval="1" />
+    <field name="perm_create" eval="1" />
+    <field name="perm_write" eval="1" />
+    <field name="perm_unlink" eval="1" />
+</record>
+
+<record id="general_audit_ws_eabdaad_wcgw_all_access" model="ir.model.access">
+    <field name="name">general_audit_ws_eabdaad.what_can_go_wrong - all</field>
+    <field name="model_id" ref="model_general_audit_ws_eabdaad_what_can_go_wrong" />
+    <field name="perm_read" eval="1" />
+    <field name="perm_create" eval="0" />
+    <field name="perm_write" eval="0" />
+    <field name="perm_unlink" eval="0" />
+</record>
+<record id="general_audit_ws_eabdaad_wcgw_user_access" model="ir.model.access">
+    <field name="name">general_audit_ws_eabdaad.what_can_go_wrong - user</field>
+    <field name="model_id" ref="model_general_audit_ws_eabdaad_what_can_go_wrong" />
+    <field name="group_id" ref="general_audit_ws_eabdaad_user_group" />
+    <field name="perm_read" eval="1" />
+    <field name="perm_create" eval="1" />
+    <field name="perm_write" eval="1" />
+    <field name="perm_unlink" eval="1" />
+</record>
+</odoo>
