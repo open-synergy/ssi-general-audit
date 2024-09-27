@@ -1,0 +1,28 @@
+<?xml version="1.0" ?>
+<!-- Copyright 2022 OpenSynergy Indonesia
+     Copyright 2022 PT. Simetri Sinergi Indonesia
+     License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl-3.0-standalone.html). -->
+<odoo>
+
+<record id="general_audit_view_form" model="ir.ui.view">
+    <field name="name">general_audit -  form</field>
+    <field name="model">general_audit</field>
+    <field name="mode">extension</field>
+    <field name="inherit_id" ref="ssi_general_audit.general_audit_view_form" />
+    <field name="arch" type="xml">
+        <data>
+            <xpath expr="//page[last()]" position="before">
+                <page name="inherent_risk" string="Inherent Risk">
+                    <group name="inherent_risk_1" colspan="4" col="2">
+                        <field
+                                name="significant_risk_account_type_ids"
+                                widget="many2many_tags"
+                            />
+                    </group>
+                </page>
+            </xpath>
+        </data>
+    </field>
+</record>
+
+</odoo>
