@@ -112,5 +112,29 @@
         />
 </record>
 
+<record id="general_audit_control_activity_group" model="res.groups">
+    <field name="name">Control Activity</field>
+    <field
+            name="category_id"
+            ref="ssi_accountant.accountant_configurator_module_category"
+        />
+    <field
+            name="users"
+            eval="[(4, ref('base.user_root')), (4, ref('base.user_admin'))]"
+        />
+</record>
+
+<record id="general_audit_key_internal_control_group" model="res.groups">
+    <field name="name">Key Internal COntrol</field>
+    <field
+            name="category_id"
+            ref="ssi_accountant.accountant_configurator_module_category"
+        />
+    <field
+            name="users"
+            eval="[(4, ref('base.user_root')), (4, ref('base.user_admin'))]"
+        />
+</record>
+
 
 </odoo>
