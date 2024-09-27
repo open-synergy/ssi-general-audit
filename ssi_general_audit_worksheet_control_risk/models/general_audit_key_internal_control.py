@@ -10,7 +10,7 @@ class GeneralAuditKeyInternalControl(models.Model):
     _inherit = [
         "mixin.master_data",
     ]
-    _description = "General Audit - Key Internal Control"
+    _description = "General Audit - Business Cycle Key Internal Control"
     _order = "sequence, id"
 
     sequence = fields.Integer(
