@@ -23,6 +23,7 @@ addon | version | maintainers | summary
 [ssi_general_audit_worksheet_inherent_risk](ssi_general_audit_worksheet_inherent_risk/) | 14.0.2.0.0 |  | General Audit Worksheet - Inherent Risk
 [ssi_general_audit_worksheet_preliminary_analytic_procedure](ssi_general_audit_worksheet_preliminary_analytic_procedure/) | 14.0.1.0.0 |  | General Audit Worksheet - Preliminary Analytic Procedure
 [ssi_general_audit_worksheet_preliminary_materiality](ssi_general_audit_worksheet_preliminary_materiality/) | 14.0.1.0.0 |  | General Audit Worksheet - Preliminary Materiality
+[ssi_general_audit_worksheet_romm](ssi_general_audit_worksheet_romm/) | 14.0.1.0.0 |  | General Audit Worksheet - ROMM
 [ssi_general_audit_worksheet_understanding_entity](ssi_general_audit_worksheet_understanding_entity/) | 14.0.1.8.0 |  | General Audit Worksheet - Understanding Entity and It's Environment
 
 [//]: # (end addons)
