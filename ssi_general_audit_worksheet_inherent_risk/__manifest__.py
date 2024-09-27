@@ -27,6 +27,7 @@
         "views/general_audit_inherent_risk_factor_views.xml",
         "views/general_audit_ws_a418d89_views.xml",
         "views/general_audit_standard_detail_views.xml",
+        "views/general_audit_views.xml",
     ],
     "demo": [],
 }

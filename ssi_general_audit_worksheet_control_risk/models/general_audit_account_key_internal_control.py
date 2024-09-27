@@ -5,12 +5,12 @@
 from odoo import fields, models
 
 
-class GeneralAuditKeyInternalControl(models.Model):
-    _name = "general_audit_key_internal_control"
+class GeneralAuditAccountKeyInternalControl(models.Model):
+    _name = "general_audit_account_key_internal_control"
     _inherit = [
         "mixin.master_data",
     ]
-    _description = "General Audit - Business Cycle Key Internal Control"
+    _description = "General Audit - Standard Account Key Internal Control"
     _order = "sequence, id"
 
     sequence = fields.Integer(
@@ -18,9 +18,9 @@ class GeneralAuditKeyInternalControl(models.Model):
         required=True,
         default=10,
     )
-    business_cycle_id = fields.Many2one(
-        string="Business Cycle",
-        comodel_name="client_business_process",
+    account_type_id = fields.Many2one(
+        string="Standard Account",
+        comodel_name="client_account_type",
         required=True,
         ondelete="restrict",
     )

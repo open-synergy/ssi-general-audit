@@ -64,6 +64,7 @@ class GeneralAuditWorksheetMixin(models.AbstractModel):
     worksheet_id = fields.Many2one(
         string="# Worksheet",
         comodel_name="general_audit_worksheet",
+        required=True,
         readonly=True,
         ondelete="cascade",
     )
