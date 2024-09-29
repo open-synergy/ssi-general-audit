@@ -1,0 +1,117 @@
+<?xml version="1.0" ?>
+<!-- Copyright 2022 OpenSynergy Indonesia
+     Copyright 2022 PT. Simetri Sinergi Indonesia
+     License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl-3.0-standalone.html). -->
+<odoo>
+
+    <record id="general_audit_ws_d66d87a_view_search" model="ir.ui.view">
+        <field name="name">general_audit_ws_d66d87a form</field>
+        <field name="model">general_audit_ws_d66d87a</field>
+        <field
+            name="inherit_id"
+            ref="ssi_general_audit.general_audit_worksheet_mixin_view_search"
+        />
+        <field name="mode">primary</field>
+        <field name="arch" type="xml">
+            <data />
+        </field>
+    </record>
+
+    <record id="general_audit_ws_d66d87a_view_tree" model="ir.ui.view">
+        <field name="name">general_audit_ws_d66d87a tree</field>
+        <field name="model">general_audit_ws_d66d87a</field>
+        <field name="mode">primary</field>
+        <field
+            name="inherit_id"
+            ref="ssi_general_audit.general_audit_worksheet_mixin_view_tree"
+        />
+        <field name="arch" type="xml">
+            <data>
+            </data>
+        </field>
+    </record>
+
+    <record id="general_audit_ws_d66d87a_view_form" model="ir.ui.view">
+        <field name="name">general_audit_ws_d66d87a form</field>
+        <field name="model">general_audit_ws_d66d87a</field>
+        <field name="mode">primary</field>
+        <field
+            name="inherit_id"
+            ref="ssi_general_audit.general_audit_worksheet_mixin_view_form"
+        />
+        <field name="arch" type="xml">
+            <data>
+                <xpath expr="//page[1]" position="before">
+                    <page name="detail" string="Details">
+                        <field name="detail_ids">
+                            <tree create="false" delete="false">
+                                <field name="standard_detail_id" invisible="1" />
+                                <field name="type_id" />
+                                <field
+                                    name="pr_assersion_type_ids"
+                                    widget="many2many_tags"
+                                    string="Assersion Types"
+                                />
+                                <field name="romm" string="ROMM" />
+                                <field
+                                    name="planned_response_analytic_procedure"
+                                    string="Analytic Procedure"
+                                />
+                                <field name="planned_response_tod" string="ToD" />
+                                <field
+                                    name="planned_response_interim"
+                                    string="Interim"
+                                />
+                                <field name="planned_response_ye" string="Year End" />
+                            </tree>
+                            <form>
+                                <group name="detail_1" colspan="4" col="2">
+                                    <field name="standard_detail_id" invisible="1" />
+                                    <field name="type_id" />
+                                    <field
+                                        name="pr_assersion_type_ids"
+                                        widget="many2many_tags"
+                                        string="Assersion Types"
+                                        readonly="0"
+                                    />
+                                    <field name="romm" string="ROMM" />
+                                    <field
+                                        name="planned_response_analytic_procedure"
+                                        string="Analytic Procedure"
+                                    />
+                                    <field name="planned_response_tod" string="ToD" />
+                                    <field
+                                        name="planned_response_interim"
+                                        string="Interim"
+                                    />
+                                    <field
+                                        name="planned_response_ye"
+                                        string="Year End"
+                                    />
+                                </group>
+                            </form>
+                        </field>
+                    </page>
+                </xpath>
+            </data>
+        </field>
+    </record>
+
+    <record id="general_audit_ws_d66d87a_action" model="ir.actions.act_window">
+        <field name="name">Account Level ROMM</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">general_audit_ws_d66d87a</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+    <menuitem
+        id="general_audit_ws_d66d87a_menu"
+        name="Account Level ROMM"
+        parent="ssi_general_audit.menu_general_audit_risk_assesment"
+        action="general_audit_ws_d66d87a_action"
+        sequence="1503"
+        groups="general_audit_ws_d66d87a_viewer_group"
+    />
+
+
+</odoo>
