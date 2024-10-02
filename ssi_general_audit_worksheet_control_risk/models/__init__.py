@@ -16,6 +16,7 @@ from . import (
     general_audit_it_control_set,
     general_audit_assersion_type,
     client_account_type,
+    client_business_process,
     general_audit_ws_d3d2719,
     general_audit_ws_d3d2719_detail,
     general_audit_ws_d3d2719_indicator,

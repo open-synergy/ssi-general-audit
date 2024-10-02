@@ -52,6 +52,7 @@
                                 name="business_cycle_id"
                                 domain="[('id','in',allowed_business_cycle_ids)]"
                             />
+                            <field name="key_internal_control_ids" invisible="1" />
                         </group>
                         <field name="detail_ids">
                             <tree>
@@ -72,7 +73,7 @@
                                     <field name="sequence" />
                                     <field
                                         name="key_internal_control_id"
-                                        domain="[('business_cycle_id','=',parent.business_cycle_id)]"
+                                        domain="[('id','=',parent.key_internal_control_ids)]"
                                     />
                                     <field name="name" />
                                     <field name="frequency" />
@@ -84,7 +85,7 @@
                                         <field name="name" />
                                     </tree>
                                 </field>
-                                <separator string="Risk Identification" />
+                                <separator string="What Can Go Wrong" />
                                 <field name="what_can_go_wrong_ids">
                                     <tree editable="bottom">
                                         <field name="sequence" widget="handle" />

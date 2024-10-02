@@ -23,6 +23,11 @@ class GeneralAuditWSEABDAAD(models.Model):
             ],
         },
     )
+    key_internal_control_ids = fields.Many2many(
+        string="Allowed Business Cycle Key Internal Controls",
+        related="business_cycle_id.key_internal_control_ids",
+        store=False,
+    )
     allowed_business_cycle_ids = fields.Many2many(
         string="Allowed Business Cycles",
         related="general_audit_id.business_cycle_ids",

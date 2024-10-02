@@ -18,11 +18,13 @@ class GeneralAuditKeyInternalControl(models.Model):
         required=True,
         default=10,
     )
-    business_cycle_id = fields.Many2one(
-        string="Business Cycle",
+    business_cycle_ids = fields.Many2many(
+        string="Business Cycles",
         comodel_name="client_business_process",
+        relation="rel_key_internal_control_2_business_cycle",
+        column1="key_internal_control_id",
+        column2="business_cycle_id",
         required=True,
-        ondelete="restrict",
     )
     control_activity_id = fields.Many2one(
         string="Control Activity",
@@ -30,9 +32,11 @@ class GeneralAuditKeyInternalControl(models.Model):
         required=True,
         ondelete="restrict",
     )
-    assersion_type_id = fields.Many2one(
-        string="Assersion Type",
+    assersion_type_ids = fields.Many2many(
+        string="Assersion Types",
         comodel_name="general_audit_assersion_type",
+        relation="rel_key_internal_control_2_assersion_type",
+        column1="key_internal_control_id",
+        column2="assersion_type_id",
         required=True,
-        ondelete="restrict",
     )
