@@ -10,7 +10,7 @@ class GeneralAuditAccountKeyInternalControl(models.Model):
     _inherit = [
         "mixin.master_data",
     ]
-    _description = "General Audit - Standard Account Key Internal Control"
+    _description = "General Audit - Significant Account Key Internal Control"
     _order = "sequence, id"
 
     sequence = fields.Integer(
@@ -18,11 +18,13 @@ class GeneralAuditAccountKeyInternalControl(models.Model):
         required=True,
         default=10,
     )
-    account_type_id = fields.Many2one(
-        string="Standard Account",
+    account_type_ids = fields.Many2many(
+        string="Standard Accounts",
         comodel_name="client_account_type",
+        relation="rel_account_key_internal_control_2_standard_account",
+        column1="key_internal_control_id",
+        column2="standard_account_id",
         required=True,
-        ondelete="restrict",
     )
     control_activity_id = fields.Many2one(
         string="Control Activity",
@@ -30,9 +32,11 @@ class GeneralAuditAccountKeyInternalControl(models.Model):
         required=True,
         ondelete="restrict",
     )
-    assersion_type_id = fields.Many2one(
-        string="Assersion Type",
+    assersion_type_id_ids = fields.Many2many(
+        string="Assersion Types",
         comodel_name="general_audit_assersion_type",
+        relation="rel_account_key_internal_control_2_assersion_type",
+        column1="key_internal_control_id",
+        column2="assersion_type_id",
         required=True,
-        ondelete="restrict",
     )

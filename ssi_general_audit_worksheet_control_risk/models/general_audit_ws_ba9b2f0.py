@@ -23,11 +23,17 @@ class GeneralAuditWSBA9B2F0(models.Model):
             ],
         },
     )
+    account_key_internal_control_ids = fields.Many2many(
+        string="Allowed Significant Account Key Internal Controls",
+        related="account_type_id.account_key_internal_control_ids",
+        store=False,
+    )
     significant_risk_account_type_ids = fields.Many2many(
         string="Significant Account Types",
         related="general_audit_id.significant_risk_account_type_ids",
         store=False,
     )
+
     standard_detail_id = fields.Many2one(
         string="Standard Detail",
         comodel_name="general_audit.standard_detail",
