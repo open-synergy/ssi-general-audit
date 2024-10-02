@@ -6,7 +6,7 @@
 <record id="general_audit_ws_ba9b2f0_internal_user_rule" model="ir.rule">
     <field
             name="name"
-        >Standard Account Internal Control (ba9b2f0) - Internal Users</field>
+        >Significant Account Internal Control (ba9b2f0) - Internal Users</field>
     <field name="model_id" ref="model_general_audit_ws_ba9b2f0" />
     <field name="groups" eval="[(4, ref('base.group_user'))]" />
     <field name="domain_force">[
@@ -21,7 +21,7 @@
 <record id="general_audit_ws_ba9b2f0_company_rule" model="ir.rule">
     <field
             name="name"
-        >Standard Account Internal Control (ba9b2f0) - Responsible to company data</field>
+        >Significant Account Internal Control (ba9b2f0) - Responsible to company data</field>
     <field name="model_id" ref="model_general_audit_ws_ba9b2f0" />
     <field name="groups" eval="[(4, ref('general_audit_ws_ba9b2f0_company_group'))]" />
     <field name="domain_force">[('company_id','=',user.company_id.id)]</field>
@@ -34,7 +34,7 @@
 <record id="general_audit_ws_ba9b2f0_companies_rule" model="ir.rule">
     <field
             name="name"
-        >Standard Account Internal Control (ba9b2f0) - Responsible to company and all child companies data</field>
+        >Significant Account Internal Control (ba9b2f0) - Responsible to company and all child companies data</field>
     <field name="model_id" ref="model_general_audit_ws_ba9b2f0" />
     <field
             name="groups"
@@ -48,7 +48,7 @@
 </record>
 
 <record id="general_audit_ws_ba9b2f0_all_rule" model="ir.rule">
-    <field name="name">Standard Account Internal Control (ba9b2f0) - All</field>
+    <field name="name">Significant Account Internal Control (ba9b2f0) - All</field>
     <field name="model_id" ref="model_general_audit_ws_ba9b2f0" />
     <field name="groups" eval="[(4, ref('general_audit_ws_ba9b2f0_all_group'))]" />
     <field name="domain_force">[(1,'=',1)]</field>

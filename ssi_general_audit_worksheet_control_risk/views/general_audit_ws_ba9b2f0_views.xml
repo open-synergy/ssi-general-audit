@@ -52,6 +52,10 @@
                                 invisible="1"
                             />
                             <field
+                                name="account_key_internal_control_ids"
+                                invisible="1"
+                            />
+                            <field
                                 name="account_type_id"
                                 domain="[('id','in',significant_risk_account_type_ids)]"
                             />
@@ -72,7 +76,7 @@
                                     <field name="sequence" />
                                     <field
                                         name="key_internal_control_id"
-                                        domain="[('account_type_id','=',parent.account_type_id)]"
+                                        domain="[('id','in',parent.account_key_internal_control_ids)]"
                                     />
                                     <field name="name" />
                                     <field name="frequency" />
@@ -84,7 +88,7 @@
                                         <field name="name" />
                                     </tree>
                                 </field>
-                                <separator string="Risk Identification" />
+                                <separator string="What Can Go Wrong" />
                                 <field name="what_can_go_wrong_ids">
                                     <tree editable="bottom">
                                         <field name="sequence" widget="handle" />
@@ -107,7 +111,7 @@
     </record>
 
     <record id="general_audit_ws_ba9b2f0_action" model="ir.actions.act_window">
-        <field name="name">Standard Account Internal Controls</field>
+        <field name="name">Significant Account Internal Controls</field>
         <field name="type">ir.actions.act_window</field>
         <field name="res_model">general_audit_ws_ba9b2f0</field>
         <field name="view_mode">tree,form</field>
@@ -115,7 +119,7 @@
 
     <menuitem
         id="general_audit_ws_ba9b2f0_menu"
-        name="Standard Account Internal Controls"
+        name="Significant Account Internal Controls"
         parent="ssi_general_audit.menu_general_audit_risk_assesment"
         action="general_audit_ws_ba9b2f0_action"
         sequence="1503"

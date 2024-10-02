@@ -37,9 +37,10 @@
                     <field name="sequence" widget="handle" />
                 </xpath>
                 <xpath expr="//field[@name='name']" position="after">
-                    <field name="account_type_id" />
+                    <field name="account_type_ids" widget="many2many_tags" />
                     <field name="control_activity_id" />
-                    <field name="assersion_type_id" />
+                    <field name="assersion_type_id_ids" widget="many2many_tags" />
+
                 </xpath>
             </data>
         </field>
@@ -60,9 +61,9 @@
             <data>
                 <xpath expr="//field[@name='code']" position="after">
                     <field name="sequence" />
-                    <field name="account_type_id" />
+                    <field name="account_type_ids" widget="many2many_tags" />
                     <field name="control_activity_id" />
-                    <field name="assersion_type_id" />
+                    <field name="assersion_type_id_ids" widget="many2many_tags" />
                 </xpath>
             </data>
         </field>
@@ -72,7 +73,7 @@
         id="general_audit_account_key_internal_control_action"
         model="ir.actions.act_window"
     >
-        <field name="name">Standard Account Key Internal Controls</field>
+        <field name="name">Significant Account Key Internal Controls</field>
         <field name="type">ir.actions.act_window</field>
         <field name="res_model">general_audit_account_key_internal_control</field>
         <field name="view_mode">tree,form</field>
@@ -80,7 +81,7 @@
 
     <menuitem
         id="general_audit_account_key_internal_control_menu"
-        name="Standard Account Key Internal Controls"
+        name="Significant Account Key Internal Controls"
         parent="ssi_general_audit.menu_configuration_general_audit"
         action="general_audit_account_key_internal_control_action"
         sequence="110"
