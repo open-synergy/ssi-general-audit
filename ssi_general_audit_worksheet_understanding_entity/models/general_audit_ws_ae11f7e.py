@@ -26,6 +26,17 @@ class GeneralAuditWSae11f7e(models.Model):
             ],
         },
     )
+    other_report_ids = fields.Many2many(
+        string="Other Reports",
+        related="general_audit_id.other_report_ids",
+        inverse="_inverse_other_report_ids",
+        readonly=True,
+        states={
+            "open": [
+                ("readonly", False),
+            ],
+        },
+    )
     expert_ids = fields.One2many(
         string="Experts",
         comodel_name="general_audit_ws_ae11f7e.expert",
@@ -76,5 +87,13 @@ class GeneralAuditWSae11f7e(models.Model):
             record.general_audit_id.write(
                 {
                     "business_cycle_ids": [(6, 0, self.business_cycle_ids.ids)],
+                }
+            )
+
+    def _inverse_other_report_ids(self):
+        for record in self:
+            record.general_audit_id.write(
+                {
+                    "other_report_ids": [(6, 0, self.other_report_ids.ids)],
                 }
             )

@@ -13,6 +13,7 @@ from . import (
     general_audit_fraud_factor_category,
     general_audit_fraud_factor,
     general_audit_fraud_factor_indicator,
+    general_audit_other_report,
     general_audit_ws_e78a3c6,
     general_audit_ws_e78a3c6_organization_structure,
     general_audit_ws_a13a30e,

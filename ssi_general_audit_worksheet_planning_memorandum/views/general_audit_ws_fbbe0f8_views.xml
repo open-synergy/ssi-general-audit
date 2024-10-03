@@ -1,0 +1,84 @@
+<?xml version="1.0" ?>
+<!-- Copyright 2022 OpenSynergy Indonesia
+     Copyright 2022 PT. Simetri Sinergi Indonesia
+     License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl-3.0-standalone.html). -->
+<odoo>
+
+    <record id="general_audit_ws_fbbe0f8_view_search" model="ir.ui.view">
+        <field name="name">general_audit_ws_fbbe0f8 form</field>
+        <field name="model">general_audit_ws_fbbe0f8</field>
+        <field
+            name="inherit_id"
+            ref="ssi_general_audit.general_audit_worksheet_mixin_view_search"
+        />
+        <field name="mode">primary</field>
+        <field name="arch" type="xml">
+            <data />
+        </field>
+    </record>
+
+    <record id="general_audit_ws_fbbe0f8_view_tree" model="ir.ui.view">
+        <field name="name">general_audit_ws_fbbe0f8 tree</field>
+        <field name="model">general_audit_ws_fbbe0f8</field>
+        <field name="mode">primary</field>
+        <field
+            name="inherit_id"
+            ref="ssi_general_audit.general_audit_worksheet_mixin_view_tree"
+        />
+        <field name="arch" type="xml">
+            <data>
+            </data>
+        </field>
+    </record>
+
+    <record id="general_audit_ws_fbbe0f8_view_form" model="ir.ui.view">
+        <field name="name">general_audit_ws_fbbe0f8 form</field>
+        <field name="model">general_audit_ws_fbbe0f8</field>
+        <field name="mode">primary</field>
+        <field
+            name="inherit_id"
+            ref="ssi_general_audit.general_audit_worksheet_mixin_view_form"
+        />
+        <field name="arch" type="xml">
+            <data>
+                <xpath expr="//page[1]" position="before">
+                    <page name="characteristics" string="Assignment Characteristics">
+                        <group name="characteristics_1" colspan="4" col="2">
+                            <field name="financial_accounting_standard_id" />
+                            <field
+                                name="other_report_ids"
+                                widget="many2many_checkboxes"
+                            />
+                        </group>
+                    </page>
+                    <page name="report_purpose" string="Report Purpose">
+                        <group name="report_purpose_1" colspan="4" col="2">
+                        </group>
+                    </page>
+                    <page name="important_factor" string="Important Factor">
+                        <group name="important_factor_1" colspan="4" col="2">
+                        </group>
+                    </page>
+                </xpath>
+            </data>
+        </field>
+    </record>
+
+    <record id="general_audit_ws_fbbe0f8_action" model="ir.actions.act_window">
+        <field name="name">Audit Planning Memorandums</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">general_audit_ws_fbbe0f8</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+    <menuitem
+        id="general_audit_ws_fbbe0f8_menu"
+        name="Audit Planning Memorandums"
+        parent="ssi_general_audit.menu_general_audit_risk_assesment"
+        action="general_audit_ws_fbbe0f8_action"
+        sequence="1503"
+        groups="general_audit_ws_fbbe0f8_viewer_group"
+    />
+
+
+</odoo>

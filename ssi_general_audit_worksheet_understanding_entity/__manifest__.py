@@ -84,6 +84,7 @@
         "views/general_audit_fraud_factor_views.xml",
         "views/general_audit_fraud_factor_indicator_views.xml",
         "views/general_audit_expert_type_views.xml",
+        "views/general_audit_fraud_other_report_views.xml",
         "views/general_audit_ws_e78a3c6_views.xml",
         "views/general_audit_ws_a13a30e_views.xml",
         "views/general_audit_ws_bdcdfc5_views.xml",
