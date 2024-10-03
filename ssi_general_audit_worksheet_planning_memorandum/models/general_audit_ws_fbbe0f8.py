@@ -21,3 +21,6 @@ class GeneralAuditWSfbbe0f8(models.Model):
     other_report_ids = fields.Many2many(
         related="general_audit_id.other_report_ids",
     )
+    expert_type_ids = fields.Many2many(
+        related="general_audit_id.expert_type_ids",
+    )

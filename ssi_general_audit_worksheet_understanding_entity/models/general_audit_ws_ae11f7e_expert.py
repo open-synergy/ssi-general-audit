@@ -16,6 +16,10 @@ class GeneralAuditWSAE11F7EDetail(models.Model):
         required=True,
         ondelete="cascade",
     )
+    general_audit_id = fields.Many2one(
+        related="worksheet_id.general_audit_id",
+        store=True,
+    )
     name = fields.Char(
         string="Expert Name",
         required=True,
