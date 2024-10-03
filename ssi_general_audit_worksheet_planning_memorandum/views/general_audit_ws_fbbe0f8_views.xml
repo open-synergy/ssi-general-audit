@@ -41,6 +41,25 @@
         />
         <field name="arch" type="xml">
             <data>
+                <xpath expr="//page[1]" position="before">
+                    <page name="characteristics" string="Assignment Characteristics">
+                        <group name="characteristics_1" colspan="4" col="2">
+                            <field name="financial_accounting_standard_id" />
+                            <field
+                                name="other_report_ids"
+                                widget="many2many_checkboxes"
+                            />
+                        </group>
+                    </page>
+                    <page name="report_purpose" string="Report Purpose">
+                        <group name="report_purpose_1" colspan="4" col="2">
+                        </group>
+                    </page>
+                    <page name="important_factor" string="Important Factor">
+                        <group name="important_factor_1" colspan="4" col="2">
+                        </group>
+                    </page>
+                </xpath>
             </data>
         </field>
     </record>
