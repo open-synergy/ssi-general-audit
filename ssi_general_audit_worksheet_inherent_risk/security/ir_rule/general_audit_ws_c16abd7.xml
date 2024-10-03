@@ -3,9 +3,11 @@
      Copyright 2022 PT. Simetri Sinergi Indonesia
      License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl). -->
 <odoo>
-<record id="general_audit_ws_a418d89_internal_user_rule" model="ir.rule">
-    <field name="name">Account Level Inherent Risk(a418d89) - Internal Users</field>
-    <field name="model_id" ref="model_general_audit_ws_a418d89" />
+<record id="general_audit_ws_c16abd7_internal_user_rule" model="ir.rule">
+    <field
+            name="name"
+        >Financial Statement Level Inherent Risk (c16abd7) - Internal Users</field>
+    <field name="model_id" ref="model_general_audit_ws_c16abd7" />
     <field name="groups" eval="[(4, ref('base.group_user'))]" />
     <field name="domain_force">[
       ('user_id','=',user.id),
@@ -16,12 +18,12 @@
     <field name="perm_create" eval="1" />
 </record>
 
-<record id="general_audit_ws_a418d89_company_rule" model="ir.rule">
+<record id="general_audit_ws_c16abd7_company_rule" model="ir.rule">
     <field
             name="name"
-        >Account Level Inherent Risk(a418d89) - Responsible to company data</field>
-    <field name="model_id" ref="model_general_audit_ws_a418d89" />
-    <field name="groups" eval="[(4, ref('general_audit_ws_a418d89_company_group'))]" />
+        >Financial Statement Level Inherent Risk (c16abd7) - Responsible to company data</field>
+    <field name="model_id" ref="model_general_audit_ws_c16abd7" />
+    <field name="groups" eval="[(4, ref('general_audit_ws_c16abd7_company_group'))]" />
     <field name="domain_force">[('company_id','=',user.company_id.id)]</field>
     <field name="perm_unlink" eval="1" />
     <field name="perm_write" eval="1" />
@@ -29,14 +31,14 @@
     <field name="perm_create" eval="1" />
 </record>
 
-<record id="general_audit_ws_a418d89_companies_rule" model="ir.rule">
+<record id="general_audit_ws_c16abd7_companies_rule" model="ir.rule">
     <field
             name="name"
-        >Account Level Inherent Risk(a418d89) - Responsible to company and all child companies data</field>
-    <field name="model_id" ref="model_general_audit_ws_a418d89" />
+        >Financial Statement Level Inherent Risk (c16abd7) - Responsible to company and all child companies data</field>
+    <field name="model_id" ref="model_general_audit_ws_c16abd7" />
     <field
             name="groups"
-            eval="[(4, ref('general_audit_ws_a418d89_company_child_group'))]"
+            eval="[(4, ref('general_audit_ws_c16abd7_company_child_group'))]"
         />
     <field name="domain_force">[('company_id','in',user.company_ids.ids)]</field>
     <field name="perm_unlink" eval="1" />
@@ -45,10 +47,10 @@
     <field name="perm_create" eval="1" />
 </record>
 
-<record id="general_audit_ws_a418d89_all_rule" model="ir.rule">
-    <field name="name">Account Level Inherent Risk(a418d89) - All</field>
-    <field name="model_id" ref="model_general_audit_ws_a418d89" />
-    <field name="groups" eval="[(4, ref('general_audit_ws_a418d89_all_group'))]" />
+<record id="general_audit_ws_c16abd7_all_rule" model="ir.rule">
+    <field name="name">Financial Statement Level Inherent Risk (c16abd7) - All</field>
+    <field name="model_id" ref="model_general_audit_ws_c16abd7" />
+    <field name="groups" eval="[(4, ref('general_audit_ws_c16abd7_all_group'))]" />
     <field name="domain_force">[(1,'=',1)]</field>
     <field name="perm_unlink" eval="1" />
     <field name="perm_write" eval="1" />
