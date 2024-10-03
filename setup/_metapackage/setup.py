@@ -11,6 +11,7 @@ setuptools.setup(
         'odoo14-addon-ssi_general_audit',
         'odoo14-addon-ssi_general_audit_worksheet_control_risk',
         'odoo14-addon-ssi_general_audit_worksheet_inherent_risk',
+        'odoo14-addon-ssi_general_audit_worksheet_planning_memorandum',
         'odoo14-addon-ssi_general_audit_worksheet_preliminary_analytic_procedure',
         'odoo14-addon-ssi_general_audit_worksheet_preliminary_materiality',
         'odoo14-addon-ssi_general_audit_worksheet_romm',
