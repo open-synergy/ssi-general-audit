@@ -19,3 +19,10 @@ class GeneralAudit(models.Model):
         column1="general_audit_id",
         column2="business_process_id",
     )
+    other_report_ids = fields.Many2many(
+        string="Other Reports",
+        comodel_name="general_audit_other_report",
+        relation="rel_general_audit_2_other_report",
+        column1="general_audit_id",
+        column2="other_report_id",
+    )
