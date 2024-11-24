@@ -1,0 +1,157 @@
+<?xml version="1.0" ?>
+<!-- Copyright 2022 OpenSynergy Indonesia
+     Copyright 2022 PT. Simetri Sinergi Indonesia
+     License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl-3.0-standalone.html). -->
+<odoo>
+
+    <record id="general_audit_ws_cbbbaf4_view_search" model="ir.ui.view">
+        <field name="name">general_audit_ws_cbbbaf4 form</field>
+        <field name="model">general_audit_ws_cbbbaf4</field>
+        <field
+            name="inherit_id"
+            ref="ssi_general_audit.general_audit_worksheet_mixin_view_search"
+        />
+        <field name="mode">primary</field>
+        <field name="arch" type="xml">
+            <data />
+        </field>
+    </record>
+
+    <record id="general_audit_ws_cbbbaf4_view_tree" model="ir.ui.view">
+        <field name="name">general_audit_ws_cbbbaf4 tree</field>
+        <field name="model">general_audit_ws_cbbbaf4</field>
+        <field name="mode">primary</field>
+        <field
+            name="inherit_id"
+            ref="ssi_general_audit.general_audit_worksheet_mixin_view_tree"
+        />
+        <field name="arch" type="xml">
+            <data>
+            </data>
+        </field>
+    </record>
+
+    <record id="general_audit_ws_cbbbaf4_view_form" model="ir.ui.view">
+        <field name="name">general_audit_ws_cbbbaf4 form</field>
+        <field name="model">general_audit_ws_cbbbaf4</field>
+        <field name="mode">primary</field>
+        <field
+            name="inherit_id"
+            ref="ssi_general_audit.general_audit_worksheet_mixin_view_form"
+        />
+        <field name="arch" type="xml">
+            <data>
+                <xpath expr="//page[1]" position="before">
+                    <page name="audit_date" string="Audit Date">
+                        <group name="audit_date_1" colspan="4" col="2">
+                            <field name="engagement_date" />
+                            <field name="risk_assesment_date" />
+                            <field name="fieldwork_date" />
+                            <field name="pullout_date" />
+                        </group>
+                    </page>
+                    <page name="manhour" string="Man Hour Allocations">
+                        <group name="manhour_1" colspan="4" col="2">
+                            <field
+                                name="pe_ra_manhour_allocation"
+                                string="Pre-Engagement &amp; Risk Assesment"
+                                widget="float_time"
+                            />
+                            <field
+                                name="rr_manhour_allocation"
+                                string="Risk Response"
+                                widget="float_time"
+                            />
+                            <field
+                                name="reporting_manhour_allocation"
+                                string="Reporting"
+                                widget="float_time"
+                            />
+                            <field
+                                name="total_manhour_allocation"
+                                string="Total"
+                                widget="float_time"
+                            />
+                        </group>
+                    </page>
+                    <page name="team_allocation" string="Team Allocations">
+                        <field name="team_allocation_ids">
+                            <tree editable="top">
+                                <field name="sequence" widget="handle" />
+                                <field
+                                    name="team_id"
+                                    domain="[('is_company','=',False),('parent_id','=',False)]"
+                                />
+                                <field name="role" />
+                                <field name="ra_allocation" widget="float_time" />
+                                <field name="rr_allocation" widget="float_time" />
+                                <field
+                                    name="reporting_allocation"
+                                    widget="float_time"
+                                />
+                            </tree>
+                        </field>
+                        <group
+                            string="Total"
+                            name="team_allocation"
+                            colspan="4"
+                            col="2"
+                        >
+                            <field
+                                name="total_ra_manhour"
+                                string="Risk Assesment"
+                                widget="float_time"
+                            />
+                            <field
+                                name="total_rr_manhour"
+                                string="Risk Response"
+                                widget="float_time"
+                            />
+                            <field
+                                name="total_reporting_manhour"
+                                string="Reporting"
+                                widget="float_time"
+                            />
+                        </group>
+                    </page>
+                    <page name="team_competency" string="Team Competency Analysis">
+                        <group name="team_competency_1" colspan="4" col="2">
+                            <field name="need_eqcr" />
+                        </group>
+                        <field name="team_competency_ids">
+                            <tree editable="top">
+                                <field name="sequence" widget="handle" />
+                                <field
+                                    name="team_id"
+                                    domain="[('is_company','=',False),('parent_id','=',False)]"
+                                />
+                                <field
+                                    name="comptency_upgrade_ids"
+                                    widget="many2many_tags"
+                                />
+                            </tree>
+                        </field>
+                    </page>
+                </xpath>
+            </data>
+        </field>
+    </record>
+
+    <record id="general_audit_ws_cbbbaf4_action" model="ir.actions.act_window">
+        <field name="name">Audit Working Plans</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">general_audit_ws_cbbbaf4</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+    <menuitem
+        id="general_audit_ws_cbbbaf4_menu"
+        name="Audit Working Plans"
+        parent="ssi_general_audit.menu_general_audit_preliminary_engagement"
+        action="general_audit_ws_cbbbaf4_action"
+        sequence="1503"
+        groups="general_audit_ws_cbbbaf4_viewer_group"
+    />
+
+
+</odoo>
