@@ -18,8 +18,8 @@ Available addons
 ----------------
 addon | version | maintainers | summary
 --- | --- | --- | ---
-[ssi_general_audit](ssi_general_audit/) | 14.0.3.0.0 |  | General Audit
-[ssi_general_audit_worksheet_audit_working_plan](ssi_general_audit_worksheet_audit_working_plan/) | 14.0.1.1.0 |  | General Audit Worksheet - Audit Working Plan
+[ssi_general_audit](ssi_general_audit/) | 14.0.3.1.0 |  | General Audit
+[ssi_general_audit_worksheet_audit_working_plan](ssi_general_audit_worksheet_audit_working_plan/) | 14.0.1.2.0 |  | General Audit Worksheet - Audit Working Plan
 [ssi_general_audit_worksheet_control_risk](ssi_general_audit_worksheet_control_risk/) | 14.0.2.2.0 |  | General Audit Worksheet - Control Risk
 [ssi_general_audit_worksheet_inherent_risk](ssi_general_audit_worksheet_inherent_risk/) | 14.0.2.1.0 |  | General Audit Worksheet - Inherent Risk
 [ssi_general_audit_worksheet_planning_memorandum](ssi_general_audit_worksheet_planning_memorandum/) | 14.0.1.2.0 |  | General Audit Worksheet - Planning Memorandum
