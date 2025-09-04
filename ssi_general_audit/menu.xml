@@ -4,76 +4,107 @@
      License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl-3.0-standalone.html). -->
 <odoo>
     <menuitem
-        id="menu_general_audit"
-        name="General Audit"
+        id="menu_general_information"
+        name="General Information"
         web_icon="ssi_general_audit,static/description/icon.png"
-        sequence="50"
-    />
-
-    <menuitem
-        id="menu_general_audit_preliminary_engagement"
-        name="Preliminary Engagement"
-        parent="menu_general_audit"
-        sequence="100"
-    />
-
-    <menuitem
-        id="menu_general_audit_risk_assesment"
-        name="Risk Assesment"
-        parent="menu_general_audit"
-        sequence="110"
-    />
-
-    <menuitem
-        id="menu_general_audit_risk_responses"
-        name="Risk Responses"
-        parent="menu_general_audit"
-        sequence="120"
-    />
-
-    <menuitem
-        id="menu_general_audit_completion_reporting"
-        name="Completion &amp; Reporting"
-        parent="menu_general_audit"
-        sequence="130"
+        sequence="200"
     />
 
     <menuitem
         id="menu_general_audit_report"
         name="Report"
-        parent="menu_general_audit"
-        sequence="980"
+        parent="menu_general_information"
+        sequence="999"
+    />
+
+    <menuitem
+        id="menu_preliminary_engagement_root"
+        name="Pre-Engagement"
+        web_icon="ssi_general_audit,static/description/icon.png"
+        sequence="201"
+    />
+
+    <menuitem
+        id="menu_general_audit_preliminary_engagement"
+        name="Worksheet"
+        parent="menu_preliminary_engagement_root"
+        sequence="1"
+    />
+
+    <menuitem
+        id="menu_risk_assesment_root"
+        name="Risk Assesment"
+        web_icon="ssi_general_audit,static/description/icon.png"
+        sequence="202"
+    />
+
+    <menuitem
+        id="menu_general_audit_risk_assesment"
+        name="Worksheet"
+        parent="menu_risk_assesment_root"
+        sequence="1"
+    />
+
+    <menuitem
+        id="menu_risk_responses_root"
+        name="Risk Responses"
+        web_icon="ssi_general_audit,static/description/icon.png"
+        sequence="203"
+    />
+
+    <menuitem
+        id="menu_general_audit_risk_responses"
+        name="Worksheet"
+        parent="menu_risk_responses_root"
+        sequence="1"
+    />
+
+    <menuitem
+        id="menu_completion_reporting_root"
+        name="Wind Up &amp; Reporting"
+        web_icon="ssi_general_audit,static/description/icon.png"
+        sequence="204"
+    />
+
+    <menuitem
+        id="menu_general_audit_completion_reporting"
+        name="Worksheet"
+        parent="menu_completion_reporting_root"
+        sequence="1"
+    />
+
+    <menuitem
+        id="menu_detail_root"
+        name="Detail Worksheet"
+        web_icon="ssi_general_audit,static/description/icon.png"
+        sequence="205"
     />
 
     <menuitem
         id="menu_general_audit_configuration"
-        name="Configuration"
-        parent="menu_general_audit"
-        sequence="990"
+        name="Reference &amp; Library"
+        web_icon="ssi_general_audit,static/description/icon.png"
+        sequence="206"
     />
-
 
     <menuitem
         id="menu_configuration_general_audit"
         name="General Audit"
-        sequence="110"
+        sequence="1"
         parent="menu_general_audit_configuration"
     />
 
     <menuitem
         id="menu_configuration_trial_balance"
         name="Trial Balance"
-        sequence="120"
+        sequence="2"
         parent="menu_general_audit_configuration"
     />
 
     <menuitem
         id="menu_configuration_worksheet"
         name="Worksheet"
-        sequence="130"
+        sequence="3"
         parent="menu_general_audit_configuration"
     />
-
-
-
 </odoo>
