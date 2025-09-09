@@ -7,6 +7,7 @@ from . import (
     general_audit_ws_a418d89,
     general_audit_ws_a418d89_detail,
     general_audit_ws_c16abd7,
+    general_audit_ws_bfb6dae,
     general_audit_standard_detail,
     general_audit,
 )

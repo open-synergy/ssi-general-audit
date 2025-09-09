@@ -16,7 +16,7 @@ class GeneralAudit(models.Model):
         string="Significant Account Types",
         comodel_name="client_account_type",
         compute="_compute_significant_risk_account_type_ids",
-        rel="rel_general_audit_2_significant_risk_account_type",
+        relation="rel_general_audit_2_significant_risk_account_type",
         column1="general_audit_id",
         column2="account_type_id",
         store=True,

@@ -4,7 +4,7 @@
 # pylint: disable=locally-disabled, manifest-required-author
 {
     "name": "General Audit Worksheet - Inherent Risk",
-    "version": "14.0.2.1.0",
+    "version": "14.0.2.2.0",
     "website": "https://simetri-sinergi.id",
     "author": "OpenSynergy Indonesia, PT. Simetri Sinergi Indonesia",
     "license": "AGPL-3",
@@ -15,7 +15,6 @@
     "data": [
         "security/ir_module_category_data.xml",
         "security/res_group_data.xml",
-        "security/ir.model.access.csv",
         "security/res_group/general_audit_ws_a418d89.xml",
         "security/res_group/general_audit_ws_c16abd7.xml",
         "security/ir_model_access/general_audit_ws_a418d89.xml",
@@ -36,6 +35,15 @@
         "views/general_audit_ws_c16abd7_views.xml",
         "views/general_audit_standard_detail_views.xml",
         "views/general_audit_views.xml",
+        # bfb6dae
+        "security/res_group/general_audit_ws_bfb6dae.xml",
+        "security/ir_rule/general_audit_ws_bfb6dae.xml",
+        "data/ir_sequence/general_audit_ws_bfb6dae.xml",
+        "data/sequence_template/general_audit_ws_bfb6dae.xml",
+        "data/policy_template/general_audit_ws_bfb6dae.xml",
+        "data/approval_template/general_audit_ws_bfb6dae.xml",
+        "views/general_audit_ws_bfb6dae_views.xml",
+        "security/ir.model.access.csv",
     ],
     "demo": [],
 }
