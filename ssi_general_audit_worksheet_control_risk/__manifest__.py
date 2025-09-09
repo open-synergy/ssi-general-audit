@@ -4,7 +4,7 @@
 # pylint: disable=locally-disabled, manifest-required-author
 {
     "name": "General Audit Worksheet - Control Risk",
-    "version": "14.0.2.2.0",
+    "version": "14.0.2.3.0",
     "website": "https://simetri-sinergi.id",
     "author": "OpenSynergy Indonesia, PT. Simetri Sinergi Indonesia",
     "license": "AGPL-3",
@@ -15,7 +15,6 @@
     ],
     "data": [
         "security/res_group_data.xml",
-        "security/ir.model.access.csv",
         "security/ir_module_category_data.xml",
         "security/res_group/general_audit_ws_d3d2719.xml",
         "security/res_group/general_audit_ws_f63f569.xml",
@@ -63,6 +62,15 @@
         "views/general_audit_ws_f63f569_views.xml",
         "views/general_audit_ws_eabdaad_views.xml",
         "views/general_audit_ws_ba9b2f0_views.xml",
+        # b59b886
+        "security/res_group/general_audit_ws_b59b886.xml",
+        "security/ir_rule/general_audit_ws_b59b886.xml",
+        "data/ir_sequence/general_audit_ws_b59b886.xml",
+        "data/sequence_template/general_audit_ws_b59b886.xml",
+        "data/policy_template/general_audit_ws_b59b886.xml",
+        "data/approval_template/general_audit_ws_b59b886.xml",
+        "views/general_audit_ws_b59b886_views.xml",
+        "security/ir.model.access.csv",
     ],
     "demo": [],
 }
