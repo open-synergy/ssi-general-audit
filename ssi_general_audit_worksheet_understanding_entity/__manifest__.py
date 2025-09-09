@@ -4,7 +4,7 @@
 # pylint: disable=locally-disabled, manifest-required-author
 {
     "name": "General Audit Worksheet - Understanding Entity and It's Environment",
-    "version": "14.0.1.10.0",
+    "version": "14.0.1.11.0",
     "website": "https://simetri-sinergi.id",
     "author": "OpenSynergy Indonesia, PT. Simetri Sinergi Indonesia",
     "license": "AGPL-3",
@@ -23,7 +23,6 @@
         "security/res_group/general_audit_ws_c0e0eec.xml",
         "security/res_group/general_audit_ws_a604795.xml",
         "security/res_group/general_audit_ws_ae11f7e.xml",
-        "security/ir.model.access.csv",
         "security/ir_model_access/general_audit_ws_e78a3c6.xml",
         "security/ir_model_access/general_audit_ws_a13a30e.xml",
         "security/ir_model_access/general_audit_ws_bdcdfc5.xml",
@@ -95,6 +94,23 @@
         "views/general_audit_ws_ae11f7e_views.xml",
         "views/general_audit_standard_detail_views.xml",
         "views/general_audit_views.xml",
+        # f87b2e1
+        "security/res_group/general_audit_ws_f87b2e1.xml",
+        "security/ir_rule/general_audit_ws_f87b2e1.xml",
+        "data/ir_sequence/general_audit_ws_f87b2e1.xml",
+        "data/sequence_template/general_audit_ws_f87b2e1.xml",
+        "data/policy_template/general_audit_ws_f87b2e1.xml",
+        "data/approval_template/general_audit_ws_f87b2e1.xml",
+        "views/general_audit_ws_f87b2e1_views.xml",
+        # ddf034c
+        "security/res_group/general_audit_ws_ddf034c.xml",
+        "security/ir_rule/general_audit_ws_ddf034c.xml",
+        "data/ir_sequence/general_audit_ws_ddf034c.xml",
+        "data/sequence_template/general_audit_ws_ddf034c.xml",
+        "data/policy_template/general_audit_ws_ddf034c.xml",
+        "data/approval_template/general_audit_ws_ddf034c.xml",
+        "views/general_audit_ws_ddf034c_views.xml",
+        "security/ir.model.access.csv",
     ],
     "demo": [],
 }

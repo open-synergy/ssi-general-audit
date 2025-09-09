@@ -7,7 +7,7 @@ from odoo import fields, models
 
 class GeneralAuditWSf6a227(models.Model):
     _name = "general_audit_ws_f6a227"
-    _description = "Understanding of Relevant Regulations (f6a227)"
+    _description = "Understanding of preparation of Financial Statements (f6a227)"
     _inherit = [
         "general_audit_worksheet_mixin",
     ]
