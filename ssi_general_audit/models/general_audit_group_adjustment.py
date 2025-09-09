@@ -27,11 +27,11 @@ class GeneralAuditGroupAdjustment(models.Model):
     )
     debit = fields.Monetary(
         string="Debit",
-        currency_id="currency_id",
+        currency_field="currency_id",
     )
     credit = fields.Monetary(
         string="Credit",
-        currency_id="currency_id",
+        currency_field="currency_id",
     )
 
     def _select(self):
