@@ -17,7 +17,7 @@ class GeneralAuditWSc8740d4(models.Model):
     )
 
     conclusion_ids = fields.One2many(
-        string="Conclusion",
+        string="Conclusion(s)",
         comodel_name="general_audit_ws_c8740d4.analytic_procedure_conclusion",
         inverse_name="worksheet_id",
         readonly=True,
