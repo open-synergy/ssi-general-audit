@@ -4,13 +4,13 @@
 # pylint: disable=locally-disabled, manifest-required-author
 {
     "name": "General Audit Worksheet - ROMM",
-    "version": "14.0.1.1.0",
+    "version": "14.0.1.2.0",
     "website": "https://simetri-sinergi.id",
     "author": "OpenSynergy Indonesia, PT. Simetri Sinergi Indonesia",
     "license": "AGPL-3",
     "installable": True,
     "depends": [
-        "ssi_general_audit",
+        "ssi_general_audit_worksheet_control_risk",
     ],
     "data": [
         "security/ir_module_category_data.xml",
@@ -32,6 +32,15 @@
         "views/general_audit_ws_c165170_views.xml",
         "views/general_audit_ws_d66d87a_views.xml",
         "views/general_audit_standard_detail_views.xml",
+        # de417a6
+        "security/res_group/general_audit_ws_de417a6.xml",
+        "security/ir_rule/general_audit_ws_de417a6.xml",
+        "data/ir_sequence/general_audit_ws_de417a6.xml",
+        "data/sequence_template/general_audit_ws_de417a6.xml",
+        "data/policy_template/general_audit_ws_de417a6.xml",
+        "data/approval_template/general_audit_ws_de417a6.xml",
+        "views/general_audit_ws_de417a6_views.xml",
+        "security/ir.model.access.csv",
     ],
     "demo": [],
 }

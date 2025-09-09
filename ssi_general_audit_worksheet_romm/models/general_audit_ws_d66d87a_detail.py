@@ -40,11 +40,6 @@ class GeneralAuditWSd66d87aDetail(models.Model):
     )
     romm = fields.Selection(
         string="Risk Material Misstatement",
-        selection=[
-            ("low", "Low"),
-            ("medium", "Medium"),
-            ("high", "High"),
-        ],
         related="standard_detail_id.romm",
         readonly=False,
         store=True,
