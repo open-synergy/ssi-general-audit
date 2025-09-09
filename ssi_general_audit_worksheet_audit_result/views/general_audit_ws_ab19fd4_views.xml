@@ -1,0 +1,63 @@
+<?xml version="1.0" ?>
+<!-- Copyright 2025 OpenSynergy Indonesia
+     Copyright 2025 PT. Simetri Sinergi Indonesia
+     License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl-3.0-standalone.html). -->
+<odoo>
+
+    <record id="general_audit_ws_ab19fd4_view_search" model="ir.ui.view">
+        <field name="name">general_audit_ws_ab19fd4 form</field>
+        <field name="model">general_audit_ws_ab19fd4</field>
+        <field
+            name="inherit_id"
+            ref="ssi_general_audit.general_audit_worksheet_mixin_view_search"
+        />
+        <field name="mode">primary</field>
+        <field name="arch" type="xml">
+            <data />
+        </field>
+    </record>
+
+    <record id="general_audit_ws_ab19fd4_view_tree" model="ir.ui.view">
+        <field name="name">general_audit_ws_ab19fd4 tree</field>
+        <field name="model">general_audit_ws_ab19fd4</field>
+        <field name="mode">primary</field>
+        <field
+            name="inherit_id"
+            ref="ssi_general_audit.general_audit_worksheet_mixin_view_tree"
+        />
+        <field name="arch" type="xml">
+            <data>
+            </data>
+        </field>
+    </record>
+
+    <record id="general_audit_ws_ab19fd4_view_form" model="ir.ui.view">
+        <field name="name">general_audit_ws_ab19fd4 form</field>
+        <field name="model">general_audit_ws_ab19fd4</field>
+        <field name="mode">primary</field>
+        <field
+            name="inherit_id"
+            ref="ssi_general_audit.general_audit_worksheet_mixin_view_form"
+        />
+        <field name="arch" type="xml">
+            <data>
+            </data>
+        </field>
+    </record>
+
+    <record id="general_audit_ws_ab19fd4_action" model="ir.actions.act_window">
+        <field name="name">Audit Result Formulation</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">general_audit_ws_ab19fd4</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+    <menuitem
+        id="general_audit_ws_ab19fd4_menu"
+        name="Audit Result Formulation"
+        parent="ssi_general_audit.menu_general_audit_audit_result"
+        action="general_audit_ws_ab19fd4_action"
+        sequence="1"
+        groups="general_audit_ws_ab19fd4_viewer_group"
+    />
+</odoo>
