@@ -4,7 +4,7 @@
 # pylint: disable=locally-disabled, manifest-required-author
 {
     "name": "General Audit Worksheet - Preliminary Materiality",
-    "version": "14.0.1.0.0",
+    "version": "14.0.1.1.0",
     "website": "https://simetri-sinergi.id",
     "author": "OpenSynergy Indonesia, PT. Simetri Sinergi Indonesia",
     "license": "AGPL-3",
@@ -15,7 +15,6 @@
     "data": [
         "security/ir_module_category_data.xml",
         "security/res_group_data.xml",
-        "security/ir.model.access.csv",
         "security/ir_rule_data.xml",
         "data/ir_sequence_data.xml",
         "data/sequence_template_data.xml",
@@ -24,6 +23,15 @@
         "data/general_audit_worksheet_type_data.xml",
         "views/general_audit_ws_d9d2b44_views.xml",
         "views/general_audit_ws_6dcda0e_views.xml",
+        # 1d9338d
+        "security/res_group/general_audit_ws_1d9338d.xml",
+        "security/ir_rule/general_audit_ws_1d9338d.xml",
+        "data/ir_sequence/general_audit_ws_1d9338d.xml",
+        "data/sequence_template/general_audit_ws_1d9338d.xml",
+        "data/policy_template/general_audit_ws_1d9338d.xml",
+        "data/approval_template/general_audit_ws_1d9338d.xml",
+        "views/general_audit_ws_1d9338d_views.xml",
+        "security/ir.model.access.csv",
     ],
     "demo": [],
 }
