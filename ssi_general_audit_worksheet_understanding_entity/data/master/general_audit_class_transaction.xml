@@ -1,0 +1,613 @@
+<?xml version='1.0' encoding='utf-8' ?>
+<odoo noupdate="1">
+    <record
+        id="general_audit_class_transaction_1_9f4dc8a4"
+        model="general_audit_class_transaction"
+    >
+        <field name="code">S1.1</field>
+        <field name="name">Sales (Revenue) Transactions</field>
+        <field name="sequence" eval="10" />
+        <field
+            name="related_account_type_ids"
+            eval="[(6, 0, [ref('ssi_general_audit.client_account_type_2_4fbd7be2'), ref('ssi_general_audit.client_account_type_3_11680e89'), ref('ssi_general_audit.client_account_type_21_990bf488'), ref('ssi_general_audit.client_account_type_46_8408865a')])]"
+        />
+        <field
+            name="note"
+        >These transactions involve the sale of goods or services to customers, either on credit (accounts receivable) or for immediate payment (cash sales). Sales transactions increase revenue and are recorded based on the accrual accounting principle (when earned).</field>
+    </record>
+    <record
+        id="general_audit_class_transaction_2_6320a433"
+        model="general_audit_class_transaction"
+    >
+        <field name="code">S1.2</field>
+        <field name="name">Cash Receipts from Customers</field>
+        <field name="sequence" eval="10" />
+        <field
+            name="note"
+        >These transactions involve collecting cash from customers, either in the form of payments for current sales (cash sales) or collections of accounts receivable (credit sales). Cash receipts are recorded when the payment is received, regardless of when the sale occurred.</field>
+    </record>
+    <record
+        id="general_audit_class_transaction_3_c46b1df1"
+        model="general_audit_class_transaction"
+    >
+        <field name="code">S1.3</field>
+        <field name="name">Sales return and allowances</field>
+        <field name="sequence" eval="10" />
+        <field
+            name="note"
+        >These transactions occur when customers return goods after a sale or receive allowances (price reductions) due to defective or damaged goods. These reduce the company’s total sales and result in adjustments to accounts receivable or cash refunds.</field>
+    </record>
+    <record
+        id="general_audit_class_transaction_4_0c85f536"
+        model="general_audit_class_transaction"
+    >
+        <field name="code">S1.5</field>
+        <field name="name">Bad Debts and Write-offs</field>
+        <field name="sequence" eval="10" />
+        <field
+            name="note"
+        >Bad debts occur when a company determines that an outstanding receivable is unlikely to be collected. The company may write off these receivables as uncollectible, reducing accounts receivable and recognizing a bad debt expense.</field>
+    </record>
+    <record
+        id="general_audit_class_transaction_5_273e68a9"
+        model="general_audit_class_transaction"
+    >
+        <field name="code">S1.6</field>
+        <field name="name">Allowance for Doubtful Accounts</field>
+        <field name="sequence" eval="10" />
+        <field
+            name="note"
+        >This is an estimate of the portion of accounts receivable that the company expects to be uncollectible. It is recorded as an expense in the same period as the related sales to adhere to the matching principle.</field>
+    </record>
+    <record
+        id="general_audit_class_transaction_6_833dbb76"
+        model="general_audit_class_transaction"
+    >
+        <field name="code">S2.1</field>
+        <field name="name">Purchases of Goods and Services</field>
+        <field name="sequence" eval="10" />
+        <field
+            name="note"
+        >These transactions involve acquiring inventory, supplies, or services from suppliers. Purchases can be made on credit (accounts payable) or for immediate payment (cash purchases). This is the starting point of the acquisition cycle, and it impacts inventory (for goods) or expenses (for services) and liabilities (accounts payable).</field>
+    </record>
+    <record
+        id="general_audit_class_transaction_7_0b9d9d56"
+        model="general_audit_class_transaction"
+    >
+        <field name="code">S2.2</field>
+        <field name="name">Cash Payments to Suppliers</field>
+        <field name="sequence" eval="10" />
+        <field
+            name="note"
+        >These transactions represent payments made to suppliers for goods or services that were previously acquired, either on credit or for immediate payment. They reduce the company’s cash balance and accounts payable.</field>
+    </record>
+    <record
+        id="general_audit_class_transaction_8_977a350d"
+        model="general_audit_class_transaction"
+    >
+        <field name="code">S2.3</field>
+        <field name="name">Purchase return and allowances</field>
+        <field name="sequence" eval="10" />
+        <field
+            name="note"
+        >Purchase returns occur when a company returns goods to a supplier due to defects or other reasons. Purchase allowances are reductions in the amount owed to a supplier due to damaged goods or poor service, without returning the goods. Both types of transactions reduce the amount owed (accounts payable) and may affect inventory or expense accounts.</field>
+    </record>
+    <record
+        id="general_audit_class_transaction_9_2253689f"
+        model="general_audit_class_transaction"
+    >
+        <field name="code">S3.1</field>
+        <field name="name">Purchases of Inventory</field>
+        <field name="sequence" eval="10" />
+        <field
+            name="note"
+        >These transactions involve acquiring raw materials, finished goods, or other inventory items from suppliers. These purchases can be made on credit (resulting in accounts payable) or with immediate cash payments.</field>
+    </record>
+    <record
+        id="general_audit_class_transaction_10_408a6fc8"
+        model="general_audit_class_transaction"
+    >
+        <field name="code">S3.2</field>
+        <field name="name">Receiving Inventory</field>
+        <field name="sequence" eval="10" />
+        <field
+            name="note"
+        >When goods are received from a supplier, the receiving department typically checks the items against the purchase order (PO) and records them as inventory. The receipt of inventory is an internal control point that ensures only authorized purchases are accepted.</field>
+    </record>
+    <record
+        id="general_audit_class_transaction_11_bb71d92d"
+        model="general_audit_class_transaction"
+    >
+        <field name="code">S3.3</field>
+        <field name="name">Inventory Transfers and Movements</field>
+        <field name="sequence" eval="10" />
+        <field
+            name="note"
+        >Inventory may be transferred between different locations within a company, such as between warehouses or production departments. These movements should be tracked to maintain accurate records of inventory quantities at each location.</field>
+    </record>
+    <record
+        id="general_audit_class_transaction_12_90899573"
+        model="general_audit_class_transaction"
+    >
+        <field name="code">S3.4</field>
+        <field
+            name="name"
+        >Inventory Adjustments (Shrinkage, Obsolescence, and Damages)</field>
+        <field name="sequence" eval="10" />
+        <field
+            name="note"
+        >These transactions involve adjusting inventory records for discrepancies between physical stock counts and the amounts recorded in the system. Shrinkage can occur due to theft, damage, spoilage, or errors. Obsolete inventory is written down when it is no longer usable or sellable.</field>
+    </record>
+    <record
+        id="general_audit_class_transaction_13_46cef7aa"
+        model="general_audit_class_transaction"
+    >
+        <field name="code">S3.5</field>
+        <field name="name">Cost of Goods Sold (COGS)</field>
+        <field name="sequence" eval="10" />
+        <field
+            name="note"
+        >COGS represents the direct costs of producing goods that have been sold. When inventory is sold, the cost associated with that inventory is transferred from the balance sheet to the income statement as COGS. This is a key element in determining a company’s gross profit.</field>
+    </record>
+    <record
+        id="general_audit_class_transaction_14_c8893673"
+        model="general_audit_class_transaction"
+    >
+        <field name="code">S3.6</field>
+        <field
+            name="name"
+        >Inventory Returns (Sales Returns and Purchase Returns)</field>
+        <field name="sequence" eval="10" />
+        <field
+            name="note"
+        >Sales Returns: These transactions occur when customers return goods after a sale. The returned goods are added back to inventory, and the cost of those goods is subtracted from COGS.
+Purchase Returns: When the company returns goods to a supplier, inventory is reduced, and accounts payable is adjusted if the original purchase was made on credit.
+</field>
+    </record>
+    <record
+        id="general_audit_class_transaction_15_34a8019b"
+        model="general_audit_class_transaction"
+    >
+        <field name="code">S6.2</field>
+        <field name="name">Repayment of Debt</field>
+        <field name="sequence" eval="10" />
+        <field
+            name="note"
+        >These transactions involve repaying the principal and interest on borrowed funds. The principal repayment reduces the company's liabilities, and interest payments are recorded as an expense.</field>
+    </record>
+    <record
+        id="general_audit_class_transaction_16_04e5ec39"
+        model="general_audit_class_transaction"
+    >
+        <field name="code">S5.2.1</field>
+        <field
+            name="name"
+        >Purchase of Property, Plan, and Equipment (Acquisition /addition)</field>
+        <field name="sequence" eval="10" />
+        <field
+            name="note"
+        >These transactions involve purchasing or internally constructing assets such as land, buildings, machinery, or equipment. Acquisitions increase the PPE balance on the balance sheet.</field>
+    </record>
+    <record
+        id="general_audit_class_transaction_17_4ed2528c"
+        model="general_audit_class_transaction"
+    >
+        <field name="code">S6.1</field>
+        <field name="name">Issuance of Debt (Borrowing)</field>
+        <field name="sequence" eval="10" />
+        <field
+            name="note"
+        >These transactions involve raising capital through borrowing from lenders, such as banks or issuing bonds to the public. The company receives cash in exchange for agreeing to repay the borrowed amount with interest over time. Debt issuance increases the company’s liabilities and cash.</field>
+    </record>
+    <record
+        id="general_audit_class_transaction_18_8e2b3076"
+        model="general_audit_class_transaction"
+    >
+        <field name="code">S6.3</field>
+        <field name="name">Issuance of Equity (Selling Stock)</field>
+        <field name="sequence" eval="10" />
+        <field
+            name="note"
+        >These transactions involve raising capital by issuing shares of stock to investors. The company receives cash in exchange for ownership shares, increasing both cash and shareholders’ equity.</field>
+    </record>
+    <record
+        id="general_audit_class_transaction_19_3114cbe5"
+        model="general_audit_class_transaction"
+    >
+        <field name="code">S6.4</field>
+        <field name="name">Repurchase of Stock (Treasury Stock)</field>
+        <field name="sequence" eval="10" />
+        <field
+            name="note"
+        >When a company buys back its own shares from the market, it reduces shareholders’ equity. Treasury stock represents shares that are issued but not outstanding and can be reissued later or retired permanently.</field>
+    </record>
+    <record
+        id="general_audit_class_transaction_20_fd33bc12"
+        model="general_audit_class_transaction"
+    >
+        <field name="code">S6.5</field>
+        <field name="name">Payment of dividend</field>
+        <field name="sequence" eval="10" />
+        <field
+            name="note"
+        >These transactions involve distributing a portion of the company’s earnings to shareholders. Dividends can be paid in cash or stock and represent a return on investment to shareholders. Dividends reduce retained earnings and cash (for cash dividends).</field>
+    </record>
+    <record
+        id="general_audit_class_transaction_21_c8dd9953"
+        model="general_audit_class_transaction"
+    >
+        <field name="code">S3.7</field>
+        <field name="name">Periodic and Perpetual Inventory Systems</field>
+        <field name="sequence" eval="10" />
+        <field
+            name="note"
+        >Companies use either a periodic or perpetual inventory system to track inventory.
+Periodic System: Inventory is only updated at the end of a period when a physical count is performed. Purchases are recorded in a purchases account, and inventory adjustments are made at the end of the period.
+Perpetual System: Inventory is updated continuously in real-time whenever transactions like purchases, sales, and returns occur.
+</field>
+    </record>
+    <record
+        id="general_audit_class_transaction_22_6eec17ca"
+        model="general_audit_class_transaction"
+    >
+        <field name="code">S4.1</field>
+        <field name="name">Salary and Wage Payments</field>
+        <field name="sequence" eval="10" />
+    </record>
+    <record
+        id="general_audit_class_transaction_23_a344ff86"
+        model="general_audit_class_transaction"
+    >
+        <field name="code">S3.8</field>
+        <field name="name">Inventory Valuation Methods</field>
+        <field name="sequence" eval="10" />
+        <field
+            name="note"
+        >The method used to value inventory affects both the cost of inventory and COGS. Common valuation methods include:
+•	FIFO (First-In, First-Out): The oldest inventory is sold first.
+•	LIFO (Last-In, First-Out): The most recently acquired inventory is sold first.
+•	Weighted Average: The cost of goods sold and ending inventory are based on the average cost of all units available for sale.
+</field>
+    </record>
+    <record
+        id="general_audit_class_transaction_24_94fd839c"
+        model="general_audit_class_transaction"
+    >
+        <field name="code">S3.9</field>
+        <field
+            name="name"
+        >Manufacturing Transactions (Work in Process, Finished Goods)</field>
+        <field name="sequence" eval="10" />
+        <field
+            name="note"
+        >For manufacturing companies, inventory is divided into raw materials, work-in-process (WIP), and finished goods. When raw materials are used in production, their cost is transferred to WIP, and once production is complete, the cost is transferred to finished goods.</field>
+    </record>
+    <record
+        id="general_audit_class_transaction_25_cadd92bd"
+        model="general_audit_class_transaction"
+    >
+        <field name="code">S5.2.2</field>
+        <field name="name">Sales of Property, Plan, and Equipment (Disposals)</field>
+        <field name="sequence" eval="10" />
+        <field
+            name="note"
+        >These transactions occur when an asset is sold, scrapped, or otherwise removed from service. Disposals decrease the PPE balance and may result in a gain or loss on disposal, which affects the income statement.</field>
+    </record>
+    <record
+        id="general_audit_class_transaction_26_7907d15e"
+        model="general_audit_class_transaction"
+    >
+        <field name="code">S5.2.3</field>
+        <field name="name">Depreciation of Property, Plant, and Equipment</field>
+        <field name="sequence" eval="10" />
+        <field
+            name="note"
+        >Depreciation is the periodic allocation of the cost of an asset over its useful life. It reduces the asset’s book value on the balance sheet and is recognized as an expense on the income statement.</field>
+    </record>
+    <record
+        id="general_audit_class_transaction_27_d70ce3e7"
+        model="general_audit_class_transaction"
+    >
+        <field name="code">S5.2.4</field>
+        <field name="name">Impairment of Property, Plant, and Equipment</field>
+        <field name="sequence" eval="10" />
+        <field
+            name="note"
+        >Impairment occurs when the carrying value of an asset exceeds its recoverable amount (the higher of fair value less costs to sell or its value in use). This results in a write-down of the asset's value on the balance sheet.</field>
+    </record>
+    <record
+        id="general_audit_class_transaction_28_406048a6"
+        model="general_audit_class_transaction"
+    >
+        <field name="code">S5.2.5</field>
+        <field name="name">Repair and maintenance</field>
+        <field name="sequence" eval="10" />
+        <field
+            name="note"
+        >Regular expenses incurred to maintain or restore an asset’s productive capacity. These do not increase the useful life or enhance the asset’s capacity and are expensed in the period incurred.</field>
+    </record>
+    <record
+        id="general_audit_class_transaction_29_4841ddb6"
+        model="general_audit_class_transaction"
+    >
+        <field name="code">S5.2.6</field>
+        <field name="name">Capital improvement (betterment)</field>
+        <field name="sequence" eval="10" />
+        <field
+            name="note"
+        >These are expenditures that extend the useful life of an asset, enhance its capacity, or improve its efficiency. Unlike repairs, these expenditures are capitalized and increase the book value of the PPE.</field>
+    </record>
+    <record
+        id="general_audit_class_transaction_30_a50f6109"
+        model="general_audit_class_transaction"
+    >
+        <field name="code">S5.1.1</field>
+        <field name="name">Purchases of Investments (Acquisitions)</field>
+        <field name="sequence" eval="10" />
+        <field
+            name="note"
+        >These transactions occur when the business buys investments, such as stocks, bonds, real estate, or other financial instruments. They increase the company’s investments on the balance sheet.</field>
+    </record>
+    <record
+        id="general_audit_class_transaction_31_7f4883e6"
+        model="general_audit_class_transaction"
+    >
+        <field name="code">S5.1.2</field>
+        <field name="name">Sales of Investments (Disposals)</field>
+        <field name="sequence" eval="10" />
+        <field
+            name="note"
+        >These transactions occur when the company sells or disposes of investments. Disposals reduce the investments on the balance sheet and may result in a gain or loss on the sale, affecting the income statement.</field>
+    </record>
+    <record
+        id="general_audit_class_transaction_32_ce21062b"
+        model="general_audit_class_transaction"
+    >
+        <field name="code">S5.1.3</field>
+        <field name="name">Dividend and Interest Income</field>
+        <field name="sequence" eval="10" />
+        <field
+            name="note"
+        >These transactions represent earnings from investments, such as dividends from equity securities or interest from bonds. This income affects the income statement and is usually recognized when earned.</field>
+    </record>
+    <record
+        id="general_audit_class_transaction_33_8f0d95ce"
+        model="general_audit_class_transaction"
+    >
+        <field name="code">S5.1.5</field>
+        <field name="name">Realized Gains or Losses on Investments</field>
+        <field name="sequence" eval="10" />
+        <field
+            name="note"
+        >Realized gains or losses are recognized when an investment is sold, and the difference between the sale price and the book value is recorded. These gains or losses directly affect the income statement.</field>
+    </record>
+    <record
+        id="general_audit_class_transaction_34_2042e498"
+        model="general_audit_class_transaction"
+    >
+        <field name="code">S5.1.6</field>
+        <field name="name">Impairment of Investments</field>
+        <field name="sequence" eval="10" />
+        <field
+            name="note"
+        >Impairment occurs when there is a permanent decline in the value of an investment, such as the bankruptcy of a company whose shares are held. Impairments result in a write-down of the investment’s value and affect the income statement.</field>
+    </record>
+    <record
+        id="general_audit_class_transaction_35_e0d2e1e3"
+        model="general_audit_class_transaction"
+    >
+        <field name="code">S5.1.7</field>
+        <field name="name">Investment in Subsidiaries or Joint Ventures</field>
+        <field name="sequence" eval="10" />
+        <field
+            name="note"
+        >These transactions involve making equity investments in subsidiaries or joint ventures, where the business takes a significant or controlling interest in another entity. The accounting treatment varies based on the level of control or influence.</field>
+    </record>
+    <record
+        id="general_audit_class_transaction_36_f9a0246e"
+        model="general_audit_class_transaction"
+    >
+        <field name="code">S4.2</field>
+        <field name="name">Payroll Taxes (Employer's Portion)</field>
+        <field name="sequence" eval="10" />
+    </record>
+    <record
+        id="general_audit_class_transaction_37_a0483f5c"
+        model="general_audit_class_transaction"
+    >
+        <field name="code">S4.3</field>
+        <field name="name">Withholdings and Deductions</field>
+        <field name="sequence" eval="10" />
+    </record>
+    <record
+        id="general_audit_class_transaction_38_e1651b0b"
+        model="general_audit_class_transaction"
+    >
+        <field name="code">S4.4</field>
+        <field name="name">Bonuses and Commissions</field>
+        <field name="sequence" eval="10" />
+    </record>
+    <record
+        id="general_audit_class_transaction_39_dea8ae8c"
+        model="general_audit_class_transaction"
+    >
+        <field name="code">S4.5</field>
+        <field name="name">Accrual of Wages and Salaries</field>
+        <field name="sequence" eval="10" />
+    </record>
+    <record
+        id="general_audit_class_transaction_40_06024b27"
+        model="general_audit_class_transaction"
+    >
+        <field name="code">S4.6</field>
+        <field name="name">Employee Benefits</field>
+        <field name="sequence" eval="10" />
+    </record>
+    <record
+        id="general_audit_class_transaction_41_1c31f650"
+        model="general_audit_class_transaction"
+    >
+        <field name="code">S4.7</field>
+        <field name="name">Overtime and Shift Differentials</field>
+        <field name="sequence" eval="10" />
+    </record>
+    <record
+        id="general_audit_class_transaction_42_4fd271d1"
+        model="general_audit_class_transaction"
+    >
+        <field name="code">S4.8</field>
+        <field name="name">Payroll Adjustments</field>
+        <field name="sequence" eval="10" />
+    </record>
+    <record
+        id="general_audit_class_transaction_43_46fc1057"
+        model="general_audit_class_transaction"
+    >
+        <field name="code">S4.9</field>
+        <field name="name">Termination and Severance Pay</field>
+        <field name="sequence" eval="10" />
+    </record>
+    <record
+        id="general_audit_class_transaction_44_1077ac72"
+        model="general_audit_class_transaction"
+    >
+        <field name="code">S1.4</field>
+        <field name="name">Sales Discounts (Cash Discounts)</field>
+        <field name="sequence" eval="10" />
+        <field
+            name="note"
+        >Sales discounts are reductions offered to customers as incentives for early payment. These discounts are typically offered under terms such as "2/10, net 30," meaning a 2% discount is given if payment is made within 10 days, otherwise the full amount is due in 30 days. Sales discounts reduce the total receivable amount and are recorded separately as a contra-revenue account.</field>
+    </record>
+    <record
+        id="general_audit_class_transaction_45_80f4fc03"
+        model="general_audit_class_transaction"
+    >
+        <field name="code">S1.7</field>
+        <field name="name">Advance Receipts (Unearned Revenue)</field>
+        <field name="sequence" eval="10" />
+        <field
+            name="note"
+        >In some cases, customers may make payments in advance of receiving goods or services. These receipts are recorded as a liability (unearned revenue) until the company delivers the goods or services.</field>
+    </record>
+    <record
+        id="general_audit_class_transaction_46_c9de3eff"
+        model="general_audit_class_transaction"
+    >
+        <field name="code">S1.8</field>
+        <field name="name">Freight and Shipping Charges</field>
+        <field name="sequence" eval="10" />
+        <field
+            name="note"
+        >For some sales, companies charge customers separately for shipping or freight costs. These charges are added to the total sales amount and recorded as revenue.</field>
+    </record>
+    <record
+        id="general_audit_class_transaction_47_96d21aa3"
+        model="general_audit_class_transaction"
+    >
+        <field name="code">S2.4</field>
+        <field name="name">Purchase Discounts</field>
+        <field name="sequence" eval="10" />
+        <field
+            name="note"
+        >Purchase discounts (also called cash discounts) are reductions in the amount payable to suppliers if payments are made within a certain time period (e.g., "2/10, net 30" means a 2% discount if paid within 10 days). These discounts incentivize early payments and reduce the total payment made to suppliers.</field>
+    </record>
+    <record
+        id="general_audit_class_transaction_48_922e868e"
+        model="general_audit_class_transaction"
+    >
+        <field name="code">S2.5</field>
+        <field name="name">Freight and Shipping Charges (Freight-in)</field>
+        <field name="sequence" eval="10" />
+        <field
+            name="note"
+        >These transactions involve costs incurred by the company for shipping goods from suppliers to their location. Freight charges are typically added to the cost of inventory or expenses. In some cases, the company may need to record freight separately.</field>
+    </record>
+    <record
+        id="general_audit_class_transaction_49_ae0f06bc"
+        model="general_audit_class_transaction"
+    >
+        <field name="code">S2.6</field>
+        <field name="name">Accrued Liabilities for Unbilled Purchases</field>
+        <field name="sequence" eval="10" />
+        <field
+            name="note"
+        >At the end of an accounting period, companies may receive goods or services that haven’t yet been billed by the supplier. To reflect the obligation to pay in the correct period, the company accrues a liability for the unbilled purchases.</field>
+    </record>
+    <record
+        id="general_audit_class_transaction_50_14b9ad02"
+        model="general_audit_class_transaction"
+    >
+        <field name="code">S2.7</field>
+        <field name="name">Prepayments (Advance Payments)</field>
+        <field name="sequence" eval="10" />
+        <field
+            name="note"
+        >These transactions occur when a company pays a supplier in advance for goods or services to be received in the future. Prepayments are initially recorded as assets (prepaid expenses) and are expensed over time as the goods or services are received.</field>
+    </record>
+    <record
+        id="general_audit_class_transaction_51_f7e462ce"
+        model="general_audit_class_transaction"
+    >
+        <field name="code">S2.8</field>
+        <field name="name">Expense Recognition</field>
+        <field name="sequence" eval="10" />
+        <field
+            name="note"
+        >Certain acquisitions are directly recorded as expenses, particularly when goods or services are immediately consumed or when services are rendered. These expenses affect the income statement in the period in which they are incurred.</field>
+    </record>
+    <record
+        id="general_audit_class_transaction_52_c3b027cf"
+        model="general_audit_class_transaction"
+    >
+        <field name="code">S5.1.4</field>
+        <field name="name">Unrealized Gains or Losses on Investments</field>
+        <field name="sequence" eval="10" />
+        <field
+            name="note"
+        >Unrealized gains or losses arise from changes in the fair market value of investments that are still held by the company. These are recorded when the company marks its investments to market, typically at period-end. They affect the balance sheet and, depending on the accounting treatment (held for trading or available-for-sale securities), may also affect the income statement or other comprehensive income.</field>
+    </record>
+    <record
+        id="general_audit_class_transaction_53_fc1e1fd0"
+        model="general_audit_class_transaction"
+    >
+        <field name="code">S6.6</field>
+        <field name="name">Stock Dividends and Stock Splits</field>
+        <field name="sequence" eval="10" />
+        <field
+            name="note"
+        >Stock dividends involve issuing additional shares to existing shareholders instead of cash. Stock splits increase the number of shares outstanding by dividing each share into multiple shares without changing the total equity.</field>
+    </record>
+    <record
+        id="general_audit_class_transaction_54_0cae8885"
+        model="general_audit_class_transaction"
+    >
+        <field name="code">S6.7</field>
+        <field name="name">Loan Covenants and Compliance Costs</field>
+        <field name="sequence" eval="10" />
+        <field
+            name="note"
+        >Certain debt agreements contain covenants requiring the company to maintain specific financial ratios or make certain financial disclosures. Any costs associated with complying with loan covenants, such as legal fees, are recorded as expenses.</field>
+    </record>
+    <record
+        id="general_audit_class_transaction_55_5ec5f9cf"
+        model="general_audit_class_transaction"
+    >
+        <field name="code">S6.8</field>
+        <field name="name">Convertible Debt and Equity Instruments</field>
+        <field name="sequence" eval="10" />
+        <field
+            name="note"
+        >Convertible bonds or preferred stock can be converted into common stock at the option of the holder. These transactions involve complex accounting because they combine features of both debt and equity.</field>
+    </record>
+    <record
+        id="general_audit_class_transaction_56_a741d58e"
+        model="general_audit_class_transaction"
+    >
+        <field name="code">S6.9</field>
+        <field name="name">Interest Payments on Debt</field>
+        <field name="sequence" eval="10" />
+        <field
+            name="note"
+        >These transactions involve paying interest on borrowed funds. Interest payments are considered expenses and reduce the company's cash balance. These payments may occur periodically (e.g., monthly, quarterly, or annually) depending on the terms of the debt agreement.</field>
+    </record>
+</odoo>
