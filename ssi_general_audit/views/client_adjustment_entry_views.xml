@@ -85,7 +85,7 @@
     </record>
 
     <record id="client_adjustment_entry_action" model="ir.actions.act_window">
-        <field name="name">Adjustment Entries</field>
+        <field name="name">Adjusting Journal Entry</field>
         <field name="type">ir.actions.act_window</field>
         <field name="res_model">client_adjustment_entry</field>
         <field name="view_mode">tree,form</field>
@@ -100,12 +100,10 @@
 
     <menuitem
         id="adjustment_entry_menu"
-        name="Adjustment Entries"
-        parent="menu_general_information"
+        name="Adjusting Journal Entry"
+        parent="ssi_general_audit.menu_general_audit_lead_schedule"
         action="client_adjustment_entry_action"
-        sequence="40"
+        sequence="3"
         groups="adjustment_entry_viewer_group"
     />
-
-
 </odoo>

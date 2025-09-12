@@ -1,0 +1,337 @@
+<?xml version='1.0' encoding='utf-8' ?>
+<odoo noupdate="1">
+    <record
+        id="trial_balance_computation_item_1_d0b0cb3e"
+        model="trial_balance_computation_item"
+    >
+        <field name="code">T001</field>
+        <field name="name">Total Asset</field>
+        <field name="sequence" eval="250" />
+        <field name="category">summary</field>
+        <field
+            name="python_code"
+        >result = account_group["T001"] + account_group["T002"]</field>
+    </record>
+    <record
+        id="trial_balance_computation_item_2_4cad10cf"
+        model="trial_balance_computation_item"
+    >
+        <field name="code">T007</field>
+        <field name="name">Total Liability</field>
+        <field name="sequence" eval="260" />
+        <field name="category">summary</field>
+        <field
+            name="python_code"
+        >result = account_group["T003"] - account_group["T004"]</field>
+    </record>
+    <record
+        id="trial_balance_computation_item_3_a1ff2fe0"
+        model="trial_balance_computation_item"
+    >
+        <field name="code">T002</field>
+        <field name="name">Net Asset</field>
+        <field name="sequence" eval="270" />
+        <field name="category">summary</field>
+        <field
+            name="python_code"
+        >result = T001 - account_group["T003"] - account_group["T004"]</field>
+    </record>
+    <record
+        id="trial_balance_computation_item_4_c118c3ed"
+        model="trial_balance_computation_item"
+    >
+        <field name="code">T009</field>
+        <field name="name">Working Capital</field>
+        <field name="sequence" eval="280" />
+        <field name="category">summary</field>
+        <field
+            name="python_code"
+        >result = result_extrapolation = result_previous = 0.0</field>
+    </record>
+    <record
+        id="trial_balance_computation_item_5_2a8e8641"
+        model="trial_balance_computation_item"
+    >
+        <field name="code">T003</field>
+        <field name="name">Revenue</field>
+        <field name="sequence" eval="290" />
+        <field name="category">summary</field>
+        <field
+            name="python_code"
+        >result = account_group["T008"] + account_group["T009"] + account_group["T010"]</field>
+    </record>
+    <record
+        id="trial_balance_computation_item_6_1684d695"
+        model="trial_balance_computation_item"
+    >
+        <field name="code">T004</field>
+        <field name="name">Cost of Revenue</field>
+        <field name="sequence" eval="300" />
+        <field name="category">summary</field>
+        <field name="python_code">result = account_group["T011"]</field>
+    </record>
+    <record
+        id="trial_balance_computation_item_7_7d917cee"
+        model="trial_balance_computation_item"
+    >
+        <field name="code">T005</field>
+        <field name="name">EBT</field>
+        <field name="sequence" eval="310" />
+        <field name="category">summary</field>
+        <field name="python_code">result = T030 + account_group["T014"]</field>
+    </record>
+    <record
+        id="trial_balance_computation_item_8_b3e9d7d4"
+        model="trial_balance_computation_item"
+    >
+        <field name="code">T006</field>
+        <field name="name">EBITDA</field>
+        <field name="sequence" eval="320" />
+        <field name="category">summary</field>
+        <field name="python_code">result = T005 + account_type["S523"] </field>
+    </record>
+    <record
+        id="trial_balance_computation_item_9_f45b1d7d"
+        model="trial_balance_computation_item"
+    >
+        <field name="code">T008</field>
+        <field name="name">EBIT</field>
+        <field name="sequence" eval="330" />
+        <field name="category">summary</field>
+        <field
+            name="python_code"
+        >result = T030 + account_type["S541"] + account_group["T042"] </field>
+    </record>
+    <record
+        id="trial_balance_computation_item_10_5f080612"
+        model="trial_balance_computation_item"
+    >
+        <field name="code">T010</field>
+        <field name="name">EAT</field>
+        <field name="sequence" eval="340" />
+        <field name="category">summary</field>
+        <field
+            name="python_code"
+        >result = T003 - account_group["T011"] - account_group["T012"] - account_group["T013"] - account_group["T014"]</field>
+    </record>
+    <record
+        id="trial_balance_computation_item_11_9c15f1db"
+        model="trial_balance_computation_item"
+    >
+        <field name="code">T011</field>
+        <field name="name">Current Ratio</field>
+        <field name="sequence" eval="350" />
+        <field name="category">liquidity</field>
+        <field name="python_code">result = T030 / T032</field>
+    </record>
+    <record
+        id="trial_balance_computation_item_12_ef288acf"
+        model="trial_balance_computation_item"
+    >
+        <field name="code">T012</field>
+        <field name="name">Cash Ratio</field>
+        <field name="sequence" eval="360" />
+        <field name="category">liquidity</field>
+        <field name="python_code">result = account_type["T001"] / T032</field>
+    </record>
+    <record
+        id="trial_balance_computation_item_13_da94aee5"
+        model="trial_balance_computation_item"
+    >
+        <field name="code">T013</field>
+        <field name="name">Quick Ratio</field>
+        <field name="sequence" eval="370" />
+        <field name="category">liquidity</field>
+        <field
+            name="python_code"
+        >result = (T030 - account_type["T006"]) / account_type["T003"]</field>
+    </record>
+    <record
+        id="trial_balance_computation_item_14_aa725845"
+        model="trial_balance_computation_item"
+    >
+        <field name="code">T014</field>
+        <field name="name">Inventory Turnover Ratio</field>
+        <field name="sequence" eval="380" />
+        <field name="category">activity</field>
+        <field
+            name="python_code"
+        >result = (T030 - account_type["T006"]) / account_type["T003"]</field>
+    </record>
+    <record
+        id="trial_balance_computation_item_15_b0081633"
+        model="trial_balance_computation_item"
+    >
+        <field name="code">T015</field>
+        <field name="name">Account Receivable Turnover Ratio</field>
+        <field name="sequence" eval="390" />
+        <field name="category">activity</field>
+        <field
+            name="python_code"
+        >result = result_extrapolation = result_previous = 0.0</field>
+    </record>
+    <record
+        id="trial_balance_computation_item_16_6fe5e27b"
+        model="trial_balance_computation_item"
+    >
+        <field name="code">T016</field>
+        <field name="name">Total Assets Turnover Ratio</field>
+        <field name="sequence" eval="400" />
+        <field name="category">activity</field>
+        <field
+            name="python_code"
+        >result = result_extrapolation = result_previous = 0.0</field>
+    </record>
+    <record
+        id="trial_balance_computation_item_17_728853c4"
+        model="trial_balance_computation_item"
+    >
+        <field name="code">T017</field>
+        <field name="name">Working Capital Turnover Ratio</field>
+        <field name="sequence" eval="410" />
+        <field name="category">activity</field>
+        <field
+            name="python_code"
+        >result = result_extrapolation = result_previous = 0.0</field>
+    </record>
+    <record
+        id="trial_balance_computation_item_18_c3307ac3"
+        model="trial_balance_computation_item"
+    >
+        <field name="code">T018</field>
+        <field name="name">Account Payable Turnover Ratio</field>
+        <field name="sequence" eval="420" />
+        <field name="category">activity</field>
+        <field
+            name="python_code"
+        >result = result_extrapolation = result_previous = 0.0</field>
+    </record>
+    <record
+        id="trial_balance_computation_item_19_673eec25"
+        model="trial_balance_computation_item"
+    >
+        <field name="code">T019</field>
+        <field name="name">Days of Inventory on Hand</field>
+        <field name="sequence" eval="430" />
+        <field name="category">activity</field>
+        <field
+            name="python_code"
+        >result = result_extrapolation = result_previous = 0.0</field>
+    </record>
+    <record
+        id="trial_balance_computation_item_20_df9196a9"
+        model="trial_balance_computation_item"
+    >
+        <field name="code">T020</field>
+        <field name="name">Days of Receivable Outstanding</field>
+        <field name="sequence" eval="440" />
+        <field name="category">activity</field>
+        <field
+            name="python_code"
+        >result = result_extrapolation = result_previous = 0.0</field>
+    </record>
+    <record
+        id="trial_balance_computation_item_21_7eb094ad"
+        model="trial_balance_computation_item"
+    >
+        <field name="code">T021</field>
+        <field name="name">Days of Payable Outstanding</field>
+        <field name="sequence" eval="450" />
+        <field name="category">activity</field>
+        <field
+            name="python_code"
+        >result = result_extrapolation = result_previous = 0.0</field>
+    </record>
+    <record
+        id="trial_balance_computation_item_22_e8f57551"
+        model="trial_balance_computation_item"
+    >
+        <field name="code">T022</field>
+        <field name="name">Cash Conversion Cycle</field>
+        <field name="sequence" eval="460" />
+        <field name="category">activity</field>
+        <field
+            name="python_code"
+        >result = result_extrapolation = result_previous = 0.0</field>
+    </record>
+    <record
+        id="trial_balance_computation_item_23_5db39ab3"
+        model="trial_balance_computation_item"
+    >
+        <field name="code">T023</field>
+        <field name="name">Debt to Equity Ratio</field>
+        <field name="sequence" eval="470" />
+        <field name="category">activity</field>
+        <field
+            name="python_code"
+        >result = (account_group["T003"] + account_group["T004"]) / account_group["T005"]</field>
+    </record>
+    <record
+        id="trial_balance_computation_item_24_33cc2638"
+        model="trial_balance_computation_item"
+    >
+        <field name="code">T024</field>
+        <field name="name">Financial Leverage Ratio</field>
+        <field name="sequence" eval="480" />
+        <field name="category">solvency</field>
+        <field
+            name="python_code"
+        >result = (account_group["T001"] + account_group["T002"]) / account_group["T005"]</field>
+    </record>
+    <record
+        id="trial_balance_computation_item_25_9e82b772"
+        model="trial_balance_computation_item"
+    >
+        <field name="code">T025</field>
+        <field name="name">Interest Coverage Ratio</field>
+        <field name="sequence" eval="490" />
+        <field name="category">solvency</field>
+        <field
+            name="python_code"
+        >result = result_extrapolation = result_previous = 0.0</field>
+    </record>
+    <record
+        id="trial_balance_computation_item_26_bd510ed2"
+        model="trial_balance_computation_item"
+    >
+        <field name="code">T026</field>
+        <field name="name">Net Profit Margin</field>
+        <field name="sequence" eval="500" />
+        <field name="category">profitability</field>
+        <field name="python_code">result = T031 / account_group["T008"]</field>
+    </record>
+    <record
+        id="trial_balance_computation_item_27_673714ec"
+        model="trial_balance_computation_item"
+    >
+        <field name="code">T027</field>
+        <field name="name">Gross Profit Margin</field>
+        <field name="sequence" eval="510" />
+        <field name="category">profitability</field>
+        <field name="python_code">result = T010 / account_group["T008"]</field>
+    </record>
+    <record
+        id="trial_balance_computation_item_28_947a1785"
+        model="trial_balance_computation_item"
+    >
+        <field name="code">T028</field>
+        <field name="name">ROA</field>
+        <field name="sequence" eval="520" />
+        <field name="category">profitability</field>
+        <field
+            name="python_code"
+        >result = T010 / (account_group["T001"] + account_group["T002"])</field>
+    </record>
+    <record
+        id="trial_balance_computation_item_29_5b154bdf"
+        model="trial_balance_computation_item"
+    >
+        <field name="code">T029</field>
+        <field name="name">ROE</field>
+        <field name="sequence" eval="530" />
+        <field name="category">profitability</field>
+        <field
+            name="python_code"
+        >result = T010 / (account_group["T001"] + account_group["T002"])</field>
+    </record>
+</odoo>

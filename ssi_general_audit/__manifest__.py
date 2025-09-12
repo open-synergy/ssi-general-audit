@@ -29,6 +29,13 @@
         "data/policy_template_data.xml",
         "data/approval_template_data.xml",
         "data/general_audit_worksheet_type_category_data.xml",
+        # MASTER DATA
+        "data/master/client_financial_ratio.xml",
+        "data/master/general_audit_business_environment.xml",
+        "data/master/client_business_process.xml",
+        "data/master/client_account_group.xml",
+        "data/master/trial_balance_computation_item.xml",
+        "data/master/client_account_type.xml",
         "menu.xml",
         "wizards/import_client_account.xml",
         "wizards/import_trial_balance_detail.xml",
