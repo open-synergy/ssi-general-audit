@@ -30,6 +30,8 @@
         "data/approval_template/general_audit_ws_a418d89.xml",
         "data/approval_template/general_audit_ws_c16abd7.xml",
         "data/general_audit_worksheet_type_data.xml",
+        # MASTER DATA
+        "data/master/general_audit_inherent_risk_factor.xml",
         "views/general_audit_inherent_risk_factor_views.xml",
         "views/general_audit_ws_a418d89_views.xml",
         "views/general_audit_ws_c16abd7_views.xml",
