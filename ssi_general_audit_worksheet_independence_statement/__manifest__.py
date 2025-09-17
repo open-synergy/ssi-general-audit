@@ -23,7 +23,7 @@
         "data/policy_template/general_audit_ws_09253fe.xml",
         "data/approval_template/general_audit_ws_09253fe.xml",
         "views/general_audit_ws_09253fe_views.xml",
-        "views/general_audit_independece_letter_checklist_views.xml",
+        "views/general_audit_independece_statement_checklist_views.xml",
         "security/ir.model.access.csv",
     ],
     "demo": [],

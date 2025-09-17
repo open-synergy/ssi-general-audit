@@ -23,7 +23,7 @@ class GeneralAuditWS09253feChecklist(models.Model):
     )
     checklist_id = fields.Many2one(
         string="Checklist Item",
-        comodel_name="general_audit_independence_letter_checklist",
+        comodel_name="general_audit_independence_statement_checklist",
         required=True,
     )
     checklist_ok = fields.Boolean(

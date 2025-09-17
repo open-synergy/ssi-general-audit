@@ -5,12 +5,12 @@
 from odoo import fields, models
 
 
-class GeneralAuditIndependenceLetterChecklist(models.Model):
-    _name = "general_audit_independence_letter_checklist"
+class GeneralAuditIndependenceStatementChecklist(models.Model):
+    _name = "general_audit_independence_statement_checklist"
     _inherit = [
         "mixin.master_data",
     ]
-    _description = "General Audit - Independence Letter Checklist"
+    _description = "General Audit - Independence Statement Checklist"
     _order = "sequence, id"
 
     sequence = fields.Integer(
