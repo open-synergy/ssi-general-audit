@@ -23,6 +23,7 @@
         "data/policy_template/general_audit_ws_c435bcd.xml",
         "data/approval_template/general_audit_ws_c435bcd.xml",
         "views/general_audit_ws_c435bcd_views.xml",
+        "views/general_audit_assignment_letter_checklist_views.xml",
         "security/ir.model.access.csv",
     ],
     "demo": [],
