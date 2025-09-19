@@ -1,0 +1,64 @@
+<?xml version="1.0" ?>
+<!-- Copyright 2025 OpenSynergy Indonesia
+     Copyright 2025 PT. Simetri Sinergi Indonesia
+     License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl-3.0-standalone.html). -->
+<odoo>
+
+    <record id="competency_item_view_search" model="ir.ui.view">
+        <field name="name">competency_item - search</field>
+        <field name="model">general_audit_ws_b9d8a5c.competency_item</field>
+        <field
+            name="inherit_id"
+            ref="ssi_master_data_mixin.mixin_master_data_view_search"
+        />
+        <field name="mode">primary</field>
+        <field name="arch" type="xml">
+            <data />
+        </field>
+    </record>
+
+    <record id="competency_item_view_tree" model="ir.ui.view">
+        <field name="name">competency_item - tree</field>
+        <field name="model">general_audit_ws_b9d8a5c.competency_item</field>
+        <field
+            name="inherit_id"
+            ref="ssi_master_data_mixin.mixin_master_data_view_tree"
+        />
+        <field name="mode">primary</field>
+        <field name="arch" type="xml">
+            <data>
+            </data>
+        </field>
+    </record>
+
+    <record id="competency_item_view_form" model="ir.ui.view">
+        <field name="name">competency_item - form</field>
+        <field name="model">general_audit_ws_b9d8a5c.competency_item</field>
+        <field
+            name="inherit_id"
+            ref="ssi_master_data_mixin.mixin_master_data_view_form"
+        />
+        <field name="mode">primary</field>
+        <field name="arch" type="xml">
+            <data>
+            </data>
+        </field>
+    </record>
+
+    <record id="competency_item_action" model="ir.actions.act_window">
+        <field name="name">Competency Items</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">general_audit_ws_b9d8a5c.competency_item</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+    <menuitem
+        id="competency_item_menu"
+        name="Competency Items"
+        parent="ssi_general_audit.menu_configuration_general_audit"
+        action="competency_item_action"
+        sequence="110"
+        groups="general_audit_ws_b9d8a5c_competency_item_configurator"
+    />
+
+</odoo>

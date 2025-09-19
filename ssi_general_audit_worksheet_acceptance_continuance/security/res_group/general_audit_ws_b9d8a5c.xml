@@ -3,6 +3,39 @@
      Copyright 2025 PT. Simetri Sinergi Indonesia
      License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl). -->
 <odoo>
+<record id="general_audit_ws_b9d8a5c_competency_item_configurator" model="res.groups">
+    <field name="name">Analysis Competency Items</field>
+    <field
+            name="category_id"
+            ref="ssi_accountant.accountant_configurator_module_category"
+        />
+    <field
+            name="users"
+            eval="[(4, ref('base.user_root')), (4, ref('base.user_admin'))]"
+        />
+</record>
+<record id="general_audit_ws_b9d8a5c_availability_item_configurator" model="res.groups">
+    <field name="name">Analysis Availability Items</field>
+    <field
+            name="category_id"
+            ref="ssi_accountant.accountant_configurator_module_category"
+        />
+    <field
+            name="users"
+            eval="[(4, ref('base.user_root')), (4, ref('base.user_admin'))]"
+        />
+</record>
+<record id="general_audit_ws_b9d8a5c_independency_item_configurator" model="res.groups">
+    <field name="name">Analysis Independency Items</field>
+    <field
+            name="category_id"
+            ref="ssi_accountant.accountant_configurator_module_category"
+        />
+    <field
+            name="users"
+            eval="[(4, ref('base.user_root')), (4, ref('base.user_admin'))]"
+        />
+</record>
 <!-- Workflow -->
 <record id="general_audit_ws_b9d8a5c_viewer_group" model="res.groups">
     <field name="name">Viewer</field>
