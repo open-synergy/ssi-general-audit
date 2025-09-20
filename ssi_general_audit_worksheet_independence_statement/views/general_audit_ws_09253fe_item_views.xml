@@ -4,14 +4,9 @@
      License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl-3.0-standalone.html). -->
 <odoo>
 
-    <record
-        id="general_audit_independence_statement_checklist_view_search"
-        model="ir.ui.view"
-    >
-        <field
-            name="name"
-        >general_audit_independence_statement_checklist - search</field>
-        <field name="model">general_audit_independence_statement_checklist</field>
+    <record id="general_audit_ws_09253fe_item_view_search" model="ir.ui.view">
+        <field name="name">general_audit_ws_09253fe_item - search</field>
+        <field name="model">general_audit_ws_09253fe.item</field>
         <field
             name="inherit_id"
             ref="ssi_master_data_mixin.mixin_master_data_view_search"
@@ -22,12 +17,9 @@
         </field>
     </record>
 
-    <record
-        id="general_audit_independence_statement_checklist_view_tree"
-        model="ir.ui.view"
-    >
-        <field name="name">general_audit_independence_statement_checklist - tree</field>
-        <field name="model">general_audit_independence_statement_checklist</field>
+    <record id="general_audit_ws_09253fe_item_view_tree" model="ir.ui.view">
+        <field name="name">general_audit_ws_09253fe_item - tree</field>
+        <field name="model">general_audit_ws_09253fe.item</field>
         <field
             name="inherit_id"
             ref="ssi_master_data_mixin.mixin_master_data_view_tree"
@@ -39,12 +31,9 @@
         </field>
     </record>
 
-    <record
-        id="general_audit_independence_statement_checklist_view_form"
-        model="ir.ui.view"
-    >
-        <field name="name">general_audit_independence_statement_checklist - form</field>
-        <field name="model">general_audit_independence_statement_checklist</field>
+    <record id="general_audit_ws_09253fe_item_view_form" model="ir.ui.view">
+        <field name="name">general_audit_ws_09253fe_item - form</field>
+        <field name="model">general_audit_ws_09253fe.item</field>
         <field
             name="inherit_id"
             ref="ssi_master_data_mixin.mixin_master_data_view_form"
@@ -52,27 +41,27 @@
         <field name="mode">primary</field>
         <field name="arch" type="xml">
             <data>
+                <xpath expr="//field[@name='code']" position="after">
+                    <field name="option_set_id" />
+                </xpath>
             </data>
         </field>
     </record>
 
-    <record
-        id="general_audit_independence_statement_checklist_action"
-        model="ir.actions.act_window"
-    >
+    <record id="general_audit_ws_09253fe_item_action" model="ir.actions.act_window">
         <field name="name">Independence Statement Checklists</field>
         <field name="type">ir.actions.act_window</field>
-        <field name="res_model">general_audit_independence_statement_checklist</field>
+        <field name="res_model">general_audit_ws_09253fe.item</field>
         <field name="view_mode">tree,form</field>
     </record>
 
     <menuitem
-        id="general_audit_independence_statement_checklist_menu"
+        id="general_audit_ws_09253fe_item_menu"
         name="Independence Statement Checklists"
         parent="ssi_general_audit.menu_configuration_general_audit"
-        action="general_audit_independence_statement_checklist_action"
+        action="general_audit_ws_09253fe_item_action"
         sequence="110"
-        groups="general_audit_independence_statement_checklist_group"
+        groups="general_audit_ws_09253fe_item_group"
     />
 
 </odoo>

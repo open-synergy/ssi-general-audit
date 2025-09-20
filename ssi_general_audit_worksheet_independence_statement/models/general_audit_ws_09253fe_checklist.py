@@ -7,8 +7,10 @@ from odoo import fields, models
 
 class GeneralAuditWS09253feChecklist(models.Model):
     _name = "general_audit_ws_09253fe.checklist"
+    _inherit = [
+        "mixin.checklist.value",
+    ]
     _description = "Independence Statement (09253fe) - Checklist"
-    _order = "worksheet_id, sequence, id"
 
     worksheet_id = fields.Many2one(
         string="# Worksheet",
@@ -16,18 +18,8 @@ class GeneralAuditWS09253feChecklist(models.Model):
         required=True,
         ondelete="cascade",
     )
-    sequence = fields.Integer(
-        string="Sequence",
-        default=10,
-        required=True,
-    )
-    checklist_id = fields.Many2one(
+    item_id = fields.Many2one(
         string="Checklist Item",
-        comodel_name="general_audit_independence_statement_checklist",
+        comodel_name="general_audit_ws_09253fe.item",
         required=True,
-    )
-    checklist_ok = fields.Boolean(
-        string="Passed?",
-        required=True,
-        default=True,
     )
