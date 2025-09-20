@@ -15,6 +15,8 @@
     "data": [
         "security/ir_module_category_data.xml",
         "data/general_audit_worksheet_type_data.xml",
+        # MASTER DATA
+        "data/master/general_audit_ws_c435bcd_item.xml",
         # c435bcd
         "security/res_group/general_audit_ws_c435bcd.xml",
         "security/ir_rule/general_audit_ws_c435bcd.xml",
@@ -23,7 +25,7 @@
         "data/policy_template/general_audit_ws_c435bcd.xml",
         "data/approval_template/general_audit_ws_c435bcd.xml",
         "views/general_audit_ws_c435bcd_views.xml",
-        "views/general_audit_assignment_letter_checklist_views.xml",
+        "views/general_audit_ws_c435bcd_item_views.xml",
         "security/ir.model.access.csv",
     ],
     "demo": [],

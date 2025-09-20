@@ -10,20 +10,15 @@ class GeneralAuditWSc435bcd(models.Model):
     _description = "Assignment Letter (c435bcd)"
     _inherit = [
         "general_audit_worksheet_mixin",
+        "mixin.checklist",
     ]
     _type_xml_id = (
         "ssi_general_audit_worksheet_assignment_letter." "worksheet_type_c435bcd"
     )
+    _checklist_model_name = "general_audit_ws_c435bcd.checklist"
+    _item_model_name = "general_audit_ws_c435bcd.item"
 
     checklist_ids = fields.One2many(
         string="Checklist",
         comodel_name="general_audit_ws_c435bcd.checklist",
-        inverse_name="worksheet_id",
-        readonly=True,
-        states={
-            "open": [
-                ("readonly", False),
-                ("required", True),
-            ],
-        },
     )
