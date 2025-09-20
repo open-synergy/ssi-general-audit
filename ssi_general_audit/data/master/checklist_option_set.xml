@@ -1,0 +1,27 @@
+<?xml version='1.0' encoding='utf-8' ?>
+<odoo noupdate="1">
+    <record id="checklist_option_set_1_5e22573f" model="checklist.option_set">
+        <field name="code">/</field>
+        <field name="name">2 Options (Ya / Tidak)</field>
+        <field
+            name="option_ids"
+            eval="[(6, 0, [ref('ssi_general_audit.checklist_option_1_5e22573f'),ref('ssi_general_audit.checklist_option_2_26b76f86')])]"
+        />
+    </record>
+    <record id="checklist_option_set_2_26b76f86" model="checklist.option_set">
+        <field name="code">/</field>
+        <field name="name">3 Options (Ya / Tidak / Tidak Relevan)</field>
+        <field
+            name="option_ids"
+            eval="[(6, 0, [ref('ssi_general_audit.checklist_option_1_5e22573f'),ref('ssi_general_audit.checklist_option_2_26b76f86'),ref('ssi_general_audit.checklist_option_3_edc01225')])]"
+        />
+    </record>
+    <record id="checklist_option_set_3_d630c3ae" model="checklist.option_set">
+        <field name="code">/</field>
+        <field name="name">2 Options (High / Low)</field>
+        <field
+            name="option_ids"
+            eval="[(6, 0, [ref('checklist_option_4_2165d82c'), ref('checklist_option_5_a8d3b1e4')])]"
+        />
+    </record>
+</odoo>
