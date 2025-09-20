@@ -41,6 +41,52 @@
         />
         <field name="arch" type="xml">
             <data>
+                <xpath expr="//field[@name='user_id']" position="after">
+                    <field name="risk" />
+                    <field name="client_relationship" />
+                </xpath>
+                <xpath expr="//page[@name='note']" position="after">
+                    <page name="links" string="Links">
+                        <group>
+                            <field
+                                name="allowed_link_1_ids"
+                                widget="many2many_tags"
+                                invisible="1"
+                            />
+                            <field
+                                name="allowed_link_2_ids"
+                                widget="many2many_tags"
+                                invisible="1"
+                            />
+                            <field
+                                name="allowed_link_3_ids"
+                                widget="many2many_tags"
+                                invisible="1"
+                            />
+                            <field
+                                name="allowed_link_4_ids"
+                                widget="many2many_tags"
+                                invisible="1"
+                            />
+                            <field
+                                name="link_1"
+                                domain="[('id', '=', allowed_link_1_ids)]"
+                            />
+                            <field
+                                name="link_2"
+                                domain="[('id', '=', allowed_link_2_ids)]"
+                            />
+                            <field
+                                name="link_3"
+                                domain="[('id', '=', allowed_link_3_ids)]"
+                            />
+                            <field
+                                name="link_4"
+                                domain="[('id', '=', allowed_link_4_ids)]"
+                            />
+                        </group>
+                    </page>
+                </xpath>
             </data>
         </field>
     </record>

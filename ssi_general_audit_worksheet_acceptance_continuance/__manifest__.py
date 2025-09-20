@@ -11,7 +11,6 @@
     "installable": True,
     "depends": [
         "ssi_general_audit",
-        "ssi_hr",
     ],
     "data": [
         "security/ir_module_category_data.xml",
@@ -23,14 +22,17 @@
         "data/master/general_audit_ws_b9d8a5c_competency_item.xml",
         "data/master/general_audit_ws_b9d8a5c_availability_item.xml",
         "data/master/general_audit_ws_b9d8a5c_independency_item.xml",
-        # 806c4e1
+        "data/master/general_audit_ws_842f0d6_item.xml",
+        # 806c4e1 - PE.110 Acceptance and Continuance of
+        # Client Relationships Analysis
         "security/res_group/general_audit_ws_806c4e1.xml",
         "security/ir_rule/general_audit_ws_806c4e1.xml",
         "data/ir_sequence/general_audit_ws_806c4e1.xml",
         "data/sequence_template/general_audit_ws_806c4e1.xml",
         "data/policy_template/general_audit_ws_806c4e1.xml",
         "data/approval_template/general_audit_ws_806c4e1.xml",
-        "views/general_audit_ws_806c4e1_views.xml",
+        "views/ga_806c4e1/general_audit_ws_806c4e1_views.xml",
+        "views/ga_806c4e1/general_audit_ws_806c4e1_item_views.xml",
         # 369c5a5 - PE.110.1 Previous Financial Reporting Issues
         "security/res_group/general_audit_ws_369c5a5.xml",
         "security/ir_rule/general_audit_ws_369c5a5.xml",
@@ -49,22 +51,23 @@
         "data/approval_template/general_audit_ws_f5e7049.xml",
         "views/ga_f5e7049/general_audit_ws_f5e7049_views.xml",
         "views/ga_f5e7049/general_audit_ws_f5e7049_item_views.xml",
-        # 842f0d6
+        # 842f0d6 - PE.110.2.1 Money Laundring Issues
         "security/res_group/general_audit_ws_842f0d6.xml",
         "security/ir_rule/general_audit_ws_842f0d6.xml",
         "data/ir_sequence/general_audit_ws_842f0d6.xml",
         "data/sequence_template/general_audit_ws_842f0d6.xml",
         "data/policy_template/general_audit_ws_842f0d6.xml",
         "data/approval_template/general_audit_ws_842f0d6.xml",
-        "views/general_audit_ws_842f0d6_views.xml",
-        # 805d4d5
+        "views/ga_842f0d6/general_audit_ws_842f0d6_views.xml",
+        "views/ga_842f0d6/general_audit_ws_842f0d6_item_views.xml",
+        # 805d4d5 - PE.110.2.2 Know your customer principles
         "security/res_group/general_audit_ws_805d4d5.xml",
         "security/ir_rule/general_audit_ws_805d4d5.xml",
         "data/ir_sequence/general_audit_ws_805d4d5.xml",
         "data/sequence_template/general_audit_ws_805d4d5.xml",
         "data/policy_template/general_audit_ws_805d4d5.xml",
         "data/approval_template/general_audit_ws_805d4d5.xml",
-        "views/general_audit_ws_805d4d5_views.xml",
+        "views/ga_805d4d5/general_audit_ws_805d4d5_views.xml",
         # b9d8a5c - PE.110.3 Competency, availability, and
         # independency of assignment team
         "security/res_group/general_audit_ws_b9d8a5c.xml",

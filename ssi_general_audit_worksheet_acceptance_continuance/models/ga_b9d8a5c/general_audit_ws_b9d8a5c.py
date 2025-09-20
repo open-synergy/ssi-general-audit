@@ -17,6 +17,14 @@ class GeneralAuditWSb9d8a5c(models.Model):
         "ssi_general_audit_worksheet_acceptance_continuance." "worksheet_type_b9d8a5c"
     )
 
+    risk = fields.Selection(
+        string="Risk",
+        selection=[
+            ("low", "Low"),
+            ("medium", "Medium"),
+            ("high", "High"),
+        ],
+    )
     personnel_ids = fields.One2many(
         string="List of Personnel",
         comodel_name="general_audit_ws_b9d8a5c.personnel",

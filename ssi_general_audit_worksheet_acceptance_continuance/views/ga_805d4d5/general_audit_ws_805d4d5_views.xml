@@ -1,0 +1,195 @@
+<?xml version="1.0" ?>
+<!-- Copyright 2025 OpenSynergy Indonesia
+     Copyright 2025 PT. Simetri Sinergi Indonesia
+     License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl-3.0-standalone.html). -->
+<odoo>
+
+    <record id="general_audit_ws_805d4d5_view_search" model="ir.ui.view">
+        <field name="name">general_audit_ws_805d4d5 form</field>
+        <field name="model">general_audit_ws_805d4d5</field>
+        <field
+            name="inherit_id"
+            ref="ssi_general_audit.general_audit_worksheet_mixin_view_search"
+        />
+        <field name="mode">primary</field>
+        <field name="arch" type="xml">
+            <data />
+        </field>
+    </record>
+
+    <record id="general_audit_ws_805d4d5_view_tree" model="ir.ui.view">
+        <field name="name">general_audit_ws_805d4d5 tree</field>
+        <field name="model">general_audit_ws_805d4d5</field>
+        <field name="mode">primary</field>
+        <field
+            name="inherit_id"
+            ref="ssi_general_audit.general_audit_worksheet_mixin_view_tree"
+        />
+        <field name="arch" type="xml">
+            <data>
+            </data>
+        </field>
+    </record>
+
+    <record id="general_audit_ws_805d4d5_view_form" model="ir.ui.view">
+        <field name="name">general_audit_ws_805d4d5 form</field>
+        <field name="model">general_audit_ws_805d4d5</field>
+        <field name="mode">primary</field>
+        <field
+            name="inherit_id"
+            ref="ssi_general_audit.general_audit_worksheet_mixin_view_form"
+        />
+        <field name="arch" type="xml">
+            <data>
+                <xpath expr="//field[@name='partner_id']" position="replace" />
+                <xpath expr="//page[@name='note']" position="before">
+                    <page name="satu" string="SIMPLIFIED">
+                        <separator
+                            string="A. Basic Information of the Customer"
+                            colspan="4"
+                        />
+                        <group>
+                            <group colspan="4" col="4">
+                                <field name="partner_id" string="Entity Name" />
+                                <field name="entity_type_id" />
+                                <field name="npwp" />
+                                <field name="field" />
+                                <field name="fax" />
+                                <field name="phone" />
+                                <field
+                                    name="sk_number"
+                                    placeholder="Decree of Ratification Number"
+                                />
+                                <field
+                                    name="sk_date"
+                                    string="Date"
+                                    placeholder="Decree of Ratification Date"
+                                />
+                                <field
+                                    name="bussines_license"
+                                    placeholder="Bussines License"
+                                />
+                                <field
+                                    name="business_license_date"
+                                    string="Date"
+                                    placeholder="Bussiness License Date"
+                                />
+                                <field name="legal_address" />
+                                <field name="location_address" />
+                                <field
+                                    name="deed_number"
+                                    placeholder="Deed of Establishment or Latest Amendment Number"
+                                />
+                                <field
+                                    name="deed_date"
+                                    string="Date"
+                                    placeholder="Deed of Establishment or Latest Amendment Date"
+                                />
+                            </group>
+                        </group>
+                        <separator
+                            string="B. Information on the Services Provided"
+                            colspan="4"
+                        />
+                        <group>
+                            <group colspan="4" col="4">
+                                <field name="partner" />
+                                <field name="service" />
+                            </group>
+                        </group>
+                        <separator
+                            string="C. Name, Position, and Identity of the Management Authorized"
+                            colspan="4"
+                        />
+                        <group>
+                            <field name="management_ids" nolabel="1">
+                                <tree editable="top">
+                                    <field name="name" />
+                                    <field name="position" />
+                                    <field name="identity_no" />
+                                    <field name="identity_type" />
+                                </tree>
+                            </field>
+                        </group>
+                    </page>
+                    <page name="dua" string="INTERMEDIATE">
+                        <separator
+                            string="D. Information on the Entity’s Assets"
+                            colspan="4"
+                        />
+                        <group>
+                            <group colspan="4" col="4">
+                                <field name="source_fund" />
+                                <field name="field2" />
+                                <field name="annual_income" />
+                                <field name="trans_purpose" />
+                            </group>
+                        </group>
+                        <separator string="E. Beneficial Owner" colspan="4" />
+                        <group>
+                            <group colspan="4" col="4">
+                                <field name="owner_name" />
+                                <field name="owner_alias" />
+                                <field name="owner_identity_no" />
+                                <field name="owner_identity_type" />
+                                <field name="owner_birthday" />
+                                <field name="owner_place_of_birth" />
+                                <field name="owner_country_id" />
+                                <field name="owner_npwp" />
+                                <field name="owner_residential_address" />
+                                <field name="owner_origin_address" />
+                                <field name="owner_relationship" />
+                                <field name="owner_verification" />
+                            </group>
+                        </group>
+                        <separator
+                            string="F. Information on Entity’s Proxy"
+                            colspan="4"
+                        />
+                        <group>
+                            <group colspan="4" col="4">
+                                <field name="proxy_name" />
+                                <field name="proxy_alias" />
+                                <field name="proxy_number" />
+                                <field name="proxy_date" />
+                                <field name="proxy_identity_no" />
+                                <field name="proxy_identity_type" />
+                                <field name="proxy_birthday" />
+                                <field name="proxy_place_of_birth" />
+                                <field name="proxy_signature" />
+                                <field name="proxy_country_id" />
+                                <field name="proxy_residential_address" />
+                                <field name="proxy_relationship" />
+                                <field name="proxy_verification" />
+                            </group>
+                        </group>
+                    </page>
+                    <page name="tiga" string="ENHANCED">
+                        <group>
+                            <group colspan="4" col="4">
+                                <field name="identification_count" />
+                                <field name="identification_statement" />
+                            </group>
+                        </group>
+                    </page>
+                </xpath>
+            </data>
+        </field>
+    </record>
+
+    <record id="general_audit_ws_805d4d5_action" model="ir.actions.act_window">
+        <field name="name">Know Your Customer Principles</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">general_audit_ws_805d4d5</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+    <menuitem
+        id="general_audit_ws_805d4d5_menu"
+        name="Know Your Customer Principles"
+        parent="general_audit_ws_f5e7049_root"
+        action="general_audit_ws_805d4d5_action"
+        sequence="3"
+        groups="general_audit_ws_805d4d5_viewer_group"
+    />
+</odoo>

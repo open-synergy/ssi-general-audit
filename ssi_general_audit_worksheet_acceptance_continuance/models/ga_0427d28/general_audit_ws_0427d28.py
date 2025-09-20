@@ -22,3 +22,12 @@ class GeneralAuditWS0427d28(models.Model):
         string="Checklist",
         comodel_name="general_audit_ws_0427d28.checklist",
     )
+    risk = fields.Selection(
+        string="Risk",
+        selection=[
+            ("low", "Low"),
+            ("medium", "Medium"),
+            ("high", "High"),
+            ("tidak_relevan", "Tidak Relevan"),
+        ],
+    )

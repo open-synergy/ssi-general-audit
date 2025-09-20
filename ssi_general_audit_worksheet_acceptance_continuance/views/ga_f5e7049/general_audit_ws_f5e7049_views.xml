@@ -41,6 +41,24 @@
         />
         <field name="arch" type="xml">
             <data>
+                <xpath expr="//field[@name='user_id']" position="after">
+                    <field name="risk" />
+                </xpath>
+                <xpath expr="//page[@name='note']" position="after">
+                    <page name="links" string="Links">
+                        <group>
+                            <field
+                                name="allowed_link_1_ids"
+                                widget="many2many_tags"
+                                invisible="1"
+                            />
+                            <field
+                                name="link_1"
+                                domain="[('id', '=', allowed_link_1_ids)]"
+                            />
+                        </group>
+                    </page>
+                </xpath>
             </data>
         </field>
     </record>

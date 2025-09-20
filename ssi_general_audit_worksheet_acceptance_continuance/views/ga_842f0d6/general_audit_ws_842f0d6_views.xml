@@ -41,12 +41,30 @@
         />
         <field name="arch" type="xml">
             <data>
+                <xpath expr="//field[@name='user_id']" position="after">
+                    <field name="pmpj" />
+                </xpath>
+                <xpath expr="//page[@name='note']" position="after">
+                    <page name="links" string="Links">
+                        <group>
+                            <field
+                                name="allowed_link_1_ids"
+                                widget="many2many_tags"
+                                invisible="1"
+                            />
+                            <field
+                                name="link_1"
+                                domain="[('id', '=', allowed_link_1_ids)]"
+                            />
+                        </group>
+                    </page>
+                </xpath>
             </data>
         </field>
     </record>
 
     <record id="general_audit_ws_842f0d6_action" model="ir.actions.act_window">
-        <field name="name">Money Laudring Issues</field>
+        <field name="name">Money Laundring Issues</field>
         <field name="type">ir.actions.act_window</field>
         <field name="res_model">general_audit_ws_842f0d6</field>
         <field name="view_mode">tree,form</field>
@@ -54,7 +72,7 @@
 
     <menuitem
         id="general_audit_ws_842f0d6_menu"
-        name="Money Laudring Issues"
+        name="Money Laundring Issues"
         parent="general_audit_ws_f5e7049_root"
         action="general_audit_ws_842f0d6_action"
         sequence="2"

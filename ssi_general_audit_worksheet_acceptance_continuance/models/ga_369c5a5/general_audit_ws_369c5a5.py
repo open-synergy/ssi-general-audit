@@ -18,6 +18,15 @@ class GeneralAuditWS369c5a5(models.Model):
     _checklist_model_name = "general_audit_ws_369c5a5.checklist"
     _item_model_name = "general_audit_ws_369c5a5.item"
 
+    risk = fields.Selection(
+        string="Risk",
+        selection=[
+            ("low", "Low"),
+            ("medium", "Medium"),
+            ("high", "High"),
+        ],
+    )
+
     checklist_ids = fields.One2many(
         string="Checklist",
         comodel_name="general_audit_ws_369c5a5.checklist",

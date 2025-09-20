@@ -41,6 +41,9 @@
         />
         <field name="arch" type="xml">
             <data>
+                <xpath expr="//field[@name='user_id']" position="after">
+                    <field name="risk" />
+                </xpath>
                 <xpath expr="//page[@name='note']" position='before'>
                     <page name="personnel_list" string="List of KAP Personnel">
                         <field name="personnel_ids">
