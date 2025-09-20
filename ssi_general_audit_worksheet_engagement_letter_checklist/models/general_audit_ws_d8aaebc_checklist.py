@@ -5,10 +5,12 @@
 from odoo import fields, models
 
 
-class GeneralAuditWSD8AAEBCChecklist(models.Model):
+class GeneralAuditWSd8aaebcChecklist(models.Model):
     _name = "general_audit_ws_d8aaebc.checklist"
-    _description = "Audit Working Plan (d8aaebc) - Checklist"
-    _order = "worksheet_id, sequence, id"
+    _inherit = [
+        "mixin.checklist.value",
+    ]
+    _description = "Engagement Letter (d8aaebc) - Checklist"
 
     worksheet_id = fields.Many2one(
         string="# Worksheet",
@@ -16,18 +18,8 @@ class GeneralAuditWSD8AAEBCChecklist(models.Model):
         required=True,
         ondelete="cascade",
     )
-    sequence = fields.Integer(
-        string="Sequence",
-        default=10,
-        required=True,
-    )
-    checklist_id = fields.Many2one(
+    item_id = fields.Many2one(
         string="Checklist Item",
-        comodel_name="general_audit_engagement_letter_checklist",
+        comodel_name="general_audit_ws_d8aaebc.item",
         required=True,
-    )
-    checklist_ok = fields.Boolean(
-        string="Passed?",
-        required=True,
-        default=True,
     )

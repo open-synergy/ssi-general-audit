@@ -10,21 +10,16 @@ class GeneralAuditWSD8AAEBC(models.Model):
     _description = "Engagement Letter Checklist (d8aaebc)"
     _inherit = [
         "general_audit_worksheet_mixin",
+        "mixin.checklist",
     ]
     _type_xml_id = (
         "ssi_general_audit_worksheet_engagement_letter_checklist."
         "worksheet_type_d8aaebc"
     )
+    _checklist_model_name = "general_audit_ws_d8aaebc.checklist"
+    _item_model_name = "general_audit_ws_d8aaebc.item"
 
     checklist_ids = fields.One2many(
         string="Checklist",
         comodel_name="general_audit_ws_d8aaebc.checklist",
-        inverse_name="worksheet_id",
-        readonly=True,
-        states={
-            "open": [
-                ("readonly", False),
-                ("required", True),
-            ],
-        },
     )
