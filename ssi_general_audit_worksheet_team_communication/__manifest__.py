@@ -15,6 +15,7 @@
     "data": [
         "security/ir_module_category_data.xml",
         "data/general_audit_worksheet_type_data.xml",
+        "data/master/general_audit_ws_437fc8f_item.xml",
         # 437fc8f
         "security/res_group/general_audit_ws_437fc8f.xml",
         "security/ir_rule/general_audit_ws_437fc8f.xml",
@@ -23,6 +24,7 @@
         "data/policy_template/general_audit_ws_437fc8f.xml",
         "data/approval_template/general_audit_ws_437fc8f.xml",
         "views/general_audit_ws_437fc8f_views.xml",
+        "views/general_audit_ws_437fc8f_item_views.xml",
         "security/ir.model.access.csv",
     ],
     "demo": [],
