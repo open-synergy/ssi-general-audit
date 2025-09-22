@@ -415,6 +415,42 @@ class GeneralAudit(models.Model):
         store=False,
         compute_sudo=True,
     )
+    industry_id = fields.Many2one(
+        string="Industry",
+        comodel_name="res.partner.industry",
+        readonly=True,
+        states={
+            "draft": [
+                ("readonly", False),
+            ],
+        },
+        copy=False,
+    )
+    ownership_type_id = fields.Many2one(
+        string="Ownership Type",
+        comodel_name="company_ownership_type",
+        readonly=True,
+        states={
+            "draft": [
+                ("readonly", False),
+            ],
+        },
+        copy=False,
+    )
+    public_offering_ids = fields.Many2many(
+        string="Public Offering",
+        comodel_name="company_public_offering_type",
+        relation="rel_general_audit_2_public_offering",
+        column1="general_audit_id",
+        column2="public_offering_id",
+        readonly=True,
+        states={
+            "draft": [
+                ("readonly", False),
+            ],
+        },
+        copy=False,
+    )
 
     @api.model
     def _get_policy_field(self):
@@ -537,6 +573,30 @@ class GeneralAudit(models.Model):
                 )
                 if record.previous_date_end >= record.interim_date_start:
                     raise UserError(strWarning)
+
+    @api.onchange(
+        "partner_id",
+    )
+    def onchange_industry_id(self):
+        self.industry_id = False
+        if self.partner_id:
+            self.industry_id = self.partner_id.industry_id
+
+    @api.onchange(
+        "partner_id",
+    )
+    def onchange_ownership_type_id(self):
+        self.ownership_type_id = False
+        if self.partner_id:
+            self.ownership_type_id = self.partner_id.ownership_type_id
+
+    @api.onchange(
+        "partner_id",
+    )
+    def onchange_public_offering_ids(self):
+        self.public_offering_ids = [(5, 0, 0)]
+        if self.partner_id and self.partner_id.public_offering_ids:
+            self.public_offering_ids = [(6, 0, self.partner_id.public_offering_ids.ids)]
 
     # @api.onchange("account_type_set_id")
     # def onchange_standard_detail_ids(self):

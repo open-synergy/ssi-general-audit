@@ -13,6 +13,9 @@ class MixinChecklistItem(models.AbstractModel):
     _abstract = True
     _order = "sequence, id"
 
+    name = fields.Char(
+        translate=True,
+    )
     sequence = fields.Integer(
         string="Sequence",
         required=True,
