@@ -94,6 +94,13 @@ class GeneralAuditWSb9d8a5cSummary(models.Model):
         compute="_compute_independency_result",
         store=True,
     )
+    select_team = fields.Selection(
+        string="Select As Team",
+        selection=[
+            ("yes", "Yes"),
+            ("no", "No"),
+        ],
+    )
     initials = fields.Char(
         related="employee_id.initials",
     )

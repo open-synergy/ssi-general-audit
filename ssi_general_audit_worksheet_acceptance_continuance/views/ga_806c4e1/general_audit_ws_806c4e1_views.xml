@@ -41,49 +41,83 @@
         />
         <field name="arch" type="xml">
             <data>
-                <xpath expr="//field[@name='user_id']" position="after">
+                <xpath expr="//field[@name='conclusion_id']" position="before">
                     <field name="risk" />
                     <field name="client_relationship" />
+                </xpath>
+                <xpath expr="//group[@name='header_right']" position="inside">
+                    <field name="industry_id" />
+                    <field name="ownership_type_id" />
+                    <field name="public_offering" />
+                    <field name="financial_accounting_standard_id" />
+                    <field name="engagemet" />
+                    <field name="establishment_state" />
+                    <field name="financial_statement" />
                 </xpath>
                 <xpath expr="//page[@name='note']" position="after">
                     <page name="links" string="Links">
                         <group>
-                            <field
-                                name="allowed_link_1_ids"
-                                widget="many2many_tags"
-                                invisible="1"
-                            />
-                            <field
-                                name="allowed_link_2_ids"
-                                widget="many2many_tags"
-                                invisible="1"
-                            />
-                            <field
-                                name="allowed_link_3_ids"
-                                widget="many2many_tags"
-                                invisible="1"
-                            />
-                            <field
-                                name="allowed_link_4_ids"
-                                widget="many2many_tags"
-                                invisible="1"
-                            />
-                            <field
+                            <group
                                 name="link_1"
-                                domain="[('id', '=', allowed_link_1_ids)]"
-                            />
-                            <field
-                                name="link_2"
-                                domain="[('id', '=', allowed_link_2_ids)]"
-                            />
-                            <field
+                                string="Previous Financial Reporting Issues"
+                            >
+                                <field
+                                    name="allowed_link_1_ids"
+                                    widget="many2many_tags"
+                                    invisible="1"
+                                />
+                                <field
+                                    name="link_1"
+                                    string="# Worksheet"
+                                    domain="[('id', '=', allowed_link_1_ids)]"
+                                />
+                                <field name="link_1_risk" string="Risk" />
+                            </group>
+                            <group name="link_2" string="Management Integrity">
+                                <field
+                                    name="allowed_link_2_ids"
+                                    widget="many2many_tags"
+                                    invisible="1"
+                                />
+                                <field
+                                    name="link_2"
+                                    string="# Worksheet"
+                                    domain="[('id', '=', allowed_link_2_ids)]"
+                                />
+                                <field name="link_2_risk" string="Risk" />
+                            </group>
+                            <group
                                 name="link_3"
-                                domain="[('id', '=', allowed_link_3_ids)]"
-                            />
-                            <field
+                                string="Competency, Availability, and Independency of Assignment Team"
+                            >
+                                <field
+                                    name="allowed_link_3_ids"
+                                    widget="many2many_tags"
+                                    invisible="1"
+                                />
+                                <field
+                                    name="link_3"
+                                    string="# Worksheet"
+                                    domain="[('id', '=', allowed_link_3_ids)]"
+                                />
+                                <field name="link_3_risk" string="Risk" />
+                            </group>
+                            <group
                                 name="link_4"
-                                domain="[('id', '=', allowed_link_4_ids)]"
-                            />
+                                string="Communication With Previous Auditor"
+                            >
+                                <field
+                                    name="allowed_link_4_ids"
+                                    widget="many2many_tags"
+                                    invisible="1"
+                                />
+                                <field
+                                    name="link_4"
+                                    string="# Worksheet"
+                                    domain="[('id', '=', allowed_link_4_ids)]"
+                                />
+                                <field name="link_4_risk" string="Risk" />
+                            </group>
                         </group>
                     </page>
                 </xpath>

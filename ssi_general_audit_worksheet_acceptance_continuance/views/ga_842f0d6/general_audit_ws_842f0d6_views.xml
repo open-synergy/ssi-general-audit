@@ -41,12 +41,12 @@
         />
         <field name="arch" type="xml">
             <data>
-                <xpath expr="//field[@name='user_id']" position="after">
+                <xpath expr="//field[@name='conclusion_id']" position="before">
                     <field name="pmpj" />
                 </xpath>
                 <xpath expr="//page[@name='note']" position="after">
                     <page name="links" string="Links">
-                        <group>
+                        <group name="link_1" string="Know Your Customer Principles">
                             <field
                                 name="allowed_link_1_ids"
                                 widget="many2many_tags"
@@ -54,6 +54,7 @@
                             />
                             <field
                                 name="link_1"
+                                string="# Worksheet"
                                 domain="[('id', '=', allowed_link_1_ids)]"
                             />
                         </group>

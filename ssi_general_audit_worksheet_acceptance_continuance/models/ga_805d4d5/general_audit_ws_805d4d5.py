@@ -14,8 +14,87 @@ class GeneralAuditWS805d4d5(models.Model):
         "ssi_general_audit_worksheet_acceptance_continuance." "worksheet_type_805d4d5"
     )
 
+    # LINK - 1 (110.2.1)
+    @api.depends(
+        "general_audit_id",
+    )
+    def _compute_allowed_link_1_ids(self):
+        for record in self:
+            obj = self.env["general_audit_ws_842f0d6"]
+            criteria = [
+                ("general_audit_id", "=", record.general_audit_id.id),
+            ]
+            record.allowed_link_1_ids = obj.search(criteria).ids
+
+    allowed_link_1_ids = fields.Many2many(
+        string="Allowed Link 1",
+        comodel_name="general_audit_ws_842f0d6",
+        compute="_compute_allowed_link_1_ids",
+        store=False,
+    )
+
+    link_1 = fields.Many2one(
+        string="PE.110.2.1",
+        comodel_name="general_audit_ws_842f0d6",
+    )
+    link_1_pmpj = fields.Selection(
+        string="Risk (110.2.1)",
+        related="link_1.pmpj",
+        store=True,
+    )
+
+    @api.depends(
+        "link_1_pmpj",
+    )
+    def _compute_pmpj(self):
+        for record in self:
+            record.pmpj_simplified = False
+            record.pmpj_intermediate = False
+            record.pmpj_enhanced = False
+            if record.link_1_pmpj == "simplified":
+                record.pmpj_simplified = True
+            elif record.link_1_pmpj == "intermediate":
+                record.pmpj_simplified = True
+                record.pmpj_intermediate = True
+            else:
+                record.pmpj_simplified = True
+                record.pmpj_intermediate = True
+                record.pmpj_enhanced = True
+
+    pmpj_simplified = fields.Boolean(
+        string="Simplified",
+        compute="_compute_pmpj",
+    )
+    pmpj_intermediate = fields.Boolean(
+        string="Intermediate",
+        compute="_compute_pmpj",
+    )
+    pmpj_enhanced = fields.Boolean(
+        string="Enhanced",
+        compute="_compute_pmpj",
+    )
+
+    @api.onchange(
+        "general_audit_id",
+    )
+    def onchange_link_1(self):
+        self.link_1 = False
+        if self.general_audit_id:
+            obj = self.env["general_audit_ws_842f0d6"]
+            criteria = [
+                ("general_audit_id", "=", self.general_audit_id.id),
+            ]
+            result = obj.search(criteria)
+            if result:
+                self.link_1 = result.id
+
     # PRINSIP MENGENAL PENGGUNA JASA – SEDERHANA
     # A.   Informasi dasar pengguna jasa
+    entity_partner_id = fields.Many2one(
+        string="Entity Name",
+        comodel_name="res.partner",
+        related="general_audit_id.partner_id",
+    )
     entity_type_id = fields.Many2one(
         string="Type of Entity",
         comodel_name="company_entity_type",
@@ -39,19 +118,24 @@ class GeneralAuditWS805d4d5(models.Model):
     fax = fields.Char(
         string="Fax",
     )
-    field = fields.Char(
+    field_industry_id = fields.Many2one(
         string="Business Field",
+        comodel_name="res.partner.industry",
     )
     deed_number = fields.Char(
         string="Deed of Establishment",
     )
     deed_date = fields.Date(string="Deed of Establishment Date")
     # B. Informasi jasa yang diberikan
-    partner = fields.Char(
+    partner_accountant_id = fields.Many2one(
         string="Partner Name",
+        comodel_name="res.partner",
+        related="general_audit_id.accountant_id",
     )
     service = fields.Char(
         string="Services Provided",
+        default="Audit of Historical Fincancial Statement",
+        readonly="1",
     )
     # C. Nama, jabatan dan identitas pengurus yang memiliki
     # wewenang bertindak untuk dan atas nama entitas
@@ -66,8 +150,9 @@ class GeneralAuditWS805d4d5(models.Model):
     source_fund = fields.Char(
         string="Source of Funds",
     )
-    field2 = fields.Char(
+    field_industry_2_id = fields.Many2one(
         string="Business Field",
+        comodel_name="res.partner.industry",
     )
     annual_income = fields.Char(
         string="Average Annual Income",

@@ -41,7 +41,54 @@
         />
         <field name="arch" type="xml">
             <data>
-                <xpath expr="//field[@name='user_id']" position="after">
+                <xpath expr="//group[@name='header_right']" position="inside">
+                    <field name="engagemet" />
+                    <field name="engagemet_ok" invisible="1" />
+                </xpath>
+                <xpath expr="//page[@name='note']" position="before">
+                    <page
+                        name="checklist"
+                        string="Checklist"
+                        attrs="{'invisible': [('engagemet_ok', '=', True)]}"
+                    >
+                        <button
+                            name="action_populate_checklist"
+                            string="Populate"
+                            type="object"
+                            icon="fa-refresh"
+                            class="oe_highlight"
+                            style="margin-right:4px"
+                            attrs="{'invisible': [('state', '!=', 'open')]}"
+                        />
+                        <field name="checklist_ids">
+                            <tree editable="top">
+                                <field name="sequence" widget="handle" />
+                                <field name="item_id" />
+                                <field name="allowed_option_ids" invisible="1" />
+                                <field
+                                    name="option_id"
+                                    domain="[('id', 'in', allowed_option_ids)]"
+                                />
+                            </tree>
+                            <form>
+                                <sheet>
+                                    <group>
+                                        <field name="item_id" />
+                                        <field
+                                            name="allowed_option_ids"
+                                            invisible="1"
+                                        />
+                                        <field
+                                            name="option_id"
+                                            domain="[('id', 'in', allowed_option_ids)]"
+                                        />
+                                    </group>
+                                </sheet>
+                            </form>
+                        </field>
+                    </page>
+                </xpath>
+                <xpath expr="//field[@name='conclusion_id']" position="before">
                     <field name="risk" />
                 </xpath>
             </data>

@@ -31,13 +31,99 @@ class GeneralAuditWS806C4E1(models.Model):
             ("medium", "Medium"),
             ("high", "High"),
         ],
+        required=False,
+        readonly=True,
+        states={
+            "open": [
+                ("readonly", False),
+            ],
+        },
     )
     client_relationship = fields.Selection(
         string="Continue the Cient Relationship",
         selection=[
-            ("ya", "Ya"),
-            ("tidak", "Tidak"),
+            ("yes", "Yes"),
+            ("no", "No"),
         ],
+        required=False,
+        readonly=True,
+        states={
+            "open": [
+                ("readonly", False),
+            ],
+        },
+    )
+    industry_id = fields.Many2one(
+        related="general_audit_id.industry_id",
+    )
+    ownership_type_id = fields.Many2one(
+        related="general_audit_id.ownership_type_id",
+    )
+
+    @api.depends("general_audit_id", "general_audit_id.public_offering_ids")
+    def _compute_public_offering(self):
+        for record in self:
+            record.public_offering = "No Public Offering"
+            if (
+                len(
+                    record.general_audit_id.public_offering_ids.filtered(
+                        lambda x: x.p2pk_go_public
+                    )
+                )
+                >= 1
+            ):
+                record.public_offering = "Public Offering"
+
+    public_offering = fields.Char(
+        string="Public Offering",
+        compute="_compute_public_offering",
+        store=True,
+    )
+    financial_accounting_standard_id = fields.Many2one(
+        related="general_audit_id.financial_accounting_standard_id",
+    )
+    establishment_state = fields.Selection(
+        string="Establishment Status",
+        selection=[
+            ("previous", "Established Previously"),
+            ("new", "Newly Established"),
+        ],
+        required=False,
+        readonly=True,
+        states={
+            "open": [
+                ("readonly", False),
+            ],
+        },
+    )
+    financial_statement = fields.Selection(
+        string="Prior Period Financial Statement",
+        selection=[
+            ("no_available", "Not Available"),
+            ("available_no_audit", "Available but Unaudited"),
+            ("available_audit", "Available and Audited"),
+            ("not_relevant", "Not Relevant"),
+        ],
+        required=False,
+        readonly=True,
+        states={
+            "open": [
+                ("readonly", False),
+            ],
+        },
+    )
+
+    @api.depends("general_audit_id", "general_audit_id.num_of_consecutive_audit_firm")
+    def _compute_engagemet(self):
+        for record in self:
+            record.engagemet = "Initial Engagement"
+            if (record.general_audit_id.num_of_consecutive_audit_firm) >= 1:
+                record.engagemet = "Recurring Engagement"
+
+    engagemet = fields.Char(
+        string="Engagement",
+        compute="_compute_engagemet",
+        store=True,
     )
 
     # LINK - 1 (PE.110.1)
@@ -62,6 +148,11 @@ class GeneralAuditWS806C4E1(models.Model):
     link_1 = fields.Many2one(
         string="PE.110.1",
         comodel_name="general_audit_ws_369c5a5",
+    )
+    link_1_risk = fields.Selection(
+        string="Risk (PE.110.1)",
+        related="link_1.risk",
+        store=True,
     )
 
     @api.onchange(
@@ -96,10 +187,14 @@ class GeneralAuditWS806C4E1(models.Model):
         compute="_compute_allowed_link_2_ids",
         store=False,
     )
-
     link_2 = fields.Many2one(
         string="PE.110.2",
         comodel_name="general_audit_ws_f5e7049",
+    )
+    link_2_risk = fields.Selection(
+        string="Risk (PE.110.2)",
+        related="link_2.risk",
+        store=True,
     )
 
     @api.onchange(
@@ -134,10 +229,14 @@ class GeneralAuditWS806C4E1(models.Model):
         compute="_compute_allowed_link_3_ids",
         store=False,
     )
-
     link_3 = fields.Many2one(
         string="PE.110.3",
         comodel_name="general_audit_ws_b9d8a5c",
+    )
+    link_3_risk = fields.Selection(
+        string="Risk (PE.110.3)",
+        related="link_3.risk",
+        store=True,
     )
 
     @api.onchange(
@@ -172,10 +271,14 @@ class GeneralAuditWS806C4E1(models.Model):
         compute="_compute_allowed_link_4_ids",
         store=False,
     )
-
     link_4 = fields.Many2one(
         string="PE.110.4",
         comodel_name="general_audit_ws_0427d28",
+    )
+    link_4_risk = fields.Selection(
+        string="Risk (PE.110.4)",
+        related="link_4.risk",
+        store=True,
     )
 
     @api.onchange(

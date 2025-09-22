@@ -26,9 +26,9 @@ class GeneralAuditWS842f0d6(models.Model):
     pmpj = fields.Selection(
         string="PMPJ",
         selection=[
-            ("sederhana", "PMPJ Sederhana"),
-            ("menengah", "PMPJ Menengah"),
-            ("mendalam", "PMPJ Mendalam"),
+            ("simplified", "PMPJ Simplified"),
+            ("intermediate", "PMPJ Intermediate"),
+            ("enhanced", "PMPJ Enhanced"),
         ],
     )
 
@@ -50,7 +50,6 @@ class GeneralAuditWS842f0d6(models.Model):
         compute="_compute_allowed_link_1_ids",
         store=False,
     )
-
     link_1 = fields.Many2one(
         string="PE.110.2.2",
         comodel_name="general_audit_ws_805d4d5",

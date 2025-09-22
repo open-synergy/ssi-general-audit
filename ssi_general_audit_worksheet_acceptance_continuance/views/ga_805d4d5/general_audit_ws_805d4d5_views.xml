@@ -41,19 +41,44 @@
         />
         <field name="arch" type="xml">
             <data>
-                <xpath expr="//field[@name='partner_id']" position="replace" />
+                <xpath expr="//page[@name='note']" position="after">
+                    <page name="links" string="Links">
+                        <group>
+                            <group name="link_1" string="Money laundring issues">
+                                <field
+                                    name="allowed_link_1_ids"
+                                    widget="many2many_tags"
+                                    invisible="1"
+                                />
+                                <field
+                                    name="link_1"
+                                    string="# Worksheet"
+                                    domain="[('id', '=', allowed_link_1_ids)]"
+                                />
+                                <field name="link_1_pmpj" string="PMPJ" />
+                                <field name="pmpj_simplified" />
+                                <field name="pmpj_intermediate" />
+                                <field name="pmpj_enhanced" />
+                            </group>
+                        </group>
+                    </page>
+                </xpath>
                 <xpath expr="//page[@name='note']" position="before">
-                    <page name="satu" string="SIMPLIFIED">
+                    <page
+                        string="SIMPLIFIED"
+                        name="satu"
+                        attrs="{'invisible': [('pmpj_simplified', '!=', True)]}"
+                    >
                         <separator
                             string="A. Basic Information of the Customer"
                             colspan="4"
                         />
                         <group>
                             <group colspan="4" col="4">
-                                <field name="partner_id" string="Entity Name" />
+                                <field name="entity_partner_id" />
                                 <field name="entity_type_id" />
                                 <field name="npwp" />
-                                <field name="field" />
+                                <field name="field_industry_id" />
                                 <field name="fax" />
                                 <field name="phone" />
                                 <field
@@ -93,8 +118,8 @@
                         />
                         <group>
                             <group colspan="4" col="4">
-                                <field name="partner" />
-                                <field name="service" />
+                                <field name="partner_accountant_id" />
+                                <field name="service" force_save="1" />
                             </group>
                         </group>
                         <separator
@@ -112,7 +137,11 @@
                             </field>
                         </group>
                     </page>
-                    <page name="dua" string="INTERMEDIATE">
+                    <page
+                        string="INTERMEDIATE"
+                        name="dua"
+                        attrs="{'invisible': [('pmpj_intermediate', '!=', True)]}"
+                    >
                         <separator
                             string="D. Information on the Entity’s Assets"
                             colspan="4"
@@ -120,7 +149,7 @@
                         <group>
                             <group colspan="4" col="4">
                                 <field name="source_fund" />
-                                <field name="field2" />
+                                <field name="field_industry_2_id" />
                                 <field name="annual_income" />
                                 <field name="trans_purpose" />
                             </group>
@@ -164,7 +193,11 @@
                             </group>
                         </group>
                     </page>
-                    <page name="tiga" string="ENHANCED">
+                    <page
+                        string="ENHANCED"
+                        name="tiga"
+                        attrs="{'invisible': [('pmpj_enhanced', '!=', True)]}"
+                    >
                         <group>
                             <group colspan="4" col="4">
                                 <field name="identification_count" />
