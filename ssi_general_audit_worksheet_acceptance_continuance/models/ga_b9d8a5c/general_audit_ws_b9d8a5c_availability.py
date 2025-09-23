@@ -29,7 +29,6 @@ class GeneralAuditWSb9d8a5cAvailability(models.Model):
             ("memadai", "Memadai"),
             ("batasan", "Ada Batasan Waktu"),
         ],
-        required=True,
     )
     analysis_item_ids = fields.Many2many(
         string="Analysis",

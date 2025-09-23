@@ -29,7 +29,6 @@ class GeneralAuditWSb9d8a5cIndependency(models.Model):
             ("memadai", "Memadai"),
             ("tidak_memadai", "Tidak Memadai"),
         ],
-        required=True,
     )
     analysis_item_ids = fields.Many2many(
         string="Analysis",

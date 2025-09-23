@@ -73,16 +73,26 @@
                     </page>
                     <page name="competency_analysis_list" string="Competency Analysis">
                         <field name="competency_analysis_ids">
-                            <tree editable="top">
+                            <tree>
                                 <field name="worksheet_id" invisible="1" />
                                 <field name="employee_id" />
-                                <field name="result" />
                                 <field name="year_experience" />
-                                <field
-                                    name="analysis_item_ids"
-                                    widget="many2many_tags"
-                                />
+                                <field name="analysis_item_ids" />
+                                <field name="result" />
                             </tree>
+                            <form>
+                                <sheet>
+                                    <group>
+                                        <field name="employee_id" />
+                                        <field name="year_experience" />
+                                        <field
+                                            name="analysis_item_ids"
+                                            widget="many2many_checkboxes"
+                                        />
+                                        <field name="result" />
+                                    </group>
+                                </sheet>
+                            </form>
                         </field>
                     </page>
                     <page
@@ -90,15 +100,24 @@
                         string="Availability Analysis"
                     >
                         <field name="availability_analysis_ids">
-                            <tree editable="top">
+                            <tree>
                                 <field name="worksheet_id" invisible="1" />
                                 <field name="employee_id" />
+                                <field name="analysis_item_ids" />
                                 <field name="result" />
-                                <field
-                                    name="analysis_item_ids"
-                                    widget="many2many_tags"
-                                />
                             </tree>
+                            <form>
+                                <sheet>
+                                    <group>
+                                        <field name="employee_id" />
+                                        <field
+                                            name="analysis_item_ids"
+                                            widget="many2many_checkboxes"
+                                        />
+                                        <field name="result" />
+                                    </group>
+                                </sheet>
+                            </form>
                         </field>
                     </page>
                     <page
@@ -106,15 +125,24 @@
                         string="Independency Analysis"
                     >
                         <field name="independency_analysis_ids">
-                            <tree editable="top">
+                            <tree>
                                 <field name="worksheet_id" invisible="1" />
                                 <field name="employee_id" />
                                 <field name="result" />
-                                <field
-                                    name="analysis_item_ids"
-                                    widget="many2many_tags"
-                                />
+                                <field name="analysis_item_ids" />
                             </tree>
+                            <form>
+                                <sheet>
+                                    <group>
+                                        <field name="employee_id" />
+                                        <field
+                                            name="analysis_item_ids"
+                                            widget="many2many_checkboxes"
+                                        />
+                                        <field name="result" />
+                                    </group>
+                                </sheet>
+                            </form>
                         </field>
                     </page>
                     <page name="summary" string="Summary">

@@ -29,11 +29,9 @@ class GeneralAuditWSb9d8a5cComptency(models.Model):
             ("memadai", "Memadai"),
             ("update", "Perlu Update"),
         ],
-        required=True,
     )
     year_experience = fields.Integer(
         string="Experience (years)",
-        required=True,
     )
     analysis_item_ids = fields.Many2many(
         string="Analysis",
