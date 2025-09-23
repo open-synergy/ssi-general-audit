@@ -6,11 +6,11 @@ from odoo import fields, models
 
 
 class GeneralAuditWS842f0d6Item(models.Model):
-    _name = "general_audit_ws_842f0d6.item"
+    _name = "general_audit_ws_842f0d6.item_categ"
     _inherit = [
-        "mixin.checklist.item",
+        "mixin.master_data",
     ]
-    _description = "Money Laudring Issues (842f0d6) - " "Checklist Item"
+    _description = "Money Laudring Issues (842f0d6) - " "Checklist Item Category"
 
     code = fields.Char(
         default="/",

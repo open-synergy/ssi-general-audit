@@ -44,6 +44,58 @@
                 <xpath expr="//field[@name='conclusion_id']" position="before">
                     <field name="pmpj" />
                 </xpath>
+                <xpath expr="//page[@name='note']" position="before">
+                    <page name="checklist" string="Checklist">
+                        <button
+                            name="action_populate_checklist"
+                            string="Populate"
+                            type="object"
+                            icon="fa-refresh"
+                            class="oe_highlight"
+                            style="margin-right:4px"
+                            attrs="{'invisible': [('state', '!=', 'open')]}"
+                        />
+                        <field name="checklist_ids">
+                            <tree>
+                                <field name="sequence" widget="handle" />
+                                <field name="item_id" />
+                                <field name="allowed_item_ids" invisible="1" />
+                                <field
+                                    name="item_ids"
+                                    domain="[('id', 'in', allowed_item_ids)]"
+                                    options="{'no_create': True}"
+                                    style="white-space: normal; max-width: 600px;"
+                                />
+                                <field name="allowed_option_ids" invisible="1" />
+                                <field
+                                    name="option_id"
+                                    domain="[('id', 'in', allowed_option_ids)]"
+                                />
+                            </tree>
+                            <form>
+                                <sheet>
+                                    <group>
+                                        <field name="item_id" />
+                                        <field name="allowed_item_ids" invisible="1" />
+                                        <field
+                                            name="item_ids"
+                                            domain="[('id', 'in', allowed_item_ids)]"
+                                            widget="many2many_checkboxes"
+                                        />
+                                        <field
+                                            name="allowed_option_ids"
+                                            invisible="1"
+                                        />
+                                        <field
+                                            name="option_id"
+                                            domain="[('id', 'in', allowed_option_ids)]"
+                                        />
+                                    </group>
+                                </sheet>
+                            </form>
+                        </field>
+                    </page>
+                </xpath>
                 <xpath expr="//page[@name='note']" position="after">
                     <page name="links" string="Links">
                         <group name="link_1" string="Know Your Customer Principles">

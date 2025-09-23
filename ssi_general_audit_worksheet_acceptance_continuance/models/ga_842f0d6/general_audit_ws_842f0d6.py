@@ -17,6 +17,7 @@ class GeneralAuditWS842f0d6(models.Model):
     )
     _checklist_model_name = "general_audit_ws_842f0d6.checklist"
     _item_model_name = "general_audit_ws_842f0d6.item"
+    _checklist_create_page = False
 
     checklist_ids = fields.One2many(
         string="Checklist",

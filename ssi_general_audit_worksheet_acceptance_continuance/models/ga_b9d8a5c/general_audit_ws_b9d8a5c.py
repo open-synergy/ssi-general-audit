@@ -50,3 +50,34 @@ class GeneralAuditWSb9d8a5c(models.Model):
         comodel_name="general_audit_ws_b9d8a5c.summary",
         inverse_name="worksheet_id",
     )
+
+    def action_populate_personnel(self):
+        """Generic method untuk populate personnel dari employee"""
+        Employee = self.env["hr.employee"]
+        Personnel = self.env["general_audit_ws_b9d8a5c.personnel"]
+        for record in self:
+            emps = Employee.search(
+                [
+                    ("audit_ok", "=", True),
+                ]
+            )
+
+            # mapping existing personnel by employee_id
+            emp_map = {chk.employee_id.id: chk for chk in record.personnel_ids}
+
+            # 1. Tambah / update
+            for emp in emps:
+                if emp.id not in emp_map:
+                    Personnel.create(
+                        {
+                            "worksheet_id": record.id,
+                            "employee_id": emp.id,
+                            "job_id": emp.job_id.id,
+                        }
+                    )
+
+            # 2. Hapus yang sudah tidak ada di master
+            emp_ids = set(emps.ids)
+            for chk in record.personnel_ids:
+                if chk.employee_id.id not in emp_ids:
+                    chk.unlink()

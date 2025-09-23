@@ -46,6 +46,15 @@
                 </xpath>
                 <xpath expr="//page[@name='note']" position='before'>
                     <page name="personnel_list" string="List of KAP Personnel">
+                        <button
+                            name="action_populate_personnel"
+                            string="Populate"
+                            type="object"
+                            icon="fa-refresh"
+                            class="oe_highlight"
+                            style="margin-right:4px"
+                            attrs="{'invisible': [('state', '!=', 'draft')]}"
+                        />
                         <field name="personnel_ids">
                             <tree editable="top">
                                 <field name="worksheet_id" invisible="1" />
@@ -53,11 +62,11 @@
                                 <field name="job_id" />
                                 <field
                                     name="competency_attachment_ids"
-                                    widget="many2many_binary"
+                                    widget="many2many_tags"
                                 />
                                 <field
                                     name="time_availability_attachment_ids"
-                                    widget="many2many_binary"
+                                    widget="many2many_tags"
                                 />
                             </tree>
                         </field>

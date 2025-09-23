@@ -3,7 +3,6 @@
      Copyright 2025 PT. Simetri Sinergi Indonesia
      License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl-3.0-standalone.html). -->
 <odoo>
-
     <record id="general_audit_ws_842f0d6_item_view_search" model="ir.ui.view">
         <field name="name">general_audit_ws_842f0d6_item - search</field>
         <field name="model">general_audit_ws_842f0d6.item</field>
@@ -42,6 +41,7 @@
         <field name="arch" type="xml">
             <data>
                 <xpath expr="//field[@name='code']" position="after">
+                    <field name="categ" />
                     <field name="option_set_id" />
                 </xpath>
             </data>
