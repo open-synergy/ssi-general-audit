@@ -5,6 +5,7 @@
 from . import (
     checklist,
     team_role,
+    employee,
     client_account_group,
     client_account_type,
     client_account,
