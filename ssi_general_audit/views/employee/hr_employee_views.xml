@@ -1,8 +1,22 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <odoo>
     <!-- Employee View -->
+    <record id="hr_employee_view_search" model="ir.ui.view">
+        <field name="name">hr.employee.general.audit.view.search</field>
+        <field name="model">hr.employee</field>
+        <field name="inherit_id" ref="hr.view_employee_filter" />
+        <field name="arch" type="xml">
+            <xpath expr="//filter[@name='message_needaction']" position="after">
+                <filter
+                    string="Can Audit"
+                    name="group_audit"
+                    domain="[('audit_ok', '=', True)]"
+                />
+            </xpath>
+        </field>
+    </record>
     <record id="hr_employee_view_form" model="ir.ui.view">
-        <field name="name">hr.employee.initial.view.form</field>
+        <field name="name">hr.employee.general.audit.view.form</field>
         <field name="model">hr.employee</field>
         <field name="inherit_id" ref="hr.view_employee_form" />
         <field name="arch" type="xml">
