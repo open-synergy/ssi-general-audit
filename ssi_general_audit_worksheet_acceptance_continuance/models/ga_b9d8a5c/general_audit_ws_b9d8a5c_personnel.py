@@ -19,6 +19,7 @@ class GeneralAuditWSb9d8a5cPersonnel(models.Model):
         string="Employee",
         comodel_name="hr.employee",
         required=True,
+        domain="[('audit_ok', '=', True)]",
     )
     job_id = fields.Many2one(
         string="Job",
