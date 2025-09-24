@@ -26,9 +26,15 @@ class GeneralAuditWSb9d8a5cIndependency(models.Model):
     result = fields.Selection(
         string="Result",
         selection=[
-            ("memadai", "Memadai"),
-            ("tidak_memadai", "Tidak Memadai"),
+            ("sufficient", "Sufficient"),
+            ("insufficient", "Insufficient"),
         ],
+        readonly=True,
+        states={
+            "open": [
+                ("readonly", False),
+            ],
+        },
     )
     analysis_item_ids = fields.Many2many(
         string="Analysis",
@@ -36,4 +42,13 @@ class GeneralAuditWSb9d8a5cIndependency(models.Model):
         relation="rel_ga_b9d8a5c_independency_2_independency_item",
         column1="independency_id",
         column2="item_id",
+        readonly=True,
+        states={
+            "open": [
+                ("readonly", False),
+            ],
+        },
+    )
+    state = fields.Selection(
+        related="worksheet_id.state",
     )

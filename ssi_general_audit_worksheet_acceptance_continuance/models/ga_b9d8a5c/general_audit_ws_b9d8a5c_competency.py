@@ -26,12 +26,24 @@ class GeneralAuditWSb9d8a5cComptency(models.Model):
     result = fields.Selection(
         string="Result",
         selection=[
-            ("memadai", "Memadai"),
-            ("update", "Perlu Update"),
+            ("sufficient", "Sufficient"),
+            ("need_update", "Need Update"),
         ],
+        readonly=True,
+        states={
+            "open": [
+                ("readonly", False),
+            ],
+        },
     )
     year_experience = fields.Integer(
         string="Experience (years)",
+        readonly=True,
+        states={
+            "open": [
+                ("readonly", False),
+            ],
+        },
     )
     analysis_item_ids = fields.Many2many(
         string="Analysis",
@@ -39,4 +51,13 @@ class GeneralAuditWSb9d8a5cComptency(models.Model):
         relation="rel_ga_b9d8a5c_competency_2_competency_item",
         column1="competency_id",
         column2="item_id",
+        readonly=True,
+        states={
+            "open": [
+                ("readonly", False),
+            ],
+        },
+    )
+    state = fields.Selection(
+        related="worksheet_id.state",
     )

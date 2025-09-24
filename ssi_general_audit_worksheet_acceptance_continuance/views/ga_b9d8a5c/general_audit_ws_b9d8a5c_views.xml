@@ -55,41 +55,69 @@
                             style="margin-right:4px"
                             attrs="{'invisible': [('state', '!=', 'draft')]}"
                         />
-                        <field name="personnel_ids">
+                        <field
+                            name="personnel_ids"
+                            attrs="{'readonly': [('state', '!=', 'draft')]}"
+                        >
                             <tree editable="top">
                                 <field name="worksheet_id" invisible="1" />
-                                <field name="employee_id" />
-                                <field name="job_id" />
+                                <field
+                                    name="employee_id"
+                                    attrs="{'readonly': [('state', '!=', 'draft')]}"
+                                />
+                                <field
+                                    name="job_id"
+                                    attrs="{'readonly': [('state', '!=', 'draft')]}"
+                                />
                                 <field
                                     name="competency_attachment_ids"
                                     widget="many2many_tags"
+                                    attrs="{'readonly': [('state', '!=', 'draft')]}"
                                 />
                                 <field
                                     name="time_availability_attachment_ids"
                                     widget="many2many_tags"
+                                    attrs="{'readonly': [('state', '!=', 'draft')]}"
                                 />
+                                <field
+                                    name="proposed"
+                                    attrs="{'readonly': [('state', '!=', 'draft')]}"
+                                />
+                                <field name="state" invisible="1" />
                             </tree>
                         </field>
                     </page>
-                    <page name="competency_analysis_list" string="Competency Analysis">
+                    <page
+                        string="Competency Analysis"
+                        name="competency_analysis_list"
+                        attrs="{'invisible': [('state', '=', 'draft')]}"
+                    >
                         <field name="competency_analysis_ids">
-                            <tree>
+                            <tree create="false" delete="false">
                                 <field name="worksheet_id" invisible="1" />
                                 <field name="employee_id" />
                                 <field name="year_experience" />
                                 <field name="analysis_item_ids" />
                                 <field name="result" />
+                                <field name="state" invisible="1" />
                             </tree>
                             <form>
                                 <sheet>
                                     <group>
-                                        <field name="employee_id" />
-                                        <field name="year_experience" />
+                                        <field name="employee_id" invisible="1" />
+                                        <field
+                                            name="year_experience"
+                                            attrs="{'required': [('state', '=', 'open')]}"
+                                        />
                                         <field
                                             name="analysis_item_ids"
                                             widget="many2many_checkboxes"
                                         />
-                                        <field name="result" />
+                                        <field
+                                            name="result"
+                                            attrs="{'required': [('state', '=', 'open')]}"
+                                        />
+                                        <field name="state" invisible="1" />
                                     </group>
                                 </sheet>
                             </form>
@@ -98,23 +126,33 @@
                     <page
                         name="availability_analysis_list"
                         string="Availability Analysis"
+                        attrs="{'invisible': [('state', '=', 'draft')]}"
                     >
-                        <field name="availability_analysis_ids">
-                            <tree>
+                        <field
+                            name="availability_analysis_ids"
+                            create="false"
+                            delete="false"
+                        >
+                            <tree create="false" delete="false">
                                 <field name="worksheet_id" invisible="1" />
                                 <field name="employee_id" />
                                 <field name="analysis_item_ids" />
                                 <field name="result" />
+                                <field name="state" invisible="1" />
                             </tree>
                             <form>
                                 <sheet>
                                     <group>
-                                        <field name="employee_id" />
+                                        <field name="employee_id" invisible="1" />
                                         <field
                                             name="analysis_item_ids"
                                             widget="many2many_checkboxes"
                                         />
-                                        <field name="result" />
+                                        <field
+                                            name="result"
+                                            attrs="{'required': [('state', '=', 'open')]}"
+                                        />
+                                        <field name="state" invisible="1" />
                                     </group>
                                 </sheet>
                             </form>
@@ -123,39 +161,56 @@
                     <page
                         name="independency_analysis_list"
                         string="Independency Analysis"
+                        attrs="{'invisible': [('state', '=', 'draft')]}"
                     >
                         <field name="independency_analysis_ids">
-                            <tree>
+                            <tree create="false" delete="false">
                                 <field name="worksheet_id" invisible="1" />
                                 <field name="employee_id" />
-                                <field name="result" />
                                 <field name="analysis_item_ids" />
+                                <field name="result" />
+                                <field name="state" invisible="1" />
                             </tree>
                             <form>
                                 <sheet>
                                     <group>
-                                        <field name="employee_id" />
+                                        <field name="employee_id" invisible="1" />
                                         <field
                                             name="analysis_item_ids"
                                             widget="many2many_checkboxes"
                                         />
-                                        <field name="result" />
+                                        <field
+                                            name="result"
+                                            attrs="{'required': [('state', '=', 'open')]}"
+                                        />
+                                        <field name="state" invisible="1" />
                                     </group>
                                 </sheet>
                             </form>
                         </field>
                     </page>
-                    <page name="summary" string="Summary">
-                        <field name="summary_ids">
-                            <tree editable="top">
+                    <page
+                        string="Summary"
+                        name="summary"
+                        attrs="{'invisible': [('state', '=', 'draft')]}"
+                    >
+                        <field name="summary_ids" create="false" delete="false">
+                            <tree editable="top" create="false" delete="false">
                                 <field name="worksheet_id" invisible="1" />
-                                <field name="employee_id" />
+                                <field name="employee_id" readonly="1" force_save="1" />
+                                <field name="initials" />
                                 <field name="compentency_result" />
                                 <field name="availability_result" />
                                 <field name="independency_result" />
-                                <field name="select_team" />
-                                <field name="initials" />
-                                <field name="team_role_id" />
+                                <field
+                                    name="select_team"
+                                    attrs="{'required': [('state', '=', 'open')]}"
+                                />
+                                <field
+                                    name="team_role_id"
+                                    attrs="{'required': [('state', '=', 'open')]}"
+                                />
+                                <field name="state" invisible="1" />
                             </tree>
                         </field>
                     </page>

@@ -1,8 +1,9 @@
 # Copyright 2025 OpenSynergy Indonesia
 # Copyright 2025 PT. Simetri Sinergi Indonesia
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl-3.0-standalone.html).
-
 from odoo import fields, models
+
+from odoo.addons.ssi_decorator import ssi_decorator
 
 
 class GeneralAuditWSb9d8a5c(models.Model):
@@ -51,6 +52,14 @@ class GeneralAuditWSb9d8a5c(models.Model):
         inverse_name="worksheet_id",
     )
 
+    @ssi_decorator.post_open_action()
+    def _10_create_proposed_team(self):
+        self.ensure_one()
+        self._create_competency_team()
+        self._create_availability_team()
+        self._create_independency_team()
+        self._create_summary()
+
     def action_populate_personnel(self):
         """Generic method untuk populate personnel dari employee"""
         Employee = self.env["hr.employee"]
@@ -81,3 +90,71 @@ class GeneralAuditWSb9d8a5c(models.Model):
             for chk in record.personnel_ids:
                 if chk.employee_id.id not in emp_ids:
                     chk.unlink()
+
+    def _prepare_team_data(self, employee):
+        self.ensure_one()
+        data = {
+            "worksheet_id": self.id,
+            "employee_id": employee.id,
+        }
+        return data
+
+    def _create_competency_team(self):
+        self.ensure_one()
+        Competency = self.env["general_audit_ws_b9d8a5c.competency"]
+        emps = self.personnel_ids.filtered(lambda x: x.proposed == "yes").mapped(
+            "employee_id"
+        )
+        mapping = {chk.employee_id.id: chk for chk in self.competency_analysis_ids}
+        for emp in emps:
+            if emp.id not in mapping:
+                Competency.create(self._prepare_team_data(emp))
+        emp_ids = set(emps.ids)
+        for chk in self.competency_analysis_ids:
+            if chk.employee_id.id not in emp_ids:
+                chk.unlink()
+
+    def _create_availability_team(self):
+        self.ensure_one()
+        Availability = self.env["general_audit_ws_b9d8a5c.availability"]
+        emps = self.personnel_ids.filtered(lambda x: x.proposed == "yes").mapped(
+            "employee_id"
+        )
+        mapping = {chk.employee_id.id: chk for chk in self.availability_analysis_ids}
+        for emp in emps:
+            if emp.id not in mapping:
+                Availability.create(self._prepare_team_data(emp))
+        emp_ids = set(emps.ids)
+        for chk in self.availability_analysis_ids:
+            if chk.employee_id.id not in emp_ids:
+                chk.unlink()
+
+    def _create_independency_team(self):
+        self.ensure_one()
+        Independency = self.env["general_audit_ws_b9d8a5c.independency"]
+        emps = self.personnel_ids.filtered(lambda x: x.proposed == "yes").mapped(
+            "employee_id"
+        )
+        mapping = {chk.employee_id.id: chk for chk in self.independency_analysis_ids}
+        for emp in emps:
+            if emp.id not in mapping:
+                Independency.create(self._prepare_team_data(emp))
+        emp_ids = set(emps.ids)
+        for chk in self.independency_analysis_ids:
+            if chk.employee_id.id not in emp_ids:
+                chk.unlink()
+
+    def _create_summary(self):
+        self.ensure_one()
+        Summary = self.env["general_audit_ws_b9d8a5c.summary"]
+        emps = self.personnel_ids.filtered(lambda x: x.proposed == "yes").mapped(
+            "employee_id"
+        )
+        mapping = {chk.employee_id.id: chk for chk in self.summary_ids}
+        for emp in emps:
+            if emp.id not in mapping:
+                Summary.create(self._prepare_team_data(emp))
+        emp_ids = set(emps.ids)
+        for chk in self.summary_ids:
+            if chk.employee_id.id not in emp_ids:
+                chk.unlink()

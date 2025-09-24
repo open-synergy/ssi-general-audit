@@ -100,6 +100,12 @@ class GeneralAuditWSb9d8a5cSummary(models.Model):
             ("yes", "Yes"),
             ("no", "No"),
         ],
+        readonly=True,
+        states={
+            "open": [
+                ("readonly", False),
+            ],
+        },
     )
     initials = fields.Char(
         related="employee_id.initials",
@@ -107,5 +113,13 @@ class GeneralAuditWSb9d8a5cSummary(models.Model):
     team_role_id = fields.Many2one(
         string="Team Role",
         comodel_name="team_role",
-        required=True,
+        readonly=True,
+        states={
+            "open": [
+                ("readonly", False),
+            ],
+        },
+    )
+    state = fields.Selection(
+        related="worksheet_id.state",
     )

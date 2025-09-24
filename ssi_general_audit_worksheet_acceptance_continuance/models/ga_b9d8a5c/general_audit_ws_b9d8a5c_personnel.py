@@ -27,6 +27,15 @@ class GeneralAuditWSb9d8a5cPersonnel(models.Model):
         required=True,
     )
 
+    proposed = fields.Selection(
+        string="Proposed As Team",
+        selection=[
+            ("yes", "Yes"),
+            ("no", "No"),
+        ],
+        default="no",
+    )
+
     competency_attachment_ids = fields.Many2many(
         string="Competency Attachments",
         comodel_name="ir.attachment",
@@ -45,6 +54,10 @@ class GeneralAuditWSb9d8a5cPersonnel(models.Model):
         column2="attachment_id",
         domain="[('res_model', '=', 'general_audit_ws_b9d8a5c'), "
         "('res_id', '=', worksheet_id)]",
+    )
+
+    state = fields.Selection(
+        related="worksheet_id.state",
     )
 
     @api.onchange(

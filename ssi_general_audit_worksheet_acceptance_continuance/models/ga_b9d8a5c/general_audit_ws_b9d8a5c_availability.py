@@ -26,9 +26,15 @@ class GeneralAuditWSb9d8a5cAvailability(models.Model):
     result = fields.Selection(
         string="Result",
         selection=[
-            ("memadai", "Memadai"),
-            ("batasan", "Ada Batasan Waktu"),
+            ("sufficient", "Sufficient"),
+            ("timeframe_required", "Timeframe Required"),
         ],
+        readonly=True,
+        states={
+            "open": [
+                ("readonly", False),
+            ],
+        },
     )
     analysis_item_ids = fields.Many2many(
         string="Analysis",
@@ -36,4 +42,13 @@ class GeneralAuditWSb9d8a5cAvailability(models.Model):
         relation="rel_ga_b9d8a5c_availability_2_availability_item",
         column1="availability_id",
         column2="item_id",
+        readonly=True,
+        states={
+            "open": [
+                ("readonly", False),
+            ],
+        },
+    )
+    state = fields.Selection(
+        related="worksheet_id.state",
     )
