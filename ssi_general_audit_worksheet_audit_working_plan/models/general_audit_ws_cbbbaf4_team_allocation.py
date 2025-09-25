@@ -32,7 +32,7 @@ class GeneralAuditWSCBBBAF4TeamAllocation(models.Model):
             ],
         },
     )
-    role = fields.Many2one(
+    role_id = fields.Many2one(
         string="Role",
         comodel_name="team_role",
         required=False,

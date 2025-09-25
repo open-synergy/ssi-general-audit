@@ -86,12 +86,21 @@
                         </group>
                     </page>
                     <page name="team_allocation" string="Team Allocations">
+                        <button
+                            name="action_refresh_allocation_team"
+                            string="Refresh"
+                            type="object"
+                            icon="fa-refresh"
+                            class="oe_highlight"
+                            style="margin-right:4px"
+                            attrs="{'invisible': [('state', '=', 'draft')]}"
+                        />
                         <field name="team_allocation_ids">
                             <tree editable="top" create="false" delete="false">
-                                <field name="sequence" widget="handle" />
+                                <field name="sequence" invisible="1" />
                                 <field name="team_id" />
                                 <field
-                                    name="role"
+                                    name="role_id"
                                     attrs="{'required': [('state', '=', 'open')]}"
                                 />
                                 <field
@@ -151,12 +160,21 @@
                         </group>
                     </page>
                     <page name="team_competency" string="Team Competency Analysis">
+                        <button
+                            name="action_refresh_competency_team"
+                            string="Refresh"
+                            type="object"
+                            icon="fa-refresh"
+                            class="oe_highlight"
+                            style="margin-right:4px"
+                            attrs="{'invisible': [('state', '=', 'draft')]}"
+                        />
                         <group name="team_competency_1" colspan="4" col="2">
                             <field name="need_eqcr" />
                         </group>
                         <field name="team_competency_ids">
                             <tree create="false" delete="false">
-                                <field name="sequence" widget="handle" />
+                                <field name="sequence" invisible="1" />
                                 <field name="team_id" />
                                 <field name="upgrade_attachment_ids" />
                                 <field name="state" invisible="1" />

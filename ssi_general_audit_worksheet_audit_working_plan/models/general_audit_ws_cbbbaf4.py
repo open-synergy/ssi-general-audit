@@ -338,45 +338,29 @@ class GeneralAuditWSCBBBAF4(models.Model):
         self._create_allocation_team()
         self._create_competency_team()
 
-    def _prepare_allocation_team_data(self, summary):
+    def _create_allocation_team_data(self, summary):
         self.ensure_one()
         data = {
             "worksheet_id": self.id,
             "team_id": summary.employee_id.id,
             "sequence": summary.sequence,
+            "role_id": summary.team_role_id.id,
         }
         return data
 
-    def _prepare_competency_data(self, summary):
+    def _update_allocation_team_data(self, summary):
         self.ensure_one()
-        data = []
-        Competency = self.env["general_audit_ws_b9d8a5c.competency"]
-        Upgrade = self.env["general_audit_competency_upgrade"]
-        criteria = [
-            ("employee_id", "=", summary.employee_id.id),
-        ]
-        competencies = Competency.search(criteria)
-        if competencies:
-            competency_item_ids = competencies.analysis_item_ids.ids
-            upgrades = Upgrade.search([]).mapped("compentency_item_id").ids
-            result = [x for x in upgrades if x not in competency_item_ids]
-            data = (
-                Upgrade.search([])
-                .filtered(lambda y: y.compentency_item_id.id in result)
-                .ids
-            )
-        return data
-
-    def _prepare_competency_team_data(self, summary):
-        self.ensure_one()
-        competency_ids = self._prepare_competency_data(summary)
         data = {
             "worksheet_id": self.id,
             "team_id": summary.employee_id.id,
             "sequence": summary.sequence,
-            "competency_upgrade_ids": [(6, 0, competency_ids)],
+            "role_id": summary.team_role_id.id,
         }
         return data
+
+    def action_refresh_allocation_team(self):
+        for record in self:
+            record._create_allocation_team()
 
     def _create_allocation_team(self):
         self.ensure_one()
@@ -403,11 +387,61 @@ class GeneralAuditWSCBBBAF4(models.Model):
         mapping = {chk.team_id.id: chk for chk in self.team_allocation_ids}
         for summary in summaries:
             if summary.employee_id.id not in mapping:
-                Allocation.create(self._prepare_allocation_team_data(summary))
+                Allocation.create(self._create_allocation_team_data(summary))
+            else:
+                mapping[summary.employee_id.id].write(
+                    self._create_allocation_team_data(summary)
+                )
+
         emp_ids = set(emps.ids)
         for chk in self.team_allocation_ids:
             if chk.team_id.id not in emp_ids:
                 chk.unlink()
+
+    def action_refresh_competency_team(self):
+        for record in self:
+            record._create_competency_team()
+
+    def _prepare_competency_data(self, summary):
+        self.ensure_one()
+        data = []
+        Competency = self.env["general_audit_ws_b9d8a5c.competency"]
+        Upgrade = self.env["general_audit_competency_upgrade"]
+        criteria = [
+            ("employee_id", "=", summary.employee_id.id),
+        ]
+        competencies = Competency.search(criteria)
+        if competencies:
+            competency_item_ids = competencies.analysis_item_ids.ids
+            upgrades = Upgrade.search([]).mapped("compentency_item_id").ids
+            result = [x for x in upgrades if x not in competency_item_ids]
+            data = (
+                Upgrade.search([])
+                .filtered(lambda y: y.compentency_item_id.id in result)
+                .ids
+            )
+        return data
+
+    def _create_competency_team_data(self, summary):
+        self.ensure_one()
+        competency_ids = self._prepare_competency_data(summary)
+        data = {
+            "worksheet_id": self.id,
+            "team_id": summary.employee_id.id,
+            "sequence": summary.sequence,
+            "competency_upgrade_ids": [(6, 0, competency_ids)],
+        }
+        return data
+
+    def _update_competency_team_data(self, summary):
+        self.ensure_one()
+        competency_ids = self._prepare_competency_data(summary)
+        data = {
+            "team_id": summary.employee_id.id,
+            "sequence": summary.sequence,
+            "competency_upgrade_ids": [(6, 0, competency_ids)],
+        }
+        return data
 
     def _create_competency_team(self):
         self.ensure_one()
@@ -434,7 +468,11 @@ class GeneralAuditWSCBBBAF4(models.Model):
         mapping = {chk.team_id.id: chk for chk in self.team_competency_ids}
         for summary in summaries:
             if summary.employee_id.id not in mapping:
-                Competency.create(self._prepare_competency_team_data(summary))
+                Competency.create(self._create_competency_team_data(summary))
+            else:
+                mapping[summary.employee_id.id].write(
+                    self._update_competency_team_data(summary)
+                )
 
         emp_ids = set(emps.ids)
         for chk in self.team_competency_ids:
