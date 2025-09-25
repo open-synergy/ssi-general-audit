@@ -18,3 +18,8 @@ class GeneralAuditCompetencyUpgrade(models.Model):
         required=True,
         default=10,
     )
+    compentency_item_id = fields.Many2one(
+        string="Competency",
+        comodel_name="general_audit_ws_b9d8a5c.competency_item",
+        required=True,
+    )

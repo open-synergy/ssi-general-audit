@@ -23,28 +23,70 @@ class GeneralAuditWSCBBBAF4TeamAllocation(models.Model):
     )
     team_id = fields.Many2one(
         string="Team Member",
-        comodel_name="res.partner",
+        comodel_name="hr.employee",
         required=True,
-        domain=[
-            ("is_company", "=", False),
-        ],
+        readonly=True,
+        states={
+            "open": [
+                ("readonly", False),
+            ],
+        },
     )
-    role = fields.Char(
+    role = fields.Many2one(
         string="Role",
-        required=True,
+        comodel_name="team_role",
+        required=False,
+        readonly=True,
+        states={
+            "open": [
+                ("readonly", False),
+            ],
+        },
+    )
+    pe_allocation = fields.Float(
+        string="Pre-Engagement Allocation",
+        required=False,
+        default=0.0,
+        readonly=True,
+        states={
+            "open": [
+                ("readonly", False),
+            ],
+        },
     )
     ra_allocation = fields.Float(
         string="Risk Assesment Allocation",
-        required=True,
+        required=False,
         default=0.0,
+        readonly=True,
+        states={
+            "open": [
+                ("readonly", False),
+            ],
+        },
     )
     rr_allocation = fields.Float(
         string="Risk Response Allocation",
-        required=True,
+        required=False,
         default=0.0,
+        readonly=True,
+        states={
+            "open": [
+                ("readonly", False),
+            ],
+        },
     )
     reporting_allocation = fields.Float(
         string="Reporting Allocation",
-        required=True,
+        required=False,
         default=0.0,
+        readonly=True,
+        states={
+            "open": [
+                ("readonly", False),
+            ],
+        },
+    )
+    state = fields.Selection(
+        related="worksheet_id.state",
     )

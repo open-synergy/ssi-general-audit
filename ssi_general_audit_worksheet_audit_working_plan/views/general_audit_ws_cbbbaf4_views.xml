@@ -41,20 +41,31 @@
         />
         <field name="arch" type="xml">
             <data>
+                <xpath expr="//group[@name='header_right']" position="inside">
+                    <field name="industry_id" />
+                    <field name="ownership_type_id" />
+                </xpath>
                 <xpath expr="//page[1]" position="before">
                     <page name="audit_date" string="Audit Date">
                         <group name="audit_date_1" colspan="4" col="2">
                             <field name="engagement_date" />
-                            <field name="risk_assesment_date" />
+                            <field name="risk_assessment_date" />
                             <field name="fieldwork_date" />
                             <field name="pullout_date" />
+                            <field name="reporting_date" />
+                            <field name="effective_days" />
                         </group>
                     </page>
                     <page name="manhour" string="Man Hour Allocations">
                         <group name="manhour_1" colspan="4" col="2">
                             <field
-                                name="pe_ra_manhour_allocation"
-                                string="Pre-Engagement &amp; Risk Assesment"
+                                name="pe_manhour_allocation"
+                                string="Pre-Engagement"
+                                widget="float_time"
+                            />
+                            <field
+                                name="ra_manhour_allocation"
+                                string="Risk Assesment"
                                 widget="float_time"
                             />
                             <field
@@ -76,19 +87,34 @@
                     </page>
                     <page name="team_allocation" string="Team Allocations">
                         <field name="team_allocation_ids">
-                            <tree editable="top">
+                            <tree editable="top" create="false" delete="false">
                                 <field name="sequence" widget="handle" />
+                                <field name="team_id" />
                                 <field
-                                    name="team_id"
-                                    domain="[('is_company','=',False),('parent_id','=',False)]"
+                                    name="role"
+                                    attrs="{'required': [('state', '=', 'open')]}"
                                 />
-                                <field name="role" />
-                                <field name="ra_allocation" widget="float_time" />
-                                <field name="rr_allocation" widget="float_time" />
+                                <field
+                                    name="pe_allocation"
+                                    widget="float_time"
+                                    attrs="{'required': [('state', '=', 'open')]}"
+                                />
+                                <field
+                                    name="ra_allocation"
+                                    widget="float_time"
+                                    attrs="{'required': [('state', '=', 'open')]}"
+                                />
+                                <field
+                                    name="rr_allocation"
+                                    widget="float_time"
+                                    attrs="{'required': [('state', '=', 'open')]}"
+                                />
                                 <field
                                     name="reporting_allocation"
                                     widget="float_time"
+                                    attrs="{'required': [('state', '=', 'open')]}"
                                 />
+                                <field name="state" invisible="1" />
                             </tree>
                         </field>
                         <group
@@ -97,6 +123,11 @@
                             colspan="4"
                             col="2"
                         >
+                            <field
+                                name="total_pe_manhour"
+                                string="Pre-Engagement"
+                                widget="float_time"
+                            />
                             <field
                                 name="total_ra_manhour"
                                 string="Risk Assesment"
@@ -112,6 +143,11 @@
                                 string="Reporting"
                                 widget="float_time"
                             />
+                            <field
+                                name="total_manhour"
+                                string="Total"
+                                widget="float_time"
+                            />
                         </group>
                     </page>
                     <page name="team_competency" string="Team Competency Analysis">
@@ -119,18 +155,61 @@
                             <field name="need_eqcr" />
                         </group>
                         <field name="team_competency_ids">
-                            <tree editable="top">
+                            <tree create="false" delete="false">
                                 <field name="sequence" widget="handle" />
-                                <field
-                                    name="team_id"
-                                    domain="[('is_company','=',False),('parent_id','=',False)]"
-                                />
-                                <field
-                                    name="comptency_upgrade_ids"
-                                    widget="many2many_tags"
-                                />
+                                <field name="team_id" />
+                                <field name="upgrade_attachment_ids" />
+                                <field name="state" invisible="1" />
                             </tree>
+                            <form>
+                                <sheet>
+                                    <group>
+                                        <field name="worksheet_id" invisible="1" />
+                                        <field name="team_id" invisible="1" />
+                                        <field
+                                            name="competency_upgrade_ids"
+                                            widget="many2many_checkboxes"
+                                            force_save="1"
+                                        />
+                                        <field
+                                            name="upgrade_attachment_ids"
+                                            widget="many2many_tags"
+                                        />
+                                        <field name="state" invisible="1" />
+                                    </group>
+                                </sheet>
+                            </form>
                         </field>
+                    </page>
+                    <page name="links" string="Links">
+                        <group>
+                            <group name="link_1" string="Client Acceptance">
+                                <field
+                                    name="allowed_link_1_ids"
+                                    widget="many2many_tags"
+                                    invisible="1"
+                                />
+                                <field
+                                    name="link_1"
+                                    string="# Worksheet"
+                                    domain="[('id', '=', allowed_link_1_ids)]"
+                                />
+                                <field name="link_1_risk" string="Risk" />
+                            </group>
+                            <group name="link_2" string="Competency">
+                                <field
+                                    name="allowed_link_2_ids"
+                                    widget="many2many_tags"
+                                    invisible="1"
+                                />
+                                <field
+                                    name="link_2"
+                                    string="# Worksheet"
+                                    domain="[('id', '=', allowed_link_2_ids)]"
+                                />
+                                <field name="link_2_risk" string="Risk" />
+                            </group>
+                        </group>
                     </page>
                 </xpath>
             </data>

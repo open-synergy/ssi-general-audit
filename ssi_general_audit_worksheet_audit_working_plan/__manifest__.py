@@ -24,6 +24,7 @@
         "data/policy_template/general_audit_ws_cbbbaf4.xml",
         "data/approval_template/general_audit_ws_cbbbaf4.xml",
         "data/general_audit_worksheet_type_data.xml",
+        "data/master/general_audit_competency_upgrade.xml",
         # "menu.xml",
         "views/general_audit_competency_upgrade_views.xml",
         "views/general_audit_ws_cbbbaf4_views.xml",

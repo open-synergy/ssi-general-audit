@@ -23,16 +23,32 @@ class GeneralAuditWSCBBBAF4TeamCompetency(models.Model):
     )
     team_id = fields.Many2one(
         string="Team Member",
-        comodel_name="res.partner",
+        comodel_name="hr.employee",
         required=True,
-        domain=[
-            ("is_company", "=", False),
-        ],
+        readonly=True,
+        states={
+            "open": [
+                ("readonly", False),
+            ],
+        },
     )
-    comptency_upgrade_ids = fields.Many2many(
+    competency_upgrade_ids = fields.Many2many(
         string="Competency Upgrade Needed",
         comodel_name="general_audit_competency_upgrade",
         relation="rel_general_audit_ws_cbbbaf4_team_competency_upgrade",
         column1="team_competency_id",
         column2="competency_upgrade_id",
+        readonly=True,
+    )
+    upgrade_attachment_ids = fields.Many2many(
+        string="Attachments",
+        comodel_name="ir.attachment",
+        relation="rel_general_audit_ws_cbbbaf4_2_attachment",
+        column1="ga_cbbbaf4_id",
+        column2="attachment_id",
+        domain="[('res_model', '=', 'general_audit_ws_cbbbaf4'), "
+        "('res_id', '=', worksheet_id)]",
+    )
+    state = fields.Selection(
+        related="worksheet_id.state",
     )
