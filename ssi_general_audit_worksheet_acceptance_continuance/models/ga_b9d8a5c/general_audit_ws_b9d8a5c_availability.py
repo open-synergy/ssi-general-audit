@@ -33,7 +33,7 @@ class GeneralAuditWSb9d8a5cAvailability(models.Model):
         string="Result",
         selection=[
             ("sufficient", "Sufficient"),
-            ("time_limit", "There Is Time Limit"),
+            ("time_constraint", "There is time constraint"),
         ],
         readonly=True,
         states={

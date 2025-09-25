@@ -70,7 +70,10 @@
                                     name="job_id"
                                     attrs="{'readonly': [('state', '!=', 'draft')]}"
                                 />
-                                <field name="year_experience" />
+                                <field
+                                    name="year_experience"
+                                    attrs="{'readonly': [('state', '!=', 'draft')]}"
+                                />
                                 <field
                                     name="competency_attachment_ids"
                                     widget="many2many_tags"
@@ -99,6 +102,7 @@
                                 <field name="sequence" invisible="1" />
                                 <field name="worksheet_id" invisible="1" />
                                 <field name="employee_id" />
+                                <field name="year_experience" />
                                 <field name="result" />
                                 <field name="state" invisible="1" />
                             </tree>
@@ -117,6 +121,7 @@
                                             name="result"
                                             attrs="{'required': [('state', '=', 'open')]}"
                                         />
+                                        <field name="year_experience" />
                                         <field name="state" invisible="1" />
                                     </group>
                                 </sheet>

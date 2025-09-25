@@ -1,8 +1,7 @@
 # Copyright 2025 OpenSynergy Indonesia
 # Copyright 2025 PT. Simetri Sinergi Indonesia
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl-3.0-standalone.html).
-
-from odoo import fields, models
+from odoo import api, fields, models
 
 
 class GeneralAuditWSb9d8a5cComptency(models.Model):
@@ -28,6 +27,27 @@ class GeneralAuditWSb9d8a5cComptency(models.Model):
         string="Employee",
         comodel_name="hr.employee",
         required=True,
+    )
+
+    @api.depends(
+        "employee_id",
+    )
+    def _compute_year_experience(self):
+        Personnel = self.env["general_audit_ws_b9d8a5c.personnel"]
+        for record in self:
+            criteria = [
+                ("worksheet_id", "=", record.worksheet_id.id),
+                ("employee_id", "=", record.employee_id.id),
+            ]
+            personnel = Personnel.search(criteria)
+            if personnel:
+                record.year_experience = personnel.year_experience
+            else:
+                record.year_experience = 0
+
+    year_experience = fields.Integer(
+        string="Experience (years)",
+        compute="_compute_year_experience",
     )
     result = fields.Selection(
         string="Result",
