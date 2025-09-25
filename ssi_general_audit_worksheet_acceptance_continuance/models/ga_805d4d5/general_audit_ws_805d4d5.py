@@ -119,7 +119,7 @@ class GeneralAuditWS805d4d5(models.Model):
         string="Fax",
     )
     field_industry_id = fields.Many2one(
-        string="Business Field",
+        string="Business Field #1",
         comodel_name="res.partner.industry",
     )
     deed_number = fields.Char(
@@ -151,7 +151,7 @@ class GeneralAuditWS805d4d5(models.Model):
         string="Source of Funds",
     )
     field_industry_2_id = fields.Many2one(
-        string="Business Field",
+        string="Business Field #2",
         comodel_name="res.partner.industry",
     )
     annual_income = fields.Char(
@@ -163,16 +163,16 @@ class GeneralAuditWS805d4d5(models.Model):
 
     # E. Informasi pemilik manfaat (Beneficial Owner)
     owner_name = fields.Char(
-        string="Full Name",
+        string="Owner Full Name",
     )
     owner_alias = fields.Char(
-        string="Alias (if any)",
+        string="Owner Alias (if any)",
     )
     owner_identity_no = fields.Char(
-        string="Identity Number",
+        string="Owner Identity Number",
     )
     owner_identity_type = fields.Selection(
-        string="Type of Identity",
+        string="Owner Type of Identity",
         selection=[
             ("ktp", "KTP"),
             ("passport", "Passport"),
@@ -180,25 +180,25 @@ class GeneralAuditWS805d4d5(models.Model):
         ],
     )
     owner_birthday = fields.Date(
-        string="Date of Birth",
+        string="Owner Date of Birth",
     )
     owner_place_of_birth = fields.Char(
-        string="Place of Birth",
+        string="Owner Place of Birth",
     )
     owner_country_id = fields.Many2one(
-        string="Nationality (Country)",
+        string="Owner Nationality (Country)",
         comodel_name="res.country",
     )
-    owner_residential_address = fields.Text(string="Residential Address")
+    owner_residential_address = fields.Text(string="Owner Residential Address")
     owner_origin_address = fields.Text(string="Origin Address (WNA)")
     owner_npwp = fields.Char(
-        string="NPWP",
+        string="Owner NPWP",
     )
     owner_relationship = fields.Char(
-        string="Relationship",
+        string="Owner Relationship",
     )
     owner_verification = fields.Selection(
-        string="Identity Verification Statement",
+        string="Owner Identity Verification Statement",
         selection=[
             ("ada", "Ada"),
             ("tidak_ada", "Tidak Ada"),
@@ -207,7 +207,7 @@ class GeneralAuditWS805d4d5(models.Model):
 
     # F. Informasi kuasa entitas
     proxy_relationship = fields.Selection(
-        string="Relationship",
+        string="Proxy Relationship",
         selection=[
             ("direktur_utama", "Direktur Utama"),
             ("direktur", "Direktur"),
@@ -225,16 +225,16 @@ class GeneralAuditWS805d4d5(models.Model):
         string="Signatory",
     )
     proxy_name = fields.Char(
-        string="Full Name",
+        string="Proxy Full Name",
     )
     proxy_alias = fields.Char(
-        string="Alias (if any)",
+        string="Proxy Alias (if any)",
     )
     proxy_identity_no = fields.Char(
-        string="Identity Number",
+        string="Proxy Identity Number",
     )
     proxy_identity_type = fields.Selection(
-        string="Type of Identity",
+        string="Proxy Type of Identity",
         selection=[
             ("ktp", "KTP"),
             ("passport", "Passport"),
@@ -242,18 +242,18 @@ class GeneralAuditWS805d4d5(models.Model):
         ],
     )
     proxy_birthday = fields.Date(
-        string="Date of Birth",
+        string="Proxy Date of Birth",
     )
     proxy_place_of_birth = fields.Char(
-        string="Place of Birth",
+        string="Proxy Place of Birth",
     )
     proxy_country_id = fields.Many2one(
-        string="Nationality (Country)",
+        string="Proxy Nationality (Country)",
         comodel_name="res.country",
     )
-    proxy_residential_address = fields.Text(string="Residential Address")
+    proxy_residential_address = fields.Text(string="Proxy Residential Address")
     proxy_verification = fields.Selection(
-        string="Identity Verification Statement",
+        string="Proxy Identity Verification Statement",
         selection=[
             ("ada", "Ada"),
             ("tidak_ada", "Tidak Ada"),

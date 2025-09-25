@@ -23,6 +23,10 @@ class GeneralAuditWS842f0d6Checklist(models.Model):
         comodel_name="general_audit_ws_842f0d6.item",
         required=True,
     )
+    none_below = fields.Boolean(
+        string="None of Below",
+        default=False,
+    )
 
     @api.depends(
         "item_id",
@@ -48,3 +52,11 @@ class GeneralAuditWS842f0d6Checklist(models.Model):
         column1="item_id",
         column2="item_categ_id",
     )
+    option_id = fields.Many2one(
+        string="Result",
+    )
+
+    @api.onchange("none_below")
+    def onchange_item_ids(self):
+        if self.none_below:
+            self.item_ids = [(5, 0, 0)]

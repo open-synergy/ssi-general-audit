@@ -91,24 +91,26 @@ class GeneralAuditWSb9d8a5c(models.Model):
                 if chk.employee_id.id not in emp_ids:
                     chk.unlink()
 
-    def _prepare_team_data(self, employee):
+    def _prepare_team_data(self, personnel):
         self.ensure_one()
         data = {
             "worksheet_id": self.id,
-            "employee_id": employee.id,
+            "employee_id": personnel.employee_id.id,
+            "sequence": personnel.sequence,
         }
         return data
 
     def _create_competency_team(self):
         self.ensure_one()
         Competency = self.env["general_audit_ws_b9d8a5c.competency"]
+        personnels = self.personnel_ids.filtered(lambda x: x.proposed == "yes")
         emps = self.personnel_ids.filtered(lambda x: x.proposed == "yes").mapped(
             "employee_id"
         )
         mapping = {chk.employee_id.id: chk for chk in self.competency_analysis_ids}
-        for emp in emps:
-            if emp.id not in mapping:
-                Competency.create(self._prepare_team_data(emp))
+        for personnel in personnels:
+            if personnel.employee_id.id not in mapping:
+                Competency.create(self._prepare_team_data(personnel))
         emp_ids = set(emps.ids)
         for chk in self.competency_analysis_ids:
             if chk.employee_id.id not in emp_ids:
@@ -117,13 +119,14 @@ class GeneralAuditWSb9d8a5c(models.Model):
     def _create_availability_team(self):
         self.ensure_one()
         Availability = self.env["general_audit_ws_b9d8a5c.availability"]
+        personnels = self.personnel_ids.filtered(lambda x: x.proposed == "yes")
         emps = self.personnel_ids.filtered(lambda x: x.proposed == "yes").mapped(
             "employee_id"
         )
         mapping = {chk.employee_id.id: chk for chk in self.availability_analysis_ids}
-        for emp in emps:
-            if emp.id not in mapping:
-                Availability.create(self._prepare_team_data(emp))
+        for personnel in personnels:
+            if personnel.employee_id.id not in mapping:
+                Availability.create(self._prepare_team_data(personnel))
         emp_ids = set(emps.ids)
         for chk in self.availability_analysis_ids:
             if chk.employee_id.id not in emp_ids:
@@ -132,13 +135,14 @@ class GeneralAuditWSb9d8a5c(models.Model):
     def _create_independency_team(self):
         self.ensure_one()
         Independency = self.env["general_audit_ws_b9d8a5c.independency"]
+        personnels = self.personnel_ids.filtered(lambda x: x.proposed == "yes")
         emps = self.personnel_ids.filtered(lambda x: x.proposed == "yes").mapped(
             "employee_id"
         )
         mapping = {chk.employee_id.id: chk for chk in self.independency_analysis_ids}
-        for emp in emps:
-            if emp.id not in mapping:
-                Independency.create(self._prepare_team_data(emp))
+        for personnel in personnels:
+            if personnel.employee_id.id not in mapping:
+                Independency.create(self._prepare_team_data(personnel))
         emp_ids = set(emps.ids)
         for chk in self.independency_analysis_ids:
             if chk.employee_id.id not in emp_ids:
@@ -147,13 +151,14 @@ class GeneralAuditWSb9d8a5c(models.Model):
     def _create_summary(self):
         self.ensure_one()
         Summary = self.env["general_audit_ws_b9d8a5c.summary"]
+        personnels = self.personnel_ids.filtered(lambda x: x.proposed == "yes")
         emps = self.personnel_ids.filtered(lambda x: x.proposed == "yes").mapped(
             "employee_id"
         )
         mapping = {chk.employee_id.id: chk for chk in self.summary_ids}
-        for emp in emps:
-            if emp.id not in mapping:
-                Summary.create(self._prepare_team_data(emp))
+        for personnel in personnels:
+            if personnel.employee_id.id not in mapping:
+                Summary.create(self._prepare_team_data(personnel))
         emp_ids = set(emps.ids)
         for chk in self.summary_ids:
             if chk.employee_id.id not in emp_ids:

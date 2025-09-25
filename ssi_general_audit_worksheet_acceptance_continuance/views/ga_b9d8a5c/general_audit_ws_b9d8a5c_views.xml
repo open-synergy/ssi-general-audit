@@ -60,6 +60,7 @@
                             attrs="{'readonly': [('state', '!=', 'draft')]}"
                         >
                             <tree editable="top">
+                                <field name="sequence" widget="handle" />
                                 <field name="worksheet_id" invisible="1" />
                                 <field
                                     name="employee_id"
@@ -69,6 +70,7 @@
                                     name="job_id"
                                     attrs="{'readonly': [('state', '!=', 'draft')]}"
                                 />
+                                <field name="year_experience" />
                                 <field
                                     name="competency_attachment_ids"
                                     widget="many2many_tags"
@@ -94,21 +96,19 @@
                     >
                         <field name="competency_analysis_ids">
                             <tree create="false" delete="false">
+                                <field name="sequence" invisible="1" />
                                 <field name="worksheet_id" invisible="1" />
                                 <field name="employee_id" />
-                                <field name="year_experience" />
-                                <field name="analysis_item_ids" />
                                 <field name="result" />
                                 <field name="state" invisible="1" />
                             </tree>
                             <form>
                                 <sheet>
+                                    <div
+                                        class="o_form_label"
+                                    >Select the competencies that the auditor has:</div>
                                     <group>
                                         <field name="employee_id" invisible="1" />
-                                        <field
-                                            name="year_experience"
-                                            attrs="{'required': [('state', '=', 'open')]}"
-                                        />
                                         <field
                                             name="analysis_item_ids"
                                             widget="many2many_checkboxes"
@@ -134,14 +134,17 @@
                             delete="false"
                         >
                             <tree create="false" delete="false">
+                                <field name="sequence" invisible="1" />
                                 <field name="worksheet_id" invisible="1" />
                                 <field name="employee_id" />
-                                <field name="analysis_item_ids" />
                                 <field name="result" />
                                 <field name="state" invisible="1" />
                             </tree>
                             <form>
                                 <sheet>
+                                    <div
+                                        class="o_form_label"
+                                    >Select the auditor's available time conditions:</div>
                                     <group>
                                         <field name="employee_id" invisible="1" />
                                         <field
@@ -165,14 +168,17 @@
                     >
                         <field name="independency_analysis_ids">
                             <tree create="false" delete="false">
+                                <field name="sequence" invisible="1" />
                                 <field name="worksheet_id" invisible="1" />
                                 <field name="employee_id" />
-                                <field name="analysis_item_ids" />
                                 <field name="result" />
                                 <field name="state" invisible="1" />
                             </tree>
                             <form>
                                 <sheet>
+                                    <div
+                                        class="o_form_label"
+                                    >Select auditor conditions related to independence:</div>
                                     <group>
                                         <field name="employee_id" invisible="1" />
                                         <field
@@ -196,6 +202,7 @@
                     >
                         <field name="summary_ids" create="false" delete="false">
                             <tree editable="top" create="false" delete="false">
+                                <field name="sequence" invisible="1" />
                                 <field name="worksheet_id" invisible="1" />
                                 <field name="employee_id" readonly="1" force_save="1" />
                                 <field name="initials" />
@@ -208,7 +215,7 @@
                                 />
                                 <field
                                     name="team_role_id"
-                                    attrs="{'required': [('state', '=', 'open')]}"
+                                    attrs="{'required': [('select_team', '=', 'yes')]}"
                                 />
                                 <field name="state" invisible="1" />
                             </tree>

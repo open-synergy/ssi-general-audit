@@ -8,12 +8,18 @@ from odoo import api, fields, models
 class GeneralAuditWSb9d8a5cPersonnel(models.Model):
     _name = "general_audit_ws_b9d8a5c.personnel"
     _description = "Communication With Previous Auditor (b9d8a5c) - Personnel"
+    _order = "sequence, id"
 
     worksheet_id = fields.Many2one(
         string="# Worksheet",
         comodel_name="general_audit_ws_b9d8a5c",
         required=True,
         ondelete="cascade",
+    )
+    sequence = fields.Integer(
+        string="Sequence",
+        required=True,
+        default=10,
     )
     employee_id = fields.Many2one(
         string="Employee",
@@ -26,7 +32,15 @@ class GeneralAuditWSb9d8a5cPersonnel(models.Model):
         comodel_name="hr.job",
         required=True,
     )
-
+    year_experience = fields.Integer(
+        string="Experience (years)",
+        readonly=True,
+        states={
+            "open": [
+                ("readonly", False),
+            ],
+        },
+    )
     proposed = fields.Selection(
         string="Proposed As Team",
         selection=[
@@ -35,7 +49,6 @@ class GeneralAuditWSb9d8a5cPersonnel(models.Model):
         ],
         default="no",
     )
-
     competency_attachment_ids = fields.Many2many(
         string="Competency Attachments",
         comodel_name="ir.attachment",
