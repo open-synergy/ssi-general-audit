@@ -66,6 +66,7 @@
         "views/ga/general_audit_detail_views.xml",
         "views/ga/general_audit_group_detail_views.xml",
         "views/ga/general_audit_standard_detail_views.xml",
+        "views/ga/general_audit_standard_audit_views.xml",
         "views/tb/client_trial_balance_views.xml",
         "views/tb/client_trial_balance_detail_views.xml",
         "views/tb/client_trial_balance_computation_views.xml",

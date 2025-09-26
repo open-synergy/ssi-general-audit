@@ -68,6 +68,12 @@ class GeneralAuditWorksheetMixin(models.AbstractModel):
         readonly=True,
         ondelete="cascade",
     )
+    preparation_time = fields.Float(
+        string="Preparation Time",
+    )
+    review_time = fields.Float(
+        string="Review Time",
+    )
 
     @api.model
     def _default_type_id(self):
@@ -87,6 +93,21 @@ class GeneralAuditWorksheetMixin(models.AbstractModel):
                 ("readonly", False),
             ],
         },
+    )
+
+    @api.depends(
+        "type_id",
+        "type_id.standard_item_ids",
+    )
+    def _compute_standard_item_ids(self):
+        for record in self:
+            record.standard_item_ids = record.type_id.standard_item_ids.ids
+
+    standard_item_ids = fields.Many2many(
+        string="Relevant Audit Standard Items",
+        comodel_name="general_audit_standard_audit",
+        compute="_compute_standard_item_ids",
+        store=False,
     )
     account_type_ids = fields.Many2many(
         string="Account Types",

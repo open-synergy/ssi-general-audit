@@ -32,6 +32,13 @@ class GeneralAuditWorksheetType(models.Model):
         required=True,
         default=1,
     )
+    standard_item_ids = fields.Many2many(
+        string="Relevant Audit Standard Items",
+        comodel_name="general_audit_standard_audit",
+        relation="rel_worksheet_type_2_audit_std_item",
+        column1="type_id",
+        column2="audit_standard_item_id",
+    )
     # TODO
     # model_id = fields.Many2one(
     #     string="Model",
