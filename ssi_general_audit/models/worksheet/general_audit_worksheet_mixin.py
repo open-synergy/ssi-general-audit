@@ -68,10 +68,16 @@ class GeneralAuditWorksheetMixin(models.AbstractModel):
         readonly=True,
         ondelete="cascade",
     )
-    preparation_time = fields.Float(
+    preparation_date = fields.Date(
+        string="Preparation Date",
+    )
+    preparation_time = fields.Integer(
         string="Preparation Time",
     )
-    review_time = fields.Float(
+    review_date = fields.Date(
+        string="Review Date",
+    )
+    review_time = fields.Integer(
         string="Review Time",
     )
 
@@ -160,6 +166,14 @@ class GeneralAuditWorksheetMixin(models.AbstractModel):
     @api.onchange("type_id")
     def onchange_parent_type_id(self):
         self.parent_type_id = self.type_id
+
+    @api.onchange("general_audit_id")
+    def onchange_user_id(self):
+        self.user_id = self.general_audit_id.user_id
+
+    @api.onchange("general_audit_id")
+    def onchange_reviewer_id(self):
+        self.reviewer_id = self.general_audit_id.reviewer_id
 
     def unlink(self):
         worksheets = self.env["general_audit_worksheet"]

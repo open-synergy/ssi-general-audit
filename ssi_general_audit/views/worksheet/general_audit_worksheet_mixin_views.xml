@@ -58,11 +58,9 @@
                         <field name="conclusion" colspan="2" nolabel="1" />
                     </group>
                 </xpath>
-                <xpath expr="//field[@name='user_id']" position="after">
-                    <field name="preparation_time" widget="float_time" />
+                <xpath expr="//field[@name='user_id']" position="replace">
                 </xpath>
-                <xpath expr="//field[@name='reviewer_id']" position="after">
-                    <field name="review_time" widget="float_time" />
+                <xpath expr="//field[@name='reviewer_id']" position="replace">
                 </xpath>
                 <xpath expr="//field[@name='company_id']" position="after">
                     <field name="general_audit_id" />
@@ -75,6 +73,12 @@
                     <field name="partner_id" />
                     <field name="title" />
                     <field name="type_id" readonly="1" force_save="1" />
+                    <field name="user_id" />
+                    <field name="preparation_date" string="Date" />
+                    <field name="preparation_time" string="Total (in minutes)" />
+                    <field name="reviewer_id" />
+                    <field name="review_date" string="Date" />
+                    <field name="review_time" string="Total (in minutes)" />
                 </xpath>
                 <xpath expr="//field[@name='user_id']" position="after">
                     <field name="parent_type_id" invisible="1" />
