@@ -56,35 +56,6 @@
                             <field name="effective_days" />
                         </group>
                     </page>
-                    <page name="manhour" string="Man Hour Allocations">
-                        <group name="manhour_1" colspan="4" col="2">
-                            <field
-                                name="pe_manhour_allocation"
-                                string="Pre-Engagement"
-                                widget="float_time"
-                            />
-                            <field
-                                name="ra_manhour_allocation"
-                                string="Risk Assesment"
-                                widget="float_time"
-                            />
-                            <field
-                                name="rr_manhour_allocation"
-                                string="Risk Response"
-                                widget="float_time"
-                            />
-                            <field
-                                name="reporting_manhour_allocation"
-                                string="Reporting"
-                                widget="float_time"
-                            />
-                            <field
-                                name="total_manhour_allocation"
-                                string="Total"
-                                widget="float_time"
-                            />
-                        </group>
-                    </page>
                     <page name="team_allocation" string="Team Allocations">
                         <button
                             name="action_refresh_allocation_team"
@@ -123,6 +94,7 @@
                                     widget="float_time"
                                     attrs="{'required': [('state', '=', 'open')]}"
                                 />
+                                <field name="total_allocation" widget="float_time" />
                                 <field name="state" invisible="1" />
                             </tree>
                         </field>

@@ -103,65 +103,6 @@ class GeneralAuditWSCBBBAF4(models.Model):
         string="Number of Effective Days",
         compute="_compute_effective_days",
     )
-    pe_manhour_allocation = fields.Float(
-        string="Pre-Engagement Manhour Allocation",
-        readonly=True,
-        states={
-            "open": [
-                ("readonly", False),
-            ],
-        },
-    )
-    ra_manhour_allocation = fields.Float(
-        string="Risk Assesment Manhour Allocation",
-        readonly=True,
-        states={
-            "open": [
-                ("readonly", False),
-            ],
-        },
-    )
-    rr_manhour_allocation = fields.Float(
-        string="Risk Response Manhour Allocation",
-        readonly=True,
-        states={
-            "open": [
-                ("readonly", False),
-            ],
-        },
-    )
-    reporting_manhour_allocation = fields.Float(
-        string="Reporting Manhour Allocation",
-        readonly=True,
-        states={
-            "open": [
-                ("readonly", False),
-            ],
-        },
-    )
-
-    @api.depends(
-        "pe_manhour_allocation",
-        "ra_manhour_allocation",
-        "rr_manhour_allocation",
-        "reporting_manhour_allocation",
-    )
-    def _compute_total_manhour_allocation(self):
-        for record in self:
-            result = (
-                record.pe_manhour_allocation
-                + record.ra_manhour_allocation
-                + record.rr_manhour_allocation
-                + record.reporting_manhour_allocation
-            )
-            record.total_manhour_allocation = result
-
-    total_manhour_allocation = fields.Float(
-        string="Total Manhour Allocation",
-        compute="_compute_total_manhour_allocation",
-        store=True,
-        compute_sudo=True,
-    )
     team_allocation_ids = fields.One2many(
         string="Team Allocations",
         comodel_name="general_audit_ws_cbbbaf4.team_allocation",
@@ -506,19 +447,5 @@ class GeneralAuditWSCBBBAF4(models.Model):
                 if rec.risk_assessment_date < rec.engagement_date:
                     msg_err = (
                         "Risk Assessment Date must be greater than Engagement Date."
-                    )
-                    raise ValidationError(msg_err)
-
-    @api.constrains(
-        "total_manhour_allocation",
-        "total_manhour",
-    )
-    def _check_total(self):
-        for rec in self:
-            if rec.total_manhour_allocation and rec.total_manhour:
-                if rec.total_manhour_allocation != rec.total_manhour:
-                    msg_err = (
-                        "Total Manhour Allocation and Total "
-                        "Team Allocation must be the same."
                     )
                     raise ValidationError(msg_err)

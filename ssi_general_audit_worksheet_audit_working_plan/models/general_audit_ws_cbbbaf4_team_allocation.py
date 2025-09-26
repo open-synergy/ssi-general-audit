@@ -2,7 +2,7 @@
 # Copyright 2022 PT. Simetri Sinergi Indonesia
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl-3.0-standalone.html).
 
-from odoo import fields, models
+from odoo import api, fields, models
 
 
 class GeneralAuditWSCBBBAF4TeamAllocation(models.Model):
@@ -86,6 +86,28 @@ class GeneralAuditWSCBBBAF4TeamAllocation(models.Model):
                 ("readonly", False),
             ],
         },
+    )
+
+    @api.depends(
+        "pe_allocation",
+        "ra_allocation",
+        "rr_allocation",
+        "reporting_allocation",
+    )
+    def _compute_total_allocation(self):
+        for record in self:
+            record.total_allocation = (
+                record.pe_allocation
+                + record.ra_allocation
+                + record.rr_allocation
+                + record.reporting_allocation
+            )
+
+    total_allocation = fields.Float(
+        string="Total Allocation",
+        compute="_compute_total_allocation",
+        store=True,
+        compute_sudo=True,
     )
     state = fields.Selection(
         related="worksheet_id.state",
