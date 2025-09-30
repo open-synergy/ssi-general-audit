@@ -22,7 +22,8 @@
         "data/sequence_template/general_audit_ws_abd82ed.xml",
         "data/policy_template/general_audit_ws_abd82ed.xml",
         "data/approval_template/general_audit_ws_abd82ed.xml",
-        "views/general_audit_ws_abd82ed_views.xml",
+        "views/ga_abd82ed/general_audit_ws_abd82ed_views.xml",
+        "views/ga_abd82ed/general_audit_ws_abd82ed_item_views.xml",
         # e301171 - Journal Entry Testing
         "security/res_group/general_audit_ws_e301171.xml",
         "security/ir_rule/general_audit_ws_e301171.xml",
@@ -30,7 +31,8 @@
         "data/sequence_template/general_audit_ws_e301171.xml",
         "data/policy_template/general_audit_ws_e301171.xml",
         "data/approval_template/general_audit_ws_e301171.xml",
-        "views/general_audit_ws_e301171_views.xml",
+        "views/ga_e301171/general_audit_ws_e301171_views.xml",
+        "views/ga_e301171/general_audit_ws_e301171_item_views.xml",
         # f5a3cee
         "security/res_group/general_audit_ws_f5a3cee.xml",
         "security/ir_rule/general_audit_ws_f5a3cee.xml",
