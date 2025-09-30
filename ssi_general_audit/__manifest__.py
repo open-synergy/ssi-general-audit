@@ -75,6 +75,7 @@
         "views/client_adjustment_entry_views.xml",
         "views/client_account/client_account_mapping_views.xml",
         "views/worksheet/general_audit_worksheet_mixin_views.xml",
+        "views/company/res_company_views.xml",
         "templates/checklist_templates.xml",
     ],
     "demo": [

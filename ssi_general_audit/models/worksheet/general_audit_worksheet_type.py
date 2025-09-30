@@ -11,9 +11,13 @@ class GeneralAuditWorksheetType(models.Model):
         "mixin.master_data",
     ]
     _description = "General Audit Worksheet Type"
-    _order = "category_id, sequence, code"
+    _order = "category_id, sequence, code_internal, code"
     _show_code_on_display_name = False
 
+    code_internal = fields.Char(
+        string="Internal Code",
+        default="/",
+    )
     sequence = fields.Integer(
         string="Sequence",
         required=True,
@@ -39,19 +43,3 @@ class GeneralAuditWorksheetType(models.Model):
         column1="type_id",
         column2="audit_standard_item_id",
     )
-    # TODO
-    # model_id = fields.Many2one(
-    #     string="Model",
-    #     comodel_name="ir.model",
-    # )
-    # model = fields.Char(
-    #     string="Model Technical Name",
-    #     related="model_id.model",
-    # )
-    # standard_item_ids = fields.Many2many(
-    #     string="Relevant Audit Standard Items",
-    #     comodel_name="accountant.audit_standard_item",
-    #     relation="rel_worksheet_type_2_audit_std_item",
-    #     column1="type_id",
-    #     column2="audit_standard_item_id",
-    # )

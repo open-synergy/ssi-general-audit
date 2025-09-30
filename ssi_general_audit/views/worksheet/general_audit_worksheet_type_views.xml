@@ -13,7 +13,11 @@
         />
         <field name="mode">primary</field>
         <field name="arch" type="xml">
-            <data />
+            <data>
+                <xpath expr="//field[@name='code']" position="before">
+                    <field name="code_internal" />
+                </xpath>
+            </data>
         </field>
     </record>
 
@@ -30,6 +34,9 @@
                 <xpath expr="//field[@name='code']" position="before">
                     <field name="sequence" widget="handle" />
                 </xpath>
+                <xpath expr="//field[@name='code']" position="replace">
+                    <field name="code_internal" />
+                </xpath>
             </data>
         </field>
     </record>
@@ -44,6 +51,9 @@
         <field name="mode">primary</field>
         <field name="arch" type="xml">
             <data>
+                <xpath expr="//field[@name='code']" position="after">
+                    <field name="code_internal" />
+                </xpath>
                 <xpath expr="//field[@name='active']" position="after">
                     <field name="sequence" />
                     <field name="parent_id" />

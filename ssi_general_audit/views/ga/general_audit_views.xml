@@ -230,52 +230,33 @@
                         />
                 </page>
                 <page name="worksheet" string="Worksheets">
-                    <group
-                            name="worksheet_1"
-                            colspan="4"
-                            col="2"
-                            string="Required Worksheet(s)"
-                        >
-                        <field
-                                name="required_worksheet_type_ids"
-                                colspan="2"
-                                nolabel="1"
-                            >
-                            <tree>
-                                <field name="name" />
-                                <field name="code" />
-                            </tree>
-                        </field>
-                    </group>
-                    <group
-                            name="worksheet_2"
-                            colspan="4"
-                            col="2"
-                            string="Additional Worksheet(s)"
-                        >
-                        <field
-                                name="additional_worksheet_type_ids"
-                                colspan="2"
-                                nolabel="1"
-                            >
-                            <tree>
-                                <field name="name" />
-                                <field name="code" />
-                            </tree>
-                        </field>
-                    </group>
-                    <group name="worksheet_3" colspan="4" col="2" string="Worksheet(s)">
-                        <field name="worksheet_control_ids" colspan="2" nolabel="1">
-                            <tree>
-                                <field name="type_id" />
-                                <field name="required" />
-                                <field name="worksheet_id" />
-                                <field name="user_id" />
-                                <field name="conclusion_id" />
-                                <field name="state" />
-                            </tree>
-                        </field>
-                    </group>
+                    <separator string="Required Worksheet(s)" />
+                    <field name="required_worksheet_type_ids" colspan="2" nolabel="1">
+                        <tree>
+                            <field name="name" />
+                            <field name="code_internal" />
+                        </tree>
+                    </field>
+
+                    <separator string="Additional Worksheet(s)" />
+                    <field name="additional_worksheet_type_ids" colspan="2" nolabel="1">
+                        <tree>
+                            <field name="name" />
+                            <field name="code_internal" />
+                        </tree>
+                    </field>
+
+                    <separator string="Worksheet(s)" />
+                    <field name="worksheet_control_ids" colspan="2" nolabel="1">
+                        <tree>
+                            <field name="type_id" />
+                            <field name="required" />
+                            <field name="worksheet_id" />
+                            <field name="user_id" />
+                            <field name="conclusion_id" />
+                            <field name="state" />
+                        </tree>
+                    </field>
                 </page>
             </xpath>
         </data>

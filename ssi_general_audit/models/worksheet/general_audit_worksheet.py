@@ -48,7 +48,7 @@ class GeneralAuditWorksheet(models.Model):
         comodel_name="general_audit",
         readonly=True,
         required=True,
-        ondelete="cascade",
+        ondelete="restrict",
         states={
             "draft": [
                 ("readonly", False),
@@ -198,3 +198,29 @@ class GeneralAuditWorksheet(models.Model):
             result = False
 
         return result
+
+    @api.constrains(
+        "general_audit_id",
+    )
+    def _check_unique_general_audit(self):
+        for record in self:
+            # Cari data lain dengan general_audit_id yang sama
+            duplicate = self.search(
+                [
+                    ("general_audit_id", "=", record.general_audit_id.id),
+                    ("id", "!=", record.id),
+                ],
+                limit=1,
+            )
+
+            if duplicate:
+                error_message = """
+                Context: New data creation
+                Database ID: %s
+                Problem: The selected General Audit is already used in %s.
+                \t\t Each Worksheet must have a unique General Audit.
+                """ % (
+                    self.id,
+                    self.name,
+                )
+                raise ValidationError(_(error_message))
