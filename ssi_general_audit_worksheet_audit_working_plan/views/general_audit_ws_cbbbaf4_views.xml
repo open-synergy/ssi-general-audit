@@ -48,12 +48,52 @@
                 <xpath expr="//page[1]" position="before">
                     <page name="audit_date" string="Audit Date">
                         <group name="audit_date_1" colspan="4" col="2">
-                            <field name="engagement_date" />
-                            <field name="risk_assessment_date" />
-                            <field name="fieldwork_date" />
-                            <field name="pullout_date" />
-                            <field name="reporting_date" />
-                            <field name="effective_days" />
+                            <field name="engagement_date" string="Pre-Engagement" />
+                            <field
+                                name="risk_assessment_date"
+                                string="Risk Assessment"
+                            />
+                            <field name="fieldwork_date" string="Fieldwork" />
+                            <field name="pullout_date" string="Pullout" />
+                            <field name="reporting_date" string="Reporting" />
+                            <field name="effective_days" string="Effective Days" />
+                        </group>
+                    </page>
+                    <page name="manhour" string="Man Hour Allocations">
+                        <group name="manhour_1" colspan="4" col="2">
+                            <field
+                                name="allocation_template_id"
+                                string="Allocation Template"
+                            />
+                            <field
+                                name="allocation_total_hour_id"
+                                string="Total Hour Template"
+                            />
+                            <field
+                                name="total_manhour_allocation"
+                                string="Total Hour"
+                                widget="float_time"
+                            />
+                            <field
+                                name="pe_manhour_allocation"
+                                string="Pre-Engagement"
+                                widget="float_time"
+                            />
+                            <field
+                                name="ra_manhour_allocation"
+                                string="Risk Assessment"
+                                widget="float_time"
+                            />
+                            <field
+                                name="rr_manhour_allocation"
+                                string="Risk Response"
+                                widget="float_time"
+                            />
+                            <field
+                                name="wr_manhour_allocation"
+                                string="Reporting"
+                                widget="float_time"
+                            />
                         </group>
                     </page>
                     <page name="team_allocation" string="Team Allocations">
@@ -98,37 +138,74 @@
                                 <field name="state" invisible="1" />
                             </tree>
                         </field>
-                        <group
-                            string="Total"
-                            name="team_allocation"
-                            colspan="4"
-                            col="2"
-                        >
-                            <field
-                                name="total_pe_manhour"
-                                string="Pre-Engagement"
-                                widget="float_time"
-                            />
-                            <field
-                                name="total_ra_manhour"
-                                string="Risk Assesment"
-                                widget="float_time"
-                            />
-                            <field
-                                name="total_rr_manhour"
-                                string="Risk Response"
-                                widget="float_time"
-                            />
-                            <field
-                                name="total_reporting_manhour"
-                                string="Reporting"
-                                widget="float_time"
-                            />
-                            <field
-                                name="total_manhour"
+                        <group name="team_allocation" colspan="4" col="2">
+                            <group
+                                name="team_allocation_1"
                                 string="Total"
-                                widget="float_time"
-                            />
+                                colspan="1"
+                                col="2"
+                            >
+                            <field
+                                    name="total_pe_manhour"
+                                    string="Pre-Engagement"
+                                    widget="float_time"
+                                />
+                            <field
+                                    name="total_ra_manhour"
+                                    string="Risk Assessment"
+                                    widget="float_time"
+                                />
+                            <field
+                                    name="total_rr_manhour"
+                                    string="Risk Response"
+                                    widget="float_time"
+                                />
+                            <field
+                                    name="total_reporting_manhour"
+                                    string="Reporting"
+                                    widget="float_time"
+                                />
+                            <field
+                                    name="total_manhour"
+                                    string="Total"
+                                    widget="float_time"
+                                />
+                            </group>
+                            <group
+                                name="header_right"
+                                string="Difference"
+                                colspan="1"
+                                col="2"
+                            >
+                                <field
+                                    name="diff_pe_manhour"
+                                    string="Pre-Engagement"
+                                    widget="float_time"
+                                />
+                                <field
+                                    name="diff_ra_manhour"
+                                    string="Risk Assessment"
+                                    widget="float_time"
+                                />
+                                <field
+                                    name="diff_rr_manhour"
+                                    string="Risk Response"
+                                    widget="float_time"
+                                />
+                                <field
+                                    name="diff_reporting_manhour"
+                                    string="Reporting"
+                                    widget="float_time"
+                                />
+                                <field
+                                    name="dif_total_manhour"
+                                    string="Total"
+                                    widget="float_time"
+                                />
+                            </group>
+                        </group>
+                        <group name="reasonable" colspan="4" cols="2">
+                            <field name="reasonable" colspan="4" />
                         </group>
                     </page>
                     <page name="team_competency" string="Team Competency Analysis">

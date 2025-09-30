@@ -103,6 +103,91 @@ class GeneralAuditWSCBBBAF4(models.Model):
         string="Number of Effective Days",
         compute="_compute_effective_days",
     )
+
+    # MAN HOUR ALLOCATION
+    @api.model
+    def default_allocation_template_id(self):
+        company = self.env.company
+        allocation = company.allocation_template_id
+        return allocation and allocation.id or False
+
+    allocation_template_id = fields.Many2one(
+        string="Template",
+        comodel_name="allocation_template",
+        default=lambda self: self.default_allocation_template_id(),
+        required=False,
+        readonly=True,
+        states={
+            "open": [
+                ("readonly", False),
+                ("required", True),
+            ],
+        },
+    )
+    allocation_total_hour_id = fields.Many2one(
+        string="Total Hour",
+        comodel_name="allocation_total_hour",
+        readonly=True,
+        states={
+            "open": [
+                ("readonly", False),
+            ],
+        },
+    )
+    total_manhour_allocation = fields.Float(
+        string="Total Manhour Allocation",
+        readonly=True,
+        states={
+            "open": [
+                ("readonly", False),
+            ],
+        },
+    )
+
+    @api.depends(
+        "allocation_template_id",
+        "total_manhour_allocation",
+        "allocation_template_id.pe_percentage",
+        "allocation_template_id.ra_percentage",
+        "allocation_template_id.rr_percentage",
+        "allocation_template_id.wr_percentage",
+    )
+    def _compute_allocation(self):
+        for rec in self:
+            if rec.allocation_template_id and rec.total_manhour_allocation:
+                total_hour = rec.total_manhour_allocation
+                template_id = rec.allocation_template_id
+                rec.pe_manhour_allocation = total_hour * template_id.pe_percentage / 100
+                rec.ra_manhour_allocation = total_hour * template_id.ra_percentage / 100
+                rec.rr_manhour_allocation = total_hour * template_id.rr_percentage / 100
+                rec.wr_manhour_allocation = total_hour * template_id.wr_percentage / 100
+            else:
+                rec.pe_manhour_allocation = 0.0
+                rec.ra_manhour_allocation = 0.0
+                rec.rr_manhour_allocation = 0.0
+                rec.wr_manhour_allocation = 0.0
+
+    pe_manhour_allocation = fields.Float(
+        string="Pre-Engagement Manhour Allocation",
+        compute="_compute_allocation",
+        store=True,
+    )
+    ra_manhour_allocation = fields.Float(
+        string="Risk Assessment Manhour Allocation",
+        compute="_compute_allocation",
+        store=True,
+    )
+    rr_manhour_allocation = fields.Float(
+        string="Risk Response Manhour Allocation",
+        compute="_compute_allocation",
+        store=True,
+    )
+    wr_manhour_allocation = fields.Float(
+        string="Reporting Manhour Allocation",
+        compute="_compute_allocation",
+        store=True,
+    )
+
     team_allocation_ids = fields.One2many(
         string="Team Allocations",
         comodel_name="general_audit_ws_cbbbaf4.team_allocation",
@@ -143,7 +228,7 @@ class GeneralAuditWSCBBBAF4(models.Model):
         compute_sudo=True,
     )
     total_ra_manhour = fields.Float(
-        string="Total Risk Assesment Allocation",
+        string="Total Risk Assessment Allocation",
         compute="_compute_total_manhour",
         store=True,
         compute_sudo=True,
@@ -155,7 +240,7 @@ class GeneralAuditWSCBBBAF4(models.Model):
         compute_sudo=True,
     )
     total_reporting_manhour = fields.Float(
-        string="Total Respoting Allocation",
+        string="Total Reporting Allocation",
         compute="_compute_total_manhour",
         store=True,
         compute_sudo=True,
@@ -176,6 +261,16 @@ class GeneralAuditWSCBBBAF4(models.Model):
             ],
         },
     )
+    reasonable = fields.Boolean(
+        string="Service hour allocation is reasonable?",
+        default=False,
+        readonly=True,
+        states={
+            "open": [
+                ("readonly", False),
+            ],
+        },
+    )
     team_competency_ids = fields.One2many(
         string="Team Competency Analysis",
         comodel_name="general_audit_ws_cbbbaf4.team_competency",
@@ -186,6 +281,68 @@ class GeneralAuditWSCBBBAF4(models.Model):
                 ("readonly", False),
             ],
         },
+    )
+
+    # Different
+    @api.depends(
+        "pe_manhour_allocation",
+        "ra_manhour_allocation",
+        "rr_manhour_allocation",
+        "wr_manhour_allocation",
+        "total_manhour_allocation",
+        "total_pe_manhour",
+        "total_ra_manhour",
+        "total_rr_manhour",
+        "total_reporting_manhour",
+        "total_manhour",
+    )
+    def _compute_diff_manhour(self):
+        for record in self:
+            record.diff_pe_manhour = (
+                record.total_pe_manhour - record.pe_manhour_allocation
+            )
+            record.diff_ra_manhour = (
+                record.total_ra_manhour - record.ra_manhour_allocation
+            )
+            record.diff_rr_manhour = (
+                record.total_rr_manhour - record.rr_manhour_allocation
+            )
+            record.diff_reporting_manhour = (
+                record.total_reporting_manhour - record.wr_manhour_allocation
+            )
+            record.dif_total_manhour = (
+                record.total_manhour - record.total_manhour_allocation
+            )
+
+    diff_pe_manhour = fields.Float(
+        string="Pre-Engagement",
+        compute="_compute_diff_manhour",
+        store=True,
+        compute_sudo=True,
+    )
+    diff_ra_manhour = fields.Float(
+        string="Risk Assessment",
+        compute="_compute_diff_manhour",
+        store=True,
+        compute_sudo=True,
+    )
+    diff_rr_manhour = fields.Float(
+        string="Risk Response",
+        compute="_compute_diff_manhour",
+        store=True,
+        compute_sudo=True,
+    )
+    diff_reporting_manhour = fields.Float(
+        string="Reporting",
+        compute="_compute_diff_manhour",
+        store=True,
+        compute_sudo=True,
+    )
+    dif_total_manhour = fields.Float(
+        string="Total",
+        compute="_compute_diff_manhour",
+        store=True,
+        compute_sudo=True,
     )
 
     # LINK - 1 (PE.110)
@@ -419,6 +576,14 @@ class GeneralAuditWSCBBBAF4(models.Model):
         for chk in self.team_competency_ids:
             if chk.team_id.id not in emp_ids:
                 chk.unlink()
+
+    @api.onchange(
+        "allocation_total_hour_id",
+        "allocation_total_hour_id.total_hour",
+    )
+    def onchange_total_manhour_allocation(self):
+        if self.allocation_total_hour_id:
+            self.total_manhour_allocation = self.allocation_total_hour_id.total_hour
 
     @api.constrains(
         "engagement_date",
