@@ -2,7 +2,8 @@
 # Copyright 2022 PT. Simetri Sinergi Indonesia
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl-3.0-standalone.html).
 
-from odoo import api, fields, models
+from odoo import _, api, fields, models
+from odoo.exceptions import ValidationError
 
 
 class GeneralAuditWorksheetMixin(models.AbstractModel):
@@ -199,3 +200,32 @@ class GeneralAuditWorksheetMixin(models.AbstractModel):
                 "parent_type_id": self.type_id.id,
             }
         )
+
+    @api.constrains(
+        "general_audit_id",
+        "type_id",
+    )
+    def _check_unique_general_audit(self):
+        for record in self:
+            # Cari data lain dengan general_audit_id yang sama
+            duplicate = self.search(
+                [
+                    ("general_audit_id", "=", record.general_audit_id.id),
+                    ("type_id", "=", record.type_id.id),
+                    ("id", "!=", record.id),
+                ],
+                limit=1,
+            )
+
+            if duplicate:
+                error_message = """
+                Context: New data creation for %s
+                Database ID: %s
+                Problem: The selected General Audit is already used in %s.
+                \t\t Each Worksheet must have a unique General Audit.
+                """ % (
+                    self.type_id.name,
+                    self.id,
+                    self.name,
+                )
+                raise ValidationError(_(error_message))
