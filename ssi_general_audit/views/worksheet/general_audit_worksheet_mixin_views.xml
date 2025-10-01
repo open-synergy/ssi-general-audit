@@ -73,8 +73,6 @@
                     <field name="partner_id" />
                     <field name="title" />
                     <field name="type_id" readonly="1" force_save="1" />
-                </xpath>
-                <xpath expr="//field[@name='user_id']" position="after">
                     <field name="parent_type_id" invisible="1" />
                     <field name="account_type_set_id" invisible="1" />
                     <field name="currency_id" invisible="1" />
@@ -82,7 +80,7 @@
                         name="allowed_conclusion_ids"
                         widget="many2many_tags"
                         invisible="1"
-                    />
+                    />                    
                 </xpath>
                 <xpath expr="//group[@name='header_right']" position="inside">
                     <separator string="Responsible" col="2"/>
