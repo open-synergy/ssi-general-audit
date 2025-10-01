@@ -229,3 +229,9 @@ class GeneralAuditWorksheetMixin(models.AbstractModel):
                     self.name,
                 )
                 raise ValidationError(_(error_message))
+
+    @ssi_decorator.insert_on_form_view()
+    def _insert_form_element(self, view_arch):
+        if self._automatically_insert_view_element:
+            view_arch = self._reconfigure_statusbar_visible(view_arch)
+        return view_arch                
