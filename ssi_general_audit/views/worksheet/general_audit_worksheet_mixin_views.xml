@@ -73,12 +73,6 @@
                     <field name="partner_id" />
                     <field name="title" />
                     <field name="type_id" readonly="1" force_save="1" />
-                    <field name="user_id" />
-                    <field name="preparation_date" string="Date" />
-                    <field name="preparation_time" string="Total (in minutes)" />
-                    <field name="reviewer_id" />
-                    <field name="review_date" string="Date" />
-                    <field name="review_time" string="Total (in minutes)" />
                 </xpath>
                 <xpath expr="//field[@name='user_id']" position="after">
                     <field name="parent_type_id" invisible="1" />
@@ -91,6 +85,14 @@
                     />
                 </xpath>
                 <xpath expr="//group[@name='header_right']" position="inside">
+                    <separator string="Responsible" col="2"/>
+                    <field name="user_id" string="Team Member"/>
+                    <field name="preparation_date" string="Date" />
+                    <field name="preparation_time" string="Total (in minutes)" />
+                    <separator string="Reviewer" col="2"/>
+                    <field name="reviewer_id" string="Team Member"/>
+                    <field name="review_date" string="Date" />
+                    <field name="review_time" string="Total (in minutes)" />                
                     <field name="date_start" invisible="1" />
                     <field name="date_end" invisible="1" />
                     <field name="interim_date_start" invisible="1" />
