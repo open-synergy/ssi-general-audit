@@ -32,4 +32,20 @@
             eval="[(6, 0, [ref('checklist_option_high'), ref('checklist_option_medium'), ref('checklist_option_low')])]"
         />
     </record>
+    <record id="checklist_option_set_5" model="checklist.option_set">
+        <field name="code">/</field>
+        <field name="name">2 Options (Implemented/Not Implemented)</field>
+        <field
+            name="option_ids"
+            eval="[(6, 0, [ref('checklist_option_implemented'), ref('checklist_option_not_implemented')])]"
+        />
+    </record>
+    <record id="checklist_option_set_6" model="checklist.option_set">
+        <field name="code">/</field>
+        <field name="name">2 Options (Selected/Not Selected)</field>
+        <field
+            name="option_ids"
+            eval="[(6, 0, [ref('checklist_option_selected'), ref('checklist_option_not_selected')])]"
+        />
+    </record>
 </odoo>
