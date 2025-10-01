@@ -15,6 +15,9 @@
     "data": [
         "security/ir_module_category_data.xml",
         "data/general_audit_worksheet_type_data.xml",
+        # MASTER DATA
+        "data/master/general_audit_ws_e301171_item.xml",
+        "data/master/general_audit_ws_abd82ed_item.xml",
         # abd82ed - Client Assistance Package
         "security/res_group/general_audit_ws_abd82ed.xml",
         "security/ir_rule/general_audit_ws_abd82ed.xml",

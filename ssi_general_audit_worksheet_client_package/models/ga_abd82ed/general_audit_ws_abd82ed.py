@@ -22,3 +22,10 @@ class GeneralAuditWSabd82ed(models.Model):
         string="Checklist",
         comodel_name="general_audit_ws_abd82ed.checklist",
     )
+    position = fields.Selection(
+        string="Position",
+        selection=[
+            ("current", "Current"),
+            ("interim", "Interim"),
+        ],
+    )
