@@ -5,6 +5,8 @@
 from odoo import _, api, fields, models
 from odoo.exceptions import ValidationError
 
+from odoo.addons.ssi_decorator import ssi_decorator
+
 
 class GeneralAuditWorksheetMixin(models.AbstractModel):
     _name = "general_audit_worksheet_mixin"
@@ -234,4 +236,4 @@ class GeneralAuditWorksheetMixin(models.AbstractModel):
     def _insert_form_element(self, view_arch):
         if self._automatically_insert_view_element:
             view_arch = self._reconfigure_statusbar_visible(view_arch)
-        return view_arch                
+        return view_arch
