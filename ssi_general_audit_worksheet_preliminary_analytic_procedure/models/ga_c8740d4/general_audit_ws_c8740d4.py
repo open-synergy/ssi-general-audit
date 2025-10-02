@@ -10,12 +10,20 @@ class GeneralAuditWSc8740d4(models.Model):
     _description = "Preliminary Analytic Procedure (c8740d4)"
     _inherit = [
         "general_audit_worksheet_mixin",
+        "mixin.checklist",
     ]
     _type_xml_id = (
         "ssi_general_audit_worksheet_preliminary_analytic_procedure."
         "worksheet_type_c8740d4"
     )
+    _checklist_page_xpath = "//page[@name='preliminary']"
+    _checklist_model_name = "general_audit_ws_c8740d4.checklist"
+    _item_model_name = "general_audit_ws_c8740d4.item"
 
+    checklist_ids = fields.One2many(
+        string="Checklist",
+        comodel_name="general_audit_ws_c8740d4.checklist",
+    )
     conclusion_ids = fields.One2many(
         string="Conclusion(s)",
         comodel_name="general_audit_ws_c8740d4.analytic_procedure_conclusion",

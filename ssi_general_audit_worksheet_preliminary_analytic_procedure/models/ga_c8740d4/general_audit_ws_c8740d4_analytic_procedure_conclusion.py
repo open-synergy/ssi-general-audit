@@ -12,7 +12,7 @@ class GeneralAuditWSb32655aAnalyticProcedureConclusion(models.Model):
 
     worksheet_id = fields.Many2one(
         string="# Worksheet",
-        comodel_name="ws_ra140",
+        comodel_name="general_audit_ws_c8740d4",
         required=True,
         ondelete="cascade",
     )
