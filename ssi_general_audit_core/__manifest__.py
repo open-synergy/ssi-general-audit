@@ -19,6 +19,7 @@
         "ssi_general_audit_worksheet_team_communication",
         # RA
         "ssi_general_audit_worksheet_client_package",
+        "ssi_general_audit_worksheet_trial_balance",
         "ssi_general_audit_worksheet_understanding_entity",
         "ssi_general_audit_worksheet_preliminary_materiality",
         "ssi_general_audit_worksheet_preliminary_analytic_procedure",
