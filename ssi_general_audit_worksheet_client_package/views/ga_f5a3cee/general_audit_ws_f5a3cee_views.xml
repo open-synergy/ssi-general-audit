@@ -41,6 +41,32 @@
         />
         <field name="arch" type="xml">
             <data>
+                <xpath expr="//page[@name='note']" position='before'>
+                    <page name="details" string="Details">
+                        <button
+                            name="action_populate_details"
+                            string="Populate"
+                            type="object"
+                            icon="fa-refresh"
+                            class="oe_highlight"
+                            style="margin-right:4px"
+                            attrs="{'invisible': [('state', '=', 'draft')]}"
+                        />
+                        <field
+                            name="detail_ids"
+                            attrs="{'readonly': [('state', '!=', 'open')]}"
+                        >
+                            <tree editable="top">
+                                <field name="worksheet_id" invisible="1" />
+                                <field name="account_client_type_id" />
+                                <field name="date" />
+                                <field name="attachment_ids" widget="many2many_tags" />
+                                <field name="complete_ok" widget="boolean_toggle" />
+                                <field name="state" invisible="1" />
+                            </tree>
+                        </field>
+                    </page>
+                </xpath>
             </data>
         </field>
     </record>

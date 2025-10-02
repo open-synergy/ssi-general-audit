@@ -36,14 +36,14 @@
         "data/approval_template/general_audit_ws_e301171.xml",
         "views/ga_e301171/general_audit_ws_e301171_views.xml",
         "views/ga_e301171/general_audit_ws_e301171_item_views.xml",
-        # f5a3cee
+        # f5a3cee - Data Collection
         "security/res_group/general_audit_ws_f5a3cee.xml",
         "security/ir_rule/general_audit_ws_f5a3cee.xml",
         "data/ir_sequence/general_audit_ws_f5a3cee.xml",
         "data/sequence_template/general_audit_ws_f5a3cee.xml",
         "data/policy_template/general_audit_ws_f5a3cee.xml",
         "data/approval_template/general_audit_ws_f5a3cee.xml",
-        "views/general_audit_ws_f5a3cee_views.xml",
+        "views/ga_f5a3cee/general_audit_ws_f5a3cee_views.xml",
         "security/ir.model.access.csv",
     ],
     "demo": [],
