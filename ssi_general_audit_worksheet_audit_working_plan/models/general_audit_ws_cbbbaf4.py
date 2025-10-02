@@ -449,7 +449,6 @@ class GeneralAuditWSCBBBAF4(models.Model):
     def _update_allocation_team_data(self, summary):
         self.ensure_one()
         data = {
-            "worksheet_id": self.id,
             "team_id": summary.employee_id.id,
             "sequence": summary.sequence,
             "role_id": summary.team_role_id.id,
@@ -488,7 +487,7 @@ class GeneralAuditWSCBBBAF4(models.Model):
                 Allocation.create(self._create_allocation_team_data(summary))
             else:
                 mapping[summary.employee_id.id].write(
-                    self._create_allocation_team_data(summary)
+                    self._update_allocation_team_data(summary)
                 )
 
         emp_ids = set(emps.ids)
