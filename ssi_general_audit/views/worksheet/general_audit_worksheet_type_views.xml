@@ -58,7 +58,12 @@
                     <field name="sequence" />
                     <field name="parent_id" />
                     <field name="category_id" />
-                    <field name="max_number_allowed" />
+                    <field name="allowed_audit" />
+                    <field
+                        name="max_number_allowed"
+                        attrs="{'invisible': [('allowed_audit', '=', False)]}"
+                        placeholder="Please enter '0' for unlimited"
+                    />
                 </xpath>
                 <xpath expr="//page[@name='note']" position="before">
                     <page name="standard_audit" string="Relevant Audit Standard Items">

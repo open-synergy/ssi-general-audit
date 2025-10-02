@@ -166,7 +166,7 @@ class ClientTrialBalance(models.Model):
         readonly=True,
     )
     account_type_set_id = fields.Many2one(
-        string="Accoount Type Set",
+        string="Account Type Set",
         related="general_audit_id.account_type_set_id",
         store=True,
         readonly=True,

@@ -92,6 +92,18 @@ class GeneralAuditWorksheet(models.Model):
         readonly=True,
         store=True,
     )
+    preparation_date = fields.Date(
+        string="Preparation Date",
+    )
+    preparation_time = fields.Integer(
+        string="Preparation Time",
+    )
+    review_date = fields.Date(
+        string="Review Date",
+    )
+    review_time = fields.Integer(
+        string="Review Time",
+    )
     currency_id = fields.Many2one(
         string="Currency",
         comodel_name="res.currency",

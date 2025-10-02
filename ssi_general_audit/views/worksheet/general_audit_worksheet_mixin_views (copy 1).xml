@@ -62,33 +62,7 @@
                 </xpath>
                 <xpath expr="//field[@name='reviewer_id']" position="replace">
                 </xpath>
-                <xpath expr="//field[@name='company_id']" position="after">
-                    <field name="general_audit_id" />
-                    <field
-                        name="account_type_ids"
-                        widget="many2many_tags"
-                        invisible="1"
-                    />
-                    <field name="accountant_id" />
-                    <field name="partner_id" />
-                    <field name="title" />
-                    <field name="type_id" readonly="1" force_save="1" />
-                    <field name="parent_type_id" invisible="1" />
-                    <field name="account_type_set_id" invisible="1" />
-                    <field name="currency_id" invisible="1" />
-                    <field
-                        name="allowed_conclusion_ids"
-                        widget="many2many_tags"
-                        invisible="1"
-                    />
-                    <separator string="Responsible" col="2" />
-                    <field name="user_id" string="Team Member" />
-                    <field name="preparation_date" string="Date" />
-                    <field name="preparation_time" string="Total (in minutes)" />
-                    <separator string="Reviewer" col="2" />
-                    <field name="reviewer_id" string="Team Member" />
-                    <field name="review_date" string="Date" />
-                    <field name="review_time" string="Total (in minutes)" />
+                <xpath expr="//field[@name='company_id']" position="replace">
                 </xpath>
                 <xpath expr="//group[@name='header_right']" position="inside">
                     <field name="date_start" invisible="1" />
@@ -102,6 +76,69 @@
                     <page name="standard_audit" string="Relevant Audit Standard Items">
                         <field name="standard_item_ids" nolabel="1" />
                     </page>
+                </xpath>
+                <xpath expr="//notebook" position="before">
+                    <notebook name="header">
+                        <page name="general_info" string="General Information">
+                            <group>
+                                <field name="company_id" />
+                                <field
+                                    name="general_audit_id"
+                                    domain="[('state','=','open')]"
+                                />
+                                <field
+                                    name="account_type_ids"
+                                    widget="many2many_tags"
+                                    invisible="1"
+                                />
+                                <field name="accountant_id" />
+                                <field name="partner_id" />
+                                <field name="title" />
+                                <field name="type_id" readonly="1" force_save="1" />
+                                <field name="parent_type_id" invisible="1" />
+                                <field name="account_type_set_id" invisible="1" />
+                                <field name="currency_id" invisible="1" />
+                                <field
+                                    name="allowed_conclusion_ids"
+                                    widget="many2many_tags"
+                                    invisible="1"
+                                />
+                            </group>
+                        </page>
+                        <page
+                            name="responsible_reviewer"
+                            string="Responsible &amp; Reviewer"
+                        >
+                            <group name="responsible_reviewer_1" colspan="4" col="2">
+                                <group
+                                    name="responsible"
+                                    string="Responsible"
+                                    colspan="1"
+                                    col="2"
+                                >
+                                    <field name="user_id" string="Team Member" />
+                                    <field name="preparation_date" string="Date" />
+                                    <field
+                                        name="preparation_time"
+                                        string="Total (in minutes)"
+                                    />
+                                </group>
+                                <group
+                                    name="reviewer"
+                                    string="Reviewer"
+                                    colspan="1"
+                                    col="2"
+                                >
+                                    <field name="reviewer_id" string="Team Member" />
+                                    <field name="review_date" string="Date" />
+                                    <field
+                                        name="review_time"
+                                        string="Total (in minutes)"
+                                    />
+                                </group>
+                            </group>
+                        </page>
+                    </notebook>
                 </xpath>
             </data>
         </field>

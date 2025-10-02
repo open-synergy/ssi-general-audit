@@ -24,6 +24,7 @@ class GeneralAuditWorksheetMixin(models.AbstractModel):
     _approval_to_state = "done"
     _approval_state = "confirm"
     _after_approved_method = "action_done"
+    _multiple_approval_xpath_reference = "//page[@name='note']"
 
     # Attributes related to add element on view automatically
     _automatically_insert_view_element = True
@@ -70,18 +71,6 @@ class GeneralAuditWorksheetMixin(models.AbstractModel):
         required=True,
         readonly=True,
         ondelete="cascade",
-    )
-    preparation_date = fields.Date(
-        string="Preparation Date",
-    )
-    preparation_time = fields.Integer(
-        string="Preparation Time",
-    )
-    review_date = fields.Date(
-        string="Review Date",
-    )
-    review_time = fields.Integer(
-        string="Review Time",
     )
 
     @api.model
@@ -209,31 +198,56 @@ class GeneralAuditWorksheetMixin(models.AbstractModel):
     )
     def _check_unique_general_audit(self):
         for record in self:
-            # Cari data lain dengan general_audit_id yang sama
-            duplicate = self.search(
-                [
-                    ("general_audit_id", "=", record.general_audit_id.id),
-                    ("type_id", "=", record.type_id.id),
-                    ("id", "!=", record.id),
-                ],
-                limit=1,
-            )
+            criteria = [
+                ("general_audit_id", "=", record.general_audit_id.id),
+                ("type_id", "=", record.type_id.id),
+                ("id", "!=", record.id),
+            ]
+            if not record.type_id.allowed_audit:
+                duplicate = self.search(criteria, limit=1)
 
-            if duplicate:
-                error_message = """
-                Context: New data creation for %s
-                Database ID: %s
-                Problem: The selected General Audit is already used in %s.
-                \t\t Each Worksheet must have a unique General Audit.
-                """ % (
-                    self.type_id.name,
-                    self.id,
-                    self.name,
-                )
-                raise ValidationError(_(error_message))
+                if duplicate:
+                    error_message = """
+                    Context: New data creation for %s
+                    Database ID: %s
+                    Problem: The selected General Audit is already used in %s.
+                    \t\t Each Worksheet must have a unique General Audit.
+                    """ % (
+                        record.type_id.name,
+                        record.id,
+                        record.name,
+                    )
+                    raise ValidationError(_(error_message))
+            else:
+                duplicate = self.search(criteria)
+                if record.type_id.max_number_allowed >= 1:
+                    if len(duplicate) >= record.type_id.max_number_allowed:
+                        error_message = """
+                        Context: New data creation for %s
+                        Database ID: %s
+                        Problem: General Audit has exceeded the max. limit allowed
+                        \t\t The maximum limit allowed is %s
+                        """ % (
+                            record.type_id.name,
+                            record.id,
+                            record.type_id.max_number_allowed,
+                        )
+                        raise ValidationError(_(error_message))
 
     @ssi_decorator.insert_on_form_view()
     def _insert_form_element(self, view_arch):
         if self._automatically_insert_view_element:
             view_arch = self._reconfigure_statusbar_visible(view_arch)
         return view_arch
+
+    @ssi_decorator.post_confirm_action()
+    def _10_create_preparation_date(self):
+        self.ensure_one()
+        if not self.preparation_date:
+            self.preparation_date = fields.Date.today()
+
+    @ssi_decorator.post_approve_action()
+    def _10_create_review_date(self):
+        self.ensure_one()
+        if not self.review_date:
+            self.review_date = fields.Date.today()

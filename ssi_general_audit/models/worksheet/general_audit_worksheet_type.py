@@ -31,10 +31,15 @@ class GeneralAuditWorksheetType(models.Model):
         string="Category",
         comodel_name="general_audit_worksheet_type_category",
     )
+    allowed_audit = fields.Boolean(
+        string="Allowed To Audit More Than One",
+        required=True,
+        default=False,
+    )
     max_number_allowed = fields.Integer(
         string="Max. Number Allowed Per Audit",
         required=True,
-        default=1,
+        default=0,
     )
     standard_item_ids = fields.Many2many(
         string="Relevant Audit Standard Items",
