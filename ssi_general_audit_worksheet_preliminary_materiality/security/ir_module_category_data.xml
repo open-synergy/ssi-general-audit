@@ -3,17 +3,30 @@
      Copyright 2021 PT. Simetri Sinergi Indonesia
      License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl). -->
 <odoo>
-<!-- General Audit Worksheet: Preliminary Materiality (d9d2b44) -->
+<!-- Preliminary Materiality (1d9338d) -->
+<record
+        id="general_audit_ws_1d9338d_workflow_module_category"
+        model="ir.module.category"
+    >
+    <field name="name">Preliminary Materiality</field>
+    <field name="parent_id" ref="ssi_accountant.accountant_workflow_module_category" />
+</record>
+
+<record id="general_audit_ws_1d9338d_data_module_category" model="ir.module.category">
+    <field name="name">Preliminary Materiality</field>
+    <field name="parent_id" ref="ssi_accountant.accountant_data_module_category" />
+</record>
+<!-- Materiality Computation (d9d2b44) -->
 <record
         id="general_audit_ws_d9d2b44_workflow_module_category"
         model="ir.module.category"
     >
-    <field name="name">General Audit Worksheet - Preliminary Materiality</field>
+    <field name="name">Materiality Computation</field>
     <field name="parent_id" ref="ssi_accountant.accountant_workflow_module_category" />
 </record>
 
 <record id="general_audit_ws_d9d2b44_data_module_category" model="ir.module.category">
-    <field name="name">General Audit Worksheet - Preliminary Materiality</field>
+    <field name="name">Materiality Computation</field>
     <field name="parent_id" ref="ssi_accountant.accountant_data_module_category" />
 </record>
 
@@ -22,30 +35,12 @@
         id="general_audit_ws_6dcda0e_workflow_module_category"
         model="ir.module.category"
     >
-    <field
-            name="name"
-        >General Audit Worksheet - Preliminary Materiality Account Mapping</field>
+    <field name="name">Preliminary Materiality Account Mapping</field>
     <field name="parent_id" ref="ssi_accountant.accountant_workflow_module_category" />
 </record>
 
 <record id="general_audit_ws_6dcda0e_data_module_category" model="ir.module.category">
-    <field
-            name="name"
-        >General Audit Worksheet - Preliminary Materiality Account Mapping</field>
-    <field name="parent_id" ref="ssi_accountant.accountant_data_module_category" />
-</record>
-
-<!-- Materiality Computation (1d9338d) -->
-<record
-        id="general_audit_ws_1d9338d_workflow_module_category"
-        model="ir.module.category"
-    >
-    <field name="name">Materiality Computation</field>
-    <field name="parent_id" ref="ssi_accountant.accountant_workflow_module_category" />
-</record>
-
-<record id="general_audit_ws_1d9338d_data_module_category" model="ir.module.category">
-    <field name="name">Materiality Computation</field>
+    <field name="name">Preliminary Materiality Account Mapping</field>
     <field name="parent_id" ref="ssi_accountant.accountant_data_module_category" />
 </record>
 </odoo>

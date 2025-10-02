@@ -7,7 +7,7 @@ from odoo import api, fields, models
 
 class GeneralAuditWSd9d2b44(models.Model):
     _name = "general_audit_ws_d9d2b44"
-    _description = "General Audit Worksheet: Preliminary Materiality (d9d2b44)"
+    _description = "Materiality Computation (d9d2b44)"
     _inherit = [
         "general_audit_worksheet_mixin",
     ]

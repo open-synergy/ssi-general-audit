@@ -3,7 +3,7 @@
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl-3.0-standalone.html).
 
 from . import (
-    ga_d9d2b44,
-    ga_6dcda0e,
-    ga_1d9338d,
+    general_audit_ws_1d9338d_item,
+    general_audit_ws_1d9338d,
+    general_audit_ws_1d9338d_checklist,
 )

@@ -21,16 +21,21 @@
         "data/policy_template_data.xml",
         "data/approval_template_data.xml",
         "data/general_audit_worksheet_type_data.xml",
-        "views/general_audit_ws_d9d2b44_views.xml",
-        "views/general_audit_ws_6dcda0e_views.xml",
-        # 1d9338d
+        # MASTER DATA
+        "data/master/general_audit_ws_1d9338d_item.xml",
+        # 6dcda0e - Preliminary Materiality Account Mapping
+        "views/ga_6dcda0e/general_audit_ws_6dcda0e_views.xml",
+        # d9d2b44 - Materiality Computation
+        "views/ga_d9d2b44/general_audit_ws_d9d2b44_views.xml",
+        # 1d9338d - Preliminary Materiality
         "security/res_group/general_audit_ws_1d9338d.xml",
         "security/ir_rule/general_audit_ws_1d9338d.xml",
         "data/ir_sequence/general_audit_ws_1d9338d.xml",
         "data/sequence_template/general_audit_ws_1d9338d.xml",
         "data/policy_template/general_audit_ws_1d9338d.xml",
         "data/approval_template/general_audit_ws_1d9338d.xml",
-        "views/general_audit_ws_1d9338d_views.xml",
+        "views/ga_1d9338d/general_audit_ws_1d9338d_views.xml",
+        "views/ga_1d9338d/general_audit_ws_1d9338d_item_views.xml",
         "security/ir.model.access.csv",
     ],
     "demo": [],
