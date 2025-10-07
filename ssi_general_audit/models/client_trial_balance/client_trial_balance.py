@@ -399,6 +399,7 @@ class ClientTrialBalance(models.Model):
 
     def action_recompute_computation(self):
         for record in self.sudo():
+            record.onchange_computation_ids()
             record._recompute_computation()
 
     @ssi_decorator.pre_confirm_check()

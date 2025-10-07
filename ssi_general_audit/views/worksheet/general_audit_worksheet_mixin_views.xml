@@ -81,14 +81,6 @@
                         widget="many2many_tags"
                         invisible="1"
                     />
-                    <separator string="Responsible" col="2" />
-                    <field name="user_id" string="Team Member" />
-                    <field name="preparation_date" string="Date" />
-                    <field name="preparation_time" string="Total (in minutes)" />
-                    <separator string="Reviewer" col="2" />
-                    <field name="reviewer_id" string="Team Member" />
-                    <field name="review_date" string="Date" />
-                    <field name="review_time" string="Total (in minutes)" />
                 </xpath>
                 <xpath expr="//group[@name='header_right']" position="inside">
                     <field name="date_start" invisible="1" />
@@ -97,6 +89,21 @@
                     <field name="interim_date_end" invisible="1" />
                     <field name="previous_date_start" invisible="1" />
                     <field name="previous_date_end" invisible="1" />
+                    <label for="user_id" string="Responsible" />
+                    <div class="o_three_in_one_format">
+                        <field name="user_id" placeholder="Team Member" />
+                        <field name="preparation_date" placeholder="Date" />
+                        <field
+                            name="preparation_time"
+                            placeholder="Total (in minutes)"
+                        />
+                    </div>
+                    <label for="reviewer_id" string="Reviewer" />
+                    <div class="o_three_in_one_format">
+                        <field name="reviewer_id" placeholder="Team Member" />
+                        <field name="review_date" placeholder="Date" />
+                        <field name="review_time" placeholder="Total (in minutes)" />
+                    </div>
                 </xpath>
                 <xpath expr="//page[@name='note']" position="after">
                     <page name="standard_audit" string="Relevant Audit Standard Items">

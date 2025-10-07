@@ -23,6 +23,7 @@
         "ssi_decorator",
     ],
     "data": [
+        "views/assets.xml",
         "security/ir_module_category_data.xml",
         "security/res_group_data.xml",
         "security/ir.model.access.csv",
