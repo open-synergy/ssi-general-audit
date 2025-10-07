@@ -1,0 +1,331 @@
+<?xml version="1.0" ?>
+<!-- Copyright 2025 OpenSynergy Indonesia
+     Copyright 2025 PT. Simetri Sinergi Indonesia
+     License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl-3.0-standalone.html). -->
+<odoo>
+
+    <record id="general_audit_ws_ddf034c_view_search" model="ir.ui.view">
+        <field name="name">general_audit_ws_ddf034c form</field>
+        <field name="model">general_audit_ws_ddf034c</field>
+        <field
+            name="inherit_id"
+            ref="ssi_general_audit.general_audit_worksheet_mixin_view_search"
+        />
+        <field name="mode">primary</field>
+        <field name="arch" type="xml">
+            <data />
+        </field>
+    </record>
+
+    <record id="general_audit_ws_ddf034c_view_tree" model="ir.ui.view">
+        <field name="name">general_audit_ws_ddf034c tree</field>
+        <field name="model">general_audit_ws_ddf034c</field>
+        <field name="mode">primary</field>
+        <field
+            name="inherit_id"
+            ref="ssi_general_audit.general_audit_worksheet_mixin_view_tree"
+        />
+        <field name="arch" type="xml">
+            <data>
+            </data>
+        </field>
+    </record>
+
+    <record id="general_audit_ws_ddf034c_view_form" model="ir.ui.view">
+        <field name="name">general_audit_ws_ddf034c form</field>
+        <field name="model">general_audit_ws_ddf034c</field>
+        <field name="mode">primary</field>
+        <field
+            name="inherit_id"
+            ref="ssi_general_audit.general_audit_worksheet_mixin_view_form"
+        />
+        <field name="arch" type="xml">
+            <data>
+                <xpath expr="//page[@name='note']" position="before">
+                    <page name="client_contacts" string="Client Contacts">
+                        <field name="client_contact_ids">
+                            <tree editable="top">
+                                <field name="sequence" widget="handle" />
+                                <field name="worksheet_id" invisible="1" />
+                                <field name="worksheet_partner_id" invisible="1" />
+                                <field name="state" invisible="1" />
+                                <field name="partner_id" />
+                                <field name="contact_name" />
+                                <field name="contact_position" />
+                                <field name="contact_phone" />
+                                <field name="contact_mobile" />
+                                <field name="contact_email" />
+                            </tree>
+                        </field>
+                    </page>
+                    <page name="est" string="Establishment of the Company">
+                        <group name="est_header">
+                            <group name="est_left">
+                                <field
+                                    name="est_no"
+                                    string="Number"
+                                    placeholder="Deed of Establishment Number"
+                                />
+                                <field
+                                    name="est_date"
+                                    string="Date"
+                                    placeholder="Deed of Establishment Date"
+                                />
+                                <field
+                                    name="est_company_purpose"
+                                    string="Purpose"
+                                    placeholder="Purpose and Objectives of the Company"
+                                />
+                                <field
+                                    name="est_company_address"
+                                    string="Address"
+                                    placeholder="Company Address"
+                                />
+                                <field name="est_notary_name" string="Name of Notary" />
+                                <field
+                                    name="est_notary_address"
+                                    string="Address of Notary"
+                                />
+                            </group>
+                            <group name="est_right" string="Capital">
+                                <label
+                                    for="est_authorized_amount"
+                                    string="Authorized Capital"
+                                />
+                                <div class="o_three_in_one_format">
+                                    <field
+                                        name="est_authorized_amount"
+                                        placeholder="Amount (IDR)"
+                                    />
+                                    <field
+                                        name="est_authorized_number"
+                                        placeholder="Number of Shares"
+                                    />
+                                    <field
+                                        name="est_authorized_value"
+                                        placeholder="Value per Share"
+                                    />
+                                </div>
+                                <label for="est_paid_amount" string="Paid Capital" />
+                                <div class="o_three_in_one_format">
+                                    <field
+                                        name="est_paid_amount"
+                                        placeholder="Amount (IDR)"
+                                    />
+                                    <field
+                                        name="est_paid_number"
+                                        placeholder="Number of Shares"
+                                    />
+                                    <field
+                                        name="est_paid_value"
+                                        placeholder="Value per Share"
+                                    />
+                                </div>
+                            </group>
+                        </group>
+                        <separator string="Shareholding Structure" />
+                        <field name="est_shareholding_ids">
+                            <tree editable="top">
+                                <field name="sequence" widget="handle" />
+                                <field name="worksheet_id" invisible="1" />
+                                <field name="state" invisible="1" />
+                                <field name="shareholder_name" />
+                                <field
+                                    name="shareholder_number"
+                                    string="Number of Shares"
+                                />
+                            </tree>
+                        </field>
+                        <separator string="Company Management Composition" />
+                        <field name="est_composition_ids">
+                            <tree editable="top">
+                                <field name="sequence" widget="handle" />
+                                <field name="worksheet_id" invisible="1" />
+                                <field name="state" invisible="1" />
+                                <field name="admin_name" />
+                                <field name="admin_position" />
+                            </tree>
+                        </field>
+                    </page>
+                    <page name="adm" string="Amendment of the Company">
+                        <group name="adm_header">
+                            <group name="adm_left">
+                                <field
+                                    name="adm_no"
+                                    string="Number"
+                                    placeholder="Deed of Amendment Number"
+                                />
+                                <field
+                                    name="adm_date"
+                                    string="Date"
+                                    placeholder="Deed of Amendment Date"
+                                />
+                                <field
+                                    name="adm_company_purpose"
+                                    string="Purpose"
+                                    placeholder="Purpose and Objectives of the Company"
+                                />
+                                <field
+                                    name="adm_company_address"
+                                    string="Address"
+                                    placeholder="Company Address"
+                                />
+                                <field name="adm_notary_name" string="Name of Notary" />
+                                <field
+                                    name="adm_notary_address"
+                                    string="Address of Notary"
+                                />
+                            </group>
+                            <group name="adm_right" string="Capital">
+                                <label
+                                    for="adm_authorized_amount"
+                                    string="Authorized Capital"
+                                />
+                                <div class="o_three_in_one_format">
+                                    <field
+                                        name="adm_authorized_amount"
+                                        placeholder="Amount (IDR)"
+                                    />
+                                    <field
+                                        name="adm_authorized_number"
+                                        placeholder="Number of Shares"
+                                    />
+                                    <field
+                                        name="adm_authorized_value"
+                                        placeholder="Value per Share"
+                                    />
+                                </div>
+                                <label for="adm_paid_amount" string="Paid Capital" />
+                                <div class="o_three_in_one_format">
+                                    <field
+                                        name="adm_paid_amount"
+                                        placeholder="Amount (IDR)"
+                                    />
+                                    <field
+                                        name="adm_paid_number"
+                                        placeholder="Number of Shares"
+                                    />
+                                    <field
+                                        name="adm_paid_value"
+                                        placeholder="Value per Share"
+                                    />
+                                </div>
+                            </group>
+                        </group>
+                        <separator string="Shareholding Structure" />
+                        <field name="adm_shareholding_ids">
+                            <tree editable="top">
+                                <field name="sequence" widget="handle" />
+                                <field name="worksheet_id" invisible="1" />
+                                <field name="state" invisible="1" />
+                                <field name="shareholder_name" />
+                                <field
+                                    name="shareholder_number"
+                                    string="Number of Shares"
+                                />
+                            </tree>
+                        </field>
+                        <separator string="Company Management Composition" />
+                        <field name="adm_composition_ids">
+                            <tree editable="top">
+                                <field name="sequence" widget="handle" />
+                                <field name="worksheet_id" invisible="1" />
+                                <field name="state" invisible="1" />
+                                <field name="admin_name" />
+                                <field name="admin_position" />
+                            </tree>
+                        </field>
+                    </page>
+                    <page name="other_legality" string="Other Legalities">
+                        <group name="legality_header">
+                            <group name="legality_left">
+                                <label for="business_no" string="Business License" />
+                                <div class="o_three_in_one_format">
+                                    <field name="business_no" placeholder="Number" />
+                                    <field name="business_date" placeholder="Date" />
+                                    <field
+                                        name="business_validity"
+                                        placeholder="Validity Period)"
+                                    />
+                                </div>
+                                <label
+                                    for="registration_no"
+                                    string="Registration Certificate"
+                                />
+                                <div class="o_three_in_one_format">
+                                    <field
+                                        name="registration_no"
+                                        placeholder="Number"
+                                    />
+                                    <field
+                                        name="registration_date"
+                                        placeholder="Date"
+                                    />
+                                    <field
+                                        name="registration_validity"
+                                        placeholder="Validity Period)"
+                                    />
+                                </div>
+                                <field name="other_type" />
+                                <label for="other_no" string="Other Permit" />
+                                <div class="o_three_in_one_format">
+                                    <field name="other_no" placeholder="Number" />
+                                    <field name="other_date" placeholder="Date" />
+                                    <field
+                                        name="other_validity"
+                                        placeholder="Validity Period)"
+                                    />
+                                </div>
+                            </group>
+                            <group name="legality_right">
+                                <field name="npwp" string="NPWP" />
+                                <field name="npwp_name" string="NPWP Name" />
+                                <field name="npwp_address" string="NPWP Address" />
+                                <field name="pkp_ok" string="PKP Confirmed ?" />
+                                <field
+                                    name="pkp_no"
+                                    attrs="{'invisible': [('pkp_ok', '=', False)]}"
+                                />
+                                <field
+                                    name="pkp_date"
+                                    string="PKP Date"
+                                    attrs="{'invisible': [('pkp_ok', '=', False)]}"
+                                />
+                            </group>
+                        </group>
+                    </page>
+                    <page name="ownership_status" string="Ownership Status">
+                        <field name="ownership_status_ids">
+                            <tree editable="top">
+                                <field name="sequence" widget="handle" />
+                                <field name="worksheet_id" invisible="1" />
+                                <field name="state" invisible="1" />
+                                <field name="ownership_location_id" />
+                                <field name="ownership_state" />
+                            </tree>
+                        </field>
+                        <group>
+                            <field name="permanent_empolyee" />
+                        </group>
+                    </page>
+                </xpath>
+            </data>
+        </field>
+    </record>
+
+    <record id="general_audit_ws_ddf034c_action" model="ir.actions.act_window">
+        <field name="name">General Information and Legal Aspec</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">general_audit_ws_ddf034c</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+    <menuitem
+        id="general_audit_ws_ddf034c_menu"
+        name="General Information and Legal Aspec"
+        parent="ssi_general_audit.menu_general_audit_understanding_entity"
+        action="general_audit_ws_ddf034c_action"
+        sequence="2"
+        groups="general_audit_ws_ddf034c_viewer_group"
+    />
+</odoo>

@@ -3,6 +3,7 @@
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl-3.0-standalone.html).
 
 from . import (
+    ownership_location,
     general_audit_class_transaction,
     general_audit_business_function,
     general_audit_business_document,
