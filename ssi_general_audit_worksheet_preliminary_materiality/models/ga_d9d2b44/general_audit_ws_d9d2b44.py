@@ -94,6 +94,23 @@ class GeneralAuditWSd9d2b44(models.Model):
             ],
         },
     )
+
+    @api.depends(
+        "general_audit_id",
+    )
+    def _compute_allowed_computation_item_ids(self):
+        for record in self:
+            record.allowed_computation_item_ids = (
+                record.general_audit_id.computation_ids.ids
+            )
+
+    allowed_computation_item_ids = fields.Many2many(
+        string="Allowed Computation Item To Use",
+        comodel_name="trial_balance_computation_item",
+        compute="_compute_allowed_computation_item_ids",
+        store=False,
+    )
+
     computation_item_id = fields.Many2one(
         string="Computation Item To Use",
         comodel_name="trial_balance_computation_item",

@@ -51,8 +51,17 @@
                             <field name="materiality_type" />
                             <field name="base" />
                         </group>
+                        <button
+                            name="action_reload_materiality_mapping"
+                            string="Reload"
+                            type="object"
+                            icon="fa-refresh"
+                            class="oe_highlight"
+                            style="margin-right:4px"
+                            attrs="{'invisible':[('state','not in',['draft','open'])]}"
+                        />
                         <field name="materiality_mapping_ids" force_save="1">
-                            <tree editable="top">
+                            <tree editable="top" create="false" delete="false">
                                 <field name="sequence" widget="handle" />
                                 <field name="standard_detail_id" invisible="1" />
                                 <field name="currency_id" invisible="1" />
@@ -72,7 +81,7 @@
     </record>
 
     <record id="general_audit_ws_6dcda0e_action" model="ir.actions.act_window">
-        <field name="name">Materiality Account Mapping</field>
+        <field name="name">Specific Materiality</field>
         <field name="type">ir.actions.act_window</field>
         <field name="res_model">general_audit_ws_6dcda0e</field>
         <field name="view_mode">tree,form</field>
@@ -80,7 +89,7 @@
 
     <menuitem
         id="general_audit_ws_6dcda0e_menu"
-        name="Materiality Account Mapping"
+        name="Specific Materiality"
         parent="ssi_general_audit.menu_general_audit_materiality"
         action="general_audit_ws_6dcda0e_action"
         sequence="3"

@@ -7,7 +7,7 @@ from odoo import api, fields, models
 
 class GeneralAuditWS6dcda0e(models.Model):
     _name = "general_audit_ws_6dcda0e"
-    _description = "Preliminary Materiality Account Mapping (6dcda0e)"
+    _description = "Specific Materiality (6dcda0e)"
     _inherit = [
         "general_audit_worksheet_mixin",
     ]
@@ -79,6 +79,10 @@ class GeneralAuditWS6dcda0e(models.Model):
             ],
         },
     )
+
+    def action_reload_materiality_mapping(self):
+        for record in self.sudo():
+            record.onchange_materiality_mapping_ids()
 
     @api.onchange("general_audit_id")
     def onchange_materiality_mapping_ids(self):

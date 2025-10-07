@@ -50,7 +50,15 @@
                             string="Base Amount"
                         >
                             <field name="base_amount_source" />
-                            <field name="computation_item_id" />
+                            <field
+                                name="allowed_computation_item_ids"
+                                widget="many2many_tags"
+                                invisible="1"
+                            />
+                            <field
+                                name="computation_item_id"
+                                domain="[('id', 'in', allowed_computation_item_ids)]"
+                            />
                             <field name="general_audit_computation_id" invisible="1" />
                             <field name="other_amount_ok" />
                             <field name="other_amount_source" />
