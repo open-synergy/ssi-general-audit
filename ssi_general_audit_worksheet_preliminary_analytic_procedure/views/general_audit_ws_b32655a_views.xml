@@ -43,6 +43,9 @@
             <data>
                 <xpath expr="//page[1]" position="before">
                     <page name="analysis" string="Analysis">
+                        <group>
+                            <field name="balance_selection" />
+                        </group>
                         <field name="analysis_ids" force_save="1">
                             <tree editable="top">
                                 <field name="sequence" widget="handle" />
@@ -64,20 +67,24 @@
                                     string="Int. b"
                                     optional="hide"
                                 />
-                                <field name="interim_vertical_analysis" string="Int." />
+                                <field
+                                    name="interim_vertical_analysis"
+                                    string="Int."
+                                    optional="hide"
+                                />
                                 <field
                                     name="extrapolation_balance"
-                                    string="Ext. ∑"
+                                    string="Cur. ∑"
                                     optional="hide"
                                 />
                                 <field
                                     name="extrapolation_base_figure"
-                                    string="Ext. b"
+                                    string="Cur. b"
                                     optional="hide"
                                 />
                                 <field
                                     name="extrapolation_vertical_analysis"
-                                    string="Ext."
+                                    string="Cur."
                                 />
                                 <field
                                     name="previous_balance"
@@ -93,13 +100,21 @@
                                     name="previous_vertical_analysis"
                                     string="Prev."
                                 />
-                                <field name="extrapolation_change" string="Ext. Δ" />
+                                <field name="extrapolation_change" string="Cur. Δ" />
                                 <field
                                     name="extrapolation_change_percent"
-                                    string="Ext. %"
+                                    string="Cur. %"
                                 />
-                                <field name="interim_change" string="Int. Δ" />
-                                <field name="interim_change_percent" string="Int. %" />
+                                <field
+                                    name="interim_change"
+                                    string="Int. Δ"
+                                    optional="hide"
+                                />
+                                <field
+                                    name="interim_change_percent"
+                                    string="Int. %"
+                                    optional="hide"
+                                />
                                 <field name="industry_average" string="Industry μ" />
                                 <field
                                     name="vertical_need_attention"

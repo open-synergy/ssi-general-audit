@@ -18,6 +18,22 @@ class GeneralAuditWSb32655a(models.Model):
         "worksheet_type_b32655a"
     )
 
+    balance_selection = fields.Selection(
+        selection=[
+            ("extrapolation", "Extrapolation"),
+            ("home_statement", "Home Statement"),
+        ],
+        default="extrapolation",
+        readonly=True,
+        required=False,
+        states={
+            "open": [
+                ("readonly", False),
+                ("required", True),
+            ],
+        },
+    )
+
     analysis_ids = fields.One2many(
         string="Analysis",
         comodel_name="general_audit_ws_b32655a.vertical_horizontal_analysis",

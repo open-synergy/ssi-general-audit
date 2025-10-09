@@ -92,9 +92,27 @@ class WS1401VerticalHorizontalAnalysis(models.Model):
         related="standard_detail_id.interim_balance",
         store=True,
     )
+
+    @api.depends(
+        "worksheet_id.balance_selection",
+        "standard_detail_id",
+    )
+    def _compute_extrapolation_balance(self):
+        for record in self:
+            result = 0
+            if record.worksheet_id.balance_selection and record.standard_detail_id:
+                if record.worksheet_id.balance_selection == "extrapolation":
+                    result = (
+                        record.standard_detail_id.adjusted_extrapolation_balance
+                    )  # TO DO
+                else:
+                    result = record.standard_detail_id.home_statement_balance
+            record.extrapolation_balance = result
+
     extrapolation_balance = fields.Monetary(
-        string="Extrapolation Balance",
-        related="standard_detail_id.adjusted_extrapolation_balance",
+        string="Current Balance",
+        compute="_compute_extrapolation_balance",
+        compute_sudo=True,
         store=True,
     )
     previous_balance = fields.Monetary(
