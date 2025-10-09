@@ -4,6 +4,7 @@
 
 
 from odoo import api, fields, models
+from odoo.exceptions import ValidationError
 from odoo.tools.safe_eval import safe_eval as eval  # pylint: disable=redefined-builtin
 
 
@@ -185,8 +186,15 @@ class GeneralAuditStandardDetail(models.Model):
                         nocopy=True,
                     )
                     balance = localdict["result"]
-                except Exception:
-                    balance = 7.0
+                except Exception as e:
+                    err_msg = """
+                    Type: %s
+                    Error: %s
+                    """ % (
+                        record.type_id.name,
+                        e,
+                    )
+                    raise ValidationError(err_msg)
             record.extrapolation_balance = balance
 
     extrapolation_balance = fields.Monetary(

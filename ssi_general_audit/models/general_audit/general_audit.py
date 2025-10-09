@@ -859,6 +859,16 @@ class GeneralAudit(models.Model):
         for record in self.sudo():
             record._reload_standard_account()
 
+    def action_recompute_standard_account(self):
+        for record in self.sudo():
+            standard_detail = record.standard_detail_ids
+            standard_detail._compute_standard_line()
+            standard_detail._compute_standard_adjustment_id()
+            standard_detail._compute_extrapolation_balance()
+            standard_detail._compute_adjusted_extrapolation_balance()
+            standard_detail._compute_adjustment_audited_balance()
+            standard_detail._compute_average()
+
     def _reload_standard_account(self):
         self.ensure_one()
         standard_details = self.account_type_set_id.detail_ids
