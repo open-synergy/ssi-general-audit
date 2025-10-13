@@ -73,7 +73,7 @@ class GeneralAuditWSb32655a(models.Model):
                     ta = record.general_audit_id.computation_ids.filtered(
                         lambda x: x.computation_item_id.id == ta_item_id
                     ).extrapolation_amount
-                elif tr_item_id:
+                if tr_item_id:
                     tr = record.general_audit_id.computation_ids.filtered(
                         lambda x: x.computation_item_id.id == tr_item_id
                     ).extrapolation_amount
@@ -82,7 +82,7 @@ class GeneralAuditWSb32655a(models.Model):
                     ta = record.general_audit_id.computation_ids.filtered(
                         lambda x: x.computation_item_id.id == ta_item_id
                     ).home_amount
-                elif tr_item_id:
+                if tr_item_id:
                     tr = record.general_audit_id.computation_ids.filtered(
                         lambda x: x.computation_item_id.id == tr_item_id
                     ).home_amount
