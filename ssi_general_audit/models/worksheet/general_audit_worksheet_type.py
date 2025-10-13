@@ -39,7 +39,7 @@ class GeneralAuditWorksheetType(models.Model):
     max_number_allowed = fields.Integer(
         string="Max. Number Allowed Per Audit",
         required=True,
-        default=0,
+        default=2,
     )
     standard_item_ids = fields.Many2many(
         string="Relevant Audit Standard Items",

@@ -80,7 +80,7 @@ class GeneralAuditComputation(models.Model):
             record.previous_computation_id = previous_result
 
     home_computation_id = fields.Many2one(
-        string="Home Statement Computation",
+        string="End Period Computation",
         comodel_name="client_trial_balance.computation",
         readonly=True,
         compute="_compute_computation",
@@ -101,7 +101,7 @@ class GeneralAuditComputation(models.Model):
         store=True,
     )
     home_amount = fields.Float(
-        string="Home Statement Amount",
+        string="End Period Amount",
         related="home_computation_id.amount",
         store=True,
     )
@@ -149,7 +149,7 @@ class GeneralAuditComputation(models.Model):
         store=True,
     )
     home_avg_amount = fields.Float(
-        string="Home Statement Avg. Amount",
+        string="End Period Avg. Amount",
         compute="_compute_average",
         store=True,
     )

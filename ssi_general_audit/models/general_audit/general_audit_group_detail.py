@@ -85,7 +85,7 @@ class GeneralAuditGroupDetail(models.Model):
             record.previous_group_line_id = previous_result
 
     home_group_line_id = fields.Many2one(
-        string="Home Statement TB Standard Line",
+        string="End Period TB Standard Line",
         comodel_name="client_trial_balance.group_detail",
         readonly=True,
         compute="_compute_group_line",
@@ -112,7 +112,7 @@ class GeneralAuditGroupDetail(models.Model):
         store=True,
     )
     home_statement_balance = fields.Monetary(
-        string="Home Statement Balance",
+        string="End Period Balance",
         related="home_group_line_id.balance",
         store=True,
         currency_field="currency_id",
@@ -190,7 +190,7 @@ class GeneralAuditGroupDetail(models.Model):
         currency_field="currency_id",
     )
     home_statement_avg = fields.Monetary(
-        string="Home Statement Average",
+        string="End Period Average",
         compute="_compute_average",
         store=True,
         currency_field="currency_id",

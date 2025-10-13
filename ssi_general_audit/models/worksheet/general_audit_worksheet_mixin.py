@@ -20,6 +20,7 @@ class GeneralAuditWorksheetMixin(models.AbstractModel):
         "mixin.transaction_open",
         "mixin.transaction_cancel",
     ]
+    _order = "general_audit_id, parent_type_id, id"
     _approval_from_state = "draft"
     _approval_to_state = "done"
     _approval_state = "confirm"

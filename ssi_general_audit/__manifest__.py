@@ -3,7 +3,7 @@
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl-3.0-standalone.html).
 {
     "name": "General Audit",
-    "version": "14.0.3.3.0",
+    "version": "14.0.4.0.0",
     "category": "Administration",
     "website": "https://simetri-sinergi.id",
     "author": "OpenSynergy Indonesia, PT. Simetri Sinergi Indonesia",
@@ -82,4 +82,5 @@
     "demo": [
         # "demo/client_account_type_set_demo.xml",
     ],
+    "post_init_hook": "post_init_hook",
 }

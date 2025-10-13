@@ -320,7 +320,7 @@ class GeneralAudit(models.Model):
         readonly=True,
     )
     home_trial_balance_id = fields.Many2one(
-        string="# Home Statement Trial Balance",
+        string="# End Period Trial Balance",
         comodel_name="client_trial_balance",
         compute="_compute_trial_balance_id",
         store=True,
@@ -511,7 +511,7 @@ class GeneralAudit(models.Model):
         for document in self:
             home = interim = previous = False
 
-            # Home statement
+            # End Period
             homes = document.trial_balance_ids.filtered(
                 lambda r: r.trial_balance_type == "home"
             )
@@ -672,8 +672,8 @@ class GeneralAudit(models.Model):
             error_message = """
             Context: Confirming general audit
             Database ID: %s
-            Problem: No home statement trial balance
-            Solution: Create home statement trial balance
+            Problem: No End Period trial balance
+            Solution: Create End Period trial balance
             """ % (
                 self.id
             )
@@ -685,8 +685,8 @@ class GeneralAudit(models.Model):
             error_message = """
             Context: Confirming general audit
             Database ID: %s
-            Problem: Home statement trial balance is not finished
-            Solution: Finish home statement trial balance
+            Problem: End Period trial balance is not finished
+            Solution: Finish End Period trial balance
             """ % (
                 self.id
             )
@@ -871,17 +871,28 @@ class GeneralAudit(models.Model):
 
     def _reload_standard_account(self):
         self.ensure_one()
-        standard_details = self.account_type_set_id.detail_ids
         StandardDetail = self.env["general_audit.standard_detail"]
-        self.standard_detail_ids.unlink()
-        for standard_detail in standard_details:
-            StandardDetail.create(
-                {
-                    "general_audit_id": self.id,
-                    "type_id": standard_detail.id,
-                }
-            )
-        self._reload_group_account()
+
+        if self.account_mapping_id:
+            acc_mapping_type_ids = self.account_mapping_id.mapped("detail_ids").type_id
+            mapping = {chk.type_id.id: chk for chk in self.standard_detail_ids}
+
+            if acc_mapping_type_ids:
+                for acc_type in acc_mapping_type_ids:
+                    if acc_type.id not in mapping:
+                        StandardDetail.create(
+                            {
+                                "general_audit_id": self.id,
+                                "type_id": acc_type.id,
+                            }
+                        )
+                    else:
+                        mapping[acc_type.id].write({"type_id": acc_type.id})
+
+                for chk in self.standard_detail_ids:
+                    if chk.type_id.id not in acc_mapping_type_ids.ids:
+                        chk.unlink()
+            self._reload_group_account()
 
     def action_reload_group_account(self):
         for record in self.sudo():

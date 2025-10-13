@@ -177,7 +177,7 @@ class ClientTrialBalance(models.Model):
         selection=[
             ("previous", "Previous"),
             ("interim", "Interim"),
-            ("home", "Home Statement"),
+            ("home", "End Period"),
         ],
         default="home",
         readonly=True,

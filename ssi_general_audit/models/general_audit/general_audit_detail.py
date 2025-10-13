@@ -43,7 +43,7 @@ class GeneralAuditDetail(models.Model):
 
     # Link to Trial Balance Detail
     home_line_id = fields.Many2one(
-        string="Home Statement TB Standard Line",
+        string="End Period TB Standard Line",
         comodel_name="client_trial_balance.detail",
         readonly=True,
         compute="_compute_detail",
@@ -66,13 +66,13 @@ class GeneralAuditDetail(models.Model):
 
     # Balance
     home_statement_opening_balance = fields.Monetary(
-        string="Home Statement Opening Balance",
+        string="End Period Opening Balance",
         related="home_line_id.opening_balance",
         store=True,
         currency_field="currency_id",
     )
     home_statement_balance = fields.Monetary(
-        string="Home Statement Balance",
+        string="End Period Balance",
         related="home_line_id.balance",
         store=True,
         currency_field="currency_id",
