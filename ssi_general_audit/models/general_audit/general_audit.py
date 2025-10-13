@@ -932,6 +932,7 @@ class GeneralAudit(models.Model):
     def action_recompute_computation(self):
         for record in self.sudo():
             record._recompute_computation()
+            record._recompute_extrapolation_computation()
 
     def _recompute_computation(self):
         self.ensure_one()
