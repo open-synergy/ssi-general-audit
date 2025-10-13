@@ -1,8 +1,10 @@
 # Copyright 2022 OpenSynergy Indonesia
 # Copyright 2022 PT. Simetri Sinergi Indonesia
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl-3.0-standalone.html).
+from odoo import _, api, fields, models
+from odoo.exceptions import ValidationError
 
-from odoo import api, fields, models
+from odoo.addons.ssi_decorator import ssi_decorator
 
 
 class GeneralAuditWSd9d2b44(models.Model):
@@ -58,15 +60,11 @@ class GeneralAuditWSd9d2b44(models.Model):
                 computations = Computation.search(criteria)
                 if len(computations) > 0:
                     general_audit_computation_id = computations[0]
-                    if document.base_amount_source == "interim":
-                        base_computation_amount = (
-                            general_audit_computation_id.interim_amount
-                        )
-                    elif document.base_amount_source == "extrapolation":
+                    if document.base_amount_source == "extrapolation":
                         base_computation_amount = (
                             general_audit_computation_id.extrapolation_amount
                         )
-                    elif document.base_amount_source == "home":
+                    elif document.base_amount_source == "end_period":
                         base_computation_amount = (
                             general_audit_computation_id.home_amount
                         )
@@ -80,9 +78,8 @@ class GeneralAuditWSd9d2b44(models.Model):
     base_amount_source = fields.Selection(
         string="Balance Type",
         selection=[
-            ("interim", "Interim Balance"),
-            ("extrapolation", "Extrapolation Balance"),
-            ("home", "Home Statement Balance"),
+            ("extrapolation", "Extrapolation"),
+            ("end_period", "End Period"),
         ],
         required=False,
         default="extrapolation",
@@ -100,9 +97,17 @@ class GeneralAuditWSd9d2b44(models.Model):
     )
     def _compute_allowed_computation_item_ids(self):
         for record in self:
-            record.allowed_computation_item_ids = (
-                record.general_audit_id.computation_ids.ids
-            )
+            record.allowed_computation_item_ids = [(5, 0, 0)]
+            if record.general_audit_id:
+                record.allowed_computation_item_ids = [
+                    (
+                        6,
+                        0,
+                        record.general_audit_id.computation_ids.mapped(
+                            "computation_item_id"
+                        ).ids,
+                    )
+                ]
 
     allowed_computation_item_ids = fields.Many2many(
         string="Allowed Computation Item To Use",
@@ -245,3 +250,26 @@ class GeneralAuditWSd9d2b44(models.Model):
             ],
         },
     )
+
+    @ssi_decorator.pre_confirm_check()
+    def _10_check_balance_type(self):
+        self.ensure_one()
+        criteria = [
+            ("general_audit_id", "=", self.general_audit_id.id),
+            ("type_id", "=", self.type_id.id),
+            ("base_amount_source", "=", self.base_amount_source),
+            ("id", "!=", self.id),
+        ]
+        check = self.search(criteria)
+        if check:
+            error_message = """
+            Context: Confirmation for %s
+            Database ID: %s
+            Problem: Balance type %s is already used for General Audit %s.
+            """ % (
+                self.type_id.name,
+                self.id,
+                self.base_amount_source,
+                self.name,
+            )
+            raise ValidationError(_(error_message))

@@ -1,8 +1,10 @@
 # Copyright 2022 OpenSynergy Indonesia
 # Copyright 2022 PT. Simetri Sinergi Indonesia
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl-3.0-standalone.html).
+from odoo import _, api, fields, models
+from odoo.exceptions import ValidationError
 
-from odoo import api, fields, models
+from odoo.addons.ssi_decorator import ssi_decorator
 
 
 class GeneralAuditWS6dcda0e(models.Model):
@@ -26,6 +28,10 @@ class GeneralAuditWS6dcda0e(models.Model):
                 ("required", True),
             ],
         },
+    )
+
+    base_amount_source = fields.Selection(
+        related="worksheet_d9d2b44_id.base_amount_source",
     )
 
     @api.depends(
@@ -100,3 +106,26 @@ class GeneralAuditWS6dcda0e(models.Model):
                     )
                 )
             self.update({"materiality_mapping_ids": result})
+
+    @ssi_decorator.pre_confirm_check()
+    def _10_check_balance_type(self):
+        self.ensure_one()
+        criteria = [
+            ("general_audit_id", "=", self.general_audit_id.id),
+            ("type_id", "=", self.type_id.id),
+            ("base_amount_source", "=", self.base_amount_source),
+            ("id", "!=", self.id),
+        ]
+        check = self.search(criteria)
+        if check:
+            error_message = """
+            Context: Confirmation for %s
+            Database ID: %s
+            Problem: Balance type %s is already used for General Audit %s.
+            """ % (
+                self.type_id.name,
+                self.id,
+                self.base_amount_source,
+                self.name,
+            )
+            raise ValidationError(_(error_message))

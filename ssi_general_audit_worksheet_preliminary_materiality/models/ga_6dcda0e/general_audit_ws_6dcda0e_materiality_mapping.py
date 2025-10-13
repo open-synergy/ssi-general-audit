@@ -26,12 +26,9 @@ class GeneralAuditWS6dcda0e1MaterialityMapping(models.Model):
 
             if worksheet.worksheet_d9d2b44_id:
                 worksheet_d9d2b44 = worksheet.worksheet_d9d2b44_id
-
-                if worksheet_d9d2b44.base_amount_source == "interim":
-                    balance = document.standard_detail_id.interim_balance
-                elif worksheet_d9d2b44.base_amount_source == "extrapolation":
+                if worksheet_d9d2b44.base_amount_source == "extrapolation":
                     balance = document.standard_detail_id.adjusted_extrapolation_balance
-                elif worksheet_d9d2b44.base_amount_source == "home":
+                elif worksheet_d9d2b44.base_amount_source == "end_period":
                     balance = document.standard_detail_id.home_statement_balance
 
                 if worksheet.materiality_type == "om":
@@ -60,6 +57,7 @@ class GeneralAuditWS6dcda0e1MaterialityMapping(models.Model):
         string="Standard Detail",
         comodel_name="general_audit.standard_detail",
         required=True,
+        ondelete="cascade",
     )
     currency_id = fields.Many2one(
         string="Currency",

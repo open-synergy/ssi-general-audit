@@ -27,6 +27,9 @@
         />
         <field name="arch" type="xml">
             <data>
+                <xpath expr="//field[@name='general_audit_id']" position="after">
+                    <field name="base_amount_source" />
+                </xpath>
             </data>
         </field>
     </record>
@@ -47,8 +50,10 @@
                             <field
                                 name="worksheet_d9d2b44_id"
                                 domain="[('general_audit_id','=',general_audit_id)]"
+                                string="Materiality Computation"
                             />
                             <field name="materiality_type" />
+                            <field name="base_amount_source" />
                             <field name="base" />
                         </group>
                         <button
