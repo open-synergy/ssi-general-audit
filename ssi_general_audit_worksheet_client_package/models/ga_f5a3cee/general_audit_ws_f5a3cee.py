@@ -25,7 +25,6 @@ class GeneralAuditWSf5a3cee(models.Model):
             "worksheet_id": self.id,
             "account_client_type_id": mapping.id,
         }
-        # raise ValidationError(str(data))
         return data
 
     def _update_details_data(self, mapping):
