@@ -43,6 +43,9 @@
             <data>
                 <xpath expr="//page[1]" position="before">
                     <page name="ratio" string="Ratios">
+                        <group name="ratio_header">
+                            <field name="base_amount_source" />
+                        </group>
                         <button
                             name="action_compute_ratio"
                             type="object"
@@ -59,11 +62,22 @@
                             >
                                 <field name="financial_ratio_id" />
                                 <field name="category" />
+                                <field name="current_amount" />
                                 <field
                                     name="extrapolation_amount"
                                     string="Extrapolation"
+                                    invisible="1"
                                 />
-                                <field name="interim_amount" string="Interim" />
+                                <field
+                                    name="end_period_amount"
+                                    string="End Period"
+                                    invisible="1"
+                                />
+                                <field
+                                    name="interim_amount"
+                                    string="Interim"
+                                    invisible="1"
+                                />
                                 <field name="previous_amount" string="Previous" />
                                 <field name="industry_average" />
                                 <field name="analysis" />

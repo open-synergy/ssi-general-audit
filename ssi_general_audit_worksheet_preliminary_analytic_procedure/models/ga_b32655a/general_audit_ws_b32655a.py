@@ -1,8 +1,10 @@
 # Copyright 2022 OpenSynergy Indonesia
 # Copyright 2022 PT. Simetri Sinergi Indonesia
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl-3.0-standalone.html).
+from odoo import _, api, fields, models
+from odoo.exceptions import ValidationError
 
-from odoo import api, fields, models
+from odoo.addons.ssi_decorator import ssi_decorator
 
 
 class GeneralAuditWSb32655a(models.Model):
@@ -18,14 +20,15 @@ class GeneralAuditWSb32655a(models.Model):
         "worksheet_type_b32655a"
     )
 
-    balance_selection = fields.Selection(
+    base_amount_source = fields.Selection(
+        string="Balance Type",
         selection=[
             ("extrapolation", "Extrapolation"),
-            ("home_statement", "Home Statement"),
+            ("end_period", "End Period"),
         ],
+        required=False,
         default="extrapolation",
         readonly=True,
-        required=False,
         states={
             "open": [
                 ("readonly", False),
@@ -46,6 +49,64 @@ class GeneralAuditWSb32655a(models.Model):
         },
     )
 
+    @api.depends(
+        "base_amount_source",
+        "general_audit_id",
+        "general_audit_id.computation_ids",
+    )
+    def _compute_total_asset_revenue(self):
+        company = self.env.company
+        ta_item_id = (
+            company.ta_computation_item_id
+            and company.ta_computation_item_id.id
+            or False
+        )
+        tr_item_id = (
+            company.tr_computation_item_id
+            and company.tr_computation_item_id.id
+            or False
+        )
+        for record in self:
+            ta = tr = 0.0
+            if record.base_amount_source == "extrapolation":
+                if ta_item_id:
+                    ta = record.general_audit_id.computation_ids.filtered(
+                        lambda x: x.computation_item_id.id == ta_item_id
+                    ).extrapolation_amount
+                elif tr_item_id:
+                    tr = record.general_audit_id.computation_ids.filtered(
+                        lambda x: x.computation_item_id.id == tr_item_id
+                    ).extrapolation_amount
+            else:
+                if ta_item_id:
+                    ta = record.general_audit_id.computation_ids.filtered(
+                        lambda x: x.computation_item_id.id == ta_item_id
+                    ).home_amount
+                elif tr_item_id:
+                    tr = record.general_audit_id.computation_ids.filtered(
+                        lambda x: x.computation_item_id.id == tr_item_id
+                    ).home_amount
+            record.total_asset = ta
+            record.total_revenue = tr
+
+    total_asset = fields.Float(
+        string="Total Asset",
+        compute="_compute_total_asset_revenue",
+        compute_sudo=True,
+        store=True,
+    )
+
+    total_revenue = fields.Float(
+        string="Total Revenue",
+        compute="_compute_total_asset_revenue",
+        compute_sudo=True,
+        store=True,
+    )
+
+    def action_reload_analysis_ids(self):
+        for record in self.sudo():
+            record.onchange_analysis_ids()
+
     @api.onchange("general_audit_id")
     def onchange_analysis_ids(self):
         self.update({"analysis_ids": [(5, 0, 0)]})
@@ -62,3 +123,26 @@ class GeneralAuditWSb32655a(models.Model):
                     )
                 )
             self.update({"analysis_ids": result})
+
+    @ssi_decorator.pre_confirm_check()
+    def _10_check_balance_type(self):
+        self.ensure_one()
+        criteria = [
+            ("general_audit_id", "=", self.general_audit_id.id),
+            ("type_id", "=", self.type_id.id),
+            ("base_amount_source", "=", self.base_amount_source),
+            ("id", "!=", self.id),
+        ]
+        check = self.search(criteria)
+        if check:
+            error_message = """
+            Context: Confirmation for %s
+            Database ID: %s
+            Problem: Balance type %s is already used for General Audit %s.
+            """ % (
+                self.type_id.name,
+                self.id,
+                self.base_amount_source,
+                self.name,
+            )
+            raise ValidationError(_(error_message))

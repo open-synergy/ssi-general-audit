@@ -1,8 +1,8 @@
 # Copyright 2022 OpenSynergy Indonesia
 # Copyright 2022 PT. Simetri Sinergi Indonesia
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl-3.0-standalone.html).
-
-from odoo import api, fields, models
+from odoo import _, api, fields, models
+from odoo.exceptions import ValidationError
 
 from odoo.addons.ssi_decorator import ssi_decorator
 
@@ -18,6 +18,22 @@ class GeneralAuditWSd4289e4(models.Model):
         "worksheet_type_d4289e4"
     )
 
+    base_amount_source = fields.Selection(
+        string="Balance Type",
+        selection=[
+            ("extrapolation", "Extrapolation"),
+            ("end_period", "End Period"),
+        ],
+        required=False,
+        default="extrapolation",
+        readonly=True,
+        states={
+            "open": [
+                ("readonly", False),
+                ("required", True),
+            ],
+        },
+    )
     ratio_ids = fields.One2many(
         string="Ratio Ratio",
         comodel_name="general_audit_ws_d4289e4.ratio",
@@ -133,3 +149,26 @@ class GeneralAuditWSd4289e4(models.Model):
                 }
             )
         return result
+
+    @ssi_decorator.pre_confirm_check()
+    def _10_check_balance_type(self):
+        self.ensure_one()
+        criteria = [
+            ("general_audit_id", "=", self.general_audit_id.id),
+            ("type_id", "=", self.type_id.id),
+            ("base_amount_source", "=", self.base_amount_source),
+            ("id", "!=", self.id),
+        ]
+        check = self.search(criteria)
+        if check:
+            error_message = """
+            Context: Confirmation for %s
+            Database ID: %s
+            Problem: Balance type %s is already used for General Audit %s.
+            """ % (
+                self.type_id.name,
+                self.id,
+                self.base_amount_source,
+                self.name,
+            )
+            raise ValidationError(_(error_message))

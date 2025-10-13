@@ -25,6 +25,16 @@ class GeneralAuditWSd4289e4Ratio(models.Model):
         string="Category",
         related="financial_ratio_id.category",
     )
+    current_amount = fields.Float(
+        string="Curr. Amount",
+        related=False,
+        store=True,
+    )
+    end_period_amount = fields.Float(
+        string="End Period Amount",
+        related=False,
+        store=True,
+    )
     extrapolation_amount = fields.Float(
         string="Extrapolation Amount",
         related=False,
@@ -54,6 +64,19 @@ class GeneralAuditWSd4289e4Ratio(models.Model):
             "document": self,
         }
 
+    def _prepare_ratio_data(self, **kwargs):
+        extrapolation_amount = kwargs.get("extrapolation", 0.0)
+        interim_amount = kwargs.get("interim", 0.0)
+        previous_amount = kwargs.get("previous", 0.0)
+        end_period_amount = kwargs.get("end_period", 0.0)
+        data = {
+            "extrapolation_amount": extrapolation_amount,
+            "interim_amount": interim_amount,
+            "previous_amount": previous_amount,
+            "end_period_amount": end_period_amount,
+        }
+        return data
+
     def _recompute(self, additional_dict):
         self.ensure_one()
         python_code = self.financial_ratio_id.python_code
@@ -70,22 +93,30 @@ class GeneralAuditWSd4289e4Ratio(models.Model):
             extrapolation_amount = localdict["result_extrapolation"]
             interim_amount = localdict["result_interim"]
             previous_amount = localdict["result_previous"]
+            end_period_amount = localdict["result_end_period"]
             additional_dict.update(
                 {
                     self.financial_ratio_id.code: {
                         "extrapolation": extrapolation_amount,
                         "interim": interim_amount,
                         "previous": previous_amount,
+                        "end_period": end_period_amount,
                     }
                 }
             )
         except Exception:
             extrapolation_amount = interim_amount = previous_amount = 0.0
-        self.write(
-            {
-                "extrapolation_amount": extrapolation_amount,
-                "interim_amount": interim_amount,
-                "previous_amount": previous_amount,
-            }
+            end_period_amount = 0.0
+
+        data = self._prepare_ratio_data(
+            extrapolation=extrapolation_amount,
+            interim=interim_amount,
+            previous=previous_amount,
+            end_period=end_period_amount,
         )
+        if self.worksheet_id.base_amount_source == "extrapolation":
+            data["current_amount"] = extrapolation_amount
+        else:
+            data["current_amount"] = end_period_amount
+        self.write(data)
         return additional_dict

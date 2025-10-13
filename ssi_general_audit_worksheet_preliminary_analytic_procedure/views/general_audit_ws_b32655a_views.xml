@@ -27,6 +27,9 @@
         />
         <field name="arch" type="xml">
             <data>
+                <xpath expr="//field[@name='general_audit_id']" position="after">
+                    <field name="base_amount_source" />
+                </xpath>
             </data>
         </field>
     </record>
@@ -44,8 +47,19 @@
                 <xpath expr="//page[1]" position="before">
                     <page name="analysis" string="Analysis">
                         <group>
-                            <field name="balance_selection" />
+                            <field name="base_amount_source" />
+                            <field name="total_asset" />
+                            <field name="total_revenue" />
                         </group>
+                        <button
+                            name="action_reload_analysis_ids"
+                            string="Reload"
+                            type="object"
+                            icon="fa-refresh"
+                            class="oe_highlight"
+                            style="margin-right:4px"
+                            attrs="{'invisible':[('state','not in',['draft','open'])]}"
+                        />
                         <field name="analysis_ids" force_save="1">
                             <tree editable="top">
                                 <field name="sequence" widget="handle" />
@@ -57,6 +71,23 @@
                                     invisible="1"
                                 />
                                 <field name="currency_id" invisible="1" />
+
+                                <field name="extrapolation_balance" string="Cur. ∑" />
+                                <field
+                                    name="extrapolation_vertical_analysis"
+                                    string="Cur."
+                                />
+                                <field name="previous_balance" string="Prev. ∑" />
+                                <field
+                                    name="previous_vertical_analysis"
+                                    string="Prev."
+                                />
+                                <field name="extrapolation_change" string="Cur. Δ" />
+                                <field
+                                    name="extrapolation_change_percent"
+                                    string="Cur. %"
+                                />
+                                <field name="industry_average" string="Industry μ" />
                                 <field
                                     name="interim_balance"
                                     string="Int. ∑"
@@ -73,37 +104,14 @@
                                     optional="hide"
                                 />
                                 <field
-                                    name="extrapolation_balance"
-                                    string="Cur. ∑"
-                                    optional="hide"
-                                />
-                                <field
                                     name="extrapolation_base_figure"
                                     string="Cur. b"
-                                    optional="hide"
-                                />
-                                <field
-                                    name="extrapolation_vertical_analysis"
-                                    string="Cur."
-                                />
-                                <field
-                                    name="previous_balance"
-                                    string="Prev. ∑"
                                     optional="hide"
                                 />
                                 <field
                                     name="previous_base_figure"
                                     string="Prev. b"
                                     optional="hide"
-                                />
-                                <field
-                                    name="previous_vertical_analysis"
-                                    string="Prev."
-                                />
-                                <field name="extrapolation_change" string="Cur. Δ" />
-                                <field
-                                    name="extrapolation_change_percent"
-                                    string="Cur. %"
                                 />
                                 <field
                                     name="interim_change"
@@ -115,7 +123,6 @@
                                     string="Int. %"
                                     optional="hide"
                                 />
-                                <field name="industry_average" string="Industry μ" />
                                 <field
                                     name="vertical_need_attention"
                                     string="Ver"

@@ -21,6 +21,7 @@ class WS1401VerticalHorizontalAnalysis(models.Model):
         string="Standard Detail",
         comodel_name="general_audit.standard_detail",
         required=True,
+        ondelete="cascade",
     )
     type_id = fields.Many2one(
         string="Account Type",
@@ -94,14 +95,14 @@ class WS1401VerticalHorizontalAnalysis(models.Model):
     )
 
     @api.depends(
-        "worksheet_id.balance_selection",
+        "worksheet_id.base_amount_source",
         "standard_detail_id",
     )
     def _compute_extrapolation_balance(self):
         for record in self:
             result = 0
-            if record.worksheet_id.balance_selection and record.standard_detail_id:
-                if record.worksheet_id.balance_selection == "extrapolation":
+            if record.worksheet_id.base_amount_source and record.standard_detail_id:
+                if record.worksheet_id.base_amount_source == "extrapolation":
                     result = (
                         record.standard_detail_id.adjusted_extrapolation_balance
                     )  # TO DO
