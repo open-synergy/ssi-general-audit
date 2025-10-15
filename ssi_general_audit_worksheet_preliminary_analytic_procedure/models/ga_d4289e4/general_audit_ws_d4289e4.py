@@ -94,6 +94,12 @@ class GeneralAuditWSd4289e4(models.Model):
         for record in self:
             record._recompute_computation()
 
+    @api.onchange(
+        "base_amount_source",
+    )
+    def onchange_recompute_ratio_ids(self):
+        self._recompute_computation()
+
     @ssi_decorator.post_confirm_action()
     def _recompute_computation(self):
         self.ensure_one()
