@@ -12,7 +12,7 @@ class GeneralAuditGroupDetail(models.Model):
     _order = "sequence, general_audit_id, id"
 
     group_id = fields.Many2one(
-        string="Account Type",
+        string="Account Group",
         comodel_name="client_account_group",
         required=True,
     )
