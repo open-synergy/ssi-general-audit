@@ -216,7 +216,7 @@ class GeneralAuditWorksheetMixin(models.AbstractModel):
                     """ % (
                         record.type_id.display_name,
                         record.id,
-                        record.name,
+                        record.display_name,
                     )
                     raise ValidationError(_(error_message))
             else:
