@@ -300,19 +300,22 @@ class ClientTrialBalance(models.Model):
         for record in self:
             record.computation_ids.action_recompute()
 
-    @api.onchange("account_type_set_id")
+    def action_reload_standard_detail_ids(self):
+        for record in self.sudo():
+            record.onchange_standard_detail_ids()
+
+    @api.onchange("general_audit_id")
     def onchange_standard_detail_ids(self):
         self.update({"standard_detail_ids": [(5, 0, 0)]})
-        if self.account_type_set_id:
+        if self.general_audit_id:
             result = []
-            for detail in self.account_type_set_id.detail_ids:
+            for detail in self.general_audit_id.standard_detail_ids:
                 result.append(
                     (
                         0,
                         0,
                         {
-                            "sequence": detail.sequence,
-                            "type_id": detail.id,
+                            "standard_detail_id": detail.id,
                         },
                     )
                 )

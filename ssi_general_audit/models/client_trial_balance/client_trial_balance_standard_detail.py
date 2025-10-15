@@ -52,20 +52,27 @@ class ClientTrialBalanceStandardDetail(models.Model):
         required=True,
         ondelete="cascade",
     )
+    standard_detail_id = fields.Many2one(
+        string="Standard Detail",
+        comodel_name="general_audit.standard_detail",
+        required=True,
+        ondelete="cascade",
+    )
     type_id = fields.Many2one(
         string="Account Type",
         comodel_name="client_account_type",
-        required=True,
-    )
-    sequence = fields.Integer(
-        string="Sequence",
-        required=True,
-        default=5,
+        related="standard_detail_id.type_id",
+        store=True,
     )
     currency_id = fields.Many2one(
         string="Currency",
         comodel_name="res.currency",
-        related="trial_balance_id.currency_id",
+        related="standard_detail_id.currency_id",
+        store=True,
+    )
+    sequence = fields.Integer(
+        string="Sequence",
+        related="standard_detail_id.sequence",
         store=True,
     )
     opening_balance = fields.Monetary(

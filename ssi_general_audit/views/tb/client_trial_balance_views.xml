@@ -121,6 +121,15 @@
                         </group>
                     </page>
                     <page string="Standard Detail" name="standard_details">
+                        <button
+                            name="action_reload_standard_detail_ids"
+                            string="Reload"
+                            type="object"
+                            icon="fa-refresh"
+                            class="oe_highlight"
+                            style="margin-right:4px"
+                            attrs="{'invisible':[('state','not in',['draft','open'])]}"
+                        />
                         <field
                             name="standard_detail_ids"
                             colspan="1"

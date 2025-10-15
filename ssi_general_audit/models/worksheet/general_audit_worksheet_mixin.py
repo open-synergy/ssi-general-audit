@@ -214,7 +214,7 @@ class GeneralAuditWorksheetMixin(models.AbstractModel):
                     Problem: The selected General Audit is already used in %s.
                     \t\t Each Worksheet must have a unique General Audit.
                     """ % (
-                        record.type_id.name,
+                        record.type_id.display_name,
                         record.id,
                         record.name,
                     )
@@ -229,7 +229,7 @@ class GeneralAuditWorksheetMixin(models.AbstractModel):
                         Problem: General Audit has exceeded the max. limit allowed
                         \t\t The maximum limit allowed is %s
                         """ % (
-                            record.type_id.name,
+                            record.type_id.display_name,
                             record.id,
                             record.type_id.max_number_allowed,
                         )
