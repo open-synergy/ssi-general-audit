@@ -124,6 +124,7 @@ class GeneralAuditWSd4289e4(models.Model):
                         "end_period": data.home_statement_balance,
                         "extrapolation_avg": data.extrapolation_avg,
                         "interim_avg": data.interim_avg,
+                        "end_period_avg": data.home_statement_avg,
                     },
                 }
             )
