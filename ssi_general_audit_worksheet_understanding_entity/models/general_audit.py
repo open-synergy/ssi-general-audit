@@ -62,7 +62,7 @@ class GeneralAudit(models.Model):
     def _compute_impacted_account_types(self):
         for record in self:
             criteria = [
-                ("general_audit_id", "=", record.record.id),
+                ("general_audit_id", "=", record.id),
                 ("expert_impacted", "=", True),
             ]
             result = (
