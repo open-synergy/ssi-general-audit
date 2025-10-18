@@ -38,5 +38,7 @@
         "ssi_general_audit_worksheet_review",
         "ssi_general_audit_worksheet_final_report",
     ],
-    "data": [],
+    "data": [
+        "menu.xml",
+    ],
 }
