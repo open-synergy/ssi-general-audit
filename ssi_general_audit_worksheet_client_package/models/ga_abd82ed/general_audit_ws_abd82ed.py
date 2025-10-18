@@ -21,6 +21,7 @@ class GeneralAuditWSabd82ed(models.Model):
     checklist_ids = fields.One2many(
         string="Checklist",
         comodel_name="general_audit_ws_abd82ed.checklist",
+        help="List of checklist values recorded for this worksheet.",
     )
     position = fields.Selection(
         string="Position",
@@ -28,4 +29,8 @@ class GeneralAuditWSabd82ed(models.Model):
             ("current", "Current"),
             ("interim", "Interim"),
         ],
+        help=(
+            "Indicates whether this worksheet relates to the current period "
+            "or an interim period."
+        ),
     )

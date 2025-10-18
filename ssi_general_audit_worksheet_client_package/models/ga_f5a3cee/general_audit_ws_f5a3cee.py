@@ -17,6 +17,9 @@ class GeneralAuditWSf5a3cee(models.Model):
         string="Details",
         comodel_name="general_audit_ws_f5a3cee.detail",
         inverse_name="worksheet_id",
+        help=(
+            "Detail lines automatically populated from the client's " "account mapping."
+        ),
     )
 
     def _create_details_data(self, mapping):

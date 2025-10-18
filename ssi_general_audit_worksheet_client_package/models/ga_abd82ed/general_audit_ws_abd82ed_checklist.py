@@ -17,9 +17,14 @@ class GeneralAuditWSabd82edChecklist(models.Model):
         comodel_name="general_audit_ws_abd82ed",
         required=True,
         ondelete="cascade",
+        help=(
+            "Reference to the related worksheet. "
+            "Deleting the worksheet will remove its checklist entries."
+        ),
     )
     item_id = fields.Many2one(
         string="Checklist Item",
         comodel_name="general_audit_ws_abd82ed.item",
         required=True,
+        help="Checklist item being answered or evaluated.",
     )

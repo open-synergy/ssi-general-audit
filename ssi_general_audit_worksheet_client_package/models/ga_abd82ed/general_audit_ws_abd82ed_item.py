@@ -14,4 +14,8 @@ class GeneralAuditWSabd82edItem(models.Model):
 
     code = fields.Char(
         default="/",
+        help=(
+            "Internal code for the checklist item. "
+            "Keep '/' to auto-generate if applicable."
+        ),
     )
