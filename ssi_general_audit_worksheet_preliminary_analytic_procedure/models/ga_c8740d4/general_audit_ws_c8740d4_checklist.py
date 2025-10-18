@@ -17,9 +17,11 @@ class GeneralAuditWSc8740d4Checklist(models.Model):
         comodel_name="general_audit_ws_c8740d4",
         required=True,
         ondelete="cascade",
+        help="Worksheet document that this checklist value belongs to.",
     )
     item_id = fields.Many2one(
         string="Checklist Item",
         comodel_name="general_audit_ws_c8740d4.item",
         required=True,
+        help="Checklist item being answered on this worksheet.",
     )

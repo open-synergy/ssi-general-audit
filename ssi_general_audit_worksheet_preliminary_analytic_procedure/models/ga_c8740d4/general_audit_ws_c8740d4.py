@@ -23,6 +23,7 @@ class GeneralAuditWSc8740d4(models.Model):
     checklist_ids = fields.One2many(
         string="Checklist",
         comodel_name="general_audit_ws_c8740d4.checklist",
+        help="Checklist answers captured for this worksheet.",
     )
     conclusion_ids = fields.One2many(
         string="Conclusion(s)",
@@ -34,4 +35,7 @@ class GeneralAuditWSc8740d4(models.Model):
                 ("readonly", False),
             ],
         },
+        help=(
+            "Conclusion lines summarizing the results of the analytic " "procedures."
+        ),
     )

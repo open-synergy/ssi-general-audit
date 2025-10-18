@@ -35,6 +35,10 @@ class GeneralAuditWSb32655a(models.Model):
                 ("required", True),
             ],
         },
+        help=(
+            "Select which balance to use for current figures: Extrapolation "
+            "(forecasted) or End Period (actual)."
+        ),
     )
 
     analysis_ids = fields.One2many(
@@ -47,6 +51,10 @@ class GeneralAuditWSb32655a(models.Model):
                 ("readonly", False),
             ],
         },
+        help=(
+            "Vertical and horizontal analysis lines generated from the General "
+            "Audit standard details."
+        ),
     )
 
     @api.depends(
@@ -94,6 +102,10 @@ class GeneralAuditWSb32655a(models.Model):
         compute="_compute_total_asset_revenue",
         compute_sudo=True,
         store=True,
+        help=(
+            "Total Assets used as the base figure depending on Balance Type "
+            "(Extrapolation or End Period)."
+        ),
     )
 
     total_revenue = fields.Float(
@@ -101,6 +113,10 @@ class GeneralAuditWSb32655a(models.Model):
         compute="_compute_total_asset_revenue",
         compute_sudo=True,
         store=True,
+        help=(
+            "Total Revenue used as the base figure depending on Balance Type "
+            "(Extrapolation or End Period)."
+        ),
     )
 
     def action_reload_analysis_ids(self):

@@ -33,11 +33,16 @@ class GeneralAuditWSd4289e4(models.Model):
                 ("required", True),
             ],
         },
+        help=(
+            "Select which balance to use as the basis for the current ratio "
+            "display: Extrapolation (forecasted) or End Period (actual)."
+        ),
     )
     ratio_ids = fields.One2many(
         string="Ratio Ratio",
         comodel_name="general_audit_ws_d4289e4.ratio",
         inverse_name="worksheet_id",
+        help="All ratio lines computed for this worksheet.",
     )
     liquidity_ratio_ids = fields.One2many(
         string="Liquidity Ratio",
@@ -46,6 +51,7 @@ class GeneralAuditWSd4289e4(models.Model):
         domain=[
             ("financial_ratio_id.category", "=", "liquidity"),
         ],
+        help="Filtered view of liquidity ratios only.",
     )
     activity_ratio_ids = fields.One2many(
         string="Activity Ratio",
@@ -54,6 +60,7 @@ class GeneralAuditWSd4289e4(models.Model):
         domain=[
             ("financial_ratio_id.category", "=", "activity"),
         ],
+        help="Filtered view of activity ratios only.",
     )
     solvency_ratio_ids = fields.One2many(
         string="Solvency Ratio",
@@ -62,6 +69,7 @@ class GeneralAuditWSd4289e4(models.Model):
         domain=[
             ("financial_ratio_id.category", "=", "solvency"),
         ],
+        help="Filtered view of solvency ratios only.",
     )
     profitability_ratio_ids = fields.One2many(
         string="Profitability Ratio",
@@ -70,6 +78,7 @@ class GeneralAuditWSd4289e4(models.Model):
         domain=[
             ("financial_ratio_id.category", "=", "profitability"),
         ],
+        help="Filtered view of profitability ratios only.",
     )
 
     @api.onchange("general_audit_id")
@@ -119,12 +128,12 @@ class GeneralAuditWSd4289e4(models.Model):
                 {
                     data.type_id.code: {
                         "extrapolation": data.extrapolation_balance,
-                        "interim": data.interim_balance,
-                        "previous": data.previous_balance,
-                        "end_period": data.home_statement_balance,
                         "extrapolation_avg": data.extrapolation_avg,
-                        "interim_avg": data.interim_avg,
+                        "end_period": data.home_statement_balance,
                         "end_period_avg": data.home_statement_avg,
+                        "interim": data.interim_balance,
+                        "interim_avg": data.interim_avg,
+                        "previous": data.previous_balance,
                     },
                 }
             )
@@ -135,10 +144,11 @@ class GeneralAuditWSd4289e4(models.Model):
                 {
                     data.group_id.code: {
                         "extrapolation": data.extrapolation_balance,
+                        "extrapolation_avg": data.extrapolation_avg,
+                        "end_period": data.home_statement_balance,
+                        "end_period_avg": data.home_statement_avg,
                         "interim": data.interim_balance,
                         "previous": data.previous_balance,
-                        "end_period": data.home_statement_balance,
-                        "extrapolation_avg": data.extrapolation_avg,
                         "interim_avg": data.interim_avg,
                     },
                 }
@@ -150,11 +160,12 @@ class GeneralAuditWSd4289e4(models.Model):
                 {
                     data.computation_item_id.code: {
                         "extrapolation": data.extrapolation_amount,
-                        "interim": data.interim_amount,
-                        "previous": data.previous_amount,
-                        "end_period": data.home_amount,
                         "extrapolation_avg": data.extrapolation_avg_amount,
-                        "interim_avg": data.interim_avg_amount,
+                        "end_period": data.home_amount,
+                        "end_period_avg": data.home_avg_amount,
+                        "interim": data.interim_amount,
+                        "interim_avg": data.interim.avg_amount,
+                        "previous": data.previous_amount,
                     },
                 }
             )
@@ -176,9 +187,9 @@ class GeneralAuditWSd4289e4(models.Model):
             Database ID: %s
             Problem: Balance type %s is already used for General Audit %s.
             """ % (
-                self.type_id.name,
+                self.type_id.display_name,
                 self.id,
                 self.base_amount_source,
-                self.name,
+                self.display_name,
             )
             raise ValidationError(_(error_message))

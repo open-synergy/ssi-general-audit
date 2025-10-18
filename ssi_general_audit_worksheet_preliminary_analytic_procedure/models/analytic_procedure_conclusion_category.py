@@ -17,8 +17,10 @@ class AnalyticProcedureConsulsionCategory(models.Model):
         string="Sequence",
         required=True,
         default=5,
+        help="Ordering number. Lower values appear first.",
     )
     parent_id = fields.Many2one(
         string="Parent",
         comodel_name="analytic_procedure_conclusion_category",
+        help=("Parent category to build a hierarchy of conclusion categories."),
     )

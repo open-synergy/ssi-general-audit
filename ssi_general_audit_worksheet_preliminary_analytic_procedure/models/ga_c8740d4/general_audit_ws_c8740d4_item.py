@@ -14,4 +14,8 @@ class GeneralAuditWSc8740d4Item(models.Model):
 
     code = fields.Char(
         default="/",
+        help=(
+            "Short code of the checklist item. The default '/' can be "
+            "replaced by an automatically generated sequence or custom code."
+        ),
     )

@@ -15,24 +15,38 @@ class GeneralAuditWSb32655aAnalyticProcedureConclusion(models.Model):
         comodel_name="general_audit_ws_c8740d4",
         required=True,
         ondelete="cascade",
+        help="Worksheet document that this conclusion belongs to.",
     )
     category_id = fields.Many2one(
         string="Category",
         comodel_name="analytic_procedure_conclusion_category",
         required=True,
         ondelete="restrict",
+        help=(
+            "Conclusion category that defines the section and ordering of the "
+            "conclusion."
+        ),
     )
     sequence = fields.Integer(
         string="Sequence",
         related="category_id.sequence",
         store=True,
+        help="Order within the category (lower values appear first).",
     )
     parent_sequence = fields.Integer(
         string="Parent Sequence",
         related="category_id.parent_id.sequence",
         store=True,
+        help=(
+            "Order of the parent category used for hierarchical sorting of "
+            "conclusions."
+        ),
     )
     name = fields.Text(
         string="Conclusion",
         required=True,
+        help=(
+            "Auditor’s conclusion text summarizing the results of the "
+            "preliminary analytic procedures."
+        ),
     )

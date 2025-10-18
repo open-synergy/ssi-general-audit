@@ -14,46 +14,64 @@ class GeneralAuditWSd4289e4Ratio(models.Model):
         comodel_name="general_audit_ws_d4289e4",
         required=True,
         ondelete="cascade",
+        help="Worksheet document that this ratio line belongs to.",
     )
     financial_ratio_id = fields.Many2one(
         string="Ratio",
         comodel_name="client_financial_ratio",
         required=True,
+        help=(
+            "Client financial ratio definition used to compute results. "
+            "Its Python code is executed to derive values."
+        ),
     )
     category = fields.Selection(
         string="Category",
         related="financial_ratio_id.category",
+        help="Ratio category derived from the selected ratio definition.",
     )
     current_amount = fields.Float(
         string="Curr. Amount",
         related=False,
         store=True,
+        help=(
+            "Displayed current ratio result based on the worksheet Balance "
+            "Type (Extrapolation or End Period)."
+        ),
     )
     end_period_amount = fields.Float(
         string="End Period Amount",
         related=False,
         store=True,
+        help="Ratio computed using End Period (actual) figures.",
     )
     extrapolation_amount = fields.Float(
         string="Extrapolation Amount",
         related=False,
         store=True,
+        help="Ratio computed using Extrapolation (forecasted) figures.",
     )
     interim_amount = fields.Float(
         string="Interim Amount",
         related=False,
         store=True,
+        help="Ratio computed using Interim figures.",
     )
     previous_amount = fields.Float(
         string="Previous Amount",
         related=False,
         store=True,
+        help="Ratio computed using Previous period figures.",
     )
     industry_average = fields.Float(
         string="Industry Average",
+        help="Industry benchmark for this ratio, for comparison purposes.",
     )
     analysis = fields.Char(
         string="Analysis",
+        help=(
+            "Short commentary or interpretation of the ratio movement or " "variance."
+        ),
     )
 
     def _get_localdict(self):
