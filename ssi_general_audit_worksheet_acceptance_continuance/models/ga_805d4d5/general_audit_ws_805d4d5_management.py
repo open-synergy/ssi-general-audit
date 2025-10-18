@@ -14,15 +14,19 @@ class GeneralAuditWS805d4d5Management(models.Model):
         comodel_name="general_audit_ws_805d4d5",
         required=True,
         ondelete="cascade",
+        help="Reference to the parent Know Your Customer (KYC) worksheet.",
     )
     name = fields.Char(
         string="Name",
+        help="Full name of the management person authorized to represent the entity.",
     )
     position = fields.Char(
         string="Position",
+        help="Official position/title of the management person within the entity.",
     )
     identity_no = fields.Char(
         string="Identity Number",
+        help="Government-issued identity/document number of the management person.",
     )
     identity_type = fields.Selection(
         string="Type of Identity",
@@ -31,4 +35,5 @@ class GeneralAuditWS805d4d5Management(models.Model):
             ("passport", "Passport"),
             ("lainnya", "Lainnya"),
         ],
+        help="Type of identity document presented (e.g., KTP, Passport, Others).",
     )

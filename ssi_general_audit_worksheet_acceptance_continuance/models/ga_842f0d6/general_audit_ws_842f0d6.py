@@ -22,6 +22,7 @@ class GeneralAuditWS842f0d6(models.Model):
     checklist_ids = fields.One2many(
         string="Checklist",
         comodel_name="general_audit_ws_842f0d6.checklist",
+        help="Checklist lines belonging to this Money Laundering Issues worksheet.",
     )
 
     pmpj = fields.Selection(
@@ -31,6 +32,8 @@ class GeneralAuditWS842f0d6(models.Model):
             ("intermediate", "PMPJ Intermediate"),
             ("enhanced", "PMPJ Enhanced"),
         ],
+        help="""Risk categorization level for KYC obligations:
+Simplified, Intermediate, or Enhanced.""",
     )
 
     # LINK - 1 (PE.110.2.2)
@@ -50,10 +53,14 @@ class GeneralAuditWS842f0d6(models.Model):
         comodel_name="general_audit_ws_805d4d5",
         compute="_compute_allowed_link_1_ids",
         store=False,
+        help="""Eligible PE.110.2.2 worksheets (KYC) from the same audit
+that can be linked.""",
     )
     link_1 = fields.Many2one(
         string="PE.110.2.2",
         comodel_name="general_audit_ws_805d4d5",
+        help="""Selected PE.110.2.2 worksheet used as a reference
+for this analysis.""",
     )
 
     @api.onchange(

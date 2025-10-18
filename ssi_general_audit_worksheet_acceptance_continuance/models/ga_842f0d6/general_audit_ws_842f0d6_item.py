@@ -14,6 +14,7 @@ class GeneralAuditWS842f0d6Item(models.Model):
 
     code = fields.Char(
         default="/",
+        help="Internal code/identifier for the checklist item. Defaults to '/'.",
     )
     categ = fields.Selection(
         string="Category",
@@ -23,4 +24,6 @@ class GeneralAuditWS842f0d6Item(models.Model):
             ("business", "Business"),
             ("product", "Product/Service"),
         ],
+        help="""Category under which the checklist item falls
+(Profile, Country, Business, Product/Service).""",
     )

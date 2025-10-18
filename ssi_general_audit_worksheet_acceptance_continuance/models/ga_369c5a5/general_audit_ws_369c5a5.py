@@ -25,9 +25,14 @@ class GeneralAuditWS369c5a5(models.Model):
             ("medium", "Medium"),
             ("high", "High"),
         ],
+        help="Overall risk assessment for this worksheet based on the checklist evaluation.",
     )
 
     checklist_ids = fields.One2many(
         string="Checklist",
         comodel_name="general_audit_ws_369c5a5.checklist",
+        help=(
+            "Checklist lines associated with this worksheet "
+            "(Previous Financial Reporting Issues)."
+        ),
     )

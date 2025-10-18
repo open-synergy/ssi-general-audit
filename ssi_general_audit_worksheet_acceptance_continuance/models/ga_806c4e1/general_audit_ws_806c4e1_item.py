@@ -17,4 +17,5 @@ class GeneralAuditWS806c4e1Item(models.Model):
 
     code = fields.Char(
         default="/",
+        help="Internal code/identifier for the checklist item. Defaults to '/'.",
     )

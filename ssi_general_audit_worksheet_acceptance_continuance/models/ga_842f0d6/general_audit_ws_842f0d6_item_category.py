@@ -14,6 +14,7 @@ class GeneralAuditWS842f0d6Item(models.Model):
 
     code = fields.Char(
         default="/",
+        help="Internal code for the item category. Defaults to '/'.",
     )
     categ = fields.Selection(
         string="Category",
@@ -23,4 +24,6 @@ class GeneralAuditWS842f0d6Item(models.Model):
             ("business", "Business"),
             ("product", "Product/Service"),
         ],
+        help="""Classification/category of the indicator
+(Profile, Country, Business, Product/Service).""",
     )

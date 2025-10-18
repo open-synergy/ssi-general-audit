@@ -23,6 +23,8 @@ class GeneralAuditWS806C4E1(models.Model):
     checklist_ids = fields.One2many(
         string="Checklist",
         comodel_name="general_audit_ws_806c4e1.checklist",
+        help="""Checklist lines for the Acceptance and Continuance of Client
+Relationships analysis.""",
     )
     risk = fields.Selection(
         string="Risk",
@@ -38,6 +40,7 @@ class GeneralAuditWS806C4E1(models.Model):
                 ("readonly", False),
             ],
         },
+        help="Aggregated risk level for the client acceptance/continuance decision.",
     )
     client_relationship = fields.Selection(
         string="Continue the Cient Relationship",
@@ -52,12 +55,15 @@ class GeneralAuditWS806C4E1(models.Model):
                 ("readonly", False),
             ],
         },
+        help="Decision whether to continue the client relationship based on the analysis.",
     )
     industry_id = fields.Many2one(
         related="general_audit_id.industry_id",
+        help="Client's industry derived from the General Audit record.",
     )
     ownership_type_id = fields.Many2one(
         related="general_audit_id.ownership_type_id",
+        help="Ownership type of the client derived from the General Audit record.",
     )
 
     @api.depends("general_audit_id", "general_audit_id.public_offering_ids")
@@ -78,9 +84,13 @@ class GeneralAuditWS806C4E1(models.Model):
         string="Public Offering",
         compute="_compute_public_offering",
         store=True,
+        help="""Computed status indicating whether the client has, or plans to have,
+a public offering.""",
     )
     financial_accounting_standard_id = fields.Many2one(
         related="general_audit_id.financial_accounting_standard_id",
+        help="""Applicable financial accounting standard for the engagement,
+derived from the General Audit.""",
     )
     establishment_state = fields.Selection(
         string="Establishment Status",
@@ -95,6 +105,7 @@ class GeneralAuditWS806C4E1(models.Model):
                 ("readonly", False),
             ],
         },
+        help="Indicates whether the entity is previously established or newly established.",
     )
     financial_statement = fields.Selection(
         string="Prior Period Financial Statement",
@@ -111,6 +122,7 @@ class GeneralAuditWS806C4E1(models.Model):
                 ("readonly", False),
             ],
         },
+        help="Availability status of prior period financial statements for the client.",
     )
 
     @api.depends("general_audit_id", "general_audit_id.num_of_consecutive_audit_firm")
@@ -124,6 +136,8 @@ class GeneralAuditWS806C4E1(models.Model):
         string="Engagement",
         compute="_compute_engagemet",
         store=True,
+        help="""Computed engagement type based on the number of consecutive audits
+with the firm ('Initial Engagement' vs 'Recurring Engagement').""",
     )
 
     # LINK - 1 (PE.110.1)
@@ -143,16 +157,21 @@ class GeneralAuditWS806C4E1(models.Model):
         comodel_name="general_audit_ws_369c5a5",
         compute="_compute_allowed_link_1_ids",
         store=False,
+        help="""Eligible PE.110.1 worksheets from the same audit
+that can be linked.""",
     )
 
     link_1 = fields.Many2one(
         string="PE.110.1",
         comodel_name="general_audit_ws_369c5a5",
+        help="""Selected PE.110.1 worksheet used for cross-referencing
+and risk derivation.""",
     )
     link_1_risk = fields.Selection(
         string="Risk (PE.110.1)",
         related="link_1.risk",
         store=True,
+        help="Risk level propagated from the linked PE.110.1 worksheet.",
     )
 
     @api.onchange(
@@ -186,15 +205,20 @@ class GeneralAuditWS806C4E1(models.Model):
         comodel_name="general_audit_ws_f5e7049",
         compute="_compute_allowed_link_2_ids",
         store=False,
+        help="""Eligible PE.110.2 worksheets from the same audit
+that can be linked.""",
     )
     link_2 = fields.Many2one(
         string="PE.110.2",
         comodel_name="general_audit_ws_f5e7049",
+        help="""Selected PE.110.2 worksheet used for cross-referencing
+and risk derivation.""",
     )
     link_2_risk = fields.Selection(
         string="Risk (PE.110.2)",
         related="link_2.risk",
         store=True,
+        help="Risk level propagated from the linked PE.110.2 worksheet.",
     )
 
     @api.onchange(
@@ -228,15 +252,20 @@ class GeneralAuditWS806C4E1(models.Model):
         comodel_name="general_audit_ws_b9d8a5c",
         compute="_compute_allowed_link_3_ids",
         store=False,
+        help="""Eligible PE.110.3 worksheets from the same audit
+that can be linked.""",
     )
     link_3 = fields.Many2one(
         string="PE.110.3",
         comodel_name="general_audit_ws_b9d8a5c",
+        help="""Selected PE.110.3 worksheet used for cross-referencing
+and risk derivation.""",
     )
     link_3_risk = fields.Selection(
         string="Risk (PE.110.3)",
         related="link_3.risk",
         store=True,
+        help="Risk level propagated from the linked PE.110.3 worksheet.",
     )
 
     @api.onchange(
@@ -270,15 +299,20 @@ class GeneralAuditWS806C4E1(models.Model):
         comodel_name="general_audit_ws_0427d28",
         compute="_compute_allowed_link_4_ids",
         store=False,
+        help="""Eligible PE.110.4 worksheets from the same audit
+that can be linked.""",
     )
     link_4 = fields.Many2one(
         string="PE.110.4",
         comodel_name="general_audit_ws_0427d28",
+        help="""Selected PE.110.4 worksheet used for cross-referencing
+and risk derivation.""",
     )
     link_4_risk = fields.Selection(
         string="Risk (PE.110.4)",
         related="link_4.risk",
         store=True,
+        help="Risk level propagated from the linked PE.110.4 worksheet.",
     )
 
     @api.onchange(

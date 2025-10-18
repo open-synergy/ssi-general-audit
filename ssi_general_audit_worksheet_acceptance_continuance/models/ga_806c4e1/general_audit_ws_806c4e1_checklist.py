@@ -20,9 +20,15 @@ class GeneralAuditWS806c4e1Checklist(models.Model):
         comodel_name="general_audit_ws_806c4e1",
         required=True,
         ondelete="cascade",
+        help="Reference to the parent worksheet for Acceptance and Continuance of "
+        "Client Relationships Analysis. This field establishes the relationship "
+        "between the checklist item and its corresponding worksheet.",
     )
     item_id = fields.Many2one(
         string="Checklist Item",
         comodel_name="general_audit_ws_806c4e1.item",
         required=True,
+        help="The specific checklist item that this record represents. "
+        "Each checklist item contains predefined criteria or questions "
+        "that need to be evaluated for the client relationship analysis.",
     )
