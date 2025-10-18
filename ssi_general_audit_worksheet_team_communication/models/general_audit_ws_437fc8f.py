@@ -7,7 +7,7 @@ from odoo import fields, models
 
 class GeneralAuditWS437fc8f(models.Model):
     _name = "general_audit_ws_437fc8f"
-    _description = "Assignment Letter (437fc8f)"
+    _description = "Team Communication (437fc8f)"
     _inherit = [
         "general_audit_worksheet_mixin",
         "mixin.checklist",
@@ -21,4 +21,9 @@ class GeneralAuditWS437fc8f(models.Model):
     checklist_ids = fields.One2many(
         string="Checklist",
         comodel_name="general_audit_ws_437fc8f.checklist",
+        help=(
+            "Collection of checklist items for this worksheet. "
+            "Each checklist item represents a specific audit point "
+            "that needs to be evaluated and documented."
+        ),
     )

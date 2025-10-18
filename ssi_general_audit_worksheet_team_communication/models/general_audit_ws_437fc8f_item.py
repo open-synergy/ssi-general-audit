@@ -10,8 +10,12 @@ class GeneralAuditWS437fc8fItem(models.Model):
     _inherit = [
         "mixin.checklist.item",
     ]
-    _description = "Assignment Letter (437fc8f) - " "Checklist Item"
+    _description = "Team Communication (437fc8f) - " "Checklist Item"
 
     code = fields.Char(
         default="/",
+        help=(
+            "Unique identifier code for this checklist item. "
+            "Used for reference and organization purposes."
+        ),
     )

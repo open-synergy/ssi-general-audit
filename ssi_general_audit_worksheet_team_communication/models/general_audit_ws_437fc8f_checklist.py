@@ -10,16 +10,25 @@ class GeneralAuditWS437fc8fChecklist(models.Model):
     _inherit = [
         "mixin.checklist.value",
     ]
-    _description = "Assignment Letter (437fc8f) - Checklist"
+    _description = "Team Communication (437fc8f) - Checklist"
 
     worksheet_id = fields.Many2one(
         string="# Worksheet",
         comodel_name="general_audit_ws_437fc8f",
         required=True,
         ondelete="cascade",
+        help=(
+            "Reference to the parent worksheet this checklist value belongs to. "
+            "Used to group checklist values by worksheet. Deleting the worksheet "
+            "will also remove associated checklist lines."
+        ),
     )
     item_id = fields.Many2one(
         string="Checklist Item",
         comodel_name="general_audit_ws_437fc8f.item",
         required=True,
+        help=(
+            "Reference to the checklist item definition that this checklist value "
+            "corresponds to."
+        ),
     )
