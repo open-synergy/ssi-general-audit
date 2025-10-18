@@ -14,4 +14,8 @@ class GeneralAuditWS1d9338dItem(models.Model):
 
     code = fields.Char(
         default="/",
+        help=(
+            "Technical code/reference for the checklist item. Use '/' to "
+            "let the system generate a code."
+        ),
     )

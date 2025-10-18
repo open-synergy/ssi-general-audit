@@ -52,29 +52,40 @@ class GeneralAuditWS6dcda0e1MaterialityMapping(models.Model):
         comodel_name="general_audit_ws_6dcda0e",
         required=True,
         ondelete="cascade",
+        help=(
+            "Specific Materiality worksheet that owns this mapping line. "
+            "Deleting the worksheet will remove the mappings."
+        ),
     )
     standard_detail_id = fields.Many2one(
         string="Standard Detail",
         comodel_name="general_audit.standard_detail",
         required=True,
         ondelete="cascade",
+        help=(
+            "Standard financial statement detail (e.g., account or type) "
+            "being assessed for materiality."
+        ),
     )
     currency_id = fields.Many2one(
         string="Currency",
         comodel_name="res.currency",
         related="standard_detail_id.currency_id",
         store=True,
+        help="Currency for amounts, derived from the related standard detail.",
     )
     type_id = fields.Many2one(
         string="Account Type",
         comodel_name="client_account_type",
         related="standard_detail_id.type_id",
         store=True,
+        help="Account type derived from the related standard detail.",
     )
     sequence = fields.Integer(
         string="Sequence",
         related="standard_detail_id.sequence",
         store=True,
+        help="Display order inherited from the standard detail.",
     )
     balance = fields.Monetary(
         string="Balance",
@@ -82,29 +93,50 @@ class GeneralAuditWS6dcda0e1MaterialityMapping(models.Model):
         related=False,
         store=True,
         currency_field="currency_id",
+        help=(
+            "Calculated balance used to evaluate materiality. Source "
+            "depends on the worksheet's base amount setting."
+        ),
     )
     materiality = fields.Selection(
         string="Materiality",
         selection=[("m", "Material"), ("im", "Immaterial")],
         compute="_compute_materiality",
         store=True,
+        help=(
+            "Computed materiality classification based on the balance "
+            "compared to the base threshold."
+        ),
     )
     use_specific_materiality = fields.Boolean(
         string="Use Specific Materiality",
         default=False,
+        help=(
+            "When enabled, this line is considered Material regardless of "
+            "the computed classification."
+        ),
     )
     specific_materiality = fields.Monetary(
         string="Specific Materiality",
         required=True,
         default=0.0,
         currency_field="currency_id",
+        help=(
+            "Specific threshold to apply for this line when using specific "
+            "materiality."
+        ),
     )
     final_materiality = fields.Selection(
         string="Final Materiality",
         selection=[("m", "Material"), ("im", "Immaterial")],
         compute="_compute_materiality",
         store=True,
+        help=(
+            "Final materiality after considering the 'Use Specific "
+            "Materiality' setting."
+        ),
     )
     specific_materiality_reason = fields.Text(
         string="Specific Materiality Reason",
+        help="Reason and justification for applying specific materiality.",
     )

@@ -90,6 +90,10 @@ class GeneralAuditWSd9d2b44(models.Model):
                 ("required", True),
             ],
         },
+        help=(
+            "Source of the base amount used in materiality computation: "
+            "Extrapolation or End Period."
+        ),
     )
 
     @api.depends(
@@ -114,6 +118,7 @@ class GeneralAuditWSd9d2b44(models.Model):
         comodel_name="trial_balance_computation_item",
         compute="_compute_allowed_computation_item_ids",
         store=False,
+        help=("Computation items available based on the selected General " "Audit."),
     )
 
     computation_item_id = fields.Many2one(
@@ -125,18 +130,27 @@ class GeneralAuditWSd9d2b44(models.Model):
                 ("readonly", False),
             ],
         },
+        help=(
+            "Computation item from the General Audit whose value will be "
+            "used to derive the base amount."
+        ),
     )
     general_audit_computation_id = fields.Many2one(
         string="General Audit Computation",
         comodel_name="general_audit.computation",
         compute="_compute_base",
         store=True,
+        help=(
+            "Matched General Audit computation record for the selected "
+            "computation item."
+        ),
     )
     base_computation_amount = fields.Monetary(
         string="Base Amount for Materiality Computation",
         compute="_compute_base",
         store=True,
         currency_field="currency_id",
+        help="Calculated base amount used to compute materiality.",
     )
     other_amount_ok = fields.Boolean(
         string="Use Other Amount",
@@ -147,6 +161,9 @@ class GeneralAuditWSd9d2b44(models.Model):
                 ("readonly", False),
             ],
         },
+        help=(
+            "Enable to override the computed base with a custom 'Other " "Base Amount'."
+        ),
     )
     other_amount_source = fields.Char(
         string="Other Amount's Source",
@@ -156,6 +173,7 @@ class GeneralAuditWSd9d2b44(models.Model):
                 ("readonly", False),
             ],
         },
+        help="Describe the source/rationale of the custom 'Other Base Amount'.",
     )
     other_base_amount = fields.Monetary(
         string="Other Base Amount",
@@ -168,6 +186,7 @@ class GeneralAuditWSd9d2b44(models.Model):
                 ("readonly", False),
             ],
         },
+        help="Custom base amount to use when 'Use Other Amount' is enabled.",
     )
     overall_materiality_percentage = fields.Float(
         string="Overall Materiality Percentage",
@@ -180,12 +199,16 @@ class GeneralAuditWSd9d2b44(models.Model):
                 ("required", True),
             ],
         },
+        help=(
+            "Percentage applied to the base amount to compute Overall " "Materiality."
+        ),
     )
     overall_materiality = fields.Monetary(
         string="Overall Materiality",
         compute="_compute_materiality",
         store=True,
         currency_field="currency_id",
+        help="Computed Overall Materiality amount.",
     )
     overall_materiality_consideration = fields.Text(
         string="Overall Materiality Consideration",
@@ -195,6 +218,10 @@ class GeneralAuditWSd9d2b44(models.Model):
                 ("readonly", False),
             ],
         },
+        help=(
+            "Considerations and professional judgement supporting the "
+            "selected overall materiality percentage."
+        ),
     )
     performance_materiality_percentage = fields.Float(
         string="Performance Materiality Percentage",
@@ -207,12 +234,17 @@ class GeneralAuditWSd9d2b44(models.Model):
                 ("required", True),
             ],
         },
+        help=(
+            "Percentage of Overall Materiality used to compute Performance "
+            "Materiality."
+        ),
     )
     performance_materiality = fields.Monetary(
         string="Performance Materiality",
         compute="_compute_materiality",
         store=True,
         currency_field="currency_id",
+        help="Computed Performance Materiality amount.",
     )
     performance_materiality_consideration = fields.Text(
         string="Performence Materiality Consideration",
@@ -222,6 +254,10 @@ class GeneralAuditWSd9d2b44(models.Model):
                 ("readonly", False),
             ],
         },
+        help=(
+            "Considerations and professional judgement supporting the "
+            "selected performance materiality percentage."
+        ),
     )
     tolerable_misstatement_percentage = fields.Float(
         string="Tolerable Misstatement Percentage",
@@ -234,12 +270,17 @@ class GeneralAuditWSd9d2b44(models.Model):
                 ("required", True),
             ],
         },
+        help=(
+            "Percentage of Performance Materiality used to compute the "
+            "Tolerable Misstatement."
+        ),
     )
     tolerable_misstatement = fields.Monetary(
         string="Tolerable Misstatement",
         compute="_compute_materiality",
         store=True,
         currency_field="currency_id",
+        help="Computed Tolerable Misstatement amount.",
     )
     tolerable_misstatement_consideration = fields.Text(
         string="Tolerable Misstatement Consideration",
@@ -249,6 +290,10 @@ class GeneralAuditWSd9d2b44(models.Model):
                 ("readonly", False),
             ],
         },
+        help=(
+            "Considerations and professional judgement supporting the "
+            "selected tolerable misstatement percentage."
+        ),
     )
 
     @ssi_decorator.pre_confirm_check()

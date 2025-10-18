@@ -17,9 +17,14 @@ class GeneralAuditWS1d9338dChecklist(models.Model):
         comodel_name="general_audit_ws_1d9338d",
         required=True,
         ondelete="cascade",
+        help=(
+            "Parent worksheet (1d9338d). Required. Deleting the worksheet "
+            "will cascade and remove its checklist items."
+        ),
     )
     item_id = fields.Many2one(
         string="Checklist Item",
         comodel_name="general_audit_ws_1d9338d.item",
         required=True,
+        help="Checklist item definition referenced by this line.",
     )

@@ -28,10 +28,18 @@ class GeneralAuditWS6dcda0e(models.Model):
                 ("required", True),
             ],
         },
+        help=(
+            "Link to the Materiality Computation (d9d2b44) worksheet that "
+            "provides overall and performance materiality thresholds."
+        ),
     )
 
     base_amount_source = fields.Selection(
         related="worksheet_d9d2b44_id.base_amount_source",
+        help=(
+            "Balance source used when deriving the base amount: "
+            "Extrapolation or End Period."
+        ),
     )
 
     @api.depends(
@@ -56,6 +64,10 @@ class GeneralAuditWS6dcda0e(models.Model):
         compute="_compute_base_amount",
         store=True,
         currency_field="currency_id",
+        help=(
+            "Base threshold amount (Overall or Performance Materiality) "
+            "derived from the linked computation worksheet."
+        ),
     )
 
     materiality_type = fields.Selection(
@@ -73,6 +85,10 @@ class GeneralAuditWS6dcda0e(models.Model):
                 ("required", True),
             ],
         },
+        help=(
+            "Choose which materiality threshold to use in this worksheet: "
+            "Overall or Performance."
+        ),
     )
     materiality_mapping_ids = fields.One2many(
         string="Materiality Mapping",
@@ -84,6 +100,7 @@ class GeneralAuditWS6dcda0e(models.Model):
                 ("readonly", False),
             ],
         },
+        help="Mapping lines of standard details with their materiality assessment.",
     )
 
     def action_reload_materiality_mapping(self):
