@@ -32,6 +32,7 @@
         "data/general_audit_worksheet_type_data.xml",
         # MASTER DATA
         "data/master/general_audit_inherent_risk_factor.xml",
+        "data/master/general_audit_ws_bfb6dae_item.xml",
         "views/general_audit_inherent_risk_factor_views.xml",
         "views/general_audit_ws_a418d89_views.xml",
         "views/general_audit_ws_c16abd7_views.xml",
@@ -44,7 +45,8 @@
         "data/sequence_template/general_audit_ws_bfb6dae.xml",
         "data/policy_template/general_audit_ws_bfb6dae.xml",
         "data/approval_template/general_audit_ws_bfb6dae.xml",
-        "views/general_audit_ws_bfb6dae_views.xml",
+        "views/ga_bfb6dae/general_audit_ws_bfb6dae_views.xml",
+        "views/ga_bfb6dae/general_audit_ws_bfb6dae_item_views.xml",
         "security/ir.model.access.csv",
     ],
     "demo": [],
