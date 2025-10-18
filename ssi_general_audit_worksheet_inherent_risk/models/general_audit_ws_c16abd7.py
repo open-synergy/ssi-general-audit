@@ -46,3 +46,24 @@ class GeneralAuditWSc16abd7(models.Model):
         readonly=True,
         store=False,
     )
+    previous_audit_information_impacted_account_type_ids = fields.Many2many(
+        string="Standard Accounts Impacted by Previous Audit Information",
+        comodel_name="client_account_type",
+        related="general_audit_id.previous_audit_information_impacted_account_type_ids",
+        readonly=True,
+        store=False,
+    )
+    previous_other_information_impacted_account_type_ids = fields.Many2many(
+        string="Standard Accounts Impacted by Previous Other Information",
+        comodel_name="client_account_type",
+        related="general_audit_id.previous_other_information_impacted_account_type_ids",
+        readonly=True,
+        store=False,
+    )
+    other_information_impacted_account_type_ids = fields.Many2many(
+        string="Standard Accounts Impacted by Other Information",
+        comodel_name="client_account_type",
+        related="general_audit_id.other_information_impacted_account_type_ids",
+        readonly=True,
+        store=False,
+    )
