@@ -11,10 +11,10 @@
     "application": False,
     "depends": [
         # PE
-        "ssi_general_audit_worksheet_audit_working_plan",
-        "ssi_general_audit_worksheet_engagement_letter_checklist",
         "ssi_general_audit_worksheet_acceptance_continuance",
         "ssi_general_audit_worksheet_assignment_letter",
+        "ssi_general_audit_worksheet_audit_working_plan",
+        "ssi_general_audit_worksheet_engagement_letter_checklist",
         "ssi_general_audit_worksheet_independence_statement",
         "ssi_general_audit_worksheet_team_communication",
         # RA
