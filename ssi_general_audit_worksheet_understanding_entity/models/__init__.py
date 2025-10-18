@@ -6,14 +6,14 @@ from . import (
     master,
     f87b2e1,  # Understanding of The Entity and it's Environment
     ga_ddf034c,  # General Information and Legal Aspec
-    e78a3c6,  # Structure Organization and Responsibilities
+    ga_e78a3c6,  # Structure Organization and Responsibilities
     a13a30e,  # Understanding of Relevant Regulations
-    bdcdfc5,  # Understanding of the business environment
+    ga_bdcdfc5,  # Understanding of the business environment
     c0d0898,  # Going concern analysis
-    f6a227,  # Understanding of preparation of Financial Statements
-    c0e0eec,  # Fraud Factor Analysis
-    a604795,  # Business Cycle
-    ae11f7e,  # Main Business Activity Process
+    ga_f6a227,  # Understanding of preparation of Financial Statements
+    ga_c0e0eec,  # Fraud Factor Analysis
+    ga_a604795,  # Business Cycle Summaries
+    ga_ae11f7e,  # Main Business Activity Process
     general_audit_standard_detail,
     general_audit,
 )

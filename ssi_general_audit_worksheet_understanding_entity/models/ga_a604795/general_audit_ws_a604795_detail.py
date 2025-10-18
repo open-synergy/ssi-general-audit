@@ -5,14 +5,14 @@
 from odoo import api, fields, models
 
 
-class GeneralAuditWSa13a30eOrganizationStructure(models.Model):
-    _name = "general_audit_ws_a13a30e.detail"
-    _description = "Worksheet a13a30e - Detail"
-    _order = "worksheet_id, sequence, id"
+class GeneralAuditWSA604795Detail(models.Model):
+    _name = "general_audit_ws_a604795.detail"
+    _description = "Worksheet a604795 - Detail"
+    _order = "worksheet_id, id"
 
     worksheet_id = fields.Many2one(
         string="# Worksheet",
-        comodel_name="general_audit_ws_a13a30e",
+        comodel_name="general_audit_ws_a604795",
         required=True,
         ondelete="cascade",
         help=(
@@ -20,40 +20,38 @@ class GeneralAuditWSa13a30eOrganizationStructure(models.Model):
             "This detail will be removed if the worksheet is deleted."
         ),
     )
-    sequence = fields.Integer(
-        string="Sequence",
-        default=10,
+    class_transaction_id = fields.Many2one(
+        string="Class of Transaction",
+        comodel_name="general_audit_class_transaction",
         required=True,
-        help="Ordering of this line within the worksheet.",
+        ondelete="restrict",
+        help=(
+            "Class of transaction in scope for this detail. "
+            "Related records cannot be deleted due to 'restrict' policy."
+        ),
     )
-    regulation_id = fields.Many2one(
-        string="Regulation",
-        comodel_name="general_audit_relevant_regulation",
-        required=True,
-        help="Relevant regulation or law applicable to the entity.",
-    )
-    item_id = fields.Many2one(
-        string="Item",
-        comodel_name="general_audit_relevant_regulation.item",
-        required=True,
-        help="Specific item/section of the regulation being tracked.",
+    business_function_ids = fields.One2many(
+        string="Business Functions",
+        comodel_name="general_audit_ws_a604795.business_function",
+        inverse_name="detail_id",
+        help="Business functions associated with this class of transaction.",
     )
     related_account_type_ids = fields.Many2many(
         string="Related Standard Accounts",
         comodel_name="client_account_type",
-        relation="rel_general_audit_ws_a13a30e_detail_2_account_type",
+        relation="rel_general_audit_ws_a604795_detail_2_account_type",
         column1="detail_id",
         column2="type_id",
         required=True,
         help=(
-            "Standard account types related to this regulation. Used to link the item "
+            "Standard account types related to this detail. Used to link the understanding "
             "to relevant accounts."
         ),
     )
     standard_detail_ids = fields.Many2many(
         string="Standard Details",
         comodel_name="general_audit.standard_detail",
-        relation="rel_general_audit_ws_a13a30e_detail_2_standard_detail",
+        relation="rel_general_audit_ws_a604795_detail_2_standard_detail",
         column1="detail_id",
         column2="standard_detail_id",
         compute="_compute_standard_detail_ids",
@@ -62,14 +60,6 @@ class GeneralAuditWSa13a30eOrganizationStructure(models.Model):
         help=(
             "Standard details automatically linked based on the selected account types "
             "and the worksheet's General Audit."
-        ),
-    )
-    significant_impact = fields.Boolean(
-        string="Significant Impact",
-        default=False,
-        help=(
-            "Indicates whether this regulation has a significant impact on the financial "
-            "statements or disclosures."
         ),
     )
 

@@ -5,56 +5,61 @@
 from odoo import api, fields, models
 
 
-class GeneralAuditWSa13a30eOrganizationStructure(models.Model):
-    _name = "general_audit_ws_a13a30e.detail"
-    _description = "Worksheet a13a30e - Detail"
-    _order = "worksheet_id, sequence, id"
+class GeneralAuditWSAE11F7EDetail(models.Model):
+    _name = "general_audit_ws_ae11f7e.expert"
+    _description = "Worksheet ae11f7e - Expert"
+    _order = "worksheet_id, id"
 
     worksheet_id = fields.Many2one(
         string="# Worksheet",
-        comodel_name="general_audit_ws_a13a30e",
+        comodel_name="general_audit_ws_ae11f7e",
         required=True,
         ondelete="cascade",
         help=(
             "Reference to the parent worksheet. "
-            "This detail will be removed if the worksheet is deleted."
+            "This expert record will be removed if the worksheet is deleted."
         ),
     )
-    sequence = fields.Integer(
-        string="Sequence",
-        default=10,
-        required=True,
-        help="Ordering of this line within the worksheet.",
+    general_audit_id = fields.Many2one(
+        related="worksheet_id.general_audit_id",
+        store=True,
+        help=(
+            "General Audit derived from the worksheet; used to link expert-related work "
+            "to applicable standards."
+        ),
     )
-    regulation_id = fields.Many2one(
-        string="Regulation",
-        comodel_name="general_audit_relevant_regulation",
+    name = fields.Char(
+        string="Expert Name",
         required=True,
-        help="Relevant regulation or law applicable to the entity.",
+        help="External expert's name or firm.",
     )
-    item_id = fields.Many2one(
-        string="Item",
-        comodel_name="general_audit_relevant_regulation.item",
+    type_id = fields.Many2one(
+        string="Type",
+        comodel_name="general_audit_expert_type",
         required=True,
-        help="Specific item/section of the regulation being tracked.",
+        help="Type of expert (e.g., valuation, legal, actuary).",
+    )
+    documentation = fields.Text(
+        string="Documentation",
+        help="Notes or references supporting the use of the expert.",
     )
     related_account_type_ids = fields.Many2many(
         string="Related Standard Accounts",
         comodel_name="client_account_type",
-        relation="rel_general_audit_ws_a13a30e_detail_2_account_type",
+        relation="rel_general_audit_ws_ae11f7e_expert_2_account_type",
         column1="detail_id",
         column2="type_id",
         required=True,
         help=(
-            "Standard account types related to this regulation. Used to link the item "
-            "to relevant accounts."
+            "Standard account types related to the expert's work. "
+            "Used to link the expert engagement to relevant accounts."
         ),
     )
     standard_detail_ids = fields.Many2many(
         string="Standard Details",
         comodel_name="general_audit.standard_detail",
-        relation="rel_general_audit_ws_a13a30e_detail_2_standard_detail",
-        column1="detail_id",
+        relation="rel_general_audit_ws_ae11f7e_expert_2_standard_detail",
+        column1="expert_id",
         column2="standard_detail_id",
         compute="_compute_standard_detail_ids",
         store=True,
@@ -62,14 +67,6 @@ class GeneralAuditWSa13a30eOrganizationStructure(models.Model):
         help=(
             "Standard details automatically linked based on the selected account types "
             "and the worksheet's General Audit."
-        ),
-    )
-    significant_impact = fields.Boolean(
-        string="Significant Impact",
-        default=False,
-        help=(
-            "Indicates whether this regulation has a significant impact on the financial "
-            "statements or disclosures."
         ),
     )
 

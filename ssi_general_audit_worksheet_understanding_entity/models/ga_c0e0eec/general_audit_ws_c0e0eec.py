@@ -7,19 +7,19 @@ from odoo import fields, models
 from odoo.addons.ssi_decorator import ssi_decorator
 
 
-class GeneralAuditWSc0d0898(models.Model):
-    _name = "general_audit_ws_c0d0898"
-    _description = "Going concern analysis (c0d0898)"
+class GeneralAuditWSC0E0EEC(models.Model):
+    _name = "general_audit_ws_c0e0eec"
+    _description = "Fraud Factor Analysis (c0e0eec)"
     _inherit = [
         "general_audit_worksheet_mixin",
     ]
     _type_xml_id = (
-        "ssi_general_audit_worksheet_understanding_entity." "worksheet_type_c0d0898"
+        "ssi_general_audit_worksheet_understanding_entity." "worksheet_type_c0e0eec"
     )
 
     detail_ids = fields.One2many(
         string="Details",
-        comodel_name="general_audit_ws_c0d0898.detail",
+        comodel_name="general_audit_ws_c0e0eec.detail",
         inverse_name="worksheet_id",
         readonly=True,
         states={
@@ -28,8 +28,8 @@ class GeneralAuditWSc0d0898(models.Model):
             ],
         },
         help=(
-            "Going concern assessment lines for this worksheet. "
-            "Re-loaded from master list when the worksheet is opened."
+            "Fraud factor assessment lines for this worksheet. "
+            "Re-loaded from master indicators when the worksheet is opened."
         ),
     )
 
@@ -37,11 +37,11 @@ class GeneralAuditWSc0d0898(models.Model):
     def _01_reload_item(self):
         self.ensure_one()
         self.detail_ids.unlink()
-        GoingConcern = self.env["general_audit_going_concern"]
-        Detail = self.env["general_audit_ws_c0d0898.detail"]
-        for gc in GoingConcern.search([]):
+        Indicator = self.env["general_audit_fraud_factor_indicator"]
+        Detail = self.env["general_audit_ws_c0e0eec.detail"]
+        for indicator in Indicator.search([]):
             data = {
-                "going_concern_id": gc.id,
+                "indicator_id": indicator.id,
                 "worksheet_id": self.id,
             }
             Detail.create(data)

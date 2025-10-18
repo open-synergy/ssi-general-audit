@@ -1,0 +1,332 @@
+<?xml version="1.0" ?>
+<!-- Copyright 2022 OpenSynergy Indonesia
+     Copyright 2022 PT. Simetri Sinergi Indonesia
+     License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl-3.0-standalone.html). -->
+<odoo>
+
+    <record id="general_audit_ws_ae11f7e_view_search" model="ir.ui.view">
+        <field name="name">general_audit_ws_ae11f7e form</field>
+        <field name="model">general_audit_ws_ae11f7e</field>
+        <field
+            name="inherit_id"
+            ref="ssi_general_audit.general_audit_worksheet_mixin_view_search"
+        />
+        <field name="mode">primary</field>
+        <field name="arch" type="xml">
+            <data />
+        </field>
+    </record>
+
+    <record id="general_audit_ws_ae11f7e_view_tree" model="ir.ui.view">
+        <field name="name">general_audit_ws_ae11f7e tree</field>
+        <field name="model">general_audit_ws_ae11f7e</field>
+        <field name="mode">primary</field>
+        <field
+            name="inherit_id"
+            ref="ssi_general_audit.general_audit_worksheet_mixin_view_tree"
+        />
+        <field name="arch" type="xml">
+            <data>
+            </data>
+        </field>
+    </record>
+
+    <record id="general_audit_ws_ae11f7e_view_form" model="ir.ui.view">
+        <field name="name">general_audit_ws_ae11f7e form</field>
+        <field name="model">general_audit_ws_ae11f7e</field>
+        <field name="mode">primary</field>
+        <field
+            name="inherit_id"
+            ref="ssi_general_audit.general_audit_worksheet_mixin_view_form"
+        />
+        <field name="arch" type="xml">
+            <data>
+                <xpath expr="//page[1]" position="before">
+                    <page name="business_cycle" string="Business Cycles">
+                        <field name="business_cycle_ids" />
+                    </page>
+                    <page name="other_party_fund" string="Other Parties and Funding">
+                        <separator string="Related Parties" />
+                        <field name="related_party_ids">
+                            <tree>
+                                <field name="name" />
+                                <field name="relation" />
+                                <field
+                                    name="related_account_type_ids"
+                                    widget="many2many_tags"
+                                    string="Nature of Transactions"
+                                />
+                            </tree>
+                            <form>
+                                <group name="related_party_1" colspan="4" col="2">
+                                    <field name="worksheet_id" invisible="1" />
+                                    <field name="name" />
+                                    <field name="relation" />
+                                    <field
+                                        name="related_account_type_ids"
+                                        widget="many2many_tags"
+                                        string="Nature of Transactions"
+                                    />
+                                </group>
+                            </form>
+                        </field>
+                        <separator string="Investments in Other Entities" />
+                        <field name="other_investment_ids">
+                            <tree>
+                                <field name="name" />
+                                <field name="percentage" string="Percentage (%)" />
+                                <field name="value" />
+                            </tree>
+                            <form>
+                                <group name="other_investment_1" colspan="4" col="2">
+                                    <field name="worksheet_id" invisible="1" />
+                                    <field name="name" />
+                                    <field name="percentage" string="Percentage (%)" />
+                                    <field name="value" />
+                                </group>
+                            </form>
+                        </field>
+                        <separator string="Primary Financing/Funding Activities" />
+                        <field name="primary_funding_ids">
+                            <tree>
+                                <field name="name" />
+                                <field name="type" />
+                                <field name="balance" />
+                            </tree>
+                            <form>
+                                <group name="primary_funding_1" colspan="4" col="2">
+                                    <field name="worksheet_id" invisible="1" />
+                                    <field name="name" />
+                                    <field name="type" />
+                                    <field name="balance" />
+                                </group>
+                            </form>
+                        </field>
+                    </page>
+                    <page
+                        name="cust_supp_compe"
+                        string="Customer, Supplier and Competitor"
+                    >
+                        <separator string="Customer" />
+                        <field name="customer_ids">
+                            <tree>
+                                <field name="name" />
+                                <field name="value" />
+                                <field name="percentage" />
+                            </tree>
+                            <form>
+                                <group name="customer_1" colspan="4" col="2">
+                                    <field name="worksheet_id" invisible="1" />
+                                <field name="name" />
+                                <field name="value" />
+                                <field name="percentage" />
+                                </group>
+                            </form>
+                        </field>
+                        <separator string="Supplier" />
+                        <field name="supplier_ids">
+                            <tree>
+                                <field name="name" />
+                                <field name="value" />
+                                <field name="percentage" />
+                            </tree>
+                            <form>
+                                <group name="supplier_1" colspan="4" col="2">
+                                    <field name="worksheet_id" invisible="1" />
+                                <field name="name" />
+                                <field name="value" />
+                                <field name="percentage" />
+                                </group>
+                            </form>
+                        </field>
+                        <separator string="Competitor" />
+                        <field name="competitor_ids">
+                            <tree>
+                                <field name="name" />
+                                <field name="size" />
+                            </tree>
+                            <form>
+                                <group name="customer_1" colspan="4" col="2">
+                                    <field name="worksheet_id" invisible="1" />
+                                <field name="name" />
+                                <field name="size" />
+                                </group>
+                            </form>
+                        </field>
+                    </page>
+                    <page name="accounting_policy" string="Accounting Policy">
+                        <separator
+                            string="Accounting Policies for Significant Accounts"
+                        />
+                        <field name="accounting_policy_ids">
+                            <tree>
+                                <field name="policy" />
+                                <field
+                                    name="related_account_type_ids"
+                                    widget="many2many_tags"
+                                />
+                            </tree>
+                            <form>
+                                <group name="accounting_policy_1" colspan="4" col="2">
+                                    <field name="worksheet_id" invisible="1" />
+                                    <field name="policy" />
+                                    <field
+                                        name="related_account_type_ids"
+                                        widget="many2many_tags"
+                                    />
+                                </group>
+                            </form>
+                        </field>
+                        <group name="accounting_policy_2" colspan="4" col="2">
+                            <field
+                                name="accounting_application_ids"
+                                widget="many2many_tags"
+                            />
+                        </group>
+                    </page>
+                    <page name="exprt" string="Experts">
+                        <field name="expert_ids">
+                            <tree>
+                                <field name="name" />
+                                <field name="type_id" />
+                                <field name="documentation" />
+                                <field
+                                    name="related_account_type_ids"
+                                    widget="many2many_tags"
+                                />
+                            </tree>
+                            <form>
+                                <group name="expert_1" colspan="4" col="2">
+                                    <field name="name" />
+                                    <field name="type_id" />
+                                    <field name="documentation" />
+                                    <field
+                                        name="related_account_type_ids"
+                                        widget="many2many_tags"
+                                    />
+                                </group>
+                            </form>
+                        </field>
+                    </page>
+                    <page
+                        name="significant_information"
+                        string="Significant Informations"
+                    >
+                        <separator string="Previous Audit" />
+                        <field name="previous_audit_information_ids">
+                            <tree>
+                                <field name="name" />
+                                <field name="documentation" />
+                                <field
+                                    name="related_account_type_ids"
+                                    widget="many2many_tags"
+                                />
+                            </tree>
+                            <form>
+                                <group
+                                    name="previous_audit_information_1"
+                                    colspan="4"
+                                    col="2"
+                                >
+                                    <field name="worksheet_id" invisible="1" />
+                                    <field name="name" />
+                                    <field name="documentation" />
+                                    <field
+                                        name="attachment_ids"
+                                        widget="many2many_tags"
+                                    />
+                                    <field
+                                        name="related_account_type_ids"
+                                        widget="many2many_tags"
+                                    />
+                                </group>
+                            </form>
+                        </field>
+                        <separator string="Previous Other" />
+                        <field name="previous_other_information_ids">
+                            <tree>
+                                <field name="name" />
+                                <field name="documentation" />
+                                <field
+                                    name="related_account_type_ids"
+                                    widget="many2many_tags"
+                                />
+                            </tree>
+                            <form>
+                                <group
+                                    name="previous_other_information_1"
+                                    colspan="4"
+                                    col="2"
+                                >
+                                    <field name="worksheet_id" invisible="1" />
+                                    <field name="name" />
+                                    <field name="documentation" />
+                                    <field
+                                        name="attachment_ids"
+                                        widget="many2many_tags"
+                                    />
+                                    <field
+                                        name="related_account_type_ids"
+                                        widget="many2many_tags"
+                                    />
+                                </group>
+                            </form>
+                        </field>
+                        <separator string="Other" />
+                        <field name="other_information_ids">
+                            <tree>
+                                <field name="name" />
+                                <field name="documentation" />
+                                <field
+                                    name="related_account_type_ids"
+                                    widget="many2many_tags"
+                                />
+                            </tree>
+                            <form>
+                                <group name="other_information_1" colspan="4" col="2">
+                                    <field name="worksheet_id" invisible="1" />
+                                    <field name="name" />
+                                    <field name="documentation" />
+                                    <field
+                                        name="attachment_ids"
+                                        widget="many2many_tags"
+                                    />
+                                    <field
+                                        name="related_account_type_ids"
+                                        widget="many2many_tags"
+                                    />
+                                </group>
+                            </form>
+                        </field>
+                    </page>
+                    <page name="other_report" string="Other Reports">
+                        <group name="other_report" colspan="4" col="2">
+                            <field
+                                name="other_report_ids"
+                                widget="many2many_checkboxes"
+                            />
+                        </group>
+                    </page>
+                </xpath>
+            </data>
+        </field>
+    </record>
+
+    <record id="general_audit_ws_ae11f7e_action" model="ir.actions.act_window">
+        <field name="name">Main Business Activity Process</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">general_audit_ws_ae11f7e</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+    <menuitem
+        id="general_audit_ws_ae11f7e_menu"
+        name="Main Business Activity Processes"
+        parent="ssi_general_audit.menu_general_audit_business_activity"
+        action="general_audit_ws_ae11f7e_action"
+        sequence="1"
+        groups="general_audit_ws_ae11f7e_viewer_group"
+    />
+
+
+</odoo>

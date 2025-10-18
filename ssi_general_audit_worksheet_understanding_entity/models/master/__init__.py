@@ -4,6 +4,7 @@
 
 from . import (
     ownership_location,
+    accounting_application,
     general_audit_class_transaction,
     general_audit_business_function,
     general_audit_business_document,

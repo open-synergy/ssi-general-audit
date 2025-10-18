@@ -5,14 +5,14 @@
 from odoo import api, fields, models
 
 
-class GeneralAuditWSa13a30eOrganizationStructure(models.Model):
-    _name = "general_audit_ws_a13a30e.detail"
-    _description = "Worksheet a13a30e - Detail"
+class GeneralAuditWSbdcdfc5ODetail(models.Model):
+    _name = "general_audit_ws_bdcdfc5.detail"
+    _description = "Worksheet bdcdfc5 - Detail"
     _order = "worksheet_id, sequence, id"
 
     worksheet_id = fields.Many2one(
         string="# Worksheet",
-        comodel_name="general_audit_ws_a13a30e",
+        comodel_name="general_audit_ws_bdcdfc5",
         required=True,
         ondelete="cascade",
         help=(
@@ -26,34 +26,38 @@ class GeneralAuditWSa13a30eOrganizationStructure(models.Model):
         required=True,
         help="Ordering of this line within the worksheet.",
     )
-    regulation_id = fields.Many2one(
-        string="Regulation",
-        comodel_name="general_audit_relevant_regulation",
+    understanding_result = fields.Text(
+        string="Understanding Result",
         required=True,
-        help="Relevant regulation or law applicable to the entity.",
+        help=(
+            "Summary of the entity understanding obtained for this area, including key "
+            "processes, risks, and controls identified."
+        ),
     )
-    item_id = fields.Many2one(
-        string="Item",
-        comodel_name="general_audit_relevant_regulation.item",
+    impact_to_financial_report = fields.Text(
+        string="Impact To Financial Report",
         required=True,
-        help="Specific item/section of the regulation being tracked.",
+        help=(
+            "Describe potential impacts on the financial statements, "
+            "assertions affected, and audit implications."
+        ),
     )
     related_account_type_ids = fields.Many2many(
         string="Related Standard Accounts",
         comodel_name="client_account_type",
-        relation="rel_general_audit_ws_a13a30e_detail_2_account_type",
+        relation="rel_general_audit_ws_bdcdfc5_detail_2_account_type",
         column1="detail_id",
         column2="type_id",
         required=True,
         help=(
-            "Standard account types related to this regulation. Used to link the item "
+            "Standard account types related to this detail. Used to link the understanding "
             "to relevant accounts."
         ),
     )
     standard_detail_ids = fields.Many2many(
         string="Standard Details",
         comodel_name="general_audit.standard_detail",
-        relation="rel_general_audit_ws_a13a30e_detail_2_standard_detail",
+        relation="rel_general_audit_ws_bdcdfc5_detail_2_standard_detail",
         column1="detail_id",
         column2="standard_detail_id",
         compute="_compute_standard_detail_ids",
@@ -61,15 +65,7 @@ class GeneralAuditWSa13a30eOrganizationStructure(models.Model):
         compute_sudo=True,
         help=(
             "Standard details automatically linked based on the selected account types "
-            "and the worksheet's General Audit."
-        ),
-    )
-    significant_impact = fields.Boolean(
-        string="Significant Impact",
-        default=False,
-        help=(
-            "Indicates whether this regulation has a significant impact on the financial "
-            "statements or disclosures."
+            "and the worksheet's general audit."
         ),
     )
 

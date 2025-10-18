@@ -5,19 +5,19 @@
 from odoo import fields, models
 
 
-class GeneralAuditWSa13a30e(models.Model):
-    _name = "general_audit_ws_a13a30e"
-    _description = "Understanding of Relevant Regulations (a13a30e)"
+class GeneralAuditWSf6a227(models.Model):
+    _name = "general_audit_ws_f6a227"
+    _description = "Understanding of preparation of Financial Statements (f6a227)"
     _inherit = [
         "general_audit_worksheet_mixin",
     ]
     _type_xml_id = (
-        "ssi_general_audit_worksheet_understanding_entity." "worksheet_type_a13a30e"
+        "ssi_general_audit_worksheet_understanding_entity." "worksheet_type_f6a227"
     )
 
     detail_ids = fields.One2many(
         string="Details",
-        comodel_name="general_audit_ws_a13a30e.detail",
+        comodel_name="general_audit_ws_f6a227.detail",
         inverse_name="worksheet_id",
         readonly=True,
         states={
@@ -25,5 +25,5 @@ class GeneralAuditWSa13a30e(models.Model):
                 ("readonly", False),
             ],
         },
-        help="Regulatory items and assessments related to this worksheet.",
+        help="Detailed assessment lines related to this worksheet.",
     )

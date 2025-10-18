@@ -5,14 +5,14 @@
 from odoo import api, fields, models
 
 
-class GeneralAuditWSa13a30eOrganizationStructure(models.Model):
-    _name = "general_audit_ws_a13a30e.detail"
-    _description = "Worksheet a13a30e - Detail"
-    _order = "worksheet_id, sequence, id"
+class GeneralAuditWSC0E0EECDetail(models.Model):
+    _name = "general_audit_ws_c0e0eec.detail"
+    _description = "Worksheet c0e0eec - Detail"
+    _order = "worksheet_id, category_id, factor_id, indicator_id, id"
 
     worksheet_id = fields.Many2one(
         string="# Worksheet",
-        comodel_name="general_audit_ws_a13a30e",
+        comodel_name="general_audit_ws_c0e0eec",
         required=True,
         ondelete="cascade",
         help=(
@@ -20,40 +20,53 @@ class GeneralAuditWSa13a30eOrganizationStructure(models.Model):
             "This detail will be removed if the worksheet is deleted."
         ),
     )
-    sequence = fields.Integer(
-        string="Sequence",
-        default=10,
+    indicator_id = fields.Many2one(
+        string="Indicator",
+        comodel_name="general_audit_fraud_factor_indicator",
         required=True,
-        help="Ordering of this line within the worksheet.",
+        help="Fraud risk indicator being assessed.",
     )
-    regulation_id = fields.Many2one(
-        string="Regulation",
-        comodel_name="general_audit_relevant_regulation",
-        required=True,
-        help="Relevant regulation or law applicable to the entity.",
+    factor_id = fields.Many2one(
+        related="indicator_id.factor_id",
+        store=True,
+        help="Fraud factor derived from the selected indicator.",
     )
-    item_id = fields.Many2one(
-        string="Item",
-        comodel_name="general_audit_relevant_regulation.item",
-        required=True,
-        help="Specific item/section of the regulation being tracked.",
+    category_id = fields.Many2one(
+        related="indicator_id.factor_id.category_id",
+        store=True,
+        help="Fraud factor category derived from the selected indicator.",
+    )
+    tcgw = fields.Text(
+        string="TCGW",
+        help=(
+            "Observations related to Those Charged With Governance (TCWG), including "
+            "communications and responses."
+        ),
+    )
+    management = fields.Text(
+        string="Management",
+        help="Observations related to management's attitudes, behaviors, or responses.",
+    )
+    other = fields.Text(
+        string="Other",
+        help="Other relevant observations or corroborative information.",
     )
     related_account_type_ids = fields.Many2many(
         string="Related Standard Accounts",
         comodel_name="client_account_type",
-        relation="rel_general_audit_ws_a13a30e_detail_2_account_type",
+        relation="rel_general_audit_ws_c0e0eec_detail_2_account_type",
         column1="detail_id",
         column2="type_id",
         required=True,
         help=(
-            "Standard account types related to this regulation. Used to link the item "
+            "Standard account types related to this indicator. Used to link the assessment "
             "to relevant accounts."
         ),
     )
     standard_detail_ids = fields.Many2many(
         string="Standard Details",
         comodel_name="general_audit.standard_detail",
-        relation="rel_general_audit_ws_a13a30e_detail_2_standard_detail",
+        relation="rel_general_audit_ws_c0e0eec_detail_2_standard_detail",
         column1="detail_id",
         column2="standard_detail_id",
         compute="_compute_standard_detail_ids",
@@ -62,14 +75,6 @@ class GeneralAuditWSa13a30eOrganizationStructure(models.Model):
         help=(
             "Standard details automatically linked based on the selected account types "
             "and the worksheet's General Audit."
-        ),
-    )
-    significant_impact = fields.Boolean(
-        string="Significant Impact",
-        default=False,
-        help=(
-            "Indicates whether this regulation has a significant impact on the financial "
-            "statements or disclosures."
         ),
     )
 

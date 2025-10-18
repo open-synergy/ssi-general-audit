@@ -5,56 +5,60 @@
 from odoo import api, fields, models
 
 
-class GeneralAuditWSa13a30eOrganizationStructure(models.Model):
-    _name = "general_audit_ws_a13a30e.detail"
-    _description = "Worksheet a13a30e - Detail"
-    _order = "worksheet_id, sequence, id"
+class GeneralAuditWSAE11F7EPreviousOtherInformation(models.Model):
+    _name = "general_audit_ws_ae11f7e.previous_other_information"
+    _description = "Worksheet ae11f7e - Previous Significant Other Information"
+    _order = "worksheet_id, id"
 
     worksheet_id = fields.Many2one(
         string="# Worksheet",
-        comodel_name="general_audit_ws_a13a30e",
+        comodel_name="general_audit_ws_ae11f7e",
         required=True,
         ondelete="cascade",
         help=(
             "Reference to the parent worksheet. "
-            "This detail will be removed if the worksheet is deleted."
+            "This entry will be removed if the worksheet is deleted."
         ),
     )
-    sequence = fields.Integer(
-        string="Sequence",
-        default=10,
+    name = fields.Text(
+        string="Summary",
         required=True,
-        help="Ordering of this line within the worksheet.",
+        help="Summary of significant other information from prior periods.",
     )
-    regulation_id = fields.Many2one(
-        string="Regulation",
-        comodel_name="general_audit_relevant_regulation",
-        required=True,
-        help="Relevant regulation or law applicable to the entity.",
+    documentation = fields.Text(
+        string="Documentation",
+        help="Narrative explanation, sources, or references for the information.",
     )
-    item_id = fields.Many2one(
-        string="Item",
-        comodel_name="general_audit_relevant_regulation.item",
-        required=True,
-        help="Specific item/section of the regulation being tracked.",
+    attachment_ids = fields.Many2many(
+        string="Attachments",
+        comodel_name="ir.attachment",
+        relation="rel_ga_ae11f7e_previous_other_2_attachment",
+        column1="ae11f7e_previous_other_id",
+        column2="attachment_id",
+        domain="[('res_model', '=', 'general_audit_ws_ae11f7e'), "
+        "('res_id', '=', worksheet_id)]",
+        help=(
+            "Files attached to this worksheet record. Only attachments whose res_model is "
+            "'general_audit_ws_ae11f7e' and res_id equals this worksheet can be selected."
+        ),
     )
     related_account_type_ids = fields.Many2many(
         string="Related Standard Accounts",
         comodel_name="client_account_type",
-        relation="rel_general_audit_ws_a13a30e_detail_2_account_type",
-        column1="detail_id",
+        relation="rel_general_audit_ws_ae11f7e_prev_other_2_account_type",
+        column1="prev_other_id",
         column2="type_id",
         required=True,
         help=(
-            "Standard account types related to this regulation. Used to link the item "
-            "to relevant accounts."
+            "Standard account types related to this item. Used to link the entry to "
+            "relevant accounts."
         ),
     )
     standard_detail_ids = fields.Many2many(
         string="Standard Details",
         comodel_name="general_audit.standard_detail",
-        relation="rel_general_audit_ws_a13a30e_detail_2_standard_detail",
-        column1="detail_id",
+        relation="rel_general_audit_ws_ae11f7e_prev_other_2_standard_detail",
+        column1="prev_other_id",
         column2="standard_detail_id",
         compute="_compute_standard_detail_ids",
         store=True,
@@ -62,14 +66,6 @@ class GeneralAuditWSa13a30eOrganizationStructure(models.Model):
         help=(
             "Standard details automatically linked based on the selected account types "
             "and the worksheet's General Audit."
-        ),
-    )
-    significant_impact = fields.Boolean(
-        string="Significant Impact",
-        default=False,
-        help=(
-            "Indicates whether this regulation has a significant impact on the financial "
-            "statements or disclosures."
         ),
     )
 

@@ -15,22 +15,33 @@ class GeneralAuditWSc0d0898ODetail(models.Model):
         comodel_name="general_audit_ws_c0d0898",
         required=True,
         ondelete="cascade",
+        help=(
+            "Reference to the parent worksheet. "
+            "This detail will be removed if the worksheet is deleted."
+        ),
     )
     going_concern_id = fields.Many2one(
         string="Going Concern",
         comodel_name="general_audit_going_concern",
         required=True,
+        help="Specific going concern indicator/condition being assessed.",
     )
     going_concern_category_id = fields.Many2one(
         string="Going Concern Category",
         related="going_concern_id.category_id",
         store=True,
+        help="Category of the going concern indicator (derived).",
     )
     going_concern_exist = fields.Boolean(
         string="Going Concern Exist",
         default=False,
+        help="Tick if this going concern indicator exists at the entity.",
     )
     consideration = fields.Text(
         string="Impact To Financial Report",
         required=False,
+        help=(
+            "Describe the potential impact on the financial statements and the audit "
+            "response or additional procedures."
+        ),
     )
