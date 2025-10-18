@@ -165,14 +165,6 @@ class GeneralAuditWorksheetMixin(models.AbstractModel):
     def onchange_parent_type_id(self):
         self.parent_type_id = self.type_id
 
-    @api.onchange("general_audit_id")
-    def onchange_user_id(self):
-        self.user_id = self.general_audit_id.user_id
-
-    @api.onchange("general_audit_id")
-    def onchange_reviewer_id(self):
-        self.reviewer_id = self.general_audit_id.reviewer_id
-
     def unlink(self):
         worksheets = self.env["general_audit_worksheet"]
         for record in self:
