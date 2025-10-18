@@ -42,6 +42,36 @@ class GeneralAudit(models.Model):
         compute_sudo=True,
     )
 
+    # Impacted standard account
+    expert_impacted_account_type_ids = fields.Many2many(
+        string="Standard Accounts Impacted by Use of Expert",
+        comodel_name="client_account_type",
+        compute="_compute_impacted_account_types",
+        relation="rel_general_audit_2_expert_impacted_account_type",
+        column1="general_audit_id",
+        column2="type_id",
+        store=True,
+        compute_sudo=True,
+        help=("Standard account types impacted by the use of experts"),
+    )
+
+    @api.depends(
+        "standard_detail_ids",
+        "standard_detail_ids.expert_impacted",
+    )
+    def _compute_impacted_account_types(self):
+        for record in self:
+            criteria = [
+                ("general_audit_id", "=", record.record.id),
+                ("expert_impacted", "=", True),
+            ]
+            result = (
+                self.env["general_audit.standard_detail"]
+                .search(criteria)
+                .mapped("type_id.id")
+            )
+            record.expert_impacted_account_type_ids = [(6, 0, result)]
+
     @api.depends(
         "ws_ae11f7e_expert_ids",
         "ws_ae11f7e_expert_ids.type_id",
