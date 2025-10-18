@@ -17,4 +17,5 @@ class ClientBusinessProcess(models.Model):
         relation="rel_key_internal_control_2_business_cycle",
         column1="business_cycle_id",
         column2="key_internal_control_id",
+        help=("Key internal controls associated with this business cycle."),
     )

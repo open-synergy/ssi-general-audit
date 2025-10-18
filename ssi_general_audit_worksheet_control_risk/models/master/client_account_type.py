@@ -15,4 +15,8 @@ class ClientAccountType(models.Model):
         relation="rel_account_key_internal_control_2_standard_account",
         column1="standard_account_id",
         column2="key_internal_control_id",
+        help=(
+            "Key internal controls applicable to this standard account type for "
+            "significant accounts."
+        ),
     )

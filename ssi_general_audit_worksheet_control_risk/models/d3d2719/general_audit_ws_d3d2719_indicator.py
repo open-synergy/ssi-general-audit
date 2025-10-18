@@ -14,23 +14,28 @@ class GeneralAuditWSD3D2719Indicator(models.Model):
         comodel_name="general_audit_ws_d3d2719.detail",
         required=True,
         ondelete="cascade",
+        help="Related detail line of the worksheet.",
     )
     worksheet_id = fields.Many2one(
         related="detail_id.worksheet_id",
         store=True,
+        help="Parent worksheet, derived from the related detail.",
     )
     control_id = fields.Many2one(
         related="detail_id.control_id",
         store=True,
+        help="Control being evaluated (propagated from detail).",
     )
     category_id = fields.Many2one(
         related="detail_id.control_id.category_id",
         store=True,
+        help="Category of the control (propagated).",
     )
     indicator_id = fields.Many2one(
         string="Indicator",
         comodel_name="general_audit_general_control_indicator",
         required=True,
+        help="Control indicator to be evaluated.",
     )
     result = fields.Selection(
         string="Result",
@@ -38,7 +43,9 @@ class GeneralAuditWSD3D2719Indicator(models.Model):
             ("adequate", "Adequate"),
             ("inadequate", "Inadequate"),
         ],
+        help="Indicator-level evaluation result.",
     )
     explanation = fields.Text(
         string="Explanation",
+        help="Notes or justification for the indicator result.",
     )

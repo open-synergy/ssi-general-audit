@@ -15,16 +15,19 @@ class GeneralAuditWSD3D2719Detail(models.Model):
         comodel_name="general_audit_ws_d3d2719",
         required=True,
         ondelete="cascade",
+        help="Parent General Control Evaluation worksheet.",
     )
     control_id = fields.Many2one(
         string="General Control",
         comodel_name="general_audit_general_control",
         required=True,
+        help="General control being evaluated.",
     )
     category_id = fields.Many2one(
         string="Category",
         related="control_id.category_id",
         store=True,
+        help="Category of the selected control (auto-filled).",
     )
     result = fields.Selection(
         string="Result",
@@ -32,12 +35,15 @@ class GeneralAuditWSD3D2719Detail(models.Model):
             ("adequate", "Adequate"),
             ("inadequate", "Inadequate"),
         ],
+        help="Conclusion for this control based on the indicators and evidence.",
     )
     explanation = fields.Text(
         string="Explanation",
+        help="Rationale, observations, or notes supporting the result.",
     )
     indicator_ids = fields.One2many(
         string="Indicators",
         comodel_name="general_audit_ws_d3d2719.indicator",
         inverse_name="detail_id",
+        help="Indicator lines used to assess this control.",
     )

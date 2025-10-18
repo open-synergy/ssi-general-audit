@@ -17,6 +17,7 @@ class GeneralAuditKeyInternalControl(models.Model):
         string="Sequence",
         required=True,
         default=10,
+        help="Ordering number used to sort records; lower values appear first.",
     )
     business_cycle_ids = fields.Many2many(
         string="Business Cycles",
@@ -25,12 +26,14 @@ class GeneralAuditKeyInternalControl(models.Model):
         column1="key_internal_control_id",
         column2="business_cycle_id",
         required=True,
+        help="Business cycles where this key internal control applies.",
     )
     control_activity_id = fields.Many2one(
         string="Control Activity",
         comodel_name="general_audit_control_activity",
         required=True,
         ondelete="restrict",
+        help="Control activity classification tied to this key control.",
     )
     assersion_type_ids = fields.Many2many(
         string="Assersion Types",
@@ -39,4 +42,8 @@ class GeneralAuditKeyInternalControl(models.Model):
         column1="key_internal_control_id",
         column2="assersion_type_id",
         required=True,
+        help=(
+            "Financial statement assertion types addressed by this control "
+            "(e.g., existence, completeness, accuracy)."
+        ),
     )

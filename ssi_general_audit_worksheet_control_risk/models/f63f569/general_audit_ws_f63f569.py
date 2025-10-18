@@ -24,6 +24,9 @@ class GeneralAuditWSF63F569(models.Model):
                 ("readonly", False),
             ],
         },
+        help=(
+            "IT control set providing the controls and indicators to be " "evaluated."
+        ),
     )
     detail_ids = fields.One2many(
         string="Details",
@@ -35,6 +38,7 @@ class GeneralAuditWSF63F569(models.Model):
                 ("readonly", False),
             ],
         },
+        help="Generated detail lines for each control in the selected set.",
     )
     indicator_ids = fields.One2many(
         string="Indicators",
@@ -46,6 +50,9 @@ class GeneralAuditWSF63F569(models.Model):
                 ("readonly", False),
             ],
         },
+        help=(
+            "Generated indicator lines for controls/indicators in the selected " "set."
+        ),
     )
 
     @ssi_decorator.post_open_action()

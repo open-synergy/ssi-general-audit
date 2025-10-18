@@ -16,4 +16,5 @@ class GeneralAuditITControlCategory(models.Model):
     sequence = fields.Integer(
         string="Sequence",
         default=10,
+        help="Ordering of IT control categories.",
     )

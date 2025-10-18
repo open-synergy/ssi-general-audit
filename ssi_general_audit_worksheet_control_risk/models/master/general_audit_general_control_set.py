@@ -18,6 +18,7 @@ class GeneralAuditGeneralControlSet(models.Model):
         relation="rel_general_audit_general_control_set_2_indicator",
         column1="set_id",
         column2="indicator_id",
+        help=("Indicators included in this general control set."),
     )
     general_control_ids = fields.Many2many(
         string="General Controls",
@@ -25,6 +26,7 @@ class GeneralAuditGeneralControlSet(models.Model):
         compute="_compute_general_control_ids",
         store=False,
         compute_sudo=True,
+        help=("Distinct general controls derived from the selected indicators."),
     )
 
     @api.depends(

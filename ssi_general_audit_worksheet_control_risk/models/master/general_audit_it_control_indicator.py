@@ -16,13 +16,16 @@ class GeneralAuditITControlIndicator(models.Model):
     sequence = fields.Integer(
         string="Sequence",
         default=10,
+        help="Ordering of indicators under the same IT control.",
     )
     control_id = fields.Many2one(
         string="Factor",
         comodel_name="general_audit_it_control",
         required=True,
+        help="IT control (factor) this indicator evaluates.",
     )
     category_id = fields.Many2one(
         related="control_id.category_id",
         store=True,
+        help="Auto-filled category derived from the selected IT control.",
     )

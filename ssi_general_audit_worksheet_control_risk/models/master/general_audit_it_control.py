@@ -16,9 +16,11 @@ class GeneralAuditITControl(models.Model):
     sequence = fields.Integer(
         string="Sequence",
         default=10,
+        help="Ordering of IT controls within the category.",
     )
     category_id = fields.Many2one(
         string="Category",
         comodel_name="general_audit_it_control_category",
         required=True,
+        help="Category to which this IT control belongs.",
     )

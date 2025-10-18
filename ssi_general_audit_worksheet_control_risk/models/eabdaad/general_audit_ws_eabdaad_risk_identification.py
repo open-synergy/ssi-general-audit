@@ -15,17 +15,21 @@ class GeneralAuditWSeABDAADRiskIdentification(models.Model):
         comodel_name="general_audit_ws_eabdaad.detail",
         required=True,
         ondelete="cascade",
+        help="Detail line this risk identification belongs to.",
     )
     worksheet_id = fields.Many2one(
         related="detail_id.worksheet_id",
         store=True,
+        help="Parent worksheet, derived from the related detail.",
     )
     sequence = fields.Integer(
         string="Sequence",
         default=10,
         required=True,
+        help="Ordering number used to sort risk identification lines.",
     )
     name = fields.Char(
         string="Risk Identification",
         required=True,
+        help="Description of the identified risk.",
     )

@@ -15,17 +15,21 @@ class GeneralAuditWSba9b2f0WhatCanGoWrong(models.Model):
         comodel_name="general_audit_ws_ba9b2f0.detail",
         required=True,
         ondelete="cascade",
+        help="Detail line this scenario is linked to.",
     )
     worksheet_id = fields.Many2one(
         related="detail_id.worksheet_id",
         store=True,
+        help="Parent worksheet, derived from the related detail.",
     )
     sequence = fields.Integer(
         string="Sequence",
         default=10,
         required=True,
+        help="Ordering number used to sort scenarios.",
     )
     name = fields.Char(
         string="What Can Go Wrong",
         required=True,
+        help="Description of the potential failure scenario.",
     )
