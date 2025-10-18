@@ -14,4 +14,8 @@ class GeneralAuditWSa033cc6Item(models.Model):
 
     code = fields.Char(
         default="/",
+        help=(
+            "Unique identifier code for this trial balance checklist item. "
+            "Used for reference and organization of audit procedures."
+        ),
     )

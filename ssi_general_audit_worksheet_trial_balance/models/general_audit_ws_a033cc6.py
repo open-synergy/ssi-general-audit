@@ -19,4 +19,9 @@ class GeneralAuditWSa033cc6(models.Model):
     checklist_ids = fields.One2many(
         string="Checklist",
         comodel_name="general_audit_ws_a033cc6.checklist",
+        help=(
+            "Collection of checklist items for this trial balance worksheet. "
+            "Each checklist item represents a specific audit verification point "
+            "related to trial balance accuracy and completeness."
+        ),
     )

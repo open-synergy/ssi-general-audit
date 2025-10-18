@@ -17,9 +17,19 @@ class GeneralAuditWSa033cc6Checklist(models.Model):
         comodel_name="general_audit_ws_a033cc6",
         required=True,
         ondelete="cascade",
+        help=(
+            "Reference to the parent Trial Balance worksheet record. "
+            "Links this checklist value to its worksheet and ensures it "
+            "is deleted when the worksheet is removed."
+        ),
     )
     item_id = fields.Many2one(
         string="Checklist Item",
         comodel_name="general_audit_ws_a033cc6.item",
         required=True,
+        help=(
+            "Reference to the checklist item definition that this value "
+            "corresponds to. Used to display the item label and properties "
+            "associated with this checklist entry."
+        ),
     )
