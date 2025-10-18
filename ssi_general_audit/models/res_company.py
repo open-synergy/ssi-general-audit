@@ -15,10 +15,16 @@ class ResCompany(models.Model):
 
     @api.model
     def _default_ta_computation_item_id(self):
-        result = False
-        if self._ta_computation_item_id:
-            result = self.env.ref(self._ta_computation_item_id)
-        return result
+        # ✅ hindari env.ref saat registry belum siap (saat instalasi awal)
+        if not self.env.registry.ready:
+            return False
+        try:
+            return self.env.ref(
+                self._ta_computation_item_id,
+                raise_if_not_found=False,
+            )
+        except ValueError:
+            return False
 
     ta_computation_item_id = fields.Many2one(
         string="Total Asset Computation",
@@ -29,10 +35,15 @@ class ResCompany(models.Model):
 
     @api.model
     def _default_tr_computation_item_id(self):
-        result = False
-        if self._tr_computation_item_id:
-            result = self.env.ref(self._tr_computation_item_id)
-        return result
+        if not self.env.registry.ready:
+            return False
+        try:
+            return self.env.ref(
+                self._tr_computation_item_id,
+                raise_if_not_found=False,
+            )
+        except ValueError:
+            return False
 
     tr_computation_item_id = fields.Many2one(
         string="Total Revenue Computation",
