@@ -27,6 +27,10 @@ class GeneralAuditWSc165170(models.Model):
                 ("readonly", False),
             ],
         },
+        help=(
+            "Overall financial statement-level risk of material misstatement (ROMM) "
+            "assessment for this worksheet."
+        ),
     )
     auditor_respons = fields.Text(
         string="Auditor Respons",
@@ -36,4 +40,8 @@ class GeneralAuditWSc165170(models.Model):
                 ("readonly", False),
             ],
         },
+        help=(
+            "Summary of the auditor's planned overall responses at the financial "
+            "statement level to address the assessed ROMM."
+        ),
     )

@@ -13,28 +13,39 @@ class WS230AccountAssersionLevelRomm(models.Model):
         comodel_name="ws_ra230",
         required=True,
         ondelete="cascade",
+        help=(
+            "The RA.230 worksheet that owns this line. Deleting the worksheet will "
+            "remove its lines."
+        ),
     )
     standard_detail_id = fields.Many2one(
         string="Standard Detail",
         comodel_name="accountant.general_audit_standard_detail",
         required=True,
+        help=("Standard detail referenced by this line."),
     )
     type_id = fields.Many2one(
         string="Account Type",
         comodel_name="accountant.client_account_type",
         related="standard_detail_id.type_id",
         store=True,
+        help=(
+            "Account type derived from the standard detail; stored for filtering "
+            "and reporting."
+        ),
     )
     currency_id = fields.Many2one(
         string="Currency",
         comodel_name="res.currency",
         related="standard_detail_id.currency_id",
         store=True,
+        help=("Currency derived from the standard detail; stored for reporting."),
     )
     sequence = fields.Integer(
         string="Sequence",
         related="standard_detail_id.sequence",
         store=True,
+        help=("Display sequence derived from the standard detail."),
     )
     pr_assersion_type_ids = fields.Many2many(
         string="Assersion Types on Presentation and Disclosure",
@@ -43,6 +54,10 @@ class WS230AccountAssersionLevelRomm(models.Model):
         column1="standard_detail_id",
         column2="assersion_type_id",
         inverse="_inverse_to_standard_detail",
+        help=(
+            "Presentation & Disclosure (P&D) assertion types applicable to this "
+            "standard detail. Values are synchronized with the standard detail."
+        ),
     )
     romm = fields.Selection(
         string="Risk Material Misstatement",
@@ -54,6 +69,10 @@ class WS230AccountAssersionLevelRomm(models.Model):
         related="standard_detail_id.romm",
         readonly=False,
         store=True,
+        help=(
+            "Assessed ROMM for the standard detail; editable here and stored on the "
+            "standard detail."
+        ),
     )
     planned_response_analytic_procedure = fields.Boolean(
         string="Planned Response Analytic Procedure",
@@ -61,6 +80,10 @@ class WS230AccountAssersionLevelRomm(models.Model):
         related="standard_detail_id.planned_response_analytic_procedure",
         readonly=False,
         store=True,
+        help=(
+            "Indicates that analytical procedures are planned; value is stored on the "
+            "standard detail."
+        ),
     )
     planned_response_tod = fields.Boolean(
         string="Planned Response ToD",
@@ -68,6 +91,10 @@ class WS230AccountAssersionLevelRomm(models.Model):
         related="standard_detail_id.planned_response_tod",
         readonly=False,
         store=True,
+        help=(
+            "Indicates that tests of details (ToD) are planned; value is stored on the "
+            "standard detail."
+        ),
     )
     planned_response_interim = fields.Boolean(
         string="Planned Response on Interim",
@@ -75,6 +102,9 @@ class WS230AccountAssersionLevelRomm(models.Model):
         related="standard_detail_id.planned_response_interim",
         readonly=False,
         store=True,
+        help=(
+            "Indicates that interim timing is planned; value is stored on the standard detail."
+        ),
     )
     planned_response_ye = fields.Boolean(
         string="Planned Response on Year End",
@@ -82,6 +112,9 @@ class WS230AccountAssersionLevelRomm(models.Model):
         related="standard_detail_id.planned_response_ye",
         readonly=False,
         store=True,
+        help=(
+            "Indicates that year-end timing is planned; value is stored on the standard detail."
+        ),
     )
 
     def _inverse_to_standard_detail(self):

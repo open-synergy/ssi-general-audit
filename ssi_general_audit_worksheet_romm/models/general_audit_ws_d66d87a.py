@@ -25,6 +25,10 @@ class GeneralAuditWSd66d87a(models.Model):
                 ("readonly", False),
             ],
         },
+        help=(
+            "Lines generated for each standard detail to capture assertion-level ROMM "
+            "and planned responses at the account level."
+        ),
     )
 
     @ssi_decorator.post_open_action()

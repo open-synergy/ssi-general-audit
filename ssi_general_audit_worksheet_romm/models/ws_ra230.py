@@ -28,6 +28,10 @@ class WSAuditRA230(models.Model):
                 ("required", True),
             ],
         },
+        help=(
+            "Overall financial statement-level risk of material misstatement (ROMM) "
+            "assessment for this engagement."
+        ),
     )
     auditor_respons = fields.Text(
         string="Auditor Respons",
@@ -37,6 +41,10 @@ class WSAuditRA230(models.Model):
                 ("readonly", False),
             ],
         },
+        help=(
+            "Description of the auditor's overall responses at the financial statement "
+            "level to address the assessed ROMM."
+        ),
     )
     account_assersion_romm_ids = fields.One2many(
         string="Account Assersion Level ROMM",
@@ -48,6 +56,10 @@ class WSAuditRA230(models.Model):
                 ("readonly", False),
             ],
         },
+        help=(
+            "Lines capturing ROMM assessment and planned responses at the account/"
+            "assertion level for this worksheet."
+        ),
     )
 
     @api.onchange("general_audit_id")

@@ -32,6 +32,8 @@
         "views/general_audit_ws_c165170_views.xml",
         "views/general_audit_ws_d66d87a_views.xml",
         "views/general_audit_standard_detail_views.xml",
+        # Master Data
+        "data/master/general_audit_ws_de417a6_item.xml",
         # de417a6
         "security/res_group/general_audit_ws_de417a6.xml",
         "security/ir_rule/general_audit_ws_de417a6.xml",
@@ -39,7 +41,8 @@
         "data/sequence_template/general_audit_ws_de417a6.xml",
         "data/policy_template/general_audit_ws_de417a6.xml",
         "data/approval_template/general_audit_ws_de417a6.xml",
-        "views/general_audit_ws_de417a6_views.xml",
+        "views/ga_de417a6/general_audit_ws_de417a6_views.xml",
+        "views/ga_de417a6/general_audit_ws_de417a6_item_views.xml",
         "security/ir.model.access.csv",
     ],
     "demo": [],
