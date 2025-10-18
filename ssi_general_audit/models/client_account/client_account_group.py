@@ -18,6 +18,7 @@ class ClientAccountGroup(models.Model):
         string="Sequence",
         required=True,
         default=5,
+        help="Ordering of the account group in lists and reports.",
     )
     normal_balance = fields.Selection(
         string="Normal Balance",
@@ -27,4 +28,5 @@ class ClientAccountGroup(models.Model):
         ],
         required=True,
         default="dr",
+        help="Default normal balance for accounts under this group.",
     )

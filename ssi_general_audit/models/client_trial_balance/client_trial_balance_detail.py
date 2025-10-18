@@ -17,17 +17,20 @@ class ClientTrialBalanceDetail(models.Model):
         comodel_name="client_trial_balance",
         required=True,
         ondelete="cascade",
+        help="Parent Trial Balance document.",
     )
     account_id = fields.Many2one(
         string="Account",
         comodel_name="client_account",
         required=True,
         ondelete="restrict",
+        help="Client account for this line.",
     )
     sequence = fields.Integer(
         string="Sequence",
         related="account_id.sequence",
         store=True,
+        help="Ordering number inherited from the client account.",
     )
     type_id = fields.Many2one(
         string="Account Type",
@@ -35,42 +38,77 @@ class ClientTrialBalanceDetail(models.Model):
         related="account_id.type_id",
         store=True,
         readonly=False,
+        help="Account type derived from the client account and can be adjusted if needed.",
     )
     currency_id = fields.Many2one(
         string="Currency",
         comodel_name="res.currency",
         related="trial_balance_id.currency_id",
         store=True,
+        help="Currency of amounts; inherited from the trial balance.",
     )
     opening_balance = fields.Monetary(
         string="Opening Balance",
         required=True,
         default=0.0,
         currency_field="currency_id",
+        help="Opening balance (net) for the period before transactions.",
     )
     opening_balance_debit = fields.Monetary(
         string="Debit Opening Balance",
         required=True,
         default=0.0,
         currency_field="currency_id",
+        help="Opening debit amount at the beginning of the period.",
     )
     opening_balance_credit = fields.Monetary(
         string="Credit Opening Balance",
         required=True,
         default=0.0,
         currency_field="currency_id",
+        help="Opening credit amount at the beginning of the period.",
     )
     debit = fields.Monetary(
         string="Debit",
         required=True,
         default=0.0,
         currency_field="currency_id",
+        help="Debit movements during the period.",
     )
     credit = fields.Monetary(
         string="Credit",
         required=True,
         default=0.0,
         currency_field="currency_id",
+        help="Credit movements during the period.",
+    )
+    ending_balance_debit = fields.Monetary(
+        string="Debit Ending Balance",
+        compute="_compute_balance",
+        store=True,
+        currency_field="currency_id",
+        help="Ending balance shown on the debit side.",
+    )
+    ending_balance_credit = fields.Monetary(
+        string="Credit Ending Balance",
+        compute="_compute_balance",
+        store=True,
+        currency_field="currency_id",
+        help="Ending balance shown on the credit side.",
+    )
+    opening_balance = fields.Monetary(
+        string="Opening Balance",
+        compute="_compute_balance",
+        store=True,
+        currency_field="currency_id",
+        help="Computed opening balance (net of opening debit and credit).",
+    )
+    balance = fields.Monetary(
+        string="Balance",
+        compute="_compute_balance",
+        store=True,
+        currency_field="currency_id",
+        help="Net balance after applying opening amounts and period movements.",
     )
 
     @api.depends(
@@ -115,31 +153,6 @@ class ClientTrialBalanceDetail(models.Model):
             record.ending_balance_debit = ending_balance_debit
             record.ending_balance_credit = ending_balance_credit
             record.opening_balance = opening_balance
-
-    ending_balance_debit = fields.Monetary(
-        string="Debit Ending Balance",
-        compute="_compute_balance",
-        store=True,
-        currency_field="currency_id",
-    )
-    ending_balance_credit = fields.Monetary(
-        string="Credit Ending Balance",
-        compute="_compute_balance",
-        store=True,
-        currency_field="currency_id",
-    )
-    opening_balance = fields.Monetary(
-        string="Opening Balance",
-        compute="_compute_balance",
-        store=True,
-        currency_field="currency_id",
-    )
-    balance = fields.Monetary(
-        string="Balance",
-        compute="_compute_balance",
-        store=True,
-        currency_field="currency_id",
-    )
 
     @api.constrains(
         "debit",

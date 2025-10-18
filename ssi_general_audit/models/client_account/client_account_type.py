@@ -16,11 +16,13 @@ class ClientAccountType(models.Model):
         string="Client Account Group",
         comodel_name="client_account_group",
         required=True,
+        help="Account group that this type belongs to.",
     )
     sequence = fields.Integer(
         string="Sequence",
         required=True,
         default=5,
+        help="Ordering of the account type.",
     )
     normal_balance = fields.Selection(
         string="Normal Balance",
@@ -30,13 +32,19 @@ class ClientAccountType(models.Model):
         ],
         required=True,
         default="dr",
+        help="Default normal balance for accounts of this type.",
     )
     analytic_procedure_computation_item_id = fields.Many2one(
         string="Computation Item for Analytic Procedure",
         comodel_name="trial_balance_computation_item",
+        help="Computation item used to calculate analytic procedure for this type.",
     )
     python_code = fields.Text(
         string="Python Code",
         required=True,
         default="result = document.balance",
+        help=(
+            "Python code to compute the balance for this type. The variable "
+            "'document' refers to the trial balance line."
+        ),
     )

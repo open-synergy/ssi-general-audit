@@ -13,13 +13,16 @@ class GeneralAuditWorksheetControlAdditional(models.Model):
     general_audit_id = fields.Many2one(
         string="# General Audit",
         comodel_name="general_audit",
+        help="General Audit that includes this additional worksheet type.",
     )
     type_id = fields.Many2one(
         string="Type",
         comodel_name="general_audit_worksheet_type",
+        help="Additional worksheet type configured for the audit.",
     )
     required = fields.Boolean(
         string="Required",
+        help="Indicates whether this additional worksheet is mandatory.",
     )
 
     def _select(self):

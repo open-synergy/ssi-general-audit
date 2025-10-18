@@ -15,17 +15,20 @@ class GeneralAuditGroupDetail(models.Model):
         string="Account Group",
         comodel_name="client_account_group",
         required=True,
+        help="Client account group represented by this line.",
     )
     sequence = fields.Integer(
         string="Sequence",
         required=True,
         default=5,
+        help="Ordering number for this group line.",
     )
     general_audit_id = fields.Many2one(
         string="# General Audit",
         comodel_name="general_audit",
         required=True,
         ondelete="cascade",
+        help="General Audit document that owns this group line.",
     )
 
     @api.depends(
@@ -90,6 +93,7 @@ class GeneralAuditGroupDetail(models.Model):
         readonly=True,
         compute="_compute_group_line",
         store=True,
+        help="Linked group detail for the end period trial balance.",
     )
     interim_group_line_id = fields.Many2one(
         string="Interim TB Standard Line",
@@ -97,6 +101,7 @@ class GeneralAuditGroupDetail(models.Model):
         readonly=True,
         compute="_compute_group_line",
         store=True,
+        help="Linked group detail for the interim trial balance.",
     )
     previous_group_line_id = fields.Many2one(
         string="Previous TB Standard Line",
@@ -104,24 +109,28 @@ class GeneralAuditGroupDetail(models.Model):
         readonly=True,
         compute="_compute_group_line",
         store=True,
+        help="Linked group detail for the previous period trial balance.",
     )
     currency_id = fields.Many2one(
         string="Currency",
         comodel_name="res.currency",
         related="general_audit_id.currency_id",
         store=True,
+        help="Currency used for amounts; inherited from the General Audit.",
     )
     home_statement_balance = fields.Monetary(
         string="End Period Balance",
         related="home_group_line_id.balance",
         store=True,
         currency_field="currency_id",
+        help="Net balance of the group from the end period trial balance.",
     )
     interim_balance = fields.Monetary(
         string="Interim Balance",
         related="interim_group_line_id.balance",
         store=True,
         currency_field="currency_id",
+        help="Net balance of the group from the interim trial balance.",
     )
 
     @api.depends(
@@ -149,12 +158,14 @@ class GeneralAuditGroupDetail(models.Model):
         compute_sudo=True,
         store=True,
         currency_field="currency_id",
+        help="Adjusted extrapolation balance aggregated for this group.",
     )
     previous_balance = fields.Monetary(
         string="Previous Balance",
         related="previous_group_line_id.balance",
         store=True,
         currency_field="currency_id",
+        help="Net balance of the group from the previous period trial balance.",
     )
 
     @api.depends(
@@ -182,18 +193,21 @@ class GeneralAuditGroupDetail(models.Model):
         compute="_compute_average",
         store=True,
         currency_field="currency_id",
+        help="Average of interim and previous balances.",
     )
     extrapolation_avg = fields.Monetary(
         string="Extrapolation Average",
         compute="_compute_average",
         store=True,
         currency_field="currency_id",
+        help="Average of extrapolation and previous balances.",
     )
     home_statement_avg = fields.Monetary(
         string="End Period Average",
         compute="_compute_average",
         store=True,
         currency_field="currency_id",
+        help="Average of end period and previous balances.",
     )
 
     @api.depends(
@@ -222,18 +236,21 @@ class GeneralAuditGroupDetail(models.Model):
         readonly=True,
         compute="_compute_adjustment_id",
         store=True,
+        help="Aggregated adjustments affecting this group.",
     )
     adjustment_debit = fields.Monetary(
         string="Adjustment Debit",
         related="adjustment_id.debit",
         store=True,
         currency_field="currency_id",
+        help="Total debit adjustments for this group.",
     )
     adjustment_credit = fields.Monetary(
         string="Adjustment Credit",
         related="adjustment_id.credit",
         store=True,
         currency_field="currency_id",
+        help="Total credit adjustments for this group.",
     )
 
     @api.depends(
@@ -260,10 +277,12 @@ class GeneralAuditGroupDetail(models.Model):
         compute="_compute_adjustment_audited_balance",
         store=True,
         currency_field="currency_id",
+        help="Net effect of adjustments on the group based on normal balance.",
     )
     audited_balance = fields.Monetary(
         string="Audited Balance",
         compute="_compute_adjustment_audited_balance",
         store=True,
         currency_field="currency_id",
+        help="End period balance after applying adjustments to the group.",
     )

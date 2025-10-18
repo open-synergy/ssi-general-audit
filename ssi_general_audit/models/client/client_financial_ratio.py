@@ -17,11 +17,16 @@ class ClientFinancialRatio(models.Model):
         string="Sequence",
         required=True,
         default=5,
+        help="Ordering number for displaying ratios.",
     )
     python_code = fields.Text(
         string="Python Code",
         required=True,
         default="result_interim = result_extrapolation = result_previous = 0.0",
+        help=(
+            "Python code that computes ratio values. Set variables: "
+            "result_interim, result_extrapolation, and result_previous."
+        ),
     )
     category = fields.Selection(
         string="Category",
@@ -33,4 +38,5 @@ class ClientFinancialRatio(models.Model):
         ],
         required=True,
         default="summary",
+        help="Classification of the financial ratio for reporting.",
     )

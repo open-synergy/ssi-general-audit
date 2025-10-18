@@ -13,4 +13,5 @@ class TeamRole(models.Model):
 
     code = fields.Char(
         default="/",
+        help="Unique short code for the team role. Use '/' to auto-generate.",
     )

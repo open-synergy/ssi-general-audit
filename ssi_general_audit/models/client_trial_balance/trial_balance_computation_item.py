@@ -17,6 +17,7 @@ class TrialBalanceComputationItem(models.Model):
         string="Sequence",
         required=True,
         default=5,
+        help="Ordering number for the computation item.",
     )
     category = fields.Selection(
         string="Category",
@@ -29,9 +30,14 @@ class TrialBalanceComputationItem(models.Model):
         ],
         required=True,
         default="summary",
+        help="Classification of the computation item for reporting.",
     )
     python_code = fields.Text(
         string="Python Code",
         required=True,
         default="result = result_extrapolation = result_previous = 0.0",
+        help=(
+            "Python code executed for this item. It must assign numeric values to "
+            "variables: result, result_extrapolation, and result_previous."
+        ),
     )

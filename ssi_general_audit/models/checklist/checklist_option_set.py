@@ -13,6 +13,7 @@ class ChecklistOptionSet(models.Model):
 
     code = fields.Char(
         default="/",
+        help="Unique code for the option set. Use '/' to auto-generate.",
     )
     option_ids = fields.Many2many(
         string="Options",
@@ -20,4 +21,5 @@ class ChecklistOptionSet(models.Model):
         relation="rel_checklist_option_set_2_option",
         column1="set_id",
         column2="option_id",
+        help="Options included in this set and available to referencing items.",
     )

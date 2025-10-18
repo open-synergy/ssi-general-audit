@@ -17,4 +17,5 @@ class GeneralAuditWorksheetTypeCategory(models.Model):
         string="Sequence",
         required=True,
         default=5,
+        help="Ordering of the worksheet type category in lists and reports.",
     )

@@ -19,6 +19,7 @@ class ClientAccount(models.Model):
         string="Sequence",
         required=True,
         default=5,
+        help="Ordering within the client's chart of accounts.",
     )
     partner_id = fields.Many2one(
         string="Client",
@@ -28,21 +29,25 @@ class ClientAccount(models.Model):
             ("parent_id", "=", False),
         ],
         required=True,
+        help="Client that owns this account.",
     )
     type_id = fields.Many2one(
         string="Type",
         comodel_name="client_account_type",
         required=False,
         ondelete="restrict",
+        help="Standard account type mapped to this client account.",
     )
     group_id = fields.Many2one(
         string="Account Group",
         related="type_id.group_id",
         store=True,
+        help="Account group derived from the selected type.",
     )
     normal_balance = fields.Selection(
         related="type_id.normal_balance",
         store=True,
+        help="Normal balance derived from the selected type.",
     )
 
     @api.onchange(

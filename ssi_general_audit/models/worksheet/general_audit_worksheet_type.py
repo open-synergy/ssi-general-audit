@@ -17,29 +17,35 @@ class GeneralAuditWorksheetType(models.Model):
     code_internal = fields.Char(
         string="Internal Code",
         default="/",
+        help="Internal identifier for the worksheet type. Use '/' to auto-generate.",
     )
     sequence = fields.Integer(
         string="Sequence",
         required=True,
         default=5,
+        help="Ordering of the worksheet type within its category.",
     )
     parent_id = fields.Many2one(
         string="Parent Worksheet",
         comodel_name="general_audit_worksheet_type",
+        help="Optional parent to organize worksheet types hierarchically.",
     )
     category_id = fields.Many2one(
         string="Category",
         comodel_name="general_audit_worksheet_type_category",
+        help="Category to which this worksheet type belongs.",
     )
     allowed_audit = fields.Boolean(
         string="Allowed To Audit More Than One",
         required=True,
         default=False,
+        help="Enable to allow multiple worksheets of this type per audit.",
     )
     max_number_allowed = fields.Integer(
         string="Max. Number Allowed Per Audit",
         required=True,
         default=2,
+        help="Maximum number of worksheets of this type allowed in one audit.",
     )
     standard_item_ids = fields.Many2many(
         string="Relevant Audit Standard Items",
@@ -47,4 +53,5 @@ class GeneralAuditWorksheetType(models.Model):
         relation="rel_worksheet_type_2_audit_std_item",
         column1="type_id",
         column2="audit_standard_item_id",
+        help="Audit standard items considered relevant for this worksheet type.",
     )

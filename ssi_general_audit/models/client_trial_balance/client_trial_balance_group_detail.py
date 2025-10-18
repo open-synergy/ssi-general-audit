@@ -41,22 +41,26 @@ class ClientTrialBalanceGroupDetail(models.Model):
         comodel_name="client_trial_balance",
         required=True,
         ondelete="cascade",
+        help="Parent Trial Balance document.",
     )
     group_id = fields.Many2one(
         string="Account Group",
         comodel_name="client_account_group",
         required=True,
+        help="Client account group aggregated in this line.",
     )
     sequence = fields.Integer(
         string="Sequence",
         required=True,
         default=5,
+        help="Ordering number for the group line.",
     )
     currency_id = fields.Many2one(
         string="Currency",
         comodel_name="res.currency",
         related="trial_balance_id.currency_id",
         store=True,
+        help="Currency of amounts; inherited from the trial balance.",
     )
     balance = fields.Monetary(
         string="Balance",
@@ -64,4 +68,5 @@ class ClientTrialBalanceGroupDetail(models.Model):
         compute="_compute_balance",
         store=True,
         currency_field="currency_id",
+        help="Aggregated balance for all account types within the group.",
     )

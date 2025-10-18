@@ -14,28 +14,34 @@ class GeneralAuditAccountAdjustment(models.Model):
     account_id = fields.Many2one(
         string="Account",
         comodel_name="client_account",
+        help="Client account affected by adjustments.",
     )
     general_audit_id = fields.Many2one(
         string="# General Audit",
         comodel_name="general_audit",
+        help="General Audit document related to the adjustment summary.",
     )
     account_id = fields.Many2one(
         string="Account",
         comodel_name="client_account",
+        help="Client account affected by adjustments.",
     )
     currency_id = fields.Many2one(
         string="Currency",
         comodel_name="res.currency",
         related="general_audit_id.currency_id",
         store=False,
+        help="Currency used for displaying debit and credit amounts.",
     )
     debit = fields.Monetary(
         string="Debit",
         currency_field="currency_id",
+        help="Total debits from client adjustment entries.",
     )
     credit = fields.Monetary(
         string="Credit",
         currency_field="currency_id",
+        help="Total credits from client adjustment entries.",
     )
 
     def _select(self):

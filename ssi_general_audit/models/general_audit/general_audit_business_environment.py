@@ -11,3 +11,4 @@ class GeneralAuditBusinessEnvironment(models.Model):
         "mixin.master_data",
     ]
     _description = "General Audit Business Environment"
+    # No field updates required

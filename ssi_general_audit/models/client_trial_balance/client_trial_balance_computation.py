@@ -54,13 +54,20 @@ class ClientTrialBalanceComputation(models.Model):
         comodel_name="client_trial_balance",
         required=True,
         ondelete="cascade",
+        help="Trial Balance document this computation line belongs to.",
     )
     computation_item_id = fields.Many2one(
         string="Computation Item",
         comodel_name="trial_balance_computation_item",
         required=True,
+        help="Reference to the computation item whose Python code is evaluated.",
     )
-    amount = fields.Float(string="Amount", compute=False, default=0.0)
+    amount = fields.Float(
+        string="Amount",
+        compute=False,
+        default=0.0,
+        help="Calculated amount produced by the computation code.",
+    )
 
     def _get_localdict(self):
         self.ensure_one()

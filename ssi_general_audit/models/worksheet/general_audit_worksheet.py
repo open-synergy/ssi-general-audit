@@ -54,6 +54,7 @@ class GeneralAuditWorksheet(models.Model):
                 ("readonly", False),
             ],
         },
+        help="General Audit to which this worksheet belongs.",
     )
     # Fields related from general audit
     date_start = fields.Date(
@@ -61,48 +62,58 @@ class GeneralAuditWorksheet(models.Model):
         related="general_audit_id.date_start",
         readonly=True,
         store=True,
+        help="Audit period start date.",
     )
     date_end = fields.Date(
         string="End Date",
         related="general_audit_id.date_end",
         readonly=True,
         store=True,
+        help="Audit period end date.",
     )
     interim_date_start = fields.Date(
         string="Interim Start Date",
         related="general_audit_id.interim_date_start",
         readonly=True,
         store=True,
+        help="Start date for the interim period.",
     )
     interim_date_end = fields.Date(
         string="Interim End Date",
         related="general_audit_id.interim_date_end",
         readonly=True,
         store=True,
+        help="End date for the interim period.",
     )
     previous_date_start = fields.Date(
         string="Previous Start Date",
         related="general_audit_id.previous_date_start",
         readonly=True,
         store=True,
+        help="Start date of the previous period.",
     )
     previous_date_end = fields.Date(
         string="Previous End Date",
         related="general_audit_id.previous_date_end",
         readonly=True,
         store=True,
+        help="End date of the previous period.",
     )
     preparation_date = fields.Date(
         string="Preparation Date",
+        help="Date when the worksheet was prepared.",
     )
     preparation_time = fields.Integer(
         string="Preparation Time",
+        help="Effort spent preparing the worksheet (in hours or minutes).",
     )
     review_date = fields.Date(
         string="Review Date",
+        help="Date when the worksheet was reviewed.",
     )
     review_time = fields.Integer(
         string="Review Time",
+        help="Effort spent reviewing the worksheet (in hours or minutes).",
     )
     currency_id = fields.Many2one(
         string="Currency",
@@ -110,6 +121,7 @@ class GeneralAuditWorksheet(models.Model):
         related="general_audit_id.currency_id",
         readonly=True,
         store=True,
+        help="Currency used for amounts in this worksheet.",
     )
     account_type_set_id = fields.Many2one(
         string="Accoount Type Set",
@@ -117,21 +129,25 @@ class GeneralAuditWorksheet(models.Model):
         related="general_audit_id.account_type_set_id",
         readonly=True,
         store=True,
+        help="Account type set used by the linked General Audit.",
     )
     partner_id = fields.Many2one(
         string="Partner",
         related="general_audit_id.partner_id",
         store=True,
+        help="Audited client company.",
     )
     accountant_id = fields.Many2one(
         string="Accountant",
         related="general_audit_id.accountant_id",
         store=True,
+        help="Accountant responsible for the audit.",
     )
     title = fields.Char(
         string="Title",
         related="general_audit_id.title",
         store=True,
+        help="Title of the General Audit engagement.",
     )
     parent_type_id = fields.Many2one(
         string="Parent Type",
@@ -143,6 +159,7 @@ class GeneralAuditWorksheet(models.Model):
                 ("readonly", False),
             ],
         },
+        help="Worksheet type category/group for this specific worksheet.",
     )
     conclusion_id = fields.Many2one(
         string="Conclusion",
@@ -154,6 +171,7 @@ class GeneralAuditWorksheet(models.Model):
                 ("readonly", False),
             ],
         },
+        help="Selected conclusion summarizing the worksheet's assessment.",
     )
     conclusion = fields.Text(
         string="Conclusion Additional Explanation",
@@ -163,6 +181,7 @@ class GeneralAuditWorksheet(models.Model):
                 ("readonly", False),
             ],
         },
+        help="Narrative explanation to support the selected conclusion.",
     )
 
     @api.constrains(

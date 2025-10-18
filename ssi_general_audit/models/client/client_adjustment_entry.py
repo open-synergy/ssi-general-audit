@@ -92,6 +92,7 @@ class ClientAdjustmentEntry(models.Model):
                 ("readonly", False),
             ],
         },
+        help="Related General Audit document.",
     )
     partner_id = fields.Many2one(
         string="Partner",
@@ -99,42 +100,49 @@ class ClientAdjustmentEntry(models.Model):
         related="general_audit_id.partner_id",
         store=True,
         readonly=True,
+        help="Client company for this audit.",
     )
     date_start = fields.Date(
         string="Start Date",
         related="general_audit_id.date_start",
         store=True,
         readonly=True,
+        help="Audit period start date.",
     )
     date_end = fields.Date(
         string="End Date",
         related="general_audit_id.date_end",
         store=True,
         readonly=True,
+        help="Audit period end date.",
     )
     interim_date_start = fields.Date(
         string="Interim Start Date",
         related="general_audit_id.interim_date_start",
         store=True,
         readonly=True,
+        help="Interim period start date.",
     )
     interim_date_end = fields.Date(
         string="Interim End Date",
         related="general_audit_id.interim_date_end",
         store=True,
         readonly=True,
+        help="Interim period end date.",
     )
     previous_date_start = fields.Date(
         string="Previous Start Date",
         related="general_audit_id.previous_date_start",
         store=True,
         readonly=True,
+        help="Previous period start date.",
     )
     previous_date_end = fields.Date(
         string="Previous End Date",
         related="general_audit_id.previous_date_end",
         store=True,
         readonly=True,
+        help="Previous period end date.",
     )
     currency_id = fields.Many2one(
         string="Currency",
@@ -142,12 +150,14 @@ class ClientAdjustmentEntry(models.Model):
         related="general_audit_id.currency_id",
         store=True,
         readonly=True,
+        help="Currency used for this audit.",
     )
     account_type_set_id = fields.Many2one(
         string="Accoount Type Set",
         related="general_audit_id.account_type_set_id",
         store=True,
         readonly=True,
+        help="Account type set used for mapping and computations.",
     )
     adjustment_type = fields.Selection(
         string="Adjustment Type",
@@ -162,6 +172,7 @@ class ClientAdjustmentEntry(models.Model):
                 ("readonly", False),
             ],
         },
+        help="Type of adjustment: proposed by auditor or booked by client.",
     )
     detail_ids = fields.One2many(
         string="Details",
@@ -173,6 +184,7 @@ class ClientAdjustmentEntry(models.Model):
                 ("readonly", False),
             ],
         },
+        help="Lines of debit/credit that compose the adjustment.",
     )
 
     @api.constrains(

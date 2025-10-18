@@ -72,6 +72,7 @@ class GeneralAuditWorksheetMixin(models.AbstractModel):
         required=True,
         readonly=True,
         ondelete="cascade",
+        help="Parent worksheet record that stores common fields.",
     )
 
     @api.model
@@ -92,6 +93,7 @@ class GeneralAuditWorksheetMixin(models.AbstractModel):
                 ("readonly", False),
             ],
         },
+        help="Worksheet type that determines behavior, items, and conclusions.",
     )
 
     @api.depends(
@@ -107,11 +109,13 @@ class GeneralAuditWorksheetMixin(models.AbstractModel):
         comodel_name="general_audit_standard_audit",
         compute="_compute_standard_item_ids",
         store=False,
+        help="Audit standard items relevant to this worksheet type.",
     )
     account_type_ids = fields.Many2many(
         string="Account Types",
         related="general_audit_id.account_type_ids",
         store=False,
+        help="Account types available in the linked General Audit.",
     )
 
     @api.depends(
@@ -133,6 +137,7 @@ class GeneralAuditWorksheetMixin(models.AbstractModel):
         comodel_name="general_audit_worksheet_conclusion",
         compute="_compute_allowed_conclusion_ids",
         store=False,
+        help="Conclusions allowed for the selected worksheet type.",
     )
 
     @api.model

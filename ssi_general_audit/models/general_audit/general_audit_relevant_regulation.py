@@ -16,4 +16,5 @@ class GeneralAuditRelevantRegulation(models.Model):
         string="Regulation Items",
         comodel_name="general_audit_relevant_regulation.item",
         inverse_name="regulation_id",
+        help="List of detailed items under this regulation.",
     )

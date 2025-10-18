@@ -13,19 +13,23 @@ class ClientAccountMappingDetail(models.Model):
         comodel_name="client_account_mapping",
         required=True,
         ondelete="cascade",
+        help="Parent client account mapping document.",
     )
     sequence = fields.Integer(
         string="Sequence",
         related="account_id.sequence",
+        help="Sequence taken from the client account for ordering.",
     )
     account_id = fields.Many2one(
         string="Account",
         comodel_name="client_account",
         required=True,
+        help="Client account being mapped to a standard type.",
     )
     code = fields.Char(
         string="Code",
         related="account_id.code",
+        help="Client account code.",
     )
     type_id = fields.Many2one(
         string="Type",
@@ -33,8 +37,10 @@ class ClientAccountMappingDetail(models.Model):
         related="account_id.type_id",
         store=True,
         readonly=False,
+        help="Standard account type mapped to this client account.",
     )
     normal_balance = fields.Selection(
         string="Normal Balance",
         related="type_id.normal_balance",
+        help="Normal balance derived from the mapped type.",
     )

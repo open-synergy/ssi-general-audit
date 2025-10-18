@@ -76,6 +76,7 @@ class ClientAccountMapping(models.Model):
                 ("readonly", False),
             ],
         },
+        help="Related General Audit document.",
     )
     partner_id = fields.Many2one(
         string="Partner",
@@ -83,52 +84,61 @@ class ClientAccountMapping(models.Model):
         related="general_audit_id.partner_id",
         store=True,
         readonly=True,
+        help="Client company for this audit.",
     )
     date_start = fields.Date(
         string="Start Date",
         related="general_audit_id.date_start",
         store=True,
         readonly=True,
+        help="Audit period start date.",
     )
     date_end = fields.Date(
         string="End Date",
         related="general_audit_id.date_end",
         store=True,
         readonly=True,
+        help="Audit period end date.",
     )
     need_interim = fields.Boolean(
         related="general_audit_id.need_interim",
         store=True,
         readonly=True,
+        help="Indicates whether an interim period is required.",
     )
     interim_date_start = fields.Date(
         string="Interim Start Date",
         related="general_audit_id.interim_date_start",
         store=True,
         readonly=True,
+        help="Interim period start date.",
     )
     interim_date_end = fields.Date(
         string="Interim End Date",
         related="general_audit_id.interim_date_end",
         store=True,
         readonly=True,
+        help="Interim period end date.",
     )
     need_previous = fields.Boolean(
         related="general_audit_id.need_previous",
         store=True,
         readonly=True,
+        help="Indicates whether a previous period is required.",
     )
     previous_date_start = fields.Date(
         string="Previous Start Date",
         related="general_audit_id.previous_date_start",
         store=True,
         readonly=True,
+        help="Previous period start date.",
     )
     previous_date_end = fields.Date(
         string="Previous End Date",
         related="general_audit_id.previous_date_end",
         store=True,
         readonly=True,
+        help="Previous period end date.",
     )
     currency_id = fields.Many2one(
         string="Currency",
@@ -136,12 +146,14 @@ class ClientAccountMapping(models.Model):
         related="general_audit_id.currency_id",
         store=True,
         readonly=True,
+        help="Currency used for this audit.",
     )
     account_type_set_id = fields.Many2one(
         string="Accoount Type Set",
         related="general_audit_id.account_type_set_id",
         store=True,
         readonly=True,
+        help="Account type set used to classify client accounts.",
     )
     detail_ids = fields.One2many(
         string="Account Mappings",
@@ -153,6 +165,7 @@ class ClientAccountMapping(models.Model):
                 ("readonly", False),
             ],
         },
+        help="Mapping lines between client accounts and standard account types.",
     )
 
     @api.model

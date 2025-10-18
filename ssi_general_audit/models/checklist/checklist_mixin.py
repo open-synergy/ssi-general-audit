@@ -24,6 +24,7 @@ class MixinChecklist(models.AbstractModel):
         string="Checklist",
         readonly=True,
         states=CHECKLIST_STATES,
+        help="Checklist values generated from master items for this document.",
     )
 
     def _get_checklist_field_name(self):

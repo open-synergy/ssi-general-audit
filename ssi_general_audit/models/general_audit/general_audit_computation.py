@@ -15,15 +15,18 @@ class GeneralAuditComputation(models.Model):
         comodel_name="general_audit",
         required=True,
         ondelete="cascade",
+        help="General Audit that owns this computation line.",
     )
     computation_item_id = fields.Many2one(
         string="Computation Item",
         comodel_name="trial_balance_computation_item",
         required=True,
+        help="Computation item used for calculating amounts.",
     )
     sequence = fields.Integer(
         string="Sequence",
         related="computation_item_id.sequence",
+        help="Ordering number derived from the computation item.",
     )
 
     @api.depends(
@@ -85,6 +88,7 @@ class GeneralAuditComputation(models.Model):
         readonly=True,
         compute="_compute_computation",
         store=True,
+        help="Computation line for the end period trial balance.",
     )
     interim_computation_id = fields.Many2one(
         string="Interim Computation",
@@ -92,6 +96,7 @@ class GeneralAuditComputation(models.Model):
         readonly=True,
         compute="_compute_computation",
         store=True,
+        help="Computation line for the interim trial balance.",
     )
     previous_computation_id = fields.Many2one(
         string="Previous Computation",
@@ -99,26 +104,31 @@ class GeneralAuditComputation(models.Model):
         readonly=True,
         compute="_compute_computation",
         store=True,
+        help="Computation line for the previous period trial balance.",
     )
     home_amount = fields.Float(
         string="End Period Amount",
         related="home_computation_id.amount",
         store=True,
+        help="Amount from end period trial balance computation.",
     )
     extrapolation_amount = fields.Float(
         string="Extrapolation Amount",
         related=False,
         store=True,
+        help="Calculated extrapolation amount for this item.",
     )
     interim_amount = fields.Float(
         string="Interim Amount",
         related="interim_computation_id.amount",
         store=True,
+        help="Amount from interim trial balance computation.",
     )
     previous_amount = fields.Float(
         string="Previous Amount",
         related="previous_computation_id.amount",
         store=True,
+        help="Amount from previous period trial balance computation.",
     )
 
     @api.depends(
@@ -142,16 +152,19 @@ class GeneralAuditComputation(models.Model):
         string="Extrapolation Avg. Amount",
         compute="_compute_average",
         store=True,
+        help="Average of extrapolation and previous amounts.",
     )
     interim_avg_amount = fields.Float(
         string="Interim Avg. Amount",
         compute="_compute_average",
         store=True,
+        help="Average of interim and previous amounts.",
     )
     home_avg_amount = fields.Float(
         string="End Period Avg. Amount",
         compute="_compute_average",
         store=True,
+        help="Average of end period and previous amounts.",
     )
 
     def _get_localdict(self):

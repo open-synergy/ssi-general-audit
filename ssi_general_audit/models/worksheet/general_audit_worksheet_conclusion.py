@@ -17,9 +17,11 @@ class GeneralAuditWorksheetConclusion(models.Model):
         string="Sequence",
         required=True,
         default=5,
+        help="Ordering of the conclusion within its worksheet type.",
     )
     type_id = fields.Many2one(
         string="Type",
         comodel_name="general_audit_worksheet_type",
         required=True,
+        help="Worksheet type that this conclusion applies to.",
     )

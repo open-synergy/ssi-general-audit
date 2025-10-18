@@ -10,3 +10,4 @@ class GeneralAuditStandardAudit(models.Model):
         "mixin.master_data",
     ]
     _description = "General Audit Standard Audit"
+    # No field updates required

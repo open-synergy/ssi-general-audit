@@ -24,6 +24,7 @@ class ResCompany(models.Model):
         string="Total Asset Computation",
         comodel_name="trial_balance_computation_item",
         default=lambda self: self._default_ta_computation_item_id(),
+        help="Default trial balance computation item used to derive Total Assets.",
     )
 
     @api.model
@@ -37,4 +38,5 @@ class ResCompany(models.Model):
         string="Total Revenue Computation",
         comodel_name="trial_balance_computation_item",
         default=lambda self: self._default_tr_computation_item_id(),
+        help="Default trial balance computation item used to derive Total Revenue.",
     )

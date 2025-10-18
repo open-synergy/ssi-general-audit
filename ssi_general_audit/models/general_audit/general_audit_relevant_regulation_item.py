@@ -15,21 +15,26 @@ class GeneralAuditRelevantRegulationItem(models.Model):
         comodel_name="general_audit_relevant_regulation",
         required=True,
         ondelete="cascade",
+        help="Parent regulation that contains this item.",
     )
     sequence = fields.Integer(
         string="Sequence",
         default=10,
         required=True,
+        help="Ordering of the item within the regulation.",
     )
     parent_id = fields.Many2one(
         string="Parent",
         comodel_name="general_audit_relevant_regulation.item",
         ondelete="set null",
+        help="Optional parent item for hierarchical structuring.",
     )
     name = fields.Char(
         string="Item",
         required=True,
+        help="Title or short name of the regulation item.",
     )
     description = fields.Text(
         string="Description",
+        help="Detailed description or notes about the item.",
     )

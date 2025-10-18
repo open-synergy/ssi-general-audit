@@ -13,36 +13,42 @@ class ClientAdjustmentEntryDetail(models.Model):
     name = fields.Char(
         string="Description",
         required=True,
+        help="Free-text description of the adjustment line.",
     )
     entry_id = fields.Many2one(
         string="# Adjustment Entry",
         comodel_name="client_adjustment_entry",
         required=True,
         ondelete="cascade",
+        help="Parent adjustment entry this line belongs to.",
     )
     account_id = fields.Many2one(
         string="Account",
         comodel_name="client_account",
         required=True,
         ondelete="restrict",
+        help="Client account to debit or credit.",
     )
     currency_id = fields.Many2one(
         string="Currency",
         comodel_name="res.currency",
         related="entry_id.currency_id",
         store=True,
+        help="Currency of amounts; inherited from the parent entry.",
     )
     debit = fields.Monetary(
         string="Debit",
         required=True,
         default=0.0,
         currency_field="currency_id",
+        help="Amount to debit. Use 0 if none.",
     )
     credit = fields.Monetary(
         string="Credit",
         required=True,
         default=0.0,
         currency_field="currency_id",
+        help="Amount to credit. Use 0 if none.",
     )
 
     @api.constrains(

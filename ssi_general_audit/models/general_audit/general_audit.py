@@ -75,91 +75,64 @@ class GeneralAudit(models.Model):
         required=True,
         copy=False,
         readonly=True,
-        states={
-            "draft": [
-                ("readonly", False),
-            ],
-        },
+        states={"draft": [("readonly", False)]},
+        help="Title of the General Audit engagement.",
     )
     date_start = fields.Date(
         string="Start Date",
         required=True,
         readonly=True,
-        states={
-            "draft": [
-                ("readonly", False),
-            ],
-        },
+        states={"draft": [("readonly", False)]},
+        help="Audit period start date.",
     )
     date_end = fields.Date(
         string="End Date",
         required=True,
         readonly=True,
-        states={
-            "draft": [
-                ("readonly", False),
-            ],
-        },
+        states={"draft": [("readonly", False)]},
+        help="Audit period end date.",
     )
     need_interim = fields.Boolean(
         string="Need Interim",
         required=True,
         readonly=True,
-        states={
-            "draft": [
-                ("readonly", False),
-            ],
-        },
+        states={"draft": [("readonly", False)]},
+        help="If enabled, an interim trial balance will be prepared.",
     )
     interim_date_start = fields.Date(
         string="Interim Start Date",
         required=False,
         readonly=True,
-        states={
-            "draft": [
-                ("readonly", False),
-            ],
-        },
+        states={"draft": [("readonly", False)]},
+        help="Start date for the interim period (if applicable).",
     )
     interim_date_end = fields.Date(
         string="Interim End Date",
         required=False,
         readonly=True,
-        states={
-            "draft": [
-                ("readonly", False),
-            ],
-        },
+        states={"draft": [("readonly", False)]},
+        help="End date for the interim period (if applicable).",
     )
     need_previous = fields.Boolean(
         string="Need Previous",
         required=True,
         readonly=True,
-        states={
-            "draft": [
-                ("readonly", False),
-            ],
-        },
+        states={"draft": [("readonly", False)]},
+        help="If enabled, balances for the previous period are required.",
     )
     previous_date_start = fields.Date(
         string="Previous Start Date",
         required=False,
         readonly=True,
-        states={
-            "draft": [
-                ("readonly", False),
-            ],
-        },
+        states={"draft": [("readonly", False)]},
+        help="Start date of the previous period (if applicable).",
     )
     previous_date_end = fields.Date(
         string="Previous End Date",
         required=False,
         readonly=True,
-        states={
-            "draft": [
-                ("readonly", False),
-            ],
-        },
+        states={"draft": [("readonly", False)]},
+        help="End date of the previous period (if applicable).",
     )
     currency_id = fields.Many2one(
         string="Currency",
@@ -167,78 +140,54 @@ class GeneralAudit(models.Model):
         default=lambda self: self._default_currency_id(),
         required=True,
         readonly=True,
-        states={
-            "draft": [
-                ("readonly", False),
-            ],
-        },
+        states={"draft": [("readonly", False)]},
+        help="Currency used for the audit balances and reports.",
     )
     account_type_set_id = fields.Many2one(
         string="Account Type Set",
         comodel_name="client_account_type_set",
         required=True,
         readonly=True,
-        states={
-            "draft": [
-                ("readonly", False),
-            ],
-        },
+        states={"draft": [("readonly", False)]},
+        help="Configured set of account types used in this audit.",
     )
     financial_accounting_standard_id = fields.Many2one(
         string="Financial Accounting Standard",
         comodel_name="accountant.financial_accounting_standard",
         required=True,
         readonly=True,
-        states={
-            "draft": [
-                ("readonly", False),
-            ],
-        },
+        states={"draft": [("readonly", False)]},
+        help="Accounting standard (e.g., IFRS, GAAP) applied in this audit.",
     )
     opinion_id = fields.Many2one(
         string="Opinion",
         comodel_name="accountant.opinion",
         readonly=True,
-        states={
-            "open": [
-                ("readonly", False),
-            ],
-        },
+        states={"open": [("readonly", False)]},
+        help="Audit opinion to be issued for the engagement.",
     )
     accountant_id = fields.Many2one(
         string="Accountant",
         comodel_name="res.partner",
-        domain=[
-            ("is_company", "=", False),
-            ("parent_id", "=", False),
-        ],
+        domain=[("is_company", "=", False), ("parent_id", "=", False)],
         required=True,
         readonly=True,
-        states={
-            "draft": [
-                ("readonly", False),
-            ],
-        },
+        states={"draft": [("readonly", False)]},
+        help="Lead accountant in charge of the audit.",
     )
     num_of_consecutive_audit_firm = fields.Integer(
         string="Num. of Consecutive Audit (Firm)",
         required=True,
         readonly=True,
-        states={
-            "draft": [
-                ("readonly", False),
-            ],
-        },
+        states={"draft": [("readonly", False)]},
+        help="Number of consecutive audits performed by the same firm.",
     )
     num_of_consecutive_audit_accountant = fields.Integer(
         string="Num. of Consecutive Audit (Accountant)",
         required=True,
         readonly=True,
-        states={
-            "draft": [
-                ("readonly", False),
-            ],
-        },
+        states={"draft": [("readonly", False)]},
+        help="Number of consecutive audits performed by the same accountant.",
     )
     restatement_option = fields.Selection(
         string="Restatement Option",
@@ -250,30 +199,21 @@ class GeneralAudit(models.Model):
         required=True,
         default="no",
         readonly=True,
-        states={
-            "draft": [
-                ("readonly", False),
-            ],
-        },
+        states={"draft": [("readonly", False)]},
+        help="Indicate whether the audit is a restatement and where it is kept.",
     )
     previous_audit_id = fields.Many2one(
         string="Previous # Audit",
         comodel_name="general_audit",
         readonly=True,
-        states={
-            "draft": [
-                ("readonly", False),
-            ],
-        },
+        states={"draft": [("readonly", False)]},
+        help="Link to the previous audit document in the system.",
     )
     previous_audit = fields.Char(
         string="Previous Audit",
         readonly=True,
-        states={
-            "draft": [
-                ("readonly", False),
-            ],
-        },
+        states={"draft": [("readonly", False)]},
+        help="Reference number or description of the previous audit (external).",
     )
     required_worksheet_type_ids = fields.Many2many(
         string="Required Worksheet Type(s)",
@@ -282,11 +222,8 @@ class GeneralAudit(models.Model):
         column1="general_audit_id",
         column2="worksheet_type_id",
         readonly=True,
-        states={
-            "draft": [
-                ("readonly", False),
-            ],
-        },
+        states={"draft": [("readonly", False)]},
+        help="Worksheet types that must be completed for this audit.",
     )
     additional_worksheet_type_ids = fields.Many2many(
         string="Additional Worksheet Type(s)",
@@ -295,73 +232,72 @@ class GeneralAudit(models.Model):
         column1="general_audit_id",
         column2="worksheet_type_id",
         readonly=True,
-        states={
-            "draft": [
-                ("readonly", False),
-            ],
-        },
+        states={"draft": [("readonly", False)]},
+        help="Optional worksheet types included for this audit.",
     )
     worksheet_ids = fields.One2many(
         string="Worksheets",
         comodel_name="general_audit_worksheet",
         inverse_name="general_audit_id",
         readonly=True,
+        help="Worksheet documents created for this audit.",
     )
     worksheet_control_ids = fields.One2many(
         string="Controls",
         comodel_name="general_audit.worksheet_control",
         inverse_name="general_audit_id",
         readonly=True,
+        help="Controls for ensuring required and additional worksheets are met.",
     )
     trial_balance_ids = fields.One2many(
         string="Trial Balance",
         comodel_name="client_trial_balance",
         inverse_name="general_audit_id",
         readonly=True,
+        help="Trial balance documents prepared within this audit.",
     )
     home_trial_balance_id = fields.Many2one(
         string="# End Period Trial Balance",
         comodel_name="client_trial_balance",
         compute="_compute_trial_balance_id",
         store=True,
+        help="Link to the end period trial balance.",
     )
     interim_trial_balance_id = fields.Many2one(
         string="# Interim Trial Balance",
         comodel_name="client_trial_balance",
         compute="_compute_trial_balance_id",
         store=True,
+        help="Link to the interim trial balance.",
     )
     previous_trial_balance_id = fields.Many2one(
         string="# Previous Trial Balance",
         comodel_name="client_trial_balance",
         compute="_compute_trial_balance_id",
         store=True,
+        help="Link to the previous period trial balance.",
     )
     account_mapping_ids = fields.One2many(
         string="Account Mappings",
         comodel_name="client_account_mapping",
         inverse_name="general_audit_id",
+        help="Client account mapping documents for this audit.",
     )
     account_mapping_id = fields.Many2one(
         string="# Account Mapping",
         comodel_name="client_account_mapping",
         compute="_compute_account_mapping_id",
         store=True,
+        help="The active account mapping used by this audit.",
     )
     detail_ids = fields.One2many(
         string="Detail",
         comodel_name="general_audit.detail",
         inverse_name="general_audit_id",
         readonly=True,
-        states={
-            "draft": [
-                ("readonly", False),
-            ],
-            "open": [
-                ("readonly", False),
-            ],
-        },
+        states={"draft": [("readonly", False)], "open": [("readonly", False)]},
         copy=False,
+        help="Client accounts included in the General Audit scope.",
     )
     standard_detail_ids = fields.One2many(
         string="Standard Detail",
@@ -369,6 +305,7 @@ class GeneralAudit(models.Model):
         inverse_name="general_audit_id",
         readonly=True,
         copy=True,
+        help="Standard account type lines used for analysis.",
     )
     group_detail_ids = fields.One2many(
         string="Group Detail",
@@ -376,6 +313,7 @@ class GeneralAudit(models.Model):
         inverse_name="general_audit_id",
         readonly=True,
         copy=True,
+        help="Account group lines aggregated for analysis.",
     )
     computation_ids = fields.One2many(
         string="Computations",
@@ -383,30 +321,35 @@ class GeneralAudit(models.Model):
         inverse_name="general_audit_id",
         readonly=True,
         copy=True,
+        help="Computation lines evaluated at the General Audit level.",
     )
     standard_adjustment_ids = fields.One2many(
         string="Standard Adjustment",
         comodel_name="general_audit.adjustment",
         inverse_name="general_audit_id",
         readonly=True,
+        help="Summary of adjustments by account type.",
     )
     account_adjustment_ids = fields.One2many(
         string="Account Adjustment",
         comodel_name="general_audit.account_adjustment",
         inverse_name="general_audit_id",
         readonly=True,
+        help="Summary of adjustments by account.",
     )
     group_adjustment_ids = fields.One2many(
         string="Group Adjustment",
         comodel_name="general_audit.group_adjustment",
         inverse_name="general_audit_id",
         readonly=True,
+        help="Summary of adjustments by account group.",
     )
     adjustment_entry_ids = fields.One2many(
         string="Adjustment Entri(es)",
         comodel_name="client_adjustment_entry",
         inverse_name="general_audit_id",
         readonly=True,
+        help="Adjustment entry documents created for this audit.",
     )
     account_type_ids = fields.Many2many(
         string="Account Types",
@@ -414,28 +357,23 @@ class GeneralAudit(models.Model):
         compute="_compute_account_type_ids",
         store=False,
         compute_sudo=True,
+        help="Account types present in this audit's standard details.",
     )
     industry_id = fields.Many2one(
         string="Industry",
         comodel_name="res.partner.industry",
         readonly=True,
-        states={
-            "draft": [
-                ("readonly", False),
-            ],
-        },
+        states={"draft": [("readonly", False)]},
         copy=False,
+        help="Industry of the audited company.",
     )
     ownership_type_id = fields.Many2one(
         string="Ownership Type",
         comodel_name="company_ownership_type",
         readonly=True,
-        states={
-            "draft": [
-                ("readonly", False),
-            ],
-        },
+        states={"draft": [("readonly", False)]},
         copy=False,
+        help="Ownership type of the audited company.",
     )
     public_offering_ids = fields.Many2many(
         string="Public Offering",
@@ -444,12 +382,9 @@ class GeneralAudit(models.Model):
         column1="general_audit_id",
         column2="public_offering_id",
         readonly=True,
-        states={
-            "draft": [
-                ("readonly", False),
-            ],
-        },
+        states={"draft": [("readonly", False)]},
         copy=False,
+        help="Public offering categories applicable to the company.",
     )
 
     @api.model

@@ -18,17 +18,20 @@ class GeneralAuditStandardDetail(models.Model):
         string="Account Type",
         comodel_name="client_account_type",
         required=True,
+        help="Standard account type being analyzed.",
     )
     sequence = fields.Integer(
         string="Sequence",
         required=True,
         default=5,
+        help="Ordering number for the standard detail line.",
     )
     general_audit_id = fields.Many2one(
         string="# General Audit",
         comodel_name="general_audit",
         required=True,
         ondelete="cascade",
+        help="General Audit that owns this standard detail line.",
     )
 
     @api.depends(
@@ -121,6 +124,7 @@ class GeneralAuditStandardDetail(models.Model):
         readonly=True,
         compute="_compute_standard_line",
         store=True,
+        help="Linked standard detail for the end period trial balance.",
     )
     interim_standard_line_id = fields.Many2one(
         string="Interim TB Standard Line",
@@ -128,6 +132,7 @@ class GeneralAuditStandardDetail(models.Model):
         readonly=True,
         compute="_compute_standard_line",
         store=True,
+        help="Linked standard detail for the interim trial balance.",
     )
     previous_standard_line_id = fields.Many2one(
         string="Previous TB Standard Line",
@@ -135,36 +140,42 @@ class GeneralAuditStandardDetail(models.Model):
         readonly=True,
         compute="_compute_standard_line",
         store=True,
+        help="Linked standard detail for the previous period trial balance.",
     )
     currency_id = fields.Many2one(
         string="Currency",
         comodel_name="res.currency",
         related="general_audit_id.currency_id",
         store=True,
+        help="Currency used for amounts; inherited from the General Audit.",
     )
     home_statement_opening_balance = fields.Monetary(
         string="End Period Opening Balance",
         related="home_standard_line_id.opening_balance",
         store=True,
         currency_field="currency_id",
+        help="Opening balance from the end period trial balance.",
     )
     home_statement_balance = fields.Monetary(
         string="End Period Balance",
         related="home_standard_line_id.balance",
         store=True,
         currency_field="currency_id",
+        help="Net balance from the end period trial balance.",
     )
     interim_opening_balance = fields.Monetary(
         string="Interim Opening Balance",
         related="interim_standard_line_id.opening_balance",
         store=True,
         currency_field="currency_id",
+        help="Opening balance from the interim trial balance.",
     )
     interim_balance = fields.Monetary(
         string="Interim Balance",
         related="interim_standard_line_id.balance",
         store=True,
         currency_field="currency_id",
+        help="Net balance from the interim trial balance.",
     )
 
     @api.depends(
@@ -203,11 +214,13 @@ class GeneralAuditStandardDetail(models.Model):
         compute="_compute_extrapolation_balance",
         store=True,
         currency_field="currency_id",
+        help="Extrapolated balance computed using the type's Python code.",
     )
 
     extrapolation_adjustment = fields.Monetary(
         string="Extrapolation Adjustment",
         currency_field="currency_id",
+        help="Manual or calculated adjustment applied to the extrapolation.",
     )
 
     @api.depends(
@@ -224,6 +237,7 @@ class GeneralAuditStandardDetail(models.Model):
         currency_field="currency_id",
         store=True,
         compute="_compute_adjusted_extrapolation_balance",
+        help="Extrapolation balance after applying the adjustment.",
     )
 
     previous_opening_balance = fields.Monetary(
@@ -231,12 +245,14 @@ class GeneralAuditStandardDetail(models.Model):
         related="previous_standard_line_id.opening_balance",
         store=True,
         currency_field="currency_id",
+        help="Opening balance from the previous period trial balance.",
     )
     previous_balance = fields.Monetary(
         string="Previous Balance",
         related="previous_standard_line_id.balance",
         store=True,
         currency_field="currency_id",
+        help="Net balance from the previous period trial balance.",
     )
 
     adjustment_debit = fields.Monetary(
@@ -244,12 +260,14 @@ class GeneralAuditStandardDetail(models.Model):
         related="standard_adjustment_id.debit",
         store=True,
         currency_field="currency_id",
+        help="Total debit adjustments affecting this type.",
     )
     adjustment_credit = fields.Monetary(
         string="Adjustment Credit",
         related="standard_adjustment_id.credit",
         store=True,
         currency_field="currency_id",
+        help="Total credit adjustments affecting this type.",
     )
 
     @api.depends(
@@ -275,12 +293,14 @@ class GeneralAuditStandardDetail(models.Model):
         compute="_compute_adjustment_audited_balance",
         store=True,
         currency_field="currency_id",
+        help="Net effect of adjustments based on the normal balance.",
     )
     audited_balance = fields.Monetary(
         string="Audited Balance",
         compute="_compute_adjustment_audited_balance",
         store=True,
         currency_field="currency_id",
+        help="End period balance after applying adjustments.",
     )
 
     @api.depends(
@@ -311,24 +331,28 @@ class GeneralAuditStandardDetail(models.Model):
         compute="_compute_average",
         store=True,
         currency_field="currency_id",
+        help="Average of interim and previous balances.",
     )
     extrapolation_avg = fields.Monetary(
         string="Extrapolation Average",
         compute="_compute_average",
         store=True,
         currency_field="currency_id",
+        help="Average of adjusted extrapolation and previous balances.",
     )
     home_statement_avg = fields.Monetary(
         string="End Period Average",
         compute="_compute_average",
         store=True,
         currency_field="currency_id",
+        help="Average of end period and previous balances.",
     )
     audited_avg = fields.Monetary(
         string="Audited Average",
         compute="_compute_average",
         store=True,
         currency_field="currency_id",
+        help="Average of audited and previous balances.",
     )
 
     def _get_localdict(self):

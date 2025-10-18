@@ -99,11 +99,8 @@ class ClientTrialBalance(models.Model):
         comodel_name="general_audit",
         required=True,
         readonly=True,
-        states={
-            "draft": [
-                ("readonly", False),
-            ],
-        },
+        states={"draft": [("readonly", False)]},
+        help="Related General Audit document.",
     )
     partner_id = fields.Many2one(
         string="Partner",
@@ -111,52 +108,61 @@ class ClientTrialBalance(models.Model):
         related="general_audit_id.partner_id",
         store=True,
         readonly=True,
+        help="Client company for this audit.",
     )
     date_start = fields.Date(
         string="Start Date",
         related="general_audit_id.date_start",
         store=True,
         readonly=True,
+        help="Audit period start date.",
     )
     date_end = fields.Date(
         string="End Date",
         related="general_audit_id.date_end",
         store=True,
         readonly=True,
+        help="Audit period end date.",
     )
     need_interim = fields.Boolean(
         related="general_audit_id.need_interim",
         store=True,
         readonly=True,
+        help="Indicates whether an interim period is required.",
     )
     interim_date_start = fields.Date(
         string="Interim Start Date",
         related="general_audit_id.interim_date_start",
         store=True,
         readonly=True,
+        help="Interim period start date.",
     )
     interim_date_end = fields.Date(
         string="Interim End Date",
         related="general_audit_id.interim_date_end",
         store=True,
         readonly=True,
+        help="Interim period end date.",
     )
     need_previous = fields.Boolean(
         related="general_audit_id.need_previous",
         store=True,
         readonly=True,
+        help="Indicates whether a previous period is required.",
     )
     previous_date_start = fields.Date(
         string="Previous Start Date",
         related="general_audit_id.previous_date_start",
         store=True,
         readonly=True,
+        help="Previous period start date.",
     )
     previous_date_end = fields.Date(
         string="Previous End Date",
         related="general_audit_id.previous_date_end",
         store=True,
         readonly=True,
+        help="Previous period end date.",
     )
     currency_id = fields.Many2one(
         string="Currency",
@@ -164,12 +170,14 @@ class ClientTrialBalance(models.Model):
         related="general_audit_id.currency_id",
         store=True,
         readonly=True,
+        help="Currency used for this trial balance.",
     )
     account_type_set_id = fields.Many2one(
         string="Account Type Set",
         related="general_audit_id.account_type_set_id",
         store=True,
         readonly=True,
+        help="Account type set used to classify accounts.",
     )
     trial_balance_type = fields.Selection(
         string="Trial Balance Type",
@@ -181,11 +189,8 @@ class ClientTrialBalance(models.Model):
         ],
         default="home",
         readonly=True,
-        states={
-            "draft": [
-                ("readonly", False),
-            ],
-        },
+        states={"draft": [("readonly", False)]},
+        help="Identify whether this TB is for previous, interim, or end period.",
     )
 
     @api.depends(
@@ -204,6 +209,7 @@ class ClientTrialBalance(models.Model):
         comodel_name="client_account_type",
         compute="_compute_account_type_ids",
         store=False,
+        help="Account types allowed based on the selected account type set.",
     )
     detail_ids = fields.One2many(
         string="Detail",
@@ -211,11 +217,8 @@ class ClientTrialBalance(models.Model):
         inverse_name="trial_balance_id",
         copy=True,
         readonly=True,
-        states={
-            "open": [
-                ("readonly", False),
-            ],
-        },
+        states={"open": [("readonly", False)]},
+        help="Client account lines included in this trial balance.",
     )
 
     @api.depends(
@@ -248,31 +251,37 @@ class ClientTrialBalance(models.Model):
         string="Opening Debit",
         compute="_compute_total_detail",
         store=True,
+        help="Total opening debit of all detail lines.",
     )
     opening_credit = fields.Monetary(
         string="Opening Credit",
         compute="_compute_total_detail",
         store=True,
+        help="Total opening credit of all detail lines.",
     )
     debit = fields.Monetary(
         string="Debit",
         compute="_compute_total_detail",
         store=True,
+        help="Total debit movements of all detail lines.",
     )
     credit = fields.Monetary(
         string="Credit",
         compute="_compute_total_detail",
         store=True,
+        help="Total credit movements of all detail lines.",
     )
     ending_debit = fields.Monetary(
         string="Ending Debit",
         compute="_compute_total_detail",
         store=True,
+        help="Total ending debit across all detail lines.",
     )
     ending_credit = fields.Monetary(
         string="Ending Credit",
         compute="_compute_total_detail",
         store=True,
+        help="Total ending credit across all detail lines.",
     )
     standard_detail_ids = fields.One2many(
         string="Standard Details",
@@ -280,6 +289,7 @@ class ClientTrialBalance(models.Model):
         inverse_name="trial_balance_id",
         readonly=True,
         copy=True,
+        help="Standard account type breakdown computed from details.",
     )
     group_detail_ids = fields.One2many(
         string="Group Details",
@@ -287,6 +297,7 @@ class ClientTrialBalance(models.Model):
         inverse_name="trial_balance_id",
         readonly=True,
         copy=True,
+        help="Aggregated balances by account group.",
     )
     computation_ids = fields.One2many(
         string="Computation",
@@ -294,6 +305,7 @@ class ClientTrialBalance(models.Model):
         inverse_name="trial_balance_id",
         readonly=True,
         copy=True,
+        help="Computation lines evaluated for this trial balance.",
     )
 
     def action_recompute(self):

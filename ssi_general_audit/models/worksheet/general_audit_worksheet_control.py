@@ -14,11 +14,13 @@ class GeneralAuditWorksheetControl(models.Model):
     general_audit_id = fields.Many2one(
         string="# General Audit",
         comodel_name="general_audit",
+        help="Audit referencing this control entry.",
     )
     type_id = fields.Many2one(
         string="Type",
         comodel_name="general_audit_worksheet_type",
         required=False,
+        help="Worksheet type being controlled (required/additional).",
     )
 
     def _compute_worksheet_id(self):
@@ -36,21 +38,26 @@ class GeneralAuditWorksheetControl(models.Model):
         comodel_name="general_audit_worksheet",
         compute="_compute_worksheet_id",
         store=False,
+        help="Linked worksheet record for this audit and type, if any.",
     )
     required = fields.Boolean(
         string="Required",
+        help="True if this worksheet type is mandatory for the audit.",
     )
     user_id = fields.Many2one(
         string="Responsible",
         related="worksheet_id.user_id",
+        help="Employee responsible for preparing the worksheet.",
     )
     conclusion_id = fields.Many2one(
         string="Conclusion",
         related="worksheet_id.conclusion_id",
+        help="Conclusion selected on the worksheet.",
     )
     state = fields.Selection(
         string="State",
         related="worksheet_id.state",
+        help="Current workflow state of the worksheet.",
     )
 
     def init(self):

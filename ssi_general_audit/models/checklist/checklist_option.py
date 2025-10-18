@@ -13,4 +13,5 @@ class ChecklistOption(models.Model):
 
     code = fields.Char(
         default="/",
+        help="Unique short code for the option (e.g., Yes/No/N/A). Use '/' to auto-generate.",
     )

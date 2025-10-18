@@ -15,14 +15,17 @@ class MixinChecklistItem(models.AbstractModel):
 
     name = fields.Char(
         translate=True,
+        help="Display name of the checklist item shown on forms and reports.",
     )
     sequence = fields.Integer(
         string="Sequence",
         required=True,
         default=10,
+        help="Ordering number controlling the display order (lower comes first).",
     )
     option_set_id = fields.Many2one(
         string="Option Set",
         comodel_name="checklist.option_set",
         required=True,
+        help="Option set that defines the allowed options for this item.",
     )
