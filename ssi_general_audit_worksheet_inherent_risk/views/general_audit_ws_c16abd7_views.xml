@@ -43,7 +43,28 @@
             <data>
                 <xpath expr="//page[1]" position="before">
                     <page name="inherent_risk" string="Inherent Risks">
-                        <group name="inherent_risk" colspan="4" col="2">
+                        <group
+                            name="inherit_risk_1"
+                            string="Impact Factor"
+                            colspan="4"
+                            col="2"
+                        >
+                            <group name="inherent_risk_1_1" colspan="1" col="2">
+                                <field
+                                    name="expert_impacted_account_type_ids"
+                                    string="Expert Use"
+                                    widget="many2many_tags"
+                                />
+                            </group>
+                            <group name="inherent_risk_1_2" colspan="1" col="2">
+                            </group>
+                        </group>
+                        <group
+                            name="inherent_risk_2"
+                            string="Inherent Risk"
+                            colspan="4"
+                            col="2"
+                        >
                             <field name="risk_material_missstatement" />
                             <field name="auditor_respons" />
                         </group>

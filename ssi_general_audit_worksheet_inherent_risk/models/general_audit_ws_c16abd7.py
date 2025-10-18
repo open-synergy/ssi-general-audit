@@ -37,3 +37,12 @@ class GeneralAuditWSc16abd7(models.Model):
             ],
         },
     )
+
+    # Impacted standard account
+    expert_impacted_account_type_ids = fields.Many2many(
+        string="Standard Accounts Impacted by Use of Expert",
+        comodel_name="client_account_type",
+        related="general_audit_id.expert_impacted_account_type_ids",
+        readonly=True,
+        store=False,
+    )
