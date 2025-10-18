@@ -3,7 +3,6 @@
      Copyright 2022 PT. Simetri Sinergi Indonesia
      License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl-3.0-standalone.html). -->
 <odoo>
-<data noupdate="1">
 <!-- General Audit -->
 <record id="approval_template_general_audit" model="approval.template">
     <field name="name">Standard</field>
@@ -17,9 +16,9 @@
     <field name="template_id" ref="approval_template_general_audit" />
     <field name="approver_selection_method">use_group</field>
     <field
-                name="approver_group_ids"
-                eval="[(6,0,[ref('general_audit_validator_group')])]"
-            />
+            name="approver_group_ids"
+            eval="[(6,0,[ref('general_audit_validator_group')])]"
+        />
 </record>
 
 <!-- Trial Balance -->
@@ -35,9 +34,9 @@
     <field name="template_id" ref="approval_template_trial_balance" />
     <field name="approver_selection_method">use_group</field>
     <field
-                name="approver_group_ids"
-                eval="[(6,0,[ref('trial_balance_validator_group')])]"
-            />
+            name="approver_group_ids"
+            eval="[(6,0,[ref('trial_balance_validator_group')])]"
+        />
 </record>
 
 <!-- Adjustment Entry -->
@@ -53,9 +52,9 @@
     <field name="template_id" ref="approval_template_adjustment_entry" />
     <field name="approver_selection_method">use_group</field>
     <field
-                name="approver_group_ids"
-                eval="[(6,0,[ref('adjustment_entry_validator_group')])]"
-            />
+            name="approver_group_ids"
+            eval="[(6,0,[ref('adjustment_entry_validator_group')])]"
+        />
 </record>
 
 <!-- Client Account Mapping -->
@@ -68,15 +67,14 @@
     <field name="validate_sequence" eval="1" />
 </record>
 <record
-            id="approval_template_detail_client_account_mapping"
-            model="approval.template_detail"
-        >
+        id="approval_template_detail_client_account_mapping"
+        model="approval.template_detail"
+    >
     <field name="template_id" ref="approval_template_client_account_mapping" />
     <field name="approver_selection_method">use_group</field>
     <field
-                name="approver_group_ids"
-                eval="[(6,0,[ref('client_account_mapping_validator_group')])]"
-            />
+            name="approver_group_ids"
+            eval="[(6,0,[ref('client_account_mapping_validator_group')])]"
+        />
 </record>
-</data>
 </odoo>

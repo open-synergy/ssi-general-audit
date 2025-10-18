@@ -37,6 +37,6 @@ class ClientFinancialRatio(models.Model):
             ("profitability", "Profitability Ratio"),
         ],
         required=True,
-        default="summary",
+        default="liquidity",
         help="Classification of the financial ratio for reporting.",
     )
