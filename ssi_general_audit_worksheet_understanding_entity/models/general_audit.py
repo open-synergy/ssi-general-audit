@@ -55,6 +55,82 @@ class GeneralAudit(models.Model):
         help=("Standard account types impacted by the use of experts"),
     )
 
+    previous_audit_information_impacted_account_type_ids = fields.Many2many(
+        string="Standard Accounts Impacted by Previous Audit Information",
+        comodel_name="client_account_type",
+        compute="_compute_previous_audit_information_impacted_account_types",
+        relation="rel_general_audit_2_prev_audit_info_impacted_account_type",
+        column1="general_audit_id",
+        column2="type_id",
+        store=True,
+        compute_sudo=True,
+        help=(
+            "Standard account types impacted by previous significant audit information"
+        ),
+    )
+
+    previous_other_information_impacted_account_type_ids = fields.Many2many(
+        string="Standard Accounts Impacted by Previous Other Information",
+        comodel_name="client_account_type",
+        compute="_compute_previous_other_information_impacted_account_types",
+        relation="rel_general_audit_2_prev_other_info_impacted_account_type",
+        column1="general_audit_id",
+        column2="type_id",
+        store=True,
+        compute_sudo=True,
+        help=(
+            "Standard account types impacted by previous significant other information"
+        ),
+    )
+
+    other_information_impacted_account_type_ids = fields.Many2many(
+        string="Standard Accounts Impacted by Other Information",
+        comodel_name="client_account_type",
+        compute="_compute_other_information_impacted_account_types",
+        relation="rel_general_audit_2_other_info_impacted_account_type",
+        column1="general_audit_id",
+        column2="type_id",
+        store=True,
+        compute_sudo=True,
+        help=("Standard account types impacted by other significant information"),
+    )
+
+    @api.depends(
+        "standard_detail_ids",
+        "standard_detail_ids.previous_other_information_impacted",
+    )
+    def _compute_previous_other_information_impacted_account_types(self):
+        for record in self:
+            criteria = [
+                ("general_audit_id", "=", record.id),
+                ("previous_other_information_impacted", "=", True),
+            ]
+            result = (
+                self.env["general_audit.standard_detail"]
+                .search(criteria)
+                .mapped("type_id.id")
+            )
+            record.previous_other_information_impacted_account_type_ids = [
+                (6, 0, result)
+            ]
+
+    @api.depends(
+        "standard_detail_ids",
+        "standard_detail_ids.other_information_impacted",
+    )
+    def _compute_other_information_impacted_account_types(self):
+        for record in self:
+            criteria = [
+                ("general_audit_id", "=", record.id),
+                ("other_information_impacted", "=", True),
+            ]
+            result = (
+                self.env["general_audit.standard_detail"]
+                .search(criteria)
+                .mapped("type_id.id")
+            )
+            record.other_information_impacted_account_type_ids = [(6, 0, result)]
+
     @api.depends(
         "standard_detail_ids",
         "standard_detail_ids.expert_impacted",
@@ -71,6 +147,25 @@ class GeneralAudit(models.Model):
                 .mapped("type_id.id")
             )
             record.expert_impacted_account_type_ids = [(6, 0, result)]
+
+    @api.depends(
+        "standard_detail_ids",
+        "standard_detail_ids.previous_audit_information_impacted",
+    )
+    def _compute_previous_audit_information_impacted_account_types(self):
+        for record in self:
+            criteria = [
+                ("general_audit_id", "=", record.id),
+                ("previous_audit_information_impacted", "=", True),
+            ]
+            result = (
+                self.env["general_audit.standard_detail"]
+                .search(criteria)
+                .mapped("type_id.id")
+            )
+            record.previous_audit_information_impacted_account_type_ids = [
+                (6, 0, result)
+            ]
 
     @api.depends(
         "ws_ae11f7e_expert_ids",
