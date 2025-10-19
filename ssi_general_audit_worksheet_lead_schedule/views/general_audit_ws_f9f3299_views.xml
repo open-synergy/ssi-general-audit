@@ -27,6 +27,10 @@
         />
         <field name="arch" type="xml">
             <data>
+                <xpath expr="//field[@name='general_audit_id']" position="after">
+                    <field name="account_type_id" />
+                    <field name="balance_type" />
+                </xpath>
             </data>
         </field>
     </record>
