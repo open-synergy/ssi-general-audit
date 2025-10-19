@@ -82,7 +82,9 @@ class GeneralAuditWSf9f3299(models.Model):
     def _reload_account(self):
         self.ensure_one()
         self.detail_ids.unlink()
-        for detail in self.general_audit_id.detail_ids:
+        for detail in self.general_audit_id.detail_ids.filtered(
+            lambda d: d.account_id.type_id == self.account_type_id
+        ):
             data = {
                 "worksheet_id": self.id,
                 "detail_id": detail.id,
