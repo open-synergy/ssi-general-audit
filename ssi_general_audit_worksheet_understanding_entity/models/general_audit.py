@@ -118,6 +118,62 @@ class GeneralAudit(models.Model):
             "Standard account types impacted by the preparation of financial statements"
         ),
     )
+    fraud_impacted_account_type_ids = fields.Many2many(
+        string="Standard Accounts Impacted by Fraud Risk",
+        comodel_name="client_account_type",
+        compute="_compute_fraud_impacted_account_types",
+        relation="rel_general_audit_2_fraud_impacted_account_type",
+        column1="general_audit_id",
+        column2="type_id",
+        store=True,
+        compute_sudo=True,
+        help=("Standard account types impacted by fraud risk"),
+    )
+    business_environment_impacted_account_type_ids = fields.Many2many(
+        string="Standard Accounts Impacted by Business Environment",
+        comodel_name="client_account_type",
+        compute="_compute_business_environment_impacted_account_types",
+        relation="rel_general_audit_2_business_env_impacted_account_type",
+        column1="general_audit_id",
+        column2="type_id",
+        store=True,
+        compute_sudo=True,
+        help=("Standard account types impacted by business environment"),
+    )
+
+    @api.depends(
+        "standard_detail_ids",
+        "standard_detail_ids.business_environmeny_impacted",
+    )
+    def _compute_business_environment_impacted_account_types(self):
+        for record in self:
+            criteria = [
+                ("general_audit_id", "=", record.id),
+                ("business_environmeny_impacted", "=", True),
+            ]
+            result = (
+                self.env["general_audit.standard_detail"]
+                .search(criteria)
+                .mapped("type_id.id")
+            )
+            record.business_environment_impacted_account_type_ids = [(6, 0, result)]
+
+    @api.depends(
+        "standard_detail_ids",
+        "standard_detail_ids.fraud_impacted",
+    )
+    def _compute_fraud_impacted_account_types(self):
+        for record in self:
+            criteria = [
+                ("general_audit_id", "=", record.id),
+                ("fraud_impacted", "=", True),
+            ]
+            result = (
+                self.env["general_audit.standard_detail"]
+                .search(criteria)
+                .mapped("type_id.id")
+            )
+            record.fraud_impacted_account_type_ids = [(6, 0, result)]
 
     @api.depends(
         "standard_detail_ids",
