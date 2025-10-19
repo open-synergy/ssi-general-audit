@@ -55,9 +55,11 @@ class GeneralAuditWSf87b2e1(models.Model):
         store=True,
     )
     link_1_state = fields.Selection(
+        string="State (RA.150.1)",
         related="link_1_id.state",
     )
     link_1_conclusion_id = fields.Many2one(
+        string="Conclusion (RA.150.1)",
         related="link_1_id.conclusion_id",
     )
 
@@ -86,9 +88,11 @@ class GeneralAuditWSf87b2e1(models.Model):
         store=True,
     )
     link_2_state = fields.Selection(
+        string="State (RA.150.2)",
         related="link_2_id.state",
     )
     link_2_conclusion_id = fields.Many2one(
+        string="Conclusion (RA.150.2)",
         related="link_2_id.conclusion_id",
     )
 
@@ -117,9 +121,11 @@ class GeneralAuditWSf87b2e1(models.Model):
         store=True,
     )
     link_3_state = fields.Selection(
+        string="State (RA.150.3)",
         related="link_3_id.state",
     )
     link_3_conclusion_id = fields.Many2one(
+        string="Conclusion (RA.150.3)",
         related="link_3_id.conclusion_id",
     )
 
@@ -148,9 +154,11 @@ class GeneralAuditWSf87b2e1(models.Model):
         store=True,
     )
     link_4_state = fields.Selection(
+        string="State (RA.150.4)",
         related="link_4_id.state",
     )
     link_4_conclusion_id = fields.Many2one(
+        string="Conclusion (RA.150.4)",
         related="link_4_id.conclusion_id",
     )
 
@@ -179,9 +187,11 @@ class GeneralAuditWSf87b2e1(models.Model):
     #     store=True,
     # )
     # link_5_state = fields.Selection(
+    #     string="State (RA.150.5)",
     #     related="link_5_id.state",
     # )
     # link_5_conclusion_id = fields.Many2one(
+    #     string="Conclusion (RA.150.5)",
     #     related="link_5_id.conclusion_id",
     # )
 
@@ -210,9 +220,11 @@ class GeneralAuditWSf87b2e1(models.Model):
         store=True,
     )
     link_6_state = fields.Selection(
+        string="State (RA.150.6)",
         related="link_6_id.state",
     )
     link_6_conclusion_id = fields.Many2one(
+        string="Conclusion (RA.150.6)",
         related="link_6_id.conclusion_id",
     )
 
@@ -241,9 +253,11 @@ class GeneralAuditWSf87b2e1(models.Model):
         store=True,
     )
     link_7_state = fields.Selection(
+        string="State (RA.150.7)",
         related="link_7_id.state",
     )
     link_7_conclusion_id = fields.Many2one(
+        string="Conclusion (RA.150.7)",
         related="link_7_id.conclusion_id",
     )
 
