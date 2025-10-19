@@ -45,7 +45,7 @@
                     <page name="inherent_risk" string="Inherent Risks">
                         <group
                             name="inherit_risk_1"
-                            string="Impact Factor"
+                            string="Standard Accounts Impacted by Factors"
                             colspan="4"
                             col="2"
                         >
@@ -65,6 +65,11 @@
                                     string="Regulation"
                                     widget="many2many_tags"
                                 />
+                                <field
+                                    name="fraud_impacted_account_type_ids"
+                                    string="Fraud"
+                                    widget="many2many_tags"
+                                />
                             </group>
                             <group name="inherent_risk_1_2" colspan="1" col="2">
                                 <field
@@ -80,6 +85,11 @@
                                 <field
                                     name="preparation_of_financial_statements_impacted_account_type_ids"
                                     string="Preparation of Financial Statements"
+                                    widget="many2many_tags"
+                                />
+                                <field
+                                    name="business_environment_impacted_account_type_ids"
+                                    string="Business Environment"
                                     widget="many2many_tags"
                                 />
                             </group>

@@ -84,3 +84,17 @@ class GeneralAuditWSc16abd7(models.Model):
         readonly=True,
         store=False,
     )
+    fraud_impacted_account_type_ids = fields.Many2many(
+        string="Standard Accounts Impacted by Fraud Risk",
+        comodel_name="client_account_type",
+        related="general_audit_id.fraud_impacted_account_type_ids",
+        readonly=True,
+        store=False,
+    )
+    business_environment_impacted_account_type_ids = fields.Many2many(
+        string="Standard Accounts Impacted by Business Environment",
+        comodel_name="client_account_type",
+        related="general_audit_id.business_environment_impacted_account_type_ids",
+        readonly=True,
+        store=False,
+    )
