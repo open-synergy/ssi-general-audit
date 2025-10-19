@@ -57,7 +57,7 @@ class GeneralAuditWSC0E0EECDetail(models.Model):
         relation="rel_general_audit_ws_c0e0eec_detail_2_account_type",
         column1="detail_id",
         column2="type_id",
-        required=True,
+        required=False,
         help=(
             "Standard account types related to this indicator. Used to link the assessment "
             "to relevant accounts."

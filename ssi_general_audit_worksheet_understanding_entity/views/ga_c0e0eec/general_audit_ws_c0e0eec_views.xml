@@ -45,9 +45,24 @@
                     <page name="detail" string="Details">
                         <field name="detail_ids">
                             <tree>
-                                <field name="category_id" />
-                                <field name="factor_id" />
+                                <field name="category_id" optional="hide" />
+                                <field name="factor_id" optional="hide" />
                                 <field name="indicator_id" />
+                                <field
+                                    name="tcgw"
+                                    string="TCGW Responses"
+                                    optional="show"
+                                />
+                                <field
+                                    name="management"
+                                    string="Management Responses"
+                                    optional="show"
+                                />
+                                <field
+                                    name="other"
+                                    string="Other Responses"
+                                    optional="show"
+                                />
                                 <field
                                     name="related_account_type_ids"
                                     widget="many2many_tags"
@@ -56,12 +71,15 @@
                             </tree>
                             <form>
                                 <group name="detail" colspan="4" col="2">
-                                    <field name="category_id" optional="hide" />
-                                    <field name="factor_id" optional="hide" />
+                                    <field name="category_id" invisible="1" />
+                                    <field name="factor_id" invisible="1" />
                                     <field name="indicator_id" />
-                                    <field name="tcgw" optional="show" />
-                                    <field name="management" optional="show" />
-                                    <field name="other" optional="show" />
+                                    <field name="tcgw" string="TCGW Responses" />
+                                    <field
+                                        name="management"
+                                        string="Management Responses"
+                                    />
+                                    <field name="other" string="Other Responses" />
                                     <field
                                         name="related_account_type_ids"
                                         widget="many2many_tags"

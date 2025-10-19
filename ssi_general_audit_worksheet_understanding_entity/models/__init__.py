@@ -4,7 +4,7 @@
 
 from . import (
     master,
-    f87b2e1,  # Understanding of The Entity and it's Environment
+    ga_f87b2e1,  # Understanding of The Entity and it's Environment
     ga_ddf034c,  # General Information and Legal Aspec
     ga_e78a3c6,  # Structure Organization and Responsibilities
     a13a30e,  # Understanding of Relevant Regulations
