@@ -1,7 +1,7 @@
 <?xml version='1.0' encoding='utf-8' ?>
-<odoo noupdate="1">
+<odoo>
     <record id="client_financial_ratio_1_f0ab3e10" model="client_financial_ratio">
-        <field name="sequence" eval="110" />
+        <field name="sequence" eval="10" />
         <field name="name">Current Ratio</field>
         <field name="code">/</field>
         <field name="category">liquidity</field>
@@ -22,7 +22,7 @@ if account_group["T003"]["end_period"]:
     </record>
 
     <record id="client_financial_ratio_2_30a38c23" model="client_financial_ratio">
-        <field name="sequence" eval="120" />
+        <field name="sequence" eval="20" />
         <field name="name">Cash Ratio</field>
         <field name="code">/</field>
         <field name="category">liquidity</field>
@@ -44,7 +44,7 @@ if account_group["T003"]["end_period"]:
     </record>
 
     <record id="client_financial_ratio_3_475786bf" model="client_financial_ratio">
-        <field name="sequence" eval="120" />
+        <field name="sequence" eval="30" />
         <field name="name">Quick Ratio</field>
         <field name="code">/</field>
         <field name="category">liquidity</field>
@@ -70,14 +70,18 @@ if account_group["T003"]["previous"]:
 if account_group["T003"]["end_period"]:
   result_end_period = (account_type.get("S111", {}).get("end_period", 0.0) + \
   account_type.get("S112", {}).get("end_period", 0.0) + \
-  account_type.get("S114", {}).get("end_period", 0.0)) / account_group["T003"]["end_period"]</field>
+  account_type.get("S114", {}).get("end_period", 0.0)) / account_group["T003"]["end_period"]
+      </field>
     </record>
+
     <record id="client_financial_ratio_4_b8515746" model="client_financial_ratio">
-        <field name="sequence" eval="120" />
+        <field name="sequence" eval="40" />
         <field name="name">Inventory Turnover</field>
         <field name="code">/</field>
         <field name="category">activity</field>
-        <field name="python_code">result_extrapolation = result_end_period = 0.0
+        <field
+            name="python_code"
+        >result_extrapolation = result_interim = result_previous = result_end_period = 0.0
 
 if account_group["T003"]["extrapolation"]:
   result_extrapolation = account_group["T011"]["extrapolation"] / account_type["S116"]["extrapolation_avg"]
@@ -87,7 +91,7 @@ if account_group["T003"]["end_period"]:
     </record>
 
     <record id="client_financial_ratio_5_7e888232" model="client_financial_ratio">
-        <field name="sequence" eval="120" />
+        <field name="sequence" eval="50" />
         <field name="name">Trade Receivable Turnover</field>
         <field name="code">/</field>
         <field name="category">activity</field>
@@ -95,17 +99,15 @@ if account_group["T003"]["end_period"]:
             name="python_code"
         >result_extrapolation = result_interim = result_previous = result_end_period = 0.0
 
-#if account_group["T003"]["extrapolation"]:
-#  result_extrapolation = account_group["T009"]["extrapolation"] / account_type["S112"]["extrapolation_avg"]
+if account_group["T003"]["extrapolation"]:
+  result_extrapolation = account_group["T009"]["extrapolation"] / account_type["S112"]["extrapolation_avg"]
 
 if account_group["T003"]["end_period"]:
-  result_end_period = account_group["T009"]["end_period"] / account_type["S112"]["end_period_avg"]
-
-#if account_group["T003"]["previous"]:
-# result_previous = account_group["T009"]["previous"] / account_type["S112"]["previous_avg"]</field>
+  result_end_period = account_group["T009"]["end_period"] / account_type["S112"]["end_period_avg"]</field>
     </record>
+
     <record id="client_financial_ratio_6_f65ecc52" model="client_financial_ratio">
-        <field name="sequence" eval="120" />
+        <field name="sequence" eval="60" />
         <field name="name">Total Asset Turnover</field>
         <field name="code">/</field>
         <field name="category">activity</field>
@@ -113,18 +115,15 @@ if account_group["T003"]["end_period"]:
             name="python_code"
         >result_extrapolation = result_interim = result_previous = result_end_period = 0.0
 
-#if account_group["T003"]["extrapolation"]:
-#  result_extrapolation = account_group["T009"]["extrapolation"] / account_type["S112"]["extrapolation_avg"]
+if account_group["T003"]["extrapolation"]:
+  result_extrapolation = account_group["T009"]["extrapolation"] / computation["T001"]["extrapolation_avg"]
 
 if account_group["T003"]["end_period"]:
-  result_end_period = (account_group["T009"]["end_period"]+account_group["T010"]["end_period"]) / ((account_group["T001"]["end_period"]+account_group["T002"]["end_period"]+account_group["T001"]["previous"]+account_group["T002"]["previous"])/2)
-
-#if account_group["T003"]["previous"]:
- # result_previous = account_group["T009"]["previous"] / account_type["S112"]["previous_avg"]</field>
+  result_end_period = account_group["T009"]["end_period"] / computation["T001"]["end_period_avg"]</field>
     </record>
 
     <record id="client_financial_ratio_7_d95b93ed" model="client_financial_ratio">
-        <field name="sequence" eval="120" />
+        <field name="sequence" eval="70" />
         <field name="name">Working Capital Turnover</field>
         <field name="code">/</field>
         <field name="category">activity</field>
@@ -133,19 +132,13 @@ if account_group["T003"]["end_period"]:
         >result_extrapolation = result_interim = result_previous = result_end_period = 0.0
 
 if account_group["T003"]["extrapolation"]:
-  result_extrapolation = account_type["S111"]["extrapolation"] / account_group["T003"]["extrapolation"]
-
-if account_group["T003"]["interim"]:
-  result_interim = account_type["S111"]["interim"] / account_group["T003"]["interim"]
-
-if account_group["T003"]["previous"]:
-  result_previous = account_type["S111"]["previous"] / account_group["T003"]["previous"]
+  result_extrapolation = account_group["T009"]["extrapolation"] / computation["T009"]["extrapolation_avg"]
 
 if account_group["T003"]["end_period"]:
-  result_end_period = account_type["S111"]["end_period"] / account_group["T003"]["end_period"]</field>
+  result_end_period = account_group["T009"]["end_period"] / computation["T009"]["end_period_avg"]</field>
     </record>
     <record id="client_financial_ratio_8_86b7a032" model="client_financial_ratio">
-        <field name="sequence" eval="120" />
+        <field name="sequence" eval="80" />
         <field name="name">Trade Payable Turnover</field>
         <field name="code">/</field>
         <field name="category">activity</field>
@@ -154,19 +147,14 @@ if account_group["T003"]["end_period"]:
         >result_extrapolation = result_interim = result_previous = result_end_period = 0.0
 
 if account_group["T003"]["extrapolation"]:
-  result_extrapolation = account_type["S111"]["extrapolation"] / account_group["T003"]["extrapolation"]
-
-if account_group["T003"]["interim"]:
-  result_interim = account_type["S111"]["interim"] / account_group["T003"]["interim"]
-
-if account_group["T003"]["previous"]:
-  result_previous = account_type["S111"]["previous"] / account_group["T003"]["previous"]
+  result_extrapolation = account_group["T011"]["extrapolation"] / account_type["S211"]["extrapolation_avg"]
 
 if account_group["T003"]["end_period"]:
-  result_end_period = account_type["S111"]["end_period"] / account_group["T003"]["end_period"]</field>
+  result_end_period = account_group["T011"]["end_period"] / account_type["S211"]["end_period_avg"]</field>
     </record>
+
     <record id="client_financial_ratio_9_4f4f8749" model="client_financial_ratio">
-        <field name="sequence" eval="120" />
+        <field name="sequence" eval="90" />
         <field name="name">Days inventory Outstanding</field>
         <field name="code">/</field>
         <field name="category">activity</field>
@@ -175,19 +163,14 @@ if account_group["T003"]["end_period"]:
         >result_extrapolation = result_interim = result_previous = result_end_period = 0.0
 
 if account_group["T003"]["extrapolation"]:
-  result_extrapolation = account_type["S111"]["extrapolation"] / account_group["T003"]["extrapolation"]
-
-if account_group["T003"]["interim"]:
-  result_interim = account_type["S111"]["interim"] / account_group["T003"]["interim"]
-
-if account_group["T003"]["previous"]:
-  result_previous = account_type["S111"]["previous"] / account_group["T003"]["previous"]
+  result_extrapolation = 365 / (account_group["T011"]["extrapolation"] / account_type["S116"]["extrapolation_avg"])
 
 if account_group["T003"]["end_period"]:
-  result_end_period = account_type["S111"]["end_period"] / account_group["T003"]["end_period"]</field>
+  result_end_period = 365 / (account_group["T011"]["end_period"] / account_type["S116"]["end_period_avg"])</field>
     </record>
+
     <record id="client_financial_ratio_10_2666943a" model="client_financial_ratio">
-        <field name="sequence" eval="120" />
+        <field name="sequence" eval="100" />
         <field name="name">Days Trade Receivable Outstanding</field>
         <field name="code">/</field>
         <field name="category">activity</field>
@@ -196,19 +179,13 @@ if account_group["T003"]["end_period"]:
         >result_extrapolation = result_interim = result_previous = result_end_period = 0.0
 
 if account_group["T003"]["extrapolation"]:
-  result_extrapolation = account_type["S111"]["extrapolation"] / account_group["T003"]["extrapolation"]
-
-if account_group["T003"]["interim"]:
-  result_interim = account_type["S111"]["interim"] / account_group["T003"]["interim"]
-
-if account_group["T003"]["previous"]:
-  result_previous = account_type["S111"]["previous"] / account_group["T003"]["previous"]
+  result_extrapolation = 365 / (account_group["T009"]["extrapolation"] / account_type["S112"]["extrapolation_avg"])
 
 if account_group["T003"]["end_period"]:
-  result_end_period = account_type["S111"]["end_period"] / account_group["T003"]["end_period"]</field>
+  result_end_period = 365 / (account_group["T009"]["end_period"] / account_type["S112"]["end_period_avg"])</field>
     </record>
     <record id="client_financial_ratio_11_f39a4f43" model="client_financial_ratio">
-        <field name="sequence" eval="120" />
+        <field name="sequence" eval="110" />
         <field name="name">Days Trade Payable Outstanding</field>
         <field name="code">/</field>
         <field name="category">activity</field>
@@ -217,17 +194,12 @@ if account_group["T003"]["end_period"]:
         >result_extrapolation = result_interim = result_previous = result_end_period = 0.0
 
 if account_group["T003"]["extrapolation"]:
-  result_extrapolation = account_type["S111"]["extrapolation"] / account_group["T003"]["extrapolation"]
-
-if account_group["T003"]["interim"]:
-  result_interim = account_type["S111"]["interim"] / account_group["T003"]["interim"]
-
-if account_group["T003"]["previous"]:
-  result_previous = account_type["S111"]["previous"] / account_group["T003"]["previous"]
+  result_extrapolation = 365 / (account_group["T011"]["extrapolation"] / account_type["S211"]["extrapolation_avg"])
 
 if account_group["T003"]["end_period"]:
-  result_end_period = account_type["S111"]["end_period"] / account_group["T003"]["end_period"]</field>
+  result_end_period = 365 / (account_group["T011"]["end_period"] / account_type["S211"]["end_period_avg"])</field>
     </record>
+
     <record id="client_financial_ratio_12_4313b355" model="client_financial_ratio">
         <field name="sequence" eval="120" />
         <field name="name">Net Operating Cycle</field>
@@ -238,15 +210,121 @@ if account_group["T003"]["end_period"]:
         >result_extrapolation = result_interim = result_previous = result_end_period = 0.0
 
 if account_group["T003"]["extrapolation"]:
-  result_extrapolation = account_type["S111"]["extrapolation"] / account_group["T003"]["extrapolation"]
-
-if account_group["T003"]["interim"]:
-  result_interim = account_type["S111"]["interim"] / account_group["T003"]["interim"]
-
-if account_group["T003"]["previous"]:
-  result_previous = account_type["S111"]["previous"] / account_group["T003"]["previous"]
+  result_extrapolation = 365 / (account_group["T009"]["extrapolation"] / computation["T009"]["extrapolation_avg"])
 
 if account_group["T003"]["end_period"]:
-  result_end_period = account_type["S111"]["end_period"] / account_group["T003"]["end_period"]</field>
+  result_end_period = 365 / (account_group["T009"]["end_period"] / computation["T009"]["end_period_avg"])</field>
+    </record>
+
+    <record id="client_financial_ratio_13_ee728e86" model="client_financial_ratio">
+        <field name="sequence" eval="130" />
+        <field name="name">Debt Equity Ratio</field>
+        <field name="code">/</field>
+        <field name="category">solvency</field>
+        <field
+            name="python_code"
+        >result_extrapolation = result_interim = result_previous = result_end_period = 0.0
+
+if account_group["T003"]["extrapolation"]:
+  result_extrapolation = computation["T007"]["extrapolation"] / computation["T002"]["extrapolation"]
+
+if account_group["T003"]["end_period"]:
+  result_end_period = computation["T007"]["end_period"] / computation["T002"]["end_period"]</field>
+    </record>
+
+    <record id="client_financial_ratio_14_523c0216" model="client_financial_ratio">
+        <field name="sequence" eval="140" />
+        <field name="name">Leverage Ratio</field>
+        <field name="code">/</field>
+        <field name="category">solvency</field>
+        <field
+            name="python_code"
+        >result_extrapolation = result_interim = result_previous = result_end_period = 0.0
+
+if account_group["T003"]["extrapolation"]:
+  result_extrapolation = computation["T001"]["extrapolation"] / computation["T002"]["extrapolation"]
+
+if account_group["T003"]["end_period"]:
+  result_end_period = computation["T001"]["end_period"] / computation["T002"]["end_period"]</field>
+    </record>
+
+    <record id="client_financial_ratio_15_99f866a5" model="client_financial_ratio">
+        <field name="sequence" eval="150" />
+        <field name="name">Coverage Ratio</field>
+        <field name="code">/</field>
+        <field name="category">solvency</field>
+        <field
+            name="python_code"
+        >result_extrapolation = result_interim = result_previous = result_end_period = 0.0
+
+if account_group["T003"]["extrapolation"]:
+  result_extrapolation = computation["T005"]["extrapolation"] / account_type["S531"]["extrapolation"]
+
+if account_group["T003"]["end_period"]:
+  result_end_period = computation["T005"]["end_period"] / account_type["S531"]["end_period"]</field>
+    </record>
+
+    <record id="client_financial_ratio_16_e9d4c603" model="client_financial_ratio">
+        <field name="sequence" eval="160" />
+        <field name="name">Gross Profit Margin</field>
+        <field name="code">/</field>
+        <field name="category">profitability</field>
+        <field
+            name="python_code"
+        >result_extrapolation = result_interim = result_previous = result_end_period = 0.0
+
+if account_group["T003"]["extrapolation"]:
+  result_extrapolation = (account_group["T009"]["extrapolation"] - account_group["T011"]["extrapolation"]) / account_group["T009"]["extrapolation"]
+
+if account_group["T003"]["end_period"]:
+  result_end_period = (account_group["T009"]["end_period"] - account_group["T011"]["end_period"]) / account_group["T009"]["end_period"]</field>
+    </record>
+
+    <record id="client_financial_ratio_17_2073110" model="client_financial_ratio">
+        <field name="sequence" eval="170" />
+        <field name="name">Net Profit Margin</field>
+        <field name="code">/</field>
+        <field name="category">profitability</field>
+        <field
+            name="python_code"
+        >result_extrapolation = result_interim = result_previous = result_end_period = 0.0
+
+if account_group["T003"]["extrapolation"]:
+  result_extrapolation = computation["T010"]["extrapolation"] / computation["T003"]["extrapolation"]
+
+if account_group["T003"]["end_period"]:
+  result_end_period = computation["T010"]["end_period"] / computation["T003"]["end_period"]</field>
+    </record>
+
+    <record id="client_financial_ratio_18_b475fb31" model="client_financial_ratio">
+        <field name="sequence" eval="180" />
+        <field name="name">Return on Asset</field>
+        <field name="code">/</field>
+        <field name="category">profitability</field>
+        <field
+            name="python_code"
+        >result_extrapolation = result_interim = result_previous = result_end_period = 0.0
+
+if account_group["T003"]["extrapolation"]:
+  result_extrapolation = computation["T010"]["extrapolation"] / computation["T001"]["extrapolation_avg"]
+
+if account_group["T003"]["end_period"]:
+  result_end_period = computation["T010"]["end_period"] / computation["T001"]["end_period_avg"]</field>
+    </record>
+
+    <record id="client_financial_ratio_19_89777c92" model="client_financial_ratio">
+        <field name="sequence" eval="190" />
+        <field name="name">Return on Equity</field>
+        <field name="code">/</field>
+        <field name="category">profitability</field>
+        <field
+            name="python_code"
+        >result_extrapolation = result_interim = result_previous = result_end_period = 0.0
+
+if account_group["T003"]["extrapolation"]:
+  result_extrapolation = computation["T010"]["extrapolation"] / computation["T002"]["extrapolation_avg"]
+
+if account_group["T003"]["end_period"]:
+  result_end_period = computation["T005"]["end_period"] / computation["T002"]["end_period_avg"]</field>
     </record>
 </odoo>
