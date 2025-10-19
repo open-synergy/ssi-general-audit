@@ -67,3 +67,20 @@ class GeneralAuditWSc16abd7(models.Model):
         readonly=True,
         store=False,
     )
+    regulation_impacted_account_type_ids = fields.Many2many(
+        string="Standard Accounts Impacted by Relevant Regulations",
+        comodel_name="client_account_type",
+        related="general_audit_id.regulation_impacted_account_type_ids",
+        readonly=True,
+        store=False,
+    )
+    preparation_of_financial_statements_impacted_account_type_ids = fields.Many2many(
+        string="Standard Accounts Impacted by Preparation of Financial Statements",
+        comodel_name="client_account_type",
+        related=(
+            "general_audit_id."
+            "preparation_of_financial_statements_impacted_account_type_ids"
+        ),
+        readonly=True,
+        store=False,
+    )
