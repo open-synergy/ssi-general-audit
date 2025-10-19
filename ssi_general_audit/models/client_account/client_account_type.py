@@ -10,7 +10,7 @@ class ClientAccountType(models.Model):
     _inherit = ["mixin.master_data"]
     _description = "Client Account Type"
     _order = "sequence, id"
-    _show_code_on_display_name = True
+    _show_code_on_display_name = False
 
     group_id = fields.Many2one(
         string="Client Account Group",
