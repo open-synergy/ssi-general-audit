@@ -230,10 +230,13 @@ if account_group["T003"]["end_period"]:
         >result_extrapolation = result_interim = result_previous = result_end_period = 0.0
 
 if account_group["T003"]["extrapolation"]:
-  result_extrapolation = computation["T007"]["extrapolation"] / computation["T002"]["extrapolation"]
+  result_extrapolation = computation["T007"]["extrapolation"] / computation["T002"]["extrapolation"] * -1
 
 if account_group["T003"]["end_period"]:
-  result_end_period = computation["T007"]["end_period"] / computation["T002"]["end_period"]</field>
+  result_end_period = computation["T007"]["end_period"] / computation["T002"]["end_period"] *-1
+
+if account_group["T003"]["previous"]:
+  result_previous = computation["T007"]["previous"] / computation["T002"]["previous"] *-1</field>
     </record>
 
     <record id="client_financial_ratio_14_523c0216" model="client_financial_ratio">
@@ -249,7 +252,10 @@ if account_group["T003"]["extrapolation"]:
   result_extrapolation = computation["T001"]["extrapolation"] / computation["T002"]["extrapolation"]
 
 if account_group["T003"]["end_period"]:
-  result_end_period = computation["T001"]["end_period"] / computation["T002"]["end_period"]</field>
+  result_end_period = computation["T001"]["end_period"] / computation["T002"]["end_period"]
+
+if account_group["T003"]["previous"]:
+  result_previous = computation["T001"]["previous"] / computation["T002"]["previous"]</field>
     </record>
 
     <record id="client_financial_ratio_15_99f866a5" model="client_financial_ratio">
@@ -265,7 +271,10 @@ if account_group["T003"]["extrapolation"]:
   result_extrapolation = computation["T005"]["extrapolation"] / account_type["S531"]["extrapolation"]
 
 if account_group["T003"]["end_period"]:
-  result_end_period = computation["T005"]["end_period"] / account_type["S531"]["end_period"]</field>
+  result_end_period = computation["T005"]["end_period"] / account_type["S531"]["end_period"]
+
+if account_group["T003"]["previous"]:
+  result_previous = computation["T005"]["previous"] / account_type["S531"]["previous"]</field>
     </record>
 
     <record id="client_financial_ratio_16_e9d4c603" model="client_financial_ratio">
@@ -281,7 +290,10 @@ if account_group["T003"]["extrapolation"]:
   result_extrapolation = (account_group["T009"]["extrapolation"] - account_group["T011"]["extrapolation"]) / account_group["T009"]["extrapolation"]
 
 if account_group["T003"]["end_period"]:
-  result_end_period = (account_group["T009"]["end_period"] - account_group["T011"]["end_period"]) / account_group["T009"]["end_period"]</field>
+  result_end_period = (account_group["T009"]["end_period"] - account_group["T011"]["end_period"]) / account_group["T009"]["end_period"]
+
+if account_group["T003"]["previous"]:
+  result_previous = (account_group["T009"]["previous"] - account_group["T011"]["previous"]) / account_group["T009"]["previous"]</field>
     </record>
 
     <record id="client_financial_ratio_17_2073110" model="client_financial_ratio">
@@ -297,7 +309,10 @@ if account_group["T003"]["extrapolation"]:
   result_extrapolation = computation["T010"]["extrapolation"] / computation["T003"]["extrapolation"]
 
 if account_group["T003"]["end_period"]:
-  result_end_period = computation["T010"]["end_period"] / computation["T003"]["end_period"]</field>
+  result_end_period = computation["T010"]["end_period"] / computation["T003"]["end_period"]
+
+if account_group["T003"]["previous"]:
+  result_previous = computation["T010"]["previous"] / computation["T003"]["previous"]</field>
     </record>
 
     <record id="client_financial_ratio_18_b475fb31" model="client_financial_ratio">
