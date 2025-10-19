@@ -103,11 +103,38 @@ class GeneralAuditWSd4289e4(models.Model):
         for record in self:
             record._recompute_computation()
 
+    def action_reload_ratio(self):
+        for record in self:
+            record._reload_ratio()
+            record._recompute_computation()
+
+    def _reload_ratio(self):
+        self.ensure_one()
+        all_ratios = self.env["client_financial_ratio"].search([])
+        existing_ratios = self.ratio_ids.mapped("financial_ratio_id")
+
+        to_be_added = all_ratios - existing_ratios
+        to_be_removed = existing_ratios - all_ratios
+
+        for ratio in to_be_removed:
+            line = self.ratio_ids.filtered(lambda r: r.financial_ratio_id == ratio)
+            line.unlink()
+
+        for ratio in to_be_added:
+            self.env["general_audit_ws_d4289e4.ratio"].create(
+                {
+                    "worksheet_id": self.id,
+                    "financial_ratio_id": ratio.id,
+                }
+            )
+
     @api.onchange(
         "base_amount_source",
+        "general_audit_id",
     )
     def onchange_recompute_ratio_ids(self):
-        self._recompute_computation()
+        if self.general_audit_id:
+            self._recompute_computation()
 
     @ssi_decorator.post_confirm_action()
     def _recompute_computation(self):

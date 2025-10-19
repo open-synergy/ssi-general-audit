@@ -47,11 +47,21 @@
                             <field name="base_amount_source" />
                         </group>
                         <button
+                            name="action_reload_ratio"
+                            type="object"
+                            string="Reload"
+                            icon="fa-refresh"
+                            class="oe_highlight"
+                            attrs="{'invisible': [('state', 'in', ['done','cancel'])]}"
+                            style="margin-right:4px"
+                        />
+                        <button
                             name="action_compute_ratio"
                             type="object"
                             string="Compute"
                             icon="fa-calculator"
                             class="oe_highlight"
+                            attrs="{'invisible': [('state', 'in', ['done','cancel'])]}"
                         />
                         <field name="ratio_ids">
                             <tree
@@ -60,9 +70,9 @@
                                 delete="false"
                                 create="false"
                             >
-                                <field name="financial_ratio_id" readonly="1"/>
+                                <field name="financial_ratio_id" readonly="1" />
                                 <field name="category" />
-                                <field name="current_amount" readonly="1"/>
+                                <field name="current_amount" readonly="1" />
                                 <field
                                     name="extrapolation_amount"
                                     string="Extrapolation"
