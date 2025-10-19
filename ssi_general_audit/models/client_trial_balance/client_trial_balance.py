@@ -144,6 +144,18 @@ class ClientTrialBalance(models.Model):
         readonly=True,
         help="Interim period end date.",
     )
+    tb_date_start = fields.Date(
+        string="Ttrial Balance Start Date",
+        compute="_compute_tb_date",
+        store=True,
+        help="Trial balance period start date based on type.",
+    )
+    tb_date_end = fields.Date(
+        string="Trial Balance End Date",
+        compute="_compute_tb_date",
+        store=True,
+        help="Trial balance period end date based on type.",
+    )
     need_previous = fields.Boolean(
         related="general_audit_id.need_previous",
         store=True,
@@ -192,6 +204,29 @@ class ClientTrialBalance(models.Model):
         states={"draft": [("readonly", False)]},
         help="Identify whether this TB is for previous, interim, or end period.",
     )
+
+    @api.depends(
+        "trial_balance_type",
+        "date_start",
+        "date_end",
+        "interim_date_start",
+        "interim_date_end",
+        "previous_date_start",
+        "previous_date_end",
+    )
+    def _compute_tb_date(self):
+        for record in self:
+            record.tb_date_start = False
+            record.tb_date_end = False
+            if record.trial_balance_type == "home":
+                record.tb_date_start = record.date_start
+                record.tb_date_end = record.date_end
+            elif record.trial_balance_type == "interim":
+                record.tb_date_start = record.interim_date_start
+                record.tb_date_end = record.interim_date_end
+            elif record.trial_balance_type == "previous":
+                record.tb_date_start = record.previous_date_start
+                record.tb_date_end = record.previous_date_end
 
     @api.depends(
         "account_type_set_id",
