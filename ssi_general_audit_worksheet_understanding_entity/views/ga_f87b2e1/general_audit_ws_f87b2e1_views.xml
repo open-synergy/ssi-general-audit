@@ -131,15 +131,23 @@
                             </div>
                             <field name="link_4_conclusion_id" string="Conclusion" />
                         </group>
-                        <!-- <group name="activity_5" string="Understanding of The Business Environment">
-                            <label for="link_5_id" string="# Worksheet" />
-                            <div class="o_row">
-                                <field name="link_5_id" class="oe_inline" force_save="1"/>
-                                <label for="link_5_state" string="State" style="font-weight: bold;" />
-                                <field name="link_5_state" class="oe_inline" />
-                            </div>
-                            <field name="link_5_conclusion_id" string="Conclusion" />
-                        </group> -->
+                        <group
+                            name="activity_5"
+                            string="Understanding of The Business Environment"
+                        >
+                            <field
+                                name="link_5_ids"
+                                widget="many2many_tree"
+                                nolabel="1"
+                            >
+                                <tree>
+                                    <field name="name" />
+                                    <field name="business_environment_id" />
+                                    <field name="state" />
+                                    <field name="conclusion_id" />
+                                </tree>
+                            </field>
+                        </group>
                         <group name="activity_6" string="Going Concern Analysis">
                             <label for="link_6_id" string="# Worksheet" />
                             <div class="o_row">

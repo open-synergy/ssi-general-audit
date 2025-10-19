@@ -53,14 +53,26 @@ class GeneralAuditWSf87b2e1(models.Model):
         compute_sudo=True,
         compute="_compute_link_1_id",
         store=True,
+        help=(
+            "Link to worksheet RA.150.1 (General Information and Legal Aspect) for this "
+            "General Audit. Automatically computed and stored for quick access."
+        ),
     )
     link_1_state = fields.Selection(
         string="State (RA.150.1)",
         related="link_1_id.state",
+        help=(
+            "Workflow state of the linked RA.150.1 worksheet. "
+            "Read-only and follows the linked record."
+        ),
     )
     link_1_conclusion_id = fields.Many2one(
         string="Conclusion (RA.150.1)",
         related="link_1_id.conclusion_id",
+        help=(
+            "Conclusion selected on the RA.150.1 worksheet. "
+            "Read-only, mirrors the linked record."
+        ),
     )
 
     # Structure Organization and Responsibilities
@@ -86,14 +98,26 @@ class GeneralAuditWSf87b2e1(models.Model):
         compute_sudo=True,
         compute="_compute_link_2_id",
         store=True,
+        help=(
+            "Link to worksheet RA.150.2 (Structure Organization and Responsibilities) "
+            "for this General Audit. Automatically computed and stored."
+        ),
     )
     link_2_state = fields.Selection(
         string="State (RA.150.2)",
         related="link_2_id.state",
+        help=(
+            "Workflow state of the linked RA.150.2 worksheet. "
+            "Read-only and follows the linked record."
+        ),
     )
     link_2_conclusion_id = fields.Many2one(
         string="Conclusion (RA.150.2)",
         related="link_2_id.conclusion_id",
+        help=(
+            "Conclusion from the RA.150.2 worksheet. "
+            "Read-only, mirrors the linked record."
+        ),
     )
 
     # Main Business Activity Process
@@ -119,14 +143,26 @@ class GeneralAuditWSf87b2e1(models.Model):
         compute_sudo=True,
         compute="_compute_link_3_id",
         store=True,
+        help=(
+            "Link to worksheet RA.150.3 (Main Business Activity Process) for this "
+            "General Audit. Automatically computed and stored."
+        ),
     )
     link_3_state = fields.Selection(
         string="State (RA.150.3)",
         related="link_3_id.state",
+        help=(
+            "Workflow state of the linked RA.150.3 worksheet. "
+            "Read-only and follows the linked record."
+        ),
     )
     link_3_conclusion_id = fields.Many2one(
         string="Conclusion (RA.150.3)",
         related="link_3_id.conclusion_id",
+        help=(
+            "Conclusion from the RA.150.3 worksheet. "
+            "Read-only, mirrors the linked record."
+        ),
     )
 
     # Understanding of Relevant Regulations
@@ -152,48 +188,57 @@ class GeneralAuditWSf87b2e1(models.Model):
         compute_sudo=True,
         compute="_compute_link_4_id",
         store=True,
+        help=(
+            "Link to worksheet RA.150.4 (Understanding of Relevant Regulations) for this "
+            "General Audit. Automatically computed and stored."
+        ),
     )
     link_4_state = fields.Selection(
         string="State (RA.150.4)",
         related="link_4_id.state",
+        help=(
+            "Workflow state of the linked RA.150.4 worksheet. "
+            "Read-only and follows the linked record."
+        ),
     )
     link_4_conclusion_id = fields.Many2one(
         string="Conclusion (RA.150.4)",
         related="link_4_id.conclusion_id",
+        help=(
+            "Conclusion from the RA.150.4 worksheet. "
+            "Read-only, mirrors the linked record."
+        ),
     )
 
     # Understanding of the business environment
     # LINK - 5 bdcdfc5 (RA.150.5)
-    # @api.depends(
-    #     "general_audit_id",
-    # )
-    # def _compute_link_5_id(self):
-    #     for record in self:
-    #         result = False
-    #         obj = self.env["general_audit_ws_bdcdfc5"]
-    #         criteria = [
-    #             ("general_audit_id", "=", record.general_audit_id.id),
-    #         ]
-    #         link_5_ids = obj.search(criteria)
-    #         if link_5_ids:
-    #             result = link_5_ids.id
-    #         record.link_5_id = result
+    @api.depends(
+        "general_audit_id",
+    )
+    def _compute_link_5_ids(self):
+        for record in self:
+            result = False
+            obj = self.env["general_audit_ws_bdcdfc5"]
+            criteria = [
+                ("general_audit_id", "=", record.general_audit_id.id),
+            ]
+            link_5_ids = obj.search(criteria)
+            if link_5_ids:
+                result = link_5_ids.ids
+            record.link_5_ids = result
 
-    # link_5_id = fields.Many2one(
-    #     string="RA.150.5",
-    #     comodel_name="general_audit_ws_bdcdfc5",
-    #     compute_sudo=True,
-    #     compute="_compute_link_5_id",
-    #     store=True,
-    # )
-    # link_5_state = fields.Selection(
-    #     string="State (RA.150.5)",
-    #     related="link_5_id.state",
-    # )
-    # link_5_conclusion_id = fields.Many2one(
-    #     string="Conclusion (RA.150.5)",
-    #     related="link_5_id.conclusion_id",
-    # )
+    link_5_ids = fields.Many2many(
+        string="RA.150.5",
+        comodel_name="general_audit_ws_bdcdfc5",
+        compute_sudo=True,
+        compute="_compute_link_5_ids",
+        store=True,
+        help=(
+            "Collection of all RA.150.5 (Understanding of the Business Environment) "
+            "worksheets linked to this General Audit. Automatically computed; use it to "
+            "navigate to each detailed worksheet."
+        ),
+    )
 
     # Going Concern Analysis
     # LINK - 6 c0d0898 (RA.150.6)
@@ -218,14 +263,26 @@ class GeneralAuditWSf87b2e1(models.Model):
         compute_sudo=True,
         compute="_compute_link_6_id",
         store=True,
+        help=(
+            "Link to worksheet RA.150.6 (Going Concern Analysis) for this General Audit. "
+            "Automatically computed and stored."
+        ),
     )
     link_6_state = fields.Selection(
         string="State (RA.150.6)",
         related="link_6_id.state",
+        help=(
+            "Workflow state of the linked RA.150.6 worksheet. "
+            "Read-only and follows the linked record."
+        ),
     )
     link_6_conclusion_id = fields.Many2one(
         string="Conclusion (RA.150.6)",
         related="link_6_id.conclusion_id",
+        help=(
+            "Conclusion from the RA.150.6 worksheet. "
+            "Read-only, mirrors the linked record."
+        ),
     )
 
     # Understanding of Preparation of Financial Statements
@@ -251,14 +308,26 @@ class GeneralAuditWSf87b2e1(models.Model):
         compute_sudo=True,
         compute="_compute_link_7_id",
         store=True,
+        help=(
+            "Link to worksheet RA.150.7 (Understanding of Preparation of Financial "
+            "Statements) for this General Audit. Automatically computed and stored."
+        ),
     )
     link_7_state = fields.Selection(
         string="State (RA.150.7)",
         related="link_7_id.state",
+        help=(
+            "Workflow state of the linked RA.150.7 worksheet. "
+            "Read-only and follows the linked record."
+        ),
     )
     link_7_conclusion_id = fields.Many2one(
         string="Conclusion (RA.150.7)",
         related="link_7_id.conclusion_id",
+        help=(
+            "Conclusion from the RA.150.7 worksheet. "
+            "Read-only, mirrors the linked record."
+        ),
     )
 
     # Fraud Factor Analysis
@@ -284,10 +353,22 @@ class GeneralAuditWSf87b2e1(models.Model):
         compute_sudo=True,
         compute="_compute_link_8_id",
         store=True,
+        help=(
+            "Link to worksheet RA.150.8 (Fraud Factor Analysis) for this General Audit. "
+            "Automatically computed and stored."
+        ),
     )
     link_8_state = fields.Selection(
         related="link_8_id.state",
+        help=(
+            "Workflow state of the linked RA.150.8 worksheet. "
+            "Read-only and follows the linked record."
+        ),
     )
     link_8_conclusion_id = fields.Many2one(
         related="link_8_id.conclusion_id",
+        help=(
+            "Conclusion from the RA.150.8 worksheet. "
+            "Read-only, mirrors the linked record."
+        ),
     )
