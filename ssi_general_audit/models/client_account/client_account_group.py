@@ -12,7 +12,7 @@ class ClientAccountGroup(models.Model):
     ]
     _description = "Client Account Group"
     _order = "sequence, id"
-    _show_code_on_display_name = True
+    _show_code_on_display_name = False
 
     sequence = fields.Integer(
         string="Sequence",
