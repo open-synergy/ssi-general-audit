@@ -54,10 +54,13 @@
                 </xpath>
                 <xpath expr="//page[1]" position="before">
                     <page name="accounts" string="Accounts">
+                        <group name="account_1" colspan="4" col="2">
+                            <field name="balance_type" />
+                        </group>
                         <button
                             name="action_reload_account"
                             type="object"
-                            string="Reload Accounts"
+                            string="Reload"
                             class="oe_highlight"
                             icon="fa-refresh"
                             attrs="{'invisible': [('state', 'not in', ['draft','open'])]}"
