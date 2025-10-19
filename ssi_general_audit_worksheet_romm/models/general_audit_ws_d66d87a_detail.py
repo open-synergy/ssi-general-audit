@@ -43,6 +43,21 @@ class GeneralAuditWSd66d87aDetail(models.Model):
         store=True,
         help=("Currency derived from the standard detail; stored for reporting."),
     )
+
+    # Overall Risk Assesment
+    fraud_impacted = fields.Boolean(
+        string="Impacted By Fraud",
+        related="standard_detail_id.fraud_impacted",
+        store=True,
+        help=("Indicates if the standard detail is impacted by fraud risk factors."),
+    )
+    inherent_risk = fields.Selection(
+        string="Inherent Risk",
+        related="standard_detail_id.inherent_risk",
+        store=True,
+        help=("Inherent risk level inherited from the standard detail."),
+    )
+
     pr_assersion_type_ids = fields.Many2many(
         string="Assersion Types on Presentation and Disclosure",
         related="standard_detail_id.pr_assersion_type_ids",

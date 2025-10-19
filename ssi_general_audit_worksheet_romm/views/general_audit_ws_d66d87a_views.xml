@@ -48,6 +48,16 @@
                                 <field name="standard_detail_id" invisible="1" />
                                 <field name="type_id" />
                                 <field
+                                    name="fraud_impacted"
+                                    string="Impacted By Fraud"
+                                    optional="show"
+                                />
+                                <field
+                                    name="inherent_risk"
+                                    string="Inherent Risk"
+                                    optional="show"
+                                />
+                                <field
                                     name="pr_assersion_type_ids"
                                     widget="many2many_tags"
                                     string="Assersion Types"
@@ -66,6 +76,21 @@
                                 <field name="planned_response_ye" string="Year End" />
                             </tree>
                             <form>
+                                <group
+                                    name="overall_risk_assesment"
+                                    string="Overall Risk Assessment"
+                                    colspan="4"
+                                    col="2"
+                                >
+                                    <field
+                                        name="fraud_impacted"
+                                        string="Impacted By Fraud"
+                                    />
+                                    <field
+                                        name="inherent_risk"
+                                        string="Inherent Risk"
+                                    />
+                                </group>
                                 <group name="detail_1" colspan="4" col="2">
                                     <field name="standard_detail_id" invisible="1" />
                                     <field name="type_id" />
