@@ -147,15 +147,24 @@
                             force_save="1"
                         />
                     </page>
-                    <page string="Computation" name="computations">
+                    <page string="Computations" name="computations">
                         <group name="computation_1">
                             <button
-                                name="action_recompute_computation"
-                                string="Computation"
+                                name="action_reload_computation"
+                                string="Reload"
                                 type="object"
-                                states="open"
+                                icon="fa-refresh"
+                                class="oe_highlight"
+                                style="margin-right:4px"
+                                attrs="{'invisible':[('state','not in',['done','cancel'])]}"
+                            />
+                            <button
+                                name="action_recompute_computation"
+                                string="Recompute"
+                                type="object"
                                 class="oe_highlight"
                                 icon="fa-calculator"
+                                attrs="{'invisible':[('state','not in',['done','cancel'])]}"
                             />
                         </group>
                         <field

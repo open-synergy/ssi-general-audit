@@ -414,8 +414,37 @@ class ClientTrialBalance(models.Model):
 
     def action_recompute_computation(self):
         for record in self.sudo():
-            record.onchange_computation_ids()
             record._recompute_computation()
+
+    def action_reload_computation(self):
+        for record in self.sudo():
+            record._reload_computation()
+            record._recompute_computation()
+
+    def _reload_computation(self):
+        self.ensure_one()
+        existing_items = self.computation_ids.mapped("computation_item_id").ids
+        all_computation_items = self.account_type_set_id.computation_ids.mapped(
+            "computation_id"
+        ).ids
+        to_add_items = list(set(all_computation_items) - set(existing_items))
+        to_remove_items = list(set(existing_items) - set(all_computation_items))
+
+        # Remove obsolete computation lines
+        if to_remove_items:
+            lines_to_remove = self.computation_ids.filtered(
+                lambda r: r.computation_item_id.id in to_remove_items
+            )
+            lines_to_remove.unlink()
+
+        # Add new computation lines
+        for item_id in to_add_items:
+            self.env["client_trial_balance.computation"].create(
+                {
+                    "trial_balance_id": self.id,
+                    "computation_item_id": item_id,
+                }
+            )
 
     @ssi_decorator.pre_confirm_check()
     def _check_ending_balance(self):
