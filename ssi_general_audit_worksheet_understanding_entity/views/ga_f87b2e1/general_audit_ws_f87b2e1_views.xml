@@ -1,0 +1,218 @@
+<?xml version="1.0" ?>
+<!-- Copyright 2025 OpenSynergy Indonesia
+     Copyright 2025 PT. Simetri Sinergi Indonesia
+     License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl-3.0-standalone.html). -->
+<odoo>
+
+    <record id="general_audit_ws_f87b2e1_view_search" model="ir.ui.view">
+        <field name="name">general_audit_ws_f87b2e1 form</field>
+        <field name="model">general_audit_ws_f87b2e1</field>
+        <field
+            name="inherit_id"
+            ref="ssi_general_audit.general_audit_worksheet_mixin_view_search"
+        />
+        <field name="mode">primary</field>
+        <field name="arch" type="xml">
+            <data />
+        </field>
+    </record>
+
+    <record id="general_audit_ws_f87b2e1_view_tree" model="ir.ui.view">
+        <field name="name">general_audit_ws_f87b2e1 tree</field>
+        <field name="model">general_audit_ws_f87b2e1</field>
+        <field name="mode">primary</field>
+        <field
+            name="inherit_id"
+            ref="ssi_general_audit.general_audit_worksheet_mixin_view_tree"
+        />
+        <field name="arch" type="xml">
+            <data>
+            </data>
+        </field>
+    </record>
+
+    <record id="general_audit_ws_f87b2e1_view_form" model="ir.ui.view">
+        <field name="name">general_audit_ws_f87b2e1 form</field>
+        <field name="model">general_audit_ws_f87b2e1</field>
+        <field name="mode">primary</field>
+        <field
+            name="inherit_id"
+            ref="ssi_general_audit.general_audit_worksheet_mixin_view_form"
+        />
+        <field name="arch" type="xml">
+            <data>
+                <xpath expr="//page[@name='note']" position="before">
+                    <page name="activity" string="Activities">
+                        <button
+                            name="action_reload_links"
+                            type="object"
+                            string="Reload"
+                            class="oe_highlight"
+                            icon="fa-refresh"
+                            attrs="{'invisible': [('state', 'not in', ['draft','open'])]}"
+                        />
+                        <group
+                            name="activity_1"
+                            string="General Information and Legal Aspec"
+                        >
+                            <label for="link_1_id" string="# Worksheet" />
+                            <div class="o_row">
+                                <field
+                                    name="link_1_id"
+                                    class="oe_inline"
+                                    force_save="1"
+                                />
+                                <label
+                                    for="link_1_state"
+                                    string="State"
+                                    style="font-weight: bold;"
+                                />
+                                <field name="link_1_state" class="oe_inline" />
+                            </div>
+                            <field name="link_1_conclusion_id" string="Conclusion" />
+                        </group>
+                        <group
+                            name="activity_2"
+                            string="Structure Organization and Responsibilities"
+                        >
+                            <label for="link_2_id" string="# Worksheet" />
+                            <div class="o_row">
+                                <field
+                                    name="link_2_id"
+                                    class="oe_inline"
+                                    force_save="1"
+                                />
+                                <label
+                                    for="link_2_state"
+                                    string="State"
+                                    style="font-weight: bold;"
+                                />
+                                <field name="link_2_state" class="oe_inline" />
+                            </div>
+                            <field name="link_2_conclusion_id" string="Conclusion" />
+                        </group>
+                        <group
+                            name="activity_3"
+                            string="Main Business Activity Process"
+                        >
+                            <label for="link_3_id" string="# Worksheet" />
+                            <div class="o_row">
+                                <field
+                                    name="link_3_id"
+                                    class="oe_inline"
+                                    force_save="1"
+                                />
+                                <label
+                                    for="link_3_state"
+                                    string="State"
+                                    style="font-weight: bold;"
+                                />
+                                <field name="link_3_state" class="oe_inline" />
+                            </div>
+                            <field name="link_3_conclusion_id" string="Conclusion" />
+                        </group>
+                        <group
+                            name="activity_4"
+                            string="Understanding of Relevant Regulations"
+                        >
+                            <label for="link_4_id" string="# Worksheet" />
+                            <div class="o_row">
+                                <field
+                                    name="link_4_id"
+                                    class="oe_inline"
+                                    force_save="1"
+                                />
+                                <label
+                                    for="link_4_state"
+                                    string="State"
+                                    style="font-weight: bold;"
+                                />
+                                <field name="link_4_state" class="oe_inline" />
+                            </div>
+                            <field name="link_4_conclusion_id" string="Conclusion" />
+                        </group>
+                        <!-- <group name="activity_5" string="Understanding of The Business Environment">
+                            <label for="link_5_id" string="# Worksheet" />
+                            <div class="o_row">
+                                <field name="link_5_id" class="oe_inline" force_save="1"/>
+                                <label for="link_5_state" string="State" style="font-weight: bold;" />
+                                <field name="link_5_state" class="oe_inline" />
+                            </div>
+                            <field name="link_5_conclusion_id" string="Conclusion" />
+                        </group> -->
+                        <group name="activity_6" string="Going Concern Analysis">
+                            <label for="link_6_id" string="# Worksheet" />
+                            <div class="o_row">
+                                <field
+                                    name="link_6_id"
+                                    class="oe_inline"
+                                    force_save="1"
+                                />
+                                <label
+                                    for="link_6_state"
+                                    string="State"
+                                    style="font-weight: bold;"
+                                />
+                                <field name="link_6_state" class="oe_inline" />
+                            </div>
+                            <field name="link_6_conclusion_id" string="Conclusion" />
+                        </group>
+                        <group
+                            name="activity_7"
+                            string="Understanding of Preparation of Financial Statements"
+                        >
+                            <label for="link_7_id" string="# Worksheet" />
+                            <div class="o_row">
+                                <field
+                                    name="link_7_id"
+                                    class="oe_inline"
+                                    force_save="1"
+                                />
+                                <label
+                                    for="link_7_state"
+                                    string="State"
+                                    style="font-weight: bold;"
+                                />
+                                <field name="link_7_state" class="oe_inline" />
+                            </div>
+                            <field name="link_7_conclusion_id" string="Conclusion" />
+                        </group>
+                        <group name="activity_8" string="Fraud Factor Analysis">
+                            <label for="link_8_id" string="# Worksheet" />
+                            <div class="o_row">
+                                <field
+                                    name="link_8_id"
+                                    class="oe_inline"
+                                    force_save="1"
+                                />
+                                <label
+                                    for="link_8_state"
+                                    string="State"
+                                    style="font-weight: bold;"
+                                />
+                                <field name="link_8_state" class="oe_inline" />
+                            </div>
+                            <field name="link_8_conclusion_id" string="Conclusion" />
+                        </group>
+                    </page>
+                </xpath>
+            </data>
+        </field>
+    </record>
+
+    <record id="general_audit_ws_f87b2e1_action" model="ir.actions.act_window">
+        <field name="name">Understanding of The Entity and it's Environment</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">general_audit_ws_f87b2e1</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+    <menuitem
+        id="general_audit_ws_f87b2e1_menu"
+        name="Understanding of The Entity and it's Environment"
+        parent="ssi_general_audit.menu_general_audit_understanding_entity"
+        action="general_audit_ws_f87b2e1_action"
+        sequence="1"
+        groups="general_audit_ws_f87b2e1_viewer_group"
+    />
+</odoo>

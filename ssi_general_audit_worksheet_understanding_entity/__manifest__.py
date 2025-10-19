@@ -58,14 +58,14 @@
         "views/general_audit_ws_c0d0898_views.xml",
         "views/general_audit_standard_detail_views.xml",
         "views/general_audit_views.xml",
-        # f87b2e1
+        # f87b2e1 - Understanding of The Entity and it's Environment
         "security/res_group/general_audit_ws_f87b2e1.xml",
         "security/ir_rule/general_audit_ws_f87b2e1.xml",
         "data/ir_sequence/general_audit_ws_f87b2e1.xml",
         "data/sequence_template/general_audit_ws_f87b2e1.xml",
         "data/policy_template/general_audit_ws_f87b2e1.xml",
         "data/approval_template/general_audit_ws_f87b2e1.xml",
-        "views/general_audit_ws_f87b2e1_views.xml",
+        "views/ga_f87b2e1/general_audit_ws_f87b2e1_views.xml",
         # ddf034c - General Information and Legal Aspec
         "security/res_group/general_audit_ws_ddf034c.xml",
         "security/ir_rule/general_audit_ws_ddf034c.xml",
