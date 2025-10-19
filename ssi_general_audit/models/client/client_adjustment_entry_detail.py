@@ -29,6 +29,13 @@ class ClientAdjustmentEntryDetail(models.Model):
         ondelete="restrict",
         help="Client account to debit or credit.",
     )
+    detail_id = fields.Many2one(
+        string="# General Audit Detail",
+        comodel_name="general_audit.detail",
+        help="Link to the related general audit detail, if applicable.",
+        compute="_compute_detail_id",
+        store=True,
+    )
     currency_id = fields.Many2one(
         string="Currency",
         comodel_name="res.currency",
@@ -50,6 +57,24 @@ class ClientAdjustmentEntryDetail(models.Model):
         currency_field="currency_id",
         help="Amount to credit. Use 0 if none.",
     )
+
+    @api.depends(
+        "account_id",
+        "entry_id.general_audit_id",
+    )
+    def _compute_detail_id(self):
+        for record in self:
+            if record.account_id and record.entry_id.general_audit_id:
+                Detail = self.env["general_audit.detail"]
+                criteria = [
+                    ("general_audit_id", "=", record.entry_id.general_audit_id.id),
+                    ("account_id", "=", record.account_id.id),
+                ]
+                details = Detail.search(criteria, limit=1)
+                if details:
+                    record.detail_id = details[0]
+                else:
+                    record.detail_id = False
 
     @api.constrains(
         "credit",

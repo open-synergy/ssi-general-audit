@@ -217,6 +217,59 @@ class GeneralAuditDetail(models.Model):
         help="Total credit adjustments for this account.",
     )
 
+    adjustment_line_ids = fields.One2many(
+        string="Adjustment Lines",
+        comodel_name="client_adjustment_entry.detail",
+        inverse_name="detail_id",
+        help="Detailed adjustment entries linked to this audit detail.",
+    )
+    adjustment_ids = fields.Many2many(
+        string="Adjustments",
+        comodel_name="client_adjustment_entry",
+        relation="rel_general_audit_detail_2_client_adjustment_entry",
+        column1="detail_id",
+        column2="client_adjustment_entry_id",
+        compute="_compute_adjustment_ids",
+        store=True,
+        help="Adjustment entries associated with this audit detail.",
+    )
+    adjustment_dr = fields.Monetary(
+        string="Total Adjustment Debit",
+        compute="_compute_adjustment_ids",
+        store=True,
+        currency_field="currency_id",
+        help="Sum of debit amounts from all linked adjustment entries.",
+    )
+    adjustment_cr = fields.Monetary(
+        string="Total Adjustment Credit",
+        compute="_compute_adjustment_ids",
+        store=True,
+        currency_field="currency_id",
+        help="Sum of credit amounts from all linked adjustment entries.",
+    )
+
+    @api.depends(
+        "adjustment_line_ids",
+        "adjustment_line_ids.entry_id",
+        "adjustment_line_ids.entry_id.state",
+    )
+    def _compute_adjustment_ids(self):
+        for record in self:
+            adjustment_entries = record.adjustment_line_ids.mapped("entry_id").filtered(
+                lambda entry: entry.state == "done"
+            )
+            record.adjustment_ids = adjustment_entries
+            record.adjustment_dr = sum(
+                record.adjustment_line_ids.filtered(
+                    lambda line: line.entry_id.state == "done"
+                ).mapped("debit")
+            )
+            record.adjustment_cr = sum(
+                record.adjustment_line_ids.filtered(
+                    lambda line: line.entry_id.state == "done"
+                ).mapped("credit")
+            )
+
     @api.depends(
         "adjustment_id",
         "account_id",
