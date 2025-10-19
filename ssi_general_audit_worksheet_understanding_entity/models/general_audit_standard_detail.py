@@ -102,6 +102,30 @@ class GeneralAuditStandardDetail(models.Model):
         compute_sudo=True,
     )
 
+    f6a227_detail_ids = fields.Many2many(
+        string="F6A227 Details",
+        comodel_name="general_audit_ws_f6a227.detail",
+        relation="rel_general_audit_ws_f6a227_detail_2_standard_detail",
+        column1="standard_detail_id",
+        column2="detail_id",
+    )
+    preparation_of_financial_statements_impacted = fields.Boolean(
+        string="Impacted By Preparation of Financial Statements",
+        compute="_compute_preparation_of_financial_statements_impacted",
+        store=True,
+        compute_sudo=True,
+    )
+
+    @api.depends(
+        "f6a227_detail_ids",
+    )
+    def _compute_preparation_of_financial_statements_impacted(self):
+        for record in self:
+            result = False
+            if record.f6a227_detail_ids:
+                result = True
+            record.preparation_of_financial_statements_impacted = result
+
     @api.depends(
         "a13a30e_detail_ids",
     )

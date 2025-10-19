@@ -94,6 +94,74 @@ class GeneralAudit(models.Model):
         compute_sudo=True,
         help=("Standard account types impacted by other significant information"),
     )
+    regulation_impacted_account_type_ids = fields.Many2many(
+        string="Standard Accounts Impacted by Regulation",
+        comodel_name="client_account_type",
+        compute="_compute_regulation_impacted_account_types",
+        relation="rel_general_audit_2_regulation_impacted_account_type",
+        column1="general_audit_id",
+        column2="type_id",
+        store=True,
+        compute_sudo=True,
+        help=("Standard account types impacted by regulations"),
+    )
+    preparation_of_financial_statements_impacted_account_type_ids = fields.Many2many(
+        string="Standard Accounts Impacted by Preparation of Financial Statements",
+        comodel_name="client_account_type",
+        compute="_compute_preparation_of_financial_statements_impacted_account_types",
+        relation="rel_general_audit_2_prep_fin_stmt_impacted_account_type",
+        column1="general_audit_id",
+        column2="type_id",
+        store=True,
+        compute_sudo=True,
+        help=(
+            "Standard account types impacted by the preparation of financial statements"
+        ),
+    )
+
+    @api.depends(
+        "standard_detail_ids",
+        "standard_detail_ids.preparation_of_financial_statements_impacted",
+    )
+    def _compute_preparation_of_financial_statements_impacted_account_types(self):
+        for record in self:
+            criteria = [
+                (
+                    "general_audit_id",
+                    "=",
+                    record.id,
+                ),
+                (
+                    "preparation_of_financial_statements_impacted",
+                    "=",
+                    True,
+                ),
+            ]
+            result = (
+                self.env["general_audit.standard_detail"]
+                .search(criteria)
+                .mapped("type_id.id")
+            )
+            record.preparation_of_financial_statements_impacted_account_type_ids = [
+                (6, 0, result)
+            ]
+
+    @api.depends(
+        "standard_detail_ids",
+        "standard_detail_ids.regulation_impacted",
+    )
+    def _compute_regulation_impacted_account_types(self):
+        for record in self:
+            criteria = [
+                ("general_audit_id", "=", record.id),
+                ("regulation_impacted", "=", True),
+            ]
+            result = (
+                self.env["general_audit.standard_detail"]
+                .search(criteria)
+                .mapped("type_id.id")
+            )
+            record.regulation_impacted_account_type_ids = [(6, 0, result)]
 
     @api.depends(
         "standard_detail_ids",
