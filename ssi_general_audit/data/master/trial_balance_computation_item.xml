@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='utf-8' ?>
-<odoo noupdate="1">
+<odoo>
     <record
         id="trial_balance_computation_item_1_d0b0cb3e"
         model="trial_balance_computation_item"
@@ -46,7 +46,7 @@
         <field name="category">summary</field>
         <field
             name="python_code"
-        >result = result_extrapolation = result_previous = 0.0</field>
+        >result = account_group["T001"] - account_group["T003"]</field>
     </record>
     <record
         id="trial_balance_computation_item_5_2a8e8641"
