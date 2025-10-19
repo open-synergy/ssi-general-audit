@@ -14,6 +14,7 @@
     ],
     "data": [
         "security/ir_module_category_data.xml",
+        "security/res_group_data.xml",
         "data/general_audit_worksheet_type_data.xml",
         # b26d482
         "security/res_group/general_audit_ws_b26d482.xml",
@@ -40,6 +41,8 @@
         "data/approval_template/general_audit_ws_f9f3299.xml",
         "views/general_audit_ws_f9f3299_views.xml",
         "security/ir.model.access.csv",
+        "views/general_audit_audit_procedure_category_views.xml",
+        "views/general_audit_audit_procedure_views.xml",
     ],
     "demo": [],
 }
