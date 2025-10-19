@@ -82,7 +82,7 @@ class GeneralAuditWSf9f3299(models.Model):
     def _reload_account(self):
         self.ensure_one()
         self.detail_ids.unlink()
-        for detail in self.general_audit_id.detail_id:
+        for detail in self.general_audit_id.detail_ids:
             data = {
                 "worksheet_id": self.id,
                 "detail_id": detail.id,
