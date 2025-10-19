@@ -210,10 +210,14 @@ if account_group["T003"]["end_period"]:
         >result_extrapolation = result_interim = result_previous = result_end_period = 0.0
 
 if account_group["T003"]["extrapolation"]:
-  result_extrapolation = 365 / (account_group["T009"]["extrapolation"] / computation["T009"]["extrapolation_avg"])
+  result_extrapolation = (365 / (account_group["T011"]["extrapolation"] / account_type["S116"]["extrapolation_avg"])) + \
+  (365 / (account_group["T009"]["extrapolation"] / account_type["S112"]["extrapolation_avg"])) -\
+  (365 / (account_group["T011"]["extrapolation"] / account_type["S211"]["extrapolation_avg"]))
 
 if account_group["T003"]["end_period"]:
-  result_end_period = 365 / (account_group["T009"]["end_period"] / computation["T009"]["end_period_avg"])</field>
+  result_end_period = (365 / (account_group["T011"]["end_period"] / account_type["S116"]["end_period_avg"])) + \
+  (365 / (account_group["T009"]["end_period"] / account_type["S112"]["end_period_avg"])) -\
+  (365 / (account_group["T011"]["end_period"] / account_type["S211"]["end_period_avg"]))</field>
     </record>
 
     <record id="client_financial_ratio_13_ee728e86" model="client_financial_ratio">
