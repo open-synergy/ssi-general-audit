@@ -106,7 +106,7 @@
                                         placeholder="Value per Share"
                                     />
                                 </div>
-                                <label for="est_paid_amount" string="Paid Capital" />
+                                <label for="est_paid_amount" string="Paid-In Capital" />
                                 <div class="o_three_in_one_format">
                                     <field
                                         name="est_paid_amount"
@@ -133,6 +133,7 @@
                                 <field
                                     name="shareholder_number"
                                     string="Number of Shares"
+                                    sum="Total Shares"
                                 />
                             </tree>
                         </field>
@@ -147,7 +148,7 @@
                             </tree>
                         </field>
                     </page>
-                    <page name="adm" string="Amendment of the Company">
+                    <page name="adm" string="Amendment of Deeds">
                         <group name="adm_header">
                             <group name="adm_left">
                                 <field
@@ -195,7 +196,7 @@
                                         placeholder="Value per Share"
                                     />
                                 </div>
-                                <label for="adm_paid_amount" string="Paid Capital" />
+                                <label for="adm_paid_amount" string="Paid-In Capital" />
                                 <div class="o_three_in_one_format">
                                     <field
                                         name="adm_paid_amount"
@@ -222,6 +223,7 @@
                                 <field
                                     name="shareholder_number"
                                     string="Number of Shares"
+                                    sum="Total Shares"
                                 />
                             </tree>
                         </field>
@@ -237,71 +239,124 @@
                         </field>
                     </page>
                     <page name="other_legality" string="Other Legalities">
-                        <group name="legality_header">
-                            <group name="legality_left">
-                                <label for="business_no" string="Business License" />
-                                <div class="o_three_in_one_format">
-                                    <field name="business_no" placeholder="Number" />
-                                    <field name="business_date" placeholder="Date" />
-                                    <field
-                                        name="business_validity"
-                                        placeholder="Validity Period)"
-                                    />
-                                </div>
+                        <group>
+                            <label for="business_no" string="Business License" />
+                            <div class="o_row">
+                                <field
+                                    name="business_no"
+                                    placeholder="Business License Number"
+                                    class="oe_inline"
+                                />
                                 <label
-                                    for="registration_no"
-                                    string="Registration Certificate"
-                                />
-                                <div class="o_three_in_one_format">
-                                    <field
-                                        name="registration_no"
-                                        placeholder="Number"
-                                    />
-                                    <field
-                                        name="registration_date"
-                                        placeholder="Date"
-                                    />
-                                    <field
-                                        name="registration_validity"
-                                        placeholder="Validity Period)"
-                                    />
-                                </div>
-                                <field name="other_type" />
-                                <label for="other_no" string="Other Permit" />
-                                <div class="o_three_in_one_format">
-                                    <field name="other_no" placeholder="Number" />
-                                    <field name="other_date" placeholder="Date" />
-                                    <field
-                                        name="other_validity"
-                                        placeholder="Validity Period)"
-                                    />
-                                </div>
-                            </group>
-                            <group name="legality_right">
-                                <field name="npwp" string="NPWP" />
-                                <field name="npwp_name" string="NPWP Name" />
-                                <field name="npwp_address" string="NPWP Address" />
-                                <field name="pkp_ok" string="PKP Confirmed ?" />
-                                <field
-                                    name="pkp_no"
-                                    attrs="{'invisible': [('pkp_ok', '=', False)]}"
+                                    for="business_date"
+                                    string="Date"
+                                    style="font-weight: bold;"
                                 />
                                 <field
-                                    name="pkp_date"
-                                    string="PKP Date"
-                                    attrs="{'invisible': [('pkp_ok', '=', False)]}"
+                                    name="business_date"
+                                    placeholder="Business License Date"
+                                    class="oe_inline"
                                 />
-                            </group>
+                                <label
+                                    for="business_validity"
+                                    string="Validity Period"
+                                    style="font-weight: bold;"
+                                />
+                                <field
+                                    name="business_validity"
+                                    placeholder="Business Validity Period"
+                                    class="oe_inline"
+                                />
+                            </div>
+                            <label
+                                for="registration_no"
+                                string="Registration Certificate"
+                            />
+                            <div class="o_row">
+                                <field
+                                    name="registration_no"
+                                    placeholder="Registration Certificate Number"
+                                    class="oe_inline"
+                                />
+                                <label
+                                    for="registration_date"
+                                    string="Date"
+                                    style="font-weight: bold;"
+                                />
+                                <field
+                                    name="registration_date"
+                                    placeholder="Registration Certificate Date"
+                                    class="oe_inline"
+                                />
+                                <label
+                                    for="registration_validity"
+                                    string="Validity Period"
+                                    style="font-weight: bold;"
+                                />
+                                <field
+                                    name="registration_validity"
+                                    placeholder="Registration Certificate Period"
+                                    class="oe_inline"
+                                />
+                            </div>
+                            <field name="other_type" />
+                            <label for="other_no" string="Other Permit" />
+                            <div class="o_row">
+                                <field
+                                    name="other_no"
+                                    placeholder="Other Permit Number"
+                                    class="oe_inline"
+                                />
+                                <label
+                                    for="other_date"
+                                    string="Date"
+                                    style="font-weight: bold;"
+                                />
+                                <field
+                                    name="other_date"
+                                    placeholder="Other Permit Date"
+                                    class="oe_inline"
+                                />
+                                <label
+                                    for="other_validity"
+                                    string="Validity Period"
+                                    style="font-weight: bold;"
+                                />
+                                <field
+                                    name="other_validity"
+                                    placeholder="Other Permit Period"
+                                    class="oe_inline"
+                                />
+                            </div>
+                            <field name="npwp" string="NPWP" />
+                            <field name="npwp_name" string="NPWP Name" />
+                            <field name="npwp_address" string="NPWP Address" />
+                            <field name="pkp_ok" string="PKP Confirmed ?" />
+                            <field
+                                name="pkp_no"
+                                attrs="{'invisible': [('pkp_ok', '=', False)]}"
+                            />
+                            <field
+                                name="pkp_date"
+                                string="PKP Date"
+                                attrs="{'invisible': [('pkp_ok', '=', False)]}"
+                            />
                         </group>
                     </page>
-                    <page name="ownership_status" string="Ownership Status">
+                    <page name="ownership_status" string="Building Status">
                         <field name="ownership_status_ids">
                             <tree editable="top">
                                 <field name="sequence" widget="handle" />
                                 <field name="worksheet_id" invisible="1" />
                                 <field name="state" invisible="1" />
-                                <field name="ownership_location_id" />
-                                <field name="ownership_state" />
+                                <field
+                                    name="ownership_location_id"
+                                    string="Building Location"
+                                />
+                                <field
+                                    name="ownership_state"
+                                    string="Ownership Status"
+                                />
                             </tree>
                         </field>
                         <group>
