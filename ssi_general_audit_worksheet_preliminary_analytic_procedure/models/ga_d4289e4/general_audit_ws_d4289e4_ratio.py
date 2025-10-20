@@ -31,7 +31,7 @@ class GeneralAuditWSd4289e4Ratio(models.Model):
         help="Ratio category derived from the selected ratio definition.",
     )
     current_amount = fields.Float(
-        string="Curr. Amount",
+        string="Current",
         related=False,
         store=True,
         help=(
