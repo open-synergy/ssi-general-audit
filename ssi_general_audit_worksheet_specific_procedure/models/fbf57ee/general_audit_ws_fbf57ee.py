@@ -7,7 +7,7 @@ from odoo import models
 
 class GeneralAuditWSfbf57ee(models.Model):
     _name = "general_audit_ws_fbf57ee"
-    _description = "Going Concern Analysis (fbf57ee)"
+    _description = "Going Concern (fbf57ee)"
     _inherit = [
         "general_audit_worksheet_mixin",
     ]
