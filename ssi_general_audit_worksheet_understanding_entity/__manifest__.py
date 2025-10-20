@@ -66,7 +66,7 @@
         "data/policy_template/general_audit_ws_f87b2e1.xml",
         "data/approval_template/general_audit_ws_f87b2e1.xml",
         "views/ga_f87b2e1/general_audit_ws_f87b2e1_views.xml",
-        # ddf034c - General Information and Legal Aspec
+        # ddf034c - General Information and Legal Aspect
         "security/res_group/general_audit_ws_ddf034c.xml",
         "security/ir_rule/general_audit_ws_ddf034c.xml",
         "data/ir_sequence/general_audit_ws_ddf034c.xml",
