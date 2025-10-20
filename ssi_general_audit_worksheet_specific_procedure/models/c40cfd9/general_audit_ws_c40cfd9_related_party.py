@@ -20,12 +20,12 @@ class GeneralAuditWSc40cfd9RelatedParty(models.Model):
         help="Related party name.",
     )
     initial_relation = fields.Char(
-        required=True,
+        required=False,
         help=(
             "Nature of relationship with the entity (e.g., subsidiary, shareholder, "
             "key management) (initial)."
         ),
-        readonly=True,
+        readonly=False,
     )
     initial_related_account_type_ids = fields.Many2many(
         string="Initial Related Standard Accounts",
@@ -33,11 +33,11 @@ class GeneralAuditWSc40cfd9RelatedParty(models.Model):
         relation="rel_ws_c40cfd9_related_party_2_initial_account_type",
         column1="detail_id",
         column2="type_id",
-        required=True,
+        required=False,
         help=(
             "Standard account types impacted by transactions with this related party (initial)."
         ),
-        readonly=True,
+        readonly=False,
     )
     final_relation = fields.Char(
         required=True,
