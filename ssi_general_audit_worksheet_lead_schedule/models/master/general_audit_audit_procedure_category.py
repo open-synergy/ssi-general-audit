@@ -12,6 +12,10 @@ class GeneralAuditAuditProcedureCategory(models.Model):
     ]
     _description = "General Audit - Audit Procedure Category"
 
+    code = fields.Char(
+        default="/",
+        help="Unique short code for the team role. Use '/' to auto-generate.",
+    )
     account_type_id = fields.Many2one(
         comodel_name="client_account_type",
         string="Account Type",

@@ -11,11 +11,15 @@
     "installable": True,
     "depends": [
         "ssi_general_audit",
+        "ssi_general_audit_worksheet_control_risk",
     ],
     "data": [
         "security/ir_module_category_data.xml",
         "security/res_group_data.xml",
         "data/general_audit_worksheet_type_data.xml",
+        # MASTER DATA
+        "data/master/general_audit_audit_procedure_category.xml",
+        "data/master/general_audit_audit_procedure.xml",
         # b26d482
         "security/res_group/general_audit_ws_b26d482.xml",
         "security/ir_rule/general_audit_ws_b26d482.xml",

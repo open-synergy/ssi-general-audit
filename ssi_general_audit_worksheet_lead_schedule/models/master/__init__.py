@@ -3,8 +3,6 @@
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl-3.0-standalone.html).
 
 from . import (
-    master,
-    b26d482,
-    e51bb1c,
-    f9f3299,
+    general_audit_audit_procedure_category,
+    general_audit_audit_procedure,
 )
