@@ -52,6 +52,7 @@
         "views/checklist/checklist_option_views.xml",
         "views/client_account/client_account_group_views.xml",
         "views/client_account/client_account_type_views.xml",
+        "views/client_account/client_relevant_account_type_views.xml",
         "views/client_account/client_account_views.xml",
         "views/client_account/client_account_type_set_views.xml",
         "views/tb/trial_balance_computation_item_views.xml",

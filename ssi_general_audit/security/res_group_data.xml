@@ -60,6 +60,18 @@
         />
 </record>
 
+<record id="client_relevant_account_type_group" model="res.groups">
+    <field name="name">Client Relevant Account Type</field>
+    <field
+            name="category_id"
+            ref="ssi_accountant.accountant_configurator_module_category"
+        />
+    <field
+            name="users"
+            eval="[(4, ref('base.user_root')), (4, ref('base.user_admin'))]"
+        />
+</record>
+
 <record id="client_account_group" model="res.groups">
     <field name="name">Client Account</field>
     <field

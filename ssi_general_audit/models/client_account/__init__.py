@@ -5,6 +5,7 @@
 from . import (
     client_account_group,
     client_account_type,
+    client_relevant_account_type,
     client_account,
     client_account_type_set,
     client_account_type_computation_item,

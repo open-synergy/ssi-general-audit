@@ -36,6 +36,18 @@ class GeneralAuditWSAE11F7EAccountingPolicy(models.Model):
         required=True,
         help=(
             "Standard account types impacted by this policy. "
+            "Used to link the policy to related accounts."
+        ),
+    )
+    relevant_account_type_ids = fields.Many2many(
+        string="Relevant Standard Accounts",
+        comodel_name="client_relevant_account_type",
+        relation="rel_ga_ws_ae11f7e_accounting_policy_2_relevant_account",
+        column1="accounting_policy_id",
+        column2="type_id",
+        required=True,
+        help=(
+            "Standard account types impacted by this policy. "
             "Used to link the policy to relevant accounts."
         ),
     )
