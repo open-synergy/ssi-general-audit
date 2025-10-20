@@ -36,10 +36,8 @@ class GeneralAuditWSf5a3ceeDetail(models.Model):
         relation="rel_ga_f5a3cee_detail_2_attachment",
         column1="f5a3cee_detail_id",
         column2="attachment_id",
-        domain=[
-            ("res_model", "=", "general_audit_ws_f5a3cee"),
-            ("res_id", "=", "worksheet_id"),
-        ],
+        domain="[('res_model', '=', 'general_audit_ws_f5a3cee'), "
+        "('res_id', '=', worksheet_id)]",
         help=(
             "Files attached as supporting evidence. "
             "Only attachments linked to this worksheet can be selected."
