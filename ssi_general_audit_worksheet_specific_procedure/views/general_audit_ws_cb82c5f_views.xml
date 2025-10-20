@@ -41,6 +41,66 @@
         />
         <field name="arch" type="xml">
             <data>
+                <xpath expr="//page[1]" position="before">
+                    <page string="Subsequent Events">
+                        <button
+                            name="action_load_detail"
+                            string="Detail"
+                            type="object"
+                            class="oe_highlight"
+                            icon="fa-refresh"
+                            attrs="{'invisible': [('state', 'not in', ['draft', 'open'])]}"
+                        />
+                        <field name="detail_ids">
+                            <tree create="false" delete="false">
+                                <field name="subsequent_event_id" />
+                                <field name="occurance" />
+                                <field name="currency_id" invisible="1" />
+                                <field name="adjustment_ids" widget="many2many_tags" />
+                                <field name="adjustment_dr" />
+                                <field name="adjustment_cr" />
+                                <field name="to_disclose" />
+                                <field name="disclosure" />
+                                <field name="reference" />
+                            </tree>
+                            <form>
+                                <sheet>
+                                    <group
+                                        name="detail_1"
+                                        colspan="4"
+                                        col="2"
+                                        string="Event Occurance"
+                                    >
+                                        <field name="subsequent_event_id" />
+                                        <field name="occurance" />
+
+
+                                    </group>
+                                    <separator string="Adjustments" colspan="4" />
+                                    <field
+                                        name="adjustment_entry_detail_ids"
+                                        domain="[('entry_id.general_audit_id', '=', parent.general_audit_id)]"
+                                    />
+                                    <group name="detail_2" colspan="4" col="2">
+                                        <field name="currency_id" invisible="1" />
+                                        <field name="adjustment_dr" />
+                                        <field name="adjustment_cr" />
+                                    </group>
+                                    <group
+                                        name="detail_3"
+                                        colspan="4"
+                                        col="2"
+                                        string="Disclosures"
+                                    >
+                                        <field name="to_disclose" />
+                                        <field name="disclosure" />
+                                        <field name="reference" />
+                                    </group>
+                                </sheet>
+                            </form>
+                        </field>
+                    </page>
+                </xpath>
             </data>
         </field>
     </record>

@@ -59,6 +59,7 @@
         "security/ir.model.access.csv",
         "views/general_audit_accounting_estimation_method_views.xml",
         "views/general_audit_accounting_estimation_relevant_control_views.xml",
+        "views/general_audit_subsequent_event_views.xml",
     ],
     "demo": [],
 }
