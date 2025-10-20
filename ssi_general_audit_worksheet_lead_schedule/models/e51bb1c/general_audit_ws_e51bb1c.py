@@ -58,32 +58,41 @@ class GeneralAuditWSe51bb1c(models.Model):
 
     def _load_detail(self):
         self.ensure_one()
-        detail_obj = self.env["general_audit_ws_e51bb1c.detail"]
+        Detail = self.env["general_audit_ws_e51bb1c.detail"]
+        Procedure = self.env["general_audit_audit_procedure"]
+
+        if not self.account_type_id:
+            return True
+
         procedure_domain = [
             ("account_type_id", "=", self.account_type_id.id),
         ]
+        procedure_ids = Procedure.search(procedure_domain)
+        mapping = {chk.audit_procedure_id.id: chk for chk in self.detail_ids}
 
-        all_procedures = self.env["general_audit_audit_procedure"].search(
-            procedure_domain
-        )
-        existing_procedure_ids = self.detail_ids.mapped("audit_procedure_id")
+        if procedure_ids:
+            for procedure in procedure_ids:
+                expected_assertions = procedure.category_id.assertion_type_ids.ids
+                if procedure.id not in mapping:
+                    Detail.create(
+                        {
+                            "worksheet_id": self.id,
+                            "audit_procedure_id": procedure.id,
+                            "assertion_type_ids": [
+                                (6, 0, procedure.category_id.assertion_type_ids.ids)
+                            ],
+                        }
+                    )
+                else:
+                    detail = mapping[procedure.id]
+                    current_assertions = detail.assertion_type_ids.ids
+                    if set(current_assertions) != set(expected_assertions):
+                        detail.write(
+                            {"assertion_type_ids": [(6, 0, expected_assertions)]}
+                        )
+                    if detail.audit_procedure_id.id != procedure.id:
+                        detail.write({"audit_procedure_id": procedure.id})
 
-        to_be_added_procedures = all_procedures - existing_procedure_ids
-        to_be_remove_procedures = existing_procedure_ids - all_procedures
-
-        for procedure in to_be_added_procedures:
-            detail_obj.create(
-                {
-                    "worksheet_id": self.id,
-                    "audit_procedure_id": procedure.id,
-                    "assertion_type_ids": [
-                        (6, 0, [procedure.category_id.assertion_type_ids.ids])
-                    ],
-                }
-            )
-
-        to_be_removed_details = self.detail_ids.filtered(
-            lambda d: d.audit_procedure_id in to_be_remove_procedures
-        )
-        if to_be_removed_details:
-            to_be_removed_details.sudo().unlink()
+            for chk in self.detail_ids:
+                if chk.audit_procedure_id.id not in procedure_ids.ids:
+                    chk.unlink()
