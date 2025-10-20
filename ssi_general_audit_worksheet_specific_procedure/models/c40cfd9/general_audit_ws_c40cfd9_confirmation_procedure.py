@@ -17,7 +17,7 @@ class GeneralAuditWSc40cfd9ConfirmationProcedure(models.Model):
         ondelete="cascade",
     )
     confirmation_procedure_id = fields.Many2one(
-        comodel_name="general_audit_confirmation_procedure",
+        comodel_name="general_audit_related_party_confirmation_procedure",
         string="Confirmation Procedure",
         required=True,
         ondelete="restrict",
