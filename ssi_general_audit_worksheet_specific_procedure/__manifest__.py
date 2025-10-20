@@ -60,6 +60,7 @@
         "views/general_audit_accounting_estimation_method_views.xml",
         "views/general_audit_accounting_estimation_relevant_control_views.xml",
         "views/general_audit_subsequent_event_views.xml",
+        "views/general_audit_related_party_confirmation_procedure_views.xml",
     ],
     "demo": [],
 }

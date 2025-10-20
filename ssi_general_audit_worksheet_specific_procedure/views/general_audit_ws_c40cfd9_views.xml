@@ -41,6 +41,82 @@
         />
         <field name="arch" type="xml">
             <data>
+                <xpath expr="//page[1]" position="before">
+                    <page string="Related Parties">
+                        <button
+                            name="action_load_related_party"
+                            string="Related Parties"
+                            type="object"
+                            class="oe_highlight"
+                            icon="fa-refresh"
+                            attrs="{'invisible': [('state', 'not in', ['draft','open'])]}"
+                        />
+                        <field name="related_party_line_ids">
+                            <tree>
+                                <field name="name" />
+                                <field name="initial_relation" />
+                                <field
+                                    name="initial_related_account_type_ids"
+                                    widget="many2many_tags"
+                                />
+                                <field name="final_relation" />
+                                <field
+                                    name="final_related_account_type_ids"
+                                    widget="many2many_tags"
+                                />
+                                <field name="conclusion" />
+                            </tree>
+                            <form>
+                                <sheet>
+                                    <group name="related_party_1" colspan="4" col="2">
+                                        <field name="name" />
+                                        <field name="initial_relation" />
+                                        <field
+                                            name="initial_related_account_type_ids"
+                                            widget="many2many_tags"
+                                        />
+                                        <field name="final_relation" />
+                                        <field
+                                            name="final_related_account_type_ids"
+                                            widget="many2many_tags"
+                                        />
+                                        <field name="conclusion" />
+                                    </group>
+                                </sheet>
+                            </form>
+                        </field>
+                    </page>
+                    <page string="Confirmation Procedures">
+                        <button
+                            name="action_load_confirmation_procedure"
+                            string="Confirmation Procedures"
+                            type="object"
+                            class="oe_highlight"
+                            icon="fa-refresh"
+                            attrs="{'invisible': [('state', 'not in', ['draft','open'])]}"
+                        />
+                        <field name="confirmation_procedure_line_ids">
+                            <tree editable="bottom" create="false" delete="false">
+                                <field name="confirmation_procedure_id" />
+                                <field name="performed" />
+                                <field name="reference" />
+                            </tree>
+                            <form>
+                                <sheet>
+                                    <group
+                                        name="confirmation_procedure_1"
+                                        colspan="4"
+                                        col="2"
+                                    >
+                                        <field name="confirmation_procedure_id" />
+                                        <field name="performed" />
+                                        <field name="reference" />
+                                    </group>
+                                </sheet>
+                            </form>
+                        </field>
+                    </page>
+                </xpath>
             </data>
         </field>
     </record>
