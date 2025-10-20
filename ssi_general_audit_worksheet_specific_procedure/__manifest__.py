@@ -14,6 +14,7 @@
     ],
     "data": [
         "security/ir_module_category_data.xml",
+        "security/res_group_data.xml",
         "data/general_audit_worksheet_type_data.xml",
         # a8f4d88
         "security/res_group/general_audit_ws_a8f4d88.xml",
@@ -56,6 +57,8 @@
         "data/approval_template/general_audit_ws_ee819ae.xml",
         "views/general_audit_ws_ee819ae_views.xml",
         "security/ir.model.access.csv",
+        "views/general_audit_accounting_estimation_method_views.xml",
+        "views/general_audit_accounting_estimation_relevant_control_views.xml",
     ],
     "demo": [],
 }

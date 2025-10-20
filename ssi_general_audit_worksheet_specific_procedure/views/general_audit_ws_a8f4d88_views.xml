@@ -41,6 +41,47 @@
         />
         <field name="arch" type="xml">
             <data>
+                <xpath expr="//page[1]" position="before">
+                    <page name="detail" string="Details">
+                        <field name="allowed_account_type_ids" invisible="1" />
+                        <field name="detail_ids">
+                            <tree>
+                                <field name="account_type_id" />
+                                <field name="expert_ids" widget="many2many_tags" />
+                                <field
+                                    name="estimation_method_ids"
+                                    widget="many2many_tags"
+                                />
+                                <field name="assumption" />
+                                <field name="relevant_control_id" />
+                                <field name="fair_value_measurement_level" />
+                                <field name="reference" />
+                                <field name="conclusion" />
+                            </tree>
+                            <form>
+                                <sheet>
+                                    <group>
+                                        <field name="account_type_id" />
+                                        <field
+                                            name="expert_ids"
+                                            widget="many2many_tags"
+                                        />
+                                        <field
+                                            name="estimation_method_ids"
+                                            widget="many2many_tags"
+                                            domain="[('account_type_id', '=', account_type_id)]"
+                                        />
+                                        <field name="assumption" />
+                                        <field name="relevant_control_id" />
+                                        <field name="fair_value_measurement_level" />
+                                        <field name="reference" />
+                                        <field name="conclusion" />
+                                    </group>
+                                </sheet>
+                            </form>
+                        </field>
+                    </page>
+                </xpath>
             </data>
         </field>
     </record>
