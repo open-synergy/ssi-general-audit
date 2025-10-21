@@ -74,6 +74,14 @@ class GeneralAuditWSf87b2e1(models.Model):
             "Read-only, mirrors the linked record."
         ),
     )
+    link_1_conclusion = fields.Text(
+        string="Conclusion",
+        related="link_1_id.conclusion",
+        help=(
+            "Conclusion on the RA.150.1 worksheet. "
+            "Read-only, mirrors the linked record."
+        ),
+    )
 
     # Structure Organization and Responsibilities
     # LINK - 2 e78a3c6 (RA.150.2)
@@ -116,6 +124,14 @@ class GeneralAuditWSf87b2e1(models.Model):
         related="link_2_id.conclusion_id",
         help=(
             "Conclusion from the RA.150.2 worksheet. "
+            "Read-only, mirrors the linked record."
+        ),
+    )
+    link_2_conclusion = fields.Text(
+        string="Conclusion",
+        related="link_2_id.conclusion",
+        help=(
+            "Conclusion on the RA.150.2 worksheet. "
             "Read-only, mirrors the linked record."
         ),
     )
@@ -164,6 +180,14 @@ class GeneralAuditWSf87b2e1(models.Model):
             "Read-only, mirrors the linked record."
         ),
     )
+    link_3_conclusion = fields.Text(
+        string="Conclusion",
+        related="link_3_id.conclusion",
+        help=(
+            "Conclusion on the RA.150.3 worksheet. "
+            "Read-only, mirrors the linked record."
+        ),
+    )
 
     # Understanding of Relevant Regulations
     # LINK - 4 a13a30e (RA.150.4)
@@ -206,6 +230,14 @@ class GeneralAuditWSf87b2e1(models.Model):
         related="link_4_id.conclusion_id",
         help=(
             "Conclusion from the RA.150.4 worksheet. "
+            "Read-only, mirrors the linked record."
+        ),
+    )
+    link_4_conclusion = fields.Text(
+        string="Conclusion",
+        related="link_4_id.conclusion",
+        help=(
+            "Conclusion on the RA.150.4 worksheet. "
             "Read-only, mirrors the linked record."
         ),
     )
@@ -284,6 +316,14 @@ class GeneralAuditWSf87b2e1(models.Model):
             "Read-only, mirrors the linked record."
         ),
     )
+    link_6_conclusion = fields.Text(
+        string="Conclusion",
+        related="link_6_id.conclusion",
+        help=(
+            "Conclusion on the RA.150.6 worksheet. "
+            "Read-only, mirrors the linked record."
+        ),
+    )
 
     # Understanding of Preparation of Financial Statements
     # LINK - 7 f6a227 (RA.150.7)
@@ -329,6 +369,14 @@ class GeneralAuditWSf87b2e1(models.Model):
             "Read-only, mirrors the linked record."
         ),
     )
+    link_7_conclusion = fields.Text(
+        string="Conclusion",
+        related="link_7_id.conclusion",
+        help=(
+            "Conclusion on the RA.150.7 worksheet. "
+            "Read-only, mirrors the linked record."
+        ),
+    )
 
     # Fraud Factor Analysis
     # LINK - 8 c0e0eec (RA.150.8)
@@ -369,6 +417,14 @@ class GeneralAuditWSf87b2e1(models.Model):
         related="link_8_id.conclusion_id",
         help=(
             "Conclusion from the RA.150.8 worksheet. "
+            "Read-only, mirrors the linked record."
+        ),
+    )
+    link_8_conclusion = fields.Text(
+        string="Conclusion",
+        related="link_8_id.conclusion",
+        help=(
+            "Conclusion on the RA.150.8 worksheet. "
             "Read-only, mirrors the linked record."
         ),
     )
