@@ -22,6 +22,10 @@ class MixinChecklistValue(models.AbstractModel):
         ondelete="restrict",
         help="Master checklist item this line refers to.",
     )
+    item_name = fields.Char(
+        string="Item",
+        related="item_id.name",
+    )
     allowed_option_ids = fields.Many2many(
         string="Options",
         related="item_id.option_set_id.option_ids",
