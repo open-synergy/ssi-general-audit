@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <template id="expert_page">
+        <page name="expert" string="Details">
+            <button
+                name="action_populate_expert"
+                string="Populate"
+                type="object"
+                icon="fa-refresh"
+                class="oe_highlight"
+                style="margin-right:4px"
+                attrs="{'invisible': [('state', '!=', 'open')]}"
+            />
+            <field name="detail_ids">
+                <tree>
+                    <field name="sequence" widget="handle" />
+                    <field name="factor_id" />
+                    <field name="category_id" />
+                    <field name="explanation" />
+                </tree>
+                <form>
+                    <sheet>
+                        <group>
+                            <field name="factor_id" invisible="1" />
+                            <field name="factor_name" />
+                            <field name="category_id" invisible="1" />
+                            <field name="explanation" />
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </page>
+    </template>
+
+    <template id="expert_header">
+        <group name="expert_header" string="General Information on Experts">
+            <field
+                name="expert_name"
+                placeholder="Name of Expert (Individual/Organization)"
+                string="Name of Expert"
+            />
+            <field name="expert_type_id" />
+            <field name="expert_account_ids" widget="many2many_tags" />
+            <field
+                name="contracting_party"
+                placeholder="Party Entering into Contract with the Expert"
+                string="Contracting Party"
+            />
+        </group>
+    </template>
+</odoo>

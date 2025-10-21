@@ -3,5 +3,8 @@
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl-3.0-standalone.html).
 
 from . import (
+    general_audit_ws_cda3a68_category,
+    general_audit_ws_cda3a68_factor,
+    general_audit_ws_cda3a68_detail,
     general_audit_ws_cda3a68,
 )
