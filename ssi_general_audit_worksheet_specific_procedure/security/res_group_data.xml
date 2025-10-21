@@ -57,4 +57,19 @@
             eval="[(4, ref('base.user_root')), (4, ref('base.user_admin'))]"
         />
 </record>
+
+<record
+        id="general_audit_going_concern_confirmation_procedure_group"
+        model="res.groups"
+    >
+    <field name="name">Going Concern Confirmation Procedures</field>
+    <field
+            name="category_id"
+            ref="ssi_accountant.accountant_configurator_module_category"
+        />
+    <field
+            name="users"
+            eval="[(4, ref('base.user_root')), (4, ref('base.user_admin'))]"
+        />
+</record>
 </odoo>
