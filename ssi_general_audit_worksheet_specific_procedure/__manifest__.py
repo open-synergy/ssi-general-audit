@@ -20,6 +20,7 @@
         # MASTER DATA
         "data/master/general_audit_ws_ee819ae_item.xml",
         "data/master/general_audit_subsequent_event.xml",
+        "data/master/related_party_confirmation_procedure.xml",
         # a8f4d88 - Accounting Estimation
         "security/res_group/general_audit_ws_a8f4d88.xml",
         "security/ir_rule/general_audit_ws_a8f4d88.xml",

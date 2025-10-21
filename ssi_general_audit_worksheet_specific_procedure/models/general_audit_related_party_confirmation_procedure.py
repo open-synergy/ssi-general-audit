@@ -13,6 +13,11 @@ class GeneralAuditRelatedPartyConfirmationProcedure(models.Model):
     _description = "General Audit - Related Party Confirmation Procedure"
     _order = "sequence, id"
 
+    code = fields.Char(
+        default="/",
+        help="Unique short code for the team role. Use '/' to auto-generate.",
+    )
+
     sequence = fields.Integer(
         string="Sequence",
         default=10,
