@@ -14,10 +14,21 @@ class GeneralAuditWSc40cfd9RelatedParty(models.Model):
         string="Worksheet",
         required=True,
         ondelete="cascade",
+        help=(
+            "Parent worksheet record for this related party entry. Used to group "
+            "and manage related party evaluations within the c40cfd9 worksheet."
+        ),
     )
     name = fields.Char(
         required=True,
         help="Related party name.",
+    )
+    reference = fields.Char(
+        string="Ref.",
+        help=(
+            "Internal or external reference linked to this record (e.g., document "
+            "number, contract ID, or note)."
+        ),
     )
     initial_relation = fields.Char(
         required=False,
