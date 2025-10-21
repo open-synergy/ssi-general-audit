@@ -8,7 +8,7 @@ from odoo import api, fields, models
 class GeneralAuditWSfbf57eeComputation(models.Model):
     _name = "general_audit_ws_fbf57ee.computation"
     _description = "Going Concern (fbf57ee) - Computation"
-    _order = "worksheet_id, going_concern_category_id, going_concern_id"
+    _order = "worksheet_id, computation_item_id"
 
     worksheet_id = fields.Many2one(
         comodel_name="general_audit_ws_fbf57ee",
