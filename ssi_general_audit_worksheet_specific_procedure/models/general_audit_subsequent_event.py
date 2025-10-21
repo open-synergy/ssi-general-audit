@@ -2,7 +2,7 @@
 # Copyright 2022 PT. Simetri Sinergi Indonesia
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl-3.0-standalone.html).
 
-from odoo import models
+from odoo import fields, models
 
 
 class GeneralAuditSubsequentEvent(models.Model):
@@ -11,3 +11,8 @@ class GeneralAuditSubsequentEvent(models.Model):
         "mixin.master_data",
     ]
     _description = "General Audit - Subsequent Event"
+
+    code = fields.Char(
+        default="/",
+        help="Unique short code for the team role. Use '/' to auto-generate.",
+    )

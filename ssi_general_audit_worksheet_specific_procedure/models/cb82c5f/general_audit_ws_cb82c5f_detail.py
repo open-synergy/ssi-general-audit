@@ -17,9 +17,9 @@ class GeneralAuditWScb82c5fDetail(models.Model):
     )
     subsequent_event_id = fields.Many2one(
         comodel_name="general_audit_subsequent_event",
-        string="Subsequent Event",
+        string="# Subsequent Event ID",
         required=True,
-        help="Subsequent event being evaluated",
+        help="Subsequent event ID",
     )
     occurance = fields.Boolean(
         default=False,
