@@ -43,8 +43,16 @@
             <data>
                 <xpath expr="//page[1]" position="before">
                     <page name="detail" string="Details">
+                        <button
+                            name="action_populate"
+                            type="object"
+                            string="Procedures"
+                            class="oe_highlight"
+                            icon="fa-refresh"
+                            attrs="{'invisible': [('state', 'not in', ['draft','open'])]}"
+                        />
                         <field name="detail_ids">
-                            <tree>
+                            <tree create="false" edit="false">
                                 <field name="category_id" optional="hide" />
                                 <field name="factor_id" optional="hide" />
                                 <field name="indicator_id" />
@@ -73,7 +81,8 @@
                                 <group name="detail" colspan="4" col="2">
                                     <field name="category_id" invisible="1" />
                                     <field name="factor_id" invisible="1" />
-                                    <field name="indicator_id" />
+                                    <field name="indicator_id" invisible="1" />
+                                    <field name="indicator_name" />
                                     <field name="tcgw" string="TCGW Responses" />
                                     <field
                                         name="management"

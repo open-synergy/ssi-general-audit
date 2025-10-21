@@ -21,10 +21,15 @@ class GeneralAuditWSC0E0EECDetail(models.Model):
         ),
     )
     indicator_id = fields.Many2one(
-        string="Indicator",
+        string="# Indicator",
         comodel_name="general_audit_fraud_factor_indicator",
         required=True,
-        help="Fraud risk indicator being assessed.",
+        help="Fraud risk indicator ID.",
+    )
+    indicator_name = fields.Char(
+        string="Indicator",
+        related="indicator_id.name",
+        help="Fraud risk indicator name.",
     )
     factor_id = fields.Many2one(
         related="indicator_id.factor_id",
