@@ -2,7 +2,7 @@
 # Copyright 2025 PT. Simetri Sinergi Indonesia
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl-3.0-standalone.html).
 
-from odoo import fields, models
+from odoo import api, fields, models
 
 
 class GeneralAuditWSddf034c(models.Model):
@@ -72,9 +72,23 @@ class GeneralAuditWSddf034c(models.Model):
             "Total number of authorized shares as specified in the Deed of Establishment."
         ),
     )
+
+    @api.depends(
+        "est_authorized_amount",
+        "est_authorized_number",
+    )
+    def _compute_est_authorized_value(self):
+        for record in self:
+            record.est_authorized_value = 0.0
+            if record.est_authorized_amount and record.est_authorized_number:
+                record.est_authorized_value = (
+                    record.est_authorized_amount * record.est_authorized_number
+                )
+
     est_authorized_value = fields.Float(
         string="Authorized Shared Value (Est.)",
-        default=False,
+        compute_sudo=True,
+        compute="_compute_est_authorized_value",
         help=(
             "Par value per authorized share as specified in the Deed of Establishment."
         ),
@@ -87,8 +101,21 @@ class GeneralAuditWSddf034c(models.Model):
         string="Paid Shared Number (Est.)",
         help=("Number of paid-in shares at the time of establishment."),
     )
+
+    @api.depends(
+        "est_paid_amount",
+        "est_paid_number",
+    )
+    def _compute_est_paid_value(self):
+        for record in self:
+            record.est_paid_value = 0.0
+            if record.est_paid_amount and record.est_paid_number:
+                record.est_paid_value = record.est_paid_amount * record.est_paid_number
+
     est_paid_value = fields.Float(
         string="Paid Shared Value (Est.)",
+        compute_sudo=True,
+        compute="_compute_est_paid_value",
         help=("Par value per paid-in share at the time of establishment."),
     )
     est_company_address = fields.Text(
@@ -149,9 +176,23 @@ class GeneralAuditWSddf034c(models.Model):
             "Total number of authorized shares as specified in the Deed of Amendment."
         ),
     )
+
+    @api.depends(
+        "adm_authorized_amount",
+        "adm_authorized_number",
+    )
+    def _compute_adm_authorized_value(self):
+        for record in self:
+            record.adm_authorized_value = 0.0
+            if record.adm_authorized_amount and record.adm_authorized_number:
+                record.adm_authorized_value = (
+                    record.adm_authorized_amount * record.adm_authorized_number
+                )
+
     adm_authorized_value = fields.Float(
         string="Authorized Shared Value (Adm.)",
-        default=False,
+        compute_sudo=True,
+        compute="_compute_adm_authorized_value",
         help=("Par value per authorized share as specified in the Deed of Amendment."),
     )
     adm_paid_amount = fields.Float(
@@ -164,8 +205,21 @@ class GeneralAuditWSddf034c(models.Model):
         string="Paid Shared Number (Adm.)",
         help=("Number of paid-in shares as per the latest Deed of Amendment."),
     )
+
+    @api.depends(
+        "adm_paid_amount",
+        "adm_paid_number",
+    )
+    def _compute_adm_paid_value(self):
+        for record in self:
+            record.adm_paid_value = 0.0
+            if record.adm_paid_amount and record.adm_paid_number:
+                record.adm_paid_value = record.adm_paid_amount * record.adm_paid_number
+
     adm_paid_value = fields.Float(
         string="Paid Shared Value (Adm.)",
+        compute_sudo=True,
+        compute="_compute_adm_paid_value",
         help=("Par value per paid-in share as per the latest Deed of Amendment."),
     )
     adm_company_address = fields.Text(
