@@ -63,6 +63,8 @@
         "views/general_audit_subsequent_event_views.xml",
         "views/general_audit_related_party_confirmation_procedure_views.xml",
         "views/general_audit_going_concern_confirmation_procedure_views.xml",
+        "views/trial_balance_computation_item_views.xml",
+        "views/general_audit_going_concern_z_score_coeficient_set_views.xml",
     ],
     "demo": [],
 }
