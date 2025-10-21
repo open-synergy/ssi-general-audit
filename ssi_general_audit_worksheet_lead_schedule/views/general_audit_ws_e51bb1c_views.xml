@@ -48,6 +48,11 @@
                     <page name="detail" string="Detail">
                         <group name="detail_1" colspan="4" col="2">
                             <field name="account_type_id" />
+                            <field
+                                name="allowed_employee_ids"
+                                widget="many2many_tags"
+                                invisible="1"
+                            />
                         </group>
                         <button
                             name="action_load_detail"
@@ -64,13 +69,20 @@
                                 delete="false"
                                 edit="false"
                             >
-                                <field name="audit_procedure_category_id" />
+                                <field
+                                    name="audit_procedure_category_id"
+                                    invisible="1"
+                                />
                                 <field name="audit_procedure_id" />
                                 <field
                                     name="assertion_type_ids"
                                     widget="many2many_tags"
+                                    invisible="1"
                                 />
-                                <field name="employee_id" />
+                                <field
+                                    name="employee_id"
+                                    domain="[('id', 'in', parent.allowed_employee_ids)]"
+                                />
                                 <field name="status" />
                                 <field name="reference" />
                             </tree>

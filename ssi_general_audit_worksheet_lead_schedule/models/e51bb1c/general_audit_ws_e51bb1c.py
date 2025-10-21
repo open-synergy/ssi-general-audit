@@ -23,11 +23,50 @@ class GeneralAuditWSe51bb1c(models.Model):
         readonly=True,
         ondelete="restrict",
     )
+
+    @api.depends(
+        "general_audit_id",
+    )
+    def _compute_allowed_account_type_ids(self):
+        for record in self:
+            record.allowed_account_type_ids = self.env["client_account_type"]
+            if record.general_audit_id:
+                record.allowed_account_type_ids = record.general_audit_id.mapped(
+                    "standard_detail_ids.type_id"
+                )
+
     allowed_account_type_ids = fields.Many2many(
         comodel_name="client_account_type",
         string="Allowed Account Types",
         help="Account types that can be selected",
         compute="_compute_allowed_account_type_ids",
+        store=False,
+    )
+
+    @api.depends(
+        "general_audit_id",
+    )
+    def _compute_allowed_employee_ids(self):
+        obj = self.env["general_audit_ws_b9d8a5c"]
+        for record in self:
+            record.allowed_employee_ids = self.env["hr.employee"]
+            if record.general_audit_id:
+                criteria = [
+                    ("general_audit_id", "=", record.general_audit_id.id),
+                ]
+                ws_b9d8a5c = obj.search(criteria)
+                if ws_b9d8a5c:
+                    summaries = ws_b9d8a5c.summary_ids.filtered(
+                        lambda x: x.select_team == "yes"
+                    )
+                    if summaries:
+                        result = summaries.mapped("employee_id")
+                record.allowed_employee_ids = result
+
+    allowed_employee_ids = fields.Many2many(
+        string="Allowed Employees",
+        comodel_name="hr.employee",
+        compute="_compute_allowed_employee_ids",
         store=False,
     )
     detail_ids = fields.One2many(
@@ -40,17 +79,6 @@ class GeneralAuditWSe51bb1c(models.Model):
             "open": [("readonly", False)],
         },
     )
-
-    @api.depends(
-        "general_audit_id",
-    )
-    def _compute_allowed_account_type_ids(self):
-        for record in self:
-            record.allowed_account_type_ids = self.env["client_account_type"]
-            if record.general_audit_id:
-                record.allowed_account_type_ids = record.general_audit_id.mapped(
-                    "standard_detail_ids.type_id"
-                )
 
     def action_load_detail(self):
         for record in self.sudo():

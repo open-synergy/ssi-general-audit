@@ -45,6 +45,7 @@ class GeneralAuditWSe51bb1cDetail(models.Model):
         required=True,
         default="not_relevant",
     )
+
     employee_id = fields.Many2one(
         comodel_name="hr.employee",
         string="Assigned To",
