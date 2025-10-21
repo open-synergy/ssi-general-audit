@@ -183,6 +183,16 @@ class GeneralAuditWorksheet(models.Model):
         },
         help="Narrative explanation to support the selected conclusion.",
     )
+    review = fields.Text(
+        string="Review Notes",
+        readonly=True,
+        states={
+            "open": [
+                ("readonly", False),
+            ],
+        },
+        help="Notes and observations from the review of the worksheet.",
+    )
 
     @api.constrains(
         "state",

@@ -47,6 +47,12 @@ class GeneralAuditWorksheetType(models.Model):
         default=2,
         help="Maximum number of worksheets of this type allowed in one audit.",
     )
+    main_worksheet = fields.Boolean(
+        string="Main Worksheet",
+        required=True,
+        default=False,
+        help="Indicates if this worksheet type is a main worksheet in the audit.",
+    )
     standard_item_ids = fields.Many2many(
         string="Relevant Audit Standard Items",
         comodel_name="general_audit_standard_audit",
