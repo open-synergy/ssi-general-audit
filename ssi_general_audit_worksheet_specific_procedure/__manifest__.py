@@ -17,7 +17,9 @@
         "security/ir_module_category_data.xml",
         "security/res_group_data.xml",
         "data/general_audit_worksheet_type_data.xml",
-        # a8f4d88
+        # MASTER DATA
+        "data/master/general_audit_ws_ee819ae_item.xml",
+        # a8f4d88 - Accounting Estimation
         "security/res_group/general_audit_ws_a8f4d88.xml",
         "security/ir_rule/general_audit_ws_a8f4d88.xml",
         "data/ir_sequence/general_audit_ws_a8f4d88.xml",
@@ -25,7 +27,7 @@
         "data/policy_template/general_audit_ws_a8f4d88.xml",
         "data/approval_template/general_audit_ws_a8f4d88.xml",
         "views/general_audit_ws_a8f4d88_views.xml",
-        # c40cfd9
+        # c40cfd9 - Related Party Transaction
         "security/res_group/general_audit_ws_c40cfd9.xml",
         "security/ir_rule/general_audit_ws_c40cfd9.xml",
         "data/ir_sequence/general_audit_ws_c40cfd9.xml",
@@ -33,7 +35,7 @@
         "data/policy_template/general_audit_ws_c40cfd9.xml",
         "data/approval_template/general_audit_ws_c40cfd9.xml",
         "views/general_audit_ws_c40cfd9_views.xml",
-        # cb82c5f
+        # cb82c5f - Subsequent Event
         "security/res_group/general_audit_ws_cb82c5f.xml",
         "security/ir_rule/general_audit_ws_cb82c5f.xml",
         "data/ir_sequence/general_audit_ws_cb82c5f.xml",
@@ -41,7 +43,7 @@
         "data/policy_template/general_audit_ws_cb82c5f.xml",
         "data/approval_template/general_audit_ws_cb82c5f.xml",
         "views/general_audit_ws_cb82c5f_views.xml",
-        # fbf57ee
+        # fbf57ee - Going Concern
         "security/res_group/general_audit_ws_fbf57ee.xml",
         "security/ir_rule/general_audit_ws_fbf57ee.xml",
         "data/ir_sequence/general_audit_ws_fbf57ee.xml",
@@ -49,14 +51,15 @@
         "data/policy_template/general_audit_ws_fbf57ee.xml",
         "data/approval_template/general_audit_ws_fbf57ee.xml",
         "views/general_audit_ws_fbf57ee_views.xml",
-        # ee819ae
+        # ee819ae - Commitment and Contingent
         "security/res_group/general_audit_ws_ee819ae.xml",
         "security/ir_rule/general_audit_ws_ee819ae.xml",
         "data/ir_sequence/general_audit_ws_ee819ae.xml",
         "data/sequence_template/general_audit_ws_ee819ae.xml",
         "data/policy_template/general_audit_ws_ee819ae.xml",
         "data/approval_template/general_audit_ws_ee819ae.xml",
-        "views/general_audit_ws_ee819ae_views.xml",
+        "views/ga_ee819ae/general_audit_ws_ee819ae_views.xml",
+        "views/ga_ee819ae/general_audit_ws_ee819ae_item_views.xml",
         "security/ir.model.access.csv",
         "views/general_audit_accounting_estimation_method_views.xml",
         "views/general_audit_accounting_estimation_relevant_control_views.xml",

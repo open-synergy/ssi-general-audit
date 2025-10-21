@@ -1,0 +1,108 @@
+<?xml version="1.0" ?>
+<!-- Copyright 2025 OpenSynergy Indonesia
+     Copyright 2025 PT. Simetri Sinergi Indonesia
+     License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl-3.0-standalone.html). -->
+<odoo>
+
+    <record id="general_audit_ws_ee819ae_view_search" model="ir.ui.view">
+        <field name="name">general_audit_ws_ee819ae form</field>
+        <field name="model">general_audit_ws_ee819ae</field>
+        <field
+            name="inherit_id"
+            ref="ssi_general_audit.general_audit_worksheet_mixin_view_search"
+        />
+        <field name="mode">primary</field>
+        <field name="arch" type="xml">
+            <data />
+        </field>
+    </record>
+
+    <record id="general_audit_ws_ee819ae_view_tree" model="ir.ui.view">
+        <field name="name">general_audit_ws_ee819ae tree</field>
+        <field name="model">general_audit_ws_ee819ae</field>
+        <field name="mode">primary</field>
+        <field
+            name="inherit_id"
+            ref="ssi_general_audit.general_audit_worksheet_mixin_view_tree"
+        />
+        <field name="arch" type="xml">
+            <data>
+            </data>
+        </field>
+    </record>
+
+    <record id="general_audit_ws_ee819ae_view_form" model="ir.ui.view">
+        <field name="name">general_audit_ws_ee819ae form</field>
+        <field name="model">general_audit_ws_ee819ae</field>
+        <field name="mode">primary</field>
+        <field
+            name="inherit_id"
+            ref="ssi_general_audit.general_audit_worksheet_mixin_view_form"
+        />
+        <field name="arch" type="xml">
+            <data>
+                <xpath expr="//page[@name='note']" position="before">
+                    <page name="checklist" string="Checklist">
+                        <button
+                            name="action_populate_checklist"
+                            string="Populate"
+                            type="object"
+                            icon="fa-refresh"
+                            class="oe_highlight"
+                            style="margin-right:4px"
+                            attrs="{'invisible': [('state', '!=', 'open')]}"
+                        />
+                        <field name="checklist_ids">
+                            <tree create="false" delete="false">
+                                <field name="sequence" widget="handle" />
+                                <field
+                                    name="item_id"
+                                    options="{'no_create': True, 'no_create_edit': True}"
+                                />
+                                <field name="allowed_option_ids" invisible="1" />
+                                <field
+                                    name="option_id"
+                                    domain="[('id', 'in', allowed_option_ids)]"
+                                />
+                                <field name="explanation" />
+                            </tree>
+                            <form>
+                                <sheet>
+                                    <group>
+                                    <field name="item_id" invisible="1" />
+                                    <field name="item_name" />
+                                        <field
+                                            name="allowed_option_ids"
+                                            invisible="1"
+                                        />
+                                        <field
+                                            name="option_id"
+                                            domain="[('id', 'in', allowed_option_ids)]"
+                                        />
+                                        <field name="explanation" />
+                                    </group>
+                                </sheet>
+                            </form>
+                        </field>
+                    </page>
+                </xpath>
+            </data>
+        </field>
+    </record>
+
+    <record id="general_audit_ws_ee819ae_action" model="ir.actions.act_window">
+        <field name="name">Commitment and Contingent</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">general_audit_ws_ee819ae</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+    <menuitem
+        id="general_audit_ws_ee819ae_menu"
+        name="Commitment and Contingent"
+        parent="ssi_general_audit.menu_general_audit_specific_procedure"
+        action="general_audit_ws_ee819ae_action"
+        sequence="7"
+        groups="general_audit_ws_ee819ae_viewer_group"
+    />
+</odoo>

@@ -7,7 +7,7 @@ from . import a8f4d88  # noqa: F401
 from . import c40cfd9  # noqa: F401
 from . import cb82c5f  # noqa: F401
 from . import fbf57ee  # noqa: F401
-from . import ee819ae  # noqa: F401
+from . import ga_ee819ae  # noqa: F401
 from . import general_audit_accounting_estimation_method  # noqa: F401
 from . import general_audit_accounting_estimation_relevant_control  # noqa: F401
 from . import general_audit_subsequent_event  # noqa: F401
