@@ -18,6 +18,8 @@ class GeneralAudit(models.Model):
         relation="rel_general_audit_2_business_cycle",
         column1="general_audit_id",
         column2="business_process_id",
+        readonly=True,
+        help=("Business cycles relevant to the audit engagement"),
     )
     other_report_ids = fields.Many2many(
         string="Other Reports",
@@ -25,11 +27,14 @@ class GeneralAudit(models.Model):
         relation="rel_general_audit_2_other_report",
         column1="general_audit_id",
         column2="other_report_id",
+        readonly=True,
+        help=("Other reports relevant to the audit engagement"),
     )
     ws_ae11f7e_expert_ids = fields.One2many(
         string="WS AE11F7E Details",
         comodel_name="general_audit_ws_ae11f7e.expert",
         inverse_name="general_audit_id",
+        readonly=True,
     )
     expert_type_ids = fields.Many2many(
         string="Expert Needed",
@@ -40,6 +45,7 @@ class GeneralAudit(models.Model):
         compute="_compute_expert_type_ids",
         store=True,
         compute_sudo=True,
+        help=("Types of experts needed for the audit engagement"),
     )
 
     # Impacted standard account
