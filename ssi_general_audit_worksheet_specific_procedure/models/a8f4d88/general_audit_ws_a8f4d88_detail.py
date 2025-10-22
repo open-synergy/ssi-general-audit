@@ -33,7 +33,7 @@ class GeneralAuditWSa8f4d88Detail(models.Model):
         required=True,
     )
     relevant_control_id = fields.Many2one(
-        comodel_name="general_audit_accounting_estimation_relevant_control",
+        comodel_name="general_audit_control_activity",
         string="Relevant Controls",
         relation="rel_general_audit_ws_a8f4d88_detail_2_acc_est_relevant_control",
         column1="detail_id",

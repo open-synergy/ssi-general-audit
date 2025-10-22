@@ -12,6 +12,7 @@
     "depends": [
         "ssi_general_audit",
         "ssi_general_audit_worksheet_understanding_entity",
+        "ssi_general_audit_worksheet_control_risk",
     ],
     "data": [
         "security/ir_module_category_data.xml",
@@ -64,7 +65,6 @@
         "views/ga_ee819ae/general_audit_ws_ee819ae_item_views.xml",
         "security/ir.model.access.csv",
         "views/general_audit_accounting_estimation_method_views.xml",
-        "views/general_audit_accounting_estimation_relevant_control_views.xml",
         "views/general_audit_subsequent_event_views.xml",
         "views/general_audit_related_party_confirmation_procedure_views.xml",
         "views/general_audit_going_concern_confirmation_procedure_views.xml",
