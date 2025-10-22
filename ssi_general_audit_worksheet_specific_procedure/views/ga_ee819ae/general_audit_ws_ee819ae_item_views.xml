@@ -27,6 +27,9 @@
         <field name="mode">primary</field>
         <field name="arch" type="xml">
             <data>
+                <xpath expr="//field[@name='id']" position="before">
+                    <field name="sequence" widget="handle" />
+                </xpath>
             </data>
         </field>
     </record>
@@ -42,6 +45,7 @@
         <field name="arch" type="xml">
             <data>
                 <xpath expr="//field[@name='code']" position="after">
+                    <field name="sequence" />
                     <field name="option_set_id" />
                 </xpath>
             </data>
