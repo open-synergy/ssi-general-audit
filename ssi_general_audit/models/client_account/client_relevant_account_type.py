@@ -7,7 +7,7 @@ from odoo import fields, models
 class ClientRelevantAccountType(models.Model):
     _name = "client_relevant_account_type"
     _inherit = ["mixin.master_data"]
-    _description = "Client Relevant Account Type"
+    _description = "Relevant Accounting Standards"
     _order = "sequence, id"
     _show_code_on_display_name = False
 
