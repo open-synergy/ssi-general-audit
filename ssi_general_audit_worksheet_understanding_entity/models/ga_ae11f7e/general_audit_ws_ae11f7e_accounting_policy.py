@@ -40,7 +40,7 @@ class GeneralAuditWSAE11F7EAccountingPolicy(models.Model):
         ),
     )
     relevant_account_type_ids = fields.Many2many(
-        string="Relevant Standard Accounts",
+        string="Relevant Accounting Standards",
         comodel_name="client_relevant_account_type",
         relation="rel_ga_ws_ae11f7e_accounting_policy_2_relevant_account",
         column1="accounting_policy_id",
