@@ -41,6 +41,44 @@
         />
         <field name="arch" type="xml">
             <data>
+                <xpath expr="//page[@name='note']" position='before'>
+                    <page name="link_1" string="Details">
+                        <button
+                            name="action_recompute"
+                            string="Reload"
+                            type="object"
+                            icon="fa-refresh"
+                            class="oe_highlight"
+                            style="margin-right:4px"
+                            attrs="{'invisible': [('state', '!=', 'open')]}"
+                        />
+                        <separator string="Findings That Influence Opinion" />
+                        <field name="link_1_ids" nolabel="1">
+                            <tree>
+                                <field name="risk" />
+                                <field name="condition" />
+                                <field name="criteria" />
+                                <field name="cause" />
+                                <field name="effect" />
+                                <field name="proposed_adjustment" />
+                            </tree>
+                        </field>
+                        <separator string="Control Deficiencies" />
+                        <field name="link_2_ids" nolabel="1">
+                            <tree>
+                                <field name="risk" />
+                                <field name="condition" />
+                                <field name="criteria" />
+                                <field name="cause" />
+                                <field name="effect" />
+                                <field
+                                    name="proposed_adjustment"
+                                    string="Recommendation"
+                                />
+                            </tree>
+                        </field>
+                    </page>
+                </xpath>
             </data>
         </field>
     </record>
@@ -55,7 +93,7 @@
     <menuitem
         id="general_audit_ws_ab19fd4_menu"
         name="Audit Result Formulation"
-        parent="ssi_general_audit.menu_general_audit_audit_result"
+        parent="ssi_general_audit.menu_general_audit_audit_result_info"
         action="general_audit_ws_ab19fd4_action"
         sequence="1"
         groups="general_audit_ws_ab19fd4_viewer_group"

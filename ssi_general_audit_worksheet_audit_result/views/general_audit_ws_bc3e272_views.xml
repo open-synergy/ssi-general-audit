@@ -41,6 +41,55 @@
         />
         <field name="arch" type="xml">
             <data>
+                <xpath expr="//page[@name='note']" position='before'>
+                    <page name="detail" string="Details">
+                        <button
+                            name="action_populate"
+                            string="Populate"
+                            type="object"
+                            icon="fa-refresh"
+                            class="oe_highlight"
+                            style="margin-right:4px"
+                            attrs="{'invisible': [('state', '!=', 'open')]}"
+                        />
+                        <separator string="Findings That Influence Opinion" />
+                        <field name="influence_ids" nolabel="1">
+                            <tree create="false" delete="false">
+                                <field name="condition" />
+                                <field name="risk" />
+                                <field name="result" />
+                                <field name="follow_up" />
+                            </tree>
+                            <form>
+                                <group name="group_1">
+                                    <field name="worksheet_id" invisible="1" />
+                                    <field name="condition" />
+                                    <field name="risk" />
+                                    <field name="result" />
+                                    <field name="follow_up" />
+                                </group>
+                            </form>
+                        </field>
+                        <separator string="Control Deficiencies" />
+                        <field name="control_ids" nolabel="1">
+                            <tree create="false" delete="false">
+                                <field name="condition" />
+                                <field name="risk" />
+                                <field name="result" />
+                                <field name="follow_up" />
+                            </tree>
+                            <form>
+                                <group name="group_1">
+                                    <field name="worksheet_id" invisible="1" />
+                                    <field name="condition" />
+                                    <field name="risk" />
+                                    <field name="result" />
+                                    <field name="follow_up" />
+                                </group>
+                            </form>
+                        </field>
+                    </page>
+                </xpath>
             </data>
         </field>
     </record>

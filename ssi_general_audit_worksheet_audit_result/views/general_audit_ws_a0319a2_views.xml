@@ -1,0 +1,88 @@
+<?xml version="1.0" ?>
+<!-- Copyright 2025 OpenSynergy Indonesia
+     Copyright 2025 PT. Simetri Sinergi Indonesia
+     License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl-3.0-standalone.html). -->
+<odoo>
+
+    <record id="general_audit_ws_a0319a2_view_search" model="ir.ui.view">
+        <field name="name">general_audit_ws_a0319a2 form</field>
+        <field name="model">general_audit_ws_a0319a2</field>
+        <field
+            name="inherit_id"
+            ref="ssi_general_audit.general_audit_worksheet_mixin_view_search"
+        />
+        <field name="mode">primary</field>
+        <field name="arch" type="xml">
+            <data />
+        </field>
+    </record>
+
+    <record id="general_audit_ws_a0319a2_view_tree" model="ir.ui.view">
+        <field name="name">general_audit_ws_a0319a2 tree</field>
+        <field name="model">general_audit_ws_a0319a2</field>
+        <field name="mode">primary</field>
+        <field
+            name="inherit_id"
+            ref="ssi_general_audit.general_audit_worksheet_mixin_view_tree"
+        />
+        <field name="arch" type="xml">
+            <data>
+            </data>
+        </field>
+    </record>
+
+    <record id="general_audit_ws_a0319a2_view_form" model="ir.ui.view">
+        <field name="name">general_audit_ws_a0319a2 form</field>
+        <field name="model">general_audit_ws_a0319a2</field>
+        <field name="mode">primary</field>
+        <field
+            name="inherit_id"
+            ref="ssi_general_audit.general_audit_worksheet_mixin_view_form"
+        />
+        <field name="arch" type="xml">
+            <data>
+                <xpath expr="//page[@name='note']" position='before'>
+                    <page name="detail" string="Details">
+                        <field name="detail_ids" nolabel="1">
+                            <tree>
+                                <field name="risk" />
+                                <field name="condition" />
+                                <field name="criteria" />
+                                <field name="cause" />
+                                <field name="effect" />
+                                <field name="proposed_adjustment" />
+                            </tree>
+                            <form>
+                                <group name="group_1">
+                                    <field name="worksheet_id" invisible="1" />
+                                    <field name="risk" />
+                                    <field name="condition" />
+                                    <field name="criteria" />
+                                    <field name="cause" />
+                                    <field name="effect" />
+                                    <field name="proposed_adjustment" />
+                                </group>
+                            </form>
+                        </field>
+                    </page>
+                </xpath>
+            </data>
+        </field>
+    </record>
+
+    <record id="general_audit_ws_a0319a2_action" model="ir.actions.act_window">
+        <field name="name">Findings That Influence Opinion</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">general_audit_ws_a0319a2</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+    <menuitem
+        id="general_audit_ws_a0319a2_menu"
+        name="Findings That Influence Opinion"
+        parent="ssi_general_audit.menu_general_audit_audit_result_info"
+        action="general_audit_ws_a0319a2_action"
+        sequence="2"
+        groups="general_audit_ws_a0319a2_viewer_group"
+    />
+</odoo>

@@ -3,8 +3,7 @@
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl-3.0-standalone.html).
 
 from . import (
-    ga_a0319a2,
-    ga_d33420f,
-    ga_ab19fd4,
-    ga_bc3e272,
+    general_audit_ws_bc3e272_influence,
+    general_audit_ws_bc3e272_control,
+    general_audit_ws_bc3e272,
 )
