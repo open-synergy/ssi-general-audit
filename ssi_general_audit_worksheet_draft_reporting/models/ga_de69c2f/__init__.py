@@ -3,10 +3,7 @@
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl-3.0-standalone.html).
 
 from . import (
-    ga_b555edd,
-    ga_e59c663,
-    ga_de69c2f,
-    ga_ff42fdc,
-    ga_ae598e6,
-    ga_bbbdfe7,
+    general_audit_ws_de69c2f_item,
+    general_audit_ws_de69c2f,
+    general_audit_ws_de69c2f_checklist,
 )

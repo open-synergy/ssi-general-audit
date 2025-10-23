@@ -1,0 +1,132 @@
+<?xml version="1.0" ?>
+<!-- Copyright 2025 OpenSynergy Indonesia
+     Copyright 2025 PT. Simetri Sinergi Indonesia
+     License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl-3.0-standalone.html). -->
+<odoo>
+
+    <record id="general_audit_ws_ae598e6_view_search" model="ir.ui.view">
+        <field name="name">general_audit_ws_ae598e6 form</field>
+        <field name="model">general_audit_ws_ae598e6</field>
+        <field
+            name="inherit_id"
+            ref="ssi_general_audit.general_audit_worksheet_mixin_view_search"
+        />
+        <field name="mode">primary</field>
+        <field name="arch" type="xml">
+            <data />
+        </field>
+    </record>
+
+    <record id="general_audit_ws_ae598e6_view_tree" model="ir.ui.view">
+        <field name="name">general_audit_ws_ae598e6 tree</field>
+        <field name="model">general_audit_ws_ae598e6</field>
+        <field name="mode">primary</field>
+        <field
+            name="inherit_id"
+            ref="ssi_general_audit.general_audit_worksheet_mixin_view_tree"
+        />
+        <field name="arch" type="xml">
+            <data>
+            </data>
+        </field>
+    </record>
+
+    <record id="general_audit_ws_ae598e6_view_form" model="ir.ui.view">
+        <field name="name">general_audit_ws_ae598e6 form</field>
+        <field name="model">general_audit_ws_ae598e6</field>
+        <field name="mode">primary</field>
+        <field
+            name="inherit_id"
+            ref="ssi_general_audit.general_audit_worksheet_mixin_view_form"
+        />
+        <field name="arch" type="xml">
+            <data>
+                <xpath expr="//page[@name='note']" position='before'>
+                    <page name="detail" string="Details">
+                        <button
+                            name="action_populate"
+                            string="Populate"
+                            type="object"
+                            icon="fa-refresh"
+                            class="oe_highlight"
+                            style="margin-right:4px"
+                            attrs="{'invisible': [('state', '!=', 'open')]}"
+                        />
+                        <separator string="Compliance with Laws and Regulations" />
+                        <field name="influence_ids" nolabel="1">
+                            <tree create="false" delete="false">
+                                <field name="risk" />
+                                <field name="condition" />
+                                <field name="criteria" />
+                                <field name="cause" />
+                                <field name="effect" />
+                                <field
+                                    name="proposed_adjustment"
+                                    string="Recommendation"
+                                />
+                            </tree>
+                            <form>
+                                <group name="group_1">
+                                    <field name="worksheet_id" invisible="1" />
+                                    <field name="risk" />
+                                    <field name="condition" />
+                                    <field name="criteria" />
+                                    <field name="cause" />
+                                    <field name="effect" />
+                                    <field
+                                        name="proposed_adjustment"
+                                        string="Recommendation"
+                                    />
+                                </group>
+                            </form>
+                        </field>
+                        <separator string="Compliance with Internal Controls" />
+                        <field name="control_ids" nolabel="1">
+                            <tree create="false" delete="false">
+                                <field name="risk" />
+                                <field name="condition" />
+                                    <field name="criteria" />
+                                    <field name="cause" />
+                                    <field name="effect" />
+                                    <field
+                                    name="proposed_adjustment"
+                                    string="Recommendation"
+                                />
+                            </tree>
+                            <form>
+                                <group name="group_1">
+                                    <field name="worksheet_id" invisible="1" />
+                                    <field name="risk" />
+                                    <field name="condition" />
+                                    <field name="criteria" />
+                                    <field name="cause" />
+                                    <field name="effect" />
+                                    <field
+                                        name="proposed_adjustment"
+                                        string="Recommendation"
+                                    />
+                                </group>
+                            </form>
+                        </field>
+                    </page>
+                </xpath>
+            </data>
+        </field>
+    </record>
+
+    <record id="general_audit_ws_ae598e6_action" model="ir.actions.act_window">
+        <field name="name">Management Letter</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">general_audit_ws_ae598e6</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+    <menuitem
+        id="general_audit_ws_ae598e6_menu"
+        name="Management Letter"
+        parent="ssi_general_audit.menu_general_audit_final_discussion"
+        action="general_audit_ws_ae598e6_action"
+        sequence="3"
+        groups="general_audit_ws_ae598e6_viewer_group"
+    />
+</odoo>
