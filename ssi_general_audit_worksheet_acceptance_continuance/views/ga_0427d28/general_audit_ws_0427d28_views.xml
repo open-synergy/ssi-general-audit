@@ -63,12 +63,16 @@
                         <field name="checklist_ids">
                             <tree editable="top">
                                 <field name="sequence" widget="handle" />
-                                <field name="item_id" />
+                                <field
+                                    name="item_id"
+                                    style="white-space: normal; word-wrap: break-word; overflow-wrap: break-word;"
+                                />
                                 <field name="allowed_option_ids" invisible="1" />
                                 <field
                                     name="option_id"
                                     domain="[('id', 'in', allowed_option_ids)]"
                                 />
+
                             </tree>
                             <form>
                                 <sheet>
