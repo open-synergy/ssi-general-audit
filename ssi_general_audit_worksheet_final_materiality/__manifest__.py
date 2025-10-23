@@ -15,6 +15,8 @@
     "data": [
         "security/ir_module_category_data.xml",
         "data/general_audit_worksheet_type_data.xml",
+        # MASTER DATA
+        "data/master/general_audit_ws_c2375d8_item.xml",
         # bb33b94
         "security/res_group/general_audit_ws_bb33b94.xml",
         "security/ir_rule/general_audit_ws_bb33b94.xml",
@@ -23,14 +25,15 @@
         "data/policy_template/general_audit_ws_bb33b94.xml",
         "data/approval_template/general_audit_ws_bb33b94.xml",
         "views/general_audit_ws_bb33b94_views.xml",
-        # c2375d8
+        # c2375d8 - Final Analytical Procedures
         "security/res_group/general_audit_ws_c2375d8.xml",
         "security/ir_rule/general_audit_ws_c2375d8.xml",
         "data/ir_sequence/general_audit_ws_c2375d8.xml",
         "data/sequence_template/general_audit_ws_c2375d8.xml",
         "data/policy_template/general_audit_ws_c2375d8.xml",
         "data/approval_template/general_audit_ws_c2375d8.xml",
-        "views/general_audit_ws_c2375d8_views.xml",
+        "views/ga_c2375d8/general_audit_ws_c2375d8_views.xml",
+        "views/ga_c2375d8/general_audit_ws_c2375d8_item_views.xml",
         "security/ir.model.access.csv",
     ],
     "demo": [],

@@ -3,6 +3,18 @@
      Copyright 2025 PT. Simetri Sinergi Indonesia
      License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl). -->
 <odoo>
+<!-- Configurator -->
+<record id="general_audit_ws_c2375d8_item_group" model="res.groups">
+    <field name="name">Final Analytical Procedures Checklist</field>
+    <field
+            name="category_id"
+            ref="ssi_accountant.accountant_configurator_module_category"
+        />
+    <field
+            name="users"
+            eval="[(4, ref('base.user_root')), (4, ref('base.user_admin'))]"
+        />
+</record>
 <!-- Workflow -->
 <record id="general_audit_ws_c2375d8_viewer_group" model="res.groups">
     <field name="name">Viewer</field>
