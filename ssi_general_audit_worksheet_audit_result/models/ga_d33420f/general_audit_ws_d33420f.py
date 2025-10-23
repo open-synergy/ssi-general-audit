@@ -20,4 +20,8 @@ class GeneralAuditWSd33420f(models.Model):
         states={
             "open": [("readonly", False)],
         },
+        help=(
+            "List of control deficiency detail lines captured in this worksheet. "
+            "Editable when the worksheet is in the 'Open' state."
+        ),
     )

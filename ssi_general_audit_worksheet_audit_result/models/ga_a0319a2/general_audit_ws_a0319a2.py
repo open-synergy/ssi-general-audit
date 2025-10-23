@@ -20,4 +20,8 @@ class GeneralAuditWSa0319a2(models.Model):
         states={
             "open": [("readonly", False)],
         },
+        help=(
+            "List of detail lines that capture findings influencing the audit opinion. "
+            "Editable when the worksheet is in the 'Open' state."
+        ),
     )

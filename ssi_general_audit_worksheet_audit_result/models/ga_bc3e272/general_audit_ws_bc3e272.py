@@ -22,6 +22,10 @@ class GeneralAuditWSbc3e272(models.Model):
         states={
             "open": [("readonly", False)],
         },
+        help=(
+            "Lines referencing 'Findings That Influence Opinion' to be discussed "
+            "and tracked within this worksheet. Editable when state is Open."
+        ),
     )
     control_ids = fields.One2many(
         string="Control Deficiencies",
@@ -31,6 +35,10 @@ class GeneralAuditWSbc3e272(models.Model):
         states={
             "open": [("readonly", False)],
         },
+        help=(
+            "Lines referencing 'Control Deficiencies' to be discussed and tracked "
+            "within this worksheet. Editable when state is Open."
+        ),
     )
 
     def action_populate(self):
