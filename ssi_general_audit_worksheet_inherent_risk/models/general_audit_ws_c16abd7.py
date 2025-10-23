@@ -71,8 +71,8 @@ class GeneralAuditWSc16abd7(models.Model):
     ws_bdcdfc5_ids = fields.Many2many(
         string="# Understanding of the Business Environment",
         comodel_name="general_audit_ws_bdcdfc5",
-        relation="general_audit_ws_c165170_bdcdfc5_rel",
-        column1="ws_c165170_id",
+        relation="general_audit_ws_c16abd7_bdcdfc5_rel",
+        column1="ws_c16abd7_id",
         column2="ws_bdcdfc5_id",
         readonly=True,
         required=False,
