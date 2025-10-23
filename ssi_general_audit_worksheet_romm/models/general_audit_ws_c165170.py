@@ -13,6 +13,80 @@ class GeneralAuditWSc165170(models.Model):
     ]
     _type_xml_id = "ssi_general_audit_worksheet_romm." "worksheet_type_c165170"
 
+    # Link
+
+    ws_c0e0eec_id = fields.Many2one(
+        string="# Fraud Factor Analysis",
+        comodel_name="general_audit_ws_c0e0eec",
+        readonly=True,
+        required=False,
+        states={
+            "open": [
+                ("readonly", False),
+                ("required", True),
+            ],
+        },
+        help="Link to Fraud Factor Analysis worksheet.",
+    )
+    ws_c0e0eec_id_review = fields.Text(
+        string="Review Note on Fraud Factor Analysis",
+        related="ws_c0e0eec_id.review",
+        readonly=True,
+        help="Review note from the linked Fraud Factor Analysis worksheet.",
+    )
+    ws_b59b886_id = fields.Many2one(
+        string="# Control Risk - Entity Level",
+        comodel_name="general_audit_ws_b59b886",
+        readonly=True,
+        required=False,
+        states={
+            "open": [
+                ("readonly", False),
+                ("required", True),
+            ],
+        },
+        help="Link to Control Risk - Entity Level worksheet.",
+    )
+    ws_f6a227_id = fields.Many2one(
+        string="# Understanding of preparation of Financial Statements",
+        comodel_name="general_audit_ws_f6a227",
+        readonly=True,
+        required=False,
+        states={
+            "open": [
+                ("readonly", False),
+                ("required", True),
+            ],
+        },
+    )
+    ws_f6a227_id_review = fields.Text(
+        related="ws_f6a227_id.review",
+        string="Review Note on Understanding of preparation of Financial Statements",
+        readonly=True,
+    )
+    ws_b59b886_id_review = fields.Text(
+        string="Review Note on Control Risk - Entity Level",
+        related="ws_b59b886_id.review",
+        readonly=True,
+        help="Review note from the linked Control Risk - Entity Level worksheet.",
+    )
+    ws_bdcdfc5_ids = fields.Many2many(
+        string="# Understanding of the Business Environment",
+        comodel_name="general_audit_ws_bdcdfc5",
+        relation="general_audit_ws_c165170_bdcdfc5_rel",
+        column1="ws_c165170_id",
+        column2="ws_bdcdfc5_id",
+        readonly=True,
+        required=False,
+        states={
+            "open": [
+                ("readonly", False),
+                ("required", True),
+            ],
+        },
+        help="Links to Understanding of the Business Environment worksheets.",
+    )
+
     risk_material_missstatement = fields.Selection(
         string="Risk Material Misstatement",
         selection=[
