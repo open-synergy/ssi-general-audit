@@ -41,6 +41,9 @@
         "ssi_general_audit_worksheet_final_report",
     ],
     "data": [
+        "data/ir_config_parameter.xml",
+        "data/res_currency.xml",
+        "data/res_company.xml",
         "menu.xml",
     ],
 }

@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <!-- Pastikan IDR sudah aktif di res_currency.xml yang dimuat lebih dulu -->
+    <function model="res.company" name="write">
+        <value eval="[ref('base.main_company')]" />
+        <value eval="{'currency_id': ref('base.IDR'), 'country_id': ref('base.id')}" />
+    </function>
+</odoo>
