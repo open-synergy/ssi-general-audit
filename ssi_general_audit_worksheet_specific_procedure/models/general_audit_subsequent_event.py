@@ -16,3 +16,10 @@ class GeneralAuditSubsequentEvent(models.Model):
         default="/",
         help="Unique short code for the team role. Use '/' to auto-generate.",
     )
+    need_adjustment = fields.Boolean(
+        string="Need Adjustment",
+        help=(
+            "Indicates whether the subsequent event requires adjustment "
+            "to the financial statements."
+        ),
+    )
