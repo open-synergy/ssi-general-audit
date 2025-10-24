@@ -10,6 +10,8 @@
     "installable": True,
     "application": False,
     "depends": [
+        # Web Theme
+        "muk_web_theme",
         # PE
         "ssi_general_audit_worksheet_acceptance_continuance",
         "ssi_general_audit_worksheet_assignment_letter",
