@@ -15,30 +15,68 @@ class GeneralAuditWScb82c5f(models.Model):
         "ssi_general_audit_worksheet_specific_procedure." "worksheet_type_cb82c5f"
     )
 
-    detail_ids = fields.One2many(
-        comodel_name="general_audit_ws_cb82c5f.detail",
+    adjustment_detail_ids = fields.One2many(
+        comodel_name="general_audit_ws_cb82c5f.adjustment_detail",
         inverse_name="worksheet_id",
-        string="Details",
-        help="Details of subsequent events evaluated in this worksheet",
+        string="Need Adjustment Details",
+        help="Details of subsequent events that need adjustment",
+        readonly=True,
+        states={"draft": [("readonly", False)], "open": [("readonly", False)]},
+    )
+    non_adjustment_detail_ids = fields.One2many(
+        comodel_name="general_audit_ws_cb82c5f.non_adjustment_detail",
+        inverse_name="worksheet_id",
+        string="Need Non-Adjustment Details",
+        help="Details of subsequent events that do not need adjustment",
         readonly=True,
         states={"draft": [("readonly", False)], "open": [("readonly", False)]},
     )
 
-    def action_load_detail(self):
+    def action_load_adjustment_detail(self):
         for record in self.sudo():
-            record._load_detail()
+            record._load_adjustment_detail()
 
-    def _load_detail(self):
+    def action_load_non_adjustment_detail(self):
+        for record in self.sudo():
+            record._load_non_adjustment_detail()
+
+    def _load_non_adjustment_detail(self):
         self.ensure_one()
         SubsequentEvent = self.env["general_audit_subsequent_event"]
-        existing_events = self.detail_ids.mapped("subsequent_event_id")
-        all_subsequent_events = SubsequentEvent.search([])
+        existing_events = self.non_adjustment_detail_ids.mapped("subsequent_event_id")
+        all_subsequent_events = SubsequentEvent.search(
+            [("need_adjustment", "=", False)]
+        )
         to_add_events = all_subsequent_events - existing_events
         to_remove_details = existing_events - all_subsequent_events
 
         # Add new details for subsequent events not yet in the worksheet
         for event in to_add_events:
-            self.env["general_audit_ws_cb82c5f.detail"].create(
+            self.env["general_audit_ws_cb82c5f.non_adjustment_detail"].create(
+                {
+                    "worksheet_id": self.id,
+                    "subsequent_event_id": event.id,
+                }
+            )
+
+        # Remove details for subsequent events no longer applicable
+        details_to_remove = self.non_adjustment_detail_ids.filtered(
+            lambda d: d.subsequent_event_id in to_remove_details
+        )
+        if details_to_remove:
+            details_to_remove.unlink()
+
+    def _load_adjustment_detail(self):
+        self.ensure_one()
+        SubsequentEvent = self.env["general_audit_subsequent_event"]
+        existing_events = self.adjustment_detail_ids.mapped("subsequent_event_id")
+        all_subsequent_events = SubsequentEvent.search([("need_adjustment", "=", True)])
+        to_add_events = all_subsequent_events - existing_events
+        to_remove_details = existing_events - all_subsequent_events
+
+        # Add new details for subsequent events not yet in the worksheet
+        for event in to_add_events:
+            self.env["general_audit_ws_cb82c5f.adjustment_detail"].create(
                 {
                     "worksheet_id": self.id,
                     "subsequent_event_id": event.id,

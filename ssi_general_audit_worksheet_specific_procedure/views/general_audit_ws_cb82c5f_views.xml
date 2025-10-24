@@ -43,22 +43,26 @@
             <data>
                 <xpath expr="//page[1]" position="before">
                     <page string="Subsequent Events">
+                        <separator string="Need Adjustment" colspan="4" />
                         <button
-                            name="action_load_detail"
+                            name="action_load_adjustment_detail"
                             string="Detail"
                             type="object"
                             class="oe_highlight"
                             icon="fa-refresh"
                             attrs="{'invisible': [('state', 'not in', ['draft', 'open'])]}"
                         />
-                        <field name="detail_ids">
+                        <field name="adjustment_detail_ids">
                             <tree create="false" delete="false">
-                                <field name="subsequent_event_id" />
+                                <field
+                                    name="subsequent_event_id"
+                                    style="white-space: normal; word-wrap: break-word; overflow-wrap: break-word;"
+                                />
                                 <field name="occurance" />
                                 <field name="currency_id" invisible="1" />
                                 <field name="adjustment_ids" widget="many2many_tags" />
-                                <field name="adjustment_dr" />
-                                <field name="adjustment_cr" />
+                                <field name="adjustment_dr" string="Adj. Dr." />
+                                <field name="adjustment_cr" string="Adj. Cr." />
                                 <field name="to_disclose" />
                                 <field name="disclosure" />
                                 <field name="reference" />
@@ -80,11 +84,76 @@
                                     <field
                                         name="adjustment_entry_detail_ids"
                                         domain="[('entry_id.general_audit_id', '=', parent.general_audit_id)]"
-                                    />
+                                    >
+                                        <tree>
+                                            <field name="entry_id" />
+                                            <field name="account_id" />
+                                            <field name="name" />
+                                            <field name="debit" />
+                                            <field name="credit" />
+                                        </tree>
+                                        <form>
+                                            <sheet>
+                                                <group colspan="4" col="2">
+                                                    <field name="entry_id" />
+                                                    <field name="account_id" />
+                                                    <field name="name" />
+                                                    <field name="debit" />
+                                                    <field name="credit" />
+                                                </group>
+                                            </sheet>
+                                        </form>
+                                    </field>
                                     <group name="detail_2" colspan="4" col="2">
                                         <field name="currency_id" invisible="1" />
                                         <field name="adjustment_dr" />
                                         <field name="adjustment_cr" />
+                                    </group>
+                                    <group
+                                        name="detail_3"
+                                        colspan="4"
+                                        col="2"
+                                        string="Disclosures"
+                                    >
+                                        <field name="to_disclose" />
+                                        <field name="disclosure" />
+                                        <field name="reference" />
+                                    </group>
+                                </sheet>
+                            </form>
+                        </field>
+                        <separator string="Not Needed Adjustment" colspan="4" />
+                        <button
+                            name="action_load_non_adjustment_detail"
+                            string="Detail"
+                            type="object"
+                            class="oe_highlight"
+                            icon="fa-refresh"
+                            attrs="{'invisible': [('state', 'not in', ['draft', 'open'])]}"
+                        />
+                        <field name="non_adjustment_detail_ids">
+                            <tree create="false" delete="false">
+                                <field
+                                    name="subsequent_event_id"
+                                    style="white-space: normal; word-wrap: break-word; overflow-wrap: break-word;"
+                                />
+                                <field name="occurance" />
+                                <field name="to_disclose" />
+                                <field name="disclosure" />
+                                <field name="reference" />
+                            </tree>
+                            <form>
+                                <sheet>
+                                    <group
+                                        name="detail_1"
+                                        colspan="4"
+                                        col="2"
+                                        string="Event Occurance"
+                                    >
+                                        <field name="subsequent_event_id" />
+                                        <field name="occurance" />
+
+
                                     </group>
                                     <group
                                         name="detail_3"

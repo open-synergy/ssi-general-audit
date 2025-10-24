@@ -5,9 +5,9 @@
 from odoo import api, fields, models
 
 
-class GeneralAuditWScb82c5fDetail(models.Model):
-    _name = "general_audit_ws_cb82c5f.detail"
-    _description = "Subsequent Event (cb82c5f) - Detail"
+class GeneralAuditWScb82c5fAdjustmentDetail(models.Model):
+    _name = "general_audit_ws_cb82c5f.adjustment_detail"
+    _description = "Subsequent Event (cb82c5f) - Adjustment Detail"
 
     worksheet_id = fields.Many2one(
         comodel_name="general_audit_ws_cb82c5f",
@@ -17,13 +17,18 @@ class GeneralAuditWScb82c5fDetail(models.Model):
     )
     subsequent_event_id = fields.Many2one(
         comodel_name="general_audit_subsequent_event",
-        string="# Subsequent Event ID",
+        string="Subsequent Event",
         required=True,
         help="Subsequent event ID",
     )
-    occurance = fields.Boolean(
-        default=False,
+    occurance = fields.Selection(
         string="Occurance",
+        selection=[
+            ("occurred", "Occurred"),
+            ("not_occurred", "Not Occurred"),
+        ],
+        required=True,
+        default="not_occurred",
         help="Indicate whether the subsequent event has occurred or not",
     )
     adjustment_entry_detail_ids = fields.Many2many(
@@ -63,9 +68,13 @@ class GeneralAuditWScb82c5fDetail(models.Model):
         help="Currency used for the amounts",
         store=True,
     )
-    to_disclose = fields.Boolean(
+    to_disclose = fields.Selection(
         string="To Disclose",
-        default=False,
+        selection=[
+            ("yes", "Yes"),
+            ("no", "No"),
+        ],
+        default="no",
         help="Indicate whether the subsequent event needs to be disclosed",
     )
     disclosure = fields.Text(

@@ -3,4 +3,5 @@
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl-3.0-standalone.html).
 
 from . import general_audit_ws_cb82c5f  # noqa: F401
-from . import general_audit_ws_cb82c5f_detail  # noqa: F401
+from . import general_audit_ws_cb82c5f_adjustment_detail  # noqa: F401
+from . import general_audit_ws_cb82c5f_non_adjustment_detail  # noqa: F401
