@@ -23,8 +23,8 @@
         "data/master/general_audit_ws_b9d8a5c_competency_item.xml",
         "data/master/general_audit_ws_b9d8a5c_availability_item.xml",
         "data/master/general_audit_ws_b9d8a5c_independency_item.xml",
-        "data/master/general_audit_ws_842f0d6_item.xml",
         "data/master/general_audit_ws_842f0d6_item_categ.xml",
+        "data/master/general_audit_ws_842f0d6_item.xml",
         # 806c4e1 - PE.110 Acceptance and Continuance of
         # Client Relationships Analysis
         "security/res_group/general_audit_ws_806c4e1.xml",
@@ -61,8 +61,8 @@
         "data/policy_template/general_audit_ws_842f0d6.xml",
         "data/approval_template/general_audit_ws_842f0d6.xml",
         "views/ga_842f0d6/general_audit_ws_842f0d6_views.xml",
-        "views/ga_842f0d6/general_audit_ws_842f0d6_item_views.xml",
         "views/ga_842f0d6/general_audit_ws_842f0d6_item_categ_views.xml",
+        "views/ga_842f0d6/general_audit_ws_842f0d6_item_views.xml",
         # 805d4d5 - PE.110.2.2 Know your customer principles
         "security/res_group/general_audit_ws_805d4d5.xml",
         "security/ir_rule/general_audit_ws_805d4d5.xml",
