@@ -84,7 +84,7 @@ class GeneralAuditWScb82c5f(models.Model):
             )
 
         # Remove details for subsequent events no longer applicable
-        details_to_remove = self.detail_ids.filtered(
+        details_to_remove = self.adjustment_detail_ids.filtered(
             lambda d: d.subsequent_event_id in to_remove_details
         )
         if details_to_remove:
