@@ -53,11 +53,20 @@
     </record>
 
     <menuitem
+        id="checklist_option_root_menu"
+        name="Option"
+        parent="menu_configuration_option_category"
+        action="checklist_option_set_action"
+        sequence="999"
+        groups="checklist_option_configurator"
+    />
+
+    <menuitem
         id="checklist_option_menu"
-        name="Options"
-        parent="menu_configuration_general_audit"
+        name="Items"
+        parent="checklist_option_root_menu"
         action="checklist_option_action"
-        sequence="110"
+        sequence="10"
         groups="checklist_option_configurator"
     />
 
