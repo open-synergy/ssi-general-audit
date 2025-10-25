@@ -49,6 +49,11 @@ class GeneralAuditWSA418D89(models.Model):
                 ("readonly", False),
             ],
         },
+        help=(
+            "Detail lines generated per standard detail of the engagement."
+            "Used to assess inherent and significant risk at the account level; "
+            "editable when the worksheet is Open."
+        ),
     )
 
     @ssi_decorator.post_open_action()

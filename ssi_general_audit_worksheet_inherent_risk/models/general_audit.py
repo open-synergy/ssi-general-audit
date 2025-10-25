@@ -21,6 +21,8 @@ class GeneralAudit(models.Model):
         column2="account_type_id",
         store=True,
         compute_sudo=True,
+        help="""Account types identified as having significant risk based on standard details.
+Computed and stored; updates automatically when significant risk flags change.""",
     )
 
     @api.depends(

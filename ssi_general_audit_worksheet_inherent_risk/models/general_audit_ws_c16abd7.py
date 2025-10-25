@@ -45,11 +45,16 @@ class GeneralAuditWSc16abd7(models.Model):
                 ("required", True),
             ],
         },
+        help="Link to the Understanding of preparation of Financial Statements worksheet.",
     )
     ws_f6a227_id_review = fields.Text(
         related="ws_f6a227_id.review",
         string="Review Note on Understanding of preparation of Financial Statements",
         readonly=True,
+        help=(
+            "Review note from the linked Understanding of "
+            "preparation of Financial Statements worksheet."
+        ),
     )
     ws_c0d0898_id = fields.Many2one(
         string="# Going Concern Analysis",
@@ -62,11 +67,13 @@ class GeneralAuditWSc16abd7(models.Model):
                 ("required", True),
             ],
         },
+        help="Link to the Going Concern Analysis worksheet.",
     )
     ws_c0d0898_id_review = fields.Text(
         related="ws_c0d0898_id.review",
         string="Review Note on Going Concern Analysis",
         readonly=True,
+        help="Review note from the linked Going Concern Analysis worksheet.",
     )
     ws_bdcdfc5_ids = fields.Many2many(
         string="# Understanding of the Business Environment",
@@ -99,6 +106,7 @@ class GeneralAuditWSc16abd7(models.Model):
                 ("readonly", False),
             ],
         },
+        help="Overall assessed risk of material misstatement at the financial statement level.",
     )
     auditor_respons = fields.Text(
         string="Auditor Respons",
@@ -108,6 +116,10 @@ class GeneralAuditWSc16abd7(models.Model):
                 ("readonly", False),
             ],
         },
+        help=(
+            "Planned auditor response considering the assessed risks "
+            "at the financial statement level."
+        ),
     )
 
     # Impacted standard account
@@ -117,6 +129,7 @@ class GeneralAuditWSc16abd7(models.Model):
         related="general_audit_id.expert_impacted_account_type_ids",
         readonly=True,
         store=False,
+        help="Account types impacted by the use of an expert (derived from General Audit).",
     )
     previous_audit_information_impacted_account_type_ids = fields.Many2many(
         string="Standard Accounts Impacted by Previous Audit Information",
@@ -124,6 +137,10 @@ class GeneralAuditWSc16abd7(models.Model):
         related="general_audit_id.previous_audit_information_impacted_account_type_ids",
         readonly=True,
         store=False,
+        help=(
+            "Account types impacted by previous audit information "
+            "(derived from General Audit)."
+        ),
     )
     previous_other_information_impacted_account_type_ids = fields.Many2many(
         string="Standard Accounts Impacted by Previous Other Information",
@@ -131,6 +148,10 @@ class GeneralAuditWSc16abd7(models.Model):
         related="general_audit_id.previous_other_information_impacted_account_type_ids",
         readonly=True,
         store=False,
+        help=(
+            "Account types impacted by previous other information "
+            "(derived from General Audit)."
+        ),
     )
     other_information_impacted_account_type_ids = fields.Many2many(
         string="Standard Accounts Impacted by Other Information",
@@ -138,6 +159,7 @@ class GeneralAuditWSc16abd7(models.Model):
         related="general_audit_id.other_information_impacted_account_type_ids",
         readonly=True,
         store=False,
+        help="Account types impacted by other information (derived from General Audit).",
     )
     regulation_impacted_account_type_ids = fields.Many2many(
         string="Standard Accounts Impacted by Relevant Regulations",
@@ -145,6 +167,7 @@ class GeneralAuditWSc16abd7(models.Model):
         related="general_audit_id.regulation_impacted_account_type_ids",
         readonly=True,
         store=False,
+        help="Account types impacted by relevant regulations (derived from General Audit).",
     )
     preparation_of_financial_statements_impacted_account_type_ids = fields.Many2many(
         string="Standard Accounts Impacted by Preparation of Financial Statements",
@@ -155,6 +178,10 @@ class GeneralAuditWSc16abd7(models.Model):
         ),
         readonly=True,
         store=False,
+        help=(
+            "Account types impacted by the preparation of "
+            "financial statements (derived from General Audit)."
+        ),
     )
     fraud_impacted_account_type_ids = fields.Many2many(
         string="Standard Accounts Impacted by Fraud Risk",
@@ -162,6 +189,7 @@ class GeneralAuditWSc16abd7(models.Model):
         related="general_audit_id.fraud_impacted_account_type_ids",
         readonly=True,
         store=False,
+        help="Account types impacted by fraud risk (derived from General Audit).",
     )
     business_environment_impacted_account_type_ids = fields.Many2many(
         string="Standard Accounts Impacted by Business Environment",
@@ -169,4 +197,8 @@ class GeneralAuditWSc16abd7(models.Model):
         related="general_audit_id.business_environment_impacted_account_type_ids",
         readonly=True,
         store=False,
+        help=(
+            "Account types impacted by business environment factors "
+            "(derived from General Audit)."
+        ),
     )

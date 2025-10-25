@@ -17,9 +17,11 @@ class GeneralAuditWSbfb6daeChecklist(models.Model):
         comodel_name="general_audit_ws_bfb6dae",
         required=True,
         ondelete="cascade",
+        help="Parent Inherent Risk worksheet for this checklist line.",
     )
     item_id = fields.Many2one(
         string="Checklist Item",
         comodel_name="general_audit_ws_bfb6dae.item",
         required=True,
+        help="Checklist item/question being evaluated on this line.",
     )

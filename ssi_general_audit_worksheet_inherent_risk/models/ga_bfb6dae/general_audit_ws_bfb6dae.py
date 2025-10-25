@@ -18,4 +18,6 @@ class GeneralAuditWSbfb6dae(models.Model):
     checklist_ids = fields.One2many(
         string="Checklist",
         comodel_name="general_audit_ws_bfb6dae.checklist",
+        help="""Checklist lines associated with this Inherent Risk worksheet.
+Each line records the assessment/answer for a specific checklist item.""",
     )

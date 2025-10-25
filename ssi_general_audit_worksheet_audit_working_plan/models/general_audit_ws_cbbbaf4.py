@@ -21,13 +21,9 @@ class GeneralAuditWSCBBBAF4(models.Model):
 
     industry_id = fields.Many2one(
         related="general_audit_id.industry_id",
-        help=("Industry of the audited entity, taken from the linked General Audit."),
     )
     ownership_type_id = fields.Many2one(
         related="general_audit_id.ownership_type_id",
-        help=(
-            "Ownership type of the audited entity, taken from the linked General Audit."
-        ),
     )
     engagement_date = fields.Date(
         string="Pre-Engagement Date",
@@ -39,11 +35,6 @@ class GeneralAuditWSCBBBAF4(models.Model):
                 ("required", True),
             ],
         },
-        help=(
-            "Target start date for pre-engagement activities. Must be on or before "
-            "the Risk Assessment Date; used together with Reporting Date to "
-            "compute the Number of Effective Days."
-        ),
     )
     risk_assessment_date = fields.Date(
         string="Risk Assessment Date",
@@ -55,10 +46,6 @@ class GeneralAuditWSCBBBAF4(models.Model):
                 ("required", True),
             ],
         },
-        help=(
-            "Target date for the risk assessment phase. Must be after the "
-            "Pre-Engagement Date and on or before the Fieldwork Date."
-        ),
     )
     fieldwork_date = fields.Date(
         string="Fieldwork Date",
@@ -70,10 +57,6 @@ class GeneralAuditWSCBBBAF4(models.Model):
                 ("required", True),
             ],
         },
-        help=(
-            "Target date for fieldwork. Must be after the Risk Assessment Date "
-            "and on or before the Pullout Date."
-        ),
     )
     pullout_date = fields.Date(
         string="Pullout Date",
@@ -85,10 +68,6 @@ class GeneralAuditWSCBBBAF4(models.Model):
                 ("required", True),
             ],
         },
-        help=(
-            "Target pullout date from fieldwork. Must be after the Fieldwork Date "
-            "and on or before the Reporting Date."
-        ),
     )
     reporting_date = fields.Date(
         string="Reporting Date",
@@ -100,10 +79,6 @@ class GeneralAuditWSCBBBAF4(models.Model):
                 ("required", True),
             ],
         },
-        help=(
-            "Target reporting date for issuing deliverables. Must be after the "
-            "Pullout Date; used with Pre-Engagement Date to compute Effective Days."
-        ),
     )
 
     @api.depends(
@@ -127,10 +102,6 @@ class GeneralAuditWSCBBBAF4(models.Model):
     effective_days = fields.Integer(
         string="Number of Effective Days",
         compute="_compute_effective_days",
-        help=(
-            "Computed number of business days between Pre-Engagement Date and "
-            "Reporting Date (Monday–Friday only; weekends excluded)."
-        ),
     )
 
     # MAN HOUR ALLOCATION
@@ -152,11 +123,6 @@ class GeneralAuditWSCBBBAF4(models.Model):
                 ("required", True),
             ],
         },
-        help=(
-            "Template that defines the percentage distribution of manhours across "
-            "phases (Pre-Engagement, Risk Assessment, Risk Response, Reporting). "
-            "Defaults from the company setting."
-        ),
     )
     allocation_total_hour_id = fields.Many2one(
         string="Total Hour",
@@ -167,10 +133,6 @@ class GeneralAuditWSCBBBAF4(models.Model):
                 ("readonly", False),
             ],
         },
-        help=(
-            "Reference to a predefined total manhours value. Selecting a record can "
-            "auto-fill the Total Manhour Allocation."
-        ),
     )
     total_manhour_allocation = fields.Float(
         string="Total Manhour Allocation",
@@ -180,10 +142,6 @@ class GeneralAuditWSCBBBAF4(models.Model):
                 ("readonly", False),
             ],
         },
-        help=(
-            "Total planned manhours for the engagement. Used as the base to compute "
-            "phase allocations according to the selected template."
-        ),
     )
 
     @api.depends(
@@ -213,37 +171,21 @@ class GeneralAuditWSCBBBAF4(models.Model):
         string="Pre-Engagement Manhour Allocation",
         compute="_compute_allocation",
         store=True,
-        help=(
-            "Hours allocated to Pre-Engagement, computed as the template percentage "
-            "of Total Manhour Allocation."
-        ),
     )
     ra_manhour_allocation = fields.Float(
         string="Risk Assessment Manhour Allocation",
         compute="_compute_allocation",
         store=True,
-        help=(
-            "Hours allocated to Risk Assessment, computed as the template percentage "
-            "of Total Manhour Allocation."
-        ),
     )
     rr_manhour_allocation = fields.Float(
         string="Risk Response Manhour Allocation",
         compute="_compute_allocation",
         store=True,
-        help=(
-            "Hours allocated to Risk Response, computed as the template percentage "
-            "of Total Manhour Allocation."
-        ),
     )
     wr_manhour_allocation = fields.Float(
         string="Reporting Manhour Allocation",
         compute="_compute_allocation",
         store=True,
-        help=(
-            "Hours allocated to Reporting, computed as the template percentage "
-            "of Total Manhour Allocation."
-        ),
     )
 
     team_allocation_ids = fields.One2many(
@@ -256,10 +198,6 @@ class GeneralAuditWSCBBBAF4(models.Model):
                 ("readonly", False),
             ],
         },
-        help=(
-            "Per-member allocation lines distributing hours by phase "
-            "for the engagement team."
-        ),
     )
 
     @api.depends(
@@ -288,50 +226,30 @@ class GeneralAuditWSCBBBAF4(models.Model):
         compute="_compute_total_manhour",
         store=True,
         compute_sudo=True,
-        help=(
-            "Sum of team members' Pre-Engagement allocations. Used to compare with "
-            "the planned Pre-Engagement allocation from the template."
-        ),
     )
     total_ra_manhour = fields.Float(
         string="Total Risk Assessment Allocation",
         compute="_compute_total_manhour",
         store=True,
         compute_sudo=True,
-        help=(
-            "Sum of team members' Risk Assessment allocations. Used to compare with "
-            "the planned Risk Assessment allocation from the template."
-        ),
     )
     total_rr_manhour = fields.Float(
         string="Total Risk Response Allocation",
         compute="_compute_total_manhour",
         store=True,
         compute_sudo=True,
-        help=(
-            "Sum of team members' Risk Response allocations. Used to compare with "
-            "the planned Risk Response allocation from the template."
-        ),
     )
     total_reporting_manhour = fields.Float(
         string="Total Reporting Allocation",
         compute="_compute_total_manhour",
         store=True,
         compute_sudo=True,
-        help=(
-            "Sum of team members' Reporting allocations. Used to compare with "
-            "the planned Reporting allocation from the template."
-        ),
     )
     total_manhour = fields.Float(
         string="Total",
         compute="_compute_total_manhour",
         store=True,
         compute_sudo=True,
-        help=(
-            "Sum of all team allocations (Pre-Engagement + Risk Assessment + "
-            "Risk Response + Reporting)."
-        ),
     )
     need_eqcr = fields.Boolean(
         string="Need EQCR",
@@ -342,10 +260,6 @@ class GeneralAuditWSCBBBAF4(models.Model):
                 ("readonly", False),
             ],
         },
-        help=(
-            "Check this box if the engagement requires an Engagement Quality Control "
-            "Review (EQCR)."
-        ),
     )
     reasonable = fields.Boolean(
         string="Service hour allocation is reasonable?",
@@ -356,10 +270,6 @@ class GeneralAuditWSCBBBAF4(models.Model):
                 ("readonly", False),
             ],
         },
-        help=(
-            "Indicates whether the planned service hour allocation is reasonable "
-            "based on the engagement context and risks."
-        ),
     )
     team_competency_ids = fields.One2many(
         string="Team Competency Analysis",
@@ -371,7 +281,6 @@ class GeneralAuditWSCBBBAF4(models.Model):
                 ("readonly", False),
             ],
         },
-        help=("Per-member competency analysis lines including recommended upgrades."),
     )
 
     # Different
@@ -410,50 +319,30 @@ class GeneralAuditWSCBBBAF4(models.Model):
         compute="_compute_diff_manhour",
         store=True,
         compute_sudo=True,
-        help=(
-            "Difference between actual and planned Pre-Engagement hours "
-            "(Actual - Planned)."
-        ),
     )
     diff_ra_manhour = fields.Float(
         string="Risk Assessment",
         compute="_compute_diff_manhour",
         store=True,
         compute_sudo=True,
-        help=(
-            "Difference between actual and planned Risk Assessment hours "
-            "(Actual - Planned)."
-        ),
     )
     diff_rr_manhour = fields.Float(
         string="Risk Response",
         compute="_compute_diff_manhour",
         store=True,
         compute_sudo=True,
-        help=(
-            "Difference between actual and planned Risk Response hours "
-            "(Actual - Planned)."
-        ),
     )
     diff_reporting_manhour = fields.Float(
         string="Reporting",
         compute="_compute_diff_manhour",
         store=True,
         compute_sudo=True,
-        help=(
-            "Difference between actual and planned Reporting hours "
-            "(Actual - Planned)."
-        ),
     )
     dif_total_manhour = fields.Float(
         string="Total",
         compute="_compute_diff_manhour",
         store=True,
         compute_sudo=True,
-        help=(
-            "Difference between total actual hours and total planned hours "
-            "for the engagement (Actual - Planned)."
-        ),
     )
 
     # LINK - 1 (PE.110)
@@ -473,22 +362,16 @@ class GeneralAuditWSCBBBAF4(models.Model):
         comodel_name="general_audit_ws_806c4e1",
         compute="_compute_allowed_link_1_ids",
         store=False,
-        help=(
-            "Available PE.110 records from the same General Audit. Used to limit "
-            "the selection for Link 1."
-        ),
     )
 
     link_1 = fields.Many2one(
         string="PE.110",
         comodel_name="general_audit_ws_806c4e1",
-        help=("Linked PE.110 worksheet used as a reference for this plan."),
     )
     link_1_risk = fields.Selection(
         string="Risk (PE.110)",
         related="link_1.risk",
         store=True,
-        help=("Risk level taken from the linked PE.110 worksheet."),
     )
 
     @api.onchange(
@@ -522,25 +405,30 @@ class GeneralAuditWSCBBBAF4(models.Model):
         comodel_name="general_audit_ws_b9d8a5c",
         compute="_compute_allowed_link_2_ids",
         store=False,
-        help=(
-            "Available PE.110.3 records from the same General Audit. Used to limit "
-            "the selection for Link 2."
-        ),
     )
     link_2 = fields.Many2one(
         string="PE.110.3",
         comodel_name="general_audit_ws_b9d8a5c",
-        help=(
-            "Linked PE.110.3 worksheet used as a reference for team selection "
-            "and competency analysis."
-        ),
     )
     link_2_risk = fields.Selection(
         string="Risk (PE.110.3)",
         related="link_2.risk",
         store=True,
-        help=("Risk level taken from the linked PE.110.3 worksheet."),
     )
+
+    @api.onchange(
+        "general_audit_id",
+    )
+    def onchange_link_2(self):
+        self.link_2 = False
+        if self.general_audit_id:
+            obj = self.env["general_audit_ws_b9d8a5c"]
+            criteria = [
+                ("general_audit_id", "=", self.general_audit_id.id),
+            ]
+            result = obj.search(criteria)
+            if result:
+                self.link_2 = result.id
 
     @ssi_decorator.post_open_action()
     def _10_create_team(self):

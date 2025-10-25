@@ -193,8 +193,10 @@ class GeneralAuditWSfbf57ee(models.Model):
             )
 
         # Remove old procedures
-        lines_to_remove = self.confirmation_procedure_line_ids.filtered(
-            lambda l: l.confirmation_procedure_id in procedures_to_remove
-        )
-        if lines_to_remove:
-            lines_to_remove.unlink()
+        for procedure in procedures_to_remove:
+            self.env["general_audit_ws_fbf57ee.confirmation_procedure"].search(
+                [
+                    ("worksheet_id", "=", self.id),
+                    ("confirmation_procedure_id", "=", procedure.id),
+                ]
+            ).unlink()
