@@ -21,4 +21,6 @@ class GeneralAuditWSc2375d8(models.Model):
     checklist_ids = fields.One2many(
         string="Checklist",
         comodel_name="general_audit_ws_c2375d8.checklist",
+        help="""Checklist lines linked to this Final Analytical Procedures worksheet.
+Each line records the response/assessment for a specific checklist item.""",
     )

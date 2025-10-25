@@ -17,12 +17,16 @@ class GeneralAuditWSc2375d8Checklist(models.Model):
         comodel_name="general_audit_ws_c2375d8",
         required=True,
         ondelete="cascade",
+        help="""Reference to the parent Final Analytical Procedures worksheet.
+Required. Deleting the worksheet cascades and removes its checklist lines.""",
     )
     item_id = fields.Many2one(
         string="Checklist Item",
         comodel_name="general_audit_ws_c2375d8.item",
         required=True,
+        help="Checklist item/question being evaluated on this line.",
     )
     analysis_type = fields.Selection(
         related="item_id.analysis_type",
+        help="Type of analysis for this line, inherited from the linked checklist item.",
     )

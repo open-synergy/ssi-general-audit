@@ -14,6 +14,8 @@ class GeneralAuditWSc2375d8Item(models.Model):
 
     code = fields.Char(
         default="/",
+        help="""Internal code for the checklist item.
+Defaults to '/'; may be replaced by a generated sequence depending on configuration.""",
     )
     analysis_type = fields.Selection(
         string="Type of Analysis",
@@ -22,4 +24,8 @@ class GeneralAuditWSc2375d8Item(models.Model):
             ("ratio", "Ratio"),
         ],
         required=True,
+        help=(
+            "Type of analytical procedure the item refers to "
+            "(e.g., vertical/horizontal or ratio analysis)."
+        ),
     )
