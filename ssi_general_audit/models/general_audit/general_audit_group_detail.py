@@ -240,24 +240,48 @@ class GeneralAuditGroupDetail(models.Model):
     )
     adjustment_debit = fields.Monetary(
         string="Adjustment Debit",
-        related="adjustment_id.debit",
+        related=False,
         store=True,
+        compute="_compute_adjustment",
         currency_field="currency_id",
         help="Total debit adjustments for this group.",
     )
     adjustment_credit = fields.Monetary(
         string="Adjustment Credit",
-        related="adjustment_id.credit",
+        related=False,
         store=True,
+        compute="_compute_adjustment",
         currency_field="currency_id",
         help="Total credit adjustments for this group.",
     )
 
     @api.depends(
-        "adjustment_id",
+        "general_audit_id.adjustment_entry_ids",
+        "general_audit_id.adjustment_entry_ids.state",
+        "general_audit_id.adjustment_entry_ids.detail_ids.account_id",
+        "general_audit_id.adjustment_entry_ids.detail_ids.debit",
+        "general_audit_id.adjustment_entry_ids.detail_ids.credit",
         "group_id",
+    )
+    def _compute_adjustment(self):
+        for record in self:
+            debit = credit = 0.0
+            ga = record.general_audit_id
+            for adjustment in ga.adjustment_entry_ids.filtered(
+                lambda r: r.state == "posted"
+            ):
+                for detail in adjustment.detail_ids.filtered(
+                    lambda r: r.account_id.group_id.id == record.group_id.id
+                ):
+                    debit += detail.debit
+                    credit += detail.credit
+            record.adjustment_debit = debit
+            record.adjustment_credit = credit
+
+    @api.depends(
         "adjustment_debit",
         "adjustment_credit",
+        "group_id",
         "home_statement_balance",
     )
     def _compute_adjustment_audited_balance(self):

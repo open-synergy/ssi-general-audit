@@ -206,6 +206,15 @@
                             nolabel="1"
                             force_save="1"
                         />
+                    <button
+                            name="action_recompute_group_account"
+                            string="Group Account"
+                            type="object"
+                            icon="fa-calculator"
+                            class="oe_highlight"
+                            style="margin-right:4px"
+                            attrs="{'invisible':[('state','not in',['draft','open'])]}"
+                        />
                     <field
                             name="group_detail_ids"
                             colspan="1"
