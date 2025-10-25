@@ -17,9 +17,12 @@ class GeneralAuditWSd8aaebcChecklist(models.Model):
         comodel_name="general_audit_ws_d8aaebc",
         required=True,
         ondelete="cascade",
+        help="""Reference to the parent Engagement Letter Checklist worksheet.
+Required. Deleting the worksheet cascades and removes its checklist lines.""",
     )
     item_id = fields.Many2one(
         string="Checklist Item",
         comodel_name="general_audit_ws_d8aaebc.item",
         required=True,
+        help="Checklist item/question being evaluated on this line.",
     )
