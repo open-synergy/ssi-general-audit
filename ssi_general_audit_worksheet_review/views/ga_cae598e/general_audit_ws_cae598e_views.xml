@@ -1,0 +1,100 @@
+<?xml version="1.0" ?>
+<!-- Copyright 2025 OpenSynergy Indonesia
+     Copyright 2025 PT. Simetri Sinergi Indonesia
+     License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl-3.0-standalone.html). -->
+<odoo>
+
+    <record id="general_audit_ws_cae598e_view_search" model="ir.ui.view">
+        <field name="name">general_audit_ws_cae598e form</field>
+        <field name="model">general_audit_ws_cae598e</field>
+        <field
+            name="inherit_id"
+            ref="ssi_general_audit.general_audit_worksheet_mixin_view_search"
+        />
+        <field name="mode">primary</field>
+        <field name="arch" type="xml">
+            <data />
+        </field>
+    </record>
+
+    <record id="general_audit_ws_cae598e_view_tree" model="ir.ui.view">
+        <field name="name">general_audit_ws_cae598e tree</field>
+        <field name="model">general_audit_ws_cae598e</field>
+        <field name="mode">primary</field>
+        <field
+            name="inherit_id"
+            ref="ssi_general_audit.general_audit_worksheet_mixin_view_tree"
+        />
+        <field name="arch" type="xml">
+            <data>
+            </data>
+        </field>
+    </record>
+
+    <record id="general_audit_ws_cae598e_view_form" model="ir.ui.view">
+        <field name="name">general_audit_ws_cae598e form</field>
+        <field name="model">general_audit_ws_cae598e</field>
+        <field name="mode">primary</field>
+        <field
+            name="inherit_id"
+            ref="ssi_general_audit.general_audit_worksheet_mixin_view_form"
+        />
+        <field name="arch" type="xml">
+            <data>
+                <xpath expr="//page[1]" position="before">
+                    <page name="detail" string="Details">
+                        <button
+                            name="action_populate"
+                            type="object"
+                            string="Populate"
+                            class="oe_highlight"
+                            icon="fa-refresh"
+                            attrs="{'invisible': [('state', '!=', 'open')]}"
+                        />
+                        <field name="detail_ids">
+                            <tree create="false" edit="false">
+                                <field name="sequence" widget="handle" />
+                                <field name="code_internal" />
+                                <field name="parent_type_id" />
+                                <field name="review_result" />
+                                <field name="evidence_sufficiency" />
+                                <field name="evidence_completeness" />
+                                <field name="impact_misstatement" />
+                                <field name="impact_pervasive" />
+                            </tree>
+                            <form>
+                                <group name="detail" colspan="4" col="2">
+                                    <field name="worksheet_id" invisible="1" />
+                                    <field name="state" invisible="1" />
+                                    <field name="code_internal" />
+                                    <field name="parent_type_id" />
+                                    <field name="review_result" />
+                                    <field name="evidence_sufficiency" />
+                                    <field name="evidence_completeness" />
+                                    <field name="impact_misstatement" />
+                                    <field name="impact_pervasive" />
+                                </group>
+                            </form>
+                        </field>
+                    </page>
+                </xpath>
+            </data>
+        </field>
+    </record>
+
+    <record id="general_audit_ws_cae598e_action" model="ir.actions.act_window">
+        <field name="name">Audit Evidence Evaluation Detail</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">general_audit_ws_cae598e</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+    <menuitem
+        id="general_audit_ws_cae598e_menu"
+        name="Audit Evidence Evaluation Detail"
+        parent="ssi_general_audit.menu_general_audit_audit_evidence"
+        action="general_audit_ws_cae598e_action"
+        sequence="2"
+        groups="general_audit_ws_cae598e_viewer_group"
+    />
+</odoo>
