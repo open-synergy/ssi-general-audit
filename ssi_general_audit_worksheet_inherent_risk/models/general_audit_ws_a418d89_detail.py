@@ -15,32 +15,26 @@ class GeneralAuditWSA418D89Detail(models.Model):
         comodel_name="general_audit_ws_a418d89",
         required=True,
         ondelete="cascade",
-        help="""Parent Account Level Inherent Risk worksheet.
-Deleting the worksheet will remove its detail lines.""",
     )
     standard_detail_id = fields.Many2one(
         string="Standard Detail",
         comodel_name="general_audit.standard_detail",
         required=True,
-        help="Linked standard detail (account/line) being evaluated in this worksheet.",
     )
     type_id = fields.Many2one(
         string="Account Type",
         related="standard_detail_id.type_id",
         store=True,
-        help="Account type automatically derived from the linked standard detail.",
     )
     currency_id = fields.Many2one(
         string="Currency",
         related="standard_detail_id.currency_id",
         store=True,
-        help="Currency automatically derived from the linked standard detail.",
     )
     sequence = fields.Integer(
         string="Sequence",
         related="standard_detail_id.sequence",
         store=True,
-        help="Display order derived from the linked standard detail.",
     )
     inherent_risk_factor_without_impact_ids = fields.Many2many(
         string="Inherent Risk Factor Without Direct Impact",
@@ -51,8 +45,6 @@ Deleting the worksheet will remove its detail lines.""",
         domain=[
             ("direct_impact", "=", False),
         ],
-        help="""Inherent risk factors considered that
-do not directly impact the risk assessment.""",
     )
     inherent_risk_factor_with_impact_ids = fields.Many2many(
         string="Inherent Risk Factor With Direct Impact",
@@ -63,14 +55,9 @@ do not directly impact the risk assessment.""",
         domain=[
             ("direct_impact", "=", True),
         ],
-        help="Inherent risk factors that directly impact the risk assessment.",
     )
     fraud_risk = fields.Boolean(
-        string="Fraud Risk",
-        related="standard_detail_id.fraud_impacted",
-        store=True,
-        help="""Indicates whether the area is impacted by "
-identified fraud risk (from the standard detail).""",
+        string="Fraud Risk", related="standard_detail_id.fraud_impacted", store=True
     )
     likelihood_risk_occuring = fields.Selection(
         string="Likelihood of Risk Occuring",
@@ -78,7 +65,6 @@ identified fraud risk (from the standard detail).""",
             ("low", "Low"),
             ("high", "High"),
         ],
-        help="Assessed likelihood that the risk will occur.",
     )
     impact_of_risk = fields.Selection(
         string="Magnitude/Impact of Risk",
@@ -86,7 +72,6 @@ identified fraud risk (from the standard detail).""",
             ("low", "Low"),
             ("high", "High"),
         ],
-        help="Assessed magnitude/impact should the risk occur.",
     )
     inherent_risk = fields.Selection(
         string="Inherent Risk",
@@ -97,7 +82,19 @@ identified fraud risk (from the standard detail).""",
         ],
         compute="_compute_risk",
         store=True,
-        help="Resulting inherent risk derived from likelihood and impact assessments.",
+    )
+    significant_risk = fields.Boolean(
+        string="Significant Risk",
+        compute="_compute_risk",
+        inverse="_inverse_to_standard_detail",
+        store=True,
+    )
+    other_significant_risk_factor = fields.Boolean(
+        string="Other Significant Risk Factor",
+        default=False,
+    )
+    note = fields.Char(
+        string="Note",
     )
 
     @api.depends(
@@ -105,13 +102,19 @@ identified fraud risk (from the standard detail).""",
         "impact_of_risk",
         "inherent_risk_factor_with_impact_ids",
         "fraud_risk",
+        "other_significant_risk_factor",
     )
     def _compute_risk(self):
         for record in self:
-            inherent_risk = False
+            inherent_risk = significant_risk = False
             if record.likelihood_risk_occuring == "high":
                 if record.impact_of_risk == "high":
                     inherent_risk = "high"
+                    if (
+                        record.inherent_risk_factor_with_impact_ids
+                        or record.other_significant_risk_factor
+                    ):
+                        significant_risk = True
                 elif record.impact_of_risk == "low":
                     inherent_risk = "medium"
             elif record.likelihood_risk_occuring == "low":
@@ -120,3 +123,13 @@ identified fraud risk (from the standard detail).""",
                 elif record.impact_of_risk == "low":
                     inherent_risk = "low"
             record.inherent_risk = inherent_risk
+            record.significant_risk = significant_risk
+
+    def _inverse_to_standard_detail(self):
+        for record in self:
+            record.standard_detail_id.write(
+                {
+                    "inherent_risk": self.inherent_risk,
+                    "significant_risk": self.significant_risk,
+                }
+            )
