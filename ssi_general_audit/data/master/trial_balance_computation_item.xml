@@ -92,7 +92,7 @@
         <field name="category">summary</field>
         <field
             name="python_code"
-        >result = T005 + account_type["S523"] - account_type["S421"] + account_type["S531"]</field>
+        >result = T005 + account_type.get("S523", 0.0)  - account_type.get("S421", 0.0) + account_type.get("S531", 0.0)</field>
     </record>
     <record
         id="trial_balance_computation_item_9_f45b1d7d"
@@ -104,7 +104,7 @@
         <field name="category">summary</field>
         <field
             name="python_code"
-        >result = T005 - account_type["S421"] + account_type["S531"]</field>
+        >result = T005 - account_type.get("S421", 0.0) + account_type.get("S531", 0.0)</field>
     </record>
     <record
         id="trial_balance_computation_item_10_5f080612"
