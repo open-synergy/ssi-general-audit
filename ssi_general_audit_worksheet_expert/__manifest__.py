@@ -29,9 +29,9 @@
         "data/sequence_template/general_audit_ws_bab9d32.xml",
         "data/policy_template/general_audit_ws_bab9d32.xml",
         "data/approval_template/general_audit_ws_bab9d32.xml",
-        "views/ga_bab9d32/general_audit_ws_bab9d32_views.xml",
         "views/ga_bab9d32/general_audit_ws_bab9d32_category_views.xml",
         "views/ga_bab9d32/general_audit_ws_bab9d32_factor_views.xml",
+        "views/ga_bab9d32/general_audit_ws_bab9d32_views.xml",
         # cda3a68 - Management Expert
         "security/res_group/general_audit_ws_cda3a68.xml",
         "security/ir_rule/general_audit_ws_cda3a68.xml",
