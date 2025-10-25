@@ -14,14 +14,17 @@ class GeneralAuditGoingConcernZScoreCoefficientSetItem(models.Model):
         string="Z-Score Coefficient Set",
         required=True,
         ondelete="cascade",
+        help="Parent Z-Score coefficient set to which this item belongs.",
     )
     computation_item_id = fields.Many2one(
         comodel_name="trial_balance_computation_item",
         string="Computation Item",
         required=True,
+        help="Trial balance computation item associated with this coefficient.",
     )
     coefficient = fields.Float(
         string="Coefficient",
         digits=(16, 6),
         required=True,
+        help="Weight/Coefficient applied to the computation item within the set.",
     )

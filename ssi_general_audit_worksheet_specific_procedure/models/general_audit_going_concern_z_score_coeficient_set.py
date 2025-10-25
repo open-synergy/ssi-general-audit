@@ -16,4 +16,5 @@ class GeneralAuditGoingConcernZScoreCoefficientSet(models.Model):
         comodel_name="general_audit_going_concern_z_score_coeficient_set.item",
         inverse_name="set_id",
         string="Computation Items",
+        help="Coefficient items included in this Z-Score coefficient set.",
     )

@@ -53,6 +53,7 @@ class GeneralAuditWSfbf57ee(models.Model):
         compute="_compute_z_score",
         store=True,
         compute_sudo=True,
+        help="Computed Altman Z-Score based on the worksheet’s computation lines.",
     )
     z_score_category = fields.Selection(
         selection=[
@@ -64,6 +65,7 @@ class GeneralAuditWSfbf57ee(models.Model):
         compute="_compute_z_score",
         store=True,
         compute_sudo=True,
+        help="Category derived from the Z-Score threshold (Solvent/Grey Area/Unsolvent).",
     )
     confirmation_procedure_line_ids = fields.One2many(
         comodel_name="general_audit_ws_fbf57ee.confirmation_procedure",
@@ -172,14 +174,14 @@ class GeneralAuditWSfbf57ee(models.Model):
     def _load_confirmation_procedure(self):
         self.ensure_one()
 
-        all_procesures = self.env[
+        all_procedures = self.env[
             "general_audit_going_concern_confirmation_procedure"
         ].search([])
-        existing_procedures = self.confirmation_procesure_line_ids.mapped(
+        existing_procedures = self.confirmation_procedure_line_ids.mapped(
             "confirmation_procedure_id"
         )
-        procedures_to_add = all_procesures - existing_procedures
-        procedures_to_remove = existing_procedures - all_procesures
+        procedures_to_add = all_procedures - existing_procedures
+        procedures_to_remove = existing_procedures - all_procedures
 
         # Add new procedures
         for procedure in procedures_to_add:
@@ -191,10 +193,8 @@ class GeneralAuditWSfbf57ee(models.Model):
             )
 
         # Remove old procedures
-        for procedure in procedures_to_remove:
-            self.env["general_audit_ws_fbf57ee.confirmation_procedure"].search(
-                [
-                    ("worksheet_id", "=", self.id),
-                    ("confirmation_procedure_id", "=", procedure.id),
-                ]
-            ).unlink()
+        lines_to_remove = self.confirmation_procedure_line_ids.filtered(
+            lambda l: l.confirmation_procedure_id in procedures_to_remove
+        )
+        if lines_to_remove:
+            lines_to_remove.unlink()

@@ -17,4 +17,5 @@ class GeneralAuditAccountingEstimationMethod(models.Model):
         string="Standard Account",
         required=True,
         ondelete="restrict",
+        help="Standard account type to which this estimation method applies.",
     )

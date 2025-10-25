@@ -14,15 +14,19 @@ class GeneralAuditWSa8f4d88Detail(models.Model):
         string="Worksheet",
         required=True,
         ondelete="cascade",
+        help="Parent Accounting Estimation worksheet for this detail line.",
     )
     account_type_id = fields.Many2one(
         comodel_name="client_account_type",
         string="Standard Account",
         required=True,
         ondelete="restrict",
+        help="Standard account type being assessed for accounting estimation.",
     )
     expert_ids = fields.Many2many(
-        comodel_name="general_audit_expert_type", string="Experts Involved"
+        comodel_name="general_audit_expert_type",
+        string="Experts Involved",
+        help="Experts involved in the assessment of the accounting estimation (if any).",
     )
     estimation_method_ids = fields.Many2many(
         comodel_name="general_audit_accounting_estimation_method",
@@ -31,6 +35,7 @@ class GeneralAuditWSa8f4d88Detail(models.Model):
         column1="detail_id",
         column2="estimation_method_id",
         required=True,
+        help="Accounting estimation methods applied for this account type.",
     )
     relevant_control_id = fields.Many2one(
         comodel_name="general_audit_control_activity",
@@ -39,6 +44,7 @@ class GeneralAuditWSa8f4d88Detail(models.Model):
         column1="detail_id",
         column2="relevant_control_id",
         required=True,
+        help="Control activity relevant to the accounting estimation process.",
     )
     fair_value_measurement_level = fields.Selection(
         selection=[
@@ -48,16 +54,20 @@ class GeneralAuditWSa8f4d88Detail(models.Model):
         ],
         string="Fair Value Measurement Level",
         required=True,
+        help="IFRS fair value hierarchy level used for the measurement (Level 1/2/3).",
     )
     assumption = fields.Text(
         string="Key Assumptions",
         required=True,
+        help="Key assumptions underlying the accounting estimation.",
     )
     reference = fields.Char(
         string="Reference",
         required=True,
+        help="References to supporting documentation or working papers.",
     )
     conclusion = fields.Text(
         string="Conclusion",
         required=True,
+        help="Auditor’s conclusion regarding the reasonableness of the estimation.",
     )

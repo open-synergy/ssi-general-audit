@@ -16,12 +16,14 @@ class GeneralAuditWSfbf57eeComputation(models.Model):
         required=True,
         ondelete="cascade",
         index=True,
+        help="Parent Going Concern worksheet for this computation line.",
     )
     general_audit_computation_id = fields.Many2one(
         comodel_name="general_audit.computation",
         string="Computation",
         required=True,
         ondelete="restrict",
+        help="General Audit computation source used to derive amounts and results.",
     )
     computation_item_id = fields.Many2one(
         related="general_audit_computation_id.computation_item_id",
@@ -35,17 +37,20 @@ class GeneralAuditWSfbf57eeComputation(models.Model):
         digits=(16, 2),
         compute="_compute_current_amount",
         store=True,
+        help="Amount used for Z-Score computation based on the selected balance type.",
     )
     coefficient = fields.Float(
         string="Coefficient",
         digits=(16, 6),
         required=True,
+        help="Weight/Coefficient applied to the computation item when calculating Z-Score.",
     )
     result = fields.Float(
         string="Result",
         digits=(16, 2),
         compute="_compute_result",
         store=True,
+        help="Computed result = Current Amount × Coefficient.",
     )
 
     @api.depends(

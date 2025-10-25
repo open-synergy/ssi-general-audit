@@ -22,4 +22,6 @@ class GeneralAuditWSee819ae(models.Model):
     checklist_ids = fields.One2many(
         string="Checklist",
         comodel_name="general_audit_ws_ee819ae.checklist",
+        help="""Checklist lines for Commitment and Contingent procedures.
+Each line records the assessment/answer for a specific checklist item.""",
     )

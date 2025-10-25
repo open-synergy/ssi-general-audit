@@ -17,12 +17,15 @@ class GeneralAuditWSee819aeChecklist(models.Model):
         comodel_name="general_audit_ws_ee819ae",
         required=True,
         ondelete="cascade",
+        help="Parent Commitment and Contingent worksheet for this checklist line.",
     )
     item_id = fields.Many2one(
         string="Checklist Item",
         comodel_name="general_audit_ws_ee819ae.item",
         required=True,
+        help="Checklist item/question being evaluated on this line.",
     )
     explanation = fields.Text(
         string="Explanation/Reference",
+        help="Additional explanation or reference supporting the checklist response.",
     )

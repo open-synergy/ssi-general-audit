@@ -28,6 +28,9 @@ class GeneralAuditWSa8f4d88(models.Model):
         string="Details",
         readonly=True,
         states={"draft": [("readonly", False)], "open": [("readonly", False)]},
+        help="""Detail lines capturing the accounting
+estimation assessment per selected account type.
+Editable while the worksheet is in Draft or Open state.""",
     )
 
     @api.depends(

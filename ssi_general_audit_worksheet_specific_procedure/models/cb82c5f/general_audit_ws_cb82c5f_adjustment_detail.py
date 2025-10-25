@@ -14,6 +14,7 @@ class GeneralAuditWScb82c5fAdjustmentDetail(models.Model):
         string="Worksheet",
         required=True,
         ondelete="cascade",
+        help="Parent Subsequent Event worksheet for this adjustment detail line.",
     )
     subsequent_event_id = fields.Many2one(
         comodel_name="general_audit_subsequent_event",

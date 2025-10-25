@@ -16,6 +16,7 @@ class GeneralAuditWSfbf57eeConfirmationProcedure(models.Model):
         required=True,
         ondelete="cascade",
         index=True,
+        help="Parent Going Concern worksheet for this confirmation line.",
     )
 
     confirmation_procedure_id = fields.Many2one(
@@ -24,6 +25,7 @@ class GeneralAuditWSfbf57eeConfirmationProcedure(models.Model):
         required=True,
         ondelete="restrict",
         index=True,
+        help="The specific going concern confirmation procedure to be performed.",
     )
     performed = fields.Selection(
         selection=[

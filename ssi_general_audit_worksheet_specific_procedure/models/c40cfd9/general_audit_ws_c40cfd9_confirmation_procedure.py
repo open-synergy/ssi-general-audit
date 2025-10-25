@@ -15,6 +15,7 @@ class GeneralAuditWSc40cfd9ConfirmationProcedure(models.Model):
         string="Worksheet",
         required=True,
         ondelete="cascade",
+        help="Parent Related Party Transaction worksheet for this confirmation line.",
     )
     confirmation_procedure_id = fields.Many2one(
         comodel_name="general_audit_related_party_confirmation_procedure",

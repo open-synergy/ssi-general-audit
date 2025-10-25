@@ -16,6 +16,7 @@ class GeneralAuditWSfbf57eeAnalysis(models.Model):
         required=True,
         ondelete="cascade",
         index=True,
+        help="Parent Going Concern worksheet for this analysis line.",
     )
     going_concern_id = fields.Many2one(
         string="Going Concern",
