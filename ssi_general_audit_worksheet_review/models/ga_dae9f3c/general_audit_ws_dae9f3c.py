@@ -19,4 +19,8 @@ class GeneralAuditWSdae9f3c(models.Model):
     checklist_ids = fields.One2many(
         string="Checklist",
         comodel_name="general_audit_ws_dae9f3c.checklist",
+        help=(
+            "Checklist lines for this worksheet. Items are managed via the related "
+            "checklist item model and evaluated within this worksheet."
+        ),
     )

@@ -26,11 +26,17 @@ class GeneralAuditWSa025441Checklist(models.Model):
         help="Checklist item that must be answered on this line.",
     )
     financial_accounting_standard_id = fields.Many2one(
-        related="item_id.financial_accounting_standard_id"
+        related="item_id.financial_accounting_standard_id",
+        help="Financial accounting standard derived from the selected checklist item.",
     )
     relevant_accounting_standard_id = fields.Many2one(
-        related="item_id.relevant_accounting_standard_id"
+        related="item_id.relevant_accounting_standard_id",
+        help="Relevant accounting standard derived from the selected checklist item.",
     )
     ref = fields.Text(
         string="Reference",
+        help=(
+            "Cross-reference to working papers, notes, or document sections "
+            "that support the answer provided for this checklist line."
+        ),
     )

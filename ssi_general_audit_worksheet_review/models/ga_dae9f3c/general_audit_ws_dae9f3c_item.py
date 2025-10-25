@@ -14,4 +14,5 @@ class GeneralAuditWSdae9f3cItem(models.Model):
 
     code = fields.Char(
         default="/",
+        help="Item code or number. Use '/' to auto-generate the code.",
     )

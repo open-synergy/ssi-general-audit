@@ -29,4 +29,8 @@ class GeneralAuditWSfc75636Item(models.Model):
     category_id = fields.Many2one(
         string="Category",
         comodel_name="general_audit_ws_fc75636.category",
+        help=(
+            "Category used to group items within the selected auditor’s report type, "
+            "such as specific sections or paragraph groups."
+        ),
     )

@@ -22,35 +22,53 @@ class GeneralAuditWSbcc0d76ODetail(models.Model):
     )
     state = fields.Selection(
         related="worksheet_id.state",
+        help="State of the parent worksheet.",
     )
     general_worksheet_id = fields.Many2one(
         string="# Worksheet",
         comodel_name="general_audit_worksheet",
+        help="Linked general worksheet being reviewed in this record.",
     )
     parent_type_id = fields.Many2one(
         related="general_worksheet_id.parent_type_id",
         store=True,
+        help="Type/category of the linked general worksheet.",
     )
     code_internal = fields.Char(
         related="parent_type_id.code_internal",
         store=True,
+        help="Internal code of the worksheet type used for ordering or grouping.",
     )
     sequence = fields.Integer(
         related="parent_type_id.sequence",
         store=True,
+        help="Ordering sequence of the worksheet type.",
     )
-    conclusion_id = fields.Many2one(related="general_worksheet_id.conclusion_id")
-    conclusion = fields.Text(related="general_worksheet_id.conclusion")
+    conclusion_id = fields.Many2one(
+        related="general_worksheet_id.conclusion_id",
+        help="Conclusion record associated with the linked worksheet.",
+    )
+    conclusion = fields.Text(
+        related="general_worksheet_id.conclusion",
+        help="Conclusion text taken from the linked worksheet.",
+    )
     recommendation = fields.Text(
         string="Reviewer’s Recommendation",
+        help="Reviewer’s recommendation based on the evaluation of the worksheet.",
     )
     follow_up = fields.Text(
         string="Follow-Up on Reviewer’s Recommendation",
+        help=(
+            "Actions taken or proposed to address the reviewer’s recommendation, "
+            "including responsible parties and timelines if applicable."
+        ),
     )
     review_result = fields.Selection(
         string="Review Result",
         selection=[("compliant", "Compliant"), ("non_compliant", "Non-Compliant")],
+        help="Outcome of the review for this area: compliant or non-compliant.",
     )
     review_date = fields.Date(
         string="Date",
+        help="Date when the review was performed or finalized.",
     )

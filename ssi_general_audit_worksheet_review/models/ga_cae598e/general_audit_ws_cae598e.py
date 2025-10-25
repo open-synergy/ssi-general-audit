@@ -22,6 +22,10 @@ class GeneralAuditWScae598e(models.Model):
         states={
             "open": [("readonly", False)],
         },
+        help=(
+            "Evaluation details linked to Audit Quality (bcc0d76) details for this audit. "
+            "Lines are populated automatically and synchronized with their sources."
+        ),
     )
 
     def action_populate(self):

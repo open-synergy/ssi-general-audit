@@ -24,6 +24,10 @@ class GeneralAuditWSbcc0d76(models.Model):
                 ("readonly", False),
             ],
         },
+        help=(
+            "Review details generated for each main worksheet under this audit. "
+            "Records are populated automatically and kept in sync with the source worksheets."
+        ),
     )
 
     def action_populate(self):
