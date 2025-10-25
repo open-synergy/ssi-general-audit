@@ -873,6 +873,7 @@ class GeneralAudit(models.Model):
             group._compute_group_line()
             group._compute_extrapolation_balance()
             group._compute_extrapolation_balance()
+            group._compute_adjustment()
             group._compute_adjustment_audited_balance()
             group._compute_average()
 
