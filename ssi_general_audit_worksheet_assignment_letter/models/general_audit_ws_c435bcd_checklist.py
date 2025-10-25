@@ -17,9 +17,14 @@ class GeneralAuditWSc435bcdChecklist(models.Model):
         comodel_name="general_audit_ws_c435bcd",
         required=True,
         ondelete="cascade",
+        help="Reference to the Assignment Letter worksheet that this "
+        "checklist item belongs to. When the worksheet is deleted, "
+        "this checklist entry will be automatically removed.",
     )
     item_id = fields.Many2one(
         string="Checklist Item",
         comodel_name="general_audit_ws_c435bcd.item",
         required=True,
+        help="The specific checklist item template that defines what needs "
+        "to be verified or completed for this assignment letter worksheet.",
     )
