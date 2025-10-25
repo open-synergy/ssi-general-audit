@@ -6,13 +6,14 @@
 <record id="worksheet_type_1d9338d" model="general_audit_worksheet_type">
     <field name="code">1d9338d</field>
     <field name="name">Preliminary Materiality</field>
-    <field name="sequence" eval="13000" />
+    <field name="sequence" eval="170" />
     <field name="category_id" ref="ssi_general_audit.worksheet_type_category_ra" />
+    <field name="main_worksheet" eval="1" />
 </record>
 <record id="worksheet_type_d9d2b44" model="general_audit_worksheet_type">
     <field name="code">D9D2B44</field>
     <field name="name">Materiality Computation</field>
-    <field name="sequence" eval="13001" />
+    <field name="sequence" eval="180" />
     <field name="category_id" ref="ssi_general_audit.worksheet_type_category_ra" />
     <field name="allowed_audit" eval="1" />
     <field name="max_number_allowed" eval="2" />
@@ -21,7 +22,7 @@
 <record id="worksheet_type_6dcda0e" model="general_audit_worksheet_type">
     <field name="code">6DCDA0E</field>
     <field name="name">Specific Materiality</field>
-    <field name="sequence" eval="13002" />
+    <field name="sequence" eval="190" />
     <field name="parent_id" ref="worksheet_type_d9d2b44" />
     <field name="category_id" ref="ssi_general_audit.worksheet_type_category_ra" />
     <field name="allowed_audit" eval="1" />
