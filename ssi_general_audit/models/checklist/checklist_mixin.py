@@ -29,11 +29,18 @@ class MixinChecklist(models.AbstractModel):
 
     def _get_checklist_field_name(self):
         """Nama field One2many untuk checklist"""
+        self.ensure_one()
         return "checklist_ids"
 
     def _get_checklist_extra_vals(self, item):
         """Override untuk menambahkan field tambahan ke checklist"""
+        self.ensure_one()
         return {}
+
+    def _get_checklist_item_domain(self):
+        """Override untuk menambahkan domain ke checklist item"""
+        self.ensure_one()
+        return []
 
     @ssi_decorator.insert_on_form_view()
     def _checklist_insert_form_element(self, view_arch):
@@ -54,8 +61,8 @@ class MixinChecklist(models.AbstractModel):
             Item = self.env[self._item_model_name]
 
             for record in self:
-                items = Item.search([])
-                checklist_field = self._get_checklist_field_name()
+                items = Item.search(record._get_checklist_item_domain())
+                checklist_field = record._get_checklist_field_name()
 
                 # mapping existing checklist by item_id
                 checklist_map = {chk.item_id.id: chk for chk in record[checklist_field]}
@@ -68,7 +75,7 @@ class MixinChecklist(models.AbstractModel):
                                 "worksheet_id": record.id,
                                 "item_id": item.id,
                                 "sequence": item.sequence,
-                                **self._get_checklist_extra_vals(item),
+                                **record._get_checklist_extra_vals(item),
                             }
                         )
 

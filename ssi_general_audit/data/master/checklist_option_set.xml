@@ -66,4 +66,20 @@
             eval="[(6, 0, [ref('checklist_option_agree'), ref('checklist_option_disagree')])]"
         />
     </record>
+    <record id="checklist_option_set_9" model="checklist.option_set">
+        <field name="code">/</field>
+        <field name="name">3 Options (Disclosed/Not Disclosed/Not Relevant)</field>
+        <field
+            name="option_ids"
+            eval="[(6, 0, [ref('checklist_option_disclosed'), ref('checklist_option_not_disclosed'), ref('checklist_option_not_relevant')])]"
+        />
+    </record>
+    <record id="checklist_option_set_10" model="checklist.option_set">
+        <field name="code">/</field>
+        <field name="name">3 Options (Present/Not Present/Not Applicable)</field>
+        <field
+            name="option_ids"
+            eval="[(6, 0, [ref('checklist_option_present'), ref('checklist_option_not_present'), ref('checklist_option_not_applicable')])]"
+        />
+    </record>
 </odoo>
