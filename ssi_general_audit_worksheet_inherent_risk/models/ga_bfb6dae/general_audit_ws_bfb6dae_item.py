@@ -14,4 +14,6 @@ class GeneralAuditWSbfb6daeItem(models.Model):
 
     code = fields.Char(
         default="/",
+        help="""Internal code for the checklist item.
+Defaults to '/'; may be replaced by a generated sequence depending on configuration.""",
     )

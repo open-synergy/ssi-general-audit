@@ -45,11 +45,14 @@ class GeneralAuditWSc16abd7(models.Model):
                 ("required", True),
             ],
         },
+        help="Link to the Understanding of preparation of Financial Statements worksheet.",
     )
     ws_f6a227_id_review = fields.Text(
         related="ws_f6a227_id.review",
         string="Review Note on Understanding of preparation of Financial Statements",
         readonly=True,
+        help="""Review note from the linked Understanding
+of preparation of Financial Statements worksheet.""",
     )
     ws_c0d0898_id = fields.Many2one(
         string="# Going Concern Analysis",
@@ -62,11 +65,13 @@ class GeneralAuditWSc16abd7(models.Model):
                 ("required", True),
             ],
         },
+        help="Link to the Going Concern Analysis worksheet.",
     )
     ws_c0d0898_id_review = fields.Text(
         related="ws_c0d0898_id.review",
         string="Review Note on Going Concern Analysis",
         readonly=True,
+        help="Review note from the linked Going Concern Analysis worksheet.",
     )
     ws_bdcdfc5_ids = fields.Many2many(
         string="# Understanding of the Business Environment",
@@ -99,74 +104,5 @@ class GeneralAuditWSc16abd7(models.Model):
                 ("readonly", False),
             ],
         },
-    )
-    auditor_respons = fields.Text(
-        string="Auditor Respons",
-        readonly=True,
-        states={
-            "open": [
-                ("readonly", False),
-            ],
-        },
-    )
-
-    # Impacted standard account
-    expert_impacted_account_type_ids = fields.Many2many(
-        string="Standard Accounts Impacted by Use of Expert",
-        comodel_name="client_account_type",
-        related="general_audit_id.expert_impacted_account_type_ids",
-        readonly=True,
-        store=False,
-    )
-    previous_audit_information_impacted_account_type_ids = fields.Many2many(
-        string="Standard Accounts Impacted by Previous Audit Information",
-        comodel_name="client_account_type",
-        related="general_audit_id.previous_audit_information_impacted_account_type_ids",
-        readonly=True,
-        store=False,
-    )
-    previous_other_information_impacted_account_type_ids = fields.Many2many(
-        string="Standard Accounts Impacted by Previous Other Information",
-        comodel_name="client_account_type",
-        related="general_audit_id.previous_other_information_impacted_account_type_ids",
-        readonly=True,
-        store=False,
-    )
-    other_information_impacted_account_type_ids = fields.Many2many(
-        string="Standard Accounts Impacted by Other Information",
-        comodel_name="client_account_type",
-        related="general_audit_id.other_information_impacted_account_type_ids",
-        readonly=True,
-        store=False,
-    )
-    regulation_impacted_account_type_ids = fields.Many2many(
-        string="Standard Accounts Impacted by Relevant Regulations",
-        comodel_name="client_account_type",
-        related="general_audit_id.regulation_impacted_account_type_ids",
-        readonly=True,
-        store=False,
-    )
-    preparation_of_financial_statements_impacted_account_type_ids = fields.Many2many(
-        string="Standard Accounts Impacted by Preparation of Financial Statements",
-        comodel_name="client_account_type",
-        related=(
-            "general_audit_id."
-            "preparation_of_financial_statements_impacted_account_type_ids"
-        ),
-        readonly=True,
-        store=False,
-    )
-    fraud_impacted_account_type_ids = fields.Many2many(
-        string="Standard Accounts Impacted by Fraud Risk",
-        comodel_name="client_account_type",
-        related="general_audit_id.fraud_impacted_account_type_ids",
-        readonly=True,
-        store=False,
-    )
-    business_environment_impacted_account_type_ids = fields.Many2many(
-        string="Standard Accounts Impacted by Business Environment",
-        comodel_name="client_account_type",
-        related="general_audit_id.business_environment_impacted_account_type_ids",
-        readonly=True,
-        store=False,
+        help="Overall assessed risk of material misstatement at the financial statement level.",
     )

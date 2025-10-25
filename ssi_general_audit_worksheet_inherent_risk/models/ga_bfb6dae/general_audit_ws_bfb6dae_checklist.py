@@ -17,9 +17,12 @@ class GeneralAuditWSbfb6daeChecklist(models.Model):
         comodel_name="general_audit_ws_bfb6dae",
         required=True,
         ondelete="cascade",
+        help="""Reference to the parent Inherent Risk worksheet.
+Required. Deleting the worksheet cascades and removes its checklist lines.""",
     )
     item_id = fields.Many2one(
         string="Checklist Item",
         comodel_name="general_audit_ws_bfb6dae.item",
         required=True,
+        help="Checklist item/question being evaluated on this line.",
     )
