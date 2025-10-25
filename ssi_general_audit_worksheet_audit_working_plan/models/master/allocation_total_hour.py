@@ -14,4 +14,8 @@ class AllocatioTotalHour(models.Model):
 
     total_hour = fields.Float(
         string="Total Hours",
+        help=(
+            "Predefined total manhours to be used as a reference for worksheets. "
+            "Selecting a record can auto-fill the Total Manhour Allocation."
+        ),
     )

@@ -15,11 +15,16 @@ class GeneralAuditWSCBBBAF4TeamAllocation(models.Model):
         comodel_name="general_audit_ws_cbbbaf4",
         required=True,
         ondelete="cascade",
+        help=(
+            "The Audit Working Plan (cbbbaf4) this allocation line belongs to. "
+            "Deleting the worksheet will remove its allocation lines."
+        ),
     )
     sequence = fields.Integer(
         string="Sequence",
         default=10,
         required=True,
+        help=("Line ordering for this team member. Lower values are shown first."),
     )
     team_id = fields.Many2one(
         string="Team Member",
@@ -31,6 +36,10 @@ class GeneralAuditWSCBBBAF4TeamAllocation(models.Model):
                 ("readonly", False),
             ],
         },
+        help=(
+            "Employee assigned to the engagement for this worksheet. "
+            "Editable while the worksheet is in Open state."
+        ),
     )
     role_id = fields.Many2one(
         string="Role",
@@ -42,6 +51,10 @@ class GeneralAuditWSCBBBAF4TeamAllocation(models.Model):
                 ("readonly", False),
             ],
         },
+        help=(
+            "Engagement role of the team member (e.g., Partner, Manager, Senior). "
+            "Editable while the worksheet is in Open state."
+        ),
     )
     pe_allocation = fields.Float(
         string="Pre-Engagement Allocation",
@@ -53,6 +66,10 @@ class GeneralAuditWSCBBBAF4TeamAllocation(models.Model):
                 ("readonly", False),
             ],
         },
+        help=(
+            "Hours allocated to Pre-Engagement activities for this team member. "
+            "Contributes to Total Allocation."
+        ),
     )
     ra_allocation = fields.Float(
         string="Risk Assesment Allocation",
@@ -64,6 +81,10 @@ class GeneralAuditWSCBBBAF4TeamAllocation(models.Model):
                 ("readonly", False),
             ],
         },
+        help=(
+            "Hours allocated to Risk Assessment activities for this team member. "
+            "Contributes to Total Allocation."
+        ),
     )
     rr_allocation = fields.Float(
         string="Risk Response Allocation",
@@ -75,6 +96,10 @@ class GeneralAuditWSCBBBAF4TeamAllocation(models.Model):
                 ("readonly", False),
             ],
         },
+        help=(
+            "Hours allocated to Risk Response activities for this team member. "
+            "Contributes to Total Allocation."
+        ),
     )
     reporting_allocation = fields.Float(
         string="Reporting Allocation",
@@ -86,6 +111,10 @@ class GeneralAuditWSCBBBAF4TeamAllocation(models.Model):
                 ("readonly", False),
             ],
         },
+        help=(
+            "Hours allocated to Reporting activities for this team member. "
+            "Contributes to Total Allocation."
+        ),
     )
 
     @api.depends(
@@ -108,7 +137,15 @@ class GeneralAuditWSCBBBAF4TeamAllocation(models.Model):
         compute="_compute_total_allocation",
         store=True,
         compute_sudo=True,
+        help=(
+            "Computed total hours allocated to this team member across all phases "
+            "(Pre-Engagement + Risk Assessment + Risk Response + Reporting)."
+        ),
     )
     state = fields.Selection(
         related="worksheet_id.state",
+        help=(
+            "Status of the parent worksheet. The state controls whether fields "
+            "on this line are editable."
+        ),
     )

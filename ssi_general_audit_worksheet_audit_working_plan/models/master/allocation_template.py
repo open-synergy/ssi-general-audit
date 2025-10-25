@@ -14,15 +14,31 @@ class AllocationTemplate(models.Model):
 
     pe_percentage = fields.Float(
         string="Pre-Engagement Allocation (%)",
+        help=(
+            "Percentage of total manhours allocated to the Pre-Engagement phase. "
+            "The sum of all phase percentages in this template must be 100%."
+        ),
     )
     ra_percentage = fields.Float(
         string="Risk Assessment Allocation (%)",
+        help=(
+            "Percentage of total manhours allocated to the Risk Assessment phase. "
+            "The sum of all phase percentages in this template must be 100%."
+        ),
     )
     rr_percentage = fields.Float(
         string="Risk Response Allocation (%)",
+        help=(
+            "Percentage of total manhours allocated to the Risk Response phase. "
+            "The sum of all phase percentages in this template must be 100%."
+        ),
     )
     wr_percentage = fields.Float(
         string="Reporting Allocation (%)",
+        help=(
+            "Percentage of total manhours allocated to the Reporting phase. "
+            "The sum of all phase percentages in this template must be 100%."
+        ),
     )
 
     @api.constrains(
