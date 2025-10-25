@@ -4,7 +4,7 @@
 from odoo import fields, models
 
 
-class MixinExpertCategory(models.Model):
+class MixinExpertCategory(models.AbstractModel):
     _name = "mixin.expert.category"
     _inherit = [
         "mixin.master_data",
