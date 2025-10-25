@@ -63,12 +63,21 @@
         <field name="view_mode">tree,form</field>
     </record>
 
+
+
+    <menuitem
+        id="general_audit_audit_procedure_category_root_menu"
+        name="Audit Procedure"
+        parent="ssi_general_audit.menu_configuration_checklist"
+        sequence="230"
+    />
+
     <menuitem
         id="general_audit_audit_procedure_category_menu"
-        name="Audit Procedure Categories"
-        parent="ssi_general_audit.menu_configuration_risk_response"
+        name="Categories"
+        parent="general_audit_audit_procedure_category_root_menu"
         action="general_audit_audit_procedure_category_action"
-        sequence="110"
+        sequence="10"
         groups="general_audit_audit_procedure_category_group"
     />
 
