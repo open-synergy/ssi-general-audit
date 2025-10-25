@@ -552,6 +552,7 @@ class ClientTrialBalance(models.Model):
             additional_dict = additionaldict
 
         self.general_audit_id._recompute_extrapolation_computation()
+        self.general_audit_id._recompute_audited_computation()
 
     def _get_account_type_dict(self):
         self.ensure_one()

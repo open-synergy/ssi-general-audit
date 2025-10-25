@@ -14,6 +14,7 @@
             <field name="interim_amount" string="Interim" />
             <field name="extrapolation_amount" string="Extrapolation" />
             <field name="home_amount" string="End Period" />
+            <field name="audited_amount" string="Audited" />
             <field name="interim_avg_amount" string="Interim Avg." optional="hide" />
             <field
                     name="extrapolation_avg_amount"
@@ -21,6 +22,7 @@
                     optional="hide"
                 />
             <field name="home_avg_amount" string="End Period Avg." optional="hide" />
+            <field name="audited_avg_amount" string="Audited Avg." optional="hide" />
         </tree>
     </field>
 </record>
@@ -37,10 +39,11 @@
                         <field name="computation_item_id" />
                     </group>
                     <group name="header2" colspan="1" col="2">
+                        <field name="previous_amount" string="Previous" />
                         <field name="interim_amount" string="Interim" />
                         <field name="extrapolation_amount" string="Extrapolation" />
                         <field name="home_amount" string="End Period" />
-                        <field name="previous_amount" string="Previous" />
+                        <foeld name="audited_amount" string="Audited" />
                         <field
                                 name="interim_avg_amount"
                                 string="Interim Avg."
@@ -54,6 +57,11 @@
                         <field
                                 name="home_avg_amount"
                                 string="End Period Avg."
+                                optional="hide"
+                            />
+                        <field
+                                name="audited_avg_amount"
+                                string="Audited Avg."
                                 optional="hide"
                             />
                     </group>

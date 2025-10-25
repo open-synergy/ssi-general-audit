@@ -745,6 +745,13 @@ class GeneralAudit(models.Model):
             additionaldict = computation._recompute_extrapolation(additional_dict)
             additional_dict = additionaldict
 
+    def _recompute_audited_computation(self):
+        self.ensure_one()
+        additional_dict = self._get_audited_account_type_dict()
+        for computation in self.computation_ids:
+            additionaldict = computation._recompute_audited(additional_dict)
+            additional_dict = additionaldict
+
     def _get_extrapolation_account_type_dict(self):
         self.ensure_one()
         result = {
@@ -764,6 +771,29 @@ class GeneralAudit(models.Model):
                 {
                     standard.type_id.group_id.code: account_group_amount
                     + standard.adjusted_extrapolation_balance,
+                }
+            )
+        return result
+
+    def _get_audited_account_type_dict(self):
+        self.ensure_one()
+        result = {
+            "account_type": {},
+            "account_group": {},
+        }
+        for standard in self.standard_detail_ids:
+            result["account_type"].update(
+                {
+                    standard.type_id.code: standard.audited_balance,
+                }
+            )
+            account_group_amount = result["account_group"].get(
+                standard.type_id.group_id.code, 0.0
+            )
+            result["account_group"].update(
+                {
+                    standard.type_id.group_id.code: account_group_amount
+                    + standard.audited_balance,
                 }
             )
         return result
@@ -868,6 +898,7 @@ class GeneralAudit(models.Model):
         for record in self.sudo():
             record._recompute_computation()
             record._recompute_extrapolation_computation()
+            record._recompute_audited_computation()
 
     def _recompute_computation(self):
         self.ensure_one()

@@ -118,6 +118,10 @@ class GeneralAuditComputation(models.Model):
         store=True,
         help="Calculated extrapolation amount for this item.",
     )
+    audited_amount = fields.Float(
+        string="Audited Amount",
+        help="Calculated auditted amount for this item.",
+    )
     interim_amount = fields.Float(
         string="Interim Amount",
         related="interim_computation_id.amount",
@@ -136,17 +140,20 @@ class GeneralAuditComputation(models.Model):
         "extrapolation_amount",
         "interim_amount",
         "previous_amount",
+        "audited_amount",
     )
     def _compute_average(self):
         for record in self:
-            extrapolation = interim = home = 0.0
+            extrapolation = interim = home = audited = 0.0
             extrapolation = (record.extrapolation_amount + record.previous_amount) / 2.0
             interim = (record.interim_amount + record.previous_amount) / 2.0
             home = (record.home_amount + record.previous_amount) / 2.0
+            audited = (record.audited_amount + record.previous_amount) / 2.0
 
             record.extrapolation_avg_amount = extrapolation
             record.interim_avg_amount = interim
             record.home_avg_amount = home
+            record.audited_avg_amount = audited
 
     extrapolation_avg_amount = fields.Float(
         string="Extrapolation Avg. Amount",
@@ -165,6 +172,12 @@ class GeneralAuditComputation(models.Model):
         compute="_compute_average",
         store=True,
         help="Average of end period and previous amounts.",
+    )
+    audited_avg_amount = fields.Float(
+        string="Audited Avg. Amount",
+        compute="_compute_average",
+        store=True,
+        help="Average of audited and previous amounts.",
     )
 
     def _get_localdict(self):
@@ -218,6 +231,46 @@ class GeneralAuditComputation(models.Model):
         self.write(
             {
                 "extrapolation_amount": amount,
+            }
+        )
+        return additional_dict
+
+    def _recompute_audited(self, additional_dict):
+        self.ensure_one()
+        Computation = self.env["client_account_type.computation_item"]
+        amount = 0.0
+        criteria = [
+            ("computation_id", "=", self.computation_item_id.id),
+            (
+                "account_type_set_id",
+                "=",
+                self.general_audit_id.account_type_set_id.id,
+            ),
+        ]
+        computations = Computation.search(criteria)
+        if len(computations) > 0:
+            computation = computations[0]
+            if computation.use_default:
+                python_code = computation.computation_id.python_code
+            else:
+                python_code = computations[0].python_code
+
+            localdict = self._get_extrapolation_localdict()
+            localdict.update(additional_dict)
+            try:
+                eval(
+                    python_code,
+                    localdict,
+                    mode="exec",
+                    nocopy=True,
+                )
+                amount = localdict["result"]
+                additional_dict.update({self.computation_item_id.code: amount})
+            except Exception:
+                amount = 0.0
+        self.write(
+            {
+                "audited_amount": amount,
             }
         )
         return additional_dict
