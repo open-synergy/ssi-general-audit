@@ -17,10 +17,7 @@ class GeneralAuditStandardDetail(models.Model):
             ("medium", "Medium"),
             ("high", "High"),
         ],
-        help="Assessed level of inherent risk for this standard account (low/medium/high).",
     )
     significant_risk = fields.Boolean(
         string="Significant Risk",
-        help="""Indicates whether this area is considered a
-significant risk for audit planning and procedures.""",
     )
