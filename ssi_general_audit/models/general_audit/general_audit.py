@@ -871,9 +871,8 @@ class GeneralAudit(models.Model):
         self.ensure_one()
         for group in self.group_detail_ids:
             group._compute_group_line()
-            group._compute_group_adjustment_id()
             group._compute_extrapolation_balance()
-            group._compute_adjusted_extrapolation_balance()
+            group._compute_extrapolation_balance()
             group._compute_adjustment_audited_balance()
             group._compute_average()
 
