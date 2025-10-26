@@ -81,24 +81,6 @@ class GeneralAuditWSd4289e4(models.Model):
         help="Filtered view of profitability ratios only.",
     )
 
-    @api.onchange("general_audit_id")
-    def onchange_ratio_ids(self):
-        self.update({"ratio_ids": [(5, 0, 0)]})
-        FinancialRatio = self.env["client_financial_ratio"]
-        if self.general_audit_id:
-            result = []
-            for ratio in FinancialRatio.search([]):
-                result.append(
-                    (
-                        0,
-                        0,
-                        {
-                            "financial_ratio_id": ratio.id,
-                        },
-                    )
-                )
-            self.update({"ratio_ids": result})
-
     def action_compute_ratio(self):
         for record in self:
             record._recompute_computation()
