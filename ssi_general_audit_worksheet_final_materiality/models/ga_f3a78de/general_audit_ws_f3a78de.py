@@ -66,7 +66,7 @@ class GeneralAuditWSf3a78de(models.Model):
         for ratio in to_be_added:
             criteria = [
                 ("worksheet_id", "=", self.ws_d4289e4_id.id),
-                ("financial_ratio_id", ratio.id),
+                ("financial_ratio_id", "=", ratio.id),
             ]
             prelim_detail = False
             prelim_details = self.env["general_audit_ws_d4289e4.ratio"].search(criteria)
