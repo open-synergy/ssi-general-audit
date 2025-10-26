@@ -240,7 +240,6 @@ class GeneralAuditGroupDetail(models.Model):
     )
     adjustment_debit = fields.Monetary(
         string="Adjustment Debit",
-        related=False,
         store=True,
         compute="_compute_adjustment",
         currency_field="currency_id",
@@ -248,7 +247,6 @@ class GeneralAuditGroupDetail(models.Model):
     )
     adjustment_credit = fields.Monetary(
         string="Adjustment Credit",
-        related=False,
         store=True,
         compute="_compute_adjustment",
         currency_field="currency_id",
@@ -268,7 +266,7 @@ class GeneralAuditGroupDetail(models.Model):
             debit = credit = 0.0
             ga = record.general_audit_id
             for adjustment in ga.adjustment_entry_ids.filtered(
-                lambda r: r.state == "posted"
+                lambda r: r.state == "done"
             ):
                 for detail in adjustment.detail_ids.filtered(
                     lambda r: r.account_id.group_id.id == record.group_id.id
