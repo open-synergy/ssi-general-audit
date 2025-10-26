@@ -151,7 +151,7 @@ class GeneralAuditWSe1f2d98(models.Model):
     def _load_analysis(self):
         self.ensure_one()
         criteria = [
-            ("worksheet_id", "=", self.worksheet_id.ws_b32655a_id.id),
+            ("worksheet_id", "=", self.ws_b32655a_id.id),
         ]
         all_details = self.env[
             "general_audit_ws_b32655a.vertical_horizontal_analysis"
