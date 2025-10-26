@@ -70,18 +70,21 @@ that can be linked to this record.""",
     pmpj_simplified = fields.Boolean(
         string="Simplified",
         compute="_compute_pmpj",
+        compute_sudo=True,
         help="""Convenience flag derived from link_1_pmpj indicating
 Simplified due diligence applies.""",
     )
     pmpj_intermediate = fields.Boolean(
         string="Intermediate",
         compute="_compute_pmpj",
+        compute_sudo=True,
         help="""Convenience flag derived from link_1_pmpj indicating
 Intermediate due diligence applies.""",
     )
     pmpj_enhanced = fields.Boolean(
         string="Enhanced",
         compute="_compute_pmpj",
+        compute_sudo=True,
         help="""Convenience flag derived from link_1_pmpj indicating
 Enhanced due diligence applies.""",
     )

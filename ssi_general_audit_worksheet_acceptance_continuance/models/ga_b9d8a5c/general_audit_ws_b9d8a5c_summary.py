@@ -51,6 +51,7 @@ class GeneralAuditWSb9d8a5cSummary(models.Model):
     compentency_result = fields.Char(
         string="Compentency",
         compute="_compute_compentency_result",
+        compute_sudo=True,
         store=True,
     )
 
@@ -75,6 +76,7 @@ class GeneralAuditWSb9d8a5cSummary(models.Model):
     availability_result = fields.Char(
         string="Availability",
         compute="_compute_availability_result",
+        compute_sudo=True,
         store=True,
     )
 
@@ -99,6 +101,7 @@ class GeneralAuditWSb9d8a5cSummary(models.Model):
     independency_result = fields.Char(
         string="Independency",
         compute="_compute_independency_result",
+        compute_sudo=True,
         store=True,
     )
     select_team = fields.Selection(

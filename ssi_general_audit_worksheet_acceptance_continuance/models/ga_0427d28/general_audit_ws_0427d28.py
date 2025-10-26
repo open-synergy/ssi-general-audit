@@ -51,6 +51,7 @@ class GeneralAuditWS0427d28(models.Model):
     engagemet = fields.Char(
         string="Engagement",
         compute="_compute_engagemet",
+        compute_sudo=True,
         store=True,
         help="Computed engagement type based on consecutive audits with the firm:\n"
         "'Initial Engagement' or 'Recurring Engagement'.",
@@ -58,6 +59,7 @@ class GeneralAuditWS0427d28(models.Model):
     engagemet_ok = fields.Boolean(
         string="Engagement Type",
         compute="_compute_engagemet",
+        compute_sudo=True,
         store=True,
         help=(
             "Computed flag indicating whether the engagement "

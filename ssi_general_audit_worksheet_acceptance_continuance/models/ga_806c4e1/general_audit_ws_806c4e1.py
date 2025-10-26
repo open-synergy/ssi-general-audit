@@ -83,6 +83,7 @@ Relationships analysis.""",
     public_offering = fields.Char(
         string="Public Offering",
         compute="_compute_public_offering",
+        compute_sudo=True,
         store=True,
         help="""Computed status indicating whether the client has, or plans to have,
 a public offering.""",
@@ -135,6 +136,7 @@ derived from the General Audit.""",
     engagemet = fields.Char(
         string="Engagement",
         compute="_compute_engagemet",
+        compute_sudo=True,
         store=True,
         help="""Computed engagement type based on the number of consecutive audits
 with the firm ('Initial Engagement' vs 'Recurring Engagement').""",
