@@ -41,6 +41,133 @@
         />
         <field name="arch" type="xml">
             <data>
+                <xpath expr="//page[1]" position="before">
+                    <page name="analysis" string="Vertical and Horisontal Analysis">
+                        <group name="analysis_1" colspan="4" col="2">
+                            <field
+                                name="ws_b32655a_id"
+                                domain="[('general_audit_id','=',general_audit_id),('state','in',['open','done']),('base_amount_source','=','end_period')]"
+                            />
+                        </group>
+                        <group name="analysis_2" colspan="4" col="3">
+                            <group
+                                name="analysis_2_1"
+                                colspan="1"
+                                col="2"
+                                string="Pervious"
+                            >
+                                <field
+                                    name="previous_total_asset"
+                                    string="Total Asset"
+                                />
+                                <field
+                                    name="previous_total_revenue"
+                                    string="Total Revenue"
+                                />
+                            </group>
+                            <group
+                                name="analysis_2_2"
+                                colspan="1"
+                                col="2"
+                                string="End Period"
+                            >
+                                <field
+                                    name="end_period_total_asset"
+                                    string="Total Asset"
+                                />
+                                <field
+                                    name="end_period_total_revenue"
+                                    string="Total Revenue"
+                                />
+                            </group>
+                            <group
+                                name="analysis_2_3"
+                                colspan="1"
+                                col="2"
+                                string="Audited"
+                            >
+                                <field
+                                    name="audited_total_asset"
+                                    string="Total Asset"
+                                />
+                                <field
+                                    name="audited_total_revenue"
+                                    string="Total Revenue"
+                                />
+                            </group>
+                        </group>
+                        <button
+                            name="action_load_analysis"
+                            string="Reload"
+                            type="object"
+                            icon="fa-refresh"
+                            class="oe_highlight"
+                            style="margin-right:4px"
+                            attrs="{'invisible':[('state','not in',['draft','open'])]}"
+                        />
+                        <field name="analysis_ids" force_save="1">
+                            <tree editable="top">
+                                <field name="sequence" widget="handle" />
+                                <field name="standard_detail_id" invisible="1" />
+                                <field name="type_id" />
+                                <field name="computation_item_id" optional="hide" />
+                                <field
+                                    name="general_audit_computation_item_id"
+                                    invisible="1"
+                                />
+                                <field name="currency_id" invisible="1" />
+                                <field
+                                    name="end_period_balance"
+                                    string="End Period ∑"
+                                    optional="hide"
+                                />
+                                <field
+                                    name="end_period_vertical_analysis"
+                                    string="End Period %"
+                                    optional="hide"
+                                />
+                                <field name="audited_balance" string="Audited ∑" />
+                                <field
+                                    name="audited_vertical_analysis"
+                                    string="Audited %"
+                                />
+                                <field name="previous_balance" string="Prev. ∑" />
+                                <field
+                                    name="previous_vertical_analysis"
+                                    string="Prev. %"
+                                />
+                                <field name="industry_average" string="Industry μ" />
+
+                                <field
+                                    name="end_period_change"
+                                    string="End Period Δ"
+                                    optional="hide"
+                                />
+                                <field
+                                    name="end_period_change_percent"
+                                    string="End Period Δ %"
+                                    optional="hide"
+                                />
+                                <field name="audited_change" string="Audited Δ" />
+                                <field
+                                    name="audited_change_percent"
+                                    string="Audited Δ %"
+                                />
+                                <field
+                                    name="vertical_need_attention"
+                                    string="Ver"
+                                    widget="boolean_toggle"
+                                />
+                                <field
+                                    name="horizontal_need_attention"
+                                    string="Hor"
+                                    widget="boolean_toggle"
+                                />
+                                <field name="explanation" string="Explanation" />
+                            </tree>
+                        </field>
+                    </page>
+                </xpath>
             </data>
         </field>
     </record>
