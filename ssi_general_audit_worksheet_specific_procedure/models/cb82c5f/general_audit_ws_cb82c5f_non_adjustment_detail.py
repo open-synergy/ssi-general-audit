@@ -20,6 +20,7 @@ class GeneralAuditWScb82c5fNonAdjustmentDetail(models.Model):
         comodel_name="general_audit_subsequent_event",
         string="Subsequent Event",
         required=True,
+        ondelete="restrict",
         help="Subsequent event ID",
     )
     occurance = fields.Selection(

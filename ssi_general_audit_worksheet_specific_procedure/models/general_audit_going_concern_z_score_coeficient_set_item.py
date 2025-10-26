@@ -20,6 +20,7 @@ class GeneralAuditGoingConcernZScoreCoefficientSetItem(models.Model):
         comodel_name="trial_balance_computation_item",
         string="Computation Item",
         required=True,
+        ondelete="restrict",
         help="Trial balance computation item associated with this coefficient.",
     )
     coefficient = fields.Float(
