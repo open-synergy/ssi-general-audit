@@ -149,6 +149,7 @@ class GeneralAuditWSd9d2b44(models.Model):
     base_computation_amount = fields.Monetary(
         string="Base Amount for Materiality Computation",
         compute="_compute_base",
+        compute_sudo=True,
         store=True,
         currency_field="currency_id",
         help="Calculated base amount used to compute materiality.",
@@ -207,6 +208,7 @@ class GeneralAuditWSd9d2b44(models.Model):
     overall_materiality = fields.Monetary(
         string="Overall Materiality",
         compute="_compute_materiality",
+        compute_sudo=True,
         store=True,
         currency_field="currency_id",
         help="Computed Overall Materiality amount.",
@@ -243,6 +245,7 @@ class GeneralAuditWSd9d2b44(models.Model):
     performance_materiality = fields.Monetary(
         string="Performance Materiality",
         compute="_compute_materiality",
+        compute_sudo=True,
         store=True,
         currency_field="currency_id",
         help="Computed Performance Materiality amount.",
@@ -279,6 +282,7 @@ class GeneralAuditWSd9d2b44(models.Model):
     tolerable_misstatement = fields.Monetary(
         string="Tolerable Misstatement",
         compute="_compute_materiality",
+        compute_sudo=True,
         store=True,
         currency_field="currency_id",
         help="Computed Tolerable Misstatement amount.",

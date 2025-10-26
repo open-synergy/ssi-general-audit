@@ -90,6 +90,7 @@ class GeneralAuditWS6dcda0e1MaterialityMapping(models.Model):
     balance = fields.Monetary(
         string="Balance",
         compute="_compute_materiality",
+        compute_sudo=True,
         related=False,
         store=True,
         currency_field="currency_id",

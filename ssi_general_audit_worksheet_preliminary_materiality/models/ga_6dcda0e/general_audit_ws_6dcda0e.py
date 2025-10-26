@@ -63,6 +63,7 @@ class GeneralAuditWS6dcda0e(models.Model):
     base = fields.Monetary(
         string="Balance",
         compute="_compute_base_amount",
+        compute_sudo=True,
         store=True,
         currency_field="currency_id",
         help=(
