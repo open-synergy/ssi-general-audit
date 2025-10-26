@@ -99,7 +99,7 @@ class GeneralAuditWSbb33b94(models.Model):
 
     def _compute_amount(self):
         for record in self:
-            preliminary_base_amount = unaudited_base_amount = audited_base_amount = 0.0
-            record.preliminary_base_amount = preliminary_base_amount
+            planning_base_amount = unaudited_base_amount = audited_base_amount = 0.0
+            record.planning_base_amount = planning_base_amount
             record.audited_base_amount = audited_base_amount
             record.unaudited_base_amount = unaudited_base_amount
