@@ -33,4 +33,5 @@ class GeneralAuditWSfc75636Item(models.Model):
             "Category used to group items within the selected auditor’s report type, "
             "such as specific sections or paragraph groups."
         ),
+        ondelete="restrict",
     )

@@ -27,6 +27,7 @@ class GeneralAuditWSbcc0d76ODetail(models.Model):
     general_worksheet_id = fields.Many2one(
         string="# Worksheet",
         comodel_name="general_audit_worksheet",
+        ondelete="restrict",
         help="Linked general worksheet being reviewed in this record.",
     )
     parent_type_id = fields.Many2one(
