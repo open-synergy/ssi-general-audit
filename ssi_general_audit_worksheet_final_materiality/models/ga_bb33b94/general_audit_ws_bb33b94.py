@@ -491,6 +491,7 @@ class GeneralAuditWSbb33b94(models.Model):
     )
 
     @api.depends(
+        "planning_ws_d9d2b44_id",
         "end_period_ws_d9d2b44_id",
     )
     def _compute_planning(self):
@@ -516,6 +517,28 @@ class GeneralAuditWSbb33b94(models.Model):
                 )
                 record.planning_tolerable_misstatement = (
                     record.planning_ws_d9d2b44_id.tolerable_misstatement
+                )
+            elif record.end_period_ws_d9d2b44_id:
+                record.planning_base_amount = (
+                    record.end_period_ws_d9d2b44_id.base_computation_amount
+                )
+                record.planning_overall_materiality_percentage = (
+                    record.end_period_ws_d9d2b44_id.overall_materiality_percentage
+                )
+                record.planning_overall_materiality = (
+                    record.end_period_ws_d9d2b44_id.overall_materiality
+                )
+                record.planning_performance_materiality_percentage = (
+                    record.end_period_ws_d9d2b44_id.performance_materiality_percentage
+                )
+                record.planning_performance_materiality = (
+                    record.end_period_ws_d9d2b44_id.performance_materiality
+                )
+                record.planning_tolerable_misstatement_percentage = (
+                    record.end_period_ws_d9d2b44_id.tolerable_misstatement_percentage
+                )
+                record.planning_tolerable_misstatement = (
+                    record.end_period_ws_d9d2b44_id.tolerable_misstatement
                 )
             else:
                 record.planning_base_amount = 0.0
