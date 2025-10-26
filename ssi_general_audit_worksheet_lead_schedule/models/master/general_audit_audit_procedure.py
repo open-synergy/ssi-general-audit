@@ -20,11 +20,13 @@ class GeneralAuditAuditProcedure(models.Model):
         comodel_name="client_account_type",
         string="Account Type",
         required=True,
+        ondelete="restrict",
     )
     category_id = fields.Many2one(
         comodel_name="general_audit_audit_procedure_category",
         string="Category",
         required=True,
+        ondelete="restrict",
     )
 
     @api.onchange("account_type_id")

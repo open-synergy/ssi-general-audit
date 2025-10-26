@@ -26,7 +26,7 @@ class GeneralAuditWSf9f3299Detail(models.Model):
         comodel_name="general_audit.detail",
         string="# Detail",
         required=True,
-        ondelete="cascade",
+        ondelete="restrict",
     )
     account_id = fields.Many2one(
         string="Account",

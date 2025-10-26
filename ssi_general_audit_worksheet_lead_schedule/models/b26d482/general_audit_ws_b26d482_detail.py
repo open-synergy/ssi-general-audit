@@ -18,6 +18,7 @@ class GeneralAuditWSb26d482Detail(models.Model):
     detail_id = fields.Many2one(
         comodel_name="general_audit.detail",
         string="Detail",
+        ondelete="restrict",
         required=True,
     )
     account_id = fields.Many2one(
@@ -41,6 +42,7 @@ class GeneralAuditWSb26d482Detail(models.Model):
     )
     ws_f9f3299_id = fields.Many2one(
         comodel_name="general_audit_ws_f9f3299",
+        ondelete="restrict",
         string="Lead Schedule - Account (f9f3299)",
     )
     adjustment_dr = fields.Monetary(

@@ -20,6 +20,7 @@ class GeneralAuditAuditProcedureCategory(models.Model):
         comodel_name="client_account_type",
         string="Account Type",
         required=True,
+        ondelete="restrict",
     )
     assertion_type_ids = fields.Many2many(
         comodel_name="general_audit_assersion_type",

@@ -50,6 +50,7 @@ class GeneralAuditWSe51bb1cDetail(models.Model):
         comodel_name="hr.employee",
         string="Assigned To",
         required=False,
+        ondelete="restrict",
     )
     reference = fields.Char(
         string="Reference",
