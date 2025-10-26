@@ -173,6 +173,7 @@ class GeneralAuditGroupDetail(models.Model):
         "extrapolation_balance",
         "previous_balance",
         "home_statement_balance",
+        "audited_balance",
     )
     def _compute_average(self):
         for record in self:
@@ -183,10 +184,12 @@ class GeneralAuditGroupDetail(models.Model):
             home_statement_avg = (
                 record.home_statement_balance + record.previous_balance
             ) / 2.0
+            audited_avg = (record.audited_balance + record.previous_balance) / 2.0
 
             record.interim_avg = interim_avg
             record.extrapolation_avg = extrapolation_avg
             record.home_statement_avg = home_statement_avg
+            record.audited_avg = audited_avg
 
     interim_avg = fields.Monetary(
         string="Interim Average",
@@ -208,6 +211,13 @@ class GeneralAuditGroupDetail(models.Model):
         store=True,
         currency_field="currency_id",
         help="Average of end period and previous balances.",
+    )
+    audited_avg = fields.Monetary(
+        string="Audited Average",
+        compute="_compute_average",
+        store=True,
+        currency_field="currency_id",
+        help="Average of audited and previous balances.",
     )
 
     @api.depends(
