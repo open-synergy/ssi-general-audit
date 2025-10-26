@@ -23,6 +23,7 @@ class GeneralAuditWSf5a3ceeDetail(models.Model):
         string="Account Type",
         comodel_name="client_account_type",
         required=True,
+        ondelete="restrict",
         help="Client account type that this detail line refers to.",
     )
     date = fields.Date(
