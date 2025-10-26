@@ -491,6 +491,78 @@ class GeneralAuditWSbb33b94(models.Model):
     )
 
     @api.depends(
+        "end_period_ws_d9d2b44_id",
+    )
+    def _compute_planning(self):
+        for record in self:
+            if record.planning_ws_d9d2b44_id:
+                record.planning_base_amount = (
+                    record.planning_ws_d9d2b44_id.base_computation_amount
+                )
+                record.planning_overall_materiality_percentage = (
+                    record.planning_ws_d9d2b44_id.overall_materiality_percentage
+                )
+                record.planning_overall_materiality = (
+                    record.planning_ws_d9d2b44_id.overall_materiality
+                )
+                record.planning_performance_materiality_percentage = (
+                    record.planning_ws_d9d2b44_id.performance_materiality_percentage
+                )
+                record.planning_performance_materiality = (
+                    record.planning_ws_d9d2b44_id.performance_materiality
+                )
+                record.planning_tolerable_misstatement_percentage = (
+                    record.planning_ws_d9d2b44_id.tolerable_misstatement_percentage
+                )
+                record.planning_tolerable_misstatement = (
+                    record.planning_ws_d9d2b44_id.tolerable_misstatement
+                )
+            else:
+                record.planning_base_amount = 0.0
+                record.planning_overall_materiality_percentage = 0.0
+                record.planning_overall_materiality = 0.0
+                record.planning_performance_materiality_percentage = 0.0
+                record.planning_performance_materiality = 0.0
+                record.planning_tolerable_misstatement_percentage = 0.0
+                record.planning_tolerable_misstatement = 0.0
+
+    @api.depends(
+        "end_period_ws_d9d2b44_id",
+    )
+    def _compute_end_period(self):
+        for record in self:
+            if record.end_period_ws_d9d2b44_id:
+                record.end_period_base_amount = (
+                    record.end_period_ws_d9d2b44_id.base_computation_amount
+                )
+                record.end_period_overall_materiality_percentage = (
+                    record.end_period_ws_d9d2b44_id.overall_materiality_percentage
+                )
+                record.end_period_overall_materiality = (
+                    record.end_period_ws_d9d2b44_id.overall_materiality
+                )
+                record.end_period_performance_materiality_percentage = (
+                    record.end_period_ws_d9d2b44_id.performance_materiality_percentage
+                )
+                record.end_period_performance_materiality = (
+                    record.end_period_ws_d9d2b44_id.performance_materiality
+                )
+                record.end_period_tolerable_misstatement_percentage = (
+                    record.end_period_ws_d9d2b44_id.tolerable_misstatement_percentage
+                )
+                record.end_period_tolerable_misstatement = (
+                    record.end_period_ws_d9d2b44_id.tolerable_misstatement
+                )
+            else:
+                record.end_period_base_amount = 0.0
+                record.end_period_overall_materiality_percentage = 0.0
+                record.end_period_overall_materiality = 0.0
+                record.end_period_performance_materiality_percentage = 0.0
+                record.end_period_performance_materiality = 0.0
+                record.end_period_tolerable_misstatement_percentage = 0.0
+                record.end_period_tolerable_misstatement = 0.0
+
+    @api.depends(
         "overall_materiality",
         "performance_materiality",
         "tolerable_misstatement",
