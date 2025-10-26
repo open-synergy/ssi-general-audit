@@ -1,7 +1,7 @@
 # Copyright 2022 OpenSynergy Indonesia
 # Copyright 2022 PT. Simetri Sinergi Indonesia
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl-3.0-standalone.html).
-
+# pylint: disable=W8106
 from odoo import _, api, fields, models
 from odoo.exceptions import UserError, ValidationError
 
@@ -924,3 +924,6 @@ class GeneralAudit(models.Model):
         if self._automatically_insert_view_element:
             view_arch = self._reconfigure_statusbar_visible(view_arch)
         return view_arch
+
+    def copy(self, default=None):
+        raise UserError(_("Duplicating this record is not allowed."))
