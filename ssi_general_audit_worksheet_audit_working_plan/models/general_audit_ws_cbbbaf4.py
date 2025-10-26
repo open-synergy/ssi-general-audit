@@ -102,6 +102,7 @@ class GeneralAuditWSCBBBAF4(models.Model):
     effective_days = fields.Integer(
         string="Number of Effective Days",
         compute="_compute_effective_days",
+        compute_sudo=True,
     )
 
     # MAN HOUR ALLOCATION
@@ -172,21 +173,25 @@ class GeneralAuditWSCBBBAF4(models.Model):
     pe_manhour_allocation = fields.Float(
         string="Pre-Engagement Manhour Allocation",
         compute="_compute_allocation",
+        compute_sudo=True,
         store=True,
     )
     ra_manhour_allocation = fields.Float(
         string="Risk Assessment Manhour Allocation",
         compute="_compute_allocation",
+        compute_sudo=True,
         store=True,
     )
     rr_manhour_allocation = fields.Float(
         string="Risk Response Manhour Allocation",
         compute="_compute_allocation",
+        compute_sudo=True,
         store=True,
     )
     wr_manhour_allocation = fields.Float(
         string="Reporting Manhour Allocation",
         compute="_compute_allocation",
+        compute_sudo=True,
         store=True,
     )
 
