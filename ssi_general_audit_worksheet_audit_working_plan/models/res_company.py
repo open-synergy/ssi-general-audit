@@ -10,6 +10,7 @@ class ResCompany(models.Model):
     allocation_template_id = fields.Many2one(
         string="Active Allocation Template",
         comodel_name="allocation_template",
+        ondelete="restrict",
         help=(
             "Default allocation template applied to new Audit Working Plan "
             "(cbbbaf4) worksheets created under this company."

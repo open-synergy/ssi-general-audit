@@ -31,6 +31,7 @@ class GeneralAuditWSCBBBAF4TeamCompetency(models.Model):
         comodel_name="hr.employee",
         required=True,
         readonly=True,
+        ondelete="restrict",
         states={
             "open": [
                 ("readonly", False),

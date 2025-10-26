@@ -117,6 +117,7 @@ class GeneralAuditWSCBBBAF4(models.Model):
         default=lambda self: self.default_allocation_template_id(),
         required=False,
         readonly=True,
+        ondelete="restrict",
         states={
             "open": [
                 ("readonly", False),
@@ -128,6 +129,7 @@ class GeneralAuditWSCBBBAF4(models.Model):
         string="Total Hour",
         comodel_name="allocation_total_hour",
         readonly=True,
+        ondelete="restrict",
         states={
             "open": [
                 ("readonly", False),
@@ -366,6 +368,7 @@ class GeneralAuditWSCBBBAF4(models.Model):
 
     link_1 = fields.Many2one(
         string="PE.110",
+        ondelete="restrict",
         comodel_name="general_audit_ws_806c4e1",
     )
     link_1_risk = fields.Selection(
@@ -408,6 +411,7 @@ class GeneralAuditWSCBBBAF4(models.Model):
     )
     link_2 = fields.Many2one(
         string="PE.110.3",
+        ondelete="restrict",
         comodel_name="general_audit_ws_b9d8a5c",
     )
     link_2_risk = fields.Selection(

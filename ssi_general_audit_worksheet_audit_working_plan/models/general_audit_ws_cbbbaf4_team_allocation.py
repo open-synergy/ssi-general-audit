@@ -31,6 +31,7 @@ class GeneralAuditWSCBBBAF4TeamAllocation(models.Model):
         comodel_name="hr.employee",
         required=True,
         readonly=True,
+        ondelete="restrict",
         states={
             "open": [
                 ("readonly", False),
@@ -46,6 +47,7 @@ class GeneralAuditWSCBBBAF4TeamAllocation(models.Model):
         comodel_name="team_role",
         required=False,
         readonly=True,
+        ondelete="restrict",
         states={
             "open": [
                 ("readonly", False),
