@@ -24,6 +24,7 @@ class GeneralAuditWSd66d87aDetail(models.Model):
         string="Standard Detail",
         comodel_name="general_audit.standard_detail",
         required=True,
+        ondelete="restrict",
         help=("Standard detail (account/assertion) referenced by this line."),
     )
     type_id = fields.Many2one(

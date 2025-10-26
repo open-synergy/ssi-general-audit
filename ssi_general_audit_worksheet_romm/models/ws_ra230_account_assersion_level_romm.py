@@ -22,6 +22,7 @@ class WS230AccountAssersionLevelRomm(models.Model):
         string="Standard Detail",
         comodel_name="accountant.general_audit_standard_detail",
         required=True,
+        ondelete="restrict",
         help=("Standard detail referenced by this line."),
     )
     type_id = fields.Many2one(

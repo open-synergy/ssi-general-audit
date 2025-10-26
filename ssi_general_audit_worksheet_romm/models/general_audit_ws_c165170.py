@@ -26,6 +26,7 @@ class GeneralAuditWSc165170(models.Model):
                 ("required", True),
             ],
         },
+        ondelete="restrict",
         help="Link to Fraud Factor Analysis worksheet.",
     )
     ws_c0e0eec_id_review = fields.Text(
@@ -45,6 +46,7 @@ class GeneralAuditWSc165170(models.Model):
                 ("required", True),
             ],
         },
+        ondelete="restrict",
         help="Link to Control Risk - Entity Level worksheet.",
     )
     ws_f6a227_id = fields.Many2one(
@@ -52,6 +54,7 @@ class GeneralAuditWSc165170(models.Model):
         comodel_name="general_audit_ws_f6a227",
         readonly=True,
         required=False,
+        ondelete="restrict",
         states={
             "open": [
                 ("readonly", False),
