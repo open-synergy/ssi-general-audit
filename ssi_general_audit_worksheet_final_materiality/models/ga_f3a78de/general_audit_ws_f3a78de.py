@@ -69,7 +69,7 @@ class GeneralAuditWSf3a78de(models.Model):
                 ("financial_ratio_id", "=", ratio.id),
             ]
             prelim_detail = False
-            prelim_details = self.env["general_audit_ws_d4289e4.ratio"].search(criteria)
+            prelim_details = self.env["general_audit_ws_f3a78de.ratio"].search(criteria)
             if len(prelim_details) > 0:
                 prelim_detail = prelim_details[0]
 
