@@ -14,12 +14,14 @@ class GeneralAuditWorksheetControl(models.Model):
     general_audit_id = fields.Many2one(
         string="# General Audit",
         comodel_name="general_audit",
+        ondelete="cascade",
         help="Audit referencing this control entry.",
     )
     type_id = fields.Many2one(
         string="Type",
         comodel_name="general_audit_worksheet_type",
         required=False,
+        ondelete="restrict",
         help="Worksheet type being controlled (required/additional).",
     )
 

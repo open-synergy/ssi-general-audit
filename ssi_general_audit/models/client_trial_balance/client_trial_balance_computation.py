@@ -60,6 +60,7 @@ class ClientTrialBalanceComputation(models.Model):
         string="Computation Item",
         comodel_name="trial_balance_computation_item",
         required=True,
+        ondelete="restrict",
         help="Reference to the computation item whose Python code is evaluated.",
     )
     amount = fields.Float(

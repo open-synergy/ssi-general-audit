@@ -35,6 +35,7 @@ class MixinChecklistValue(models.AbstractModel):
         string="Option",
         comodel_name="checklist.option",
         required=False,
+        ondelete="restrict",
         help="Selected option for this checklist item.",
     )
     sequence = fields.Integer(

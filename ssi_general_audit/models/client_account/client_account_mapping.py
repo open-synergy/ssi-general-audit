@@ -76,6 +76,7 @@ class ClientAccountMapping(models.Model):
                 ("readonly", False),
             ],
         },
+        ondelete="restrict",
         help="Related General Audit document.",
     )
     partner_id = fields.Many2one(

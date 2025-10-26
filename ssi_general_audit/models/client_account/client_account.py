@@ -29,6 +29,7 @@ class ClientAccount(models.Model):
             ("parent_id", "=", False),
         ],
         required=True,
+        ondelete="restrict",
         help="Client that owns this account.",
     )
     type_id = fields.Many2one(

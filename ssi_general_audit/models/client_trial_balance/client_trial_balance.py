@@ -99,6 +99,7 @@ class ClientTrialBalance(models.Model):
         comodel_name="general_audit",
         required=True,
         readonly=True,
+        ondelete="restrict",
         states={"draft": [("readonly", False)]},
         help="Related General Audit document.",
     )

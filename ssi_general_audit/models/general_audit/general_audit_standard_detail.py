@@ -18,6 +18,7 @@ class GeneralAuditStandardDetail(models.Model):
         string="Account Type",
         comodel_name="client_account_type",
         required=True,
+        ondelete="restrict",
         help="Standard account type being analyzed.",
     )
     sequence = fields.Integer(

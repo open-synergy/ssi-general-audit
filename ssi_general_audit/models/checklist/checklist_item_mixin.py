@@ -27,5 +27,6 @@ class MixinChecklistItem(models.AbstractModel):
         string="Option Set",
         comodel_name="checklist.option_set",
         required=True,
+        ondelete="restrict",
         help="Option set that defines the allowed options for this item.",
     )

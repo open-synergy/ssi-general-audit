@@ -24,6 +24,7 @@ class ClientAccountMappingDetail(models.Model):
         string="Account",
         comodel_name="client_account",
         required=True,
+        ondelete="restrict",
         help="Client account being mapped to a standard type.",
     )
     code = fields.Char(

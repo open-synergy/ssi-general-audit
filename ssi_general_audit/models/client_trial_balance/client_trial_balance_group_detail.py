@@ -47,6 +47,7 @@ class ClientTrialBalanceGroupDetail(models.Model):
         string="Account Group",
         comodel_name="client_account_group",
         required=True,
+        ondelete="restrict",
         help="Client account group aggregated in this line.",
     )
     sequence = fields.Integer(

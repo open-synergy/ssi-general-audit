@@ -30,6 +30,7 @@ class GeneralAuditDetail(models.Model):
         string="Account",
         comodel_name="client_account",
         required=True,
+        ondelete="restrict",
         help="Client account being tracked in the audit.",
     )
     type_id = fields.Many2one(

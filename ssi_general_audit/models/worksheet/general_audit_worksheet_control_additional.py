@@ -18,6 +18,7 @@ class GeneralAuditWorksheetControlAdditional(models.Model):
     type_id = fields.Many2one(
         string="Type",
         comodel_name="general_audit_worksheet_type",
+        ondelete="restrict",
         help="Additional worksheet type configured for the audit.",
     )
     required = fields.Boolean(

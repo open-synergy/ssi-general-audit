@@ -16,6 +16,7 @@ class ClientAccountType(models.Model):
         string="Client Account Group",
         comodel_name="client_account_group",
         required=True,
+        ondelete="restrict",
         help="Account group that this type belongs to.",
     )
     sequence = fields.Integer(
@@ -37,6 +38,7 @@ class ClientAccountType(models.Model):
     analytic_procedure_computation_item_id = fields.Many2one(
         string="Computation Item for Analytic Procedure",
         comodel_name="trial_balance_computation_item",
+        ondelete="restrict",
         help="Computation item used to calculate analytic procedure for this type.",
     )
     python_code = fields.Text(

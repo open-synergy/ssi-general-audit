@@ -57,7 +57,7 @@ class ClientTrialBalanceStandardDetail(models.Model):
         string="Standard Detail",
         comodel_name="general_audit.standard_detail",
         required=True,
-        ondelete="cascade",
+        ondelete="restrict",
         help="Standard account type line defined in the General Audit.",
     )
     type_id = fields.Many2one(

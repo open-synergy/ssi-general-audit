@@ -159,6 +159,7 @@ class GeneralAuditWorksheet(models.Model):
                 ("readonly", False),
             ],
         },
+        ondelete="restrict",
         help="Worksheet type category/group for this specific worksheet.",
     )
     conclusion_id = fields.Many2one(
@@ -171,6 +172,7 @@ class GeneralAuditWorksheet(models.Model):
                 ("readonly", False),
             ],
         },
+        ondelete="restrict",
         help="Selected conclusion summarizing the worksheet's assessment.",
     )
     conclusion = fields.Text(

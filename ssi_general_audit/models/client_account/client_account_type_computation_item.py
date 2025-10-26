@@ -14,6 +14,7 @@ class ClientAccountTypeComputationItem(models.Model):
         string="Account Type Set",
         comodel_name="client_account_type_set",
         required=True,
+        ondelete="cascade",
         help="Client account type set to which this computation applies.",
     )
     sequence = fields.Integer(
@@ -26,6 +27,7 @@ class ClientAccountTypeComputationItem(models.Model):
         string="Computation",
         comodel_name="trial_balance_computation_item",
         required=True,
+        ondelete="restrict",
         help="Trial balance computation item used as a base.",
     )
     use_default = fields.Boolean(

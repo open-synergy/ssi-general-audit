@@ -21,6 +21,7 @@ class GeneralAuditComputation(models.Model):
         string="Computation Item",
         comodel_name="trial_balance_computation_item",
         required=True,
+        ondelete="restrict",
         help="Computation item used for calculating amounts.",
     )
     sequence = fields.Integer(

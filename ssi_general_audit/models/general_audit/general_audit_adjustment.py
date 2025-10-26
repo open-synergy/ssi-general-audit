@@ -14,11 +14,13 @@ class GeneralAuditAdjustment(models.Model):
     type_id = fields.Many2one(
         string="Account Type",
         comodel_name="client_account_type",
+        ondelete="restrict",
         help="Account type affected by adjustments.",
     )
     general_audit_id = fields.Many2one(
         string="# General Audit",
         comodel_name="general_audit",
+        ondelete="cascade",
         help="General Audit document related to the standard adjustment summary.",
     )
     currency_id = fields.Many2one(

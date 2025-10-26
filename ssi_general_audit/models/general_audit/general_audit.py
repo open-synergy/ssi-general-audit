@@ -141,6 +141,7 @@ class GeneralAudit(models.Model):
         required=True,
         readonly=True,
         states={"draft": [("readonly", False)]},
+        ondelete="restrict",
         help="Currency used for the audit balances and reports.",
     )
     account_type_set_id = fields.Many2one(
@@ -149,6 +150,7 @@ class GeneralAudit(models.Model):
         required=True,
         readonly=True,
         states={"draft": [("readonly", False)]},
+        ondelete="restrict",
         help="Configured set of account types used in this audit.",
     )
     financial_accounting_standard_id = fields.Many2one(
@@ -157,6 +159,7 @@ class GeneralAudit(models.Model):
         required=True,
         readonly=True,
         states={"draft": [("readonly", False)]},
+        ondelete="restrict",
         help="Accounting standard (e.g., IFRS, GAAP) applied in this audit.",
     )
     opinion_id = fields.Many2one(
@@ -164,6 +167,7 @@ class GeneralAudit(models.Model):
         comodel_name="accountant.opinion",
         readonly=True,
         states={"open": [("readonly", False)]},
+        ondelete="restrict",
         help="Audit opinion to be issued for the engagement.",
     )
     accountant_id = fields.Many2one(
@@ -173,6 +177,7 @@ class GeneralAudit(models.Model):
         required=True,
         readonly=True,
         states={"draft": [("readonly", False)]},
+        ondelete="restrict",
         help="Lead accountant in charge of the audit.",
     )
     num_of_consecutive_audit_firm = fields.Integer(
@@ -207,6 +212,7 @@ class GeneralAudit(models.Model):
         comodel_name="general_audit",
         readonly=True,
         states={"draft": [("readonly", False)]},
+        ondelete="restrict",
         help="Link to the previous audit document in the system.",
     )
     previous_audit = fields.Char(
@@ -365,6 +371,7 @@ class GeneralAudit(models.Model):
         readonly=True,
         states={"draft": [("readonly", False)]},
         copy=False,
+        ondelete="restrict",
         help="Industry of the audited company.",
     )
     ownership_type_id = fields.Many2one(
@@ -373,6 +380,7 @@ class GeneralAudit(models.Model):
         readonly=True,
         states={"draft": [("readonly", False)]},
         copy=False,
+        ondelete="restrict",
         help="Ownership type of the audited company.",
     )
     public_offering_ids = fields.Many2many(

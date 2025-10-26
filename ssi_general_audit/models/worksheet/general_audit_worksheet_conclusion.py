@@ -23,5 +23,6 @@ class GeneralAuditWorksheetConclusion(models.Model):
         string="Type",
         comodel_name="general_audit_worksheet_type",
         required=True,
+        ondelete="restrict",
         help="Worksheet type that this conclusion applies to.",
     )

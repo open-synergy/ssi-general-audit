@@ -93,6 +93,7 @@ class GeneralAuditWorksheetMixin(models.AbstractModel):
                 ("readonly", False),
             ],
         },
+        ondelete="restrict",
         help="Worksheet type that determines behavior, items, and conclusions.",
     )
 

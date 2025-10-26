@@ -14,11 +14,13 @@ class GeneralAuditGroupAdjustment(models.Model):
     group_id = fields.Many2one(
         string="Account Group",
         comodel_name="client_account_group",
+        ondelete="restrict",
         help="Account group affected by adjustments.",
     )
     general_audit_id = fields.Many2one(
         string="# General Audit",
         comodel_name="general_audit",
+        ondelete="cascade",
         help="General Audit document related to the group adjustment summary.",
     )
     currency_id = fields.Many2one(

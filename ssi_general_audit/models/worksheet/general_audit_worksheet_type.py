@@ -28,11 +28,13 @@ class GeneralAuditWorksheetType(models.Model):
     parent_id = fields.Many2one(
         string="Parent Worksheet",
         comodel_name="general_audit_worksheet_type",
+        ondelete="restrict",
         help="Optional parent to organize worksheet types hierarchically.",
     )
     category_id = fields.Many2one(
         string="Category",
         comodel_name="general_audit_worksheet_type_category",
+        ondelete="restrict",
         help="Category to which this worksheet type belongs.",
     )
     allowed_audit = fields.Boolean(
