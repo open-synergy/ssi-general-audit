@@ -21,6 +21,7 @@ class GeneralAuditWSD3D2719Detail(models.Model):
         string="General Control",
         comodel_name="general_audit_general_control",
         required=True,
+        ondelete="restrict",
         help="General control being evaluated.",
     )
     category_id = fields.Many2one(

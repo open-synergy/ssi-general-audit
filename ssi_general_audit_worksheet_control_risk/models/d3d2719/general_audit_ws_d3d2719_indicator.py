@@ -35,6 +35,7 @@ class GeneralAuditWSD3D2719Indicator(models.Model):
         string="Indicator",
         comodel_name="general_audit_general_control_indicator",
         required=True,
+        ondelete="restrict",
         help="Control indicator to be evaluated.",
     )
     result = fields.Selection(

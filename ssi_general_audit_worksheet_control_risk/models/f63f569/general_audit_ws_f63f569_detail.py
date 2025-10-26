@@ -21,6 +21,7 @@ class GeneralAuditWSF63F569Detail(models.Model):
         string="IT Control",
         comodel_name="general_audit_it_control",
         required=True,
+        ondelete="restrict",
         help="IT control being evaluated.",
     )
     category_id = fields.Many2one(

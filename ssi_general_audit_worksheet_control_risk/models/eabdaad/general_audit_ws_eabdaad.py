@@ -24,6 +24,7 @@ class GeneralAuditWSEABDAAD(models.Model):
                 ("readonly", False),
             ],
         },
+        ondelete="restrict",
         help="Business cycle being evaluated in this worksheet.",
     )
     key_internal_control_ids = fields.Many2many(

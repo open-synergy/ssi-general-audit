@@ -24,6 +24,7 @@ class GeneralAuditWSD3D2719(models.Model):
                 ("readonly", False),
             ],
         },
+        ondelete="restrict",
         help=(
             "General control set providing the controls and indicators to be "
             "evaluated."

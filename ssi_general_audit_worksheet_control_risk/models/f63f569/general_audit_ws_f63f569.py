@@ -24,6 +24,7 @@ class GeneralAuditWSF63F569(models.Model):
                 ("readonly", False),
             ],
         },
+        ondelete="restrict",
         help=(
             "IT control set providing the controls and indicators to be " "evaluated."
         ),

@@ -34,6 +34,7 @@ class GeneralAuditWSF63F569Indicator(models.Model):
     indicator_id = fields.Many2one(
         string="Indicator",
         comodel_name="general_audit_it_control_indicator",
+        ondelete="restrict",
         required=True,
         help="Control indicator to be evaluated.",
     )

@@ -24,6 +24,7 @@ class GeneralAuditWSBA9B2F0(models.Model):
                 ("readonly", False),
             ],
         },
+        ondelete="restrict",
         help="Standard account type being evaluated in this worksheet.",
     )
     account_key_internal_control_ids = fields.Many2many(

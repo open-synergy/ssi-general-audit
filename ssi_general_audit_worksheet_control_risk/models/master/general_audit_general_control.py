@@ -22,5 +22,6 @@ class GeneralAuditGeneralControl(models.Model):
         string="Category",
         comodel_name="general_audit_general_control_category",
         required=True,
+        ondelete="restrict",
         help="Category to which this general control belongs.",
     )

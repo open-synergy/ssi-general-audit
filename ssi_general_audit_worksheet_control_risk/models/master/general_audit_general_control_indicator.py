@@ -22,6 +22,7 @@ class GeneralAuditGeneralControlIndicator(models.Model):
         string="Factor",
         comodel_name="general_audit_general_control",
         required=True,
+        ondelete="restrict",
         help="General control (factor) this indicator evaluates.",
     )
     category_id = fields.Many2one(
