@@ -26,6 +26,7 @@ class GeneralAuditWSc16abd7(models.Model):
                 ("required", True),
             ],
         },
+        ondelete="restrict",
         help="Link to Fraud Factor Analysis worksheet.",
     )
     ws_c0e0eec_id_review = fields.Text(
@@ -45,6 +46,7 @@ class GeneralAuditWSc16abd7(models.Model):
                 ("required", True),
             ],
         },
+        ondelete="restrict",
         help="Link to the Understanding of preparation of Financial Statements worksheet.",
     )
     ws_f6a227_id_review = fields.Text(
@@ -67,6 +69,7 @@ class GeneralAuditWSc16abd7(models.Model):
                 ("required", True),
             ],
         },
+        ondelete="restrict",
         help="Link to the Going Concern Analysis worksheet.",
     )
     ws_c0d0898_id_review = fields.Text(

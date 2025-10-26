@@ -21,6 +21,7 @@ class GeneralAuditWSA418D89Detail(models.Model):
         string="Standard Detail",
         comodel_name="general_audit.standard_detail",
         required=True,
+        ondelete="restrict",
         help="Linked standard detail (account) being evaluated.",
     )
     type_id = fields.Many2one(
