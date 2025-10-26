@@ -21,6 +21,7 @@ class GeneralAuditWSa604795(models.Model):
         string="Business Cycle",
         comodel_name="client_business_process",
         readonly=True,
+        ondelete="restrict",
         states={
             "open": [
                 ("readonly", False),

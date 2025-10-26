@@ -22,6 +22,7 @@ class GeneralAuditWSbdcdfc5(models.Model):
         comodel_name="general_audit_business_environment",
         required=False,
         readonly=True,
+        ondelete="restrict",
         states={
             "open": [
                 ("readonly", False),

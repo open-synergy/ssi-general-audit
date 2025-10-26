@@ -24,6 +24,7 @@ class GeneralAuditWSc0d0898ODetail(models.Model):
         string="Going Concern",
         comodel_name="general_audit_going_concern",
         required=True,
+        ondelete="restrict",
         help="Specific going concern indicator/condition being assessed.",
     )
     going_concern_category_id = fields.Many2one(

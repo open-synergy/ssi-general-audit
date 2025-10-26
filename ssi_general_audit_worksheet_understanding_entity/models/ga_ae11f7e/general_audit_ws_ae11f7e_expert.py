@@ -37,6 +37,7 @@ class GeneralAuditWSAE11F7EDetail(models.Model):
         string="Type",
         comodel_name="general_audit_expert_type",
         required=True,
+        ondelete="restrict",
         help="Type of expert (e.g., valuation, legal, actuary).",
     )
     documentation = fields.Text(

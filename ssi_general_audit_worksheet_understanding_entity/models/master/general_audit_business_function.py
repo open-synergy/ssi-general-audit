@@ -20,6 +20,7 @@ class GeneralAuditBusinessFunction(models.Model):
     class_transaction_id = fields.Many2one(
         string="Class of Transaction",
         comodel_name="general_audit_class_transaction",
+        ondelete="restrict",
         required=True,
     )
     business_document_ids = fields.Many2many(

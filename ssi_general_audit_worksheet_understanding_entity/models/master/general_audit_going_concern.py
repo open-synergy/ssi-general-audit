@@ -20,5 +20,6 @@ class GeneralAuditGoingConcern(models.Model):
     category_id = fields.Many2one(
         string="Category",
         comodel_name="general_audit_going_concern_category",
+        ondelete="restrict",
         required=True,
     )

@@ -30,12 +30,14 @@ class GeneralAuditWSa13a30eOrganizationStructure(models.Model):
         string="Regulation",
         comodel_name="general_audit_relevant_regulation",
         required=True,
+        ondelete="restrict",
         help="Relevant regulation or law applicable to the entity.",
     )
     item_id = fields.Many2one(
         string="Item",
         comodel_name="general_audit_relevant_regulation.item",
         required=True,
+        ondelete="restrict",
         help="Specific item/section of the regulation being tracked.",
     )
     related_account_type_ids = fields.Many2many(

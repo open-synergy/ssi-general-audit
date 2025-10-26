@@ -24,6 +24,7 @@ class GeneralAuditWSC0E0EECDetail(models.Model):
         string="# Indicator",
         comodel_name="general_audit_fraud_factor_indicator",
         required=True,
+        ondelete="restrict",
         help="Fraud risk indicator ID.",
     )
     indicator_name = fields.Char(

@@ -48,6 +48,7 @@ class GeneralAuditWSddf034cContact(models.Model):
         string="Partner",
         comodel_name="res.partner",
         domain="[('is_company', '=', False), ('parent_id', '=', worksheet_partner_id)]",
+        ondelete="restrict",
         help=(
             "Select the contact person from the worksheet's partner company. "
             "Only individual contacts under the partner are allowed."

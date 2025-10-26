@@ -39,6 +39,7 @@ class GeneralAuditWSddf034cOwnership(models.Model):
     ownership_location_id = fields.Many2one(
         string="Ownership Location",
         comodel_name="ownership_location",
+        ondelete="restrict",
         help=(
             "Location/site for which the ownership status "
             "is recorded (e.g., head office, branch, facility)."

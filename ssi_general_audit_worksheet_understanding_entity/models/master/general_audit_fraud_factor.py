@@ -20,5 +20,6 @@ class GeneralAuditFraudFactor(models.Model):
     category_id = fields.Many2one(
         string="Category",
         comodel_name="general_audit_fraud_factor_category",
+        ondelete="restrict",
         required=True,
     )

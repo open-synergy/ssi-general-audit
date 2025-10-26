@@ -34,6 +34,7 @@ class GeneralAuditWSA604795BusinessFunction(models.Model):
         string="Business Functions",
         comodel_name="general_audit_business_function",
         required=True,
+        ondelete="restrict",
         help=(
             "Specific business function that is relevant to and supports the selected "
             "class of transaction. This defines the operational activities and processes "

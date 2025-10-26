@@ -29,6 +29,7 @@ class GeneralAuditWSf6a227Detail(models.Model):
     step_id = fields.Many2one(
         string="Step",
         comodel_name="general_audit_fs_preparation_step",
+        ondelete="restrict",
         required=True,
         help="Financial statements preparation step.",
     )
