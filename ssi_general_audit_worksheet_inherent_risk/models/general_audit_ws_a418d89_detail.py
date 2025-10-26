@@ -103,6 +103,7 @@ class GeneralAuditWSA418D89Detail(models.Model):
     significant_risk = fields.Boolean(
         string="Significant Risk",
         compute="_compute_risk",
+        compute_sudo=True,
         inverse="_inverse_to_standard_detail",
         store=True,
         help=(
