@@ -73,7 +73,7 @@ class GeneralAuditWSf3a78de(models.Model):
             if len(prelim_details) > 0:
                 prelim_detail = prelim_details[0]
 
-            self.env["general_audit_ws_d4289e4.ratio"].create(
+            self.env["general_audit_ws_f3a78de.ratio"].create(
                 {
                     "worksheet_id": self.id,
                     "financial_ratio_id": ratio.id,
