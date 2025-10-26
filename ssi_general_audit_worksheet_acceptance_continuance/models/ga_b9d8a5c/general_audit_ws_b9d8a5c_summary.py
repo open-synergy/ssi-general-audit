@@ -27,6 +27,7 @@ class GeneralAuditWSb9d8a5cSummary(models.Model):
         string="Employee",
         comodel_name="hr.employee",
         required=True,
+        ondelete="restrict",
     )
 
     @api.depends(
@@ -125,6 +126,7 @@ class GeneralAuditWSb9d8a5cSummary(models.Model):
                 ("readonly", False),
             ],
         },
+        ondelete="restrict",
     )
     state = fields.Selection(
         related="worksheet_id.state",

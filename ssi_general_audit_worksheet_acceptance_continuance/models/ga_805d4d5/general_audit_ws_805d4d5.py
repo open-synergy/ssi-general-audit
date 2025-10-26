@@ -38,6 +38,7 @@ that can be linked to this record.""",
     link_1 = fields.Many2one(
         string="PE.110.2.1",
         comodel_name="general_audit_ws_842f0d6",
+        ondelete="restrict",
         help="Selected PE.110.2.1 worksheet used to derive the risk category (PMPJ).",
     )
     link_1_pmpj = fields.Selection(
@@ -110,6 +111,7 @@ Enhanced due diligence applies.""",
     entity_type_id = fields.Many2one(
         string="Type of Entity",
         comodel_name="company_entity_type",
+        ondelete="restrict",
         help="Legal form/type of the entity (e.g., PT, CV, Foundation).",
     )
     sk_number = fields.Char(
@@ -152,6 +154,7 @@ conducts its activities.""",
     field_industry_id = fields.Many2one(
         string="Business Field #1",
         comodel_name="res.partner.industry",
+        ondelete="restrict",
         help="Primary industry classification of the entity (res.partner.industry).",
     )
     deed_number = fields.Char(
@@ -198,6 +201,7 @@ for and on behalf of the entity.""",
     field_industry_2_id = fields.Many2one(
         string="Business Field #2",
         comodel_name="res.partner.industry",
+        ondelete="restrict",
         help="Secondary industry classification of the entity, if any.",
     )
     annual_income = fields.Char(
@@ -242,6 +246,7 @@ for and on behalf of the entity.""",
     owner_country_id = fields.Many2one(
         string="Owner Nationality (Country)",
         comodel_name="res.country",
+        ondelete="restrict",
         help="Nationality (country) of the beneficial owner.",
     )
     owner_residential_address = fields.Text(
@@ -331,6 +336,7 @@ Commissioner, Shareholder).""",
     proxy_country_id = fields.Many2one(
         string="Proxy Nationality (Country)",
         comodel_name="res.country",
+        ondelete="restrict",
         help="Nationality (country) of the proxy.",
     )
     proxy_residential_address = fields.Text(

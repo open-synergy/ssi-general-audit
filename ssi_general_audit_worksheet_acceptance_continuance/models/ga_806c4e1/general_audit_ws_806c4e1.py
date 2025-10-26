@@ -164,6 +164,7 @@ that can be linked.""",
     link_1 = fields.Many2one(
         string="PE.110.1",
         comodel_name="general_audit_ws_369c5a5",
+        ondelete="restrict",
         help="""Selected PE.110.1 worksheet used for cross-referencing
 and risk derivation.""",
     )
@@ -211,6 +212,7 @@ that can be linked.""",
     link_2 = fields.Many2one(
         string="PE.110.2",
         comodel_name="general_audit_ws_f5e7049",
+        ondelete="restrict",
         help="""Selected PE.110.2 worksheet used for cross-referencing
 and risk derivation.""",
     )
@@ -258,6 +260,7 @@ that can be linked.""",
     link_3 = fields.Many2one(
         string="PE.110.3",
         comodel_name="general_audit_ws_b9d8a5c",
+        ondelete="restrict",
         help="""Selected PE.110.3 worksheet used for cross-referencing
 and risk derivation.""",
     )
@@ -305,6 +308,7 @@ that can be linked.""",
     link_4 = fields.Many2one(
         string="PE.110.4",
         comodel_name="general_audit_ws_0427d28",
+        ondelete="restrict",
         help="""Selected PE.110.4 worksheet used for cross-referencing
 and risk derivation.""",
     )

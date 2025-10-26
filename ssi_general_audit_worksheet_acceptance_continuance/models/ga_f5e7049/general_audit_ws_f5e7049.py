@@ -52,6 +52,7 @@ class GeneralAuditWSf5e7049(models.Model):
 
     link_1 = fields.Many2one(
         string="PE.110.2.1",
+        ondelete="restrict",
         comodel_name="general_audit_ws_842f0d6",
     )
 

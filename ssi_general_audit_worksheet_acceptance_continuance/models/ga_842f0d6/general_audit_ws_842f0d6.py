@@ -59,6 +59,7 @@ that can be linked.""",
     link_1 = fields.Many2one(
         string="PE.110.2.2",
         comodel_name="general_audit_ws_805d4d5",
+        ondelete="restrict",
         help="""Selected PE.110.2.2 worksheet used as a reference
 for this analysis.""",
     )

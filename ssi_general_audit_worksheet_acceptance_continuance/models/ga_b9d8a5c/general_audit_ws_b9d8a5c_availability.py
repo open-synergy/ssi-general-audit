@@ -28,6 +28,7 @@ class GeneralAuditWSb9d8a5cAvailability(models.Model):
         string="Employee",
         comodel_name="hr.employee",
         required=True,
+        ondelete="restrict",
     )
     result = fields.Selection(
         string="Result",

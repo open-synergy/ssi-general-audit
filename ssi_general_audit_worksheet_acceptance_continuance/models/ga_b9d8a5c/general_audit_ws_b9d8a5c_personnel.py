@@ -26,11 +26,13 @@ class GeneralAuditWSb9d8a5cPersonnel(models.Model):
         comodel_name="hr.employee",
         required=True,
         domain="[('audit_ok', '=', True)]",
+        ondelete="restrict",
     )
     job_id = fields.Many2one(
         string="Job",
         comodel_name="hr.job",
         required=True,
+        ondelete="restrict",
     )
     year_experience = fields.Integer(
         string="Experience (years)",

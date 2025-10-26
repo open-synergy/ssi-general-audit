@@ -27,6 +27,7 @@ class GeneralAuditWSb9d8a5cComptency(models.Model):
         string="Employee",
         comodel_name="hr.employee",
         required=True,
+        ondelete="restrict",
     )
 
     @api.depends(
