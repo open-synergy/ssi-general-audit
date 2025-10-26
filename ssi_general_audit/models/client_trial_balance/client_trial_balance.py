@@ -148,12 +148,14 @@ class ClientTrialBalance(models.Model):
     tb_date_start = fields.Date(
         string="Ttrial Balance Start Date",
         compute="_compute_tb_date",
+        compute_sudo=True,
         store=True,
         help="Trial balance period start date based on type.",
     )
     tb_date_end = fields.Date(
         string="Trial Balance End Date",
         compute="_compute_tb_date",
+        compute_sudo=True,
         store=True,
         help="Trial balance period end date based on type.",
     )
@@ -286,36 +288,42 @@ class ClientTrialBalance(models.Model):
     opening_debit = fields.Monetary(
         string="Opening Debit",
         compute="_compute_total_detail",
+        compute_sudo=True,
         store=True,
         help="Total opening debit of all detail lines.",
     )
     opening_credit = fields.Monetary(
         string="Opening Credit",
         compute="_compute_total_detail",
+        compute_sudo=True,
         store=True,
         help="Total opening credit of all detail lines.",
     )
     debit = fields.Monetary(
         string="Debit",
         compute="_compute_total_detail",
+        compute_sudo=True,
         store=True,
         help="Total debit movements of all detail lines.",
     )
     credit = fields.Monetary(
         string="Credit",
         compute="_compute_total_detail",
+        compute_sudo=True,
         store=True,
         help="Total credit movements of all detail lines.",
     )
     ending_debit = fields.Monetary(
         string="Ending Debit",
         compute="_compute_total_detail",
+        compute_sudo=True,
         store=True,
         help="Total ending debit across all detail lines.",
     )
     ending_credit = fields.Monetary(
         string="Ending Credit",
         compute="_compute_total_detail",
+        compute_sudo=True,
         store=True,
         help="Total ending credit across all detail lines.",
     )

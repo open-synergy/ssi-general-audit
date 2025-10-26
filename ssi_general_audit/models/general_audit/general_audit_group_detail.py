@@ -195,6 +195,7 @@ class GeneralAuditGroupDetail(models.Model):
     interim_avg = fields.Monetary(
         string="Interim Average",
         compute="_compute_average",
+        compute_sudo=True,
         store=True,
         currency_field="currency_id",
         help="Average of interim and previous balances.",
@@ -202,6 +203,7 @@ class GeneralAuditGroupDetail(models.Model):
     extrapolation_avg = fields.Monetary(
         string="Extrapolation Average",
         compute="_compute_average",
+        compute_sudo=True,
         store=True,
         currency_field="currency_id",
         help="Average of extrapolation and previous balances.",
@@ -209,6 +211,7 @@ class GeneralAuditGroupDetail(models.Model):
     home_statement_avg = fields.Monetary(
         string="End Period Average",
         compute="_compute_average",
+        compute_sudo=True,
         store=True,
         currency_field="currency_id",
         help="Average of end period and previous balances.",
@@ -216,6 +219,7 @@ class GeneralAuditGroupDetail(models.Model):
     audited_avg = fields.Monetary(
         string="Audited Average",
         compute="_compute_average",
+        compute_sudo=True,
         store=True,
         currency_field="currency_id",
         help="Average of audited and previous balances.",
@@ -253,6 +257,7 @@ class GeneralAuditGroupDetail(models.Model):
         string="Adjustment Debit",
         store=True,
         compute="_compute_adjustment",
+        compute_sudo=True,
         currency_field="currency_id",
         help="Total debit adjustments for this group.",
     )
@@ -260,6 +265,7 @@ class GeneralAuditGroupDetail(models.Model):
         string="Adjustment Credit",
         store=True,
         compute="_compute_adjustment",
+        compute_sudo=True,
         currency_field="currency_id",
         help="Total credit adjustments for this group.",
     )
@@ -308,6 +314,7 @@ class GeneralAuditGroupDetail(models.Model):
     adjustment_balance = fields.Monetary(
         string="Adjustment Balance",
         compute="_compute_adjustment_audited_balance",
+        compute_sudo=True,
         store=True,
         currency_field="currency_id",
         help="Net effect of adjustments on the group based on normal balance.",
@@ -315,6 +322,7 @@ class GeneralAuditGroupDetail(models.Model):
     audited_balance = fields.Monetary(
         string="Audited Balance",
         compute="_compute_adjustment_audited_balance",
+        compute_sudo=True,
         store=True,
         currency_field="currency_id",
         help="End period balance after applying adjustments to the group.",

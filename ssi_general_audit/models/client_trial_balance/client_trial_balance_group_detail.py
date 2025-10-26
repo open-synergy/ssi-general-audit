@@ -67,6 +67,7 @@ class ClientTrialBalanceGroupDetail(models.Model):
         string="Balance",
         required=False,
         compute="_compute_balance",
+        compute_sudo=True,
         store=True,
         currency_field="currency_id",
         help="Aggregated balance for all account types within the group.",

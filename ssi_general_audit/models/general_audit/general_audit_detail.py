@@ -237,6 +237,7 @@ class GeneralAuditDetail(models.Model):
     adjustment_dr = fields.Monetary(
         string="Total Adjustment Debit",
         compute="_compute_adjustment_ids",
+        compute_sudo=True,
         store=True,
         currency_field="currency_id",
         help="Sum of debit amounts from all linked adjustment entries.",
@@ -244,6 +245,7 @@ class GeneralAuditDetail(models.Model):
     adjustment_cr = fields.Monetary(
         string="Total Adjustment Credit",
         compute="_compute_adjustment_ids",
+        compute_sudo=True,
         store=True,
         currency_field="currency_id",
         help="Sum of credit amounts from all linked adjustment entries.",
@@ -293,6 +295,7 @@ class GeneralAuditDetail(models.Model):
     adjustment_balance = fields.Monetary(
         string="Adjustment Balance",
         compute="_compute_adjustment_audited_balance",
+        compute_sudo=True,
         store=True,
         currency_field="currency_id",
         help="Net effect of adjustments based on the account's normal balance.",
@@ -300,6 +303,7 @@ class GeneralAuditDetail(models.Model):
     audited_balance = fields.Monetary(
         string="Audited Balance",
         compute="_compute_adjustment_audited_balance",
+        compute_sudo=True,
         store=True,
         currency_field="currency_id",
         help="End period balance after applying adjustments.",

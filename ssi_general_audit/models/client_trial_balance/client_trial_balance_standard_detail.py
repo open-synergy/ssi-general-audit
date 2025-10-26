@@ -83,6 +83,7 @@ class ClientTrialBalanceStandardDetail(models.Model):
     opening_balance = fields.Monetary(
         string="Opening Balance",
         compute="_compute_balance",
+        compute_sudo=True,
         store=True,
         currency_field="currency_id",
         help="Total opening balance for the type (sum of details).",
@@ -90,6 +91,7 @@ class ClientTrialBalanceStandardDetail(models.Model):
     debit = fields.Monetary(
         string="Debit",
         compute="_compute_balance",
+        compute_sudo=True,
         store=True,
         currency_field="currency_id",
         help="Total debit during the period for this type.",
@@ -97,6 +99,7 @@ class ClientTrialBalanceStandardDetail(models.Model):
     credit = fields.Monetary(
         string="Credit",
         compute="_compute_balance",
+        compute_sudo=True,
         store=True,
         currency_field="currency_id",
         help="Total credit during the period for this type.",
@@ -104,6 +107,7 @@ class ClientTrialBalanceStandardDetail(models.Model):
     balance = fields.Monetary(
         string="Balance",
         compute="_compute_balance",
+        compute_sudo=True,
         store=True,
         currency_field="currency_id",
         help="Net balance for this standard account type.",

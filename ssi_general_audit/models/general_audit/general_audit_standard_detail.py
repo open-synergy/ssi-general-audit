@@ -213,6 +213,7 @@ class GeneralAuditStandardDetail(models.Model):
         string="Extrapolation Balance",
         related=False,
         compute="_compute_extrapolation_balance",
+        compute_sudo=True,
         store=True,
         currency_field="currency_id",
         help="Extrapolated balance computed using the type's Python code.",
@@ -238,6 +239,7 @@ class GeneralAuditStandardDetail(models.Model):
         currency_field="currency_id",
         store=True,
         compute="_compute_adjusted_extrapolation_balance",
+        compute_sudo=True,
         help="Extrapolation balance after applying the adjustment.",
     )
 
@@ -292,6 +294,7 @@ class GeneralAuditStandardDetail(models.Model):
     adjustment_balance = fields.Monetary(
         string="Adjustment Balance",
         compute="_compute_adjustment_audited_balance",
+        compute_sudo=True,
         store=True,
         currency_field="currency_id",
         help="Net effect of adjustments based on the normal balance.",
@@ -299,6 +302,7 @@ class GeneralAuditStandardDetail(models.Model):
     audited_balance = fields.Monetary(
         string="Audited Balance",
         compute="_compute_adjustment_audited_balance",
+        compute_sudo=True,
         store=True,
         currency_field="currency_id",
         help="End period balance after applying adjustments.",
@@ -330,6 +334,7 @@ class GeneralAuditStandardDetail(models.Model):
     interim_avg = fields.Monetary(
         string="Interim Average",
         compute="_compute_average",
+        compute_sudo=True,
         store=True,
         currency_field="currency_id",
         help="Average of interim and previous balances.",
@@ -337,6 +342,7 @@ class GeneralAuditStandardDetail(models.Model):
     extrapolation_avg = fields.Monetary(
         string="Extrapolation Average",
         compute="_compute_average",
+        compute_sudo=True,
         store=True,
         currency_field="currency_id",
         help="Average of adjusted extrapolation and previous balances.",
@@ -344,6 +350,7 @@ class GeneralAuditStandardDetail(models.Model):
     home_statement_avg = fields.Monetary(
         string="End Period Average",
         compute="_compute_average",
+        compute_sudo=True,
         store=True,
         currency_field="currency_id",
         help="Average of end period and previous balances.",
@@ -351,6 +358,7 @@ class GeneralAuditStandardDetail(models.Model):
     audited_avg = fields.Monetary(
         string="Audited Average",
         compute="_compute_average",
+        compute_sudo=True,
         store=True,
         currency_field="currency_id",
         help="Average of audited and previous balances.",

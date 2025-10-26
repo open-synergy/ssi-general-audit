@@ -159,24 +159,28 @@ class GeneralAuditComputation(models.Model):
     extrapolation_avg_amount = fields.Float(
         string="Extrapolation Avg. Amount",
         compute="_compute_average",
+        compute_sudo=True,
         store=True,
         help="Average of extrapolation and previous amounts.",
     )
     interim_avg_amount = fields.Float(
         string="Interim Avg. Amount",
         compute="_compute_average",
+        compute_sudo=True,
         store=True,
         help="Average of interim and previous amounts.",
     )
     home_avg_amount = fields.Float(
         string="End Period Avg. Amount",
         compute="_compute_average",
+        compute_sudo=True,
         store=True,
         help="Average of end period and previous amounts.",
     )
     audited_avg_amount = fields.Float(
         string="Audited Avg. Amount",
         compute="_compute_average",
+        compute_sudo=True,
         store=True,
         help="Average of audited and previous amounts.",
     )

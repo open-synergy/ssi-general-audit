@@ -85,6 +85,7 @@ class ClientTrialBalanceDetail(models.Model):
     ending_balance_debit = fields.Monetary(
         string="Debit Ending Balance",
         compute="_compute_balance",
+        compute_sudo=True,
         store=True,
         currency_field="currency_id",
         help="Ending balance shown on the debit side.",
@@ -92,6 +93,7 @@ class ClientTrialBalanceDetail(models.Model):
     ending_balance_credit = fields.Monetary(
         string="Credit Ending Balance",
         compute="_compute_balance",
+        compute_sudo=True,
         store=True,
         currency_field="currency_id",
         help="Ending balance shown on the credit side.",
@@ -99,6 +101,7 @@ class ClientTrialBalanceDetail(models.Model):
     opening_balance = fields.Monetary(
         string="Opening Balance",
         compute="_compute_balance",
+        compute_sudo=True,
         store=True,
         currency_field="currency_id",
         help="Computed opening balance (net of opening debit and credit).",
@@ -106,6 +109,7 @@ class ClientTrialBalanceDetail(models.Model):
     balance = fields.Monetary(
         string="Balance",
         compute="_compute_balance",
+        compute_sudo=True,
         store=True,
         currency_field="currency_id",
         help="Net balance after applying opening amounts and period movements.",
