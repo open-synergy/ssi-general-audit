@@ -10,7 +10,8 @@
     "license": "AGPL-3",
     "installable": True,
     "depends": [
-        "ssi_general_audit",
+        "ssi_general_audit_worksheet_preliminary_materiality",
+        "ssi_general_audit_worksheet_preliminary_analytic_procedure",
     ],
     "data": [
         "security/ir_module_category_data.xml",

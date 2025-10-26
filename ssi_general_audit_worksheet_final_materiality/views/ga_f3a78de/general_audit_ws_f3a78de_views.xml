@@ -41,6 +41,48 @@
         />
         <field name="arch" type="xml">
             <data>
+                <xpath expr="//page[1]" position="before">
+                    <page name="ratio" string="Ratios">
+                        <group name="ratio_header">
+                            <field
+                                name="ws_d4289e4_id"
+                                domain="[('general_audit_id','=',general_audit_id),('base_amount_source','=','end_period'),('state','in',['open','done'])]"
+                            />
+                        </group>
+                        <button
+                            name="action_reload_ratio"
+                            type="object"
+                            string="Reload"
+                            icon="fa-refresh"
+                            class="oe_highlight"
+                            attrs="{'invisible': [('state', 'in', ['done','cancel'])]}"
+                            style="margin-right:4px"
+                        />
+                        <button
+                            name="action_compute_ratio"
+                            type="object"
+                            string="Compute"
+                            icon="fa-calculator"
+                            class="oe_highlight"
+                            attrs="{'invisible': [('state', 'in', ['done','cancel'])]}"
+                        />
+                        <field name="ratio_ids">
+                            <tree
+                                editable="top"
+                                force_save="1"
+                                delete="false"
+                                create="false"
+                            >
+                                <field name="financial_ratio_id" readonly="1" />
+                                <field name="category" />
+                                <field name="audited_amount" string="Audited" />
+                                <field name="previous_amount" string="Previous" />
+                                <field name="industry_average" />
+                                <field name="analysis" />
+                            </tree>
+                        </field>
+                    </page>
+                </xpath>
             </data>
         </field>
     </record>

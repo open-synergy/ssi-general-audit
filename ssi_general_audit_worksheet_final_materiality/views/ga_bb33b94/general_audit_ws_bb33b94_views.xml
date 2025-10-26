@@ -41,6 +41,47 @@
         />
         <field name="arch" type="xml">
             <data>
+                <xpath expr="//page[1]" position="before">
+                    <page name="materiality" string="Final Materiality">
+                        <group name="materiality_1" colspan="4" col="2" string="Link">
+                            <field
+                                name="ws_d9d2b44_id"
+                                domain="[('general_audit_id','=',general_audit_id)]"
+                            />
+                            <field name="computation_item_id" />
+                            <field name="general_audit_computation_id" invisible="1" />
+                            <field name="other_amount_ok" />
+                            <field name="other_amount_source" />
+                            <field name="other_base_amount" />
+                        </group>
+                        <group
+                            name="materiality_2"
+                            colspan="4"
+                            col="2"
+                            string="Overall Materiality"
+                        >
+                            <field name="overall_materiality_percentage" />
+                        </group>
+                        <group
+                            name="materiality_3"
+                            colspan="4"
+                            col="2"
+                            string="Performance Materiality"
+                        >
+                            <field name="performance_materiality_percentage" />
+                        </group>
+                        <group
+                            name="materiality_4"
+                            colspan="4"
+                            col="2"
+                            string="Tolerable Misstatement"
+                        >
+                            <field name="tolerable_misstatement_percentage" />
+                        </group>
+                        <group name="materiality_5" colspan="4" col="2" string="Diff.">
+                        </group>
+                    </page>
+                </xpath>
             </data>
         </field>
     </record>

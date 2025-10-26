@@ -2,6 +2,5 @@
 # Copyright 2025 PT. Simetri Sinergi Indonesia
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl-3.0-standalone.html).
 
-from . import (
-    general_audit_ws_f3a78de,
-)
+from . import general_audit_ws_f3a78de  # noqa: F401
+from . import general_audit_ws_f3a78de_ratio  # noqa: F401
