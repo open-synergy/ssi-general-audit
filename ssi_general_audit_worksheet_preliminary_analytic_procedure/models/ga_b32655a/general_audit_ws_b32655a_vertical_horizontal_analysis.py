@@ -194,6 +194,7 @@ class WS1401VerticalHorizontalAnalysis(models.Model):
     interim_vertical_analysis = fields.Float(
         string="Interim Vertical Analysis",
         compute="_compute_vertical",
+        compute_sudo=True,
         store=True,
         help=(
             "Interim vertical analysis in percent: Interim Balance / Interim "
@@ -203,6 +204,7 @@ class WS1401VerticalHorizontalAnalysis(models.Model):
     extrapolation_vertical_analysis = fields.Float(
         string="Extrapolation Vertical Analysis",
         compute="_compute_vertical",
+        compute_sudo=True,
         store=True,
         help=(
             "Current vertical analysis in percent: Current Balance / "
@@ -212,6 +214,7 @@ class WS1401VerticalHorizontalAnalysis(models.Model):
     previous_vertical_analysis = fields.Float(
         string="Previous Vertical Analysis",
         compute="_compute_vertical",
+        compute_sudo=True,
         store=True,
         help=(
             "Previous year vertical analysis in percent: Previous Balance / "
@@ -250,6 +253,7 @@ class WS1401VerticalHorizontalAnalysis(models.Model):
     extrapolation_change = fields.Monetary(
         string="Extrapolation Change",
         compute="_compute_horizontal",
+        compute_sudo=True,
         store=True,
         help=(
             "Absolute change between Current Balance (extrapolation) and "
@@ -268,6 +272,7 @@ class WS1401VerticalHorizontalAnalysis(models.Model):
     interim_change = fields.Monetary(
         string="Interim Change",
         compute="_compute_horizontal",
+        compute_sudo=True,
         store=True,
         help=("Absolute change between Interim Balance and Previous Balance."),
     )
