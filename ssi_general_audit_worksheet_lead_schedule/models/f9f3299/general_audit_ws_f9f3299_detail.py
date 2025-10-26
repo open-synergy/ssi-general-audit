@@ -39,6 +39,7 @@ class GeneralAuditWSf9f3299Detail(models.Model):
     current_balance = fields.Monetary(
         string="Current Balance",
         compute="_compute_current_balance",
+        compute_sudo=True,
         store=True,
     )
     supporting_schedule = fields.Char(
@@ -67,6 +68,7 @@ class GeneralAuditWSf9f3299Detail(models.Model):
     adjusted_balance = fields.Monetary(
         string="Adjusted Balance",
         compute="_compute_adjusted_balance",
+        compute_sudo=True,
         store=True,
     )
     previous_balance = fields.Monetary(

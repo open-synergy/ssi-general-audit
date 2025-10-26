@@ -38,6 +38,7 @@ class GeneralAuditWSb26d482Detail(models.Model):
         string="Current Balance",
         currency_field="currency_id",
         compute="_compute_current_balance",
+        compute_sudo=True,
         store=False,
     )
     ws_f9f3299_id = fields.Many2one(
@@ -60,6 +61,7 @@ class GeneralAuditWSb26d482Detail(models.Model):
     adjusted_balance = fields.Monetary(
         string="Adjusted Balance",
         compute="_compute_adjusted_balance",
+        compute_sudo=True,
         store=True,
     )
     previous_balance = fields.Monetary(
