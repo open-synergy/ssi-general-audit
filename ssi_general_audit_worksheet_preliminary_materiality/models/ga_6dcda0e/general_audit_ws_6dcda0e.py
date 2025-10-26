@@ -22,6 +22,7 @@ class GeneralAuditWS6dcda0e(models.Model):
         comodel_name="general_audit_ws_d9d2b44",
         required=False,
         readonly=True,
+        ondelete="restrict",
         states={
             "open": [
                 ("readonly", False),

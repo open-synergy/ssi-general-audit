@@ -130,6 +130,7 @@ class GeneralAuditWSd9d2b44(models.Model):
                 ("readonly", False),
             ],
         },
+        ondelete="restrict",
         help=(
             "Computation item from the General Audit whose value will be "
             "used to derive the base amount."

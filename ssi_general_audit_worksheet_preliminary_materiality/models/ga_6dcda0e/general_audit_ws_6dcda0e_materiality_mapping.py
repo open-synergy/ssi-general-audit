@@ -61,7 +61,7 @@ class GeneralAuditWS6dcda0e1MaterialityMapping(models.Model):
         string="Standard Detail",
         comodel_name="general_audit.standard_detail",
         required=True,
-        ondelete="cascade",
+        ondelete="restrict",
         help=(
             "Standard financial statement detail (e.g., account or type) "
             "being assessed for materiality."
