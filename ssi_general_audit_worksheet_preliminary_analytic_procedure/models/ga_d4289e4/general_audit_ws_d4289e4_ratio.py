@@ -24,6 +24,7 @@ class GeneralAuditWSd4289e4Ratio(models.Model):
             "Client financial ratio definition used to compute results. "
             "Its Python code is executed to derive values."
         ),
+        ondelete="restrict",
     )
     category = fields.Selection(
         string="Category",

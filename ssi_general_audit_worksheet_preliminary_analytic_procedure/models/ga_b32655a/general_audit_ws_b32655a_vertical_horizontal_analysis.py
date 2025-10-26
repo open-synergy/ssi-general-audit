@@ -25,7 +25,7 @@ class WS1401VerticalHorizontalAnalysis(models.Model):
         string="Standard Detail",
         comodel_name="general_audit.standard_detail",
         required=True,
-        ondelete="cascade",
+        ondelete="restrict",
         help=(
             "Reference to the mapped standard detail line (account/section) "
             "used to compute balances."
