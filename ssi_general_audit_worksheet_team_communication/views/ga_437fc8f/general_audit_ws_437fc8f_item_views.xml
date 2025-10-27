@@ -27,6 +27,9 @@
         <field name="mode">primary</field>
         <field name="arch" type="xml">
             <data>
+                <xpath expr="//field[@name='name']" position="after">
+                    <field name="communication_type" />
+                </xpath>
             </data>
         </field>
     </record>
@@ -42,6 +45,7 @@
         <field name="arch" type="xml">
             <data>
                 <xpath expr="//field[@name='code']" position="after">
+                    <field name="communication_type" />
                     <field name="option_set_id" />
                 </xpath>
             </data>
@@ -49,7 +53,7 @@
     </record>
 
     <record id="general_audit_ws_437fc8f_item_action" model="ir.actions.act_window">
-        <field name="name">Team Communication Checklists</field>
+        <field name="name">Pre-Engagement Checklists</field>
         <field name="type">ir.actions.act_window</field>
         <field name="res_model">general_audit_ws_437fc8f.item</field>
         <field name="view_mode">tree,form</field>
@@ -57,10 +61,10 @@
 
     <menuitem
         id="general_audit_ws_437fc8f_item_menu"
-        name="Team Communications"
-        parent="ssi_general_audit.menu_configuration_checklist"
+        name="Pre-Engagement Checklists"
+        parent="ssi_general_audit.menu_configuration_team_comm"
         action="general_audit_ws_437fc8f_item_action"
-        sequence="110"
+        sequence="1"
         groups="general_audit_ws_437fc8f_item_group"
     />
 

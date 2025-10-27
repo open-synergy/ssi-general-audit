@@ -7,7 +7,7 @@ from odoo import fields, models
 
 class GeneralAuditWS437fc8f(models.Model):
     _name = "general_audit_ws_437fc8f"
-    _description = "Team Communication (437fc8f)"
+    _description = "Team Communication Pre-Engagement (437fc8f)"
     _inherit = [
         "general_audit_worksheet_mixin",
         "mixin.checklist",
@@ -17,6 +17,7 @@ class GeneralAuditWS437fc8f(models.Model):
     )
     _checklist_model_name = "general_audit_ws_437fc8f.checklist"
     _item_model_name = "general_audit_ws_437fc8f.item"
+    _checklist_create_page = False
 
     checklist_ids = fields.One2many(
         string="Checklist",

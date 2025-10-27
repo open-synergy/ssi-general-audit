@@ -10,7 +10,7 @@ class GeneralAuditWS437fc8fChecklist(models.Model):
     _inherit = [
         "mixin.checklist.value",
     ]
-    _description = "Team Communication (437fc8f) - Checklist"
+    _description = "Team Communication Pre-Engagement (437fc8f) - " "Checklist"
 
     worksheet_id = fields.Many2one(
         string="# Worksheet",
@@ -31,4 +31,7 @@ class GeneralAuditWS437fc8fChecklist(models.Model):
             "Reference to the checklist item definition that this checklist value "
             "corresponds to."
         ),
+    )
+    communication_type = fields.Selection(
+        related="item_id.communication_type",
     )
