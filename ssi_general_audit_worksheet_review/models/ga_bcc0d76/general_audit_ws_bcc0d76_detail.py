@@ -66,8 +66,8 @@ class GeneralAuditWSbcc0d76ODetail(models.Model):
     )
     review_result = fields.Selection(
         string="Review Result",
-        selection=[("compliant", "Compliant"), ("non_compliant", "Non-Compliant")],
-        help="Outcome of the review for this area: compliant or non-compliant.",
+        selection=[("compliant", "Comply"), ("non_compliant", "Not Comply")],
+        help="Outcome of the review for this area: Comply or Not Comply.",
     )
     review_date = fields.Date(
         string="Date",
