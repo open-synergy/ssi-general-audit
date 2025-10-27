@@ -70,6 +70,22 @@ class GeneralAuditWSBA9B2F0(models.Model):
         },
         help="Detail lines describing controls for the selected standard account.",
     )
+    result = fields.Selection(
+        string="Result",
+        selection=[
+            ("high", "High"),
+            ("low", "Low"),
+        ],
+        readonly=True,
+        required=False,
+        states={
+            "open": [
+                ("readonly", False),
+                ("required", True),
+            ],
+        },
+        help="Overall risk assessment result for the business cycle.",
+    )
 
     @api.depends(
         "account_type_id",
