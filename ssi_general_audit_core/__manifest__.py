@@ -29,6 +29,7 @@
         "ssi_general_audit_worksheet_inherent_risk",
         "ssi_general_audit_worksheet_control_risk",
         "ssi_general_audit_worksheet_romm",
+        "ssi_general_audit_worksheet_external_communication",
         # RR
         "ssi_general_audit_worksheet_lead_schedule",
         "ssi_general_audit_worksheet_specific_procedure",
