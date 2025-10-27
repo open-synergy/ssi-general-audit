@@ -32,9 +32,9 @@ class GeneralAuditWSa604795(models.Model):
             "Editable only when the worksheet is Open."
         ),
     )
-    ws_b9d8a5c_id = fields.Many2one(
-        string="# Worksheet B9D8A5C",
-        comodel_name="general_audit_ws_b9d8a5c",
+    ws_cbbbaf4_id = fields.Many2one(
+        string="# Worksheet CBBAF4",
+        comodel_name="general_audit_ws_cbbbaf4",
         readonly=True,
         ondelete="restrict",
         states={
@@ -83,8 +83,8 @@ class GeneralAuditWSa604795(models.Model):
     def _compute_allowed_team_member_ids(self):
         for record in self:
             result = []
-            if record.ws_b9d8a5c_id:
-                result = record.ws_b9d8a5c_id.mapped("team_allocation_ids.team_id").ids
+            if record.ws_cbbbaf4_id:
+                result = record.ws_cbbbaf4_id.mapped("team_allocation_ids.team_id").ids
             record.allowed_team_member_ids = [(6, 0, result)]
 
     @ssi_decorator.pre_confirm_check()
