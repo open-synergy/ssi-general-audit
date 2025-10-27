@@ -32,6 +32,41 @@ class GeneralAuditWSa604795(models.Model):
             "Editable only when the worksheet is Open."
         ),
     )
+    ws_b9d8a5c_id = fields.Many2one(
+        string="# Worksheet B9D8A5C",
+        comodel_name="general_audit_ws_b9d8a5c",
+        readonly=True,
+        ondelete="restrict",
+        states={
+            "open": [
+                ("readonly", False),
+            ],
+        },
+        help=(
+            "Link to Worksheet B9D8A5C - Competency, "
+            "Availability and Independency Of Assignment Team."
+        ),
+    )
+    allowed_team_member_ids = fields.Many2many(
+        string="Allowed Team Members",
+        comodel_name="hr.employee",
+        compute="_compute_allowed_team_member_ids",
+        help=("Team members allowed to be assigned to " "work on this business cycle."),
+    )
+    assigned_team_member_ids = fields.Many2many(
+        string="Assigned Team Members",
+        comodel_name="hr.employee",
+        relation="general_audit_ws_a604795_employee_rel",
+        column1="worksheet_id",
+        column2="employee_id",
+        readonly=True,
+        states={
+            "open": [
+                ("readonly", False),
+            ],
+        },
+        help=("Team members assigned to work on this " "business cycle."),
+    )
     detail_ids = fields.One2many(
         string="Details",
         comodel_name="general_audit_ws_a604795.detail",
@@ -44,6 +79,13 @@ class GeneralAuditWSa604795(models.Model):
         },
         help="Detailed assessment lines for this worksheet.",
     )
+
+    def _compute_allowed_team_member_ids(self):
+        for record in self:
+            result = []
+            if record.ws_b9d8a5c_id:
+                result = record.ws_b9d8a5c_id.mapped("team_allocation_ids.team_id")
+            record.allowed_team_member_ids = result
 
     @ssi_decorator.pre_confirm_check()
     def _10_check_business_process(self):

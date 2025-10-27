@@ -48,6 +48,20 @@
                     <page name="detail" string="Details">
                         <group name="detail_1" colspan="4" col="2">
                             <field name="business_process_id" />
+                            <field
+                                name="ws_b9d8a5c_id"
+                                domain="[('general_audit_id','=',general_audit_id),('state', 'in', ['open','done'])]"
+                            />
+                            <field
+                                name="allowed_team_member_ids"
+                                widget="many2many_tags"
+                                invisible="1"
+                            />
+                            <field
+                                name="assigned_team_member_ids"
+                                widget="many2many_tags_avatar"
+                                domain="[('id', 'in', allowed_team_member_ids)]"
+                            />
                         </group>
                         <field name="detail_ids">
                             <tree>
