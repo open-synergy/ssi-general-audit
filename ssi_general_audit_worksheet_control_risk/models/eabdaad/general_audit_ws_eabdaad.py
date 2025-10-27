@@ -51,6 +51,22 @@ class GeneralAuditWSEABDAAD(models.Model):
         },
         help="Detail lines describing key controls within the business cycle.",
     )
+    result = fields.Selection(
+        string="Result",
+        selection=[
+            ("high", "High"),
+            ("low", "Low"),
+        ],
+        readonly=True,
+        required=False,
+        states={
+            "open": [
+                ("readonly", False),
+                ("required", True),
+            ],
+        },
+        help="Overall risk assessment result for the business cycle.",
+    )
 
     @ssi_decorator.pre_confirm_check()
     def _10_check_business_cycle(self):
