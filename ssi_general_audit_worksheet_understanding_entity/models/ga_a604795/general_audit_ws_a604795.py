@@ -84,8 +84,8 @@ class GeneralAuditWSa604795(models.Model):
         for record in self:
             result = []
             if record.ws_b9d8a5c_id:
-                result = record.ws_b9d8a5c_id.mapped("team_allocation_ids.team_id")
-            record.allowed_team_member_ids = result
+                result = record.ws_b9d8a5c_id.mapped("team_allocation_ids.team_id").ids
+            record.allowed_team_member_ids = [(6, 0, result)]
 
     @ssi_decorator.pre_confirm_check()
     def _10_check_business_process(self):
