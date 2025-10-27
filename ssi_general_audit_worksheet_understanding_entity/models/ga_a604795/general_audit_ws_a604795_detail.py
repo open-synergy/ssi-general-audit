@@ -62,6 +62,15 @@ class GeneralAuditWSA604795Detail(models.Model):
             "and the worksheet's General Audit."
         ),
     )
+    review = fields.Text(
+        string="Review",
+        help="Reviewer notes or comments regarding this class of transaction.",
+    )
+    need_unannounced_audit = fields.Boolean(
+        string="Need Unannounced Audit",
+        default=False,
+        help="Indicates if an unannounced audit is required for this class of transaction.",
+    )
 
     @api.depends(
         "related_account_type_ids",

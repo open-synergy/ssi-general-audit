@@ -56,6 +56,7 @@
                                     name="related_account_type_ids"
                                     widget="many2many_tags"
                                 />
+                                <field name="need_unannounced_audit" />
                             </tree>
                             <form>
                                 <group name="detail_1" colspan="4" col="2">
@@ -84,6 +85,17 @@
                                         name="related_account_type_ids"
                                         widget="many2many_tags"
                                     />
+                                </group>
+                                <group name="detail_4" colspan="4" col="2">
+                                    <field name="need_unannounced_audit" />
+                                </group>
+                                <group
+                                    name="detail_5"
+                                    colspan="4"
+                                    col="2"
+                                    string="Review Note"
+                                >
+                                    <field name="review" />
                                 </group>
                             </form>
                         </field>
