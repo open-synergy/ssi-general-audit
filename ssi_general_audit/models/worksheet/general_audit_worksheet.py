@@ -2,8 +2,7 @@
 # Copyright 2022 PT. Simetri Sinergi Indonesia
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl-3.0-standalone.html).
 
-from odoo import _, api, fields, models
-from odoo.exceptions import ValidationError
+from odoo import api, fields, models
 
 
 class GeneralAuditWorksheet(models.Model):
@@ -195,50 +194,3 @@ class GeneralAuditWorksheet(models.Model):
         },
         help="Notes and observations from the review of the worksheet.",
     )
-
-    def _get_fields_required_before_confirm(self):
-        return ["conclusion_id", "conclusion"]
-
-    def _get_custom_field_labels(self):
-        # CONTOH
-        # return {
-        #     "conclusion_id": _("Test #1"),
-        #     "conclusion": _("Test #2"),
-        # }
-        return {}
-
-    @api.constrains(
-        "state",
-    )
-    def _check_required_fields_before_confirm(self):
-        for rec in self:
-            if rec.state == "confirm":
-                required_fields = rec._get_fields_required_before_confirm()
-                if not required_fields:
-                    continue
-
-                custom_labels = rec._get_custom_field_labels()
-                missing = []
-
-                for fname in required_fields:
-                    value = rec[fname]
-                    if not value:
-                        if fname in custom_labels:
-                            field_label = custom_labels[fname]
-                        else:
-                            field_obj = rec._fields.get(fname)
-                            field_label = field_obj and _(field_obj.string) or fname
-                        missing.append(field_label)
-
-                if missing:
-                    raise ValidationError(
-                        _(
-                            "You cannot 'Confirm' this record because "
-                            "the following required fields are empty or not computed yet:\n\n"
-                            "- "
-                            + "\n- ".join(missing)
-                            + "\n\nPlease click the 'Reload' or 'Re-Compute' button "
-                            "to refresh these values, "
-                            "or fill them in manually before proceeding."
-                        )
-                    )

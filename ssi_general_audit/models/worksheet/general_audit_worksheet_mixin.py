@@ -233,6 +233,53 @@ class GeneralAuditWorksheetMixin(models.AbstractModel):
                         )
                         raise ValidationError(_(error_message))
 
+    def _get_fields_required_before_confirm(self):
+        return ["conclusion_id", "conclusion"]
+
+    def _get_custom_field_labels(self):
+        # CONTOH
+        # return {
+        #     "conclusion_id": _("Test #1"),
+        #     "conclusion": _("Test #2"),
+        # }
+        return {}
+
+    @api.constrains(
+        "state",
+    )
+    def _check_required_fields_before_confirm(self):
+        for rec in self:
+            if rec.state == "confirm":
+                required_fields = rec._get_fields_required_before_confirm()
+                if not required_fields:
+                    continue
+
+                custom_labels = rec._get_custom_field_labels()
+                missing = []
+
+                for fname in required_fields:
+                    value = rec[fname]
+                    if not value:
+                        if fname in custom_labels:
+                            field_label = custom_labels[fname]
+                        else:
+                            field_obj = rec._fields.get(fname)
+                            field_label = field_obj and _(field_obj.string) or fname
+                        missing.append(field_label)
+
+                if missing:
+                    raise ValidationError(
+                        _(
+                            "You cannot 'Confirm' this record because "
+                            "the following required fields are empty or not computed yet:\n\n"
+                            "- "
+                            + "\n- ".join(missing)
+                            + "\n\nPlease click the 'Reload' or 'Re-Compute' button "
+                            "to refresh these values, "
+                            "or fill them in manually before proceeding."
+                        )
+                    )
+
     @ssi_decorator.insert_on_form_view()
     def _insert_form_element(self, view_arch):
         if self._automatically_insert_view_element:
