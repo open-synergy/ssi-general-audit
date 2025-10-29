@@ -248,22 +248,22 @@ class GeneralAuditWorksheetMixin(models.AbstractModel):
         "state",
     )
     def _check_required_fields_before_confirm(self):
-        for rec in self:
-            if rec.state == "confirm":
-                required_fields = rec._get_fields_required_before_confirm()
+        for record in self:
+            if record.state == "confirm":
+                required_fields = record._get_fields_required_before_confirm()
                 if not required_fields:
                     continue
 
-                custom_labels = rec._get_custom_field_labels()
+                custom_labels = record._get_custom_field_labels()
                 missing = []
 
                 for fname in required_fields:
-                    value = rec[fname]
+                    value = record[fname]
                     if not value:
                         if fname in custom_labels:
                             field_label = custom_labels[fname]
                         else:
-                            field_obj = rec._fields.get(fname)
+                            field_obj = record._fields.get(fname)
                             field_label = field_obj and _(field_obj.string) or fname
                         missing.append(field_label)
 

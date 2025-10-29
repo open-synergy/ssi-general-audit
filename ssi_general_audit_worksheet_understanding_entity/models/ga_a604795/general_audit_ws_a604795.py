@@ -32,6 +32,27 @@ class GeneralAuditWSa604795(models.Model):
             "Editable only when the worksheet is Open."
         ),
     )
+
+    def _compute_allowed_ws_cbbbaf4_ids(self):
+        for record in self:
+            result = []
+            Worksheet = self.env["general_audit_ws_cbbbaf4"]
+            criteria = [
+                ("general_audit_id", "=", record.general_audit_id.id),
+                ("state", "in", ["open", "done"]),
+            ]
+            worksheets = Worksheet.search(criteria)
+            if worksheets:
+                result = worksheets.ids
+            record.allowed_ws_cbbbaf4_ids = [(6, 0, result)]
+
+    allowed_ws_cbbbaf4_ids = fields.Many2many(
+        string="Allowed Worksheet CBBAF4",
+        comodel_name="general_audit_ws_cbbbaf4",
+        compute="_compute_allowed_ws_cbbbaf4_ids",
+        help=("Worksheet CBBAF4 allowed to work on this business cycle."),
+    )
+
     ws_cbbbaf4_id = fields.Many2one(
         string="# Worksheet CBBAF4",
         comodel_name="general_audit_ws_cbbbaf4",
@@ -42,10 +63,7 @@ class GeneralAuditWSa604795(models.Model):
                 ("readonly", False),
             ],
         },
-        help=(
-            "Link to Worksheet B9D8A5C - Competency, "
-            "Availability and Independency Of Assignment Team."
-        ),
+        help=("Link to Worksheet CBBAF4 - " "Audit Working Plan."),
     )
     allowed_team_member_ids = fields.Many2many(
         string="Allowed Team Members",
@@ -109,3 +127,9 @@ class GeneralAuditWSa604795(models.Model):
                 self.display_name,
             )
             raise ValidationError(_(error_message))
+
+    def _get_fields_required_before_confirm(self):
+        _super = super(GeneralAuditWSa604795, self)
+        res = _super._get_fields_required_before_confirm()
+        res += ["ws_cbbbaf4_id"]
+        return res
