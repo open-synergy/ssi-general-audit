@@ -19,3 +19,12 @@ class GeneralAuditWS1d9338dItem(models.Model):
             "let the system generate a code."
         ),
     )
+    checklist_type = fields.Selection(
+        string="Type of Checklist",
+        selection=[
+            ("materiality_comp", "Materiality Computation"),
+            ("account_mapping", "Material Accounts Mapping"),
+        ],
+        required=True,
+        help="Defines the category of checklist where this item is used.",
+    )

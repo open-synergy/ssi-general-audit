@@ -41,6 +41,59 @@
         />
         <field name="arch" type="xml">
             <data>
+                <xpath expr="//page[@name='note']" position="before">
+                    <page name="checklist" string="Checklist">
+                        <button
+                            name="action_populate_checklist"
+                            string="Populate"
+                            type="object"
+                            icon="fa-refresh"
+                            class="oe_highlight"
+                            style="margin-right:4px"
+                            attrs="{'invisible': [('state', '!=', 'open')]}"
+                        />
+                        <field name="checklist_ids">
+                            <tree create="false" delete="false">
+                                <field name="sequence" widget="handle" />
+                                <field
+                                    name="item_id"
+                                    options="{'no_create': True, 'no_create_edit': True}"
+                                    style="white-space: normal; word-wrap: break-word; overflow-wrap: break-word;"
+                                />
+                                <field
+                                    name="checklist_type"
+                                    string="Checklist Type"
+                                    optional="hide"
+                                />
+                                <field name="allowed_option_ids" invisible="1" />
+                                <field
+                                    name="option_id"
+                                    domain="[('id', 'in', allowed_option_ids)]"
+                                />
+                            </tree>
+                            <form>
+                                <sheet>
+                                    <group>
+                                    <field name="item_id" invisible="1" />
+                                    <field
+                                            name="checklist_type"
+                                            string="Checklist Type"
+                                        />
+                                    <field name="item_name" />
+                                        <field
+                                            name="allowed_option_ids"
+                                            invisible="1"
+                                        />
+                                        <field
+                                            name="option_id"
+                                            domain="[('id', 'in', allowed_option_ids)]"
+                                        />
+                                    </group>
+                                </sheet>
+                            </form>
+                        </field>
+                    </page>
+                </xpath>
             </data>
         </field>
     </record>

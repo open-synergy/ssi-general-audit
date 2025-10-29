@@ -27,6 +27,9 @@
         <field name="mode">primary</field>
         <field name="arch" type="xml">
             <data>
+                <xpath expr="//field[@name='name']" position="after">
+                    <field name="checklist_type" string="Checklist Type" />
+                </xpath>
             </data>
         </field>
     </record>
@@ -42,6 +45,7 @@
         <field name="arch" type="xml">
             <data>
                 <xpath expr="//field[@name='code']" position="after">
+                    <field name="checklist_type" string="Checklist Type" />
                     <field name="option_set_id" />
                 </xpath>
             </data>

@@ -28,3 +28,7 @@ class GeneralAuditWS1d9338dChecklist(models.Model):
         required=True,
         help="Checklist item definition referenced by this line.",
     )
+    checklist_type = fields.Selection(
+        related="item_id.checklist_type",
+        help="Type/category of the checklist item, inherited from the item.",
+    )
