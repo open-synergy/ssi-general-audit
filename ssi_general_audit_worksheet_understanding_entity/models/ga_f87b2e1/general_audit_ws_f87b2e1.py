@@ -2,7 +2,7 @@
 # Copyright 2025 PT. Simetri Sinergi Indonesia
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl-3.0-standalone.html).
 
-from odoo import api, fields, models
+from odoo import _, api, fields, models
 
 
 class GeneralAuditWSf87b2e1(models.Model):
@@ -25,7 +25,7 @@ class GeneralAuditWSf87b2e1(models.Model):
         self._compute_link_2_id()
         self._compute_link_3_id()
         self._compute_link_4_id()
-        # self._compute_link_5_id()
+        self._compute_link_5_ids()
         self._compute_link_6_id()
         self._compute_link_7_id()
         self._compute_link_8_id()
@@ -428,3 +428,30 @@ class GeneralAuditWSf87b2e1(models.Model):
             "Read-only, mirrors the linked record."
         ),
     )
+
+    def _get_fields_required_before_confirm(self):
+        _super = super(GeneralAuditWSf87b2e1, self)
+        res = _super._get_fields_required_before_confirm()
+        res += [
+            "link_1_id",
+            "link_2_id",
+            "link_3_id",
+            "link_4_id",
+            "link_5_ids",
+            "link_6_id",
+            "link_7_id",
+            "link_8_id",
+        ]
+        return res
+
+    def _get_custom_field_labels(self):
+        return {
+            "link_1_id": _("General Information and Legal Aspec"),
+            "link_2_id": _("Structure Organization and Responsibilities"),
+            "link_3_id": _("Main Business Activity Process"),
+            "link_4_id": _("Understanding of Relevant Regulations"),
+            "link_5_ids": _("Understanding of The Business Environment"),
+            "link_6_id": _("Going Concern Analysis"),
+            "link_7_id": _("Understanding of Preparation of Financial Statements"),
+            "link_8_id": _("Fraud Factor Analysis"),
+        }
