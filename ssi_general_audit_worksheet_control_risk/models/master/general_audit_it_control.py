@@ -21,7 +21,13 @@ class GeneralAuditITControl(models.Model):
     category_id = fields.Many2one(
         string="Category",
         comodel_name="general_audit_it_control_category",
+        required=False,
+        help="Category to which this IT control belongs.",
+    )
+    option_set_id = fields.Many2one(
+        string="Option Set",
+        comodel_name="checklist.option_set",
         required=True,
         ondelete="restrict",
-        help="Category to which this IT control belongs.",
+        help="Option set that defines the allowed options for this item.",
     )

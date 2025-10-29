@@ -1,0 +1,168 @@
+<?xml version="1.0" ?>
+<!-- Copyright 2025 OpenSynergy Indonesia
+     Copyright 2025 PT. Simetri Sinergi Indonesia
+     License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl-3.0-standalone.html). -->
+<odoo>
+
+    <record id="general_audit_ws_b59b886_view_search" model="ir.ui.view">
+        <field name="name">general_audit_ws_b59b886 form</field>
+        <field name="model">general_audit_ws_b59b886</field>
+        <field
+            name="inherit_id"
+            ref="ssi_general_audit.general_audit_worksheet_mixin_view_search"
+        />
+        <field name="mode">primary</field>
+        <field name="arch" type="xml">
+            <data />
+        </field>
+    </record>
+
+    <record id="general_audit_ws_b59b886_view_tree" model="ir.ui.view">
+        <field name="name">general_audit_ws_b59b886 tree</field>
+        <field name="model">general_audit_ws_b59b886</field>
+        <field name="mode">primary</field>
+        <field
+            name="inherit_id"
+            ref="ssi_general_audit.general_audit_worksheet_mixin_view_tree"
+        />
+        <field name="arch" type="xml">
+            <data>
+            </data>
+        </field>
+    </record>
+
+    <record id="general_audit_ws_b59b886_view_form" model="ir.ui.view">
+        <field name="name">general_audit_ws_b59b886 form</field>
+        <field name="model">general_audit_ws_b59b886</field>
+        <field name="mode">primary</field>
+        <field
+            name="inherit_id"
+            ref="ssi_general_audit.general_audit_worksheet_mixin_view_form"
+        />
+        <field name="arch" type="xml">
+            <data>
+                <xpath expr="//page[@name='note']" position='before'>
+                    <page name="detail" string="Details">
+                        <button
+                            name="action_populate"
+                            string="Populate"
+                            type="object"
+                            icon="fa-refresh"
+                            class="oe_highlight"
+                            style="margin-right:4px"
+                            attrs="{'invisible': [('state', '!=', 'open')]}"
+                        />
+                        <separator string="Evaluation of Control Understanding" />
+                        <field name="general_control_ids" nolabel="1">
+                            <tree create="false" delete="false">
+                                <field name="sequence" invisible="1" />
+                                <field name="detail_id" invisible="1" />
+                                <field name="control_id" />
+                                <field name="result" />
+                                <field name="explanation" />
+                            </tree>
+                            <form>
+                                <group name="group_1">
+                                    <field name="worksheet_id" invisible="1" />
+                                    <field name="detail_id" invisible="1" />
+                                    <field name="control_id" />
+                                    <field name="result" />
+                                    <field name="explanation" />
+                                </group>
+                            </form>
+                        </field>
+                        <separator
+                            string="Evaluation of Information Technology Controls"
+                        />
+                        <field name="it_control_ids" nolabel="1">
+                            <tree create="false" delete="false">
+                                <field name="sequence" invisible="1" />
+                                <field name="detail_id" invisible="1" />
+                                <field name="control_id" />
+                                <field name="result" />
+                                <field name="explanation" />
+                            </tree>
+                            <form>
+                                <group name="group_1">
+                                    <field name="worksheet_id" invisible="1" />
+                                    <field name="detail_id" invisible="1" />
+                                    <field name="control_id" />
+                                    <field name="result" />
+                                    <field name="explanation" />
+                                </group>
+                            </form>
+                        </field>
+                    </page>
+                </xpath>
+                <xpath expr="//group[@name='review']" position='before'>
+                    <group>
+                        <table style="width:100%; border-collapse:collapse;">
+                            <tr>
+                                <!-- Kolom 1 -->
+                                <td
+                                    style="width:50%; vertical-align:top; padding-right:8px;"
+                                >
+                                    <div style="display:flex; align-items:center;">
+                                        <div style="flex:1; padding-right:6px;">
+                                            Has any deficiency in internal control been identified based on the above understanding?
+                                        </div>
+                                        <div
+                                            style="border-left:1px solid #ccc; padding-left:6px; margin-left:6px; white-space:nowrap;"
+                                        >
+                                            <field
+                                                name="control_deficiency_identified"
+                                                nolabel="1"
+                                            />
+                                        </div>
+                                    </div>
+                                </td>
+
+                                <!-- Kolom 2 -->
+                                <td
+                                    style="width:50%; vertical-align:top; padding-left:8px;"
+                                >
+                                    <div style="display:flex; align-items:center;">
+                                        <div style="flex:1; padding-right:6px;">
+                                            Have any significant deficiencies been identified, either individually or in combination?
+                                        </div>
+                                        <div
+                                            style="border-left:1px solid #ccc; padding-left:6px; margin-left:6px; white-space:nowrap;"
+                                        >
+                                            <field
+                                                name="significant_deficiency_identified"
+                                                nolabel="1"
+                                            />
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                        </table>
+                    </group>
+                </xpath>
+            </data>
+        </field>
+    </record>
+
+    <record id="general_audit_ws_b59b886_action" model="ir.actions.act_window">
+        <field name="name">Control Risk - Entity Level</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">general_audit_ws_b59b886</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+    <menuitem
+        id="general_audit_ws_b59b886_root"
+        name="Control Risk - Entity Level"
+        parent="ssi_general_audit.menu_general_audit_control_risk"
+        sequence="2"
+    />
+
+    <menuitem
+        id="general_audit_ws_b59b886_menu"
+        name="Control Risk - Entity Level"
+        parent="ssi_general_audit_worksheet_control_risk.general_audit_ws_b59b886_root"
+        action="general_audit_ws_b59b886_action"
+        sequence="1"
+        groups="general_audit_ws_b59b886_viewer_group"
+    />
+</odoo>

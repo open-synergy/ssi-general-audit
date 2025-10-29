@@ -22,11 +22,17 @@ class GeneralAuditGeneralControlIndicator(models.Model):
         string="Factor",
         comodel_name="general_audit_general_control",
         required=True,
-        ondelete="restrict",
         help="General control (factor) this indicator evaluates.",
     )
     category_id = fields.Many2one(
         related="control_id.category_id",
         store=True,
         help="Auto-filled category derived from the selected control.",
+    )
+    option_set_id = fields.Many2one(
+        string="Option Set",
+        comodel_name="checklist.option_set",
+        required=True,
+        ondelete="restrict",
+        help="Option set that defines the allowed options for this item.",
     )

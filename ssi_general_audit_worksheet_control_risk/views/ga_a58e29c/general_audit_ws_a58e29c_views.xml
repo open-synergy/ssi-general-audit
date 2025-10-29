@@ -1,0 +1,123 @@
+<?xml version="1.0" ?>
+<!-- Copyright 2025 OpenSynergy Indonesia
+     Copyright 2025 PT. Simetri Sinergi Indonesia
+     License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl-3.0-standalone.html). -->
+<odoo>
+
+    <record id="general_audit_ws_a58e29c_view_search" model="ir.ui.view">
+        <field name="name">general_audit_ws_a58e29c form</field>
+        <field name="model">general_audit_ws_a58e29c</field>
+        <field
+            name="inherit_id"
+            ref="ssi_general_audit.general_audit_worksheet_mixin_view_search"
+        />
+        <field name="mode">primary</field>
+        <field name="arch" type="xml">
+            <data />
+        </field>
+    </record>
+
+    <record id="general_audit_ws_a58e29c_view_tree" model="ir.ui.view">
+        <field name="name">general_audit_ws_a58e29c tree</field>
+        <field name="model">general_audit_ws_a58e29c</field>
+        <field name="mode">primary</field>
+        <field
+            name="inherit_id"
+            ref="ssi_general_audit.general_audit_worksheet_mixin_view_tree"
+        />
+        <field name="arch" type="xml">
+            <data>
+            </data>
+        </field>
+    </record>
+
+    <record id="general_audit_ws_a58e29c_view_form" model="ir.ui.view">
+        <field name="name">general_audit_ws_a58e29c form</field>
+        <field name="model">general_audit_ws_a58e29c</field>
+        <field name="mode">primary</field>
+        <field
+            name="inherit_id"
+            ref="ssi_general_audit.general_audit_worksheet_mixin_view_form"
+        />
+        <field name="arch" type="xml">
+            <data>
+                <xpath expr="//page[@name='note']" position="before">
+                    <page name="activity" string="Activities">
+                        <button
+                            name="action_reload_links"
+                            type="object"
+                            string="Reload"
+                            class="oe_highlight"
+                            icon="fa-refresh"
+                            attrs="{'invisible': [('state', 'not in', ['draft','open'])]}"
+                        />
+                        <group name="activity_1" string="Control Risk - Entity Level">
+                            <label for="link_1_id" string="# Worksheet" />
+                            <div class="o_row">
+                                <field
+                                    name="link_1_id"
+                                    class="oe_inline"
+                                    force_save="1"
+                                />
+                                <label
+                                    for="link_1_state"
+                                    string="State"
+                                    style="font-weight: bold;"
+                                />
+                                <field name="link_1_state" class="oe_inline" />
+                            </div>
+                            <field name="link_1_conclusion" string="Conclusion" />
+                        </group>
+                        <group name="activity_2" string="Control Risk - Cycle Level">
+                            <field
+                                name="link_2_ids"
+                                widget="many2many_tree"
+                                nolabel="1"
+                            >
+                                <tree>
+                                    <field name="name" />
+                                    <field name="business_cycle_id" />
+                                    <field name="state" />
+                                    <field name="conclusion" string="Conclusion" />
+                                </tree>
+                            </field>
+                        </group>
+                        <group name="activity_3" string="Significant Account">
+                            <label for="link_3_id" string="# Worksheet" />
+                            <div class="o_row">
+                                <field
+                                    name="link_3_id"
+                                    class="oe_inline"
+                                    force_save="1"
+                                />
+                                <label
+                                    for="link_3_state"
+                                    string="State"
+                                    style="font-weight: bold;"
+                                />
+                                <field name="link_3_state" class="oe_inline" />
+                            </div>
+                            <field name="link_3_conclusion" string="Conclusion" />
+                        </group>
+                    </page>
+                </xpath>
+            </data>
+        </field>
+    </record>
+
+    <record id="general_audit_ws_a58e29c_action" model="ir.actions.act_window">
+        <field name="name">Control Risk</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">general_audit_ws_a58e29c</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+    <menuitem
+        id="general_audit_ws_a58e29c_menu"
+        name="Control Risk"
+        parent="ssi_general_audit.menu_general_audit_control_risk"
+        action="general_audit_ws_a58e29c_action"
+        sequence="1"
+        groups="general_audit_ws_a58e29c_viewer_group"
+    />
+</odoo>
