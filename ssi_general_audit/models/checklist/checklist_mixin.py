@@ -1,9 +1,13 @@
 # Copyright 2025 OpenSynergy Indonesia
 # Copyright 2025 PT. Simetri Sinergi Indonesia
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl-3.0-standalone.html).
-from odoo import fields, models
+import logging
 
-from odoo.addons.ssi_decorator import ssi_decorator
+from lxml import etree
+
+from odoo import api, fields, models
+
+_logger = logging.getLogger(__name__)
 
 
 class MixinChecklist(models.AbstractModel):
@@ -42,16 +46,48 @@ class MixinChecklist(models.AbstractModel):
         self.ensure_one()
         return []
 
-    @ssi_decorator.insert_on_form_view()
-    def _checklist_insert_form_element(self, view_arch):
-        if self._checklist_create_page:
-            view_arch = self._add_view_element(
-                view_arch=view_arch,
-                qweb_template_xml_id="ssi_general_audit.checklist_page",
-                xpath=self._checklist_page_xpath,
-                position=self._checklist_position,
-            )
-        return view_arch
+    @api.model
+    def fields_view_get(
+        self, view_id=None, view_type="form", toolbar=False, submenu=False
+    ):
+        res = super(MixinChecklist, self).fields_view_get(
+            view_id=view_id,
+            view_type=view_type,
+            toolbar=toolbar,
+            submenu=submenu,
+        )
+
+        if view_type != "form" or not res.get("arch"):
+            return res
+
+        try:
+            doc = etree.XML(res["arch"])
+            notebook_nodes = doc.xpath("//notebook")
+            if not notebook_nodes:
+                return res
+
+            notebook = notebook_nodes[0]
+            checklist_pages = notebook.xpath("./page[@name='checklist']")
+
+            if not checklist_pages and getattr(self, "_checklist_create_page", False):
+                tmpl = self.env.ref(
+                    "ssi_general_audit.checklist_page",
+                    raise_if_not_found=False,
+                )
+                if tmpl:
+                    new_page = etree.XML(tmpl._render({}))
+                    notebook.insert(0, new_page)
+            elif checklist_pages:
+                checklist_page = checklist_pages[0]
+                parent = checklist_page.getparent()
+                parent.remove(checklist_page)
+                parent.insert(0, checklist_page)
+
+            res["arch"] = etree.tostring(doc, encoding="unicode")
+        except Exception as e:
+            _logger.warning("Failed to ensure checklist page is first: %s", e)
+
+        return res
 
     # ---- Method utama ----
     def action_populate_checklist(self):
