@@ -90,4 +90,12 @@
             eval="[(6, 0, [ref('checklist_option_adequate'), ref('checklist_option_inadequate')])]"
         />
     </record>
+    <record id="checklist_option_set_12" model="checklist.option_set">
+        <field name="code">/</field>
+        <field name="name">3 Options (Adequate/Inadequate/Not Relevant)</field>
+        <field
+            name="option_ids"
+            eval="[(6, 0, [ref('checklist_option_adequate'), ref('checklist_option_inadequate'),ref('ssi_general_audit.checklist_option_not_relevant')])]"
+        />
+    </record>
 </odoo>
