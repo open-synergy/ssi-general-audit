@@ -34,6 +34,7 @@
     <record id="general_audit_ws_805d4d5_view_form" model="ir.ui.view">
         <field name="name">general_audit_ws_805d4d5 form</field>
         <field name="model">general_audit_ws_805d4d5</field>
+        <field name="priority" eval="100" />
         <field name="mode">primary</field>
         <field
             name="inherit_id"
@@ -41,27 +42,8 @@
         />
         <field name="arch" type="xml">
             <data>
-                <xpath expr="//page[@name='note']" position="after">
-                    <page name="links" string="Links">
-                        <group>
-                            <group name="link_1" string="Money laundring issues">
-                                <field
-                                    name="allowed_link_1_ids"
-                                    widget="many2many_tags"
-                                    invisible="1"
-                                />
-                                <field
-                                    name="link_1"
-                                    string="# Worksheet"
-                                    domain="[('id', '=', allowed_link_1_ids)]"
-                                />
-                                <field name="link_1_pmpj" string="PMPJ" />
-                                <field name="pmpj_simplified" />
-                                <field name="pmpj_intermediate" />
-                                <field name="pmpj_enhanced" />
-                            </group>
-                        </group>
-                    </page>
+                <xpath expr="//page[@name='standard_audit']" position="replace">
+
                 </xpath>
                 <xpath expr="//page[@name='note']" position="before">
                     <page
@@ -250,6 +232,29 @@
                             <group colspan="4" col="4">
                                 <field name="identification_count" />
                                 <field name="identification_statement" />
+                            </group>
+                        </group>
+                    </page>
+                    <page name="standard_audit" string="Relevant Audit Standard Items">
+                        <field name="standard_item_ids" nolabel="1" />
+                    </page>
+                    <page name="links" string="Links">
+                        <group>
+                            <group name="link_1" string="Money laundring issues">
+                                <field
+                                    name="allowed_link_1_ids"
+                                    widget="many2many_tags"
+                                    invisible="1"
+                                />
+                                <field
+                                    name="link_1"
+                                    string="# Worksheet"
+                                    domain="[('id', '=', allowed_link_1_ids)]"
+                                />
+                                <field name="link_1_pmpj" string="PMPJ" />
+                                <field name="pmpj_simplified" />
+                                <field name="pmpj_intermediate" />
+                                <field name="pmpj_enhanced" />
                             </group>
                         </group>
                     </page>

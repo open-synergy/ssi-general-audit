@@ -2,7 +2,7 @@
 # Copyright 2025 PT. Simetri Sinergi Indonesia
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl-3.0-standalone.html).
 
-from odoo import api, fields, models
+from odoo import _, api, fields, models
 
 
 class GeneralAuditWS806C4E1(models.Model):
@@ -334,3 +334,24 @@ and risk derivation.""",
             result = obj.search(criteria)
             if result:
                 self.link_4 = result.id
+
+    def _get_fields_required_before_confirm(self):
+        _super = super(GeneralAuditWS806C4E1, self)
+        res = _super._get_fields_required_before_confirm()
+        res += [
+            "link_1",
+            "link_2",
+            "link_3",
+            "link_4",
+        ]
+        return res
+
+    def _get_custom_field_labels(self):
+        return {
+            "link_1": _("Previous Financial Reporting Issues"),
+            "link_2": _("Management Integrity"),
+            "link_3": _(
+                "Competency, availability, and independency of assignment team"
+            ),
+            "link_4": _("Communication with previous auditor"),
+        }

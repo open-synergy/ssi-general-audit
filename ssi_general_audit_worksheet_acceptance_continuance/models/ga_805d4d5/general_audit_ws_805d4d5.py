@@ -1,7 +1,7 @@
 # Copyright 2025 OpenSynergy Indonesia
 # Copyright 2025 PT. Simetri Sinergi Indonesia
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl-3.0-standalone.html).
-from odoo import api, fields, models
+from odoo import _, api, fields, models
 
 
 class GeneralAuditWS805d4d5(models.Model):
@@ -411,3 +411,16 @@ have been completed.""",
         self.location_address = ""
         if self.partner_id:
             self.location_address = self.partner_id.contact_address
+
+    def _get_fields_required_before_confirm(self):
+        _super = super(GeneralAuditWS805d4d5, self)
+        res = _super._get_fields_required_before_confirm()
+        res += [
+            "link_1",
+        ]
+        return res
+
+    def _get_custom_field_labels(self):
+        return {
+            "link_1": _("Money Laundring Issues"),
+        }

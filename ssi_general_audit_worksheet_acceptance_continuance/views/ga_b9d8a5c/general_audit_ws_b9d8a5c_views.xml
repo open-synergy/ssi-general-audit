@@ -34,6 +34,7 @@
     <record id="general_audit_ws_b9d8a5c_view_form" model="ir.ui.view">
         <field name="name">general_audit_ws_b9d8a5c form</field>
         <field name="model">general_audit_ws_b9d8a5c</field>
+        <field name="priority" eval="100" />
         <field name="mode">primary</field>
         <field
             name="inherit_id"
@@ -43,6 +44,8 @@
             <data>
                 <xpath expr="//field[@name='conclusion_id']" position="before">
                     <field name="risk" />
+                </xpath>
+                <xpath expr="//page[@name='standard_audit']" position="replace">
                 </xpath>
                 <xpath expr="//page[@name='note']" position='before'>
                     <page name="personnel_list" string="List of KAP Personnel">
@@ -225,6 +228,9 @@
                                 <field name="state" invisible="1" />
                             </tree>
                         </field>
+                    </page>
+                    <page name="standard_audit" string="Relevant Audit Standard Items">
+                        <field name="standard_item_ids" nolabel="1" />
                     </page>
                 </xpath>
             </data>

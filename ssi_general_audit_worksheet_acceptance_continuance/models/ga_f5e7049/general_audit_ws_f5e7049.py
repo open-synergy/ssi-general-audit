@@ -2,7 +2,7 @@
 # Copyright 2025 PT. Simetri Sinergi Indonesia
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl-3.0-standalone.html).
 
-from odoo import api, fields, models
+from odoo import _, api, fields, models
 
 
 class GeneralAuditWSf5e7049(models.Model):
@@ -69,3 +69,16 @@ class GeneralAuditWSf5e7049(models.Model):
             result = obj.search(criteria, limit=1)
             if result:
                 self.link_1 = result.id
+
+    def _get_fields_required_before_confirm(self):
+        _super = super(GeneralAuditWSf5e7049, self)
+        res = _super._get_fields_required_before_confirm()
+        res += [
+            "link_1",
+        ]
+        return res
+
+    def _get_custom_field_labels(self):
+        return {
+            "link_1": _("Money Laundring Issues"),
+        }

@@ -2,7 +2,7 @@
 # Copyright 2025 PT. Simetri Sinergi Indonesia
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl-3.0-standalone.html).
 
-from odoo import api, fields, models
+from odoo import _, api, fields, models
 
 
 class GeneralAuditWS842f0d6(models.Model):
@@ -77,3 +77,16 @@ for this analysis.""",
             result = obj.search(criteria)
             if result:
                 self.link_1 = result.id
+
+    def _get_fields_required_before_confirm(self):
+        _super = super(GeneralAuditWS842f0d6, self)
+        res = _super._get_fields_required_before_confirm()
+        res += [
+            "link_1",
+        ]
+        return res
+
+    def _get_custom_field_labels(self):
+        return {
+            "link_1": _("Know Your Customer Principles"),
+        }
