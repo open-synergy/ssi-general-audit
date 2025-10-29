@@ -634,7 +634,7 @@ if ga.interim_date_end and ga.previous_date_end:
         />
         <field name="python_code">result = 0.0
 if ga.interim_date_end and ga.previous_date_end:
-  delta_days = (ga.interim_date_end - ga.previous_date_end).days.days
+  delta_days = (ga.interim_date_end - ga.previous_date_end).days
   delta_balance = standard_detail.interim_balance - standard_detail.previous_balance
   result = delta_balance + (365.0/delta_days) * standard_detail.interim_balance</field>
     </record>
@@ -664,7 +664,7 @@ if ga.interim_date_end and ga.previous_date_end:
         />
         <field name="python_code">result = 0.0
 if ga.interim_date_end and ga.previous_date_end:
-  delta_days = (ga.interim_date_end - ga.previous_date_end).days.days
+  delta_days = (ga.interim_date_end - ga.previous_date_end).days
   delta_balance = standard_detail.interim_balance - standard_detail.previous_balance
   result = delta_balance + (365.0/delta_days) * standard_detail.interim_balance</field>
     </record>
