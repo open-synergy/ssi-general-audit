@@ -2,5 +2,11 @@
 <odoo>
     <record id="ou_administrator_group" model="res.groups">
         <field name="name">OU Administrator</field>
+    <field
+            name="implied_ids"
+            eval="[
+            (4, ref('ssi_general_audit_core.audit_team_group')),
+            ]"
+        />
     </record>
 </odoo>
