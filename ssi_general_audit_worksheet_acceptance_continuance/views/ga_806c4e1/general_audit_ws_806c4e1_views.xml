@@ -20,6 +20,7 @@
     <record id="general_audit_ws_806c4e1_view_tree" model="ir.ui.view">
         <field name="name">general_audit_ws_806c4e1 tree</field>
         <field name="model">general_audit_ws_806c4e1</field>
+        <field name="priority" eval="100" />
         <field name="mode">primary</field>
         <field
             name="inherit_id"
@@ -34,6 +35,7 @@
     <record id="general_audit_ws_806c4e1_view_form" model="ir.ui.view">
         <field name="name">general_audit_ws_806c4e1 form</field>
         <field name="model">general_audit_ws_806c4e1</field>
+        <field name="priority" eval="100" />
         <field name="mode">primary</field>
         <field
             name="inherit_id"
@@ -41,6 +43,8 @@
         />
         <field name="arch" type="xml">
             <data>
+                <xpath expr="//page[@name='standard_audit']" position="replace">
+                </xpath>
                 <xpath expr="//field[@name='conclusion_id']" position="before">
                     <field name="risk" />
                     <field name="client_relationship" />
@@ -119,6 +123,9 @@
                                 <field name="link_4_risk" string="Risk" />
                             </group>
                         </group>
+                    </page>
+                    <page name="standard_audit" string="Relevant Audit Standard Items">
+                        <field name="standard_item_ids" nolabel="1" />
                     </page>
                 </xpath>
             </data>
