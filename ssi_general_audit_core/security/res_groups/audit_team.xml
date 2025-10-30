@@ -2,5 +2,16 @@
 <odoo>
     <record id="audit_team_group" model="res.groups">
         <field name="name">Audit Team</field>
+    <field
+            name="implied_ids"
+            eval="[
+            (4, ref('base.group_user')),
+            (4, ref('ssi_general_audit.general_audit_user_group')),
+            (4, ref('ssi_general_audit.trial_balance_user_group')),
+            (4, ref('ssi_general_audit.adjustment_entry_user_group')),
+            (4, ref('ssi_general_audit.client_account_mapping_user_group')),
+            (4, ref('ssi_general_audit.client_account_mapping_user_group')),
+            ]"
+        />
     </record>
 </odoo>
