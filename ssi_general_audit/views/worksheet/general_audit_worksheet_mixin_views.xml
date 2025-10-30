@@ -5,7 +5,7 @@
 <odoo>
 
     <record id="general_audit_worksheet_mixin_view_search" model="ir.ui.view">
-        <field name="name">general_audit_worksheet_mixin form</field>
+        <field name="name">general_audit_worksheet_mixin search</field>
         <field name="model">general_audit_worksheet_mixin</field>
         <field
             name="inherit_id"
@@ -13,7 +13,23 @@
         />
         <field name="mode">primary</field>
         <field name="arch" type="xml">
-            <data />
+        <data>
+            <xpath expr="//field[@name='company_id']" position="after">
+                <field
+                        name="operating_unit_id"
+                        groups="operating_unit.group_multi_operating_unit"
+                        optional="hide"
+                    />
+            </xpath>
+            <xpath expr="//filter[@name='grp_company']" position="after">
+                <filter
+                        name="grp_ou"
+                        string="Operating Unit"
+                        context="{'group_by':'operating_unit_id'}"
+                        groups="operating_unit.group_multi_operating_unit"
+                    />
+            </xpath>
+        </data>
         </field>
     </record>
 
@@ -27,6 +43,13 @@
         />
         <field name="arch" type="xml">
             <data>
+                <xpath expr="//field[@name='company_id']" position="after">
+                    <field
+                        name="operating_unit_id"
+                        groups="operating_unit.group_multi_operating_unit"
+                        optional="hide"
+                    />
+                </xpath>
                 <xpath expr="//field[@name='company_id']" position="after">
                     <field name="general_audit_id" />
                     <field name="type_id" invisible="1" />
@@ -49,6 +72,13 @@
         />
         <field name="arch" type="xml">
             <data>
+                <xpath expr="//field[@name='company_id']" position="after">
+                    <field
+                        name="operating_unit_id"
+                        groups="operating_unit.group_multi_operating_unit"
+                        optional="hide"
+                    />
+                </xpath>
                 <xpath expr="//group[@name='footer']" position="after">
                     <group name="review" string="Review Notes" colspan="4" col="2">
                         <field name="review" colspan="2" nolabel="1" />

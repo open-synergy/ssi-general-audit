@@ -20,6 +20,7 @@
         "ssi_transaction_cancel_mixin",
         "ssi_transaction_done_mixin",
         "ssi_transaction_open_mixin",
+        "ssi_operating_unit_mixin",
         "ssi_decorator",
     ],
     "data": [

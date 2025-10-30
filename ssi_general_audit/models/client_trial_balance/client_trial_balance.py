@@ -16,6 +16,7 @@ class ClientTrialBalance(models.Model):
         "mixin.transaction_confirm",
         "mixin.transaction_open",
         "mixin.transaction_cancel",
+        "mixin.single_operating_unit",
     ]
 
     # Attributes related to multiple approval

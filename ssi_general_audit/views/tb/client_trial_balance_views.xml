@@ -5,7 +5,7 @@
 <odoo>
 
 <record id="client_trial_balance_view_search" model="ir.ui.view">
-    <field name="name">client_trial_balance form</field>
+    <field name="name">client_trial_balance search</field>
     <field name="model">client_trial_balance</field>
     <field
             name="inherit_id"
@@ -13,7 +13,23 @@
         />
     <field name="mode">primary</field>
     <field name="arch" type="xml">
-        <data />
+        <data>
+            <xpath expr="//field[@name='company_id']" position="after">
+                <field
+                        name="operating_unit_id"
+                        groups="operating_unit.group_multi_operating_unit"
+                        optional="hide"
+                    />
+            </xpath>
+            <xpath expr="//filter[@name='grp_company']" position="after">
+                <filter
+                        name="grp_ou"
+                        string="Operating Unit"
+                        context="{'group_by':'operating_unit_id'}"
+                        groups="operating_unit.group_multi_operating_unit"
+                    />
+            </xpath>
+        </data>
     </field>
 </record>
 
@@ -24,6 +40,13 @@
     <field name="inherit_id" ref="ssi_transaction_mixin.mixin_transaction_view_tree" />
     <field name="arch" type="xml">
         <data>
+            <xpath expr="//field[@name='company_id']" position="after">
+                <field
+                        name="operating_unit_id"
+                        groups="operating_unit.group_multi_operating_unit"
+                        optional="hide"
+                    />
+            </xpath>
             <xpath expr="//field[@name='company_id']" position="after">
                 <field name="partner_id" widget="many2one_avatar" />
                 <field name="tb_date_start" string="Date Start" />
@@ -42,6 +65,13 @@
     <field name="inherit_id" ref="ssi_transaction_mixin.mixin_transaction_view_form" />
     <field name="arch" type="xml">
         <data>
+            <xpath expr="//field[@name='company_id']" position="after">
+                <field
+                        name="operating_unit_id"
+                        groups="operating_unit.group_multi_operating_unit"
+                        optional="hide"
+                    />
+            </xpath>
             <xpath expr="//field[@name='user_id']" position="after">
                 <field name="general_audit_id" domain="[('state','=','open')]" />
                 <field name="partner_id" widget="many2one_avatar" />

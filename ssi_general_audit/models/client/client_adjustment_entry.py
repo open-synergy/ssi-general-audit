@@ -13,6 +13,7 @@ class ClientAdjustmentEntry(models.Model):
         "mixin.transaction_done",
         "mixin.transaction_confirm",
         "mixin.transaction_cancel",
+        "mixin.single_operating_unit",
     ]
 
     _approval_from_state = "draft"

@@ -13,6 +13,7 @@ class GeneralAuditWorksheet(models.Model):
         "mixin.transaction_confirm",
         "mixin.transaction_cancel",
         "mixin.transaction_done",
+        "mixin.single_operating_unit",
     ]
     _order = "general_audit_id, parent_type_id, id"
 

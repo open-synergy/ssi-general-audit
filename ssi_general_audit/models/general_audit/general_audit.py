@@ -17,6 +17,7 @@ class GeneralAudit(models.Model):
         "mixin.transaction_open",
         "mixin.transaction_cancel",
         "mixin.transaction_partner",
+        "mixin.single_operating_unit",
     ]
 
     # Attributes related to multiple approval
