@@ -1,6 +1,28 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <odoo>
-    <record id="system_administrator_group" model="res.groups">
-        <field name="name">System Administrator</field>
-    </record>
+<record id="system_administrator_group" model="res.groups">
+    <field name="name">System Administrator</field>
+    <field
+            name="implied_ids"
+            eval="[
+            (4, ref('base.group_user')),
+            (4, ref('ssi_general_audit.general_audit_standard_audit_configurator')),
+            (4, ref('ssi_general_audit.team_role_configurator')),
+            (4, ref('ssi_general_audit.checklist_option_configurator')),
+            (4, ref('ssi_general_audit.client_account_group_group')),
+            (4, ref('ssi_general_audit.client_account_type_group')),
+            (4, ref('ssi_general_audit.client_relevant_account_type_group')),
+            (4, ref('ssi_general_audit.client_account_group')),
+            (4, ref('ssi_general_audit.client_account_type_set_group')),
+            (4, ref('ssi_general_audit.client_financial_ratio_group')),
+            (4, ref('ssi_general_audit.client_business_process_group')),
+            (4, ref('ssi_general_audit.general_audit_relevant_regulation_group')),
+            (4, ref('ssi_general_audit.general_audit_business_environment_group')),
+            (4, ref('ssi_general_audit.general_audit_worksheet_type_category_group')),
+            (4, ref('ssi_general_audit.general_audit_worksheet_type_group')),
+            (4, ref('ssi_general_audit.general_audit_worksheet_conclusion_group')),
+            (4, ref('ssi_general_audit.trial_balance_computation_item_group')),
+            ]"
+        />
+</record>
 </odoo>
