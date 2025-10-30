@@ -4,7 +4,9 @@
      License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl). -->
 <odoo>
 <record id="general_audit_ws_fbbe0f8_internal_user_rule" model="ir.rule">
-    <field name="name">Audit Planning Memorandum (fbbe0f8) - Internal Users</field>
+    <field
+            name="name"
+        >Audit Planning Memorandum - Detail (fbbe0f8) - Internal Users</field>
     <field name="model_id" ref="model_general_audit_ws_fbbe0f8" />
     <field name="groups" eval="[(4, ref('base.group_user'))]" />
     <field name="domain_force">[
@@ -40,7 +42,7 @@
 <record id="general_audit_ws_fbbe0f8_company_rule" model="ir.rule">
     <field
             name="name"
-        >Audit Planning Memorandum (fbbe0f8) - Responsible to company data</field>
+        >Audit Planning Memorandum - Detail (fbbe0f8) - Responsible to company data</field>
     <field name="model_id" ref="model_general_audit_ws_fbbe0f8" />
     <field name="groups" eval="[(4, ref('general_audit_ws_fbbe0f8_company_group'))]" />
     <field name="domain_force">[('company_id','=',user.company_id.id)]</field>
@@ -53,7 +55,7 @@
 <record id="general_audit_ws_fbbe0f8_companies_rule" model="ir.rule">
     <field
             name="name"
-        >Audit Planning Memorandum (fbbe0f8) - Responsible to company and all child companies data</field>
+        >Audit Planning Memorandum - Detail (fbbe0f8) - Responsible to company and all child companies data</field>
     <field name="model_id" ref="model_general_audit_ws_fbbe0f8" />
     <field
             name="groups"
@@ -67,7 +69,7 @@
 </record>
 
 <record id="general_audit_ws_fbbe0f8_all_rule" model="ir.rule">
-    <field name="name">Audit Planning Memorandum (fbbe0f8) - All</field>
+    <field name="name">Audit Planning Memorandum - Detail (fbbe0f8) - All</field>
     <field name="model_id" ref="model_general_audit_ws_fbbe0f8" />
     <field name="groups" eval="[(4, ref('general_audit_ws_fbbe0f8_all_group'))]" />
     <field name="domain_force">[(1,'=',1)]</field>

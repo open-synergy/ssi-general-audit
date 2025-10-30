@@ -14,6 +14,18 @@
     ],
     "data": [
         "security/ir_module_category_data.xml",
+        # MASTER DATA
+        "data/master/general_audit_ws_a753ab9_item.xml",
+        # a753ab9 - Audit Planning Memorandum
+        "security/res_group/general_audit_ws_a753ab9.xml",
+        "security/ir_rule/general_audit_ws_a753ab9.xml",
+        "data/ir_sequence/general_audit_ws_a753ab9.xml",
+        "data/sequence_template/general_audit_ws_a753ab9.xml",
+        "data/policy_template/general_audit_ws_a753ab9.xml",
+        "data/approval_template/general_audit_ws_a753ab9.xml",
+        "views/ga_a753ab9/general_audit_ws_a753ab9_views.xml",
+        "views/ga_a753ab9/general_audit_ws_a753ab9_item_views.xml",
+        # fbbe0f8 - Audit Planning Memorandum - Detail
         "security/res_group/general_audit_ws_fbbe0f8.xml",
         "security/ir_model_access/general_audit_ws_fbbe0f8.xml",
         "security/ir_rule/general_audit_ws_fbbe0f8.xml",
@@ -22,7 +34,8 @@
         "data/policy_template/general_audit_ws_fbbe0f8.xml",
         "data/approval_template/general_audit_ws_fbbe0f8.xml",
         "data/general_audit_worksheet_type_data.xml",
-        "views/general_audit_ws_fbbe0f8_views.xml",
+        "views/ga_fbbe0f8/general_audit_ws_fbbe0f8_views.xml",
+        "security/ir.model.access.csv",
     ],
     "demo": [],
 }

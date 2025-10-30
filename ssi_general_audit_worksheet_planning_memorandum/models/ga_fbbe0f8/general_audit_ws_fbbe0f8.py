@@ -7,7 +7,7 @@ from odoo import fields, models
 
 class GeneralAuditWSfbbe0f8(models.Model):
     _name = "general_audit_ws_fbbe0f8"
-    _description = "Audit Planning Memorandum (fbbe0f8)"
+    _description = "Audit Planning Memorandum - Detail (fbbe0f8)"
     _inherit = [
         "general_audit_worksheet_mixin",
     ]

@@ -42,7 +42,10 @@
         <field name="arch" type="xml">
             <data>
                 <xpath expr="//page[1]" position="before">
-                    <page name="characteristics" string="Assignment Characteristics">
+                    <page
+                        name="characteristics"
+                        string="Characteristics of the Engagement"
+                    >
                         <group name="characteristics_1" colspan="4" col="2">
                             <field name="financial_accounting_standard_id" />
                             <field
@@ -53,12 +56,30 @@
 
                         </group>
                     </page>
-                    <page name="report_purpose" string="Report Purpose">
-                        <group name="report_purpose_1" colspan="4" col="2">
+                    <page name="report_obj" string="Reporting Objectives">
+                        <group name="report_obj_1" colspan="4" col="2">
                         </group>
                     </page>
-                    <page name="important_factor" string="Important Factor">
+                    <page name="important_factor" string="Important Factors">
                         <group name="important_factor_1" colspan="4" col="2">
+                        </group>
+                    </page>
+                    <page name="report_obj" string="Reporting Objectives">
+                        <group name="report_obj_1" colspan="4" col="2">
+                        </group>
+                    </page>
+                    <page
+                        name="significant"
+                        string="Significant Changes and Developments"
+                    >
+                        <group name="significant_1" colspan="4" col="2">
+                        </group>
+                    </page>
+                    <page
+                        name="nature"
+                        string="Nature, Timing, and Extent of Resources Required"
+                    >
+                        <group name="nature_1" colspan="4" col="2">
                         </group>
                     </page>
                 </xpath>
@@ -67,7 +88,7 @@
     </record>
 
     <record id="general_audit_ws_fbbe0f8_action" model="ir.actions.act_window">
-        <field name="name">Audit Planning Memorandums</field>
+        <field name="name">Audit Planning Memorandum - Details</field>
         <field name="type">ir.actions.act_window</field>
         <field name="res_model">general_audit_ws_fbbe0f8</field>
         <field name="view_mode">tree,form</field>
@@ -75,10 +96,10 @@
 
     <menuitem
         id="general_audit_ws_fbbe0f8_menu"
-        name="Audit Planning Memorandums"
+        name="Audit Planning Memorandum - Details"
         parent="ssi_general_audit.menu_general_audit_audit_plan_memo"
         action="general_audit_ws_fbbe0f8_action"
-        sequence="4"
+        sequence="2"
         groups="general_audit_ws_fbbe0f8_viewer_group"
     />
 
