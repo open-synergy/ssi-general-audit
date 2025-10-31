@@ -34,6 +34,7 @@
     <record id="general_audit_ws_fbbe0f8_view_form" model="ir.ui.view">
         <field name="name">general_audit_ws_fbbe0f8 form</field>
         <field name="model">general_audit_ws_fbbe0f8</field>
+        <field name="priority">100</field>
         <field name="mode">primary</field>
         <field
             name="inherit_id"
@@ -41,46 +42,738 @@
         />
         <field name="arch" type="xml">
             <data>
+                <xpath expr="//page[@name='standard_audit']" position="replace">
+                </xpath>
+                <xpath expr="//notebook" position="before">
+                    <button
+                        name="action_reload_links"
+                        type="object"
+                        string="Reload"
+                        class="oe_highlight"
+                        icon="fa-refresh"
+                        attrs="{'invisible': [('state', 'not in', ['draft','open'])]}"
+                    />
+                </xpath>
                 <xpath expr="//page[1]" position="before">
                     <page
                         name="characteristics"
                         string="Characteristics of the Engagement"
                     >
-                        <group name="characteristics_1" colspan="4" col="2">
-                            <field name="financial_accounting_standard_id" />
-                            <field
+                            <!-- Financial Reporting Framework -->
+                            <div
+                            style="display: flex; align-items: flex-start; margin-bottom: 8px; width: 100%;"
+                        >
+                                <div
+                                class="o_form_label"
+                                style="font-weight: bold; white-space: normal; width: 600px;"
+                            >
+                                    Financial Reporting Framework (FRF) to be applied
+                                </div>
+                                <span style="margin: 0 8px;font-weight: bold;">:</span>
+                                <field
+                                name="financial_accounting_standard_id"
+                                readonly="1"
+                                style="flex: 1;"
+                            />
+                            </div>
+
+                            <!-- Additional Reports Requested -->
+                            <div
+                            style="display: flex; align-items: flex-start; margin-bottom: 8px;"
+                        >
+                                <div
+                                class="o_form_label"
+                                style="font-weight: bold; white-space: normal; width: 600px;"
+                            >
+                                    Additional reports requested, such as regulator-mandated reports
+                                </div>
+                                <span style="margin: 0 8px;font-weight: bold;">:</span>
+                                <field
                                 name="other_report_ids"
                                 widget="many2many_checkboxes"
+                                nolabel="1"
+                                style="flex: 1;"
                             />
-                            <field name="expert_type_ids" widget="many2many_tags" />
+                            </div>
 
-                        </group>
+                            <!-- Requirement for Specialized Knowledge -->
+                            <div
+                            style="display: flex; align-items: flex-start; margin-bottom: 8px;"
+                        >
+                                <div
+                                class="o_form_label"
+                                style="font-weight: bold; white-space: normal; width: 600px;"
+                            >
+                                    Requirement for specialized knowledge or expertise to address complex or high-risk matters
+                                </div>
+                                <span style="margin: 0 8px;font-weight: bold;">:</span>
+                                <field
+                                name="expert_type_ids"
+                                widget="many2many_tags"
+                                nolabel="1"
+                                style="flex: 1;"
+                            />
+                            </div>
+
+                            <!-- Audit Evidence (TODO) -->
+                            <div
+                            style="display: flex; align-items: flex-start; margin-bottom: 8px;"
+                        >
+                                <div
+                                class="o_form_label"
+                                style="font-weight: bold; white-space: normal; width: 600px;"
+                            >
+                                    Audit evidence required from service organizations external to the entity
+                                </div>
+                                <span style="margin: 0 8px;font-weight: bold;">:</span>
+                                <!-- <field name="expert_type_ids" widget="many2many_tags" nolabel="1" style="flex: 1;"/> -->
+                            </div>
+
+                            <!-- Use Audit Evidence (TODO) -->
+                            <div
+                            style="display: flex; align-items: flex-start; margin-bottom: 8px;"
+                        >
+                                <div
+                                class="o_form_label"
+                                style="font-weight: bold; white-space: normal; width: 600px;"
+                            >
+                                    Use of audit evidence obtained in prior audits
+                                </div>
+                                <span style="margin: 0 8px;font-weight: bold;">:</span>
+                                <!-- <field name="expert_type_ids" widget="many2many_tags" nolabel="1" style="flex: 1;"/> -->
+                            </div>
+
+                            <!-- Impact Of Information Technology -->
+                            <div
+                            style="display: flex; align-items: flex-start; margin-bottom: 8px;"
+                        >
+                                <div
+                                class="o_form_label"
+                                style="font-weight: bold; white-space: normal; width: 950px;"
+                            >
+                                    Impact of information technology on audit procedures (data availability and use of computer-assisted audit techniques) :
+                                </div>
+                            </div>
+                            <field
+                            name="it_detail_ids"
+                            widget="many2many_tree"
+                            nolabel="1"
+                            style="margin-left: 20px; width: 100%;"
+                        >
+                                <tree>
+                                    <field name="understanding_result" />
+                                    <field name="impact_to_financial_report" />
+                                    <field
+                                    name="related_account_type_ids"
+                                    widget="many2many_tags"
+                                />
+                                </tree>
+                            </field>
+
+                            <!-- Unannounced Audit -->
+                            <div
+                            style="display: flex; align-items: flex-start; margin-bottom: 8px;"
+                        >
+                                <div
+                                class="o_form_label"
+                                style="font-weight: bold; white-space: normal; width: 950px;"
+                            >
+                                    Incorporation of elements of unpredictability in performing audit procedures :
+                                </div>
+                            </div>
+                            <field
+                            name="unannounced_audit_ids"
+                            widget="many2many_tree"
+                            nolabel="1"
+                            style="margin-left: 20px; width: 100%;"
+                        >
+                                <tree>
+                                    <field name="class_transaction_id" />
+                                    <field
+                                    name="related_account_type_ids"
+                                    widget="many2many_tags"
+                                />
+                                    <field name="need_unannounced_audit" />
+                                </tree>
+                            </field>
+
+                            <!-- Availability of client personnel and data (TODO) -->
+                            <div
+                            style="display: flex; align-items: flex-start; margin-bottom: 8px;"
+                        >
+                                <div
+                                class="o_form_label"
+                                style="font-weight: bold; white-space: normal; width: 600px;"
+                            >
+                                    Use of audit evidence obtained in prior audits
+                                </div>
+                                <span style="margin: 0 8px;font-weight: bold;">:</span>
+                                <!-- <field name="expert_type_ids" widget="many2many_tags" nolabel="1" style="flex: 1;"/> -->
+                            </div>
+
                     </page>
+
                     <page name="report_obj" string="Reporting Objectives">
-                        <group name="report_obj_1" colspan="4" col="2">
-                        </group>
+                        <!-- Reporting timetable to be followed by the entity (TODO) -->
+                        <div
+                            style="display: flex; align-items: flex-start; margin-bottom: 8px;"
+                        >
+                            <div
+                                class="o_form_label"
+                                style="font-weight: bold; white-space: normal; width: 600px;"
+                            >
+                                Reporting timetable to be followed by the entity
+                            </div>
+                            <span style="margin: 0 8px;font-weight: bold;">:</span>
+                            <!-- <field name="expert_type_ids" widget="many2many_tags" nolabel="1" style="flex: 1;"/> -->
+                        </div>
+
+                        <!-- Auditor Report (TODO) -->
+                        <div
+                            style="display: flex; align-items: flex-start; margin-bottom: 8px;"
+                        >
+                            <div
+                                class="o_form_label"
+                                style="font-weight: bold; white-space: normal; width: 600px;"
+                            >
+                                Schedule of meetings with management and TCWG to discuss the auditor's report and other communications such as the management letter
+                            </div>
+                            <span style="margin: 0 8px;font-weight: bold;">:</span>
+                            <!-- <field name="expert_type_ids" widget="many2many_tags" nolabel="1" style="flex: 1;"/> -->
+                        </div>
+
+                        <!-- Meeting With 3rd parties (TODO) -->
+                        <div
+                            style="display: flex; align-items: flex-start; margin-bottom: 8px;"
+                        >
+                            <div
+                                class="o_form_label"
+                                style="font-weight: bold; white-space: normal; width: 600px;"
+                            >
+                                Schedule of meetings/communications among audit team members to discuss other communications with third parties
+                            </div>
+                            <span style="margin: 0 8px;font-weight: bold;">:</span>
+                            <!-- <field name="expert_type_ids" widget="many2many_tags" nolabel="1" style="flex: 1;"/> -->
+                        </div>
                     </page>
+
                     <page name="important_factor" string="Important Factors">
-                        <group name="important_factor_1" colspan="4" col="2">
-                        </group>
+                        <!-- Materiality -->
+                        <div
+                            style="display: flex; align-items: flex-start; margin-bottom: 8px;"
+                        >
+                            <div
+                                class="o_form_label"
+                                style="font-weight: bold; white-space: normal; width: 950px;"
+                            >
+                                Materiality (overall, specific, and performance materiality) :
+                            </div>
+                        </div>
+
+                        <!-- Balance Type -->
+                        <div
+                            style="display: flex; align-items: flex-start; margin-bottom: 8px;"
+                        >
+                            <div
+                                class="o_form_label"
+                                style="font-weight: bold; white-space: normal; width: 200px;"
+                            >
+                                Balance Type
+                            </div>
+                            <span style="margin: 0 8px;font-weight: bold;">:</span>
+                            <field
+                                name="materiality_balance_type"
+                                nolabel="1"
+                                style="flex: 1;"
+                            />
+                        </div>
+
+                        <!-- Overall Materiality -->
+                        <div
+                            style="display: flex; align-items: flex-start; margin-bottom: 8px;"
+                        >
+                            <div
+                                class="o_form_label"
+                                style="font-weight: bold; white-space: normal; width: 200px;"
+                            >
+                                Overall Materiality
+                            </div>
+                            <span style="margin: 0 8px;font-weight: bold;">:</span>
+                            <field
+                                name="overall_materiality"
+                                nolabel="1"
+                                style="flex: 1;"
+                            />
+                        </div>
+
+                        <!-- Performance Materiality -->
+                        <div
+                            style="display: flex; align-items: flex-start; margin-bottom: 8px;"
+                        >
+                            <div
+                                class="o_form_label"
+                                style="font-weight: bold; white-space: normal; width: 200px;"
+                            >
+                                Performance Materiality
+                            </div>
+                            <span style="margin: 0 8px;font-weight: bold;">:</span>
+                            <field
+                                name="performance_materiality"
+                                nolabel="1"
+                                style="flex: 1;"
+                            />
+                        </div>
+
+                        <!-- Specific Materiality -->
+                        <div
+                            style="display: flex; align-items: flex-start; margin-bottom: 8px;"
+                        >
+                            <div
+                                class="o_form_label"
+                                style="font-weight: bold; white-space: normal; width: 950px;"
+                            >
+                                Specific Materiality :
+                            </div>
+                        </div>
+                        <field
+                            name="specific_materiality_ids"
+                            widget="many2many_tree"
+                            nolabel="1"
+                            style="margin-left: 20px; width: 100%;"
+                        >
+                            <tree>
+                                <field name="type_id" />
+                                <field name="balance" />
+                                <field name="materiality" />
+                                <field name="use_specific_materiality" />
+                                <field name="specific_materiality" />
+                                <field name="specific_materiality_reason" />
+                                <field name="final_materiality" />
+                            </tree>
+                        </field>
+
+                        <!-- Tolerable Misstatement -->
+                        <div
+                            style="display: flex; align-items: flex-start; margin-bottom: 8px;"
+                        >
+                            <div
+                                class="o_form_label"
+                                style="font-weight: bold; white-space: normal; width: 200px;"
+                            >
+                                Tolerable Misstatement
+                            </div>
+                            <span style="margin: 0 8px;font-weight: bold;">:</span>
+                            <field
+                                name="tolerable_misstatement"
+                                nolabel="1"
+                                style="flex: 1;"
+                            />
+                        </div>
+
+                        <!--  Initial Assessment -->
+                        <div
+                            style="display: flex; align-items: flex-start; margin-bottom: 8px;"
+                        >
+                            <div
+                                class="o_form_label"
+                                style="font-weight: bold; white-space: normal; width: 600px;"
+                            >
+                                Initial assessment at the overall financial statement level and its impact on the audit
+                            </div>
+                            <span style="margin: 0 8px;font-weight: bold;">:</span>
+                            <field
+                                name="inherent_finance_review"
+                                nolabel="1"
+                                style="flex: 1;"
+                            />
+                        </div>
+
+                        <!-- Initial Identification With Higher Risk (TODO) -->
+                        <div
+                            style="display: flex; align-items: flex-start; margin-bottom: 8px;"
+                        >
+                            <div
+                                class="o_form_label"
+                                style="font-weight: bold; white-space: normal; width: 600px;"
+                            >
+                                Initial identification of areas with higher risk of material misstatement
+                            </div>
+                            <span style="margin: 0 8px;font-weight: bold;">:</span>
+                            <!-- <field name="expert_type_ids" widget="many2many_tags" nolabel="1" style="flex: 1;"/> -->
+                        </div>
+
+                        <!-- Initial Identification of Type Transaction (TODO) -->
+                        <div
+                            style="display: flex; align-items: flex-start; margin-bottom: 8px;"
+                        >
+                            <div
+                                class="o_form_label"
+                                style="font-weight: bold; white-space: normal; width: 600px;"
+                            >
+                                Initial identification of types of transactions, account balances, and disclosures that are significant and material
+                            </div>
+                            <span style="margin: 0 8px;font-weight: bold;">:</span>
+                            <!-- <field name="expert_type_ids" widget="many2many_tags" nolabel="1" style="flex: 1;"/> -->
+                        </div>
+
+                        <!-- Reminding Team Members -->
+                        <div
+                            style="display: flex; align-items: flex-start; margin-bottom: 8px;"
+                        >
+                            <div
+                                class="o_form_label"
+                                style="font-weight: bold; white-space: normal; width: 600px;"
+                            >
+                                Approach to reminding team members to consistently exercise professional skepticism in gathering and evaluating evidence
+                            </div>
+                            <span style="margin: 0 8px;font-weight: bold;">:</span>
+                            <field name="team_pe_review" nolabel="1" style="flex: 1;" />
+                        </div>
+
+                        <!-- Previous Auditor -->
+                        <div
+                            style="display: flex; align-items: flex-start; margin-bottom: 8px;"
+                        >
+                            <div
+                                class="o_form_label"
+                                style="font-weight: bold; white-space: normal; width: 950px;"
+                            >
+                                Relevant prior audit results, including internal control deficiencies and management's responses or follow-up :
+                            </div>
+                        </div>
+                        <field
+                            name="previous_auditor_ids"
+                            widget="many2many_tree"
+                            nolabel="1"
+                            style="margin-left: 20px; width: 100%;"
+                        >
+                            <tree>
+                                <field name="name" />
+                                <field name="documentation" />
+                                <field
+                                    name="related_account_type_ids"
+                                    widget="many2many_tags"
+                                />
+                            </tree>
+                        </field>
+
+                        <!-- Disccussions With Audit Firm (TODO) -->
+                        <div
+                            style="display: flex; align-items: flex-start; margin-bottom: 8px;"
+                        >
+                            <div
+                                class="o_form_label"
+                                style="font-weight: bold; white-space: normal; width: 600px;"
+                            >
+                                Discussions with audit firm staff/partners who provide other services to the entity
+                            </div>
+                            <span style="margin: 0 8px;font-weight: bold;">:</span>
+                            <!-- <field name="expert_type_ids" widget="many2many_tags" nolabel="1" style="flex: 1;"/> -->
+                        </div>
+
+                        <!-- Entity Control -->
+                        <div
+                            style="display: flex; align-items: flex-start; margin-bottom: 8px;"
+                        >
+                            <div
+                                class="o_form_label"
+                                style="font-weight: bold; white-space: normal; width: 600px;"
+                            >
+                                Evidence regarding management's attitude toward internal control and the emphasis placed on the importance of internal control within the entity
+                            </div>
+                            <span style="margin: 0 8px;font-weight: bold;">:</span>
+                            <field
+                                name="control_entity_review"
+                                nolabel="1"
+                                style="flex: 1;"
+                            />
+                        </div>
+
+                        <!-- Volume Of Transaction (TODO) -->
+                        <div
+                            style="display: flex; align-items: flex-start; margin-bottom: 8px;"
+                        >
+                            <div
+                                class="o_form_label"
+                                style="font-weight: bold; white-space: normal; width: 600px;"
+                            >
+                                Volume of transactions, which may determine whether it is more efficient for the auditor to rely on internal control
+                            </div>
+                            <span style="margin: 0 8px;font-weight: bold;">:</span>
+                            <!-- <field name="expert_type_ids" widget="many2many_tags" nolabel="1" style="flex: 1;"/> -->
+                        </div>
                     </page>
-                    <page name="report_obj" string="Reporting Objectives">
-                        <group name="report_obj_1" colspan="4" col="2">
-                        </group>
-                    </page>
+
                     <page
                         name="significant"
                         string="Significant Changes and Developments"
                     >
-                        <group name="significant_1" colspan="4" col="2">
-                        </group>
+                        <!-- IT Review -->
+                        <div
+                            style="display: flex; align-items: flex-start; margin-bottom: 8px;"
+                        >
+                            <div
+                                class="o_form_label"
+                                style="font-weight: bold; white-space: normal; width: 600px;"
+                            >
+                                Significant business developments affecting the entity, including IT changes, changes in key management, and mergers, acquisitions, and divestitures
+                            </div>
+                            <span style="margin: 0 8px;font-weight: bold;">:</span>
+                            <field name="it_review" nolabel="1" style="flex: 1;" />
+                        </div>
+
+                        <!-- Industry Review -->
+                        <div
+                            style="display: flex; align-items: flex-start; margin-bottom: 8px;"
+                        >
+                            <div
+                                class="o_form_label"
+                                style="font-weight: bold; white-space: normal; width: 600px;"
+                            >
+                                Significant industry developments, such as changes in industry legislation and new reporting requirements
+                            </div>
+                            <span style="margin: 0 8px;font-weight: bold;">:</span>
+                            <field
+                                name="industry_review"
+                                nolabel="1"
+                                style="flex: 1;"
+                            />
+                        </div>
+
+                        <!-- Amendments Review -->
+                        <div
+                            style="display: flex; align-items: flex-start; margin-bottom: 8px;"
+                        >
+                            <div
+                                class="o_form_label"
+                                style="font-weight: bold; white-space: normal; width: 600px;"
+                            >
+                                Changes in the Financial Reporting Framework (FRF), such as changes in accounting standards
+                            </div>
+                            <span style="margin: 0 8px;font-weight: bold;">:</span>
+                            <field
+                                name="amendment_review"
+                                nolabel="1"
+                                style="flex: 1;"
+                            />
+                        </div>
+
+                        <!-- Regulatory Review -->
+                        <div
+                            style="display: flex; align-items: flex-start; margin-bottom: 8px;"
+                        >
+                            <div
+                                class="o_form_label"
+                                style="font-weight: bold; white-space: normal; width: 600px;"
+                            >
+                                Other significant developments, such as changes in the legal and regulatory environment affecting the entity
+                            </div>
+                            <span style="margin: 0 8px;font-weight: bold;">:</span>
+                            <field
+                                name="regulatory_review"
+                                nolabel="1"
+                                style="flex: 1;"
+                            />
+                        </div>
                     </page>
+
                     <page
                         name="nature"
                         string="Nature, Timing, and Extent of Resources Required"
                     >
-                        <group name="nature_1" colspan="4" col="2">
+                        <!-- Assignment Teams -->
+                        <div
+                            style="display: flex; align-items: flex-start; margin-bottom: 8px;"
+                        >
+                            <div
+                                class="o_form_label"
+                                style="font-weight: bold; white-space: normal; width: 950px;"
+                            >
+                                Audit engagement team, including the Engagement Quality Control Reviewer (EQCR) :
+                            </div>
+                        </div>
+                        <field
+                            name="assignment_team_ids"
+                            widget="many2many_tree"
+                            nolabel="1"
+                            style="margin-left: 20px; width: 100%;"
+                        >
+                            <tree>
+                                <field name="state" invisible="1" />
+                                <field name="team_role_id" />
+                                <field name="initials" />
+                            </tree>
+                        </field>
+
+                        <!-- Allocation Teams(TODO) -->
+                        <div
+                            style="display: flex; align-items: flex-start; margin-bottom: 8px;"
+                        >
+                            <div
+                                class="o_form_label"
+                                style="font-weight: bold; white-space: normal; width: 950px;"
+                            >
+                                Allocation of responsibilities among engagement staff, considering experience and expertise where a higher risk of misstatement is assessed :
+                            </div>
+                            <!-- <field name="expert_type_ids" widget="many2many_tags" nolabel="1" style="flex: 1;"/> -->
+                        </div>
+
+
+                        <!-- Engagement Budget(TODO) -->
+                        <div
+                            style="display: flex; align-items: flex-start; margin-bottom: 8px;"
+                        >
+                            <div
+                                class="o_form_label"
+                                style="font-weight: bold; white-space: normal; width: 950px;"
+                            >
+                                Engagement budget, including adequate time allocations for areas with higher risk of misstatement :
+                            </div>
+                            <!-- <field name="expert_type_ids" widget="many2many_tags" nolabel="1" style="flex: 1;"/> -->
+                        </div>
+                    </page>
+                </xpath>
+                <xpath expr="//page[@name='note']" position="before">
+                    <page name="links" string="Links">
+                        <group
+                            name="link_1"
+                            string="Understanding of The Business Environment"
+                        >
+                            <field
+                                name="link_1_ids"
+                                widget="many2many_tree"
+                                nolabel="1"
+                            >
+                                <tree>
+                                    <field name="name" />
+                                    <field name="business_environment_id" />
+                                    <field name="state" />
+                                    <field name="conclusion" string="Conclusion" />
+                                </tree>
+                            </field>
                         </group>
+                        <group name="link_2" string="Business Cycle Summaries">
+                            <field
+                                name="link_2_ids"
+                                widget="many2many_tree"
+                                nolabel="1"
+                            >
+                                <tree>
+                                    <field name="name" />
+                                    <field name="business_process_id" />
+                                    <field name="state" />
+                                    <field name="conclusion" string="Conclusion" />
+                                </tree>
+                            </field>
+                        </group>
+                        <group name="activity_3" string="Materiality Computation">
+                            <field
+                                name="link_3_ids"
+                                widget="many2many_tree"
+                                nolabel="1"
+                            >
+                                <tree>
+                                    <field name="name" />
+                                    <field name="base_amount_source" />
+                                    <field name="state" />
+                                    <field name="conclusion" string="Conclusion" />
+                                </tree>
+                            </field>
+                        </group>
+                        <group name="activity_4" string="Specific Materiality">
+                            <field
+                                name="link_4_ids"
+                                widget="many2many_tree"
+                                nolabel="1"
+                            >
+                                <tree>
+                                    <field name="name" />
+                                    <field name="base_amount_source" />
+                                    <field name="state" />
+                                    <field name="conclusion" string="Conclusion" />
+                                </tree>
+                            </field>
+                        </group>
+                        <group
+                            name="activity_5"
+                            string="Inherent Risk - Financial Statement Level"
+                        >
+                            <label for="link_5_id" string="# Worksheet" />
+                            <div class="o_row">
+                                <field
+                                    name="link_5_id"
+                                    class="oe_inline"
+                                    force_save="1"
+                                />
+                                <label
+                                    for="link_5_state"
+                                    string="State"
+                                    style="font-weight: bold;"
+                                />
+                                <field name="link_5_state" class="oe_inline" />
+                            </div>
+                            <field name="link_5_conclusion" string="Conclusion" />
+                        </group>
+                        <group
+                            name="activity_6"
+                            string="Team Communication Pre-Engagement"
+                        >
+                            <label for="link_6_id" string="# Worksheet" />
+                            <div class="o_row">
+                                <field
+                                    name="link_6_id"
+                                    class="oe_inline"
+                                    force_save="1"
+                                />
+                                <label
+                                    for="link_6_state"
+                                    string="State"
+                                    style="font-weight: bold;"
+                                />
+                                <field name="link_6_state" class="oe_inline" />
+                            </div>
+                            <field name="link_6_conclusion" string="Conclusion" />
+                        </group>
+                        <group
+                            name="activity_7"
+                            string="Main Business Activity Process"
+                        >
+                            <label for="link_7_id" string="# Worksheet" />
+                            <div class="o_row">
+                                <field
+                                    name="link_7_id"
+                                    class="oe_inline"
+                                    force_save="1"
+                                />
+                                <label
+                                    for="link_7_state"
+                                    string="State"
+                                    style="font-weight: bold;"
+                                />
+                                <field name="link_7_state" class="oe_inline" />
+                            </div>
+                            <field name="link_7_conclusion" string="Conclusion" />
+                        </group>
+                        <group name="activity_8" string="Control Risk - Entity Level">
+                            <label for="link_8_id" string="# Worksheet" />
+                            <div class="o_row">
+                                <field
+                                    name="link_8_id"
+                                    class="oe_inline"
+                                    force_save="1"
+                                />
+                                <label
+                                    for="link_8_state"
+                                    string="State"
+                                    style="font-weight: bold;"
+                                />
+                                <field name="link_8_state" class="oe_inline" />
+                            </div>
+                            <field name="link_8_conclusion" string="Conclusion" />
+                        </group>
+                    </page>
+                    <page name="standard_audit" string="Relevant Audit Standard Items">
+                        <field name="standard_item_ids" nolabel="1" />
                     </page>
                 </xpath>
             </data>

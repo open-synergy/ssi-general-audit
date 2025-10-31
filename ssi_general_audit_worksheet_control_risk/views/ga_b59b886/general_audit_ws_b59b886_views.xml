@@ -101,49 +101,40 @@
                     </page>
                 </xpath>
                 <xpath expr="//group[@name='review']" position='before'>
-                    <group>
-                        <table style="width:100%; border-collapse:collapse;">
-                            <tr>
-                                <!-- Kolom 1 -->
-                                <td
-                                    style="width:50%; vertical-align:top; padding-right:8px;"
-                                >
-                                    <div style="display:flex; align-items:center;">
-                                        <div style="flex:1; padding-right:6px;">
-                                            Has any deficiency in internal control been identified based on the above understanding?
-                                        </div>
-                                        <div
-                                            style="border-left:1px solid #ccc; padding-left:6px; margin-left:6px; white-space:nowrap;"
-                                        >
-                                            <field
-                                                name="control_deficiency_identified"
-                                                nolabel="1"
-                                            />
-                                        </div>
-                                    </div>
-                                </td>
+                    <!-- Control Deficiency Identified -->
+                    <div
+                        style="display: flex; align-items: flex-start; margin-bottom: 8px; width: 100%;"
+                    >
 
-                                <!-- Kolom 2 -->
-                                <td
-                                    style="width:50%; vertical-align:top; padding-left:8px;"
-                                >
-                                    <div style="display:flex; align-items:center;">
-                                        <div style="flex:1; padding-right:6px;">
-                                            Have any significant deficiencies been identified, either individually or in combination?
-                                        </div>
-                                        <div
-                                            style="border-left:1px solid #ccc; padding-left:6px; margin-left:6px; white-space:nowrap;"
-                                        >
-                                            <field
-                                                name="significant_deficiency_identified"
-                                                nolabel="1"
-                                            />
-                                        </div>
-                                    </div>
-                                </td>
-                            </tr>
-                        </table>
-                    </group>
+                        <label
+                            string="Has any deficiency in internal control been identified based on the above understanding?"
+                            style="font-weight: bold; white-space: normal; width: 600px;"
+                        />
+                        <span style="margin: 0 8px;">|</span>
+                        <field
+                            name="control_deficiency_identified"
+                            readonly="1"
+                            style="flex: 1;"
+                        />
+                    </div>
+
+                    <!-- Significant Deficiency Identified -->
+                    <div
+                        style="display: flex; align-items: flex-start; margin-bottom: 8px; width: 100%;"
+                    >
+
+                        <label
+                            string="Have any significant deficiencies been identified, either individually or in combination?"
+                            style="font-weight: bold; white-space: normal; width: 600px;"
+                        />
+                        <span style="margin: 0 8px;">|</span>
+                        <field
+                            name="significant_deficiency_identified"
+                            readonly="1"
+                            style="flex: 1;"
+                        />
+                    </div>
+
                 </xpath>
             </data>
         </field>

@@ -2,7 +2,7 @@
 # Copyright 2022 PT. Simetri Sinergi Indonesia
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl-3.0-standalone.html).
 
-from odoo import fields, models
+from odoo import _, api, fields, models
 
 
 class GeneralAuditWSfbbe0f8(models.Model):
@@ -17,10 +17,725 @@ class GeneralAuditWSfbbe0f8(models.Model):
 
     financial_accounting_standard_id = fields.Many2one(
         related="general_audit_id.financial_accounting_standard_id",
+        store=True,
     )
     other_report_ids = fields.Many2many(
         related="general_audit_id.other_report_ids",
+        relation="rel_ga_ws_fbbe0f8_2_ga_other_report",
+        column1="ws_fbbe0f8_id",
+        column2="other_report_id",
+        store=True,
     )
     expert_type_ids = fields.Many2many(
         related="general_audit_id.expert_type_ids",
+        relation="rel_ga_ws_fbbe0f8_2_ga_expert_type",
+        column1="ws_fbbe0f8_id",
+        column2="expert_type_id",
+        store=True,
     )
+
+    @api.depends(
+        "link_1_ids",
+    )
+    def _compute_it_detail_review_ids(self):
+        for record in self:
+            result = review = False
+            if record.link_1_ids:
+                it_env_id = self.env.ref(
+                    "ssi_general_audit." "general_audit_business_environment_5_ffea3e57"
+                ).id
+                it_env = record.link_1_ids.filtered(
+                    lambda x: x.business_environment_id.id == it_env_id
+                )
+                if len(it_env) == 1:
+                    result = it_env.detail_ids.ids
+                    review = it_env.review
+            record.it_detail_ids = result
+            record.it_review = review
+
+    it_detail_ids = fields.Many2many(
+        comodel_name="general_audit_ws_bdcdfc5.detail",
+        compute_sudo=True,
+        compute="_compute_it_detail_review_ids",
+        store=True,
+    )
+    it_review = fields.Text(
+        compute_sudo=True,
+        compute="_compute_it_detail_review_ids",
+        store=True,
+    )
+
+    @api.depends(
+        "link_1_ids",
+    )
+    def _compute_industry_review(self):
+        for record in self:
+            review = False
+            if record.link_1_ids:
+                env_id = self.env.ref(
+                    "ssi_general_audit." "general_audit_business_environment_1_297034dd"
+                ).id
+                it_env = record.link_1_ids.filtered(
+                    lambda x: x.business_environment_id.id == env_id
+                )
+                if len(it_env) == 1:
+                    review = it_env.review
+            record.industry_review = review
+
+    industry_review = fields.Text(
+        compute_sudo=True,
+        compute="_compute_industry_review",
+        store=True,
+    )
+
+    @api.depends(
+        "link_1_ids",
+    )
+    def _compute_amendment_review(self):
+        for record in self:
+            review = False
+            if record.link_1_ids:
+                env_id = self.env.ref(
+                    "ssi_general_audit." "general_audit_business_environment_3_bd6c9b55"
+                ).id
+                it_env = record.link_1_ids.filtered(
+                    lambda x: x.business_environment_id.id == env_id
+                )
+                if len(it_env) == 1:
+                    review = it_env.review
+            record.amendment_review = review
+
+    amendment_review = fields.Text(
+        compute_sudo=True,
+        compute="_compute_amendment_review",
+        store=True,
+    )
+
+    @api.depends(
+        "link_1_ids",
+    )
+    def _compute_regulatory_review(self):
+        for record in self:
+            review = False
+            if record.link_1_ids:
+                env_id = self.env.ref(
+                    "ssi_general_audit." "general_audit_business_environment_4_aaeebb37"
+                ).id
+                it_env = record.link_1_ids.filtered(
+                    lambda x: x.business_environment_id.id == env_id
+                )
+                if len(it_env) == 1:
+                    review = it_env.review
+            record.regulatory_review = review
+
+    regulatory_review = fields.Text(
+        compute_sudo=True,
+        compute="_compute_regulatory_review",
+        store=True,
+    )
+
+    @api.depends(
+        "link_2_ids",
+    )
+    def _compute_unannounced_audit_ids(self):
+        for record in self:
+            result = False
+            if record.link_2_ids:
+                nannounced_audit = record.link_2_ids.detail_ids.filtered(
+                    lambda x: x.need_unannounced_audit
+                )
+                if nannounced_audit:
+                    result = nannounced_audit.ids
+            record.unannounced_audit_ids = result
+
+    unannounced_audit_ids = fields.Many2many(
+        comodel_name="general_audit_ws_a604795.detail",
+        compute_sudo=True,
+        compute="_compute_unannounced_audit_ids",
+        store=True,
+    )
+
+    materiality_balance_type = fields.Selection(
+        string="Balance Type",
+        selection=[
+            ("extrapolation", "Extrapolation"),
+            ("end_period", "End Period"),
+        ],
+        required=False,
+        default="extrapolation",
+        readonly=True,
+        states={
+            "open": [
+                ("readonly", False),
+                ("required", True),
+            ],
+        },
+        help=(
+            "Source of the base amount used in materiality computation: "
+            "Extrapolation or End Period."
+        ),
+    )
+
+    @api.depends(
+        "materiality_balance_type",
+        "link_3_ids",
+    )
+    def _compute_materiality(self):
+        for record in self:
+            overall = 0.0
+            performance = 0.0
+            tolerable = 0.0
+
+            if record.materiality_balance_type and record.link_3_ids:
+                ttype = record.materiality_balance_type
+                materiality = record.link_3_ids.filtered(
+                    lambda x: x.base_amount_source == ttype
+                )
+                if materiality:
+                    overall = materiality.overall_materiality
+                    performance = materiality.performance_materiality
+                    tolerable = materiality.tolerable_misstatement
+            record.overall_materiality = overall
+            record.performance_materiality = performance
+            record.tolerable_misstatement = tolerable
+
+    overall_materiality = fields.Monetary(
+        compute_sudo=True,
+        compute="_compute_materiality",
+        store=True,
+    )
+    performance_materiality = fields.Monetary(
+        compute_sudo=True,
+        compute="_compute_materiality",
+        store=True,
+    )
+    tolerable_misstatement = fields.Monetary(
+        compute_sudo=True,
+        compute="_compute_materiality",
+        store=True,
+    )
+
+    @api.depends(
+        "materiality_balance_type",
+        "link_4_ids",
+    )
+    def _compute_specific_materiality_ids(self):
+        for record in self:
+            result = False
+            if record.materiality_balance_type and record.link_4_ids:
+                ttype = record.materiality_balance_type
+                materiality = record.link_4_ids.filtered(
+                    lambda x: x.base_amount_source == ttype
+                )
+                if materiality:
+                    specific_materiality = materiality.materiality_mapping_ids.filtered(
+                        lambda y: y.use_specific_materiality
+                    )
+                    if specific_materiality:
+                        result = specific_materiality.ids
+            record.specific_materiality_ids = result
+
+    specific_materiality_ids = fields.Many2many(
+        comodel_name="general_audit_ws_6dcda0e_materiality_mapping",
+        compute_sudo=True,
+        compute="_compute_specific_materiality_ids",
+        relation="rel_ga_ws_fbbe0f8_2_6dcda0e_materiality_mapping",
+        store=True,
+    )
+
+    inherent_finance_review = fields.Text(
+        related="link_5_id.review",
+        store=True,
+    )
+
+    team_pe_review = fields.Text(
+        related="link_6_id.review",
+        store=True,
+    )
+
+    @api.depends(
+        "link_7_id",
+    )
+    def _compute_previous_auditor_ids(self):
+        for record in self:
+            result = False
+            if record.link_7_id and record.link_7_id.previous_audit_information_ids:
+                result = record.link_7_id.previous_audit_information_ids.ids
+            record.previous_auditor_ids = result
+
+    previous_auditor_ids = fields.Many2many(
+        comodel_name=("general_audit_ws_ae11f7e." "previous_audit_information"),
+        compute_sudo=True,
+        compute="_compute_previous_auditor_ids",
+        relation="rel_ga_ws_fbbe0f8_2_ae11f7e_previous_audit",
+        store=True,
+    )
+
+    control_entity_review = fields.Text(
+        related="link_8_id.review",
+        store=True,
+    )
+
+    @api.depends(
+        "link_9_id",
+    )
+    def _compute_assignment_team_ids(self):
+        for record in self:
+            result = False
+            if record.link_9_id and record.link_9_id.summary_ids:
+                summary = record.link_9_id.summary_ids.filtered(
+                    lambda y: y.select_team == "yes"
+                )
+                if summary:
+                    result = summary.ids
+            record.assignment_team_ids = result
+
+    assignment_team_ids = fields.Many2many(
+        comodel_name="general_audit_ws_b9d8a5c.summary",
+        compute_sudo=True,
+        compute="_compute_assignment_team_ids",
+        relation="rel_ga_ws_fbbe0f8_2_b9d8a5c_summary",
+        store=True,
+    )
+
+    # Understanding of The Business Environment
+    # LINK - 1 bdcdfc5 (RA.150.5)
+    @api.depends(
+        "general_audit_id",
+    )
+    def _compute_link_1_ids(self):
+        for record in self:
+            result = False
+            obj = self.env["general_audit_ws_bdcdfc5"]
+            criteria = [
+                ("general_audit_id", "=", record.general_audit_id.id),
+                ("state", "=", "done"),
+            ]
+            link_1_ids = obj.search(criteria)
+            if link_1_ids:
+                result = link_1_ids.ids
+            record.link_1_ids = result
+
+    link_1_ids = fields.Many2many(
+        string="RA.150.5",
+        comodel_name="general_audit_ws_bdcdfc5",
+        compute_sudo=True,
+        compute="_compute_link_1_ids",
+        store=True,
+        help=(
+            "Collection of all RA.150.5 (Understanding of the Business Environment) "
+            "worksheets linked to this General Audit. Automatically computed; use it to "
+            "navigate to each detailed worksheet."
+        ),
+    )
+
+    # Business Cycle Summaries
+    # LINK - 2 a604795 (RA.150.3)
+    @api.depends(
+        "general_audit_id",
+    )
+    def _compute_link_2_ids(self):
+        for record in self:
+            result = False
+            obj = self.env["general_audit_ws_a604795"]
+            criteria = [
+                ("general_audit_id", "=", record.general_audit_id.id),
+                ("state", "=", "done"),
+            ]
+            link_2_ids = obj.search(criteria)
+            if link_2_ids:
+                result = link_2_ids.ids
+            record.link_2_ids = result
+
+    link_2_ids = fields.Many2many(
+        string="RA.150.3",
+        comodel_name="general_audit_ws_a604795",
+        compute_sudo=True,
+        compute="_compute_link_2_ids",
+        store=True,
+        help=(
+            "Collection of all RA.150.3 (Business Cycle Summaries) "
+            "worksheets linked to this General Audit. Automatically computed; use it to "
+            "navigate to each detailed worksheet."
+        ),
+    )
+
+    # Materiality Computation
+    # LINK - 3 d9d2b44 (RA.130.1)
+    @api.depends(
+        "general_audit_id",
+    )
+    def _compute_link_3_ids(self):
+        for record in self:
+            result = False
+            obj = self.env["general_audit_ws_d9d2b44"]
+            criteria = [
+                ("general_audit_id", "=", record.general_audit_id.id),
+                ("state", "=", "done"),
+            ]
+            link_3_ids = obj.search(criteria)
+            if link_3_ids:
+                result = link_3_ids.ids
+            record.link_3_ids = result
+
+    link_3_ids = fields.Many2many(
+        string="RA.130.1",
+        comodel_name="general_audit_ws_d9d2b44",
+        compute_sudo=True,
+        compute="_compute_link_3_ids",
+        store=True,
+        help=(
+            "Collection of all RA.130.1 (Materiality Computation) "
+            "worksheets linked to this General Audit. Automatically computed; use it to "
+            "navigate to each detailed worksheet."
+        ),
+    )
+
+    # Specific Materiality
+    # LINK - 4 6dcda0e (RA.130.2)
+    @api.depends(
+        "general_audit_id",
+    )
+    def _compute_link_4_ids(self):
+        for record in self:
+            result = False
+            obj = self.env["general_audit_ws_6dcda0e"]
+            criteria = [
+                ("general_audit_id", "=", record.general_audit_id.id),
+                ("state", "=", "done"),
+            ]
+            link_4_ids = obj.search(criteria)
+            if link_4_ids:
+                result = link_4_ids.ids
+            record.link_4_ids = result
+
+    link_4_ids = fields.Many2many(
+        string="RA.130.2",
+        comodel_name="general_audit_ws_6dcda0e",
+        compute_sudo=True,
+        compute="_compute_link_4_ids",
+        store=True,
+        help=(
+            "Collection of all RA.130.2 (Specific Materiality) "
+            "worksheets linked to this General Audit. Automatically computed; use it to "
+            "navigate to each detailed worksheet."
+        ),
+    )
+
+    # Inherent Risk - Financial Statement Level
+    # LINK - 5 c16abd7 (RA.210.1)
+    @api.depends(
+        "general_audit_id",
+    )
+    def _compute_link_5_id(self):
+        for record in self:
+            result = False
+            obj = self.env["general_audit_ws_c16abd7"]
+            criteria = [
+                ("general_audit_id", "=", record.general_audit_id.id),
+                ("state", "=", "done"),
+            ]
+            link_5_id = obj.search(criteria)
+            if link_5_id:
+                result = link_5_id.id
+            record.link_5_id = result
+
+    link_5_id = fields.Many2one(
+        string="RA.210.1",
+        comodel_name="general_audit_ws_c16abd7",
+        compute_sudo=True,
+        compute="_compute_link_5_id",
+        store=True,
+        help=(
+            "Link to worksheet RA.210.1 (Inherent Risk - Financial Statement Level) "
+            "for this General Audit. Automatically computed and stored."
+        ),
+    )
+    link_5_state = fields.Selection(
+        string="State (RA.210.1)",
+        related="link_5_id.state",
+        help=(
+            "Workflow state of the linked RA.210.1 worksheet. "
+            "Read-only and follows the linked record."
+        ),
+    )
+    link_5_conclusion_id = fields.Many2one(
+        string="Conclusion (RA.210.1)",
+        related="link_5_id.conclusion_id",
+        help=(
+            "Conclusion from the RA.210.1 worksheet. "
+            "Read-only, mirrors the linked record."
+        ),
+    )
+    link_5_conclusion = fields.Text(
+        string="Conclusion",
+        related="link_5_id.conclusion",
+        help=(
+            "Conclusion on the RA.210.1 worksheet. "
+            "Read-only, mirrors the linked record."
+        ),
+    )
+
+    # Team Communication Pre-Engagement
+    # LINK - 6 437fc8f (PE.160)
+    @api.depends(
+        "general_audit_id",
+    )
+    def _compute_link_6_id(self):
+        for record in self:
+            result = False
+            obj = self.env["general_audit_ws_437fc8f"]
+            criteria = [
+                ("general_audit_id", "=", record.general_audit_id.id),
+                ("state", "=", "done"),
+            ]
+            link_6_id = obj.search(criteria)
+            if link_6_id:
+                result = link_6_id.id
+            record.link_6_id = result
+
+    link_6_id = fields.Many2one(
+        string="PE.160",
+        comodel_name="general_audit_ws_437fc8f",
+        compute_sudo=True,
+        compute="_compute_link_6_id",
+        store=True,
+        help=(
+            "Link to worksheet PE.160 (Team Communication Pre-Engagement) "
+            "for this General Audit. Automatically computed and stored."
+        ),
+    )
+    link_6_state = fields.Selection(
+        string="State (PE.160)",
+        related="link_6_id.state",
+        help=(
+            "Workflow state of the linked PE.160 worksheet. "
+            "Read-only and follows the linked record."
+        ),
+    )
+    link_6_conclusion_id = fields.Many2one(
+        string="Conclusion (PE.160)",
+        related="link_6_id.conclusion_id",
+        help=(
+            "Conclusion from the PE.160 worksheet. "
+            "Read-only, mirrors the linked record."
+        ),
+    )
+    link_6_conclusion = fields.Text(
+        string="Conclusion",
+        related="link_6_id.conclusion",
+        help=(
+            "Conclusion on the PE.160 worksheet. "
+            "Read-only, mirrors the linked record."
+        ),
+    )
+
+    # Main Business Activity Process
+    # LINK - 7 ae11f7e (RA.150.3)
+    @api.depends(
+        "general_audit_id",
+    )
+    def _compute_link_7_id(self):
+        for record in self:
+            result = False
+            obj = self.env["general_audit_ws_ae11f7e"]
+            criteria = [
+                ("general_audit_id", "=", record.general_audit_id.id),
+                ("state", "=", "done"),
+            ]
+            link_7_id = obj.search(criteria)
+            if link_7_id:
+                result = link_7_id.id
+            record.link_7_id = result
+
+    link_7_id = fields.Many2one(
+        string="PE.150.3",
+        comodel_name="general_audit_ws_ae11f7e",
+        compute_sudo=True,
+        compute="_compute_link_7_id",
+        store=True,
+        help=(
+            "Link to worksheet PE.150.3 (Main Business Activity Process) "
+            "for this General Audit. Automatically computed and stored."
+        ),
+    )
+    link_7_state = fields.Selection(
+        string="State (PE.150.3)",
+        related="link_7_id.state",
+        help=(
+            "Workflow state of the linked PE.150.3 worksheet. "
+            "Read-only and follows the linked record."
+        ),
+    )
+    link_7_conclusion_id = fields.Many2one(
+        string="Conclusion (PE.150.3)",
+        related="link_7_id.conclusion_id",
+        help=(
+            "Conclusion from the PE.150.3 worksheet. "
+            "Read-only, mirrors the linked record."
+        ),
+    )
+    link_7_conclusion = fields.Text(
+        string="Conclusion",
+        related="link_7_id.conclusion",
+        help=(
+            "Conclusion on the PE.150.3 worksheet. "
+            "Read-only, mirrors the linked record."
+        ),
+    )
+
+    # Control Risk - Entity Level
+    # LINK - 8 b59b886 (RA.220.1)
+    @api.depends(
+        "general_audit_id",
+    )
+    def _compute_link_8_id(self):
+        for record in self:
+            result = False
+            obj = self.env["general_audit_ws_b59b886"]
+            criteria = [
+                ("general_audit_id", "=", record.general_audit_id.id),
+                ("state", "=", "done"),
+            ]
+            link_8_id = obj.search(criteria)
+            if link_8_id:
+                result = link_8_id.id
+            record.link_8_id = result
+
+    link_8_id = fields.Many2one(
+        string="RA.220.1",
+        comodel_name="general_audit_ws_b59b886",
+        compute_sudo=True,
+        compute="_compute_link_8_id",
+        store=True,
+        help=(
+            "Link to worksheet RA.220.1 (Control Risk - Entity Level) "
+            "for this General Audit. Automatically computed and stored."
+        ),
+    )
+    link_8_state = fields.Selection(
+        string="State (RA.220.1)",
+        related="link_8_id.state",
+        help=(
+            "Workflow state of the linked RA.220.1 worksheet. "
+            "Read-only and follows the linked record."
+        ),
+    )
+    link_8_conclusion_id = fields.Many2one(
+        string="Conclusion (RA.220.1)",
+        related="link_8_id.conclusion_id",
+        help=(
+            "Conclusion from the RA.220.1 worksheet. "
+            "Read-only, mirrors the linked record."
+        ),
+    )
+    link_8_conclusion = fields.Text(
+        string="Conclusion",
+        related="link_8_id.conclusion",
+        help=(
+            "Conclusion on the RA.220.1 worksheet. "
+            "Read-only, mirrors the linked record."
+        ),
+    )
+
+    # Competency, availability, and
+    # independency of assignment team
+    # LINK - 9 b9d8a5c (PE.110.3)
+    @api.depends(
+        "general_audit_id",
+    )
+    def _compute_link_9_id(self):
+        for record in self:
+            result = False
+            obj = self.env["general_audit_ws_b9d8a5c"]
+            criteria = [
+                ("general_audit_id", "=", record.general_audit_id.id),
+                ("state", "=", "done"),
+            ]
+            link_9_id = obj.search(criteria)
+            if link_9_id:
+                result = link_9_id.id
+            record.link_9_id = result
+
+    link_9_id = fields.Many2one(
+        string="PE.110.3",
+        comodel_name="general_audit_ws_b9d8a5c",
+        compute_sudo=True,
+        compute="_compute_link_9_id",
+        store=True,
+        help=(
+            "Link to worksheet PE.110.3 "
+            "for this General Audit. Automatically computed and stored."
+        ),
+    )
+    link_9_state = fields.Selection(
+        string="State (PE.110.3)",
+        related="link_9_id.state",
+        help=(
+            "Workflow state of the linked PE.110.3 worksheet. "
+            "Read-only and follows the linked record."
+        ),
+    )
+    link_9_conclusion_id = fields.Many2one(
+        string="Conclusion (PE.110.3)",
+        related="link_9_id.conclusion_id",
+        help=(
+            "Conclusion from the PE.110.3 worksheet. "
+            "Read-only, mirrors the linked record."
+        ),
+    )
+    link_9_conclusion = fields.Text(
+        string="Conclusion",
+        related="link_9_id.conclusion",
+        help=(
+            "Conclusion on the PE.110.3 worksheet. "
+            "Read-only, mirrors the linked record."
+        ),
+    )
+
+    def action_reload_links(self):
+        for record in self.sudo():
+            record._reload_links()
+
+    def _reload_links(self):
+        self.ensure_one()
+        self._compute_link_1_ids()
+        self._compute_link_2_ids()
+        self._compute_link_3_ids()
+        self._compute_link_4_ids()
+        self._compute_link_5_id()
+        self._compute_link_6_id()
+        self._compute_link_7_id()
+        self._compute_link_8_id()
+        self._compute_link_9_id()
+
+    def _get_fields_required_before_confirm(self):
+        _super = super(GeneralAuditWSfbbe0f8, self)
+        res = _super._get_fields_required_before_confirm()
+        res += [
+            "link_1_ids",
+            "link_2_ids",
+            "link_3_ids",
+            "link_4_ids",
+            "link_5_id",
+            "link_6_id",
+            "link_7_id",
+            "link_8_id",
+            "link_9_id",
+        ]
+        return res
+
+    def _get_custom_field_labels(self):
+        return {
+            "link_1_ids": _("Understanding of The Business Environment"),
+            "link_2_ids": _("Business Cycle Summaries"),
+            "link_3_ids": _("Materiality Computation"),
+            "link_4_ids": _("Specific Materiality"),
+            "link_5_id": _("Inherent Risk - Financial Statement Level"),
+            "link_6_id": _("Team Communication Pre-Engagement"),
+            "link_7_id": _("Main Business Activity Process"),
+            "link_8_id": _("Control Risk - Entity Level"),
+            "link_9_id": _(
+                "Competency, availability, and " "independency of assignment team"
+            ),
+        }

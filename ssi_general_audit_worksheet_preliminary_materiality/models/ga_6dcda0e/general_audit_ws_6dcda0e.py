@@ -107,24 +107,30 @@ class GeneralAuditWS6dcda0e(models.Model):
 
     def action_reload_materiality_mapping(self):
         for record in self.sudo():
-            record.onchange_materiality_mapping_ids()
+            record._populate()
 
-    @api.onchange("general_audit_id")
-    def onchange_materiality_mapping_ids(self):
-        self.update({"materiality_mapping_ids": [(5, 0, 0)]})
-        if self.general_audit_id:
-            result = []
-            for detail in self.general_audit_id.standard_detail_ids:
-                result.append(
-                    (
-                        0,
-                        0,
-                        {
-                            "standard_detail_id": detail.id,
-                        },
-                    )
+    def _populate(self):
+        self.ensure_one()
+        Detail = self.env["general_audit_ws_6dcda0e_materiality_mapping"]
+
+        worksheets = self.general_audit_id.standard_detail_ids
+        mapping = {
+            chk.standard_detail_id.id: chk for chk in self.materiality_mapping_ids
+        }
+
+        for ws in worksheets:
+            if ws.id not in mapping:
+                Detail.create(
+                    {
+                        "worksheet_id": self.id,
+                        "standard_detail_id": ws.id,
+                    }
                 )
-            self.update({"materiality_mapping_ids": result})
+
+        worksheet_ids = set(worksheets.ids)
+        for chk in self.materiality_mapping_ids:
+            if chk.standard_detail_id.id not in worksheet_ids:
+                chk.unlink()
 
     @ssi_decorator.pre_confirm_check()
     def _10_check_balance_type(self):

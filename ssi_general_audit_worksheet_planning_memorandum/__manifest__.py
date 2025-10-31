@@ -11,6 +11,9 @@
     "installable": True,
     "depends": [
         "ssi_general_audit_worksheet_understanding_entity",
+        "ssi_general_audit_worksheet_inherent_risk",
+        "ssi_general_audit_worksheet_preliminary_materiality",
+        "ssi_general_audit_worksheet_team_communication",
     ],
     "data": [
         "security/ir_module_category_data.xml",
