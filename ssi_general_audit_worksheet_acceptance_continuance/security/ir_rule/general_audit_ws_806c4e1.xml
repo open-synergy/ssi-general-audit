@@ -18,6 +18,21 @@
     <field name="perm_create" eval="1" />
 </record>
 
+<record id="general_audit_ws_806c4e1_internal_user_team_rule" model="ir.rule">
+    <field
+            name="name"
+        >Acceptance and Continuance of Client Relationships Analysis (806c4e1) - Internal Users - Audit Team</field>
+    <field name="model_id" ref="model_general_audit_ws_806c4e1" />
+    <field name="groups" eval="[(4, ref('base.group_user'))]" />
+    <field name="domain_force">[
+        ("general_audit_id.team_allocation_user_ids", "in", [user.id])
+    ]</field>
+    <field name="perm_unlink" eval="0" />
+    <field name="perm_write" eval="0" />
+    <field name="perm_read" eval="1" />
+    <field name="perm_create" eval="0" />
+</record>
+
 <record id="general_audit_ws_806c4e1_company_rule" model="ir.rule">
     <field
             name="name"
