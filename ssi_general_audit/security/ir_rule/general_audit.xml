@@ -19,6 +19,19 @@
     <field name="perm_create" eval="1" />
 </record>
 
+<record id="general_audit_internal_user_team_rule" model="ir.rule">
+    <field name="name">General Audit - Internal Users - Team Member</field>
+    <field name="model_id" ref="model_general_audit" />
+    <field name="groups" eval="[(4, ref('base.group_user'))]" />
+    <field name="domain_force">[
+        ("team_allocation_user_ids", "in", [user.id])
+    ]</field>
+    <field name="perm_unlink" eval="0" />
+    <field name="perm_write" eval="0" />
+    <field name="perm_read" eval="1" />
+    <field name="perm_create" eval="0" />
+</record>
+
 <record id="general_audit_ou_role" model="ir.rule">
     <field name="name">General Audit - Responsible to operating unit data</field>
     <field name="model_id" ref="model_general_audit" />

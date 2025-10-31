@@ -27,10 +27,22 @@
             name="state_ids"
             search="[('field_id.model_id.model','=','client_adjustment_entry'),('value','=','draft')]"
         />
-    <field name="restrict_user" eval="1" />
-    <field name="computation_method">use_group</field>
-    <field name="group_ids" eval="[(6,0,[ref('adjustment_entry_user_group')])]" />
-    <field name="restrict_additional" eval="0" />
+    <field name="restrict_user" eval="0" />
+    <field name="restrict_additional" eval="1" />
+    <field name="additional_python_code">result = False
+if env.user.id == document.user_id.id:
+    result = True
+elif env.user.id == document.reviewer_id.id:
+    result = True
+elif env.user.id == document.general_audit_id.user_id.id:
+    result = True
+elif env.user.id == document.general_audit_id.reviewer_id.id:
+    result = True
+elif env.user.id in env.ref("base.group_system").users.ids:
+    result = True
+elif env.user.id in env.ref("ssi_general_audit.adjustment_entry_validator_group").users.ids:
+    result = True
+    </field>
 </record>
 
 <!--  Adjustment Entry: Cancel -->
@@ -45,10 +57,20 @@
             name="state_ids"
             search="[('field_id.model_id.model','=','client_adjustment_entry'),('value','in',['draft','done'])]"
         />
-    <field name="restrict_user" eval="1" />
-    <field name="computation_method">use_group</field>
-    <field name="group_ids" eval="[(6,0,[ref('adjustment_entry_user_group')])]" />
-    <field name="restrict_additional" eval="0" />
+    <field name="restrict_user" eval="0" />
+    <field name="restrict_additional" eval="1" />
+    <field name="additional_python_code">result = False
+if env.user.id == document.reviewer_id.id:
+    result = True
+elif env.user.id == document.general_audit_id.user_id.id:
+    result = True
+elif env.user.id == document.general_audit_id.reviewer_id.id:
+    result = True
+elif env.user.id in env.ref("base.group_system").users.ids:
+    result = True
+elif env.user.id in env.ref("ssi_general_audit.adjustment_entry_validator_group").users.ids:
+    result = True
+    </field>
 </record>
 
 <!--  Adjustment Entry: Restart -->
@@ -63,10 +85,20 @@
             name="state_ids"
             search="[('field_id.model_id.model','=','client_adjustment_entry'),('value','in',['cancel','reject'])]"
         />
-    <field name="restrict_user" eval="1" />
-    <field name="computation_method">use_group</field>
-    <field name="group_ids" eval="[(6,0,[ref('adjustment_entry_user_group')])]" />
-    <field name="restrict_additional" eval="0" />
+    <field name="restrict_user" eval="0" />
+    <field name="restrict_additional" eval="1" />
+    <field name="additional_python_code">result = False
+if env.user.id == document.reviewer_id.id:
+    result = True
+elif env.user.id == document.general_audit_id.user_id.id:
+    result = True
+elif env.user.id == document.general_audit_id.reviewer_id.id:
+    result = True
+elif env.user.id in env.ref("base.group_system").users.ids:
+    result = True
+elif env.user.id in env.ref("ssi_general_audit.adjustment_entry_validator_group").users.ids:
+    result = True
+    </field>
 </record>
 
 <!--  Adjustment Entry: Reject -->
@@ -122,9 +154,19 @@ if env.user.id in document.active_approver_user_ids.ids:
             name="state_ids"
             search="[('field_id.model_id.model','=','client_adjustment_entry'),('value','=','draft')]"
         />
-    <field name="restrict_user" eval="1" />
-    <field name="computation_method">use_group</field>
-    <field name="group_ids" eval="[(6,0,[ref('adjustment_entry_user_group')])]" />
-    <field name="restrict_additional" eval="0" />
+    <field name="restrict_user" eval="0" />
+    <field name="restrict_additional" eval="1" />
+    <field name="additional_python_code">result = False
+if env.user.id == document.reviewer_id.id:
+    result = True
+elif env.user.id == document.general_audit_id.user_id.id:
+    result = True
+elif env.user.id == document.general_audit_id.reviewer_id.id:
+    result = True
+elif env.user.id in env.ref("base.group_system").users.ids:
+    result = True
+elif env.user.id in env.ref("ssi_general_audit.adjustment_entry_validator_group").users.ids:
+    result = True
+    </field>
 </record>
 </odoo>

@@ -181,6 +181,19 @@ class GeneralAudit(models.Model):
         ondelete="restrict",
         help="Lead accountant in charge of the audit.",
     )
+    team_allocation_user_ids = fields.Many2many(
+        string="Teams",
+        comodel_name="res.users",
+        compute="_compute_team_allocation_user_ids",
+        help=(
+            "Users linked to employees assigned as team members "
+            "in the team allocations for this General Audit engagement."
+        ),
+        store=True,
+        relation="general_audit_team_allocation_user_rel",
+        column1="general_audit_id",
+        column2="user_id",
+    )
     num_of_consecutive_audit_firm = fields.Integer(
         string="Num. of Consecutive Audit (Firm)",
         required=True,
@@ -412,6 +425,10 @@ class GeneralAudit(models.Model):
         ]
         res += policy_field
         return res
+
+    def _compute_team_allocation_user_ids(self):
+        for record in self:
+            record.team_allocation_user_ids = []
 
     @api.model
     def _default_currency_id(self):
