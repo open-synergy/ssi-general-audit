@@ -29,13 +29,20 @@
             name="state_ids"
             search="[('field_id.model_id.model','=','general_audit_ws_c0d0898'),('value','=','draft')]"
         />
-    <field name="restrict_user" eval="1" />
-    <field name="computation_method">use_group</field>
-    <field
-            name="group_ids"
-            eval="[(6,0,[ref('general_audit_ws_c0d0898_user_group')])]"
-        />
-    <field name="restrict_additional" eval="0" />
+    <field name="restrict_user" eval="0" />
+    <field name="restrict_additional" eval="1" />
+    <field name="additional_python_code">result = False
+if env.user.id == document.reviewer_id.id:
+    result = True
+elif env.user.id == document.general_audit_id.user_id.id:
+    result = True
+elif env.user.id == document.general_audit_id.reviewer_id.id:
+    result = True
+elif env.user.id in env.ref("base.group_system").users.ids:
+    result = True
+elif env.user.id in env.ref("ssi_general_audit_worksheet_understanding_entity.general_audit_ws_c0d0898_validator_group").users.ids:
+    result = True
+    </field>
 </record>
 
 <!-- Confirm -->
@@ -53,13 +60,22 @@
             name="state_ids"
             search="[('field_id.model_id.model','=','general_audit_ws_c0d0898'),('value','=','open')]"
         />
-    <field name="restrict_user" eval="1" />
-    <field name="computation_method">use_group</field>
-    <field
-            name="group_ids"
-            eval="[(6,0,[ref('general_audit_ws_c0d0898_user_group')])]"
-        />
-    <field name="restrict_additional" eval="0" />
+    <field name="restrict_user" eval="0" />
+    <field name="restrict_additional" eval="1" />
+    <field name="additional_python_code">result = False
+if env.user.id == document.user_id.id:
+    result = True
+elif env.user.id == document.reviewer_id.id:
+    result = True
+elif env.user.id == document.general_audit_id.user_id.id:
+    result = True
+elif env.user.id == document.general_audit_id.reviewer_id.id:
+    result = True
+elif env.user.id in env.ref("base.group_system").users.ids:
+    result = True
+elif env.user.id in env.ref("ssi_general_audit_worksheet_understanding_entity.general_audit_ws_c0d0898_validator_group").users.ids:
+    result = True
+    </field>
 </record>
 
 <!-- Cancel -->
@@ -77,13 +93,20 @@
             name="state_ids"
             search="[('field_id.model_id.model','=','general_audit_ws_c0d0898'),('value','in',['draft','open','done'])]"
         />
-            <field name="restrict_user" eval="1" />
-            <field name="computation_method">use_group</field>
-            <field
-            name="group_ids"
-            eval="[(6,0,[ref('general_audit_ws_c0d0898_validator_group')])]"
-        />
-            <field name="restrict_additional" eval="0" />
+    <field name="restrict_user" eval="0" />
+    <field name="restrict_additional" eval="1" />
+    <field name="additional_python_code">result = False
+if env.user.id == document.reviewer_id.id:
+    result = True
+elif env.user.id == document.general_audit_id.user_id.id:
+    result = True
+elif env.user.id == document.general_audit_id.reviewer_id.id:
+    result = True
+elif env.user.id in env.ref("base.group_system").users.ids:
+    result = True
+elif env.user.id in env.ref("ssi_general_audit_worksheet_understanding_entity.general_audit_ws_c0d0898_validator_group").users.ids:
+    result = True
+    </field>
 </record>
 
 <!-- Restart -->
@@ -101,13 +124,20 @@
             name="state_ids"
             search="[('field_id.model_id.model','=','general_audit_ws_c0d0898'),('value','in',['cancel','reject'])]"
         />
-            <field name="restrict_user" eval="1" />
-            <field name="computation_method">use_group</field>
-            <field
-            name="group_ids"
-            eval="[(6,0,[ref('general_audit_ws_c0d0898_validator_group')])]"
-        />
-            <field name="restrict_additional" eval="0" />
+    <field name="restrict_user" eval="0" />
+    <field name="restrict_additional" eval="1" />
+    <field name="additional_python_code">result = False
+if env.user.id == document.reviewer_id.id:
+    result = True
+elif env.user.id == document.general_audit_id.user_id.id:
+    result = True
+elif env.user.id == document.general_audit_id.reviewer_id.id:
+    result = True
+elif env.user.id in env.ref("base.group_system").users.ids:
+    result = True
+elif env.user.id in env.ref("ssi_general_audit_worksheet_understanding_entity.general_audit_ws_c0d0898_validator_group").users.ids:
+    result = True
+    </field>
 </record>
 
 <!-- Reject -->
@@ -169,12 +199,19 @@ if env.user.id in document.active_approver_user_ids.ids:
             name="state_ids"
             search="[('field_id.model_id.model','=','general_audit_ws_c0d0898'),('value','=','draft')]"
         />
-    <field name="restrict_user" eval="1" />
-    <field name="computation_method">use_group</field>
-    <field
-            name="group_ids"
-            eval="[(6,0,[ref('general_audit_ws_c0d0898_validator_group')])]"
-        />
-    <field name="restrict_additional" eval="0" />
+    <field name="restrict_user" eval="0" />
+    <field name="restrict_additional" eval="1" />
+    <field name="additional_python_code">result = False
+if env.user.id == document.reviewer_id.id:
+    result = True
+elif env.user.id == document.general_audit_id.user_id.id:
+    result = True
+elif env.user.id == document.general_audit_id.reviewer_id.id:
+    result = True
+elif env.user.id in env.ref("base.group_system").users.ids:
+    result = True
+elif env.user.id in env.ref("ssi_general_audit_worksheet_understanding_entity.general_audit_ws_c0d0898_validator_group").users.ids:
+    result = True
+    </field>
 </record>
 </odoo>
