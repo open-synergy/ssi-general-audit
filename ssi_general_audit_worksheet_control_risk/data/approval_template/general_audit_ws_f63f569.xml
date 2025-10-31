@@ -17,10 +17,16 @@
         model="approval.template_detail"
     >
     <field name="template_id" ref="approval_template_general_audit_ws_f63f569" />
-    <field name="approver_selection_method">use_group</field>
-    <field
-            name="approver_group_ids"
-            eval="[(6,0,[ref('general_audit_ws_f63f569_validator_group')])]"
-        />
+    <field name="approver_selection_method">use_python</field>
+    <field name="python_code">user = []
+user += env.ref('ssi_general_audit_worksheet_control_risk.general_audit_ws_f63f569_validator_group').users.ids
+user.append(rec.general_audit_id.user_id.id)
+
+if rec.reviewer_id:
+    user.append(rec.reviewer_id.id)
+
+if rec.general_audit_id.reviewer_id:
+    user.append(rec.general_audit_id.reviewer_id.id)
+    </field>
 </record>
 </odoo>
