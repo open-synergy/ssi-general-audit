@@ -8,12 +8,33 @@
     <field name="model_id" ref="model_general_audit_ws_d66d87a" />
     <field name="groups" eval="[(4, ref('base.group_user'))]" />
     <field name="domain_force">[
+      '|',
+      '|',
+      '|',
       ('user_id','=',user.id),
+      ('reviewer_id','=',user.id),
+      ('general_audit_id.user_id','=',user.id),
+      ('general_audit_id.reviewer_id','=',user.id),
     ]</field>
     <field name="perm_unlink" eval="1" />
     <field name="perm_write" eval="1" />
     <field name="perm_read" eval="1" />
     <field name="perm_create" eval="1" />
+</record>
+
+<record id="general_audit_ws_d66d87a_internal_user_team_rule" model="ir.rule">
+    <field
+            name="name"
+        >Account Level ROMM (d66d87a) - Internal Users - Audit Team</field>
+    <field name="model_id" ref="model_general_audit_ws_d66d87a" />
+    <field name="groups" eval="[(4, ref('base.group_user'))]" />
+    <field name="domain_force">[
+        ("general_audit_id.team_allocation_user_ids", "in", [user.id])
+    ]</field>
+    <field name="perm_unlink" eval="0" />
+    <field name="perm_write" eval="0" />
+    <field name="perm_read" eval="1" />
+    <field name="perm_create" eval="0" />
 </record>
 
 <record id="general_audit_ws_d66d87a_company_rule" model="ir.rule">
