@@ -18,9 +18,16 @@
         "security/ir_rule_data.xml",
         "data/ir_sequence_data.xml",
         "data/sequence_template_data.xml",
-        "data/policy_template_data.xml",
-        "data/approval_template_data.xml",
+        # Approval Template
+        "data/approval_template/general_audit_ws_1d9338d.xml",
+        "data/approval_template/general_audit_ws_d9d2b44.xml",
+        "data/approval_template/general_audit_ws_6dcda0e.xml",
         "data/general_audit_worksheet_type_data.xml",
+        # Policy Template
+        "data/policy_template/general_audit_ws_6dcda0e.xml",
+        "data/policy_template/general_audit_ws_d9d2b44.xml",
+        "data/policy_template/general_audit_ws_1d9338d.xml",
+        # Sequence Template
         # MASTER DATA
         "data/master/general_audit_ws_1d9338d_item.xml",
         # 6dcda0e - Preliminary Materiality Account Mapping
@@ -32,7 +39,6 @@
         "security/ir_rule/general_audit_ws_1d9338d.xml",
         "data/ir_sequence/general_audit_ws_1d9338d.xml",
         "data/sequence_template/general_audit_ws_1d9338d.xml",
-        "data/policy_template/general_audit_ws_1d9338d.xml",
         "data/approval_template/general_audit_ws_1d9338d.xml",
         "views/ga_1d9338d/general_audit_ws_1d9338d_views.xml",
         "views/ga_1d9338d/general_audit_ws_1d9338d_item_views.xml",

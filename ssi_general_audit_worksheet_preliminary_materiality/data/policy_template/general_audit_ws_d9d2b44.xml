@@ -1,33 +1,37 @@
 <?xml version="1.0" encoding="utf-8" ?>
-<!-- Copyright 2025 OpenSynergy Indonesia
-     Copyright 2025 PT. Simetri Sinergi Indonesia
-     License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl). -->
+<!-- Copyright 2022 OpenSynergy Indonesia
+     Copyright 2022 PT. Simetri Sinergi Indonesia
+     License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl-3.0-standalone.html). -->
 <odoo>
-<record id="policy_template_general_audit_ws_1d9338d" model="policy.template">
+<!-- Materiality Computation (d9d2b44) -->
+<record id="policy_template_general_audit_ws_d9d2b44" model="policy.template">
     <field name="name">Standard</field>
-    <field name="model_id" ref="model_general_audit_ws_1d9338d" />
+    <field
+            name="model_id"
+            ref="ssi_general_audit_worksheet_preliminary_materiality.model_general_audit_ws_d9d2b44"
+        />
     <field
             name="state_field_id"
-            search="[('model_id.model','=','general_audit_ws_1d9338d'),('name','=','state')]"
+            search="[('model_id.model','=','general_audit_ws_d9d2b44'),('name','=','state')]"
         />
     <field name="sequence" eval="100" />
     <field name="python_code">result=True</field>
 </record>
 
-<!-- Start -->
+<!-- Materiality Computation (d9d2b44): Start -->
 <record
-        id="policy_template_general_audit_ws_1d9338d_open"
+        id="policy_template_general_audit_ws_d9d2b44_open"
         model="policy.template_detail"
     >
-    <field name="template_id" ref="policy_template_general_audit_ws_1d9338d" />
+    <field name="template_id" ref="policy_template_general_audit_ws_d9d2b44" />
     <field
             name="field_id"
-            search="[('model_id.model','=','general_audit_ws_1d9338d'),('name','=','open_ok')]"
+            search="[('model_id.model','=','general_audit_ws_d9d2b44'),('name','=','open_ok')]"
         />
     <field name="restrict_state" eval="1" />
     <field
             name="state_ids"
-            search="[('field_id.model_id.model','=','general_audit_ws_1d9338d'),('value','=','draft')]"
+            search="[('field_id.model_id.model','=','general_audit_ws_d9d2b44'),('value','=','draft')]"
         />
     <field name="restrict_user" eval="0" />
     <field name="restrict_additional" eval="1" />
@@ -42,25 +46,25 @@ elif env.user.id == document.general_audit_id.reviewer_id.id:
     result = True
 elif env.user.id in env.ref("base.group_system").users.ids:
     result = True
-elif env.user.id in env.ref("ssi_general_audit_worksheet_preliminary_materiality.general_audit_ws_1d9338d_validator_group").users.ids:
+elif env.user.id in env.ref("ssi_general_audit_worksheet_preliminary_materiality.general_audit_ws_d9d2b44_validator_group").users.ids:
     result = True
     </field>
 </record>
 
-<!-- Confirm -->
+<!--  Materiality Computation (d9d2b44): Confirm -->
 <record
-        id="policy_template_general_audit_ws_1d9338d_confirm"
+        id="policy_template_general_audit_ws_d9d2b44_confirm"
         model="policy.template_detail"
     >
-    <field name="template_id" ref="policy_template_general_audit_ws_1d9338d" />
+    <field name="template_id" ref="policy_template_general_audit_ws_d9d2b44" />
     <field
             name="field_id"
-            search="[('model_id.model','=','general_audit_ws_1d9338d'),('name','=','confirm_ok')]"
+            search="[('model_id.model','=','general_audit_ws_d9d2b44'),('name','=','confirm_ok')]"
         />
     <field name="restrict_state" eval="1" />
     <field
             name="state_ids"
-            search="[('field_id.model_id.model','=','general_audit_ws_1d9338d'),('value','=','open')]"
+            search="[('field_id.model_id.model','=','general_audit_ws_d9d2b44'),('value','=','open')]"
         />
     <field name="restrict_user" eval="0" />
     <field name="restrict_additional" eval="1" />
@@ -75,25 +79,25 @@ elif env.user.id == document.general_audit_id.reviewer_id.id:
     result = True
 elif env.user.id in env.ref("base.group_system").users.ids:
     result = True
-elif env.user.id in env.ref("ssi_general_audit_worksheet_preliminary_materiality.general_audit_ws_1d9338d_validator_group").users.ids:
+elif env.user.id in env.ref("ssi_general_audit_worksheet_preliminary_materiality.general_audit_ws_d9d2b44_validator_group").users.ids:
     result = True
     </field>
 </record>
 
-<!-- Cancel -->
+<!--  Materiality Computation (d9d2b44): Cancel -->
 <record
-        id="policy_template_general_audit_ws_1d9338d_cancel"
+        id="policy_template_general_audit_ws_d9d2b44_cancel"
         model="policy.template_detail"
     >
-    <field name="template_id" ref="policy_template_general_audit_ws_1d9338d" />
+    <field name="template_id" ref="policy_template_general_audit_ws_d9d2b44" />
     <field
             name="field_id"
-            search="[('model_id.model','=','general_audit_ws_1d9338d'),('name','=','cancel_ok')]"
+            search="[('model_id.model','=','general_audit_ws_d9d2b44'),('name','=','cancel_ok')]"
         />
     <field name="restrict_state" eval="1" />
     <field
             name="state_ids"
-            search="[('field_id.model_id.model','=','general_audit_ws_1d9338d'),('value','in',['draft','open','done'])]"
+            search="[('field_id.model_id.model','=','general_audit_ws_d9d2b44'),('value','in',['draft','open','done'])]"
         />
     <field name="restrict_user" eval="0" />
     <field name="restrict_additional" eval="1" />
@@ -108,25 +112,25 @@ elif env.user.id == document.general_audit_id.reviewer_id.id:
     result = True
 elif env.user.id in env.ref("base.group_system").users.ids:
     result = True
-elif env.user.id in env.ref("ssi_general_audit_worksheet_preliminary_materiality.general_audit_ws_1d9338d_validator_group").users.ids:
+elif env.user.id in env.ref("ssi_general_audit_worksheet_preliminary_materiality.general_audit_ws_d9d2b44_validator_group").users.ids:
     result = True
     </field>
 </record>
 
-<!-- Restart -->
+<!--  Materiality Computation (d9d2b44): Restart -->
 <record
-        id="policy_template_general_audit_ws_1d9338d_restart"
+        id="policy_template_general_audit_ws_d9d2b44_restart"
         model="policy.template_detail"
     >
-    <field name="template_id" ref="policy_template_general_audit_ws_1d9338d" />
+    <field name="template_id" ref="policy_template_general_audit_ws_d9d2b44" />
     <field
             name="field_id"
-            search="[('model_id.model','=','general_audit_ws_1d9338d'),('name','=','restart_ok')]"
+            search="[('model_id.model','=','general_audit_ws_d9d2b44'),('name','=','restart_ok')]"
         />
     <field name="restrict_state" eval="1" />
     <field
             name="state_ids"
-            search="[('field_id.model_id.model','=','general_audit_ws_1d9338d'),('value','in',['cancel','reject'])]"
+            search="[('field_id.model_id.model','=','general_audit_ws_d9d2b44'),('value','in',['cancel','reject'])]"
         />
     <field name="restrict_user" eval="0" />
     <field name="restrict_additional" eval="1" />
@@ -141,25 +145,25 @@ elif env.user.id == document.general_audit_id.reviewer_id.id:
     result = True
 elif env.user.id in env.ref("base.group_system").users.ids:
     result = True
-elif env.user.id in env.ref("ssi_general_audit_worksheet_preliminary_materiality.general_audit_ws_1d9338d_validator_group").users.ids:
+elif env.user.id in env.ref("ssi_general_audit_worksheet_preliminary_materiality.general_audit_ws_d9d2b44_validator_group").users.ids:
     result = True
     </field>
 </record>
 
-<!-- Reject -->
+<!--  Materiality Computation (d9d2b44): Reject -->
 <record
-        id="policy_template_general_audit_ws_1d9338d_reject"
+        id="policy_template_general_audit_ws_d9d2b44_reject"
         model="policy.template_detail"
     >
-    <field name="template_id" ref="policy_template_general_audit_ws_1d9338d" />
+    <field name="template_id" ref="policy_template_general_audit_ws_d9d2b44" />
     <field
             name="field_id"
-            search="[('model_id.model','=','general_audit_ws_1d9338d'),('name','=','reject_ok')]"
+            search="[('model_id.model','=','general_audit_ws_d9d2b44'),('name','=','reject_ok')]"
         />
     <field name="restrict_state" eval="1" />
     <field
             name="state_ids"
-            search="[('field_id.model_id.model','=','general_audit_ws_1d9338d'),('value','=','confirm')]"
+            search="[('field_id.model_id.model','=','general_audit_ws_d9d2b44'),('value','=','confirm')]"
         />
     <field name="restrict_user" eval="0" />
     <field name="restrict_additional" eval="1" />
@@ -168,20 +172,20 @@ if env.user.id in document.active_approver_user_ids.ids:
     result = True</field>
 </record>
 
-<!-- Approve -->
+<!--  Materiality Computation (d9d2b44): Approve -->
 <record
-        id="policy_template_general_audit_ws_1d9338d_approve"
+        id="policy_template_general_audit_ws_d9d2b44_approve"
         model="policy.template_detail"
     >
-    <field name="template_id" ref="policy_template_general_audit_ws_1d9338d" />
+    <field name="template_id" ref="policy_template_general_audit_ws_d9d2b44" />
     <field
             name="field_id"
-            search="[('model_id.model','=','general_audit_ws_1d9338d'),('name','=','approve_ok')]"
+            search="[('model_id.model','=','general_audit_ws_d9d2b44'),('name','=','approve_ok')]"
         />
     <field name="restrict_state" eval="1" />
     <field
             name="state_ids"
-            search="[('field_id.model_id.model','=','general_audit_ws_1d9338d'),('value','=','confirm')]"
+            search="[('field_id.model_id.model','=','general_audit_ws_d9d2b44'),('value','=','confirm')]"
         />
     <field name="restrict_user" eval="0" />
     <field name="restrict_additional" eval="1" />
@@ -190,20 +194,20 @@ if env.user.id in document.active_approver_user_ids.ids:
     result = True</field>
 </record>
 
-<!-- Manual Number -->
+<!--  Materiality Computation (d9d2b44): Manual Number -->
 <record
-        id="policy_template_general_audit_ws_1d9338d_manual_number"
+        id="policy_template_general_audit_ws_d9d2b44_manual_number"
         model="policy.template_detail"
     >
-    <field name="template_id" ref="policy_template_general_audit_ws_1d9338d" />
+    <field name="template_id" ref="policy_template_general_audit_ws_d9d2b44" />
     <field
             name="field_id"
-            search="[('model_id.model','=','general_audit_ws_1d9338d'),('name','=','manual_number_ok')]"
+            search="[('model_id.model','=','general_audit_ws_d9d2b44'),('name','=','manual_number_ok')]"
         />
     <field name="restrict_state" eval="1" />
     <field
             name="state_ids"
-            search="[('field_id.model_id.model','=','general_audit_ws_1d9338d'),('value','=','draft')]"
+            search="[('field_id.model_id.model','=','general_audit_ws_d9d2b44'),('value','=','draft')]"
         />
     <field name="restrict_user" eval="0" />
     <field name="restrict_additional" eval="1" />
@@ -218,7 +222,7 @@ elif env.user.id == document.general_audit_id.reviewer_id.id:
     result = True
 elif env.user.id in env.ref("base.group_system").users.ids:
     result = True
-elif env.user.id in env.ref("ssi_general_audit_worksheet_preliminary_materiality.general_audit_ws_1d9338d_validator_group").users.ids:
+elif env.user.id in env.ref("ssi_general_audit_worksheet_preliminary_materiality.general_audit_ws_d9d2b44_validator_group").users.ids:
     result = True
     </field>
 </record>
