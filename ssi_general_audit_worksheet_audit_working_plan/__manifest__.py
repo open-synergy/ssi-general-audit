@@ -31,7 +31,6 @@
         "views/general_audit_ws_cbbbaf4_views.xml",
         "views/allocation_template_views.xml",
         "views/allocation_total_hour_views.xml",
-        "views/general_audit_views.xml",
         # "views/general_audit_ws_f63f569_views.xml",
         # "views/general_audit_ws_eabdaad_views.xml",
         # "views/general_audit_ws_ba9b2f0_views.xml",
