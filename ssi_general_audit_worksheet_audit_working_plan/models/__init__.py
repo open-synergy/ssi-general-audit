@@ -9,4 +9,5 @@ from . import (
     general_audit_ws_cbbbaf4_team_competency,
     general_audit_ws_cbbbaf4_team_allocation,
     master,
+    general_audit,
 )

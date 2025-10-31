@@ -20,6 +20,14 @@ class GeneralAuditWSCBBBAF4TeamAllocation(models.Model):
             "Deleting the worksheet will remove its allocation lines."
         ),
     )
+    general_audit_id = fields.Many2one(
+        related="worksheet_id.general_audit_id",
+        store=True,
+        help=(
+            "Related General Audit engagement for this worksheet. Stored "
+            "for easier searching and filtering."
+        ),
+    )
     sequence = fields.Integer(
         string="Sequence",
         default=10,
