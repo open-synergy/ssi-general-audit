@@ -133,5 +133,9 @@
         "data/res_currency.xml",
         "data/res_company.xml",
         "menu.xml",
+        "templates/web_login.xml",
+        "templates/auth_signup_reset_password.xml",
+        "templates/auth_signup_fields.xml",
+        "views/res_users.xml",
     ],
 }

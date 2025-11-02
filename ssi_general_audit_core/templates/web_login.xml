@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <template
+        id="web_login_inherit"
+        name="Web Login Override (inherit)"
+        inherit_id="web.login"
+        priority="20"
+    >
+        <!-- Ubah label untuk field login -->
+        <xpath
+            expr="//div[contains(@class, 'field-login')]/label[@for='login']"
+            position="attributes"
+        >
+            <attribute name="t-esc">'Login'</attribute>
+        </xpath>
+        <xpath expr="//input[@name='login']" position="attributes">
+            <attribute name="placeholder">Login</attribute>
+        </xpath>
+    </template>
+</odoo>
