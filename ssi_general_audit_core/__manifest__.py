@@ -133,6 +133,7 @@
         "data/res_currency.xml",
         "data/res_company.xml",
         "data/company_ownership_type.xml",
+        "data/company_public_offering_type.xml",
         "menu.xml",
         "templates/web_login.xml",
         "templates/auth_signup_reset_password.xml",
