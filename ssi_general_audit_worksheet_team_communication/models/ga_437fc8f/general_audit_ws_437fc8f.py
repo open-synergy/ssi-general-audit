@@ -28,3 +28,20 @@ class GeneralAuditWS437fc8f(models.Model):
             "that needs to be evaluated and documented."
         ),
     )
+    communication_planning_date = fields.Date(
+        string="Communication Planning Date",
+        help=(
+            "The date when the communication planning for the audit "
+            "engagement was conducted."
+        ),
+    )
+    communication_date = fields.Date(
+        string="Communication Date",
+        help="The date when the team communication took place.",
+    )
+    communication_reporting_date = fields.Date(
+        string="Communication Reporting Date",
+        help=(
+            "The date when the communication reporting was completed " "and documented."
+        ),
+    )
