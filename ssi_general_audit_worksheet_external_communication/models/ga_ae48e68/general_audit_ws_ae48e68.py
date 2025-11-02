@@ -23,3 +23,27 @@ class GeneralAuditWSae48e68(models.Model):
         comodel_name="general_audit_ws_ae48e68.checklist",
         help="All checklist line records associated with this worksheet.",
     )
+    tcwg_communication_planning_date = fields.Date(
+        string="Date of TCWG Communication Planning",
+        help="Date when the communication planning with the " "TCWG was conducted.",
+    )
+    tcwg_communication_date = fields.Date(
+        string="Date of TCWG Communication",
+        help="Date when the communication with the TCWG was conducted.",
+    )
+    tcwg_communication_reporting_date = fields.Date(
+        string="Date of TCWG Communication Reporting",
+        help="Date when the communication reporting to the TCWG was conducted.",
+    )
+    ia_communication_planning_date = fields.Date(
+        string="Date of IA Communication Planning",
+        help="Date when the communication planning with Internal Audit was conducted.",
+    )
+    ia_communication_date = fields.Date(
+        string="Date of IA Communication",
+        help="Date when the communication with Internal Audit was conducted.",
+    )
+    ia_communication_reporting_date = fields.Date(
+        string="Date of IA Communication Reporting",
+        help="Date when the communication reporting to Internal Audit was conducted.",
+    )

@@ -41,6 +41,32 @@
         />
         <field name="arch" type="xml">
             <data>
+                <xpath expr="//page[1]" position="before">
+                    <page name="date" string="Date">
+                        <group name="ia" string="Internal Audit">
+                            <field
+                                name="ia_communication_planning_date"
+                                string="Planning"
+                            />
+                            <field name="ia_communication_date" string="Execution" />
+                            <field
+                                name="ia_communication_reporting_date"
+                                string="Reporting"
+                            />
+                        </group>
+                        <group name="tcwg" string="TCWG">
+                            <field
+                                name="tcwg_communication_planning_date"
+                                string="Planning"
+                            />
+                            <field name="tcwg_communication_date" string="Execution" />
+                            <field
+                                name="tcwg_communication_reporting_date"
+                                string="Reporting"
+                            />
+                        </group>
+                    </page>
+                </xpath>
             </data>
         </field>
     </record>
