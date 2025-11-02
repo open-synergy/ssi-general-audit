@@ -12,7 +12,7 @@
     "depends": [
         # Web Theme
         "muk_web_theme",
-        "base_user_role_profile",
+        "base_user_role",
         # PE
         "ssi_general_audit_worksheet_acceptance_continuance",
         "ssi_general_audit_worksheet_assignment_letter",
@@ -129,9 +129,6 @@
         "security/res_users_role/system_administrator.xml",
         "security/res_users_role/ou_administrator.xml",
         "security/res_users_role/audit_team.xml",
-        "security/res_users_profile/system_administrator.xml",
-        "security/res_users_profile/audit_team.xml",
-        "security/res_users_profile/ou_administrator.xml",
         "data/ir_config_parameter.xml",
         "data/res_currency.xml",
         "data/res_company.xml",
