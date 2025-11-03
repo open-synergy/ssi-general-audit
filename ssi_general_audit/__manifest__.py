@@ -22,6 +22,7 @@
         "ssi_transaction_open_mixin",
         "ssi_operating_unit_mixin",
         "ssi_decorator",
+        "ssi_partner_identification_cpa_license",
     ],
     "data": [
         "views/assets.xml",

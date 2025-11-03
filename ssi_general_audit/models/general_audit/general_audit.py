@@ -174,7 +174,11 @@ class GeneralAudit(models.Model):
     accountant_id = fields.Many2one(
         string="Accountant",
         comodel_name="res.partner",
-        domain=[("is_company", "=", False), ("parent_id", "=", False)],
+        domain=[
+            ("is_company", "=", False),
+            ("parent_id", "=", False),
+            ("cpa_license", "!=", False),
+        ],
         required=True,
         readonly=True,
         states={"draft": [("readonly", False)]},
