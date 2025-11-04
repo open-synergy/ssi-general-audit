@@ -3,8 +3,6 @@
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl-3.0-standalone.html).
 from odoo import fields, models
 
-from odoo.addons.ssi_decorator import ssi_decorator
-
 
 class GeneralAuditWSb9d8a5c(models.Model):
     _name = "general_audit_ws_b9d8a5c"
@@ -35,61 +33,72 @@ class GeneralAuditWSb9d8a5c(models.Model):
         string="Competency Analysis",
         comodel_name="general_audit_ws_b9d8a5c.competency",
         inverse_name="worksheet_id",
+        readonly=True,
+        states={"open": [("readonly", False)]},
     )
     availability_analysis_ids = fields.One2many(
         string="Availability Analysis",
         comodel_name="general_audit_ws_b9d8a5c.availability",
         inverse_name="worksheet_id",
+        readonly=True,
+        states={"open": [("readonly", False)]},
     )
     independency_analysis_ids = fields.One2many(
         string="Independency Analysis",
         comodel_name="general_audit_ws_b9d8a5c.independency",
         inverse_name="worksheet_id",
+        readonly=True,
+        states={"open": [("readonly", False)]},
     )
     summary_ids = fields.One2many(
         string="Summary",
         comodel_name="general_audit_ws_b9d8a5c.summary",
         inverse_name="worksheet_id",
+        readonly=True,
+        states={"open": [("readonly", False)]},
     )
-
-    @ssi_decorator.post_open_action()
-    def _10_create_proposed_team(self):
-        self.ensure_one()
-        self._create_competency_team()
-        self._create_availability_team()
-        self._create_independency_team()
-        self._create_summary()
 
     def action_populate_personnel(self):
         """Generic method untuk populate personnel dari employee"""
+        for record in self.sudo():
+            record._populate_personnel()
+
+    def action_create_summary(self):
+        for record in self.sudo():
+            record._create_competency_team()
+            record._create_availability_team()
+            record._create_independency_team()
+            record._create_summary()
+
+    def _populate_personnel(self):
+        self.ensure_one()
         Employee = self.env["hr.employee"]
         Personnel = self.env["general_audit_ws_b9d8a5c.personnel"]
-        for record in self:
-            emps = Employee.search(
-                [
-                    ("audit_ok", "=", True),
-                ]
-            )
+        emps = Employee.search(
+            [
+                ("audit_ok", "=", True),
+            ]
+        )
 
-            # mapping existing personnel by employee_id
-            emp_map = {chk.employee_id.id: chk for chk in record.personnel_ids}
+        # mapping existing personnel by employee_id
+        emp_map = {chk.employee_id.id: chk for chk in self.personnel_ids}
 
-            # 1. Tambah / update
-            for emp in emps:
-                if emp.id not in emp_map:
-                    Personnel.create(
-                        {
-                            "worksheet_id": record.id,
-                            "employee_id": emp.id,
-                            "job_id": emp.job_id.id,
-                        }
-                    )
+        # 1. Tambah / update
+        for emp in emps:
+            if emp.id not in emp_map:
+                Personnel.create(
+                    {
+                        "worksheet_id": self.id,
+                        "employee_id": emp.id,
+                        "job_id": emp.job_id.id,
+                    }
+                )
 
-            # 2. Hapus yang sudah tidak ada di master
-            emp_ids = set(emps.ids)
-            for chk in record.personnel_ids:
-                if chk.employee_id.id not in emp_ids:
-                    chk.unlink()
+        # 2. Hapus yang sudah tidak ada di master
+        emp_ids = set(emps.ids)
+        for chk in self.personnel_ids:
+            if chk.employee_id.id not in emp_ids:
+                chk.unlink()
 
     def _prepare_team_data(self, personnel):
         self.ensure_one()

@@ -56,41 +56,33 @@
                             icon="fa-refresh"
                             class="oe_highlight"
                             style="margin-right:4px"
-                            attrs="{'invisible': [('state', '!=', 'draft')]}"
+                            attrs="{'invisible': [('state', '!=', 'open')]}"
                         />
-                        <field
-                            name="personnel_ids"
-                            attrs="{'readonly': [('state', '!=', 'draft')]}"
-                        >
+                        <button
+                            name="action_create_summary"
+                            string="Analysis"
+                            type="object"
+                            icon="fa-refresh"
+                            class="oe_highlight"
+                            style="margin-right:4px"
+                            attrs="{'invisible': [('state', '!=', 'open')]}"
+                        />
+                        <field name="personnel_ids">
                             <tree editable="top">
                                 <field name="sequence" widget="handle" />
                                 <field name="worksheet_id" invisible="1" />
-                                <field
-                                    name="employee_id"
-                                    attrs="{'readonly': [('state', '!=', 'draft')]}"
-                                />
-                                <field
-                                    name="job_id"
-                                    attrs="{'readonly': [('state', '!=', 'draft')]}"
-                                />
-                                <field
-                                    name="year_experience"
-                                    attrs="{'readonly': [('state', '!=', 'draft')]}"
-                                />
+                                <field name="employee_id" />
+                                <field name="job_id" />
+                                <field name="year_experience" />
                                 <field
                                     name="competency_attachment_ids"
                                     widget="many2many_tags"
-                                    attrs="{'readonly': [('state', '!=', 'draft')]}"
                                 />
                                 <field
                                     name="time_availability_attachment_ids"
                                     widget="many2many_tags"
-                                    attrs="{'readonly': [('state', '!=', 'draft')]}"
                                 />
-                                <field
-                                    name="proposed"
-                                    attrs="{'readonly': [('state', '!=', 'draft')]}"
-                                />
+                                <field name="proposed" />
                                 <field name="state" invisible="1" />
                             </tree>
                         </field>
