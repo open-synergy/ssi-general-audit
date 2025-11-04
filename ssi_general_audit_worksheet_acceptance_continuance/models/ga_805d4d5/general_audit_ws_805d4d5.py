@@ -273,9 +273,10 @@ for and on behalf of the entity.""",
     )
     owner_verification = fields.Selection(
         string="Owner Identity Verification Statement",
+        # TODO: Sesuaikan value ke bahasa inggris. Perlu migration script
         selection=[
-            ("ada", "Ada"),
-            ("tidak_ada", "Tidak Ada"),
+            ("ada", "Exist"),
+            ("tidak_ada", "Not Exist"),
         ],
         help="""Statement indicating whether the beneficial owner's identity
 has been verified.""",
@@ -364,9 +365,10 @@ the enhanced due diligence process.""",
     )
     identification_statement = fields.Selection(
         string="Statement of Identifications",
+        # TODO: Sesuaikan value ke bahasa inggris. Perlu migration script
         selection=[
-            ("sudah", "Sudah"),
-            ("belum", "Belum"),
+            ("sudah", "Done"),
+            ("belum", "Not Done"),
         ],
         help="""Overall statement indicating whether the required identifications
 have been completed.""",
