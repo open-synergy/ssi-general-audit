@@ -19,6 +19,13 @@ class GeneralAuditWSCBBBAF4(models.Model):
         "ssi_general_audit_worksheet_audit_working_plan." "worksheet_type_cbbbaf4"
     )
 
+    budget_plan_status = fields.Selection(
+        selection=[
+            ("prepared", "Prepared"),
+            ("not_prepared", "Not Prepared"),
+        ],
+        default="not_prepared",
+    )
     industry_id = fields.Many2one(
         related="general_audit_id.industry_id",
     )
