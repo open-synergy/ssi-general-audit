@@ -44,6 +44,9 @@
         />
         <field name="arch" type="xml">
             <data>
+                <xpath expr="//field[@name='conclusion_id']" position="before">
+                    <field name="risk" />
+                </xpath>
                 <xpath expr="//page[1]" position="before">
                     <page name="detail" string="Details">
                         <group name="detail_1" colspan="4" col="1">

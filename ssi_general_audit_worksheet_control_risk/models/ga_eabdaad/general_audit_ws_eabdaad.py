@@ -15,6 +15,14 @@ class GeneralAuditWSEABDAAD(models.Model):
     ]
     _type_xml_id = "ssi_general_audit_worksheet_control_risk." "worksheet_type_eabdaad"
 
+    risk = fields.Selection(
+        string="Risk",
+        selection=[
+            ("low", "Low"),
+            ("high", "High"),
+        ],
+        help="Overall risk assessment for this worksheet based on the checklist evaluation.",
+    )
     business_cycle_id = fields.Many2one(
         string="Business Cycle",
         comodel_name="client_business_process",
