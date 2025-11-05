@@ -101,7 +101,7 @@
         "data/policy_template/general_audit_ws_bdcdfc5.xml",
         "data/approval_template/general_audit_ws_bdcdfc5.xml",
         "views/ga_bdcdfc5/general_audit_ws_bdcdfc5_views.xml",
-        # a604795 - Business Cycles
+        # a604795 - Business Cycles Summary
         "security/res_group/general_audit_ws_a604795.xml",
         "security/ir_model_access/general_audit_ws_a604795.xml",
         "security/ir_rule/general_audit_ws_a604795.xml",

@@ -32,6 +32,19 @@ class GeneralAuditWSa604795(models.Model):
             "Editable only when the worksheet is Open."
         ),
     )
+    estimated_transaction_volume = fields.Integer(
+        readonly=True,
+        states={
+            "open": [
+                ("readonly", False),
+            ],
+        },
+        help=(
+            "Estimated number of transactions expected to occur within the scope "
+            "of this business cycle for the relevant audit period. Editable only "
+            "when the worksheet is Open."
+        ),
+    )
 
     def _compute_allowed_ws_cbbbaf4_ids(self):
         for record in self:
@@ -84,6 +97,15 @@ class GeneralAuditWSa604795(models.Model):
             ],
         },
         help=("Team members assigned to work on this " "business cycle."),
+    )
+
+    def _compute_member_initials(self):
+        for rec in self:
+            initials = rec.assigned_team_member_ids.mapped("initials")
+            rec.member_initials = ", ".join(initials)
+
+    member_initials = fields.Char(
+        string="Initials", compute="_compute_member_initials", store=False
     )
     detail_ids = fields.One2many(
         string="Details",

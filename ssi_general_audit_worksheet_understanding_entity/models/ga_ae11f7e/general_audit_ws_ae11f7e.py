@@ -194,6 +194,18 @@ class GeneralAuditWSae11f7e(models.Model):
         },
         help="Other significant information relevant to understanding the entity.",
     )
+    other_provided_service_ids = fields.One2many(
+        string="Other Provided Service",
+        comodel_name="general_audit_ws_ae11f7e.other_provided_service",
+        inverse_name="worksheet_id",
+        readonly=True,
+        states={
+            "open": [
+                ("readonly", False),
+            ],
+        },
+        help="Other provided service relevant to understanding the entity.",
+    )
 
     def _inverse_business_cycle_ids(self):
         for record in self:

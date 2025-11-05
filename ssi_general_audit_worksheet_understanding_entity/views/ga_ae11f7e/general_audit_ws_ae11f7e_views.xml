@@ -280,7 +280,7 @@
                                 </group>
                             </form>
                         </field>
-                        <separator string="Other" />
+                        <separator string="Other Information" />
                         <field name="other_information_ids">
                             <tree>
                                 <field name="name" />
@@ -299,6 +299,34 @@
                                         name="attachment_ids"
                                         widget="many2many_tags"
                                     />
+                                    <field
+                                        name="related_account_type_ids"
+                                        widget="many2many_tags"
+                                    />
+                                </group>
+                            </form>
+                        </field>
+                        <separator string="Other Provided Service" />
+                        <field name="other_provided_service_ids">
+                            <tree>
+                                <field name="name" />
+                                <field name="partner_id" />
+                                <field name="summary" />
+                                <field
+                                    name="related_account_type_ids"
+                                    widget="many2many_tags"
+                                />
+                            </tree>
+                            <form>
+                                <group
+                                    name="other_provided_service_1"
+                                    colspan="4"
+                                    col="2"
+                                >
+                                    <field name="worksheet_id" invisible="1" />
+                                    <field name="name" />
+                                    <field name="partner_id" />
+                                    <field name="summary" />
                                     <field
                                         name="related_account_type_ids"
                                         widget="many2many_tags"
