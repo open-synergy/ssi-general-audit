@@ -309,7 +309,7 @@ class GeneralAuditWSfbbe0f8(models.Model):
             obj = self.env["general_audit_ws_bdcdfc5"]
             criteria = [
                 ("general_audit_id", "=", record.general_audit_id.id),
-                ("state", "=", "done"),
+                ("state", "in", ["open", "done"]),
             ]
             link_1_ids = obj.search(criteria)
             if link_1_ids:
@@ -323,7 +323,7 @@ class GeneralAuditWSfbbe0f8(models.Model):
         compute="_compute_link_1_ids",
         store=True,
         help=(
-            "Collection of all RA.150.5 (Understanding of the Business Environment) "
+            "Collection of all (Understanding of the Business Environment) "
             "worksheets linked to this General Audit. Automatically computed; use it to "
             "navigate to each detailed worksheet."
         ),
@@ -340,7 +340,7 @@ class GeneralAuditWSfbbe0f8(models.Model):
             obj = self.env["general_audit_ws_a604795"]
             criteria = [
                 ("general_audit_id", "=", record.general_audit_id.id),
-                ("state", "=", "done"),
+                ("state", "in", ["open", "done"]),
             ]
             link_2_ids = obj.search(criteria)
             if link_2_ids:
@@ -354,7 +354,7 @@ class GeneralAuditWSfbbe0f8(models.Model):
         compute="_compute_link_2_ids",
         store=True,
         help=(
-            "Collection of all RA.150.3 (Business Cycle Summaries) "
+            "Collection of all (Business Cycle Summaries) "
             "worksheets linked to this General Audit. Automatically computed; use it to "
             "navigate to each detailed worksheet."
         ),
@@ -371,7 +371,7 @@ class GeneralAuditWSfbbe0f8(models.Model):
             obj = self.env["general_audit_ws_d9d2b44"]
             criteria = [
                 ("general_audit_id", "=", record.general_audit_id.id),
-                ("state", "=", "done"),
+                ("state", "in", ["open", "done"]),
             ]
             link_3_ids = obj.search(criteria)
             if link_3_ids:
@@ -385,7 +385,7 @@ class GeneralAuditWSfbbe0f8(models.Model):
         compute="_compute_link_3_ids",
         store=True,
         help=(
-            "Collection of all RA.130.1 (Materiality Computation) "
+            "Collection of all (Materiality Computation) "
             "worksheets linked to this General Audit. Automatically computed; use it to "
             "navigate to each detailed worksheet."
         ),
@@ -402,7 +402,7 @@ class GeneralAuditWSfbbe0f8(models.Model):
             obj = self.env["general_audit_ws_6dcda0e"]
             criteria = [
                 ("general_audit_id", "=", record.general_audit_id.id),
-                ("state", "=", "done"),
+                ("state", "in", ["open", "done"]),
             ]
             link_4_ids = obj.search(criteria)
             if link_4_ids:
@@ -416,7 +416,7 @@ class GeneralAuditWSfbbe0f8(models.Model):
         compute="_compute_link_4_ids",
         store=True,
         help=(
-            "Collection of all RA.130.2 (Specific Materiality) "
+            "Collection of all (Specific Materiality) "
             "worksheets linked to this General Audit. Automatically computed; use it to "
             "navigate to each detailed worksheet."
         ),
@@ -433,7 +433,7 @@ class GeneralAuditWSfbbe0f8(models.Model):
             obj = self.env["general_audit_ws_c16abd7"]
             criteria = [
                 ("general_audit_id", "=", record.general_audit_id.id),
-                ("state", "=", "done"),
+                ("state", "in", ["open", "done"]),
             ]
             link_5_id = obj.search(criteria)
             if link_5_id:
@@ -447,7 +447,7 @@ class GeneralAuditWSfbbe0f8(models.Model):
         compute="_compute_link_5_id",
         store=True,
         help=(
-            "Link to worksheet RA.210.1 (Inherent Risk - Financial Statement Level) "
+            "Link to worksheet (Inherent Risk - Financial Statement Level) "
             "for this General Audit. Automatically computed and stored."
         ),
     )
@@ -455,7 +455,8 @@ class GeneralAuditWSfbbe0f8(models.Model):
         string="State (RA.210.1)",
         related="link_5_id.state",
         help=(
-            "Workflow state of the linked RA.210.1 worksheet. "
+            "Workflow state of the linked Inherent Risk - "
+            "Financial Statement Level worksheet. "
             "Read-only and follows the linked record."
         ),
     )
@@ -463,7 +464,8 @@ class GeneralAuditWSfbbe0f8(models.Model):
         string="Conclusion (RA.210.1)",
         related="link_5_id.conclusion_id",
         help=(
-            "Conclusion from the RA.210.1 worksheet. "
+            "Conclusion from the Inherent Risk - "
+            "Financial Statement Level worksheet. "
             "Read-only, mirrors the linked record."
         ),
     )
@@ -471,7 +473,8 @@ class GeneralAuditWSfbbe0f8(models.Model):
         string="Conclusion",
         related="link_5_id.conclusion",
         help=(
-            "Conclusion on the RA.210.1 worksheet. "
+            "Conclusion on the Inherent Risk - "
+            "Financial Statement Level worksheet. "
             "Read-only, mirrors the linked record."
         ),
     )
@@ -487,7 +490,7 @@ class GeneralAuditWSfbbe0f8(models.Model):
             obj = self.env["general_audit_ws_437fc8f"]
             criteria = [
                 ("general_audit_id", "=", record.general_audit_id.id),
-                ("state", "=", "done"),
+                ("state", "in", ["open", "done"]),
             ]
             link_6_id = obj.search(criteria)
             if link_6_id:
@@ -501,7 +504,7 @@ class GeneralAuditWSfbbe0f8(models.Model):
         compute="_compute_link_6_id",
         store=True,
         help=(
-            "Link to worksheet PE.160 (Team Communication Pre-Engagement) "
+            "Link to worksheet Team Communication Pre-Engagement "
             "for this General Audit. Automatically computed and stored."
         ),
     )
@@ -509,7 +512,8 @@ class GeneralAuditWSfbbe0f8(models.Model):
         string="State (PE.160)",
         related="link_6_id.state",
         help=(
-            "Workflow state of the linked PE.160 worksheet. "
+            "Workflow state of the linked Team Communication "
+            "Pre-Engagement worksheet. "
             "Read-only and follows the linked record."
         ),
     )
@@ -517,7 +521,8 @@ class GeneralAuditWSfbbe0f8(models.Model):
         string="Conclusion (PE.160)",
         related="link_6_id.conclusion_id",
         help=(
-            "Conclusion from the PE.160 worksheet. "
+            "Conclusion from the Team Communication "
+            "Pre-Engagement worksheet. "
             "Read-only, mirrors the linked record."
         ),
     )
@@ -525,7 +530,8 @@ class GeneralAuditWSfbbe0f8(models.Model):
         string="Conclusion",
         related="link_6_id.conclusion",
         help=(
-            "Conclusion on the PE.160 worksheet. "
+            "Conclusion on the Team Communication "
+            "Pre-Engagement worksheet. "
             "Read-only, mirrors the linked record."
         ),
     )
@@ -541,7 +547,7 @@ class GeneralAuditWSfbbe0f8(models.Model):
             obj = self.env["general_audit_ws_ae11f7e"]
             criteria = [
                 ("general_audit_id", "=", record.general_audit_id.id),
-                ("state", "=", "done"),
+                ("state", "in", ["open", "done"]),
             ]
             link_7_id = obj.search(criteria)
             if link_7_id:
@@ -555,7 +561,7 @@ class GeneralAuditWSfbbe0f8(models.Model):
         compute="_compute_link_7_id",
         store=True,
         help=(
-            "Link to worksheet PE.150.3 (Main Business Activity Process) "
+            "Link to worksheet Main Business Activity Process "
             "for this General Audit. Automatically computed and stored."
         ),
     )
@@ -563,7 +569,8 @@ class GeneralAuditWSfbbe0f8(models.Model):
         string="State (PE.150.3)",
         related="link_7_id.state",
         help=(
-            "Workflow state of the linked PE.150.3 worksheet. "
+            "Workflow state of the linked Main Business "
+            "Activity Process worksheet. "
             "Read-only and follows the linked record."
         ),
     )
@@ -571,7 +578,8 @@ class GeneralAuditWSfbbe0f8(models.Model):
         string="Conclusion (PE.150.3)",
         related="link_7_id.conclusion_id",
         help=(
-            "Conclusion from the PE.150.3 worksheet. "
+            "Conclusion from the Main Business "
+            "Activity Process worksheet. "
             "Read-only, mirrors the linked record."
         ),
     )
@@ -579,7 +587,8 @@ class GeneralAuditWSfbbe0f8(models.Model):
         string="Conclusion",
         related="link_7_id.conclusion",
         help=(
-            "Conclusion on the PE.150.3 worksheet. "
+            "Conclusion on the Main Business "
+            "Activity Process worksheet. "
             "Read-only, mirrors the linked record."
         ),
     )
@@ -595,7 +604,7 @@ class GeneralAuditWSfbbe0f8(models.Model):
             obj = self.env["general_audit_ws_b59b886"]
             criteria = [
                 ("general_audit_id", "=", record.general_audit_id.id),
-                ("state", "=", "done"),
+                ("state", "in", ["open", "done"]),
             ]
             link_8_id = obj.search(criteria)
             if link_8_id:
@@ -609,7 +618,7 @@ class GeneralAuditWSfbbe0f8(models.Model):
         compute="_compute_link_8_id",
         store=True,
         help=(
-            "Link to worksheet RA.220.1 (Control Risk - Entity Level) "
+            "Link to worksheet Control Risk - Entity Level "
             "for this General Audit. Automatically computed and stored."
         ),
     )
@@ -617,7 +626,8 @@ class GeneralAuditWSfbbe0f8(models.Model):
         string="State (RA.220.1)",
         related="link_8_id.state",
         help=(
-            "Workflow state of the linked RA.220.1 worksheet. "
+            "Workflow state of the linked Control Risk "
+            "Entity Level worksheet. "
             "Read-only and follows the linked record."
         ),
     )
@@ -625,7 +635,8 @@ class GeneralAuditWSfbbe0f8(models.Model):
         string="Conclusion (RA.220.1)",
         related="link_8_id.conclusion_id",
         help=(
-            "Conclusion from the RA.220.1 worksheet. "
+            "Conclusion from the Control Risk "
+            "Entity Level worksheet. "
             "Read-only, mirrors the linked record."
         ),
     )
@@ -633,7 +644,8 @@ class GeneralAuditWSfbbe0f8(models.Model):
         string="Conclusion",
         related="link_8_id.conclusion",
         help=(
-            "Conclusion on the RA.220.1 worksheet. "
+            "Conclusion on the Control Risk "
+            "Entity Level worksheet. "
             "Read-only, mirrors the linked record."
         ),
     )
@@ -650,7 +662,7 @@ class GeneralAuditWSfbbe0f8(models.Model):
             obj = self.env["general_audit_ws_b9d8a5c"]
             criteria = [
                 ("general_audit_id", "=", record.general_audit_id.id),
-                ("state", "=", "done"),
+                ("state", "in", ["open", "done"]),
             ]
             link_9_id = obj.search(criteria)
             if link_9_id:
@@ -664,7 +676,8 @@ class GeneralAuditWSfbbe0f8(models.Model):
         compute="_compute_link_9_id",
         store=True,
         help=(
-            "Link to worksheet PE.110.3 "
+            "Link to worksheet Competency, availability, and "
+            "independency of assignment team "
             "for this General Audit. Automatically computed and stored."
         ),
     )
@@ -672,7 +685,8 @@ class GeneralAuditWSfbbe0f8(models.Model):
         string="State (PE.110.3)",
         related="link_9_id.state",
         help=(
-            "Workflow state of the linked PE.110.3 worksheet. "
+            "Workflow state of the linked Competency, availability, and "
+            "independency of assignment team worksheet. "
             "Read-only and follows the linked record."
         ),
     )
@@ -680,7 +694,8 @@ class GeneralAuditWSfbbe0f8(models.Model):
         string="Conclusion (PE.110.3)",
         related="link_9_id.conclusion_id",
         help=(
-            "Conclusion from the PE.110.3 worksheet. "
+            "Conclusion from the Competency, availability, and "
+            "independency of assignment team worksheet. "
             "Read-only, mirrors the linked record."
         ),
     )
@@ -688,7 +703,8 @@ class GeneralAuditWSfbbe0f8(models.Model):
         string="Conclusion",
         related="link_9_id.conclusion",
         help=(
-            "Conclusion on the PE.110.3 worksheet. "
+            "Conclusion on the Competency, availability, and "
+            "independency of assignment team worksheet. "
             "Read-only, mirrors the linked record."
         ),
     )
