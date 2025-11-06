@@ -47,7 +47,7 @@ class GeneralAuditWSa58e29c(models.Model):
         compute="_compute_link_1_id",
         store=True,
         help=(
-            "Link to worksheet RA.220.1 (Control Risk - Entity Level) for this "
+            "Link to worksheet 'Control Risk - Entity Level' for this "
             "General Audit. Automatically computed and stored for quick access."
         ),
     )
@@ -55,7 +55,7 @@ class GeneralAuditWSa58e29c(models.Model):
         string="State (RA.220.1)",
         related="link_1_id.state",
         help=(
-            "Workflow state of the linked RA.220.1 worksheet. "
+            "Workflow state of the linked worksheet. "
             "Read-only and follows the linked record."
         ),
     )
@@ -63,17 +63,14 @@ class GeneralAuditWSa58e29c(models.Model):
         string="Conclusion (RA.220.1)",
         related="link_1_id.conclusion_id",
         help=(
-            "Conclusion selected on the RA.220.1 worksheet. "
+            "Conclusion selected on the worksheet. "
             "Read-only, mirrors the linked record."
         ),
     )
     link_1_conclusion = fields.Text(
         string="Conclusion",
         related="link_1_id.conclusion",
-        help=(
-            "Conclusion on the RA.220.1 worksheet. "
-            "Read-only, mirrors the linked record."
-        ),
+        help=("Conclusion on the worksheet. " "Read-only, mirrors the linked record."),
     )
 
     # Control Risk - Cycle Level
@@ -100,7 +97,7 @@ class GeneralAuditWSa58e29c(models.Model):
         compute="_compute_link_2_ids",
         store=True,
         help=(
-            "Collection of all RA.220.2 (Control Risk - Cycle Level) "
+            "Collection of all 'Control Risk - Cycle Level' "
             "worksheets linked to this General Audit. Automatically computed; use it to "
             "navigate to each detailed worksheet."
         ),
@@ -130,7 +127,7 @@ class GeneralAuditWSa58e29c(models.Model):
         compute="_compute_link_3_id",
         store=True,
         help=(
-            "Link to worksheet RA.220.3 (Significant Account) for this General Audit. "
+            "Link to worksheet 'Significant Account' for this General Audit. "
             "Automatically computed and stored."
         ),
     )
@@ -138,7 +135,7 @@ class GeneralAuditWSa58e29c(models.Model):
         string="State (RA.220.3)",
         related="link_3_id.state",
         help=(
-            "Workflow state of the linked RA.220.3 worksheet. "
+            "Workflow state of the linked worksheet. "
             "Read-only and follows the linked record."
         ),
     )
@@ -146,17 +143,13 @@ class GeneralAuditWSa58e29c(models.Model):
         string="Conclusion (RA.220.3)",
         related="link_3_id.conclusion_id",
         help=(
-            "Conclusion from the RA.220.3 worksheet. "
-            "Read-only, mirrors the linked record."
+            "Conclusion from the worksheet. " "Read-only, mirrors the linked record."
         ),
     )
     link_3_conclusion = fields.Text(
         string="Conclusion",
         related="link_3_id.conclusion",
-        help=(
-            "Conclusion on the RA.220.3 worksheet. "
-            "Read-only, mirrors the linked record."
-        ),
+        help=("Conclusion on the worksheet. " "Read-only, mirrors the linked record."),
     )
 
     def _get_fields_required_before_confirm(self):
