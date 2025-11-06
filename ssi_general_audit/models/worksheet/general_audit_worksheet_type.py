@@ -9,6 +9,7 @@ class GeneralAuditWorksheetType(models.Model):
     _name = "general_audit_worksheet_type"
     _inherit = [
         "mixin.master_data",
+        "image.mixin",
     ]
     _description = "General Audit Worksheet Type"
     _order = "category_id, sequence, code_internal, code"

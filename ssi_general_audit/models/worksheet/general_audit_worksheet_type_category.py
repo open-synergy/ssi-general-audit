@@ -7,9 +7,7 @@ from odoo import fields, models
 
 class GeneralAuditWorksheetTypeCategory(models.Model):
     _name = "general_audit_worksheet_type_category"
-    _inherit = [
-        "mixin.master_data",
-    ]
+    _inherit = ["mixin.master_data", "image.mixin"]
     _description = "General Audit Worksheet Type Category"
     _order = "sequence, id"
 

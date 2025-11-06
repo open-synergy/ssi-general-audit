@@ -273,6 +273,13 @@ class GeneralAudit(models.Model):
         readonly=True,
         help="Controls for ensuring required and additional worksheets are met.",
     )
+    worksheet_summary_ids = fields.One2many(
+        string="Worksheet Summary",
+        comodel_name="general_audit.worksheet_summary",
+        inverse_name="general_audit_id",
+        readonly=True,
+        help="Summary of worksheet types and their statuses for this audit.",
+    )
     trial_balance_ids = fields.One2many(
         string="Trial Balance",
         comodel_name="client_trial_balance",
@@ -563,61 +570,6 @@ class GeneralAudit(models.Model):
         if self.partner_id and self.partner_id.public_offering_ids:
             self.public_offering_ids = [(6, 0, self.partner_id.public_offering_ids.ids)]
 
-    # @api.onchange("account_type_set_id")
-    # def onchange_standard_detail_ids(self):
-    #     self.update({"standard_detail_ids": [(5, 0, 0)]})
-    #     if self.account_type_set_id:
-    #         result = []
-    #         for detail in self.account_type_set_id.detail_ids:
-    #             result.append(
-    #                 (
-    #                     0,
-    #                     0,
-    #                     {
-    #                         "sequence": detail.sequence,
-    #                         "type_id": detail.id,
-    #                     },
-    #                 )
-    #             )
-    #         self.update({"standard_detail_ids": result})
-
-    # @api.onchange("account_type_set_id")
-    # def onchange_group_detail_ids(self):
-    #     self.update({"group_detail_ids": [(5, 0, 0)]})
-    #     AccountGroup = self.env["accountant.client_account_group"]
-    #     if self.account_type_set_id:
-    #         result = []
-    #         criteria = []
-    #         for detail in AccountGroup.search(criteria):
-    #             result.append(
-    #                 (
-    #                     0,
-    #                     0,
-    #                     {
-    #                         "sequence": detail.sequence,
-    #                         "group_id": detail.id,
-    #                     },
-    #                 )
-    #             )
-    #         self.update({"group_detail_ids": result})
-
-    # @api.onchange("account_type_set_id")
-    # def onchange_computation_ids(self):
-    #     self.update({"computation_ids": [(5, 0, 0)]})
-    #     if self.account_type_set_id:
-    #         result = []
-    #         for detail in self.account_type_set_id.computation_ids:
-    #             result.append(
-    #                 (
-    #                     0,
-    #                     0,
-    #                     {
-    #                         "computation_item_id": detail.computation_id.id,
-    #                     },
-    #                 )
-    #             )
-    #         self.update({"computation_ids": result})
-
     @api.constrains(
         "state",
     )
@@ -831,6 +783,46 @@ class GeneralAudit(models.Model):
     def action_reload_account(self):
         for record in self.sudo():
             record._reload_account()
+
+    def action_load_worksheet_summary(self):
+        for record in self.sudo():
+            record._load_worksheet_summary()
+
+    def action_open_worksheet_summary(self):
+        self.ensure_one()
+        action = self.env.ref(
+            "ssi_general_audit.general_audit_worksheet_summary_action"
+        ).read()[0]
+        action["domain"] = [("general_audit_id", "=", self.id)]
+        return action
+
+    def _load_worksheet_summary(self):
+        self.ensure_one()
+        WorksheetSummary = self.env["general_audit.worksheet_summary"]
+        self.worksheet_summary_ids.unlink()
+
+        required_types = self.required_worksheet_type_ids
+        additional_types = self.additional_worksheet_type_ids
+
+        for ws_type in required_types:
+            WorksheetSummary.create(
+                {
+                    "general_audit_id": self.id,
+                    "type_id": ws_type.id,
+                    "max_worksheet": ws_type.max_number_allowed,
+                    "is_required": True,
+                }
+            )
+
+        for ws_type in additional_types:
+            WorksheetSummary.create(
+                {
+                    "general_audit_id": self.id,
+                    "type_id": ws_type.id,
+                    "max_worksheet": ws_type.max_number_allowed,
+                    "is_required": False,
+                }
+            )
 
     def _reload_account(self):
         self.ensure_one()

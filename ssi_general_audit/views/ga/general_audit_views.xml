@@ -72,6 +72,17 @@
     <field name="inherit_id" ref="ssi_transaction_mixin.mixin_transaction_view_form" />
     <field name="arch" type="xml">
         <data>
+            <xpath expr="//div[@name='button_box']" position="inside">
+            <button
+                        name="action_open_worksheet_summary"
+                        type="object"
+                        class="oe_stat_button"
+                        icon="fa-files-o"
+                        attrs="{'invisible':[('state','not in',['draft','open','confirm'])]}"
+                    >
+                <span>Worksheet Summary</span>
+            </button>
+            </xpath>
           <xpath expr="//field[@name='company_id']" position="after">
               <field
                         name="operating_unit_id"
@@ -296,14 +307,21 @@
                     </field>
 
                     <separator string="Worksheet(s)" />
-                    <field name="worksheet_control_ids" colspan="2" nolabel="1">
+                    <button
+                            name="action_load_worksheet_summary"
+                            string="Worksheet Summary"
+                            type="object"
+                            class="oe_highlight"
+                            icon="fa-refresh"
+                            style="margin-bottom:6px;"
+                            attrs="{'invisible':[('state','not in',['draft','open'])]}"
+                        />
+                    <field name="worksheet_summary_ids" colspan="2" nolabel="1">
                         <tree>
                             <field name="type_id" />
-                            <field name="required" />
-                            <field name="worksheet_id" />
-                            <field name="user_id" />
-                            <field name="conclusion_id" />
-                            <field name="state" />
+                            <field name="category_id" />
+                            <field name="max_worksheet" />
+                            <field name="is_required" />
                         </tree>
                     </field>
                 </page>

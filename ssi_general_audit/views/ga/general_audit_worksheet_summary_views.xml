@@ -1,0 +1,155 @@
+<?xml version="1.0" ?>
+<!-- Copyright 2022 OpenSynergy Indonesia
+     Copyright 2022 PT. Simetri Sinergi Indonesia
+     License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl-3.0-standalone.html). -->
+<odoo>
+<record id="general_audit_worksheet_summary_view_tree" model="ir.ui.view">
+    <field name="name">general_audit.worksheet_summary - tree</field>
+    <field name="model">general_audit.worksheet_summary</field>
+    <field name="mode">primary</field>
+    <field name="arch" type="xml">
+        <tree>
+            <field name="type_id" />
+            <field name="category_id" />
+            <field name="max_worksheet" />
+            <field name="is_required" />
+        </tree>
+    </field>
+</record>
+
+<record id="general_audit_worksheet_summary_view_kanban" model="ir.ui.view">
+    <field name="name">general_audit.worksheet_summary - kanban</field>
+    <field name="model">general_audit.worksheet_summary</field>
+    <field name="arch" type="xml">
+        <!-- biarkan Odoo atur lebar kolom; jangan pakai o_kanban_large_column -->
+        <kanban default_group_by="category_id">
+            <field name="general_audit_id" />
+            <field name="type_id" />
+            <field name="category_id" />
+            <field name="is_required" />
+            <field name="max_worksheet" />
+            <field name="image_128" />
+
+<templates>
+  <t t-name="kanban-box">
+    <div
+                            class="o_kanban_record oe_kanban_global_click"
+                            style="display:flex;align-items:stretch;width:100%;max-width:100%;
+                box-sizing:border-box;border:1px solid #d9d9d9;border-radius:10px;
+                overflow:hidden;background:#fff;box-shadow:0 1px 2px rgba(0,0,0,.06);
+                margin-bottom:14px;padding:0;height:128px;"
+                        >
+
+      <!-- Panel kiri: full hitam + image (ada padding kecil) -->
+      <div
+                                style="width:100px;min-width:100px;background:#151515;display:flex;
+                  align-items:center;justify-content:center;margin:0;padding:6px;"
+                            >
+        <field
+                                    name="image_128"
+                                    widget="image"
+                                    options="{'preview_image':'image_128'}"
+                                    class="o_kanban_image"
+                                    style="max-width:85%;max-height:85%;object-fit:contain;border-radius:6px;"
+                                />
+      </div>
+
+      <!-- Panel kanan -->
+      <div
+                                style="flex:1 1 auto;display:flex;flex-direction:column;justify-content:flex-start;
+                  padding:14px 20px;min-width:0;margin:0;"
+                            >
+        <div
+                                    style="font-weight:600;font-size:14px;color:#111;line-height:1.25;
+                    white-space:normal;word-break:break-word;display:-webkit-box;
+                    -webkit-line-clamp:4;-webkit-box-orient:vertical;overflow:hidden;
+                    max-height:72px;"
+                                >
+          <t t-esc="record.type_id.value or ''" />
+        </div>
+        <div
+                                    style="font-size:12px;color:#666;margin-top:6px;display:flex;align-items:center;"
+                                >
+          <t t-if="record.is_required.value">
+            <i
+                                            class="fa fa-check-circle"
+                                            title="Required"
+                                            style="color:#007bff;margin-right:6px;font-size:13px;"
+                                        />
+          </t>
+          <t t-if="!record.is_required.value">
+            <i
+                                            class="fa fa-circle-o"
+                                            title="Additional"
+                                            style="color:#999;margin-right:6px;font-size:13px;"
+                                        />
+          </t>
+          <span>Max: <t t-esc="record.max_worksheet.value or 0" /></span>
+        </div>
+      </div>
+    </div>
+  </t>
+</templates>
+
+
+
+
+
+
+
+
+
+        </kanban>
+    </field>
+</record>
+
+
+
+
+    <!-- 2) SEARCH VIEW dengan filter Group By Category -->
+    <record id="general_audit_worksheet_summary_view_search" model="ir.ui.view">
+        <field name="name">general_audit.worksheet_summary - search</field>
+        <field name="model">general_audit.worksheet_summary</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="general_audit_id" />
+                <field name="type_id" />
+                <field name="category_id" />
+                <filter
+                    string="Required"
+                    name="is_required_true"
+                    domain="[('is_required','=',True)]"
+                />
+                <filter
+                    string="Additional"
+                    name="is_required_false"
+                    domain="[('is_required','=',False)]"
+                />
+
+                <group expand="0" string="Group By">
+                    <filter
+                        string="Category"
+                        name="group_by_category_id"
+                        context="{'group_by': 'category_id'}"
+                    />
+                    <filter
+                        string="Audit"
+                        name="group_by_general_audit_id"
+                        context="{'group_by': 'general_audit_id'}"
+                    />
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="general_audit_worksheet_summary_action" model="ir.actions.act_window">
+        <field name="name">Worksheet Summary</field>
+        <field name="res_model">general_audit.worksheet_summary</field>
+        <field name="view_mode">kanban,tree,form</field>
+        <field name="context">
+            {
+                'search_default_group_by_category_id': 1
+            }
+        </field>
+    </record>
+</odoo>
