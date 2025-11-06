@@ -2,8 +2,7 @@
 # Copyright 2022 PT. Simetri Sinergi Indonesia
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl-3.0-standalone.html).
 
-from odoo import _, api, fields, models
-from odoo.exceptions import UserError
+from odoo import api, fields, models
 
 
 class GeneralAuditWorksheetSummary(models.Model):
@@ -86,4 +85,13 @@ class GeneralAuditWorksheetSummary(models.Model):
                 record.finish = True
 
     def action_open_worksheet(self):
-        raise UserError(_("Not implemented yet."))
+        self.ensure_one()
+        WindowAction = self.env["ir.actions.act_window"]
+        criteria = [
+            ("res_model", "=", self.type_id.model_name),
+        ]
+        action = WindowAction.search(criteria).read()[0]
+        action["domain"] = [
+            ("general_audit_id", "=", self.general_audit_id.id),
+        ]
+        return action
