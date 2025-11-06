@@ -26,6 +26,11 @@ class GeneralAuditWorksheetType(models.Model):
         default=5,
         help="Ordering of the worksheet type within its category.",
     )
+    model_name = fields.Char(
+        string="Model Name",
+        required=True,
+        help="Technical model name associated with this worksheet type.",
+    )
     parent_id = fields.Many2one(
         string="Parent Worksheet",
         comodel_name="general_audit_worksheet_type",

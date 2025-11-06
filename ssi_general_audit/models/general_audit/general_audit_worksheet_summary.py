@@ -2,7 +2,8 @@
 # Copyright 2022 PT. Simetri Sinergi Indonesia
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl-3.0-standalone.html).
 
-from odoo import fields, models
+from odoo import _, fields, models
+from odoo.exceptions import UserError
 
 
 class GeneralAuditWorksheetSummary(models.Model):
@@ -41,3 +42,6 @@ class GeneralAuditWorksheetSummary(models.Model):
         related="type_id.image_128",
         string="Type Image",
     )
+
+    def action_open_worksheet(self):
+        raise UserError(_("Not implemented yet."))

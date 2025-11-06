@@ -35,12 +35,50 @@
     <div
                             class="o_kanban_record oe_kanban_global_click"
                             style="display:flex;align-items:stretch;width:100%;max-width:100%;
-                box-sizing:border-box;border:1px solid #d9d9d9;border-radius:10px;
-                overflow:hidden;background:#fff;box-shadow:0 1px 2px rgba(0,0,0,.06);
-                margin-bottom:14px;padding:0;height:128px;"
-                        >
+             box-sizing:border-box;border:1px solid #d9d9d9;border-radius:10px;
+             background:#fff;box-shadow:0 1px 2px rgba(0,0,0,.06);
+             margin-bottom:14px;padding:0;height:128px;
+             position:relative; overflow:visible;"
+                        >   <!-- penting: relative + visible -->
 
-      <!-- Panel kiri: full hitam + image (ada padding kecil) -->
+      <!-- ▼ tiga titik kanan-atas -->
+      <div
+                                class="o_dropdown_kanban dropdown"
+                                style="position:absolute; top:6px; right:6px;"
+                            >
+        <a
+                                    class="dropdown-toggle o-no-caret btn btn-link"
+                                    data-toggle="dropdown"
+                                    href="#"
+                                    role="button"
+                                    aria-haspopup="true"
+                                    aria-expanded="false"
+                                >
+          <i class="fa fa-ellipsis-v" />
+        </a>
+
+        <div
+                                    class="o_kanban_card_manage_pane dropdown-menu"
+                                    role="menu"
+                                    style="min-width: 200px;"
+                                >
+          <div class="o_kanban_card_manage_section">
+            <div role="menuitem">
+              <a type="object" name="action_open_worksheet">
+                <i class="fa fa-folder-open" style="margin-right:6px;" />Open Worksheet
+              </a>
+            </div>
+            <div role="menuitem">
+              <a type="object" name="action_open_worksheet">
+                <i class="fa fa-gear" style="margin-right:6px;" />Create Worksheet
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- ▲ end tiga titik -->
+
+      <!-- Panel kiri -->
       <div
                                 style="width:100px;min-width:100px;background:#151515;display:flex;
                   align-items:center;justify-content:center;margin:0;padding:6px;"
@@ -90,14 +128,6 @@
     </div>
   </t>
 </templates>
-
-
-
-
-
-
-
-
 
         </kanban>
     </field>
