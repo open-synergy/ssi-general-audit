@@ -54,7 +54,7 @@ class GeneralAuditWSf87b2e1(models.Model):
         compute="_compute_link_1_id",
         store=True,
         help=(
-            "Link to worksheet RA.150.1 (General Information and Legal Aspect) for this "
+            "Link to worksheet 'General Information and Legal Aspect' for this "
             "General Audit. Automatically computed and stored for quick access."
         ),
     )
@@ -62,7 +62,7 @@ class GeneralAuditWSf87b2e1(models.Model):
         string="State (RA.150.1)",
         related="link_1_id.state",
         help=(
-            "Workflow state of the linked RA.150.1 worksheet. "
+            "Workflow state of the linked worksheet. "
             "Read-only and follows the linked record."
         ),
     )
@@ -70,17 +70,14 @@ class GeneralAuditWSf87b2e1(models.Model):
         string="Conclusion (RA.150.1)",
         related="link_1_id.conclusion_id",
         help=(
-            "Conclusion selected on the RA.150.1 worksheet. "
+            "Conclusion selected on the worksheet. "
             "Read-only, mirrors the linked record."
         ),
     )
     link_1_conclusion = fields.Text(
         string="Conclusion",
         related="link_1_id.conclusion",
-        help=(
-            "Conclusion on the RA.150.1 worksheet. "
-            "Read-only, mirrors the linked record."
-        ),
+        help=("Conclusion on the worksheet. " "Read-only, mirrors the linked record."),
     )
 
     # Structure Organization and Responsibilities
@@ -107,7 +104,7 @@ class GeneralAuditWSf87b2e1(models.Model):
         compute="_compute_link_2_id",
         store=True,
         help=(
-            "Link to worksheet RA.150.2 (Structure Organization and Responsibilities) "
+            "Link to worksheet 'Structure Organization and Responsibilities' "
             "for this General Audit. Automatically computed and stored."
         ),
     )
@@ -115,7 +112,7 @@ class GeneralAuditWSf87b2e1(models.Model):
         string="State (RA.150.2)",
         related="link_2_id.state",
         help=(
-            "Workflow state of the linked RA.150.2 worksheet. "
+            "Workflow state of the linked worksheet. "
             "Read-only and follows the linked record."
         ),
     )
@@ -123,17 +120,13 @@ class GeneralAuditWSf87b2e1(models.Model):
         string="Conclusion (RA.150.2)",
         related="link_2_id.conclusion_id",
         help=(
-            "Conclusion from the RA.150.2 worksheet. "
-            "Read-only, mirrors the linked record."
+            "Conclusion from the worksheet. " "Read-only, mirrors the linked record."
         ),
     )
     link_2_conclusion = fields.Text(
         string="Conclusion",
         related="link_2_id.conclusion",
-        help=(
-            "Conclusion on the RA.150.2 worksheet. "
-            "Read-only, mirrors the linked record."
-        ),
+        help=("Conclusion on the worksheet. " "Read-only, mirrors the linked record."),
     )
 
     # Main Business Activity Process
@@ -160,7 +153,7 @@ class GeneralAuditWSf87b2e1(models.Model):
         compute="_compute_link_3_id",
         store=True,
         help=(
-            "Link to worksheet RA.150.3 (Main Business Activity Process) for this "
+            "Link to worksheet 'Main Business Activity Process' for this "
             "General Audit. Automatically computed and stored."
         ),
     )
@@ -168,7 +161,7 @@ class GeneralAuditWSf87b2e1(models.Model):
         string="State (RA.150.3)",
         related="link_3_id.state",
         help=(
-            "Workflow state of the linked RA.150.3 worksheet. "
+            "Workflow state of the linked worksheet. "
             "Read-only and follows the linked record."
         ),
     )
@@ -176,17 +169,13 @@ class GeneralAuditWSf87b2e1(models.Model):
         string="Conclusion (RA.150.3)",
         related="link_3_id.conclusion_id",
         help=(
-            "Conclusion from the RA.150.3 worksheet. "
-            "Read-only, mirrors the linked record."
+            "Conclusion from the worksheet. " "Read-only, mirrors the linked record."
         ),
     )
     link_3_conclusion = fields.Text(
         string="Conclusion",
         related="link_3_id.conclusion",
-        help=(
-            "Conclusion on the RA.150.3 worksheet. "
-            "Read-only, mirrors the linked record."
-        ),
+        help=("Conclusion on the worksheet. " "Read-only, mirrors the linked record."),
     )
 
     # Understanding of Relevant Regulations
@@ -213,7 +202,7 @@ class GeneralAuditWSf87b2e1(models.Model):
         compute="_compute_link_4_id",
         store=True,
         help=(
-            "Link to worksheet RA.150.4 (Understanding of Relevant Regulations) for this "
+            "Link to worksheet 'Understanding of Relevant Regulations' for this "
             "General Audit. Automatically computed and stored."
         ),
     )
@@ -221,7 +210,7 @@ class GeneralAuditWSf87b2e1(models.Model):
         string="State (RA.150.4)",
         related="link_4_id.state",
         help=(
-            "Workflow state of the linked RA.150.4 worksheet. "
+            "Workflow state of the linked worksheet. "
             "Read-only and follows the linked record."
         ),
     )
@@ -229,17 +218,13 @@ class GeneralAuditWSf87b2e1(models.Model):
         string="Conclusion (RA.150.4)",
         related="link_4_id.conclusion_id",
         help=(
-            "Conclusion from the RA.150.4 worksheet. "
-            "Read-only, mirrors the linked record."
+            "Conclusion from the worksheet. " "Read-only, mirrors the linked record."
         ),
     )
     link_4_conclusion = fields.Text(
         string="Conclusion",
         related="link_4_id.conclusion",
-        help=(
-            "Conclusion on the RA.150.4 worksheet. "
-            "Read-only, mirrors the linked record."
-        ),
+        help=("Conclusion on the worksheet. " "Read-only, mirrors the linked record."),
     )
 
     # Understanding of the business environment
@@ -266,7 +251,7 @@ class GeneralAuditWSf87b2e1(models.Model):
         compute="_compute_link_5_ids",
         store=True,
         help=(
-            "Collection of all RA.150.5 (Understanding of the Business Environment) "
+            "Collection of all 'Understanding of the Business Environment' "
             "worksheets linked to this General Audit. Automatically computed; use it to "
             "navigate to each detailed worksheet."
         ),
@@ -296,7 +281,7 @@ class GeneralAuditWSf87b2e1(models.Model):
         compute="_compute_link_6_id",
         store=True,
         help=(
-            "Link to worksheet RA.150.6 (Going Concern Analysis) for this General Audit. "
+            "Link to worksheet 'Going Concern Analysis' for this General Audit. "
             "Automatically computed and stored."
         ),
     )
@@ -304,7 +289,7 @@ class GeneralAuditWSf87b2e1(models.Model):
         string="State (RA.150.6)",
         related="link_6_id.state",
         help=(
-            "Workflow state of the linked RA.150.6 worksheet. "
+            "Workflow state of the linked worksheet. "
             "Read-only and follows the linked record."
         ),
     )
@@ -312,17 +297,13 @@ class GeneralAuditWSf87b2e1(models.Model):
         string="Conclusion (RA.150.6)",
         related="link_6_id.conclusion_id",
         help=(
-            "Conclusion from the RA.150.6 worksheet. "
-            "Read-only, mirrors the linked record."
+            "Conclusion from the worksheet. " "Read-only, mirrors the linked record."
         ),
     )
     link_6_conclusion = fields.Text(
         string="Conclusion",
         related="link_6_id.conclusion",
-        help=(
-            "Conclusion on the RA.150.6 worksheet. "
-            "Read-only, mirrors the linked record."
-        ),
+        help=("Conclusion on the worksheet. " "Read-only, mirrors the linked record."),
     )
 
     # Understanding of Preparation of Financial Statements
@@ -349,15 +330,15 @@ class GeneralAuditWSf87b2e1(models.Model):
         compute="_compute_link_7_id",
         store=True,
         help=(
-            "Link to worksheet RA.150.7 (Understanding of Preparation of Financial "
-            "Statements) for this General Audit. Automatically computed and stored."
+            "Link to worksheet 'Understanding of Preparation of Financial "
+            "Statements' for this General Audit. Automatically computed and stored."
         ),
     )
     link_7_state = fields.Selection(
         string="State (RA.150.7)",
         related="link_7_id.state",
         help=(
-            "Workflow state of the linked RA.150.7 worksheet. "
+            "Workflow state of the linked worksheet. "
             "Read-only and follows the linked record."
         ),
     )
@@ -365,17 +346,13 @@ class GeneralAuditWSf87b2e1(models.Model):
         string="Conclusion (RA.150.7)",
         related="link_7_id.conclusion_id",
         help=(
-            "Conclusion from the RA.150.7 worksheet. "
-            "Read-only, mirrors the linked record."
+            "Conclusion from the worksheet. " "Read-only, mirrors the linked record."
         ),
     )
     link_7_conclusion = fields.Text(
         string="Conclusion",
         related="link_7_id.conclusion",
-        help=(
-            "Conclusion on the RA.150.7 worksheet. "
-            "Read-only, mirrors the linked record."
-        ),
+        help=("Conclusion on the worksheet. " "Read-only, mirrors the linked record."),
     )
 
     # Fraud Factor Analysis
@@ -402,31 +379,27 @@ class GeneralAuditWSf87b2e1(models.Model):
         compute="_compute_link_8_id",
         store=True,
         help=(
-            "Link to worksheet RA.150.8 (Fraud Factor Analysis) for this General Audit. "
+            "Link to worksheet 'Fraud Factor Analysis' for this General Audit. "
             "Automatically computed and stored."
         ),
     )
     link_8_state = fields.Selection(
         related="link_8_id.state",
         help=(
-            "Workflow state of the linked RA.150.8 worksheet. "
+            "Workflow state of the linked worksheet. "
             "Read-only and follows the linked record."
         ),
     )
     link_8_conclusion_id = fields.Many2one(
         related="link_8_id.conclusion_id",
         help=(
-            "Conclusion from the RA.150.8 worksheet. "
-            "Read-only, mirrors the linked record."
+            "Conclusion from the worksheet. " "Read-only, mirrors the linked record."
         ),
     )
     link_8_conclusion = fields.Text(
         string="Conclusion",
         related="link_8_id.conclusion",
-        help=(
-            "Conclusion on the RA.150.8 worksheet. "
-            "Read-only, mirrors the linked record."
-        ),
+        help=("Conclusion on the worksheet. " "Read-only, mirrors the linked record."),
     )
 
     def _get_fields_required_before_confirm(self):
