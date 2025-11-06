@@ -37,7 +37,7 @@ class GeneralAuditWSab19fd4(models.Model):
         compute="_compute_link_1_ids",
         store=True,
         help=(
-            "Auto-populated link to 'Findings That Influence Opinion' (WR. 110.1). "
+            "Auto-populated link to 'Findings That Influence Opinion'. "
             "Computed from worksheet a0319a2 belonging to the same general audit."
         ),
     )
@@ -66,7 +66,7 @@ class GeneralAuditWSab19fd4(models.Model):
         compute="_compute_link_2_ids",
         store=True,
         help=(
-            "Auto-populated link to 'Control Deficiencies' (WR. 110.2). "
+            "Auto-populated link to 'Control Deficiencies'. "
             "Computed from worksheet d33420f belonging to the same general audit."
         ),
     )
