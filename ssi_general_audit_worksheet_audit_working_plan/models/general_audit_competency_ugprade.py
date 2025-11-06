@@ -29,6 +29,7 @@ class GeneralAuditCompetencyUpgrade(models.Model):
         ondelete="restrict",
         help=(
             "The competency item that requires an upgrade for the team member. "
-            "Sourced from PE.110.3 competency items."
+            "Sourced from worksheet 'Competency, availability, and. "
+            "independency of assignment team'"
         ),
     )

@@ -52,7 +52,7 @@ class GeneralAuditWSCBBBAF4TeamCompetency(models.Model):
         help=(
             "Recommended competency upgrades needed for the team member. "
             "Populated based on gaps between required competencies and current "
-            "competency analysis (from PE.110.3)."
+            "competency analysis."
         ),
     )
     upgrade_attachment_ids = fields.Many2many(

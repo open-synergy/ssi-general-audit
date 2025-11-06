@@ -3,7 +3,7 @@
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl-3.0-standalone.html).
 from datetime import timedelta
 
-from odoo import api, fields, models
+from odoo import _, api, fields, models
 from odoo.exceptions import ValidationError
 
 from odoo.addons.ssi_decorator import ssi_decorator
@@ -480,18 +480,7 @@ class GeneralAuditWSCBBBAF4(models.Model):
         Allocation = self.env["general_audit_ws_cbbbaf4.team_allocation"]
 
         if not self.link_2:
-            msg_err = """
-            Document Type: %s
-            Context: Creating Allocation Teams
-            Database ID: %s
-            Problem: PE.110.3 Not Found for General Audit %s
-            Solution: Please Create PE.110.3 Document First
-            """ % (
-                self._description.lower(),
-                self.id,
-                self.general_audit_id.name,
-            )
-            raise ValidationError(msg_err)
+            return
 
         summaries = self.link_2.summary_ids.filtered(lambda x: x.select_team == "yes")
         emps = self.link_2.summary_ids.filtered(
@@ -561,18 +550,7 @@ class GeneralAuditWSCBBBAF4(models.Model):
         Competency = self.env["general_audit_ws_cbbbaf4.team_competency"]
 
         if not self.link_2:
-            msg_err = """
-            Document Type: %s
-            Context: Creating Competency Teams
-            Database ID: %s
-            Problem: PE.110.3 Not Found for General Audit %s
-            Solution: Please Create PE.110.3 Document First
-            """ % (
-                self._description.lower(),
-                self.id,
-                self.general_audit_id.name,
-            )
-            raise ValidationError(msg_err)
+            return
 
         summaries = self.link_2.summary_ids.filtered(lambda x: x.select_team == "yes")
         emps = self.link_2.summary_ids.filtered(
@@ -629,3 +607,20 @@ class GeneralAuditWSCBBBAF4(models.Model):
                         "Risk Assessment Date must be greater than Engagement Date."
                     )
                     raise ValidationError(msg_err)
+
+    def _get_fields_required_before_confirm(self):
+        _super = super(GeneralAuditWSCBBBAF4, self)
+        res = _super._get_fields_required_before_confirm()
+        res += [
+            "link_1",
+            "link_2",
+        ]
+        return res
+
+    def _get_custom_field_labels(self):
+        return {
+            "link_1": _("Acceptance and Continuance of Client Relationships Analysis"),
+            "link_2": _(
+                "Competency, availability, and " "independency of assignment team"
+            ),
+        }
