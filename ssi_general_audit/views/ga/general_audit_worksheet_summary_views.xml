@@ -13,6 +13,9 @@
             <field name="category_id" />
             <field name="max_worksheet" />
             <field name="is_required" />
+            <field name="num_of_worksheet" />
+            <field name="num_of_finish_worksheet" />
+            <field name="finish" />
         </tree>
     </field>
 </record>
@@ -29,6 +32,9 @@
             <field name="is_required" />
             <field name="max_worksheet" />
             <field name="image_128" />
+            <field name="num_of_worksheet" />
+            <field name="num_of_finish_worksheet" />
+            <field name="finish" />
 
 <templates>
   <t t-name="kanban-box">
@@ -95,36 +101,82 @@
       <!-- Panel kanan -->
       <div
                                 style="flex:1 1 auto;display:flex;flex-direction:column;justify-content:flex-start;
-                  padding:14px 20px;min-width:0;margin:0;"
+              padding:14px 20px;min-width:0;margin:0;"
                             >
+
+        <!-- Judul / type -->
         <div
                                     style="font-weight:600;font-size:14px;color:#111;line-height:1.25;
-                    white-space:normal;word-break:break-word;display:-webkit-box;
-                    -webkit-line-clamp:4;-webkit-box-orient:vertical;overflow:hidden;
-                    max-height:72px;"
+                white-space:normal;word-break:break-word;display:-webkit-box;
+                -webkit-line-clamp:4;-webkit-box-orient:vertical;overflow:hidden;
+                max-height:72px;"
                                 >
           <t t-esc="record.type_id.value or ''" />
         </div>
+
+        <!-- Row 1: Max, Created, Finished -->
         <div
-                                    style="font-size:12px;color:#666;margin-top:6px;display:flex;align-items:center;"
+                                    style="font-size:12px;color:#444;margin-top:6px;display:flex;align-items:center;gap:16px;"
                                 >
-          <t t-if="record.is_required.raw_value">
-            <i
-                                            class="fa fa-check-circle"
-                                            title="Required"
-                                            style="color:#007bff;margin-right:6px;font-size:13px;"
-                                        />
-          </t>
-          <t t-else="">
-            <i
-                                            class="fa fa-circle-o"
-                                            title="Additional"
-                                            style="color:#999;margin-right:6px;font-size:13px;"
-                                        />
-          </t>
-          <span>Max: <t t-esc="record.max_worksheet.value or 0" /></span>
+          <span
+                                        title="Maximum worksheets allowed"
+                                        style="display:flex;align-items:center;"
+                                    >
+            <i class="fa fa-flag" style="margin-right:4px;" />
+            <t t-esc="record.max_worksheet.value or 0" />
+          </span>
+          <span title="Created worksheets" style="display:flex;align-items:center;">
+            <i class="fa fa-files-o" style="margin-right:4px;" />
+            <t t-esc="record.num_of_worksheet.value or 0" />
+          </span>
+          <span title="Finished worksheets" style="display:flex;align-items:center;">
+            <i class="fa fa-check-square" style="margin-right:4px;" />
+            <t t-esc="record.num_of_finish_worksheet.value or 0" />
+          </span>
+        </div>
+
+        <!-- Row 2: Required/Additional + Finish status -->
+        <div
+                                    style="font-size:12px;color:#666;margin-top:6px;display:flex;align-items:center;gap:16px;"
+                                >
+          <!-- Required / Additional -->
+          <span>
+            <t t-if="record.is_required.raw_value">
+              <i
+                                                class="fa fa-check-circle"
+                                                title="Required worksheet"
+                                                style="color:#007bff;font-size:13px;"
+                                            />
+            </t>
+            <t t-else="">
+              <i
+                                                class="fa fa-circle-o"
+                                                title="Additional worksheet"
+                                                style="color:#999;font-size:13px;"
+                                            />
+            </t>
+          </span>
+
+          <!-- Finish status -->
+          <span>
+            <t t-if="record.finish.raw_value">
+              <i
+                                                class="fa fa-check"
+                                                title="All worksheets finished"
+                                                style="color:#28a745;font-size:13px;"
+                                            />
+            </t>
+            <t t-else="">
+              <i
+                                                class="fa fa-clock-o"
+                                                title="In progress"
+                                                style="color:#999;font-size:13px;"
+                                            />
+            </t>
+          </span>
         </div>
       </div>
+
     </div>
   </t>
 </templates>

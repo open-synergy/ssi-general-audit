@@ -2,7 +2,7 @@
 # Copyright 2022 PT. Simetri Sinergi Indonesia
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl-3.0-standalone.html).
 
-from odoo import _, fields, models
+from odoo import _, api, fields, models
 from odoo.exceptions import UserError
 
 
@@ -42,6 +42,48 @@ class GeneralAuditWorksheetSummary(models.Model):
         related="type_id.image_128",
         string="Type Image",
     )
+    num_of_worksheet = fields.Integer(
+        string="Number of Worksheets",
+        compute="_compute_num_of_worksheet",
+        store=True,
+        compute_sudo=True,
+        help="Number of worksheets created for this type.",
+    )
+    num_of_finish_worksheet = fields.Integer(
+        string="Number of Finished Worksheets",
+        compute="_compute_num_of_worksheet",
+        store=True,
+        compute_sudo=True,
+        help="Number of finished worksheets for this type.",
+    )
+    finish = fields.Boolean(
+        string="Finished",
+        compute="_compute_num_of_worksheet",
+        store=True,
+        compute_sudo=True,
+        help="True if all required worksheets of this type are finished.",
+    )
+
+    @api.depends(
+        "general_audit_id",
+        "type_id",
+        "general_audit_id.worksheet_ids",
+        "general_audit_id.worksheet_ids.state",
+        "general_audit_id.worksheet_ids.parent_type_id",
+    )
+    def _compute_num_of_worksheet(self):
+        Worksheet = self.env["general_audit_worksheet"]
+        for record in self:
+            record.finish = False
+            domain = [
+                ("general_audit_id", "=", record.general_audit_id.id),
+                ("parent_type_id", "=", record.type_id.id),
+            ]
+            record.num_of_worksheet = Worksheet.search_count(domain)
+            domain.append(("state", "=", "done"))
+            record.num_of_finish_worksheet = Worksheet.search_count(domain)
+            if record.num_of_finish_worksheet > 0:
+                record.finish = True
 
     def action_open_worksheet(self):
         raise UserError(_("Not implemented yet."))
