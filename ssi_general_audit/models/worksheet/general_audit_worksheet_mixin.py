@@ -2,6 +2,8 @@
 # Copyright 2022 PT. Simetri Sinergi Indonesia
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl-3.0-standalone.html).
 
+import textwrap
+
 from odoo import _, api, fields, models
 from odoo.exceptions import ValidationError
 
@@ -206,27 +208,44 @@ class GeneralAuditWorksheetMixin(models.AbstractModel):
                 duplicate = self.search(criteria, limit=1)
 
                 if duplicate:
-                    error_message = """
-                    Context: New data creation for %s
-                    Database ID: %s
-                    Problem: The selected General Audit is already used in %s.
-                    \t\t Each Worksheet must have a unique General Audit.
-                    """ % (
+                    error_message = _(
+                        "❌ Failed to create a new record.\n\n"
+                        "⚙️ Context:\n"
+                        "\t• Worksheet Type: %s\n"
+                        "\t• Record ID : %s\n\n"
+                        "⚠️ Problem :\n"
+                        "\t The selected General Audit has already been linked to : \n"
+                        "\t\t• Worksheet: (%s).\n"
+                        "\t Each worksheet type can only be associated with one "
+                        "General Audit at a time.\n\n"
+                        "💡 Recommended Action:\n"
+                        "\tPlease verify the existing records "
+                        "before creating a new one "
+                        "or contact your administrator."
+                    ) % (
                         record.type_id.display_name,
                         record.id,
-                        record.display_name,
+                        duplicate.display_name,
                     )
-                    raise ValidationError(_(error_message))
+                    raise ValidationError(_(textwrap.dedent(error_message).strip()))
             else:
                 duplicate = self.search(criteria)
                 if record.type_id.max_number_allowed >= 1:
                     if len(duplicate) >= record.type_id.max_number_allowed:
-                        error_message = """
-                        Context: New data creation for %s
-                        Database ID: %s
-                        Problem: General Audit has exceeded the max. limit allowed
-                        \t\t The maximum limit allowed is %s
-                        """ % (
+                        error_message = _(
+                            "❌ Failed to create a new record.\n\n"
+                            "⚙️ Context:\n"
+                            "\t• Worksheet Type: %s\n"
+                            "\t• Record ID : %s\n\n"
+                            "⚠️ Problem :\n"
+                            "\t The selected General Audit has exceeded "
+                            "the max. limit allowed :\n"
+                            "\t\t• Maximum Allowed: %s\n\n"
+                            "💡 Recommended Action:\n"
+                            "\tPlease review your existing worksheets and ensure "
+                            "the number of linked records complies \n"
+                            "\twith the maximum limit or contact your administrator."
+                        ) % (
                             record.type_id.display_name,
                             record.id,
                             record.type_id.max_number_allowed,
@@ -268,17 +287,23 @@ class GeneralAuditWorksheetMixin(models.AbstractModel):
                         missing.append(field_label)
 
                 if missing:
-                    raise ValidationError(
-                        _(
-                            "You cannot 'Confirm' this record because "
-                            "the following required fields are empty or not computed yet:\n\n"
-                            "- "
-                            + "\n- ".join(missing)
-                            + "\n\nPlease click the 'Reload' or 'Re-Compute' button "
-                            "to refresh these values, "
-                            "or fill them in manually before proceeding."
-                        )
+                    missing_lines = "\n".join(f"  • {m}" for m in missing)
+                    msg = _(
+                        "⚠️ You cannot 'Confirm' this record.\n\n"
+                        "⚙️ Context:\n"
+                        "\t• Worksheet Type: %s\n"
+                        "\t• Record ID : %s\n\n"
+                        "⚠️ Problem :\n"
+                        "The following required fields are empty or not computed yet:\n"
+                        f"{missing_lines}\n\n"
+                        "💡 Recommended Action:\n"
+                        "\tPlease click 'Reload' or 'Re-Compute' to refresh these values\n"
+                        "\tor fill them in manually before proceeding."
+                    ) % (
+                        record.type_id.display_name,
+                        record.id,
                     )
+                    raise ValidationError(msg)
 
     @ssi_decorator.insert_on_form_view()
     def _insert_form_element(self, view_arch):
