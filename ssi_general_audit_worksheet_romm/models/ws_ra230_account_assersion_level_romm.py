@@ -6,7 +6,7 @@ from odoo import fields, models
 
 class WS230AccountAssersionLevelRomm(models.Model):
     _name = "ws_ra230.account_assersion_level_romm"
-    _description = "General Audit WS RA.230 - Account Assersion Level ROMM"
+    _description = "General Audit - Account Assersion Level ROMM"
 
     worksheet_id = fields.Many2one(
         string="# RA.210",
@@ -14,7 +14,7 @@ class WS230AccountAssersionLevelRomm(models.Model):
         required=True,
         ondelete="cascade",
         help=(
-            "The RA.230 worksheet that owns this line. Deleting the worksheet will "
+            "The worksheet that owns this line. Deleting the worksheet will "
             "remove its lines."
         ),
     )

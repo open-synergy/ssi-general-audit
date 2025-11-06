@@ -7,7 +7,7 @@ from odoo import api, fields, models
 
 class WSAuditRA230(models.Model):
     _name = "ws_ra230"
-    _description = "General Audit WS RA.230"
+    _description = "ROMM"
     _inherit = [
         "accountant.general_audit_worksheet_mixin",
     ]
