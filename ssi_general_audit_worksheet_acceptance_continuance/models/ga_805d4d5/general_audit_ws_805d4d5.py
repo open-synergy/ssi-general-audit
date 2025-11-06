@@ -31,7 +31,7 @@ class GeneralAuditWS805d4d5(models.Model):
         comodel_name="general_audit_ws_842f0d6",
         compute="_compute_allowed_link_1_ids",
         store=False,
-        help="""Eligible PE.110.2.1 worksheets from the same audit
+        help="""Eligible worksheets from the same audit
 that can be linked to this record.""",
     )
 
@@ -39,13 +39,13 @@ that can be linked to this record.""",
         string="PE.110.2.1",
         comodel_name="general_audit_ws_842f0d6",
         ondelete="restrict",
-        help="Selected PE.110.2.1 worksheet used to derive the risk category (PMPJ).",
+        help="Selected worksheet used to derive the risk category (PMPJ).",
     )
     link_1_pmpj = fields.Selection(
         string="Risk (110.2.1)",
         related="link_1.pmpj",
         store=True,
-        help="""Risk level propagated from the linked PE.110.2.1 worksheet
+        help="""Risk level propagated from the linked worksheet
 (Simplified/Intermediate/Enhanced).""",
     )
 

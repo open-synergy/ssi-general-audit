@@ -159,7 +159,7 @@ with the firm ('Initial Engagement' vs 'Recurring Engagement').""",
         comodel_name="general_audit_ws_369c5a5",
         compute="_compute_allowed_link_1_ids",
         store=False,
-        help="""Eligible PE.110.1 worksheets from the same audit
+        help="""Eligible worksheets from the same audit
 that can be linked.""",
     )
 
@@ -167,14 +167,14 @@ that can be linked.""",
         string="PE.110.1",
         comodel_name="general_audit_ws_369c5a5",
         ondelete="restrict",
-        help="""Selected PE.110.1 worksheet used for cross-referencing
+        help="""Selected worksheet used for cross-referencing
 and risk derivation.""",
     )
     link_1_risk = fields.Selection(
         string="Risk (PE.110.1)",
         related="link_1.risk",
         store=True,
-        help="Risk level propagated from the linked PE.110.1 worksheet.",
+        help="Risk level propagated from the linked worksheet.",
     )
 
     @api.onchange(
@@ -208,21 +208,21 @@ and risk derivation.""",
         comodel_name="general_audit_ws_f5e7049",
         compute="_compute_allowed_link_2_ids",
         store=False,
-        help="""Eligible PE.110.2 worksheets from the same audit
+        help="""Eligible worksheets from the same audit
 that can be linked.""",
     )
     link_2 = fields.Many2one(
         string="PE.110.2",
         comodel_name="general_audit_ws_f5e7049",
         ondelete="restrict",
-        help="""Selected PE.110.2 worksheet used for cross-referencing
+        help="""Selected worksheet used for cross-referencing
 and risk derivation.""",
     )
     link_2_risk = fields.Selection(
         string="Risk (PE.110.2)",
         related="link_2.risk",
         store=True,
-        help="Risk level propagated from the linked PE.110.2 worksheet.",
+        help="Risk level propagated from the linked worksheet.",
     )
 
     @api.onchange(
@@ -256,21 +256,21 @@ and risk derivation.""",
         comodel_name="general_audit_ws_b9d8a5c",
         compute="_compute_allowed_link_3_ids",
         store=False,
-        help="""Eligible PE.110.3 worksheets from the same audit
+        help="""Eligible worksheets from the same audit
 that can be linked.""",
     )
     link_3 = fields.Many2one(
         string="PE.110.3",
         comodel_name="general_audit_ws_b9d8a5c",
         ondelete="restrict",
-        help="""Selected PE.110.3 worksheet used for cross-referencing
+        help="""Selected worksheet used for cross-referencing
 and risk derivation.""",
     )
     link_3_risk = fields.Selection(
         string="Risk (PE.110.3)",
         related="link_3.risk",
         store=True,
-        help="Risk level propagated from the linked PE.110.3 worksheet.",
+        help="Risk level propagated from the linked worksheet.",
     )
 
     @api.onchange(
@@ -304,21 +304,21 @@ and risk derivation.""",
         comodel_name="general_audit_ws_0427d28",
         compute="_compute_allowed_link_4_ids",
         store=False,
-        help="""Eligible PE.110.4 worksheets from the same audit
+        help="""Eligible worksheets from the same audit
 that can be linked.""",
     )
     link_4 = fields.Many2one(
         string="PE.110.4",
         comodel_name="general_audit_ws_0427d28",
         ondelete="restrict",
-        help="""Selected PE.110.4 worksheet used for cross-referencing
+        help="""Selected worksheet used for cross-referencing
 and risk derivation.""",
     )
     link_4_risk = fields.Selection(
         string="Risk (PE.110.4)",
         related="link_4.risk",
         store=True,
-        help="Risk level propagated from the linked PE.110.4 worksheet.",
+        help="Risk level propagated from the linked worksheet.",
     )
 
     @api.onchange(

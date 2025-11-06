@@ -53,14 +53,14 @@ Simplified, Intermediate, or Enhanced.""",
         comodel_name="general_audit_ws_805d4d5",
         compute="_compute_allowed_link_1_ids",
         store=False,
-        help="""Eligible PE.110.2.2 worksheets (KYC) from the same audit
+        help="""Eligible worksheets (KYC) from the same audit
 that can be linked.""",
     )
     link_1 = fields.Many2one(
         string="PE.110.2.2",
         comodel_name="general_audit_ws_805d4d5",
         ondelete="restrict",
-        help="""Selected PE.110.2.2 worksheet used as a reference
+        help="""Selected worksheet used as a reference
 for this analysis.""",
     )
 
