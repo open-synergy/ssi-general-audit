@@ -7,7 +7,7 @@ from odoo import fields, models
 
 class GeneralAuditWS805d4d5Management(models.Model):
     _name = "general_audit_ws_805d4d5.management"
-    _description = "Know Your Customer Principles (805d4d5)"
+    _description = "Know Your Customer Principles (805d4d5) - Management"
 
     worksheet_id = fields.Many2one(
         string="# Worksheet",
