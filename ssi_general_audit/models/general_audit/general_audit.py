@@ -570,6 +570,27 @@ class GeneralAudit(models.Model):
         if self.partner_id and self.partner_id.public_offering_ids:
             self.public_offering_ids = [(6, 0, self.partner_id.public_offering_ids.ids)]
 
+    def action_reload_account(self):
+        for record in self.sudo():
+            record._reload_account()
+
+    def action_load_worksheet_summary(self):
+        for record in self.sudo():
+            record._load_worksheet_summary()
+
+    def action_open_trial_balance(self):
+        for record in self.sudo():
+            result = record._open_trial_balance()
+        return result
+
+    def action_open_worksheet_summary(self):
+        self.ensure_one()
+        action = self.env.ref(
+            "ssi_general_audit.general_audit_worksheet_summary_action"
+        ).read()[0]
+        action["domain"] = [("general_audit_id", "=", self.id)]
+        return action
+
     @api.constrains(
         "state",
     )
@@ -720,6 +741,17 @@ class GeneralAudit(models.Model):
             )
             raise ValidationError(_(error_message))
 
+    def _open_trial_balance(self):
+        self.ensure_one()
+        waction = self.env.ref("ssi_general_audit.client_trial_balance_action").read()[
+            0
+        ]
+        waction["domain"] = [("general_audit_id", "=", self.id)]
+        waction["context"] = {
+            "default_general_audit_id": self.id,
+        }
+        return waction
+
     def _recompute_extrapolation_computation(self):
         self.ensure_one()
         additional_dict = self._get_extrapolation_account_type_dict()
@@ -779,22 +811,6 @@ class GeneralAudit(models.Model):
                 }
             )
         return result
-
-    def action_reload_account(self):
-        for record in self.sudo():
-            record._reload_account()
-
-    def action_load_worksheet_summary(self):
-        for record in self.sudo():
-            record._load_worksheet_summary()
-
-    def action_open_worksheet_summary(self):
-        self.ensure_one()
-        action = self.env.ref(
-            "ssi_general_audit.general_audit_worksheet_summary_action"
-        ).read()[0]
-        action["domain"] = [("general_audit_id", "=", self.id)]
-        return action
 
     def _load_worksheet_summary(self):
         self.ensure_one()
