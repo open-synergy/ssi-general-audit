@@ -49,6 +49,7 @@ class GeneralAuditWSe51bb1c(models.Model):
     def _compute_allowed_employee_ids(self):
         obj = self.env["general_audit_ws_b9d8a5c"]
         for record in self:
+            result = False
             record.allowed_employee_ids = self.env["hr.employee"]
             if record.general_audit_id:
                 criteria = [
