@@ -12,7 +12,11 @@
     <field name="arch" type="xml">
         <data>
             <xpath expr="//page[last()]" position="before">
-                <page name="inherent_risk" string="Inherent Risk">
+                <page
+                        name="inherent_risk"
+                        string="Inherent Risk"
+                        groups="base.group_system"
+                    >
                     <group name="inherent_risk_1" colspan="4" col="2">
                         <field
                                 name="significant_risk_account_type_ids"
