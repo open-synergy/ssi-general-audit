@@ -583,6 +583,11 @@ class GeneralAudit(models.Model):
             result = record._open_trial_balance()
         return result
 
+    def action_open_account_mapping(self):
+        for record in self.sudo():
+            result = record._open_account_mapping()
+        return result
+
     def action_open_worksheet_summary(self):
         self.ensure_one()
         action = self.env.ref(
@@ -746,6 +751,17 @@ class GeneralAudit(models.Model):
         waction = self.env.ref("ssi_general_audit.client_trial_balance_action").read()[
             0
         ]
+        waction["domain"] = [("general_audit_id", "=", self.id)]
+        waction["context"] = {
+            "default_general_audit_id": self.id,
+        }
+        return waction
+
+    def _open_account_mapping(self):
+        self.ensure_one()
+        waction = self.env.ref(
+            "ssi_general_audit.client_account_mapping_action"
+        ).read()[0]
         waction["domain"] = [("general_audit_id", "=", self.id)]
         waction["context"] = {
             "default_general_audit_id": self.id,
