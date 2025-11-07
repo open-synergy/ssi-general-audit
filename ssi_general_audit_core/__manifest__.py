@@ -129,6 +129,7 @@
         "security/res_users_role/system_administrator.xml",
         "security/res_users_role/ou_administrator.xml",
         "security/res_users_role/audit_team.xml",
+        "security/ir.model.access.csv",
         "data/ir_config_parameter.xml",
         "data/res_currency.xml",
         "data/res_company.xml",
