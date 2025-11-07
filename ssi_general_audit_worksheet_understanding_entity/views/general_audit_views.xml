@@ -12,7 +12,11 @@
     <field name="arch" type="xml">
         <data>
             <xpath expr="//page[last()]" position="before">
-                <page name="understanding_entity" string="Understanding Entity">
+                <page
+                        name="understanding_entity"
+                        string="Understanding Entity"
+                        groups="base.group_system"
+                    >
                     <group name="understanding_entity_1" colspan="4" col="2">
                         <field name="business_cycle_ids" widget="many2many_tags" />
                         <field name="other_report_ids" widget="many2many_tags" />
