@@ -33,11 +33,14 @@ class GeneralAuditWSfbf57ee(models.Model):
     z_score_coefficient_set_id = fields.Many2one(
         comodel_name="general_audit_going_concern_z_score_coeficient_set",
         string="Z-Score Coefficient Set",
-        required=True,
+        required=False,
         ondelete="restrict",
         help="Z-Score Coefficient Set used in the going concern analysis.",
         readonly=True,
-        states={"draft": [("readonly", False)], "open": [("readonly", False)]},
+        states={
+            "draft": [("readonly", False)],
+            "open": [("readonly", False), ("required", True)],
+        },
     )
     computation_line_ids = fields.One2many(
         comodel_name="general_audit_ws_fbf57ee.computation",
