@@ -20,6 +20,116 @@
     </field>
 </record>
 
+<record id="general_audit_worksheet_summary_view_form" model="ir.ui.view">
+    <field name="name">general_audit.worksheet_summary - form</field>
+    <field name="model">general_audit.worksheet_summary</field>
+    <field name="arch" type="xml">
+        <form string="Worksheet Summary" class="o_form_image">
+            <sheet>
+                <!-- Header: gambar + judul + info singkat -->
+                <div class="oe_title" style="align-items:center; gap:16px;">
+                    <!-- Gambar: pakai image_128 sesuai model Anda -->
+                    <field
+                            name="image_128"
+                            widget="image"
+                            options="{'preview_image':'image_128'}"
+                            class="oe_avatar"
+                            style="border-radius:8px;"
+                        />
+
+                    <div>
+                        <!-- Judul: Type -->
+                        <h1 style="margin:0;">
+                            <field name="type_id" readonly="1" />
+                        </h1>
+                        <!-- Subjudul: Category -->
+                        <div style="color:#666; margin-top:4px;">
+                            <span title="Category">
+                                <i class="fa fa-tags" style="margin-right:6px;" />
+                                <field name="category_id" readonly="1" />
+                            </span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Baris metrik (ikon + angka) -->
+                <group style="margin-top:8px;">
+                    <div
+                            style="display:flex; align-items:center; gap:20px; flex-wrap:wrap; font-size:13px;"
+                        >
+                        <span
+                                title="Maximum worksheets allowed"
+                                style="display:inline-flex; align-items:center;"
+                            >
+                            <i class="fa fa-flag" style="margin-right:6px;" />
+                            <field name="max_worksheet" readonly="1" />
+                        </span>
+                        <span
+                                title="Created worksheets"
+                                style="display:inline-flex; align-items:center;"
+                            >
+                            <i class="fa fa-files-o" style="margin-right:6px;" />
+                            <field name="num_of_worksheet" readonly="1" />
+                        </span>
+                        <span
+                                title="Finished worksheets"
+                                style="display:inline-flex; align-items:center;"
+                            >
+                            <i class="fa fa-check-square" style="margin-right:6px;" />
+                            <field name="num_of_finish_worksheet" readonly="1" />
+                        </span>
+                        <!-- Status Required / Additional (ikon saja) -->
+                        <span style="display:inline-flex; align-items:center;">
+                            <field name="is_required" invisible="1" />
+                            <label for="is_required" string="" invisible="1" />
+                            <span
+                                    t-if="record.is_required and record.is_required.raw_value"
+                                >
+                                <i
+                                        class="fa fa-check-circle"
+                                        title="Required worksheet"
+                                        style="color:#007bff;"
+                                    />
+                            </span>
+                            <span
+                                    t-if="not (record.is_required and record.is_required.raw_value)"
+                                >
+                                <i
+                                        class="fa fa-circle-o"
+                                        title="Additional worksheet"
+                                        style="color:#999;"
+                                    />
+                            </span>
+                        </span>
+                        <!-- Status Finish (ikon saja) -->
+                        <span style="display:inline-flex; align-items:center;">
+                            <field name="finish" invisible="1" />
+                            <label for="finish" string="" invisible="1" />
+                            <span t-if="record.finish and record.finish.raw_value">
+                                <i
+                                        class="fa fa-check"
+                                        title="All worksheets finished"
+                                        style="color:#28a745;"
+                                    />
+                            </span>
+                            <span
+                                    t-if="not (record.finish and record.finish.raw_value)"
+                                >
+                                <i
+                                        class="fa fa-clock-o"
+                                        title="In progress"
+                                        style="color:#999;"
+                                    />
+                            </span>
+                        </span>
+                    </div>
+                </group>
+            </sheet>
+        </form>
+    </field>
+</record>
+
+
 <record id="general_audit_worksheet_summary_view_kanban" model="ir.ui.view">
     <field name="name">general_audit.worksheet_summary - kanban</field>
     <field name="model">general_audit.worksheet_summary</field>
