@@ -60,75 +60,91 @@
                         string="Characteristics of the Engagement"
                     >
                             <!-- Financial Reporting Framework -->
-                            <div
-                            style="display: flex; align-items: flex-start; margin-bottom: 8px; width: 100%;"
-                        >
-                                <div
-                                class="o_form_label"
-                                style="font-weight: bold; white-space: normal; width: 600px;"
-                            >
+                            <!-- <div style="display: flex; align-items: flex-start; margin-bottom: 8px; width: 100%;">
+                                <div class="o_form_label" style="font-weight: bold; white-space: normal; width: 600px;">
                                     Financial Reporting Framework (FRF) to be applied
                                 </div>
                                 <span style="margin: 0 8px;font-weight: bold;">:</span>
+                                <field name="financial_accounting_standard_id" readonly="1" style="flex: 1;"/>
+                            </div> -->
+                            <group name="group_1" col="2" style="margin-bottom: 8px;">
+                                <label
+                                for="financial_accounting_standard_id"
+                                string="Financial Reporting Framework (FRF) to be applied"
+                                style="font-weight: bold; white-space: normal; width: 600px;"
+                            />
                                 <field
                                 name="financial_accounting_standard_id"
+                                nolabel="1"
                                 readonly="1"
                                 style="flex: 1;"
                             />
-                            </div>
+                            </group>
 
                             <!-- Additional Reports Requested -->
-                            <div
-                            style="display: flex; align-items: flex-start; margin-bottom: 8px;"
-                        >
-                                <div
-                                class="o_form_label"
-                                style="font-weight: bold; white-space: normal; width: 600px;"
-                            >
+                            <!-- <div style="display: flex; align-items: flex-start; margin-bottom: 8px;">
+                                <div class="o_form_label" style="font-weight: bold; white-space: normal; width: 600px;">
                                     Additional reports requested, such as regulator-mandated reports
                                 </div>
                                 <span style="margin: 0 8px;font-weight: bold;">:</span>
+                                <field name="other_report_ids" widget="many2many_checkboxes" nolabel="1" style="flex: 1;"/>
+                            </div> -->
+                            <group name="group_2" col="2" style="margin-bottom: 8px;">
+                                <label
+                                for="other_report_ids"
+                                string="Additional reports requested, such as regulator-mandated reports"
+                                style="font-weight: bold; white-space: normal; width: 600px;"
+                            />
                                 <field
                                 name="other_report_ids"
                                 widget="many2many_checkboxes"
                                 nolabel="1"
                                 style="flex: 1;"
                             />
-                            </div>
+                            </group>
 
                             <!-- Requirement for Specialized Knowledge -->
-                            <div
-                            style="display: flex; align-items: flex-start; margin-bottom: 8px;"
-                        >
-                                <div
-                                class="o_form_label"
-                                style="font-weight: bold; white-space: normal; width: 600px;"
-                            >
+                            <!-- <div style="display: flex; align-items: flex-start; margin-bottom: 8px;">
+                                <div class="o_form_label" style="font-weight: bold; white-space: normal; width: 600px;">
                                     Requirement for specialized knowledge or expertise to address complex or high-risk matters
                                 </div>
                                 <span style="margin: 0 8px;font-weight: bold;">:</span>
+                                <field name="expert_type_ids" widget="many2many_tags" nolabel="1" style="flex: 1;"/>
+                            </div> -->
+                            <group name="group_3" col="2" style="margin-bottom: 8px;">
+                                <label
+                                for="expert_type_ids"
+                                string="Requirement for specialized knowledge or expertise to address complex or high-risk matters"
+                                style="font-weight: bold; white-space: normal; width: 600px;"
+                            />
                                 <field
                                 name="expert_type_ids"
                                 widget="many2many_tags"
                                 nolabel="1"
                                 style="flex: 1;"
                             />
-                            </div>
+                            </group>
 
                             <!-- Audit Evidence -->
+                            <!-- <div style="display: flex; align-items: flex-start; margin-bottom: 8px;">
+                                <div class="o_form_label" style="font-weight: bold; white-space: normal; width: 600px;">
+                                    Audit evidence required from service organizations external to the entity
+                                </div>
+                                <span style="margin: 0 8px;font-weight: bold;">:</span>
+                                <field name="expert_type_ids" widget="many2many_tags" nolabel="1" style="flex: 1;"/>
+                            </div> -->
                             <div
+                            name="div_1"
                             style="display: flex; align-items: flex-start; margin-bottom: 8px;"
                         >
-                                <div
-                                class="o_form_label"
+                                <label
+                                for="other_evidence_ids"
+                                string="Use of audit evidence obtained in prior audits"
                                 style="font-weight: bold; white-space: normal; width: 950px;"
-                            >
-                                    Audit evidence required from service organizations external to the entity :
-                                </div>
+                            />
                             </div>
                             <field
                             name="other_evidence_ids"
-                            nolabel="1"
                             widget="many2many_tree"
                             style="margin-left: 20px; width: 100%;"
                         >
@@ -144,20 +160,27 @@
                                 </tree>
                             </field>
 
-                            <!-- Use Audit Evidence -->
-                            <div
-                            style="display: flex; align-items: flex-start; margin-bottom: 8px;"
-                        >
-                                <div
-                                class="o_form_label"
-                                style="font-weight: bold; white-space: normal; width: 950px;"
-                            >
+
+                            <!-- Use Prior Audit Evidence -->
+                            <!-- <div style="display: flex; align-items: flex-start; margin-bottom: 8px;">
+                                <div class="o_form_label" style="font-weight: bold; white-space: normal; width: 600px;">
                                     Use of audit evidence obtained in prior audits
                                 </div>
+                                <span style="margin: 0 8px;font-weight: bold;">:</span>
+                                <field name="expert_type_ids" widget="many2many_tags" nolabel="1" style="flex: 1;"/>
+                            </div> -->
+                            <div
+                            name="div_2"
+                            style="display: flex; align-items: flex-start; margin-bottom: 8px;"
+                        >
+                                <label
+                                for="previous_audit_evidence_ids"
+                                string="Audit evidence required from service organizations external to the entity"
+                                style="font-weight: bold; white-space: normal; width: 950px;"
+                            />
                             </div>
                             <field
                             name="previous_audit_evidence_ids"
-                            nolabel="1"
                             widget="many2many_tree"
                             style="margin-left: 20px; width: 100%;"
                         >
@@ -172,20 +195,32 @@
                             </field>
 
                             <!-- Impact Of Information Technology -->
-                            <div
-                            style="display: flex; align-items: flex-start; margin-bottom: 8px;"
-                        >
-                                <div
-                                class="o_form_label"
-                                style="font-weight: bold; white-space: normal; width: 950px;"
-                            >
+                            <!-- <div style="display: flex; align-items: flex-start; margin-bottom: 8px;">
+                                <div class="o_form_label" style="font-weight: bold; white-space: normal; width: 950px;">
                                     Impact of information technology on audit procedures (data availability and use of computer-assisted audit techniques) :
                                 </div>
+                            </div>
+                            <field name="it_detail_ids" widget="many2many_tree" nolabel="1" style="margin-left: 20px; width: 100%;">
+                                <tree>
+                                    <field name="understanding_result" />
+                                    <field name="impact_to_financial_report" />
+                                    <field name="related_account_type_ids" widget="many2many_tags"
+                                />
+                                </tree>
+                            </field> -->
+                            <div
+                            name="div_3"
+                            style="display: flex; align-items: flex-start; margin-bottom: 8px;"
+                        >
+                                <label
+                                for="it_detail_ids"
+                                string="Impact of information technology on audit procedures (data availability and use of computer-assisted audit techniques)"
+                                style="font-weight: bold; white-space: normal; width: 950px;"
+                            />
                             </div>
                             <field
                             name="it_detail_ids"
                             widget="many2many_tree"
-                            nolabel="1"
                             style="margin-left: 20px; width: 100%;"
                         >
                                 <tree>
@@ -199,20 +234,31 @@
                             </field>
 
                             <!-- Unannounced Audit -->
-                            <div
-                            style="display: flex; align-items: flex-start; margin-bottom: 8px;"
-                        >
-                                <div
-                                class="o_form_label"
-                                style="font-weight: bold; white-space: normal; width: 950px;"
-                            >
+                            <!-- <div style="display: flex; align-items: flex-start; margin-bottom: 8px;">
+                                <div class="o_form_label" style="font-weight: bold; white-space: normal; width: 950px;">
                                     Incorporation of elements of unpredictability in performing audit procedures :
                                 </div>
+                            </div>
+                            <field name="unannounced_audit_ids" widget="many2many_tree" nolabel="1" style="margin-left: 20px; width: 100%;">
+                                <tree>
+                                    <field name="class_transaction_id" />
+                                    <field name="related_account_type_ids" widget="many2many_tags" />
+                                    <field name="need_unannounced_audit" />
+                                </tree>
+                            </field> -->
+                            <div
+                            name="div_4"
+                            style="display: flex; align-items: flex-start; margin-bottom: 8px;"
+                        >
+                                <label
+                                for="unannounced_audit_ids"
+                                string="Incorporation of elements of unpredictability in performing audit procedures"
+                                style="font-weight: bold; white-space: normal; width: 950px;"
+                            />
                             </div>
                             <field
                             name="unannounced_audit_ids"
                             widget="many2many_tree"
-                            nolabel="1"
                             style="margin-left: 20px; width: 100%;"
                         >
                                 <tree>
@@ -238,7 +284,18 @@
                                 <span style="margin: 0 8px;font-weight: bold;">:</span>
                                 <!-- <field name="expert_type_ids" widget="many2many_tags" nolabel="1" style="flex: 1;"/> -->
                             </div>
-
+                            <!-- <div name="div_5" style="display: flex; align-items: flex-start; margin-bottom: 8px;">
+                                <label for="unannounced_audit_ids"
+                                    string="Availability of client personnel and data"
+                                    style="font-weight: bold; white-space: normal; width: 950px;"/>
+                            </div>
+                            <field name="unannounced_audit_ids" widget="many2many_tree" style="margin-left: 20px; width: 100%;">
+                                <tree>
+                                    <field name="class_transaction_id" />
+                                    <field name="related_account_type_ids" widget="many2many_tags" />
+                                    <field name="need_unannounced_audit" />
+                                </tree>
+                            </field> -->
                     </page>
 
                     <page name="report_obj" string="Reporting Objectives">
@@ -255,6 +312,18 @@
                             <span style="margin: 0 8px;font-weight: bold;">:</span>
                             <!-- <field name="expert_type_ids" widget="many2many_tags" nolabel="1" style="flex: 1;"/> -->
                         </div>
+                        <!-- <div name="div_6" style="display: flex; align-items: flex-start; margin-bottom: 8px;">
+                            <label for="unannounced_audit_ids"
+                                string="Reporting timetable to be followed by the entity"
+                                style="font-weight: bold; white-space: normal; width: 950px;"/>
+                        </div>
+                        <field name="unannounced_audit_ids" widget="many2many_tree" style="margin-left: 20px; width: 100%;">
+                            <tree>
+                                <field name="class_transaction_id" />
+                                <field name="related_account_type_ids" widget="many2many_tags" />
+                                <field name="need_unannounced_audit" />
+                            </tree>
+                        </field> -->
 
                         <!-- Auditor Report -->
                         <div style="margin-bottom: 16px;">
@@ -264,13 +333,9 @@
                             >
                                 Schedule of meetings with management and TCWG to discuss the auditor's report and other communications such as the management letter :
                             </div>
-
-                            <!-- Container untuk 3 kolom -->
                             <div
                                 style="display: flex; justify-content: space-between; gap: 24px;"
                             >
-
-                                <!-- ================= Management ================= -->
                                 <div style="flex: 1;">
                                     <div
                                         class="o_form_label"
@@ -278,7 +343,6 @@
                                     >
                                         Management
                                     </div>
-
                                     <div style="display: flex; margin-bottom: 8px;">
                                         <div
                                             style="font-weight: bold; width: 100px;"
@@ -292,7 +356,6 @@
                                             style="flex: 1;"
                                         />
                                     </div>
-
                                     <div style="display: flex; margin-bottom: 8px;">
                                         <div
                                             style="font-weight: bold; width: 100px;"
@@ -306,7 +369,6 @@
                                             style="flex: 1;"
                                         />
                                     </div>
-
                                     <div style="display: flex;">
                                         <div
                                             style="font-weight: bold; width: 100px;"
@@ -322,7 +384,6 @@
                                     </div>
                                 </div>
 
-                                <!-- ================= TCWG ================= -->
                                 <div style="flex: 1;">
                                     <div
                                         class="o_form_label"
@@ -330,7 +391,6 @@
                                     >
                                         TCWG
                                     </div>
-
                                     <div style="display: flex; margin-bottom: 8px;">
                                         <div
                                             style="font-weight: bold; width: 100px;"
@@ -344,7 +404,6 @@
                                             style="flex: 1;"
                                         />
                                     </div>
-
                                     <div style="display: flex; margin-bottom: 8px;">
                                         <div
                                             style="font-weight: bold; width: 100px;"
@@ -358,7 +417,6 @@
                                             style="flex: 1;"
                                         />
                                     </div>
-
                                     <div style="display: flex;">
                                         <div
                                             style="font-weight: bold; width: 100px;"
@@ -374,7 +432,6 @@
                                     </div>
                                 </div>
 
-                                <!-- ================= Internal Auditor ================= -->
                                 <div style="flex: 1;">
                                     <div
                                         class="o_form_label"
@@ -382,7 +439,6 @@
                                     >
                                         Internal Auditor
                                     </div>
-
                                     <div style="display: flex; margin-bottom: 8px;">
                                         <div
                                             style="font-weight: bold; width: 100px;"
@@ -396,7 +452,6 @@
                                             style="flex: 1;"
                                         />
                                     </div>
-
                                     <div style="display: flex; margin-bottom: 8px;">
                                         <div
                                             style="font-weight: bold; width: 100px;"
@@ -410,7 +465,6 @@
                                             style="flex: 1;"
                                         />
                                     </div>
-
                                     <div style="display: flex;">
                                         <div
                                             style="font-weight: bold; width: 100px;"

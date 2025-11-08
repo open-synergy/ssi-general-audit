@@ -351,6 +351,7 @@ class GeneralAuditWSfbbe0f8(models.Model):
     def _compute_main_business_activity(self):
         for record in self:
             previous_auditor = other_provided = False
+            previous_audit_evidence = other_evidence = False
             if record.link_7_id:
                 if record.link_7_id.previous_audit_information_ids:
                     previous_auditor = (
@@ -358,8 +359,16 @@ class GeneralAuditWSfbbe0f8(models.Model):
                     )
                 if record.link_7_id.other_provided_service_ids:
                     other_provided = record.link_7_id.other_provided_service_ids.ids
+                if record.link_7_id.previous_audit_evidence_ids:
+                    previous_audit_evidence = (
+                        record.link_7_id.previous_audit_evidence_ids.ids
+                    )
+                if record.link_7_id.other_evidence_ids:
+                    other_evidence = record.link_7_id.other_evidence_ids.ids
             record.previous_auditor_ids = previous_auditor
             record.other_provided_service_ids = other_provided
+            record.previous_audit_evidence_ids = previous_audit_evidence
+            record.other_evidence_ids = other_evidence
 
     previous_auditor_ids = fields.Many2many(
         comodel_name=("general_audit_ws_ae11f7e." "previous_audit_information"),
@@ -373,6 +382,20 @@ class GeneralAuditWSfbbe0f8(models.Model):
         compute_sudo=True,
         compute="_compute_main_business_activity",
         relation="rel_ga_ws_fbbe0f8_2_ae11f7e_other_provided_service",
+        store=True,
+    )
+    previous_audit_evidence_ids = fields.Many2many(
+        comodel_name=("general_audit_ws_ae11f7e." "previous_audit_evidence"),
+        compute_sudo=True,
+        compute="_compute_main_business_activity",
+        relation="rel_ga_ws_fbbe0f8_2_ae11f7e_previous_audit_evidence",
+        store=True,
+    )
+    other_evidence_ids = fields.Many2many(
+        comodel_name=("general_audit_ws_ae11f7e." "other_evidence"),
+        compute_sudo=True,
+        compute="_compute_main_business_activity",
+        relation="rel_ga_ws_fbbe0f8_2_ae11f7e_other_evidence",
         store=True,
     )
 
