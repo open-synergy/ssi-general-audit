@@ -170,6 +170,21 @@ class GeneralAuditWSae11f7e(models.Model):
         },
         help="Significant audit information from prior periods.",
     )
+    previous_audit_evidence_ids = fields.One2many(
+        string="Previous Audit Evidence",
+        comodel_name="general_audit_ws_ae11f7e.previous_audit_evidence",
+        inverse_name="worksheet_id",
+        readonly=True,
+        states={
+            "open": [
+                ("readonly", False),
+            ],
+        },
+        help=(
+            "Audit evidence from prior periods that remains "
+            "relevant to the current audit."
+        ),
+    )
     previous_other_information_ids = fields.One2many(
         string="Previous Significant Other Information",
         comodel_name="general_audit_ws_ae11f7e.previous_other_information",
@@ -205,6 +220,21 @@ class GeneralAuditWSae11f7e(models.Model):
             ],
         },
         help="Other provided service relevant to understanding the entity.",
+    )
+    other_evidence_ids = fields.One2many(
+        string="Other Evidence",
+        comodel_name="general_audit_ws_ae11f7e.other_evidence",
+        inverse_name="worksheet_id",
+        readonly=True,
+        states={
+            "open": [
+                ("readonly", False),
+            ],
+        },
+        help=(
+            "Other audit evidence relevant to understanding the entity that is not "
+            "classified under specific prior period categories."
+        ),
     )
 
     def _inverse_business_cycle_ids(self):

@@ -334,6 +334,61 @@
                                 </group>
                             </form>
                         </field>
+                        <separator string="Previous Evidence" />
+                        <field name="previous_audit_evidence_ids">
+                            <tree>
+                                <field name="evidence_id" />
+                                <field name="summary" />
+                                <field
+                                    name="related_account_type_ids"
+                                    widget="many2many_tags"
+                                />
+                            </tree>
+                            <form>
+                                <group
+                                    name="other_provided_service_1"
+                                    colspan="4"
+                                    col="2"
+                                >
+                                    <field name="worksheet_id" invisible="1" />
+                                    <field name="evidence_id" />
+                                    <field name="summary" />
+                                    <field
+                                        name="related_account_type_ids"
+                                        widget="many2many_tags"
+                                    />
+                                </group>
+                            </form>
+                        </field>
+                        <separator string="Other Evidence" />
+                        <field name="other_evidence_ids">
+                            <tree>
+                                <field name="evidence_id" />
+                                <field name="partner_id" />
+                                <field name="partner_name" />
+                                <field name="summary" />
+                                <field
+                                    name="related_account_type_ids"
+                                    widget="many2many_tags"
+                                />
+                            </tree>
+                            <form>
+                                <group
+                                    name="other_provided_service_1"
+                                    colspan="4"
+                                    col="2"
+                                >
+                                    <field name="worksheet_id" invisible="1" />
+                                    <field name="partner_id" />
+                                    <field name="partner_name" />
+                                    <field name="summary" />
+                                    <field
+                                        name="related_account_type_ids"
+                                        widget="many2many_tags"
+                                    />
+                                </group>
+                            </form>
+                        </field>
                     </page>
                     <page name="other_report" string="Other Reports">
                         <group name="other_report" colspan="4" col="2">

@@ -14,6 +14,8 @@ from . import (
     general_audit_ws_ae11f7e_expert,
     general_audit_ws_ae11f7e_previous_audit_information,
     general_audit_ws_ae11f7e_previous_other_information,
+    general_audit_ws_ae11f7e_previous_audit_evidence,
     general_audit_ws_ae11f7e_other_information,
     general_audit_ws_ae11f7e_other_provided_service,
+    general_audit_ws_ae11f7e_other_evidence,
 )
