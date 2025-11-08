@@ -120,6 +120,7 @@
         "ssi_partner_experience",
         "ssi_partner_identification",
         "ssi_hr",
+        "ssi_py3o_print_mixin",
     ],
     "data": [
         "security/res_groups/system_administrator.xml",
