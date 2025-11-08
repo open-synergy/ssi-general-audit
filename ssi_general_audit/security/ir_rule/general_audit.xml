@@ -1,82 +1,73 @@
-<?xml version="1.0" encoding="utf-8" ?>
-<!-- Copyright 2022 OpenSynergy Indonesia
-     Copyright 2022 PT. Simetri Sinergi Indonesia
-     License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl). -->
+<?xml version='1.0' encoding='utf-8' ?>
 <odoo>
-<!-- General Audit -->
-<record id="general_audit_internal_user_rule" model="ir.rule">
-    <field name="name">General Audit - Internal Users</field>
-    <field name="model_id" ref="model_general_audit" />
-    <field name="groups" eval="[(4, ref('base.group_user'))]" />
-    <field name="domain_force">[
+    <record id="general_audit_internal_user_rule" model="ir.rule">
+        <field name="name">General Audit - Internal Users</field>
+        <field name="model_id" ref="model_general_audit" />
+        <field name="groups" eval="[(4, ref('base.group_user'))]" />
+        <field name="domain_force">[
       '|',
       ('user_id','=',user.id),
       ('reviewer_id','=',user.id),
     ]</field>
-    <field name="perm_unlink" eval="1" />
-    <field name="perm_write" eval="1" />
-    <field name="perm_read" eval="1" />
-    <field name="perm_create" eval="1" />
-</record>
-
-<record id="general_audit_internal_user_team_rule" model="ir.rule">
-    <field name="name">General Audit - Internal Users - Team Member</field>
-    <field name="model_id" ref="model_general_audit" />
-    <field name="groups" eval="[(4, ref('base.group_user'))]" />
-    <field name="domain_force">[
+        <field name="perm_unlink" eval="1" />
+        <field name="perm_write" eval="1" />
+        <field name="perm_read" eval="1" />
+        <field name="perm_create" eval="1" />
+    </record>
+    <record id="general_audit_internal_user_team_rule" model="ir.rule">
+        <field name="name">General Audit - Internal Users - Team Member</field>
+        <field name="model_id" ref="model_general_audit" />
+        <field name="groups" eval="[(4, ref('base.group_user'))]" />
+        <field name="domain_force">[
         ("team_allocation_user_ids", "in", [user.id])
     ]</field>
-    <field name="perm_unlink" eval="0" />
-    <field name="perm_write" eval="0" />
-    <field name="perm_read" eval="1" />
-    <field name="perm_create" eval="0" />
-</record>
-
-<record id="general_audit_ou_role" model="ir.rule">
-    <field name="name">General Audit - Responsible to operating unit data</field>
-    <field name="model_id" ref="model_general_audit" />
-    <field name="groups" eval="[(4, ref('general_audit_ou_group'))]" />
-    <field
+        <field name="perm_unlink" eval="0" />
+        <field name="perm_write" eval="0" />
+        <field name="perm_read" eval="1" />
+        <field name="perm_create" eval="0" />
+    </record>
+    <record id="general_audit_ou_role" model="ir.rule">
+        <field name="name">General Audit - Responsible to operating unit data</field>
+        <field name="model_id" ref="model_general_audit" />
+        <field name="groups" eval="[(4, ref('general_audit_ou_group'))]" />
+        <field
             name="domain_force"
         >[('operating_unit_id','in',[g.id for g in user.operating_unit_ids])]</field>
-    <field name="perm_unlink" eval="1" />
-    <field name="perm_write" eval="1" />
-    <field name="perm_read" eval="1" />
-    <field name="perm_create" eval="1" />
-</record>
-
-<record id="general_audit_company_rule" model="ir.rule">
-    <field name="name">General Audit - Responsible to company data</field>
-    <field name="model_id" ref="model_general_audit" />
-    <field name="groups" eval="[(4, ref('general_audit_company_group'))]" />
-    <field name="domain_force">[('company_id','=',user.company_id.id)]</field>
-    <field name="perm_unlink" eval="1" />
-    <field name="perm_write" eval="1" />
-    <field name="perm_read" eval="1" />
-    <field name="perm_create" eval="1" />
-</record>
-
-<record id="general_audit_companies_rule" model="ir.rule">
-    <field
+        <field name="perm_unlink" eval="0" />
+        <field name="perm_write" eval="0" />
+        <field name="perm_read" eval="1" />
+        <field name="perm_create" eval="0" />
+    </record>
+    <record id="general_audit_company_rule" model="ir.rule">
+        <field name="name">General Audit - Responsible to company data</field>
+        <field name="model_id" ref="model_general_audit" />
+        <field name="groups" eval="[(4, ref('general_audit_company_group'))]" />
+        <field name="domain_force">[('company_id','=',user.company_id.id)]</field>
+        <field name="perm_unlink" eval="1" />
+        <field name="perm_write" eval="1" />
+        <field name="perm_read" eval="1" />
+        <field name="perm_create" eval="1" />
+    </record>
+    <record id="general_audit_companies_rule" model="ir.rule">
+        <field
             name="name"
         >General Audit - Responsible to company and all child companies data</field>
-    <field name="model_id" ref="model_general_audit" />
-    <field name="groups" eval="[(4, ref('general_audit_company_child_group'))]" />
-    <field name="domain_force">[('company_id','in',user.company_ids.ids)]</field>
-    <field name="perm_unlink" eval="1" />
-    <field name="perm_write" eval="1" />
-    <field name="perm_read" eval="1" />
-    <field name="perm_create" eval="1" />
-</record>
-
-<record id="general_audit_all_rule" model="ir.rule">
-    <field name="name">General Audit - All</field>
-    <field name="model_id" ref="model_general_audit" />
-    <field name="groups" eval="[(4, ref('general_audit_all_group'))]" />
-    <field name="domain_force">[(1,'=',1)]</field>
-    <field name="perm_unlink" eval="1" />
-    <field name="perm_write" eval="1" />
-    <field name="perm_read" eval="1" />
-    <field name="perm_create" eval="1" />
-</record>
+        <field name="model_id" ref="model_general_audit" />
+        <field name="groups" eval="[(4, ref('general_audit_company_child_group'))]" />
+        <field name="domain_force">[('company_id','in',user.company_ids.ids)]</field>
+        <field name="perm_unlink" eval="1" />
+        <field name="perm_write" eval="1" />
+        <field name="perm_read" eval="1" />
+        <field name="perm_create" eval="1" />
+    </record>
+    <record id="general_audit_all_rule" model="ir.rule">
+        <field name="name">General Audit - All</field>
+        <field name="model_id" ref="model_general_audit" />
+        <field name="groups" eval="[(4, ref('general_audit_all_group'))]" />
+        <field name="domain_force">[(1,'=',1)]</field>
+        <field name="perm_unlink" eval="1" />
+        <field name="perm_write" eval="1" />
+        <field name="perm_read" eval="1" />
+        <field name="perm_create" eval="1" />
+    </record>
 </odoo>
