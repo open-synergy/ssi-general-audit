@@ -1,15 +1,12 @@
-<?xml version="1.0" encoding="utf-8" ?>
-<!-- Copyright 2025 OpenSynergy Indonesia
-     Copyright 2025 PT. Simetri Sinergi Indonesia
-     License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl). -->
+<?xml version='1.0' encoding='utf-8' ?>
 <odoo>
-<record id="general_audit_ws_f3a78de_internal_user_rule" model="ir.rule">
-    <field
+    <record id="general_audit_ws_f3a78de_internal_user_rule" model="ir.rule">
+        <field
             name="name"
-        >Final Analytical Procedures - Ratio Analysis (f3a78de) - Internal Users</field>
-    <field name="model_id" ref="model_general_audit_ws_f3a78de" />
-    <field name="groups" eval="[(4, ref('base.group_user'))]" />
-    <field name="domain_force">[
+        >Final Analytical Procedures Ratio Analysis (f3a78de) - Internal Users</field>
+        <field name="model_id" ref="model_general_audit_ws_f3a78de" />
+        <field name="groups" eval="[(4, ref('base.group_user'))]" />
+        <field name="domain_force">[
       '|',
       '|',
       '|',
@@ -18,66 +15,79 @@
       ('general_audit_id.user_id','=',user.id),
       ('general_audit_id.reviewer_id','=',user.id),
     ]</field>
-    <field name="perm_unlink" eval="1" />
-    <field name="perm_write" eval="1" />
-    <field name="perm_read" eval="1" />
-    <field name="perm_create" eval="1" />
-</record>
-
-<record id="general_audit_ws_f3a78de_internal_user_team_rule" model="ir.rule">
-    <field
+        <field name="perm_unlink" eval="1" />
+        <field name="perm_write" eval="1" />
+        <field name="perm_read" eval="1" />
+        <field name="perm_create" eval="1" />
+    </record>
+    <record id="general_audit_ws_f3a78de_internal_user_team_rule" model="ir.rule">
+        <field
             name="name"
-        >Final Analytical Procedures - Ratio Analysis (f3a78de) - Internal Users - Audit Team</field>
-    <field name="model_id" ref="model_general_audit_ws_f3a78de" />
-    <field name="groups" eval="[(4, ref('base.group_user'))]" />
-    <field name="domain_force">[
+        >Final Analytical Procedures Ratio Analysis (f3a78de) - Internal Users - Audit Team</field>
+        <field name="model_id" ref="model_general_audit_ws_f3a78de" />
+        <field name="groups" eval="[(4, ref('base.group_user'))]" />
+        <field name="domain_force">[
         ("general_audit_id.team_allocation_user_ids", "in", [user.id])
     ]</field>
-    <field name="perm_unlink" eval="0" />
-    <field name="perm_write" eval="0" />
-    <field name="perm_read" eval="1" />
-    <field name="perm_create" eval="0" />
-</record>
-
-<record id="general_audit_ws_f3a78de_company_rule" model="ir.rule">
-    <field
+        <field name="perm_unlink" eval="0" />
+        <field name="perm_write" eval="0" />
+        <field name="perm_read" eval="1" />
+        <field name="perm_create" eval="0" />
+    </record>
+    <record id="general_audit_ws_f3a78de_company_rule" model="ir.rule">
+        <field
             name="name"
-        >Final Analytical Procedures - Ratio Analysis (f3a78de) - Responsible to company data</field>
-    <field name="model_id" ref="model_general_audit_ws_f3a78de" />
-    <field name="groups" eval="[(4, ref('general_audit_ws_f3a78de_company_group'))]" />
-    <field name="domain_force">[('company_id','=',user.company_id.id)]</field>
-    <field name="perm_unlink" eval="1" />
-    <field name="perm_write" eval="1" />
-    <field name="perm_read" eval="1" />
-    <field name="perm_create" eval="1" />
-</record>
-
-<record id="general_audit_ws_f3a78de_companies_rule" model="ir.rule">
-    <field
+        >Final Analytical Procedures Ratio Analysis (f3a78de) - Responsible to company data</field>
+        <field name="model_id" ref="model_general_audit_ws_f3a78de" />
+        <field
+            name="groups"
+            eval="[(4, ref('general_audit_ws_f3a78de_company_group'))]"
+        />
+        <field name="domain_force">[('company_id','=',user.company_id.id)]</field>
+        <field name="perm_unlink" eval="1" />
+        <field name="perm_write" eval="1" />
+        <field name="perm_read" eval="1" />
+        <field name="perm_create" eval="1" />
+    </record>
+    <record id="general_audit_ws_f3a78de_companies_rule" model="ir.rule">
+        <field
             name="name"
-        >Final Analytical Procedures - Ratio Analysis (f3a78de) - Responsible to company and all child companies data</field>
-    <field name="model_id" ref="model_general_audit_ws_f3a78de" />
-    <field
+        >Final Analytical Procedures Ratio Analysis (f3a78de) - Responsible to company and all child companies data</field>
+        <field name="model_id" ref="model_general_audit_ws_f3a78de" />
+        <field
             name="groups"
             eval="[(4, ref('general_audit_ws_f3a78de_company_child_group'))]"
         />
-    <field name="domain_force">[('company_id','in',user.company_ids.ids)]</field>
-    <field name="perm_unlink" eval="1" />
-    <field name="perm_write" eval="1" />
-    <field name="perm_read" eval="1" />
-    <field name="perm_create" eval="1" />
-</record>
-
-<record id="general_audit_ws_f3a78de_all_rule" model="ir.rule">
-    <field
+        <field name="domain_force">[('company_id','in',user.company_ids.ids)]</field>
+        <field name="perm_unlink" eval="1" />
+        <field name="perm_write" eval="1" />
+        <field name="perm_read" eval="1" />
+        <field name="perm_create" eval="1" />
+    </record>
+    <record id="general_audit_ws_f3a78de_all_rule" model="ir.rule">
+        <field
             name="name"
-        >Final Analytical Procedures - Ratio Analysis (f3a78de) - All</field>
-    <field name="model_id" ref="model_general_audit_ws_f3a78de" />
-    <field name="groups" eval="[(4, ref('general_audit_ws_f3a78de_all_group'))]" />
-    <field name="domain_force">[(1,'=',1)]</field>
-    <field name="perm_unlink" eval="1" />
-    <field name="perm_write" eval="1" />
-    <field name="perm_read" eval="1" />
-    <field name="perm_create" eval="1" />
-</record>
+        >Final Analytical Procedures Ratio Analysis (f3a78de) - All</field>
+        <field name="model_id" ref="model_general_audit_ws_f3a78de" />
+        <field name="groups" eval="[(4, ref('general_audit_ws_f3a78de_all_group'))]" />
+        <field name="domain_force">[(1,'=',1)]</field>
+        <field name="perm_unlink" eval="1" />
+        <field name="perm_write" eval="1" />
+        <field name="perm_read" eval="1" />
+        <field name="perm_create" eval="1" />
+    </record>
+    <record id="general_audit_ws_f3a78de_ou_role" model="ir.rule">
+        <field
+            name="name"
+        >Final Analytical Procedures Ratio Analysis (f3a78de) - Responsible to operating unit data</field>
+        <field name="model_id" ref="model_general_audit_ws_f3a78de" />
+        <field name="groups" eval="[(4, ref('general_audit_ws_f3a78de_ou_group'))]" />
+        <field
+            name="domain_force"
+        >[('operating_unit_id','in',[g.id for g in user.operating_unit_ids])]</field>
+        <field name="perm_unlink" eval="0" />
+        <field name="perm_write" eval="0" />
+        <field name="perm_read" eval="1" />
+        <field name="perm_create" eval="0" />
+    </record>
 </odoo>
