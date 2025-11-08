@@ -77,6 +77,7 @@
         "views/client_business_process_views.xml",
         "views/ga/general_audit_relevant_regulation_views.xml",
         "views/ga/general_audit_business_environment_views.xml",
+        "views/ga/general_audit_evidence_views.xml",
         "views/worksheet/general_audit_worksheet_type_category_views.xml",
         "views/worksheet/general_audit_worksheet_type_views.xml",
         "views/worksheet/general_audit_worksheet_conclusion_views.xml",

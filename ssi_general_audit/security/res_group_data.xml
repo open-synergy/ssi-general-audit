@@ -3,6 +3,17 @@
      Copyright 2022 PT. Simetri Sinergi Indonesia
      License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl). -->
 <odoo>
+<record id="general_audit_evidence_configurator" model="res.groups">
+    <field name="name">Evidence Configurator</field>
+    <field
+            name="category_id"
+            ref="ssi_accountant.accountant_configurator_module_category"
+        />
+    <field
+            name="users"
+            eval="[(4, ref('base.user_root')), (4, ref('base.user_admin'))]"
+        />
+</record>
 <record id="general_audit_standard_audit_configurator" model="res.groups">
     <field name="name">Standard Audit Configurator</field>
     <field
