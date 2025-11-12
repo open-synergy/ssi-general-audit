@@ -2,7 +2,7 @@
 # Copyright 2025 PT. Simetri Sinergi Indonesia
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl-3.0-standalone.html).
 
-from odoo import fields, models
+from odoo import api, fields, models
 
 
 class GeneralAuditWSa753ab9Item(models.Model):
@@ -27,3 +27,23 @@ class GeneralAuditWSa753ab9Item(models.Model):
         required=True,
         help="Defines the category of checklist where this item is used.",
     )
+    related_field = fields.Char()
+
+    @api.model_create_multi
+    def create(self, vals_list):
+        _super = super(GeneralAuditWSa753ab9Item, self)
+        res = _super.create(vals_list)
+        self.env["general_audit_ws_fbbe0f8"].get_dynamic_labels.cache_clear()
+        return res
+
+    def write(self, vals):
+        _super = super(GeneralAuditWSa753ab9Item, self)
+        res = _super.write(vals)
+        self.env["general_audit_ws_fbbe0f8"].get_dynamic_labels.cache_clear()
+        return res
+
+    def unlink(self):
+        _super = super(GeneralAuditWSa753ab9Item, self)
+        res = _super.unlink()
+        self.env["general_audit_ws_fbbe0f8"].get_dynamic_labels.cache_clear()
+        return res

@@ -1,6 +1,9 @@
 # Copyright 2022 OpenSynergy Indonesia
 # Copyright 2022 PT. Simetri Sinergi Indonesia
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl-3.0-standalone.html).
+from functools import lru_cache
+
+from lxml import etree
 
 from odoo import _, api, fields, models
 
@@ -14,6 +17,15 @@ class GeneralAuditWSfbbe0f8(models.Model):
     _type_xml_id = (
         "ssi_general_audit_worksheet_planning_memorandum." "worksheet_type_fbbe0f8"
     )
+    _label_exceptions = [
+        "id",
+        "create_uid",
+        "create_date",
+        "write_uid",
+        "write_date",
+        "display_name",
+        "note",
+    ]
 
     financial_accounting_standard_id = fields.Many2one(
         related="general_audit_id.financial_accounting_standard_id",
@@ -87,6 +99,10 @@ class GeneralAuditWSfbbe0f8(models.Model):
         compute="_compute_industry_review",
         store=True,
     )
+    label_shedule_meeting_auditor = fields.Char()
+    label_mgmt = fields.Char(
+        string="Management",
+    )
     mgmt_communication_planning_date = fields.Date(
         related="link_10_id.mgmt_communication_planning_date",
         store=True,
@@ -98,6 +114,9 @@ class GeneralAuditWSfbbe0f8(models.Model):
     mgmt_communication_reporting_date = fields.Date(
         related="link_10_id.mgmt_communication_reporting_date",
         store=True,
+    )
+    label_tcwg = fields.Char(
+        string="TCWG",
     )
     tcwg_communication_planning_date = fields.Date(
         related="link_10_id.tcwg_communication_planning_date",
@@ -111,6 +130,9 @@ class GeneralAuditWSfbbe0f8(models.Model):
         related="link_10_id.tcwg_communication_reporting_date",
         store=True,
     )
+    label_internal_auditor = fields.Char(
+        string="Internal Auditor",
+    )
     ia_communication_planning_date = fields.Date(
         related="link_10_id.ia_communication_planning_date",
         store=True,
@@ -123,6 +145,7 @@ class GeneralAuditWSfbbe0f8(models.Model):
         related="link_10_id.ia_communication_reporting_date",
         store=True,
     )
+    label_shedule_meeting_team = fields.Char()
     communication_planning_date = fields.Date(
         related="link_6_id.communication_planning_date",
         store=True,
@@ -247,6 +270,7 @@ class GeneralAuditWSfbbe0f8(models.Model):
         store=True,
     )
 
+    label_materiality = fields.Char()
     materiality_balance_type = fields.Selection(
         string="Balance Type",
         selection=[
@@ -327,6 +351,7 @@ class GeneralAuditWSfbbe0f8(models.Model):
                         result = specific_materiality.ids
             record.specific_materiality_ids = result
 
+    label_specific_materiality = fields.Char()
     specific_materiality_ids = fields.Many2many(
         comodel_name="general_audit_ws_6dcda0e_materiality_mapping",
         compute_sudo=True,
@@ -1122,3 +1147,47 @@ class GeneralAuditWSfbbe0f8(models.Model):
             "link_12_ids": _("Significant Account"),
             "link_13_id": _("Audit Working Plan"),
         }
+
+    @api.model
+    @lru_cache()
+    def get_dynamic_labels(self):
+        ChecklistItem = self.env["general_audit_ws_a753ab9.item"]
+        items = ChecklistItem.search([("related_field", "!=", False)])
+        return {item.related_field: item.name for item in items}
+
+    def get_field_label(self, field_name):
+        labels = self.get_dynamic_labels()
+        return labels.get(field_name, self._fields[field_name].string)
+
+    @api.model
+    def fields_view_get(
+        self, view_id=None, view_type="form", toolbar=False, submenu=False
+    ):
+        _super = super(GeneralAuditWSfbbe0f8, self)
+        res = _super.fields_view_get(
+            view_id=view_id, view_type=view_type, toolbar=toolbar, submenu=submenu
+        )
+
+        if view_type == "form":
+            doc = etree.XML(res["arch"])
+            labels = self.get_dynamic_labels()
+
+            for field_name in self._fields:
+                if field_name in self._label_exceptions:
+                    continue
+
+                label = labels.get(field_name)
+                if not label:  # <-- tambahkan validasi aman
+                    continue
+
+                # ubah string field
+                for node in doc.xpath(f"//field[@name='{field_name}']"):
+                    node.set("string", label)
+
+                # ubah label manual juga, kalau ada
+                for label_node in doc.xpath(f"//label[@for='{field_name}']"):
+                    if label:  # <-- pastikan label bukan None
+                        label_node.set("string", label)
+
+            res["arch"] = etree.tostring(doc, encoding="unicode")
+        return res

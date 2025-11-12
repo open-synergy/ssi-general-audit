@@ -1,0 +1,58 @@
+/* ========================================= */
+/*  READ + EDIT MODE CONSISTENCY FIX         */
+/* ========================================= */
+
+/* Default (READ MODE) */
+.o_form_view.apm .o_form_label {
+    display: inline-block !important;
+    vertical-align: middle !important;
+    white-space: nowrap !important;
+    max-width: 600px !important;
+}
+
+/* Label panjang yang perlu wrap */
+.o_form_view.apm .no-limit-label .o_form_label,
+.o_form_view.apm .no-limit-label label {
+    white-space: normal !important;
+    display: inline-block !important;
+    vertical-align: top !important;
+    line-height: 1.3em !important;
+    max-width: 100% !important;
+}
+
+/* EDIT MODE FIX — buat label behave seperti di read mode */
+.o_form_view.apm.o_form_editable .o_form_label,
+.o_form_view.apm.o_form_editable label.o_form_label {
+    display: inline-flex !important; /* ikut layout input */
+    align-items: center !important;
+    white-space: normal !important;
+    text-overflow: unset !important;
+    line-height: 1.2em !important;
+    max-width: 100% !important;
+}
+
+/* Field widget sejajar vertikal di edit mode */
+.o_form_view.apm.o_form_editable .o_field_widget {
+    vertical-align: middle !important;
+}
+
+/* Tambah sedikit spasi antar baris */
+.o_form_view.apm.o_form_editable .o_group {
+    row-gap: 4px !important;
+}
+
+/* 5️⃣ Untuk group yang lebar */
+.o_form_view.apm .wide-field-group .o_td_label {
+    width: 60% !important;
+}
+.o_form_view.apm .wide-field-group .o_td_field {
+    width: 40% !important;
+}
+
+/* 5️⃣ Untuk group yang lebar */
+.o_form_view.apm .wide-field-group-b .o_td_label {
+    width: 25% !important;
+}
+.o_form_view.apm .wide-field-group-b .o_td_field {
+    width: 75% !important;
+}

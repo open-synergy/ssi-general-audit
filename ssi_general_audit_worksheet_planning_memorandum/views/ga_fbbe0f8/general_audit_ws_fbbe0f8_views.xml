@@ -42,6 +42,9 @@
         />
         <field name="arch" type="xml">
             <data>
+                <xpath expr="//form" position="attributes">
+                    <attribute name="class">apm</attribute>
+                </xpath>
                 <xpath expr="//page[@name='standard_audit']" position="replace">
                 </xpath>
                 <xpath expr="//notebook" position="before">
@@ -59,190 +62,103 @@
                         name="characteristics"
                         string="Characteristics of the Engagement"
                     >
-                            <!-- Financial Reporting Framework -->
-                            <div
-                            style="display: flex; align-items: flex-start; margin-bottom: 8px; width: 100%;"
+                        <group
+                            class="wide-field-group"
+                            name="group_1"
+                            col="2"
+                            style="margin-bottom: 8px;"
                         >
-                                <div
-                                class="o_form_label"
-                                style="font-weight: bold; white-space: normal; width: 600px;"
-                            >
-                                    Financial Reporting Framework (FRF) to be applied
-                                </div>
-                                <span style="margin: 0 8px;font-weight: bold;">:</span>
-                                <field
-                                name="financial_accounting_standard_id"
-                                readonly="1"
-                                style="flex: 1;"
-                            />
-                            </div>
-
-                            <!-- Additional Reports Requested -->
-                            <div
-                            style="display: flex; align-items: flex-start; margin-bottom: 8px;"
-                        >
-                                <div
-                                class="o_form_label"
-                                style="font-weight: bold; white-space: normal; width: 600px;"
-                            >
-                                    Additional reports requested, such as regulator-mandated reports
-                                </div>
-                                <span style="margin: 0 8px;font-weight: bold;">:</span>
-                                <field
+                            <field name="financial_accounting_standard_id" />
+                            <field
                                 name="other_report_ids"
                                 widget="many2many_checkboxes"
-                                nolabel="1"
-                                style="flex: 1;"
                             />
-                            </div>
-
-                            <!-- Requirement for Specialized Knowledge -->
-                            <div
-                            style="display: flex; align-items: flex-start; margin-bottom: 8px;"
-                        >
-                                <div
-                                class="o_form_label"
-                                style="font-weight: bold; white-space: normal; width: 600px;"
-                            >
-                                    Requirement for specialized knowledge or expertise to address complex or high-risk matters
-                                </div>
-                                <span style="margin: 0 8px;font-weight: bold;">:</span>
-                                <field
-                                name="expert_type_ids"
-                                widget="many2many_tags"
-                                nolabel="1"
-                                style="flex: 1;"
+                            <field name="expert_type_ids" widget="many2many_tags" />
+                        </group>
+                        <div class="no-limit-label" colspan="2">
+                            <label
+                                for="other_evidence_ids"
+                                style="font-weight: bold;"
                             />
-                            </div>
-
-                            <!-- Audit Evidence -->
-                            <div
-                            style="display: flex; align-items: flex-start; margin-bottom: 8px;"
-                        >
-                                <div
-                                class="o_form_label"
-                                style="font-weight: bold; white-space: normal; width: 950px;"
-                            >
-                                    Audit evidence required from service organizations external to the entity :
-                                </div>
-                            </div>
-                            <field
+                        </div>
+                        <field
                             name="other_evidence_ids"
-                            nolabel="1"
                             widget="many2many_tree"
+                            nolabel="1"
                             style="margin-left: 20px; width: 100%;"
                         >
-                                <tree>
-                                    <field name="evidence_id" />
-                                    <field name="partner_id" />
-                                    <field name="partner_name" />
-                                    <field name="summary" />
-                                    <field
+                            <tree>
+                                <field name="evidence_id" />
+                                <field name="partner_id" />
+                                <field name="partner_name" />
+                                <field name="summary" />
+                                <field
                                     name="related_account_type_ids"
                                     widget="many2many_tags"
                                 />
-                                </tree>
-                            </field>
-
-                            <!-- Use Audit Evidence -->
-                            <div
-                            style="display: flex; align-items: flex-start; margin-bottom: 8px;"
-                        >
-                                <div
-                                class="o_form_label"
-                                style="font-weight: bold; white-space: normal; width: 950px;"
-                            >
-                                    Use of audit evidence obtained in prior audits
-                                </div>
-                            </div>
-                            <field
+                            </tree>
+                        </field>
+                        <div class="no-limit-label" colspan="2">
+                            <label
+                                for="previous_audit_evidence_ids"
+                                style="font-weight: bold;"
+                            />
+                        </div>
+                        <field
                             name="previous_audit_evidence_ids"
-                            nolabel="1"
                             widget="many2many_tree"
+                            nolabel="1"
                             style="margin-left: 20px; width: 100%;"
                         >
-                                <tree>
-                                    <field name="evidence_id" />
-                                    <field name="summary" />
-                                    <field
+                            <tree>
+                                <field name="evidence_id" />
+                                <field name="summary" />
+                                <field
                                     name="related_account_type_ids"
                                     widget="many2many_tags"
                                 />
-                                </tree>
-                            </field>
-
-                            <!-- Impact Of Information Technology -->
-                            <div
-                            style="display: flex; align-items: flex-start; margin-bottom: 8px;"
-                        >
-                                <div
-                                class="o_form_label"
-                                style="font-weight: bold; white-space: normal; width: 950px;"
-                            >
-                                    Impact of information technology on audit procedures (data availability and use of computer-assisted audit techniques) :
-                                </div>
-                            </div>
-                            <field
+                            </tree>
+                        </field>
+                        <div class="no-limit-label" colspan="2">
+                            <label for="it_detail_ids" style="font-weight: bold;" />
+                        </div>
+                        <field
                             name="it_detail_ids"
                             widget="many2many_tree"
                             nolabel="1"
                             style="margin-left: 20px; width: 100%;"
                         >
-                                <tree>
-                                    <field name="understanding_result" />
-                                    <field name="impact_to_financial_report" />
-                                    <field
+                            <tree>
+                                <field name="understanding_result" />
+                                <field name="impact_to_financial_report" />
+                                <field
                                     name="related_account_type_ids"
                                     widget="many2many_tags"
                                 />
-                                </tree>
-                            </field>
-
-                            <!-- Unannounced Audit -->
-                            <div
-                            style="display: flex; align-items: flex-start; margin-bottom: 8px;"
-                        >
-                                <div
-                                class="o_form_label"
-                                style="font-weight: bold; white-space: normal; width: 950px;"
-                            >
-                                    Incorporation of elements of unpredictability in performing audit procedures :
-                                </div>
-                            </div>
-                            <field
+                            </tree>
+                        </field>
+                        <div class="no-limit-label" colspan="2">
+                            <label
+                                for="unannounced_audit_ids"
+                                style="font-weight: bold;"
+                            />
+                        </div>
+                        <field
                             name="unannounced_audit_ids"
                             widget="many2many_tree"
                             nolabel="1"
                             style="margin-left: 20px; width: 100%;"
                         >
-                                <tree>
-                                    <field name="class_transaction_id" />
-                                    <field
+                            <tree>
+                                <field name="class_transaction_id" />
+                                <field
                                     name="related_account_type_ids"
                                     widget="many2many_tags"
                                 />
-                                    <field name="need_unannounced_audit" />
-                                </tree>
-                            </field>
-
-                            <!-- Availability of client personnel and data (TODO) -->
-                            <div
-                            style="display: flex; align-items: flex-start; margin-bottom: 8px;"
-                        >
-                                <div
-                                class="o_form_label"
-                                style="font-weight: bold; white-space: normal; width: 600px;"
-                            >
-                                    Availability of client personnel and data
-                                </div>
-                                <span style="margin: 0 8px;font-weight: bold;">:</span>
-                                <!-- <field name="expert_type_ids" widget="many2many_tags" nolabel="1" style="flex: 1;"/> -->
-                            </div>
-
-                    </page>
-
-                    <page name="report_obj" string="Reporting Objectives">
-                        <!-- Reporting timetable to be followed by the entity (TODO) -->
+                                <field name="need_unannounced_audit" />
+                            </tree>
+                        </field>
+                        <!-- Availability of client personnel and data (TODO) -->
                         <div
                             style="display: flex; align-items: flex-start; margin-bottom: 8px;"
                         >
@@ -250,320 +166,354 @@
                                 class="o_form_label"
                                 style="font-weight: bold; white-space: normal; width: 600px;"
                             >
-                                Reporting timetable to be followed by the entity
+                                Availability of client personnel and data
                             </div>
                             <span style="margin: 0 8px;font-weight: bold;">:</span>
                             <!-- <field name="expert_type_ids" widget="many2many_tags" nolabel="1" style="flex: 1;"/> -->
                         </div>
+                    </page>
 
-                        <!-- Auditor Report -->
-                        <div style="margin-bottom: 16px;">
+                    <page name="report_obj" string="Reporting Objectives">
+                        <group name="group_2" col="2" style="margin-bottom: 8px;">
+                            <!-- Reporting timetable to be followed by the entity (TODO) -->
                             <div
-                                class="o_form_label"
-                                style="font-weight: bold; white-space: normal; margin-bottom: 8px;"
+                                style="display: flex; align-items: flex-start; margin-bottom: 8px;"
                             >
-                                Schedule of meetings with management and TCWG to discuss the auditor's report and other communications such as the management letter :
-                            </div>
-
-                            <!-- Container untuk 3 kolom -->
-                            <div
-                                style="display: flex; justify-content: space-between; gap: 24px;"
-                            >
-
-                                <!-- ================= Management ================= -->
-                                <div style="flex: 1;">
-                                    <div
-                                        class="o_form_label"
-                                        style="font-weight: bold; text-align: center; margin-bottom: 8px;"
-                                    >
-                                        Management
-                                    </div>
-
-                                    <div style="display: flex; margin-bottom: 8px;">
-                                        <div
-                                            style="font-weight: bold; width: 100px;"
-                                        >Planning</div>
-                                        <span
-                                            style="margin: 0 8px; font-weight: bold;"
-                                        >:</span>
-                                        <field
-                                            name="mgmt_communication_planning_date"
-                                            readonly="1"
-                                            style="flex: 1;"
-                                        />
-                                    </div>
-
-                                    <div style="display: flex; margin-bottom: 8px;">
-                                        <div
-                                            style="font-weight: bold; width: 100px;"
-                                        >Communication</div>
-                                        <span
-                                            style="margin: 0 8px; font-weight: bold;"
-                                        >:</span>
-                                        <field
-                                            name="mgmt_communication_date"
-                                            readonly="1"
-                                            style="flex: 1;"
-                                        />
-                                    </div>
-
-                                    <div style="display: flex;">
-                                        <div
-                                            style="font-weight: bold; width: 100px;"
-                                        >Reporting</div>
-                                        <span
-                                            style="margin: 0 8px; font-weight: bold;"
-                                        >:</span>
-                                        <field
-                                            name="mgmt_communication_reporting_date"
-                                            readonly="1"
-                                            style="flex: 1;"
-                                        />
-                                    </div>
+                                <div
+                                    class="o_form_label"
+                                    style="font-weight: bold; white-space: normal; width: 600px;"
+                                >
+                                    Reporting timetable to be followed by the entity
                                 </div>
-
-                                <!-- ================= TCWG ================= -->
-                                <div style="flex: 1;">
-                                    <div
-                                        class="o_form_label"
-                                        style="font-weight: bold; text-align: center; margin-bottom: 8px;"
-                                    >
-                                        TCWG
-                                    </div>
-
-                                    <div style="display: flex; margin-bottom: 8px;">
-                                        <div
-                                            style="font-weight: bold; width: 100px;"
-                                        >Planning</div>
-                                        <span
-                                            style="margin: 0 8px; font-weight: bold;"
-                                        >:</span>
-                                        <field
-                                            name="tcwg_communication_planning_date"
-                                            readonly="1"
-                                            style="flex: 1;"
-                                        />
-                                    </div>
-
-                                    <div style="display: flex; margin-bottom: 8px;">
-                                        <div
-                                            style="font-weight: bold; width: 100px;"
-                                        >Communication</div>
-                                        <span
-                                            style="margin: 0 8px; font-weight: bold;"
-                                        >:</span>
-                                        <field
-                                            name="tcwg_communication_date"
-                                            readonly="1"
-                                            style="flex: 1;"
-                                        />
-                                    </div>
-
-                                    <div style="display: flex;">
-                                        <div
-                                            style="font-weight: bold; width: 100px;"
-                                        >Reporting</div>
-                                        <span
-                                            style="margin: 0 8px; font-weight: bold;"
-                                        >:</span>
-                                        <field
-                                            name="tcwg_communication_reporting_date"
-                                            readonly="1"
-                                            style="flex: 1;"
-                                        />
-                                    </div>
-                                </div>
-
-                                <!-- ================= Internal Auditor ================= -->
-                                <div style="flex: 1;">
-                                    <div
-                                        class="o_form_label"
-                                        style="font-weight: bold; text-align: center; margin-bottom: 8px;"
-                                    >
-                                        Internal Auditor
-                                    </div>
-
-                                    <div style="display: flex; margin-bottom: 8px;">
-                                        <div
-                                            style="font-weight: bold; width: 100px;"
-                                        >Planning</div>
-                                        <span
-                                            style="margin: 0 8px; font-weight: bold;"
-                                        >:</span>
-                                        <field
-                                            name="ia_communication_planning_date"
-                                            readonly="1"
-                                            style="flex: 1;"
-                                        />
-                                    </div>
-
-                                    <div style="display: flex; margin-bottom: 8px;">
-                                        <div
-                                            style="font-weight: bold; width: 100px;"
-                                        >Communication</div>
-                                        <span
-                                            style="margin: 0 8px; font-weight: bold;"
-                                        >:</span>
-                                        <field
-                                            name="ia_communication_date"
-                                            readonly="1"
-                                            style="flex: 1;"
-                                        />
-                                    </div>
-
-                                    <div style="display: flex;">
-                                        <div
-                                            style="font-weight: bold; width: 100px;"
-                                        >Reporting</div>
-                                        <span
-                                            style="margin: 0 8px; font-weight: bold;"
-                                        >:</span>
-                                        <field
-                                            name="ia_communication_reporting_date"
-                                            readonly="1"
-                                            style="flex: 1;"
-                                        />
-                                    </div>
-                                </div>
+                                <span style="margin: 0 8px;font-weight: bold;">:</span>
+                                <!-- <field name="expert_type_ids" widget="many2many_tags" nolabel="1" style="flex: 1;"/> -->
                             </div>
-                        </div>
+                        </group>
+                        <group name="group_3" col="2" style="margin-bottom: 8px;">
+                            <!-- Auditor Report -->
+                            <div style="margin-bottom: 16px;">
+                                <div
+                                    style="max-width: 100%; overflow-wrap: break-word; white-space: normal;"
+                                >
+                                    <label
+                                        for="label_shedule_meeting_auditor"
+                                        style="display: block;
+                                            font-weight: bold;
+                                            white-space: normal;
+                                            word-wrap: break-word;
+                                            overflow-wrap: anywhere;
+                                            margin-bottom: 8px;
+                                            max-width: 100%;"
+                                    />
+                                </div>
+                                <field
+                                    name="label_shedule_meeting_auditor"
+                                    invisible="1"
+                                />
+                                <!-- Container untuk 3 kolom -->
+                                <div
+                                    style="display: flex; justify-content: center; gap: 24px;"
+                                >
 
-                        <!-- Meeting With Team Members  -->
-                        <div style="margin-bottom: 16px;">
-                            <div
-                                class="o_form_label"
-                                style="font-weight: bold; white-space: normal; margin-bottom: 8px;"
-                            >
-                                Schedule of meetings/communications among audit team members to discuss other communications with third parties
-                            </div>
-                            <div
-                                style="display: flex; justify-content: space-between; gap: 24px;"
-                            >
-                                <div style="flex: 1;">
-                                    <div style="display: flex; margin-bottom: 8px;">
+                                    <!-- ================= Management ================= -->
+                                    <div style="flex: 1;">
                                         <div
-                                            style="font-weight: bold; width: 100px;"
-                                        >Planning</div>
-                                        <span
-                                            style="margin: 0 8px; font-weight: bold;"
-                                        >:</span>
-                                        <field
-                                            name="communication_planning_date"
-                                            readonly="1"
-                                            style="flex: 1;"
-                                        />
+                                            class="no-limit-label"
+                                            style="font-weight: bold; text-align: center; margin-bottom: 8px;"
+                                        >
+                                            <label
+                                                for="label_mgmt"
+                                                style="font-weight: bold;"
+                                            />
+                                            <field name="label_mgmt" invisible="1" />
+                                        </div>
+
+                                        <div style="display: flex; margin-bottom: 8px;">
+                                            <label
+                                                for="mgmt_communication_planning_date"
+                                                string="Planning"
+                                                style="font-weight: bold; width: 100px;"
+                                            />
+                                            <span
+                                                style="margin: 0 8px; font-weight: bold;"
+                                            >:</span>
+                                            <field
+                                                name="mgmt_communication_planning_date"
+                                                style="flex: 1;"
+                                            />
+                                        </div>
+
+                                        <div style="display: flex; margin-bottom: 8px;">
+                                            <label
+                                                for="mgmt_communication_date"
+                                                string="Communication"
+                                                style="font-weight: bold; width: 100px;"
+                                            />
+                                            <span
+                                                style="margin: 0 8px; font-weight: bold;"
+                                            >:</span>
+                                            <field
+                                                name="mgmt_communication_date"
+                                                style="flex: 1;"
+                                            />
+                                        </div>
+
+                                        <div style="display: flex;">
+                                            <label
+                                                for="mgmt_communication_reporting_date"
+                                                string="Reporting"
+                                                style="font-weight: bold; width: 100px;"
+                                            />
+                                            <span
+                                                style="margin: 0 8px; font-weight: bold;"
+                                            >:</span>
+                                            <field
+                                                name="mgmt_communication_reporting_date"
+                                                style="flex: 1;"
+                                            />
+                                        </div>
                                     </div>
 
-                                    <div style="display: flex; margin-bottom: 8px;">
+                                    <!-- ================= TCWG ================= -->
+                                    <div style="flex: 1;">
                                         <div
-                                            style="font-weight: bold; width: 100px;"
-                                        >Communication</div>
-                                        <span
-                                            style="margin: 0 8px; font-weight: bold;"
-                                        >:</span>
-                                        <field
-                                            name="communication_date"
-                                            readonly="1"
-                                            style="flex: 1;"
-                                        />
+                                            class="no-limit-label"
+                                            style="font-weight: bold; text-align: center; margin-bottom: 8px;"
+                                        >
+                                            <label
+                                                for="label_tcwg"
+                                                style="font-weight: bold;"
+                                            />
+                                            <field name="label_tcwg" invisible="1" />
+                                        </div>
+
+                                        <div style="display: flex; margin-bottom: 8px;">
+                                            <label
+                                                for="tcwg_communication_planning_date"
+                                                string="Planning"
+                                                style="font-weight: bold; width: 100px;"
+                                            />
+                                            <span
+                                                style="margin: 0 8px; font-weight: bold;"
+                                            >:</span>
+                                            <field
+                                                name="tcwg_communication_planning_date"
+                                                style="flex: 1;"
+                                            />
+                                        </div>
+
+                                        <div style="display: flex; margin-bottom: 8px;">
+                                            <label
+                                                for="tcwg_communication_date"
+                                                string="Communication"
+                                                style="font-weight: bold; width: 100px;"
+                                            />
+                                            <span
+                                                style="margin: 0 8px; font-weight: bold;"
+                                            >:</span>
+                                            <field
+                                                name="tcwg_communication_date"
+                                                style="flex: 1;"
+                                            />
+                                        </div>
+
+                                        <div style="display: flex;">
+                                            <label
+                                                for="tcwg_communication_reporting_date"
+                                                string="Reporting"
+                                                style="font-weight: bold; width: 100px;"
+                                            />
+                                            <span
+                                                style="margin: 0 8px; font-weight: bold;"
+                                            >:</span>
+                                            <field
+                                                name="tcwg_communication_reporting_date"
+                                                style="flex: 1;"
+                                            />
+                                        </div>
                                     </div>
 
-                                    <div style="display: flex;">
+                                    <!-- ================= Internal Auditor ================= -->
+                                    <div style="flex: 1;">
                                         <div
-                                            style="font-weight: bold; width: 100px;"
-                                        >Reporting</div>
-                                        <span
-                                            style="margin: 0 8px; font-weight: bold;"
-                                        >:</span>
-                                        <field
-                                            name="communication_reporting_date"
-                                            readonly="1"
-                                            style="flex: 1;"
-                                        />
+                                            class="no-limit-label"
+                                            style="font-weight: bold; text-align: center; margin-bottom: 8px;"
+                                        >
+                                            <label
+                                                for="label_internal_auditor"
+                                                style="font-weight: bold;"
+                                            />
+                                            <field
+                                                name="label_internal_auditor"
+                                                invisible="1"
+                                            />
+                                        </div>
+
+                                        <div style="display: flex; margin-bottom: 8px;">
+                                            <label
+                                                for="ia_communication_planning_date"
+                                                string="Planning"
+                                                style="font-weight: bold; width: 100px;"
+                                            />
+                                            <span
+                                                style="margin: 0 8px; font-weight: bold;"
+                                            >:</span>
+                                            <field
+                                                name="ia_communication_planning_date"
+                                                style="flex: 1;"
+                                            />
+                                        </div>
+
+                                        <div style="display: flex; margin-bottom: 8px;">
+                                            <label
+                                                for="ia_communication_date"
+                                                string="Communication"
+                                                style="font-weight: bold; width: 100px;"
+                                            />
+                                            <span
+                                                style="margin: 0 8px; font-weight: bold;"
+                                            >:</span>
+                                            <field
+                                                name="ia_communication_date"
+                                                style="flex: 1;"
+                                            />
+                                        </div>
+
+                                        <div style="display: flex;">
+                                            <label
+                                                for="ia_communication_reporting_date"
+                                                string="Reporting"
+                                                style="font-weight: bold; width: 100px;"
+                                            />
+                                            <span
+                                                style="margin: 0 8px; font-weight: bold;"
+                                            >:</span>
+                                            <field
+                                                name="ia_communication_reporting_date"
+                                                style="flex: 1;"
+                                            />
+                                        </div>
                                     </div>
                                 </div>
                             </div>
-                        </div>
+                        </group>
+                        <group name="group_4" col="2" style="margin-bottom: 8px;">
+                            <!-- Meeting With Team Members  -->
+                            <div style="margin-bottom: 16px;">
+                                <div
+                                    style="max-width: 100%; overflow-wrap: break-word; white-space: normal;"
+                                >
+                                    <label
+                                        for="label_shedule_meeting_team"
+                                        style="display: block;
+                                            font-weight: bold;
+                                            white-space: normal;
+                                            word-wrap: break-word;
+                                            overflow-wrap: anywhere;
+                                            margin-bottom: 8px;
+                                            max-width: 100%;"
+                                    />
+                                </div>
+                                <field
+                                    name="label_shedule_meeting_team"
+                                    invisible="1"
+                                />
+                                <div
+                                    style="display: flex; justify-content: space-between; gap: 24px;"
+                                >
+                                    <div style="flex: 1;">
+                                        <div style="display: flex; margin-bottom: 8px;">
+                                            <label
+                                                for="communication_planning_date"
+                                                string="Planning"
+                                                style="font-weight: bold; width: 100px;"
+                                            />
+                                            <span
+                                                style="margin: 0 8px; font-weight: bold;"
+                                            >:</span>
+                                            <field
+                                                name="communication_planning_date"
+                                                style="flex: 1;"
+                                            />
+                                        </div>
+
+                                        <div style="display: flex; margin-bottom: 8px;">
+                                            <label
+                                                for="communication_date"
+                                                string="Communication"
+                                                style="font-weight: bold; width: 100px;"
+                                            />
+                                            <span
+                                                style="margin: 0 8px; font-weight: bold;"
+                                            >:</span>
+                                            <field
+                                                name="communication_date"
+                                                style="flex: 1;"
+                                            />
+                                        </div>
+
+                                        <div style="display: flex;">
+                                            <label
+                                                for="communication_reporting_date"
+                                                string="Reporting"
+                                                style="font-weight: bold; width: 100px;"
+                                            />
+                                            <span
+                                                style="margin: 0 8px; font-weight: bold;"
+                                            >:</span>
+                                            <field
+                                                name="communication_reporting_date"
+                                                style="flex: 1;"
+                                            />
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </group>
                     </page>
 
                     <page name="important_factor" string="Important Factors">
-                        <!-- Materiality -->
                         <div
-                            style="display: flex; align-items: flex-start; margin-bottom: 8px;"
+                            style="max-width: 100%; overflow-wrap: break-word; white-space: normal;"
                         >
-                            <div
-                                class="o_form_label"
-                                style="font-weight: bold; white-space: normal; width: 950px;"
-                            >
-                                Materiality (overall, specific, and performance materiality) :
-                            </div>
-                        </div>
-
-                        <!-- Balance Type -->
-                        <div
-                            style="display: flex; align-items: flex-start; margin-bottom: 8px;"
-                        >
-                            <div
-                                class="o_form_label"
-                                style="font-weight: bold; white-space: normal; width: 200px;"
-                            >
-                                Balance Type
-                            </div>
-                            <span style="margin: 0 8px;font-weight: bold;">:</span>
-                            <field
-                                name="materiality_balance_type"
-                                nolabel="1"
-                                style="flex: 1;"
+                            <label
+                                for="label_materiality"
+                                style="display: block;
+                                    font-weight: bold;
+                                    white-space: normal;
+                                    word-wrap: break-word;
+                                    overflow-wrap: anywhere;
+                                    margin-bottom: 8px;
+                                    max-width: 100%;"
                             />
                         </div>
-
-                        <!-- Overall Materiality -->
-                        <div
-                            style="display: flex; align-items: flex-start; margin-bottom: 8px;"
+                        <field name="label_materiality" invisible="1" />
+                        <group
+                            class="wide-field-group-b"
+                            name="group_5"
+                            col="2"
+                            style="margin-bottom: 8px;"
                         >
-                            <div
-                                class="o_form_label"
-                                style="font-weight: bold; white-space: normal; width: 200px;"
-                            >
-                                Overall Materiality
-                            </div>
-                            <span style="margin: 0 8px;font-weight: bold;">:</span>
-                            <field
-                                name="overall_materiality"
-                                nolabel="1"
-                                style="flex: 1;"
+                            <field name="materiality_balance_type" />
+                            <field name="overall_materiality" />
+                            <field name="performance_materiality" />
+                        </group>
+                        <div
+                            style="max-width: 100%; overflow-wrap: break-word; white-space: normal;"
+                        >
+                            <label
+                                string="Specific Materiality"
+                                for="label_specific_materiality"
+                                style="display: block;
+                                    font-weight: bold;
+                                    white-space: normal;
+                                    word-wrap: break-word;
+                                    overflow-wrap: anywhere;
+                                    margin-bottom: 8px;
+                                    max-width: 100%;"
                             />
                         </div>
-
-                        <!-- Performance Materiality -->
-                        <div
-                            style="display: flex; align-items: flex-start; margin-bottom: 8px;"
-                        >
-                            <div
-                                class="o_form_label"
-                                style="font-weight: bold; white-space: normal; width: 200px;"
-                            >
-                                Performance Materiality
-                            </div>
-                            <span style="margin: 0 8px;font-weight: bold;">:</span>
-                            <field
-                                name="performance_materiality"
-                                nolabel="1"
-                                style="flex: 1;"
-                            />
-                        </div>
-
-                        <!-- Specific Materiality -->
-                        <div
-                            style="display: flex; align-items: flex-start; margin-bottom: 8px;"
-                        >
-                            <div
-                                class="o_form_label"
-                                style="font-weight: bold; white-space: normal; width: 950px;"
-                            >
-                                Specific Materiality :
-                            </div>
-                        </div>
+                        <field name="label_specific_materiality" invisible="1" />
                         <field
                             name="specific_materiality_ids"
                             widget="many2many_tree"
@@ -580,53 +530,27 @@
                                 <field name="final_materiality" />
                             </tree>
                         </field>
-
-                        <!-- Tolerable Misstatement -->
-                        <div
-                            style="display: flex; align-items: flex-start; margin-bottom: 8px;"
+                        <group
+                            class="wide-field-group-b"
+                            name="group_6"
+                            col="2"
+                            style="margin-bottom: 8px;"
                         >
-                            <div
-                                class="o_form_label"
-                                style="font-weight: bold; white-space: normal; width: 200px;"
-                            >
-                                Tolerable Misstatement
-                            </div>
-                            <span style="margin: 0 8px;font-weight: bold;">:</span>
-                            <field
-                                name="tolerable_misstatement"
-                                nolabel="1"
-                                style="flex: 1;"
+                            <field name="tolerable_misstatement" />
+                        </group>
+                        <div class="no-limit-label" colspan="2">
+                            <label
+                                for="inherent_finance_review"
+                                style="font-weight: bold;"
                             />
                         </div>
-
-                        <!--  Initial Assessment -->
-                        <div
-                            style="display: flex; align-items: flex-start; margin-bottom: 8px;"
-                        >
-                            <div
-                                class="o_form_label"
-                                style="font-weight: bold; white-space: normal; width: 600px;"
-                            >
-                                Initial assessment at the overall financial statement level and its impact on the audit
-                            </div>
-                            <span style="margin: 0 8px;font-weight: bold;">:</span>
-                            <field
-                                name="inherent_finance_review"
-                                nolabel="1"
-                                style="flex: 1;"
-                            />
-                        </div>
-
-                        <!-- Initial Identification With Higher Risk -->
-                        <div
-                            style="display: flex; align-items: flex-start; margin-bottom: 8px;"
-                        >
-                            <div
-                                class="o_form_label"
-                                style="font-weight: bold; white-space: normal; width: 950px;"
-                            >
-                                Initial identification of areas with higher risk of material misstatement :
-                            </div>
+                        <field
+                            name="inherent_finance_review"
+                            nolabel="1"
+                            style="margin-left: 20px; width: 100%;"
+                        />
+                        <div class="no-limit-label" colspan="2">
+                            <label for="cycle_level_ids" style="font-weight: bold;" />
                         </div>
                         <field
                             name="cycle_level_ids"
@@ -638,17 +562,11 @@
                                 <field name="name" string="Business Cycle" />
                             </tree>
                         </field>
-
-                        <!-- Initial Identification of Type Transaction (TODO) -->
-                        <div
-                            style="display: flex; align-items: flex-start; margin-bottom: 8px;"
-                        >
-                            <div
-                                class="o_form_label"
-                                style="font-weight: bold; white-space: normal; width: 950px;"
-                            >
-                                Initial identification of types of transactions, account balances, and disclosures that are significant and material :
-                            </div>
+                        <div class="no-limit-label" colspan="2">
+                            <label
+                                for="significant_acc_ids"
+                                style="font-weight: bold;"
+                            />
                         </div>
                         <field
                             name="significant_acc_ids"
@@ -657,34 +575,22 @@
                             style="margin-left: 20px; width: 100%;"
                         >
                             <tree>
-                                <field name="name" string="Standard Account" />
+                                <field name="name" string="Business Cycle" />
                             </tree>
                         </field>
-
-                        <!-- Reminding Team Members -->
-                        <div
-                            style="display: flex; align-items: flex-start; margin-bottom: 8px;"
-                        >
-                            <div
-                                class="o_form_label"
-                                style="font-weight: bold; white-space: normal; width: 600px;"
-                            >
-                                Approach to reminding team members to consistently exercise professional skepticism in gathering and evaluating evidence
-                            </div>
-                            <span style="margin: 0 8px;font-weight: bold;">:</span>
-                            <field name="team_pe_review" nolabel="1" style="flex: 1;" />
+                        <div class="no-limit-label" colspan="2">
+                            <label for="team_pe_review" style="font-weight: bold;" />
                         </div>
-
-                        <!-- Previous Auditor -->
-                        <div
-                            style="display: flex; align-items: flex-start; margin-bottom: 8px;"
-                        >
-                            <div
-                                class="o_form_label"
-                                style="font-weight: bold; white-space: normal; width: 950px;"
-                            >
-                                Relevant prior audit results, including internal control deficiencies and management's responses or follow-up :
-                            </div>
+                        <field
+                            name="team_pe_review"
+                            nolabel="1"
+                            style="margin-left: 20px; width: 100%;"
+                        />
+                        <div class="no-limit-label" colspan="2">
+                            <label
+                                for="previous_auditor_ids"
+                                style="font-weight: bold;"
+                            />
                         </div>
                         <field
                             name="previous_auditor_ids"
@@ -701,17 +607,11 @@
                                 />
                             </tree>
                         </field>
-
-                        <!-- Disccussions With Audit Firm -->
-                        <div
-                            style="display: flex; align-items: flex-start; margin-bottom: 8px;"
-                        >
-                            <div
-                                class="o_form_label"
-                                style="font-weight: bold; white-space: normal; width: 950px;"
-                            >
-                                Discussions with audit firm staff/partners who provide other services to the entity :
-                            </div>
+                        <div class="no-limit-label" colspan="2">
+                            <label
+                                for="other_provided_service_ids"
+                                style="font-weight: bold;"
+                            />
                         </div>
                         <field
                             name="other_provided_service_ids"
@@ -729,35 +629,22 @@
                                 />
                             </tree>
                         </field>
-
-                        <!-- Entity Control -->
-                        <div
-                            style="display: flex; align-items: flex-start; margin-bottom: 8px;"
-                        >
-                            <div
-                                class="o_form_label"
-                                style="font-weight: bold; white-space: normal; width: 600px;"
-                            >
-                                Evidence regarding management's attitude toward internal control and the emphasis placed on the importance of internal control within the entity
-                            </div>
-                            <span style="margin: 0 8px;font-weight: bold;">:</span>
-                            <field
-                                name="control_entity_review"
-                                nolabel="1"
-                                style="flex: 1;"
+                        <div class="no-limit-label" colspan="2">
+                            <label
+                                for="control_entity_review"
+                                style="font-weight: bold;"
                             />
                         </div>
-
-                        <!-- Volume Of Transaction (TODO) -->
-                        <div
-                            style="display: flex; align-items: flex-start; margin-bottom: 8px;"
-                        >
-                            <div
-                                class="o_form_label"
-                                style="font-weight: bold; white-space: normal; width: 950px;"
-                            >
-                                Volume of transactions, which may determine whether it is more efficient for the auditor to rely on internal control :
-                            </div>
+                        <field
+                            name="control_entity_review"
+                            nolabel="1"
+                            style="margin-left: 20px; width: 100%;"
+                        />
+                        <div class="no-limit-label" colspan="2">
+                            <label
+                                for="volume_transaction_ids"
+                                style="font-weight: bold;"
+                            />
                         </div>
                         <field
                             name="volume_transaction_ids"
@@ -777,89 +664,49 @@
                         name="significant"
                         string="Significant Changes and Developments"
                     >
-                        <!-- IT Review -->
-                        <div
-                            style="display: flex; align-items: flex-start; margin-bottom: 8px;"
-                        >
-                            <div
-                                class="o_form_label"
-                                style="font-weight: bold; white-space: normal; width: 600px;"
-                            >
-                                Significant business developments affecting the entity, including IT changes, changes in key management, and mergers, acquisitions, and divestitures
-                            </div>
-                            <span style="margin: 0 8px;font-weight: bold;">:</span>
-                            <field name="it_review" nolabel="1" style="flex: 1;" />
+                        <div class="no-limit-label" colspan="2">
+                            <label for="it_review" style="font-weight: bold;" />
                         </div>
-
-                        <!-- Industry Review -->
-                        <div
-                            style="display: flex; align-items: flex-start; margin-bottom: 8px;"
-                        >
-                            <div
-                                class="o_form_label"
-                                style="font-weight: bold; white-space: normal; width: 600px;"
-                            >
-                                Significant industry developments, such as changes in industry legislation and new reporting requirements
-                            </div>
-                            <span style="margin: 0 8px;font-weight: bold;">:</span>
-                            <field
-                                name="industry_review"
-                                nolabel="1"
-                                style="flex: 1;"
-                            />
+                        <field
+                            name="it_review"
+                            nolabel="1"
+                            style="margin-left: 20px; width: 100%;"
+                        />
+                        <div class="no-limit-label" colspan="2">
+                            <label for="industry_review" style="font-weight: bold;" />
                         </div>
-
-                        <!-- Amendments Review -->
-                        <div
-                            style="display: flex; align-items: flex-start; margin-bottom: 8px;"
-                        >
-                            <div
-                                class="o_form_label"
-                                style="font-weight: bold; white-space: normal; width: 600px;"
-                            >
-                                Changes in the Financial Reporting Framework (FRF), such as changes in accounting standards
-                            </div>
-                            <span style="margin: 0 8px;font-weight: bold;">:</span>
-                            <field
-                                name="amendment_review"
-                                nolabel="1"
-                                style="flex: 1;"
-                            />
+                        <field
+                            name="industry_review"
+                            nolabel="1"
+                            style="margin-left: 20px; width: 100%;"
+                        />
+                        <div class="no-limit-label" colspan="2">
+                            <label for="amendment_review" style="font-weight: bold;" />
                         </div>
-
-                        <!-- Regulatory Review -->
-                        <div
-                            style="display: flex; align-items: flex-start; margin-bottom: 8px;"
-                        >
-                            <div
-                                class="o_form_label"
-                                style="font-weight: bold; white-space: normal; width: 600px;"
-                            >
-                                Other significant developments, such as changes in the legal and regulatory environment affecting the entity
-                            </div>
-                            <span style="margin: 0 8px;font-weight: bold;">:</span>
-                            <field
-                                name="regulatory_review"
-                                nolabel="1"
-                                style="flex: 1;"
-                            />
+                        <field
+                            name="amendment_review"
+                            nolabel="1"
+                            style="margin-left: 20px; width: 100%;"
+                        />
+                        <div class="no-limit-label" colspan="2">
+                            <label for="regulatory_review" style="font-weight: bold;" />
                         </div>
+                        <field
+                            name="regulatory_review"
+                            nolabel="1"
+                            style="margin-left: 20px; width: 100%;"
+                        />
                     </page>
 
                     <page
                         name="nature"
                         string="Nature, Timing, and Extent of Resources Required"
                     >
-                        <!-- Assignment Teams -->
-                        <div
-                            style="display: flex; align-items: flex-start; margin-bottom: 8px;"
-                        >
-                            <div
-                                class="o_form_label"
-                                style="font-weight: bold; white-space: normal; width: 950px;"
-                            >
-                                Audit engagement team, including the Engagement Quality Control Reviewer (EQCR) :
-                            </div>
+                        <div class="no-limit-label" colspan="2">
+                            <label
+                                for="assignment_team_ids"
+                                style="font-weight: bold;"
+                            />
                         </div>
                         <field
                             name="assignment_team_ids"
@@ -873,20 +720,15 @@
                                 <field name="initials" />
                             </tree>
                         </field>
-
-                        <!-- Allocation Teams-->
-                        <div
-                            style="display: flex; align-items: flex-start; margin-bottom: 8px;"
-                        >
-                            <div
-                                class="o_form_label"
-                                style="font-weight: bold; white-space: normal; width: 950px;"
-                            >
-                                Allocation of responsibilities among engagement staff, considering experience and expertise where a higher risk of misstatement is assessed :
-                            </div>
+                        <div class="no-limit-label" colspan="2">
+                            <label
+                                for="assigned_team_member_ids"
+                                style="font-weight: bold;"
+                            />
                         </div>
                         <field
                             name="assigned_team_member_ids"
+                            widget="many2many_tree"
                             nolabel="1"
                             style="margin-left: 20px; width: 100%;"
                         >
@@ -896,42 +738,15 @@
                                 <field name="member_initials" />
                             </tree>
                         </field>
-
-                        <!-- Engagement Category -->
-                        <div
-                            style="display: flex; align-items: flex-start; margin-bottom: 8px; width: 100%;"
+                        <group
+                            class="wide-field-group-b"
+                            name="group_7"
+                            col="2"
+                            style="margin-bottom: 8px;"
                         >
-                            <div
-                                class="o_form_label"
-                                style="font-weight: bold; white-space: normal; width: 600px;"
-                            >
-                                The engagement is categorized as
-                            </div>
-                            <span style="margin: 0 8px;font-weight: bold;">:</span>
-                            <field
-                                name="allocation_total_hour_id"
-                                readonly="1"
-                                style="flex: 1;"
-                            />
-                        </div>
-
-                        <!-- The Budget Plan -->
-                        <div
-                            style="display: flex; align-items: flex-start; margin-bottom: 8px; width: 100%;"
-                        >
-                            <div
-                                class="o_form_label"
-                                style="font-weight: bold; white-space: normal; width: 600px;"
-                            >
-                                The budget plan has been prepared
-                            </div>
-                            <span style="margin: 0 8px;font-weight: bold;">:</span>
-                            <field
-                                name="budget_plan_status"
-                                readonly="1"
-                                style="flex: 1;"
-                            />
-                        </div>
+                            <field name="allocation_total_hour_id" />
+                            <field name="budget_plan_status" />
+                        </group>
                     </page>
                 </xpath>
                 <xpath expr="//page[@name='note']" position="before">

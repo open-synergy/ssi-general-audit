@@ -16,6 +16,7 @@
         "ssi_general_audit_worksheet_team_communication",
     ],
     "data": [
+        "views/assets.xml",
         "security/ir_module_category_data.xml",
         # MASTER DATA
         "data/master/general_audit_ws_a753ab9_item.xml",
