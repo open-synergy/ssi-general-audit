@@ -131,4 +131,67 @@
         />
     <field name="use_default" eval="1" />
 </record>
+
+<record id="client_account_type_wc_ta" model="client_account_type.computation_item">
+    <field
+            name="account_type_set_id"
+            ref="ssi_general_audit.client_account_type_set_st"
+        />
+    <field
+            name="computation_id"
+            ref="ssi_general_audit.trial_balance_computation_item_wc_ta"
+        />
+    <field name="use_default" eval="1" />
+</record>
+
+<record id="client_account_type_re_ta" model="client_account_type.computation_item">
+    <field
+            name="account_type_set_id"
+            ref="ssi_general_audit.client_account_type_set_st"
+        />
+    <field
+            name="computation_id"
+            ref="ssi_general_audit.trial_balance_computation_item_re_ta"
+        />
+    <field name="use_default" eval="1" />
+</record>
+
+<record id="client_account_type_ebt_ta" model="client_account_type.computation_item">
+    <field
+            name="account_type_set_id"
+            ref="ssi_general_audit.client_account_type_set_st"
+        />
+    <field
+            name="computation_id"
+            ref="ssi_general_audit.trial_balance_computation_item_ebt_ta"
+        />
+    <field name="use_default" eval="1" />
+</record>
+
+<record id="client_account_type_sc_tl" model="client_account_type.computation_item">
+    <field
+            name="account_type_set_id"
+            ref="ssi_general_audit.client_account_type_set_st"
+        />
+    <field
+            name="computation_id"
+            ref="ssi_general_audit.trial_balance_computation_item_sc_tl"
+        />
+    <field name="use_default" eval="1" />
+</record>
+
+<record
+        id="client_account_type_revenue_ta"
+        model="client_account_type.computation_item"
+    >
+    <field
+            name="account_type_set_id"
+            ref="ssi_general_audit.client_account_type_set_st"
+        />
+    <field
+            name="computation_id"
+            ref="ssi_general_audit.trial_balance_computation_item_revenue_ta"
+        />
+    <field name="use_default" eval="1" />
+</record>
 </odoo>

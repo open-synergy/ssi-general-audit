@@ -338,4 +338,59 @@
             name="python_code"
         >result = T010 / (account_group["T001"] + account_group["T002"])</field>
     </record>
+
+    <record
+        id="trial_balance_computation_item_wc_ta"
+        model="trial_balance_computation_item"
+    >
+        <field name="code">T900</field>
+        <field name="name">Working Capital / Total Asset</field>
+        <field name="sequence" eval="900" />
+        <field name="category">summary</field>
+        <field name="python_code">result = T009 / T001</field>
+    </record>
+
+    <record
+        id="trial_balance_computation_item_re_ta"
+        model="trial_balance_computation_item"
+    >
+        <field name="code">T910</field>
+        <field name="name">Retained Earning / Total Asset</field>
+        <field name="sequence" eval="900" />
+        <field name="category">summary</field>
+        <field name="python_code">result = account_type.get("S332", 0.0) / T001</field>
+    </record>
+
+    <record
+        id="trial_balance_computation_item_ebt_ta"
+        model="trial_balance_computation_item"
+    >
+        <field name="code">T920</field>
+        <field name="name">EBIT / Total Asset</field>
+        <field name="sequence" eval="920" />
+        <field name="category">summary</field>
+        <field name="python_code">result = T008 / T001</field>
+    </record>
+
+    <record
+        id="trial_balance_computation_item_sc_tl"
+        model="trial_balance_computation_item"
+    >
+        <field name="code">T930</field>
+        <field name="name">Share Capital / Total Liability</field>
+        <field name="sequence" eval="930" />
+        <field name="category">summary</field>
+        <field name="python_code">result = account_type.get("S311", 0.0) / T007 </field>
+    </record>
+
+    <record
+        id="trial_balance_computation_item_revenue_ta"
+        model="trial_balance_computation_item"
+    >
+        <field name="code">T940</field>
+        <field name="name">Total Revenue / Total Asset</field>
+        <field name="sequence" eval="940" />
+        <field name="category">summary</field>
+        <field name="python_code">result = account_group["T009"] / T001</field>
+    </record>
 </odoo>
