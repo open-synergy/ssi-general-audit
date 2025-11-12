@@ -57,6 +57,13 @@ jobs:
       - name: Install Python requirements
         run: |
           if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+      - name: Checkout SSI App Store
+        uses: actions/checkout@v4
+        with:
+          repository: open-synergy/ssi-app-store
+          token: ${{ secrets.OTHER_REPO_PAT }}
+          path: /opt/odoo/addons
+          fetch-depth: 0
       - name: Install addons and dependencies
         env:
           PIP_INDEX_URL: https://pypi.org/simple
