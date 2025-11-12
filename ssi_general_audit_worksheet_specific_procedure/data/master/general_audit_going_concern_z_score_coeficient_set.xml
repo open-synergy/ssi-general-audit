@@ -1,0 +1,253 @@
+<?xml version='1.0' encoding='utf-8' ?>
+<odoo>
+<record
+        id="general_audit_going_concern_z_score_coeficient_set_emiten"
+        model="general_audit_going_concern_z_score_coeficient_set"
+    >
+    <field name="code">T001</field>
+    <field name="name">Emiten</field>
+</record>
+
+<record
+        id="general_audit_going_concern_z_score_coeficient_set_emiten_x1"
+        model="general_audit_going_concern_z_score_coeficient_set.item"
+    >
+    <field
+            name="set_id"
+            ref="general_audit_going_concern_z_score_coeficient_set_emiten"
+        />
+    <field
+            name="computation_item_id"
+            ref="ssi_general_audit.trial_balance_computation_item_wc_ta"
+        />
+    <field name="coefficient" eval="1.2" />
+</record>
+
+<record
+        id="general_audit_going_concern_z_score_coeficient_set_emiten_x2"
+        model="general_audit_going_concern_z_score_coeficient_set.item"
+    >
+    <field
+            name="set_id"
+            ref="general_audit_going_concern_z_score_coeficient_set_emiten"
+        />
+    <field
+            name="computation_item_id"
+            ref="ssi_general_audit.trial_balance_computation_item_re_ta"
+        />
+    <field name="coefficient" eval="1.4" />
+</record>
+
+<record
+        id="general_audit_going_concern_z_score_coeficient_set_emiten_x3"
+        model="general_audit_going_concern_z_score_coeficient_set.item"
+    >
+    <field
+            name="set_id"
+            ref="general_audit_going_concern_z_score_coeficient_set_emiten"
+        />
+    <field
+            name="computation_item_id"
+            ref="ssi_general_audit.trial_balance_computation_item_ebt_ta"
+        />
+    <field name="coefficient" eval="3.3" />
+</record>
+
+<record
+        id="general_audit_going_concern_z_score_coeficient_set_emiten_x4"
+        model="general_audit_going_concern_z_score_coeficient_set.item"
+    >
+    <field
+            name="set_id"
+            ref="general_audit_going_concern_z_score_coeficient_set_emiten"
+        />
+    <field
+            name="computation_item_id"
+            ref="ssi_general_audit.trial_balance_computation_item_sc_tl"
+        />
+    <field name="coefficient" eval="0.64" />
+</record>
+
+<record
+        id="general_audit_going_concern_z_score_coeficient_set_emiten_x5"
+        model="general_audit_going_concern_z_score_coeficient_set.item"
+    >
+    <field
+            name="set_id"
+            ref="general_audit_going_concern_z_score_coeficient_set_emiten"
+        />
+    <field
+            name="computation_item_id"
+            ref="ssi_general_audit.trial_balance_computation_item_revenue_ta"
+        />
+    <field name="coefficient" eval="0.998" />
+</record>
+
+<!-- Non-Emiten Manufacturing -->
+<record
+        id="general_audit_going_concern_z_score_coeficient_set_non_emiten_man"
+        model="general_audit_going_concern_z_score_coeficient_set"
+    >
+    <field name="code">T002</field>
+    <field name="name">Non-Emiten Manufacturing</field>
+</record>
+
+<record
+        id="general_audit_going_concern_z_score_coeficient_set_non_emiten_man_x1"
+        model="general_audit_going_concern_z_score_coeficient_set.item"
+    >
+    <field
+            name="set_id"
+            ref="general_audit_going_concern_z_score_coeficient_set_non_emiten_man"
+        />
+    <field
+            name="computation_item_id"
+            ref="ssi_general_audit.trial_balance_computation_item_wc_ta"
+        />
+    <field name="coefficient" eval="0.717" />
+</record>
+
+<record
+        id="general_audit_going_concern_z_score_coeficient_set_non_emiten_man_x2"
+        model="general_audit_going_concern_z_score_coeficient_set.item"
+    >
+    <field
+            name="set_id"
+            ref="general_audit_going_concern_z_score_coeficient_set_non_emiten_man"
+        />
+    <field
+            name="computation_item_id"
+            ref="ssi_general_audit.trial_balance_computation_item_re_ta"
+        />
+    <field name="coefficient" eval="0.847" />
+</record>
+
+<record
+        id="general_audit_going_concern_z_score_coeficient_set_non_emiten_man_x3"
+        model="general_audit_going_concern_z_score_coeficient_set.item"
+    >
+    <field
+            name="set_id"
+            ref="general_audit_going_concern_z_score_coeficient_set_non_emiten_man"
+        />
+    <field
+            name="computation_item_id"
+            ref="ssi_general_audit.trial_balance_computation_item_ebt_ta"
+        />
+    <field name="coefficient" eval="3.107" />
+</record>
+
+<record
+        id="general_audit_going_concern_z_score_coeficient_set_non_emiten_man_x4"
+        model="general_audit_going_concern_z_score_coeficient_set.item"
+    >
+    <field
+            name="set_id"
+            ref="general_audit_going_concern_z_score_coeficient_set_non_emiten_man"
+        />
+    <field
+            name="computation_item_id"
+            ref="ssi_general_audit.trial_balance_computation_item_sc_tl"
+        />
+    <field name="coefficient" eval="0.42" />
+</record>
+
+<record
+        id="general_audit_going_concern_z_score_coeficient_set_non_emiten_man_x5"
+        model="general_audit_going_concern_z_score_coeficient_set.item"
+    >
+    <field
+            name="set_id"
+            ref="general_audit_going_concern_z_score_coeficient_set_non_emiten_man"
+        />
+    <field
+            name="computation_item_id"
+            ref="ssi_general_audit.trial_balance_computation_item_revenue_ta"
+        />
+    <field name="coefficient" eval="0.998" />
+</record>
+
+<!-- Non-Emiten Non-Manufacturing -->
+<record
+        id="general_audit_going_concern_z_score_coeficient_set_non_emiten_non_man"
+        model="general_audit_going_concern_z_score_coeficient_set"
+    >
+    <field name="code">T003</field>
+    <field name="name">Non-Emiten Non-Manufacturing</field>
+</record>
+
+<record
+        id="general_audit_going_concern_z_score_coeficient_set_non_emiten_non_man_x1"
+        model="general_audit_going_concern_z_score_coeficient_set.item"
+    >
+    <field
+            name="set_id"
+            ref="general_audit_going_concern_z_score_coeficient_set_non_emiten_non_man"
+        />
+    <field
+            name="computation_item_id"
+            ref="ssi_general_audit.trial_balance_computation_item_wc_ta"
+        />
+    <field name="coefficient" eval="6.56" />
+</record>
+
+<record
+        id="general_audit_going_concern_z_score_coeficient_set_non_emiten_non_man_x2"
+        model="general_audit_going_concern_z_score_coeficient_set.item"
+    >
+    <field
+            name="set_id"
+            ref="general_audit_going_concern_z_score_coeficient_set_non_emiten_non_man"
+        />
+    <field
+            name="computation_item_id"
+            ref="ssi_general_audit.trial_balance_computation_item_re_ta"
+        />
+    <field name="coefficient" eval="3.26" />
+</record>
+
+<record
+        id="general_audit_going_concern_z_score_coeficient_set_non_emiten_non_man_x3"
+        model="general_audit_going_concern_z_score_coeficient_set.item"
+    >
+    <field
+            name="set_id"
+            ref="general_audit_going_concern_z_score_coeficient_set_non_emiten_non_man"
+        />
+    <field
+            name="computation_item_id"
+            ref="ssi_general_audit.trial_balance_computation_item_ebt_ta"
+        />
+    <field name="coefficient" eval="6.72" />
+</record>
+
+<record
+        id="general_audit_going_concern_z_score_coeficient_set_non_emiten_non_man_x4"
+        model="general_audit_going_concern_z_score_coeficient_set.item"
+    >
+    <field
+            name="set_id"
+            ref="general_audit_going_concern_z_score_coeficient_set_non_emiten_non_man"
+        />
+    <field
+            name="computation_item_id"
+            ref="ssi_general_audit.trial_balance_computation_item_sc_tl"
+        />
+    <field name="coefficient" eval="1.05" />
+</record>
+
+<record
+        id="general_audit_going_concern_z_score_coeficient_set_non_emiten_non_man_x5"
+        model="general_audit_going_concern_z_score_coeficient_set.item"
+    >
+    <field
+            name="set_id"
+            ref="general_audit_going_concern_z_score_coeficient_set_non_emiten_non_man"
+        />
+    <field
+            name="computation_item_id"
+            ref="ssi_general_audit.trial_balance_computation_item_revenue_ta"
+        />
+    <field name="coefficient" eval="0.0" />
+</record>
+</odoo>

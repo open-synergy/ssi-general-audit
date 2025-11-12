@@ -22,6 +22,8 @@
         "data/master/general_audit_ws_ee819ae_item.xml",
         "data/master/general_audit_subsequent_event.xml",
         "data/master/related_party_confirmation_procedure.xml",
+        "data/master/general_audit_going_concern_z_score_coeficient_set.xml",
+        "data/master/trial_balance_computation_item.xml",
         # a8f4d88 - Accounting Estimation
         "security/res_group/general_audit_ws_a8f4d88.xml",
         "security/ir_rule/general_audit_ws_a8f4d88.xml",
