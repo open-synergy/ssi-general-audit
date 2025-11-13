@@ -56,6 +56,7 @@
                     <field name="code_internal" />
                 </xpath>
                 <xpath expr="//field[@name='active']" position="after">
+                    <field name="category_id" />
                     <field name="sequence" />
                     <field
                         name="image_1920"
@@ -64,16 +65,6 @@
                         options="{'preview_image': 'image_256'}"
                         string="Image"
                     />
-                    <field name="parent_id" />
-                    <field name="category_id" />
-                    <field name="model_name" />
-                    <field name="main_worksheet" />
-                    <field name="allowed_audit" />
-                    <field
-                        name="max_number_allowed"
-                        attrs="{'invisible': [('allowed_audit', '=', False)]}"
-                        placeholder="Please enter '0' for unlimited"
-                    />
                 </xpath>
                 <xpath expr="//page[@name='note']" position="before">
                     <page name="dependency" string="Dependencies">
@@ -81,6 +72,18 @@
                         <field name="predecessor_ids" />
                         <separator string="Successor" colspan="4" />
                         <field name="successor_ids" />
+                    </page>
+                    <page name="technical" string="Technical Information">
+                        <group name="technical_1" colspan="4" col="2">
+                            <field name="model_name" />
+                            <field name="main_worksheet" />
+                            <field name="allowed_audit" />
+                            <field
+                                name="max_number_allowed"
+                                attrs="{'invisible': [('allowed_audit', '=', False)]}"
+                                placeholder="Please enter '0' for unlimited"
+                            />
+                        </group>
                     </page>
                     <page name="standard_audit" string="Relevant Audit Standard Items">
                         <field name="standard_item_ids" nolabel="1" />
