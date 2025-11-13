@@ -79,6 +79,9 @@ class GeneralAudit(models.Model):
         states={"draft": [("readonly", False)]},
         help="Title of the General Audit engagement.",
     )
+    partner_id = fields.Many2one(
+        string="Client",
+    )
     date_start = fields.Date(
         string="Start Date",
         required=True,
@@ -172,7 +175,7 @@ class GeneralAudit(models.Model):
         help="Audit opinion to be issued for the engagement.",
     )
     accountant_id = fields.Many2one(
-        string="Accountant",
+        string="CPA",
         comodel_name="res.partner",
         domain=[
             ("is_company", "=", False),
