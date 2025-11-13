@@ -69,3 +69,19 @@ class GeneralAuditWorksheetType(models.Model):
         column2="audit_standard_item_id",
         help="Audit standard items considered relevant for this worksheet type.",
     )
+    predecessor_ids = fields.Many2many(
+        string="Predecessor Worksheet Types",
+        comodel_name="general_audit_worksheet_type",
+        relation="rel_worksheet_type_relationship",
+        column1="type_id",
+        column2="predecessor_type_id",
+        help="Worksheet types that should precede this type in the audit process.",
+    )
+    successor_ids = fields.Many2many(
+        string="Successor Worksheet Types",
+        comodel_name="general_audit_worksheet_type",
+        relation="rel_worksheet_type_relationship",
+        column1="predecessor_type_id",
+        column2="type_id",
+        help="Worksheet types that should follow this type in the audit process.",
+    )
