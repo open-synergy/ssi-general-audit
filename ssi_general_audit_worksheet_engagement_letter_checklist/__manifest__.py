@@ -24,6 +24,7 @@
         "data/policy_template/general_audit_ws_d8aaebc.xml",
         "data/approval_template/general_audit_ws_d8aaebc.xml",
         "data/general_audit_worksheet_type_data.xml",
+        "data/master/general_audit_worksheet_conclusion.xml",
         "data/master/general_audit_ws_d8aaebc_item.xml",
         "views/general_audit_ws_d8aaebc_item_views.xml",
         "views/general_audit_ws_d8aaebc_views.xml",
