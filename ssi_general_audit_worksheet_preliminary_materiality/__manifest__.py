@@ -29,8 +29,9 @@
         "data/policy_template/general_audit_ws_1d9338d.xml",
         # Sequence Template
         # MASTER DATA
+        "data/master/general_audit_worksheet_conclusion.xml",
         "data/master/general_audit_ws_1d9338d_item.xml",
-        # 6dcda0e - Preliminary Materiality Account Mapping
+        # 6dcda0e - Specific Materiality
         "views/ga_6dcda0e/general_audit_ws_6dcda0e_views.xml",
         # d9d2b44 - Materiality Computation
         "views/ga_d9d2b44/general_audit_ws_d9d2b44_views.xml",
