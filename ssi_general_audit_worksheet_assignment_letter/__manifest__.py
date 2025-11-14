@@ -16,6 +16,7 @@
         "security/ir_module_category_data.xml",
         "data/general_audit_worksheet_type_data.xml",
         # MASTER DATA
+        "data/master/general_audit_worksheet_conclusion.xml",
         "data/master/general_audit_ws_c435bcd_item.xml",
         # c435bcd
         "security/res_group/general_audit_ws_c435bcd.xml",
