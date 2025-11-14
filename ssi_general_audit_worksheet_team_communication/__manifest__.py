@@ -16,6 +16,7 @@
         "security/ir_module_category_data.xml",
         "data/general_audit_worksheet_type_data.xml",
         # MASTER DATA
+        "data/master/general_audit_worksheet_conclusion.xml",
         "data/master/general_audit_ws_437fc8f_item.xml",
         "data/master/general_audit_ws_b1f820c_item.xml",
         # 437fc8f - Team Communication Pre-Engagement
