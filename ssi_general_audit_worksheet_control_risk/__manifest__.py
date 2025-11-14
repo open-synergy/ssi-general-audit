@@ -29,6 +29,7 @@
         "data/master/general_audit_it_control.xml",
         "data/master/general_audit_it_control_indicator.xml",
         "data/master/general_audit_it_control_set.xml",
+        "data/master/general_audit_account_key_internal_control.xml",
         "menu.xml",
         # MASTER
         "views/master/general_audit_assersion_type_views.xml",
