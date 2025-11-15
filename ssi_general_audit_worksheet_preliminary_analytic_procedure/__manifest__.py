@@ -38,6 +38,7 @@
         "data/approval_template/general_audit_ws_b32655a.xml",
         "data/approval_template/general_audit_ws_d4289e4.xml",
         "data/general_audit_worksheet_type_data.xml",
+        "data/master/general_audit_worksheet_conclusion.xml",
         "data/master/analytic_procedure_conclusion_category.xml",
         "data/master/general_audit_ws_c8740d4_item.xml",
         "views/analytic_procedure_conclusion_category_views.xml",
