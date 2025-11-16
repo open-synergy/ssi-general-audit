@@ -19,6 +19,7 @@
         "views/assets.xml",
         "security/ir_module_category_data.xml",
         # MASTER DATA
+        "data/master/general_audit_worksheet_conclusion.xml",
         "data/master/general_audit_ws_a753ab9_item.xml",
         # a753ab9 - Audit Planning Memorandum
         "security/res_group/general_audit_ws_a753ab9.xml",
