@@ -17,6 +17,7 @@
         "security/ir_module_category_data.xml",
         "data/general_audit_worksheet_type_data.xml",
         # MASTER DATA
+        "data/master/general_audit_worksheet_conclusion.xml",
         "data/master/general_audit_ws_c2375d8_item.xml",
         # bb33b94 - Final Materiality
         "security/res_group/general_audit_ws_bb33b94.xml",
