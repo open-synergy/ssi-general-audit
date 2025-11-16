@@ -18,9 +18,10 @@
         "security/res_group_data.xml",
         "data/general_audit_worksheet_type_data.xml",
         # MASTER DATA
+        "data/master/general_audit_worksheet_conclusion.xml",
         "data/master/general_audit_audit_procedure_category.xml",
         "data/master/general_audit_audit_procedure.xml",
-        # b26d482
+        # b26d482 - Worksheet
         "security/res_group/general_audit_ws_b26d482.xml",
         "security/ir_rule/general_audit_ws_b26d482.xml",
         "data/ir_sequence/general_audit_ws_b26d482.xml",
@@ -28,7 +29,7 @@
         "data/policy_template/general_audit_ws_b26d482.xml",
         "data/approval_template/general_audit_ws_b26d482.xml",
         "views/general_audit_ws_b26d482_views.xml",
-        # e51bb1c
+        # e51bb1c - Key Audit Procedures
         "security/res_group/general_audit_ws_e51bb1c.xml",
         "security/ir_rule/general_audit_ws_e51bb1c.xml",
         "data/ir_sequence/general_audit_ws_e51bb1c.xml",
@@ -36,7 +37,7 @@
         "data/policy_template/general_audit_ws_e51bb1c.xml",
         "data/approval_template/general_audit_ws_e51bb1c.xml",
         "views/general_audit_ws_e51bb1c_views.xml",
-        # f9f3299
+        # f9f3299 - Lead Schedule - Account
         "security/res_group/general_audit_ws_f9f3299.xml",
         "security/ir_rule/general_audit_ws_f9f3299.xml",
         "data/ir_sequence/general_audit_ws_f9f3299.xml",
