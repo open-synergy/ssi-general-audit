@@ -18,6 +18,7 @@
         "security/ir_module_category_data.xml",
         "data/general_audit_worksheet_type_data.xml",
         # MASTER DATA
+        "data/master/general_audit_worksheet_conclusion.xml",
         "data/master/general_audit_assersion_type.xml",
         "data/master/general_audit_control_activity.xml",
         "data/master/general_audit_key_internal_control.xml",
