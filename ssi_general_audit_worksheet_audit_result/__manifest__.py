@@ -15,6 +15,8 @@
     "data": [
         "security/ir_module_category_data.xml",
         "data/general_audit_worksheet_type_data.xml",
+        # MASTER DATA
+        "data/master/general_audit_worksheet_conclusion.xml",
         # a0319a2 - Findings That Influence Opinion
         "security/res_group/general_audit_ws_a0319a2.xml",
         "security/ir_rule/general_audit_ws_a0319a2.xml",
