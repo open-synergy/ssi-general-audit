@@ -19,6 +19,7 @@
         "security/res_group_data.xml",
         "data/general_audit_worksheet_type_data.xml",
         # MASTER DATA
+        "data/master/general_audit_worksheet_conclusion.xml",
         "data/master/general_audit_ws_ee819ae_item.xml",
         "data/master/general_audit_subsequent_event.xml",
         "data/master/related_party_confirmation_procedure.xml",
