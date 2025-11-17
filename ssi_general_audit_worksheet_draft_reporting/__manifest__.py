@@ -16,6 +16,7 @@
         "security/ir_module_category_data.xml",
         "data/general_audit_worksheet_type_data.xml",
         # MASTER DATA
+        "data/master/general_audit_worksheet_conclusion.xml",
         "data/master/general_audit_ws_bbbdfe7_item.xml",
         "data/master/general_audit_ws_de69c2f_item.xml",
         # b555edd - Report Formatting Control
