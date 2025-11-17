@@ -1,11 +1,11 @@
 <?xml version='1.0' encoding='utf-8' ?>
 <odoo>
-    <record id="client_financial_ratio_1_f0ab3e10" model="client_financial_ratio">
-        <field name="sequence" eval="10" />
-        <field name="name">Current Ratio</field>
-        <field name="code">/</field>
-        <field name="category">liquidity</field>
-        <field
+  <record id="client_financial_ratio_1_f0ab3e10" model="client_financial_ratio">
+    <field name="sequence" eval="10" />
+    <field name="name">Current Ratio</field>
+    <field name="code">/</field>
+    <field name="category">liquidity</field>
+    <field
             name="python_code"
         >result_extrapolation = result_interim = result_previous = result_end_period = result_audited = 0.0
 if account_group["T003"]["extrapolation"]:
@@ -22,14 +22,14 @@ if account_group["T003"]["end_period"]:
 
 if account_group["T003"]["audited"]:
   result_audited = account_group["T001"]["audited"] / account_group["T003"]["audited"]</field>
-    </record>
+  </record>
 
-    <record id="client_financial_ratio_2_30a38c23" model="client_financial_ratio">
-        <field name="sequence" eval="20" />
-        <field name="name">Cash Ratio</field>
-        <field name="code">/</field>
-        <field name="category">liquidity</field>
-        <field
+  <record id="client_financial_ratio_2_30a38c23" model="client_financial_ratio">
+    <field name="sequence" eval="20" />
+    <field name="name">Cash Ratio</field>
+    <field name="code">/</field>
+    <field name="category">liquidity</field>
+    <field
             name="python_code"
         >result_extrapolation = result_interim = result_previous = result_end_period = result_audited =0.0
 
@@ -47,14 +47,14 @@ if account_group["T003"]["end_period"]:
 
 if account_group["T003"]["audited"]:
   result_audited = account_type["S111"]["audited"] / account_group["T003"]["audited"]</field>
-    </record>
+  </record>
 
-    <record id="client_financial_ratio_3_475786bf" model="client_financial_ratio">
-        <field name="sequence" eval="30" />
-        <field name="name">Quick Ratio</field>
-        <field name="code">/</field>
-        <field name="category">liquidity</field>
-        <field
+  <record id="client_financial_ratio_3_475786bf" model="client_financial_ratio">
+    <field name="sequence" eval="30" />
+    <field name="name">Quick Ratio</field>
+    <field name="code">/</field>
+    <field name="category">liquidity</field>
+    <field
             name="python_code"
         >result_extrapolation = result_interim = result_previous = result_end_period = result_audited0.0
 
@@ -82,15 +82,15 @@ if account_group["T003"]["audited"]:
   result_audited = (account_type.get("S111", {}).get("audited", 0.0) + \
   account_type.get("S112", {}).get("audited", 0.0) + \
   account_type.get("S114", {}).get("audited", 0.0)) / account_group["T003"]["audited"]
-      </field>
-    </record>
+    </field>
+  </record>
 
-    <record id="client_financial_ratio_4_b8515746" model="client_financial_ratio">
-        <field name="sequence" eval="40" />
-        <field name="name">Inventory Turnover</field>
-        <field name="code">/</field>
-        <field name="category">activity</field>
-        <field
+  <record id="client_financial_ratio_4_b8515746" model="client_financial_ratio">
+    <field name="sequence" eval="40" />
+    <field name="name">Inventory Turnover</field>
+    <field name="code">/</field>
+    <field name="category">activity</field>
+    <field
             name="python_code"
         >result_extrapolation = result_interim = result_previous = result_end_period = result_audited = 0.0
 
@@ -102,14 +102,14 @@ if account_group["T003"]["end_period"]:
 
 if account_group["T003"]["audited"]:
   result_audited = account_group["T011"]["audited"] / account_type["S116"]["audited_avg"]</field>
-    </record>
+  </record>
 
-    <record id="client_financial_ratio_5_7e888232" model="client_financial_ratio">
-        <field name="sequence" eval="50" />
-        <field name="name">Trade Receivable Turnover</field>
-        <field name="code">/</field>
-        <field name="category">activity</field>
-        <field
+  <record id="client_financial_ratio_5_7e888232" model="client_financial_ratio">
+    <field name="sequence" eval="50" />
+    <field name="name">Trade Receivable Turnover</field>
+    <field name="code">/</field>
+    <field name="category">activity</field>
+    <field
             name="python_code"
         >result_extrapolation = result_interim = result_previous = result_end_period = result_audited = 0.0
 
@@ -121,14 +121,14 @@ if account_group["T003"]["end_period"]:
 
 if account_group["T003"]["audited"]:
   result_audited = account_group["T009"]["audited"] / account_type["S112"]["audited_avg"]</field>
-    </record>
+  </record>
 
-    <record id="client_financial_ratio_6_f65ecc52" model="client_financial_ratio">
-        <field name="sequence" eval="60" />
-        <field name="name">Total Asset Turnover</field>
-        <field name="code">/</field>
-        <field name="category">activity</field>
-        <field
+  <record id="client_financial_ratio_6_f65ecc52" model="client_financial_ratio">
+    <field name="sequence" eval="60" />
+    <field name="name">Total Asset Turnover</field>
+    <field name="code">/</field>
+    <field name="category">activity</field>
+    <field
             name="python_code"
         >result_extrapolation = result_interim = result_previous = result_end_period = result_audited 0.0
 
@@ -140,14 +140,14 @@ if account_group["T003"]["end_period"]:
 
 if account_group["T003"]["audited"]:
   result_audited = account_group["T009"]["audited"] / computation["T001"]["audited_avg"]</field>
-    </record>
+  </record>
 
-    <record id="client_financial_ratio_7_d95b93ed" model="client_financial_ratio">
-        <field name="sequence" eval="70" />
-        <field name="name">Working Capital Turnover</field>
-        <field name="code">/</field>
-        <field name="category">activity</field>
-        <field
+  <record id="client_financial_ratio_7_d95b93ed" model="client_financial_ratio">
+    <field name="sequence" eval="70" />
+    <field name="name">Working Capital Turnover</field>
+    <field name="code">/</field>
+    <field name="category">activity</field>
+    <field
             name="python_code"
         >result_extrapolation = result_interim = result_previous = result_end_period = result_audited = 0.0
 
@@ -159,13 +159,13 @@ if account_group["T003"]["end_period"]:
 
 if account_group["T003"]["audited"]:
   result_audited = account_group["T009"]["audited"] / computation["T009"]["audited_avg"]</field>
-    </record>
-    <record id="client_financial_ratio_8_86b7a032" model="client_financial_ratio">
-        <field name="sequence" eval="80" />
-        <field name="name">Trade Payable Turnover</field>
-        <field name="code">/</field>
-        <field name="category">activity</field>
-        <field
+  </record>
+  <record id="client_financial_ratio_8_86b7a032" model="client_financial_ratio">
+    <field name="sequence" eval="80" />
+    <field name="name">Trade Payable Turnover</field>
+    <field name="code">/</field>
+    <field name="category">activity</field>
+    <field
             name="python_code"
         >result_extrapolation = result_interim = result_previous = result_end_period = result_audited = 0.0
 
@@ -177,14 +177,14 @@ if account_group["T003"]["end_period"]:
 
 if account_group["T003"]["audited"]:
   result_audited = account_group["T011"]["audited"] / account_type["S211"]["audited_avg"]</field>
-    </record>
+  </record>
 
-    <record id="client_financial_ratio_9_4f4f8749" model="client_financial_ratio">
-        <field name="sequence" eval="90" />
-        <field name="name">Days inventory Outstanding</field>
-        <field name="code">/</field>
-        <field name="category">activity</field>
-        <field
+  <record id="client_financial_ratio_9_4f4f8749" model="client_financial_ratio">
+    <field name="sequence" eval="90" />
+    <field name="name">Days inventory Outstanding</field>
+    <field name="code">/</field>
+    <field name="category">activity</field>
+    <field
             name="python_code"
         >result_extrapolation = result_interim = result_previous = result_end_period = result_audited = 0.0
 
@@ -196,14 +196,14 @@ if account_group["T003"]["end_period"]:
 
 if account_group["T003"]["audited"]:
   result_audited = 365 / (account_group["T011"]["audited"] / account_type["S116"]["audited_avg"])</field>
-    </record>
+  </record>
 
-    <record id="client_financial_ratio_10_2666943a" model="client_financial_ratio">
-        <field name="sequence" eval="100" />
-        <field name="name">Days Trade Receivable Outstanding</field>
-        <field name="code">/</field>
-        <field name="category">activity</field>
-        <field
+  <record id="client_financial_ratio_10_2666943a" model="client_financial_ratio">
+    <field name="sequence" eval="100" />
+    <field name="name">Days Trade Receivable Outstanding</field>
+    <field name="code">/</field>
+    <field name="category">activity</field>
+    <field
             name="python_code"
         >result_extrapolation = result_interim = result_previous = result_end_period = result_audited = 0.0
 
@@ -215,13 +215,13 @@ if account_group["T003"]["end_period"]:
 
 if account_group["T003"]["audited"]:
   result_audited = 365 / (account_group["T009"]["audited"] / account_type["S112"]["audited_avg"])</field>
-    </record>
-    <record id="client_financial_ratio_11_f39a4f43" model="client_financial_ratio">
-        <field name="sequence" eval="110" />
-        <field name="name">Days Trade Payable Outstanding</field>
-        <field name="code">/</field>
-        <field name="category">activity</field>
-        <field
+  </record>
+  <record id="client_financial_ratio_11_f39a4f43" model="client_financial_ratio">
+    <field name="sequence" eval="110" />
+    <field name="name">Days Trade Payable Outstanding</field>
+    <field name="code">/</field>
+    <field name="category">activity</field>
+    <field
             name="python_code"
         >result_extrapolation = result_interim = result_previous = result_end_period = result_audited = 0.0
 
@@ -233,14 +233,14 @@ if account_group["T003"]["end_period"]:
 
 if account_group["T003"]["audited"]:
   result_audited = 365 / (account_group["T011"]["audited"] / account_type["S211"]["audited_avg"])</field>
-    </record>
+  </record>
 
-    <record id="client_financial_ratio_12_4313b355" model="client_financial_ratio">
-        <field name="sequence" eval="120" />
-        <field name="name">Net Operating Cycle</field>
-        <field name="code">/</field>
-        <field name="category">activity</field>
-        <field
+  <record id="client_financial_ratio_12_4313b355" model="client_financial_ratio">
+    <field name="sequence" eval="120" />
+    <field name="name">Net Operating Cycle</field>
+    <field name="code">/</field>
+    <field name="category">activity</field>
+    <field
             name="python_code"
         >result_extrapolation = result_interim = result_previous = result_end_period = result_audited = 0.0
 
@@ -258,14 +258,14 @@ if account_group["T003"]["end_period"]:
   result_end_period = (365 / (account_group["T011"]["end_period"] / account_type["S116"]["end_period_avg"])) + \
   (365 / (account_group["T009"]["end_period"] / account_type["S112"]["end_period_avg"])) -\
   (365 / (account_group["T011"]["end_period"] / account_type["S211"]["end_period_avg"]))</field>
-    </record>
+  </record>
 
-    <record id="client_financial_ratio_13_ee728e86" model="client_financial_ratio">
-        <field name="sequence" eval="130" />
-        <field name="name">Debt Equity Ratio</field>
-        <field name="code">/</field>
-        <field name="category">solvency</field>
-        <field
+  <record id="client_financial_ratio_13_ee728e86" model="client_financial_ratio">
+    <field name="sequence" eval="130" />
+    <field name="name">Debt Equity Ratio</field>
+    <field name="code">/</field>
+    <field name="category">solvency</field>
+    <field
             name="python_code"
         >result_extrapolation = result_interim = result_previous = result_end_period = result_audited = 0.0
 
@@ -280,14 +280,14 @@ if account_group["T003"]["previous"]:
 
 if account_group["T003"]["audited"]:
   result_audited = computation["T007"]["audited"] / computation["T002"]["audited"] *-1</field>
-    </record>
+  </record>
 
-    <record id="client_financial_ratio_14_523c0216" model="client_financial_ratio">
-        <field name="sequence" eval="140" />
-        <field name="name">Leverage Ratio</field>
-        <field name="code">/</field>
-        <field name="category">solvency</field>
-        <field
+  <record id="client_financial_ratio_14_523c0216" model="client_financial_ratio">
+    <field name="sequence" eval="140" />
+    <field name="name">Leverage Ratio</field>
+    <field name="code">/</field>
+    <field name="category">solvency</field>
+    <field
             name="python_code"
         >result_extrapolation = result_interim = result_previous = result_end_period = result_audited = 0.0
 
@@ -302,15 +302,15 @@ if account_group["T003"]["previous"]:
 
 if account_group["T003"]["audited"]:
   result_audited = computation["T001"]["audited"] / computation["T002"]["audited"]
-  </field>
-    </record>
+    </field>
+  </record>
 
-    <record id="client_financial_ratio_15_99f866a5" model="client_financial_ratio">
-        <field name="sequence" eval="150" />
-        <field name="name">Coverage Ratio</field>
-        <field name="code">/</field>
-        <field name="category">solvency</field>
-        <field
+  <record id="client_financial_ratio_15_99f866a5" model="client_financial_ratio">
+    <field name="sequence" eval="150" />
+    <field name="name">Coverage Ratio</field>
+    <field name="code">/</field>
+    <field name="category">solvency</field>
+    <field
             name="python_code"
         >result_extrapolation = result_interim = result_previous = result_end_period = result_audited = 0.0
 
@@ -325,14 +325,14 @@ if account_group["T003"]["previous"]:
 
 if account_group["T003"]["audited"]:
   result_audited = computation["T005"]["audited"] / account_type["S531"]["audited"]</field>
-    </record>
+  </record>
 
-    <record id="client_financial_ratio_16_e9d4c603" model="client_financial_ratio">
-        <field name="sequence" eval="160" />
-        <field name="name">Gross Profit Margin</field>
-        <field name="code">/</field>
-        <field name="category">profitability</field>
-        <field
+  <record id="client_financial_ratio_16_e9d4c603" model="client_financial_ratio">
+    <field name="sequence" eval="160" />
+    <field name="name">Gross Profit Margin</field>
+    <field name="code">/</field>
+    <field name="category">profitability</field>
+    <field
             name="python_code"
         >result_extrapolation = result_interim = result_previous = result_end_period = result_audited = 0.0
 
@@ -347,15 +347,15 @@ if account_group["T003"]["previous"]:
 
 if account_group["T003"]["audited"]:
   result_audited = (account_group["T009"]["audited"] - account_group["T011"]["audited"]) / account_group["T009"]["audited"]
-  </field>
-    </record>
+    </field>
+  </record>
 
-    <record id="client_financial_ratio_17_2073110" model="client_financial_ratio">
-        <field name="sequence" eval="170" />
-        <field name="name">Net Profit Margin</field>
-        <field name="code">/</field>
-        <field name="category">profitability</field>
-        <field
+  <record id="client_financial_ratio_17_2073110" model="client_financial_ratio">
+    <field name="sequence" eval="170" />
+    <field name="name">Net Profit Margin</field>
+    <field name="code">/</field>
+    <field name="category">profitability</field>
+    <field
             name="python_code"
         >result_extrapolation = result_interim = result_previous = result_end_period = result_audited = 0.0
 
@@ -370,14 +370,14 @@ if account_group["T003"]["previous"]:
 
 if account_group["T003"]["audited"]:
   result_audited = computation["T010"]["audited"] / computation["T003"]["audited"]</field>
-    </record>
+  </record>
 
-    <record id="client_financial_ratio_18_b475fb31" model="client_financial_ratio">
-        <field name="sequence" eval="180" />
-        <field name="name">Return on Asset</field>
-        <field name="code">/</field>
-        <field name="category">profitability</field>
-        <field
+  <record id="client_financial_ratio_18_b475fb31" model="client_financial_ratio">
+    <field name="sequence" eval="180" />
+    <field name="name">Return on Asset</field>
+    <field name="code">/</field>
+    <field name="category">profitability</field>
+    <field
             name="python_code"
         >result_extrapolation = result_interim = result_previous = result_end_period = result_audited = 0.0
 
@@ -389,14 +389,14 @@ if account_group["T003"]["end_period"]:
 
 if account_group["T003"]["audited"]:
   result_audited = computation["T010"]["audited"] / computation["T001"]["audited_avg"]</field>
-    </record>
+  </record>
 
-    <record id="client_financial_ratio_19_89777c92" model="client_financial_ratio">
-        <field name="sequence" eval="190" />
-        <field name="name">Return on Equity</field>
-        <field name="code">/</field>
-        <field name="category">profitability</field>
-        <field
+  <record id="client_financial_ratio_19_89777c92" model="client_financial_ratio">
+    <field name="sequence" eval="190" />
+    <field name="name">Return on Equity</field>
+    <field name="code">/</field>
+    <field name="category">profitability</field>
+    <field
             name="python_code"
         >result_extrapolation = result_interim = result_previous = result_end_period = result_audited = 0.0
 
@@ -408,5 +408,140 @@ if account_group["T003"]["end_period"]:
 
 if account_group["T003"]["audited"]:
   result_audited = computation["T005"]["audited"] / computation["T002"]["audited_avg"]</field>
-    </record>
+  </record>
+
+  <!-- Indonesian translations for client_financial_ratio -->
+  <record id="l18n_id_client_financial_ratio_1_f0ab3e10" model="ir.translation">
+    <field name="name">client_financial_ratio,name</field>
+    <field name="lang">id_ID</field>
+    <field name="type">model</field>
+    <field name="res_id" ref="client_financial_ratio_1_f0ab3e10" />
+    <field name="value">Rasio Lancar</field>
+  </record>
+  <record id="l18n_id_client_financial_ratio_2_30a38c23" model="ir.translation">
+    <field name="name">client_financial_ratio,name</field>
+    <field name="lang">id_ID</field>
+    <field name="type">model</field>
+    <field name="res_id" ref="client_financial_ratio_2_30a38c23" />
+    <field name="value">Rasio Kas</field>
+  </record>
+  <record id="l18n_id_client_financial_ratio_3_475786bf" model="ir.translation">
+    <field name="name">client_financial_ratio,name</field>
+    <field name="lang">id_ID</field>
+    <field name="type">model</field>
+    <field name="res_id" ref="client_financial_ratio_3_475786bf" />
+    <field name="value">Rasio Cepat</field>
+  </record>
+  <record id="l18n_id_client_financial_ratio_4_b8515746" model="ir.translation">
+    <field name="name">client_financial_ratio,name</field>
+    <field name="lang">id_ID</field>
+    <field name="type">model</field>
+    <field name="res_id" ref="client_financial_ratio_4_b8515746" />
+    <field name="value">Perputaran Persediaan</field>
+  </record>
+  <record id="l18n_id_client_financial_ratio_5_7e888232" model="ir.translation">
+    <field name="name">client_financial_ratio,name</field>
+    <field name="lang">id_ID</field>
+    <field name="type">model</field>
+    <field name="res_id" ref="client_financial_ratio_5_7e888232" />
+    <field name="value">Perputaran Piutang Usaha</field>
+  </record>
+  <record id="l18n_id_client_financial_ratio_6_f65ecc52" model="ir.translation">
+    <field name="name">client_financial_ratio,name</field>
+    <field name="lang">id_ID</field>
+    <field name="type">model</field>
+    <field name="res_id" ref="client_financial_ratio_6_f65ecc52" />
+    <field name="value">Perputaran Total Aset</field>
+  </record>
+  <record id="l18n_id_client_financial_ratio_7_d95b93ed" model="ir.translation">
+    <field name="name">client_financial_ratio,name</field>
+    <field name="lang">id_ID</field>
+    <field name="type">model</field>
+    <field name="res_id" ref="client_financial_ratio_7_d95b93ed" />
+    <field name="value">Perputaran Modal Kerja</field>
+  </record>
+  <record id="l18n_id_client_financial_ratio_8_86b7a032" model="ir.translation">
+    <field name="name">client_financial_ratio,name</field>
+    <field name="lang">id_ID</field>
+    <field name="type">model</field>
+    <field name="res_id" ref="client_financial_ratio_8_86b7a032" />
+    <field name="value">Perputaran Utang Usaha</field>
+  </record>
+  <record id="l18n_id_client_financial_ratio_9_4f4f8749" model="ir.translation">
+    <field name="name">client_financial_ratio,name</field>
+    <field name="lang">id_ID</field>
+    <field name="type">model</field>
+    <field name="res_id" ref="client_financial_ratio_9_4f4f8749" />
+    <field name="value">Hari Persediaan Beredar</field>
+  </record>
+  <record id="l18n_id_client_financial_ratio_10_2666943a" model="ir.translation">
+    <field name="name">client_financial_ratio,name</field>
+    <field name="lang">id_ID</field>
+    <field name="type">model</field>
+    <field name="res_id" ref="client_financial_ratio_10_2666943a" />
+    <field name="value">Hari Piutang Usaha Beredar</field>
+  </record>
+  <record id="l18n_id_client_financial_ratio_11_f39a4f43" model="ir.translation">
+    <field name="name">client_financial_ratio,name</field>
+    <field name="lang">id_ID</field>
+    <field name="type">model</field>
+    <field name="res_id" ref="client_financial_ratio_11_f39a4f43" />
+    <field name="value">Hari Utang Usaha Beredar</field>
+  </record>
+  <record id="l18n_id_client_financial_ratio_12_4313b355" model="ir.translation">
+    <field name="name">client_financial_ratio,name</field>
+    <field name="lang">id_ID</field>
+    <field name="type">model</field>
+    <field name="res_id" ref="client_financial_ratio_12_4313b355" />
+    <field name="value">Siklus Operasi Bersih</field>
+  </record>
+  <record id="l18n_id_client_financial_ratio_13_ee728e86" model="ir.translation">
+    <field name="name">client_financial_ratio,name</field>
+    <field name="lang">id_ID</field>
+    <field name="type">model</field>
+    <field name="res_id" ref="client_financial_ratio_13_ee728e86" />
+    <field name="value">Rasio Utang terhadap Ekuitas</field>
+  </record>
+  <record id="l18n_id_client_financial_ratio_14_523c0216" model="ir.translation">
+    <field name="name">client_financial_ratio,name</field>
+    <field name="lang">id_ID</field>
+    <field name="type">model</field>
+    <field name="res_id" ref="client_financial_ratio_14_523c0216" />
+    <field name="value">Rasio Leverage</field>
+  </record>
+  <record id="l18n_id_client_financial_ratio_15_99f866a5" model="ir.translation">
+    <field name="name">client_financial_ratio,name</field>
+    <field name="lang">id_ID</field>
+    <field name="type">model</field>
+    <field name="res_id" ref="client_financial_ratio_15_99f866a5" />
+    <field name="value">Rasio Cakupan</field>
+  </record>
+  <record id="l18n_id_client_financial_ratio_16_e9d4c603" model="ir.translation">
+    <field name="name">client_financial_ratio,name</field>
+    <field name="lang">id_ID</field>
+    <field name="type">model</field>
+    <field name="res_id" ref="client_financial_ratio_16_e9d4c603" />
+    <field name="value">Margin Laba Kotor</field>
+  </record>
+  <record id="l18n_id_client_financial_ratio_17_2073110" model="ir.translation">
+    <field name="name">client_financial_ratio,name</field>
+    <field name="lang">id_ID</field>
+    <field name="type">model</field>
+    <field name="res_id" ref="client_financial_ratio_17_2073110" />
+    <field name="value">Margin Laba Bersih</field>
+  </record>
+  <record id="l18n_id_client_financial_ratio_18_b475fb31" model="ir.translation">
+    <field name="name">client_financial_ratio,name</field>
+    <field name="lang">id_ID</field>
+    <field name="type">model</field>
+    <field name="res_id" ref="client_financial_ratio_18_b475fb31" />
+    <field name="value">Imbal Hasil Aset</field>
+  </record>
+  <record id="l18n_id_client_financial_ratio_19_89777c92" model="ir.translation">
+    <field name="name">client_financial_ratio,name</field>
+    <field name="lang">id_ID</field>
+    <field name="type">model</field>
+    <field name="res_id" ref="client_financial_ratio_19_89777c92" />
+    <field name="value">Imbal Hasil Ekuitas</field>
+  </record>
 </odoo>
