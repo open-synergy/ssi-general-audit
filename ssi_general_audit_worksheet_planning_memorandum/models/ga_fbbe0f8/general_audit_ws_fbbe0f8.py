@@ -665,7 +665,7 @@ class GeneralAuditWSfbbe0f8(models.Model):
         ),
     )
     link_5_conclusion_id = fields.Many2one(
-        string="Conclusion (RA.210.1)",
+        string="Conclusion ID (RA.210.1)",
         related="link_5_id.conclusion_id",
         help=(
             "Conclusion from the Inherent Risk - "
@@ -674,7 +674,7 @@ class GeneralAuditWSfbbe0f8(models.Model):
         ),
     )
     link_5_conclusion = fields.Text(
-        string="Conclusion",
+        string="Conclusion (RA.210.1)",
         related="link_5_id.conclusion",
         help=(
             "Conclusion on the Inherent Risk - "
@@ -722,7 +722,7 @@ class GeneralAuditWSfbbe0f8(models.Model):
         ),
     )
     link_6_conclusion_id = fields.Many2one(
-        string="Conclusion (PE.160)",
+        string="Conclusion ID (PE.160)",
         related="link_6_id.conclusion_id",
         help=(
             "Conclusion from the Team Communication "
@@ -731,7 +731,7 @@ class GeneralAuditWSfbbe0f8(models.Model):
         ),
     )
     link_6_conclusion = fields.Text(
-        string="Conclusion",
+        string="Conclusion (PE.160)",
         related="link_6_id.conclusion",
         help=(
             "Conclusion on the Team Communication "
@@ -779,7 +779,7 @@ class GeneralAuditWSfbbe0f8(models.Model):
         ),
     )
     link_7_conclusion_id = fields.Many2one(
-        string="Conclusion (PE.150.3)",
+        string="Conclusion ID (PE.150.3)",
         related="link_7_id.conclusion_id",
         help=(
             "Conclusion from the Main Business "
@@ -788,7 +788,7 @@ class GeneralAuditWSfbbe0f8(models.Model):
         ),
     )
     link_7_conclusion = fields.Text(
-        string="Conclusion",
+        string="Conclusion (PE.150.3)",
         related="link_7_id.conclusion",
         help=(
             "Conclusion on the Main Business "
@@ -836,7 +836,7 @@ class GeneralAuditWSfbbe0f8(models.Model):
         ),
     )
     link_8_conclusion_id = fields.Many2one(
-        string="Conclusion (RA.220.1)",
+        string="Conclusion ID (RA.220.1)",
         related="link_8_id.conclusion_id",
         help=(
             "Conclusion from the Control Risk "
@@ -845,7 +845,7 @@ class GeneralAuditWSfbbe0f8(models.Model):
         ),
     )
     link_8_conclusion = fields.Text(
-        string="Conclusion",
+        string="Conclusion (RA.220.1)",
         related="link_8_id.conclusion",
         help=(
             "Conclusion on the Control Risk "
@@ -895,7 +895,7 @@ class GeneralAuditWSfbbe0f8(models.Model):
         ),
     )
     link_9_conclusion_id = fields.Many2one(
-        string="Conclusion (PE.110.3)",
+        string="Conclusion ID (PE.110.3)",
         related="link_9_id.conclusion_id",
         help=(
             "Conclusion from the Competency, availability, and "
@@ -904,7 +904,7 @@ class GeneralAuditWSfbbe0f8(models.Model):
         ),
     )
     link_9_conclusion = fields.Text(
-        string="Conclusion",
+        string="Conclusion (PE.110.3)",
         related="link_9_id.conclusion",
         help=(
             "Conclusion on the Competency, availability, and "
@@ -952,7 +952,7 @@ class GeneralAuditWSfbbe0f8(models.Model):
         ),
     )
     link_10_conclusion_id = fields.Many2one(
-        string="Conclusion (RA.330)",
+        string="Conclusion ID (RA.330)",
         related="link_10_id.conclusion_id",
         help=(
             "Conclusion from the External Communication "
@@ -961,7 +961,7 @@ class GeneralAuditWSfbbe0f8(models.Model):
         ),
     )
     link_10_conclusion = fields.Text(
-        string="Conclusion",
+        string="Conclusion (RA.330)",
         related="link_10_id.conclusion",
         help=(
             "Conclusion on the External Communication "
@@ -1071,7 +1071,7 @@ class GeneralAuditWSfbbe0f8(models.Model):
         ),
     )
     link_13_conclusion_id = fields.Many2one(
-        string="Conclusion (PE.120)",
+        string="Conclusion ID (PE.120)",
         related="link_13_id.conclusion_id",
         help=(
             "Conclusion from the Audit Working Plan "
@@ -1080,7 +1080,7 @@ class GeneralAuditWSfbbe0f8(models.Model):
         ),
     )
     link_13_conclusion = fields.Text(
-        string="Conclusion",
+        string="Conclusion (PE.120)",
         related="link_13_id.conclusion",
         help=(
             "Conclusion on the Audit Working Plan "

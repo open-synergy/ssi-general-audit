@@ -67,7 +67,7 @@ class GeneralAuditWSf87b2e1(models.Model):
         ),
     )
     link_1_conclusion_id = fields.Many2one(
-        string="Conclusion (RA.150.1)",
+        string="Conclusion ID (RA.150.1)",
         related="link_1_id.conclusion_id",
         help=(
             "Conclusion selected on the worksheet. "
@@ -75,7 +75,7 @@ class GeneralAuditWSf87b2e1(models.Model):
         ),
     )
     link_1_conclusion = fields.Text(
-        string="Conclusion",
+        string="Conclusion (RA.150.1)",
         related="link_1_id.conclusion",
         help=("Conclusion on the worksheet. " "Read-only, mirrors the linked record."),
     )
@@ -117,14 +117,14 @@ class GeneralAuditWSf87b2e1(models.Model):
         ),
     )
     link_2_conclusion_id = fields.Many2one(
-        string="Conclusion (RA.150.2)",
+        string="Conclusion ID (RA.150.2)",
         related="link_2_id.conclusion_id",
         help=(
             "Conclusion from the worksheet. " "Read-only, mirrors the linked record."
         ),
     )
     link_2_conclusion = fields.Text(
-        string="Conclusion",
+        string="Conclusion (RA.150.2)",
         related="link_2_id.conclusion",
         help=("Conclusion on the worksheet. " "Read-only, mirrors the linked record."),
     )
@@ -166,14 +166,14 @@ class GeneralAuditWSf87b2e1(models.Model):
         ),
     )
     link_3_conclusion_id = fields.Many2one(
-        string="Conclusion (RA.150.3)",
+        string="Conclusion ID (RA.150.3)",
         related="link_3_id.conclusion_id",
         help=(
             "Conclusion from the worksheet. " "Read-only, mirrors the linked record."
         ),
     )
     link_3_conclusion = fields.Text(
-        string="Conclusion",
+        string="Conclusion (RA.150.3)",
         related="link_3_id.conclusion",
         help=("Conclusion on the worksheet. " "Read-only, mirrors the linked record."),
     )
@@ -215,14 +215,14 @@ class GeneralAuditWSf87b2e1(models.Model):
         ),
     )
     link_4_conclusion_id = fields.Many2one(
-        string="Conclusion (RA.150.4)",
+        string="Conclusion ID (RA.150.4)",
         related="link_4_id.conclusion_id",
         help=(
             "Conclusion from the worksheet. " "Read-only, mirrors the linked record."
         ),
     )
     link_4_conclusion = fields.Text(
-        string="Conclusion",
+        string="Conclusion (RA.150.4)",
         related="link_4_id.conclusion",
         help=("Conclusion on the worksheet. " "Read-only, mirrors the linked record."),
     )
@@ -294,14 +294,14 @@ class GeneralAuditWSf87b2e1(models.Model):
         ),
     )
     link_6_conclusion_id = fields.Many2one(
-        string="Conclusion (RA.150.6)",
+        string="Conclusion ID (RA.150.6)",
         related="link_6_id.conclusion_id",
         help=(
             "Conclusion from the worksheet. " "Read-only, mirrors the linked record."
         ),
     )
     link_6_conclusion = fields.Text(
-        string="Conclusion",
+        string="Conclusion (RA.150.6)",
         related="link_6_id.conclusion",
         help=("Conclusion on the worksheet. " "Read-only, mirrors the linked record."),
     )
@@ -343,14 +343,14 @@ class GeneralAuditWSf87b2e1(models.Model):
         ),
     )
     link_7_conclusion_id = fields.Many2one(
-        string="Conclusion (RA.150.7)",
+        string="Conclusion ID (RA.150.7)",
         related="link_7_id.conclusion_id",
         help=(
             "Conclusion from the worksheet. " "Read-only, mirrors the linked record."
         ),
     )
     link_7_conclusion = fields.Text(
-        string="Conclusion",
+        string="Conclusion (RA.150.7)",
         related="link_7_id.conclusion",
         help=("Conclusion on the worksheet. " "Read-only, mirrors the linked record."),
     )
@@ -391,13 +391,14 @@ class GeneralAuditWSf87b2e1(models.Model):
         ),
     )
     link_8_conclusion_id = fields.Many2one(
+        string="Conclusion ID (RA.150.8)",
         related="link_8_id.conclusion_id",
         help=(
             "Conclusion from the worksheet. " "Read-only, mirrors the linked record."
         ),
     )
     link_8_conclusion = fields.Text(
-        string="Conclusion",
+        string="Conclusion (RA.150.8)",
         related="link_8_id.conclusion",
         help=("Conclusion on the worksheet. " "Read-only, mirrors the linked record."),
     )
