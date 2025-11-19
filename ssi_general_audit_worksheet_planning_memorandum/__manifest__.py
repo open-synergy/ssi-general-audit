@@ -18,6 +18,7 @@
     "data": [
         "views/assets.xml",
         "security/ir_module_category_data.xml",
+        "data/general_audit_worksheet_type_data.xml",
         # MASTER DATA
         "data/master/general_audit_worksheet_conclusion.xml",
         "data/master/general_audit_ws_a753ab9_item.xml",
@@ -38,7 +39,6 @@
         "data/sequence_template/general_audit_ws_fbbe0f8.xml",
         "data/policy_template/general_audit_ws_fbbe0f8.xml",
         "data/approval_template/general_audit_ws_fbbe0f8.xml",
-        "data/general_audit_worksheet_type_data.xml",
         "views/ga_fbbe0f8/general_audit_ws_fbbe0f8_views.xml",
         "security/ir.model.access.csv",
     ],
