@@ -47,6 +47,7 @@
         "approval_template/client_account_mapping.xml",
         "data/general_audit_worksheet_type_category_data.xml",
         # MASTER DATA
+        "data/ir_translation.xml",
         "data/master/client_financial_ratio.xml",
         "data/master/general_audit_business_environment.xml",
         "data/master/client_business_process.xml",
