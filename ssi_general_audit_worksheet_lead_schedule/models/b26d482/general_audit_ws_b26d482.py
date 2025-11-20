@@ -19,8 +19,7 @@ class GeneralAuditWSb26d482(models.Model):
             ("interim", "Interim Balance"),
         ],
         string="Balance Type",
-        required=True,
-        default="end_period",
+        required=False,
         readonly=True,
         states={
             "draft": [("readonly", False)],
