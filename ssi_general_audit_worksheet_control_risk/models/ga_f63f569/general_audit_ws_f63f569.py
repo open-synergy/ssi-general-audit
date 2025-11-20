@@ -4,8 +4,6 @@
 
 from odoo import fields, models
 
-from odoo.addons.ssi_decorator import ssi_decorator
-
 
 class GeneralAuditWSF63F569(models.Model):
     _name = "general_audit_ws_f63f569"
@@ -19,9 +17,9 @@ class GeneralAuditWSF63F569(models.Model):
         string="IT Control Set",
         comodel_name="general_audit_it_control_set",
         readonly=True,
-        required=True,
+        required=False,
         states={
-            "draft": [
+            "open": [
                 ("readonly", False),
             ],
         },
@@ -56,8 +54,11 @@ class GeneralAuditWSF63F569(models.Model):
         ),
     )
 
-    @ssi_decorator.post_open_action()
-    def _01_compute_detail(self):
+    def action_load_detail(self):
+        for record in self.sudo():
+            record._load_detail()
+
+    def _load_detail(self):
         self.detail_ids.unlink()
         Detail = self.env["general_audit_ws_f63f569.detail"]
         Indicator = self.env["general_audit_ws_f63f569.indicator"]

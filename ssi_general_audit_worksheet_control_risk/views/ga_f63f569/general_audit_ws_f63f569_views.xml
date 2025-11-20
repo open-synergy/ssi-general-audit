@@ -46,6 +46,14 @@
                         <group name="control" colspan="4" col="1">
                             <field name="set_id" />
                         </group>
+                        <button
+                            name="action_load_detail"
+                            type="object"
+                            string="Detail"
+                            class="oe_highlight"
+                            icon="fa-refresh"
+                            attrs="{'invisible': [('state', 'not in', ['open'])]}"
+                        />
                         <field name="detail_ids">
                             <tree create="false" delete="false">
                                 <field name="category_id" optional="hide" />
