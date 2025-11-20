@@ -3,8 +3,6 @@
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl-3.0-standalone.html).
 from odoo import fields, models
 
-from odoo.addons.ssi_decorator import ssi_decorator
-
 
 class GeneralAuditWScae598e(models.Model):
     _name = "general_audit_ws_cae598e"
@@ -56,8 +54,3 @@ class GeneralAuditWScae598e(models.Model):
         for chk in self.detail_ids:
             if chk.detail_id.id not in worksheet_ids:
                 chk.unlink()
-
-    @ssi_decorator.post_open_action()
-    def _10_populate_data(self):
-        self.ensure_one()
-        self.action_populate()

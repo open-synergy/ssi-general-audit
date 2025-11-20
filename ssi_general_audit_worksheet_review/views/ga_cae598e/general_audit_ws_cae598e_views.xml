@@ -52,8 +52,8 @@
                             attrs="{'invisible': [('state', '!=', 'open')]}"
                         />
                         <field name="detail_ids">
-                            <tree create="false" edit="false">
-                                <field name="sequence" widget="handle" />
+                            <tree create="false" delete="false">
+                                <field name="sequence" invisible="1" />
                                 <field name="code_internal" />
                                 <field name="parent_type_id" />
                                 <field name="review_result" />
