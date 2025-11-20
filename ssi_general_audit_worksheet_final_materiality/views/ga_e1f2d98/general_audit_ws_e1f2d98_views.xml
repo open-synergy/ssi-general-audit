@@ -98,15 +98,20 @@
                         </group>
                         <button
                             name="action_load_analysis"
-                            string="Reload"
+                            string="Detail"
                             type="object"
                             icon="fa-refresh"
                             class="oe_highlight"
                             style="margin-right:4px"
-                            attrs="{'invisible':[('state','not in',['draft','open'])]}"
+                            attrs="{'invisible':[('state','not in',['open'])]}"
                         />
                         <field name="analysis_ids" force_save="1">
-                            <tree editable="top">
+                            <tree
+                                editable="top"
+                                create="false"
+                                edit="true"
+                                delete="false"
+                            >
                                 <field name="sequence" widget="handle" />
                                 <field name="standard_detail_id" invisible="1" />
                                 <field name="type_id" />

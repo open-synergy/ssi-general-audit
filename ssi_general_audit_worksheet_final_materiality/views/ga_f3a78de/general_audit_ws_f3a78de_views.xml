@@ -52,10 +52,10 @@
                         <button
                             name="action_reload_ratio"
                             type="object"
-                            string="Reload"
+                            string="Detail"
                             icon="fa-refresh"
                             class="oe_highlight"
-                            attrs="{'invisible': [('state', 'in', ['done','cancel'])]}"
+                            attrs="{'invisible': [('state', 'not in', ['open'])]}"
                             style="margin-right:4px"
                         />
                         <button
@@ -64,7 +64,7 @@
                             string="Compute"
                             icon="fa-calculator"
                             class="oe_highlight"
-                            attrs="{'invisible': [('state', 'in', ['done','cancel'])]}"
+                            attrs="{'invisible': [('state', 'not in', ['open'])]}"
                         />
                         <field name="ratio_ids">
                             <tree
