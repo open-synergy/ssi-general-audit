@@ -40,4 +40,10 @@ class GeneralAuditWSe78a3c6(models.Model):
             "Maximum size is 1920x1920 pixels; larger images will be resized. "
             "Recommended formats: PNG or JPEG."
         ),
+        readonly=True,
+        states={
+            "open": [
+                ("readonly", False),
+            ],
+        },
     )
