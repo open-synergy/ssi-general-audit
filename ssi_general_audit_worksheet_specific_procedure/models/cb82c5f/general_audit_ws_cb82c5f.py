@@ -21,7 +21,7 @@ class GeneralAuditWScb82c5f(models.Model):
         string="Need Adjustment Details",
         help="Details of subsequent events that need adjustment",
         readonly=True,
-        states={"draft": [("readonly", False)], "open": [("readonly", False)]},
+        states={"open": [("readonly", False)]},
     )
     non_adjustment_detail_ids = fields.One2many(
         comodel_name="general_audit_ws_cb82c5f.non_adjustment_detail",
@@ -29,7 +29,7 @@ class GeneralAuditWScb82c5f(models.Model):
         string="Need Non-Adjustment Details",
         help="Details of subsequent events that do not need adjustment",
         readonly=True,
-        states={"draft": [("readonly", False)], "open": [("readonly", False)]},
+        states={"open": [("readonly", False)]},
     )
 
     def action_load_adjustment_detail(self):
