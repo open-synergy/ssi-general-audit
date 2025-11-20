@@ -16,9 +16,9 @@ class GeneralAuditWSf9f3299(models.Model):
     account_type_id = fields.Many2one(
         comodel_name="client_account_type",
         string="Standard Account Type",
-        required=True,
+        required=False,
         states={
-            "draft": [("readonly", False)],
+            "open": [("readonly", False)],
         },
         readonly=True,
         ondelete="restrict",
@@ -37,11 +37,9 @@ class GeneralAuditWSf9f3299(models.Model):
             ("interim", "Interim Balance"),
         ],
         string="Balance Type",
-        required=True,
-        default="end_period",
+        required=False,
         readonly=True,
         states={
-            "draft": [("readonly", False)],
             "open": [("readonly", False)],
         },
         help="Type of balance to consider for the accounts.",

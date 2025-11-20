@@ -45,20 +45,18 @@
         />
         <field name="arch" type="xml">
             <data>
-                <xpath expr="//field[@name='type_id']" position="after">
-                    <field
-                        name="allowed_account_type_ids"
-                        invisible="1"
-                        widget="many2many_tags"
-                    />
-                    <field
-                        name="account_type_id"
-                        domain="[('id', 'in', allowed_account_type_ids)]"
-                    />
-                </xpath>
                 <xpath expr="//page[1]" position="before">
                     <page name="accounts" string="Accounts">
                         <group name="account_1" colspan="4" col="2">
+                            <field
+                                name="allowed_account_type_ids"
+                                invisible="1"
+                                widget="many2many_tags"
+                            />
+                            <field
+                                name="account_type_id"
+                                domain="[('id', 'in', allowed_account_type_ids)]"
+                            />
                             <field name="balance_type" />
                         </group>
                         <button
@@ -67,7 +65,7 @@
                             string="Reload"
                             class="oe_highlight"
                             icon="fa-refresh"
-                            attrs="{'invisible': [('state', 'not in', ['draft','open'])]}"
+                            attrs="{'invisible': [('state', 'not in', ['open'])]}"
                         />
                         <field name="detail_ids">
                             <tree
