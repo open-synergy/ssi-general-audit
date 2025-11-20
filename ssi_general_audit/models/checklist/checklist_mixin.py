@@ -106,7 +106,7 @@ class MixinChecklist(models.AbstractModel):
                 # 1. Tambah / update
                 for item in items:
                     if item.id not in checklist_map:
-                        Checklist.create(
+                        Checklist.sudo().create(
                             {
                                 "worksheet_id": record.id,
                                 "item_id": item.id,
@@ -119,6 +119,6 @@ class MixinChecklist(models.AbstractModel):
                 item_ids = set(items.ids)
                 for chk in record[checklist_field]:
                     if chk.item_id.id not in item_ids:
-                        chk.unlink()
+                        chk.sudo().unlink()
         else:
             return True
