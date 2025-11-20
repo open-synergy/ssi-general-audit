@@ -4,8 +4,6 @@
 
 from odoo import fields, models
 
-from odoo.addons.ssi_decorator import ssi_decorator
-
 
 class GeneralAuditWSA418D89(models.Model):
     _name = "general_audit_ws_a418d89"
@@ -56,8 +54,11 @@ class GeneralAuditWSA418D89(models.Model):
         ),
     )
 
-    @ssi_decorator.post_open_action()
-    def _01_compute_detail(self):
+    def action_load_detail(self):
+        for record in self.sudo():
+            record._load_detail()
+
+    def _load_detail(self):
         self.detail_ids.unlink()
         Detail = self.env["general_audit_ws_a418d89.detail"]
         for detail in self.general_audit_id.standard_detail_ids:

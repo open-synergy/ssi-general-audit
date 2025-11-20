@@ -43,6 +43,15 @@
             <data>
                 <xpath expr="//page[1]" position="before">
                     <page name="inherent_risk" string="Inherent Risks">
+
+                        <button
+                            name="action_load_detail"
+                            type="object"
+                            string="Details"
+                            class="oe_highlight"
+                            icon="fa-refresh"
+                            attrs="{'invisible': [('state', 'not in', ['open'])]}"
+                        />
                         <field name="detail_ids">
                         <tree create="false" delete="false">
                             <field name="standard_detail_id" invisible="1" />
