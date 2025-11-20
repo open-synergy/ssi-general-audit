@@ -16,9 +16,9 @@ class GeneralAuditWSe51bb1c(models.Model):
     account_type_id = fields.Many2one(
         comodel_name="client_account_type",
         string="Standard Account",
-        required=True,
+        required=False,
         states={
-            "draft": [("readonly", False)],
+            "open": [("readonly", False)],
         },
         readonly=True,
         ondelete="restrict",
