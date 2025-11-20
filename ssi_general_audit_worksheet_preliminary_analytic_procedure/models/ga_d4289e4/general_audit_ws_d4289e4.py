@@ -25,7 +25,6 @@ class GeneralAuditWSd4289e4(models.Model):
             ("end_period", "End Period"),
         ],
         required=False,
-        default="extrapolation",
         readonly=True,
         states={
             "open": [
