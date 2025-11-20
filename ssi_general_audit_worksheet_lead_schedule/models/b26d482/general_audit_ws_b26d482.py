@@ -22,7 +22,6 @@ class GeneralAuditWSb26d482(models.Model):
         required=False,
         readonly=True,
         states={
-            "draft": [("readonly", False)],
             "open": [("readonly", False)],
         },
         help="Type of balance to consider for the accounts.",
