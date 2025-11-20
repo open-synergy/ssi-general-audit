@@ -44,6 +44,7 @@ class GeneralAuditDetail(models.Model):
     sequence = fields.Integer(
         string="Sequence",
         related="account_id.sequence",
+        store=True,
         help="Ordering number inherited from the client account.",
     )
 
