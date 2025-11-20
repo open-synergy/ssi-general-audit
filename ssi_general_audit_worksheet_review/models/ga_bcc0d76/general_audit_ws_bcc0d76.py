@@ -3,8 +3,6 @@
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl-3.0-standalone.html).
 from odoo import fields, models
 
-from odoo.addons.ssi_decorator import ssi_decorator
-
 
 class GeneralAuditWSbcc0d76(models.Model):
     _name = "general_audit_ws_bcc0d76"
@@ -31,31 +29,8 @@ class GeneralAuditWSbcc0d76(models.Model):
     )
 
     def action_populate(self):
-        for record in self:
+        for record in self.sudo():
             record._populate()
-
-    # def _populate(self):
-    #     self.ensure_one()
-    #     Detail = self.env["general_audit_ws_bcc0d76.detail"]
-    #     Worksheet = self.env["general_audit_worksheet"]
-
-    #     worksheet_ids = Worksheet.search([
-    #         ("parent_type_id.main_worksheet", "=", True)
-    #     ])
-    #     mapping = {chk.general_worksheet_id.id: chk for chk in self.detail_ids}
-
-    #     for ws in worksheet_ids:
-    #         if ws.id not in mapping:
-    #             Detail.create(
-    #                 {
-    #                     "worksheet_id": self.id,
-    #                     "general_worksheet_id": ws.id,
-    #                 }
-    #             )
-
-    #     for chk in self.detail_ids:
-    #         if chk.general_worksheet_id.id not in set(worksheet_ids.ids):
-    #             chk.unlink()
 
     def _populate(self):
         self.ensure_one()
@@ -93,8 +68,3 @@ class GeneralAuditWSbcc0d76(models.Model):
         for chk in self.detail_ids:
             if chk.general_worksheet_id.id not in worksheet_ids:
                 chk.unlink()
-
-    @ssi_decorator.post_open_action()
-    def _10_populate_data(self):
-        self.ensure_one()
-        self.action_populate()
