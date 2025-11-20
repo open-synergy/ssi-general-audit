@@ -30,9 +30,9 @@ class GeneralAuditWSc40cfd9(models.Model):
             "Reference to the 'Understanding of the Entity' worksheet "
             "from which related party information is sourced."
         ),
-        required=True,
+        required=False,
         readonly=True,
-        states={"draft": [("readonly", False)], "open": [("readonly", False)]},
+        states={"open": [("readonly", False)]},
     )
     related_party_line_ids = fields.One2many(
         comodel_name="general_audit_ws_c40cfd9.related_party",
@@ -40,7 +40,7 @@ class GeneralAuditWSc40cfd9(models.Model):
         string="Related Parties",
         help="List of related parties associated with this worksheet.",
         readonly=True,
-        states={"draft": [("readonly", False)], "open": [("readonly", False)]},
+        states={"open": [("readonly", False)]},
     )
 
     def onchange_ws_ae11f7e_id(self):
