@@ -174,6 +174,13 @@ class GeneralAudit(models.Model):
         ondelete="restrict",
         help="Audit opinion to be issued for the engagement.",
     )
+    opinion_date = fields.Date(
+        string="Opinion Date",
+        readonly=True,
+        states={"open": [("readonly", False)]},
+        ondelete="restrict",
+        help="Date when the audit opinion is issued.",
+    )
     accountant_id = fields.Many2one(
         string="CPA",
         comodel_name="res.partner",
