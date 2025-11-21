@@ -171,7 +171,6 @@ class GeneralAudit(models.Model):
         comodel_name="accountant.opinion",
         readonly=True,
         states={"open": [("readonly", False)]},
-        ondelete="restrict",
         help="Audit opinion to be issued for the engagement.",
     )
     opinion_date = fields.Date(
