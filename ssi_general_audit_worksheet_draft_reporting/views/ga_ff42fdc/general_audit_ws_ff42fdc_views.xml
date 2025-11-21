@@ -41,6 +41,25 @@
         />
         <field name="arch" type="xml">
             <data>
+                <xpath expr="//notebook/page[1]" position="before">
+                    <page name="opinion" string="Audit Opinion">
+                        <group
+                            name="finncial_statement_opinion"
+                            colspan="4"
+                            col="2"
+                            string="Financial Statement"
+                        >
+                            <field
+                                name="financial_statement_opinion_id"
+                                string="Opinion"
+                            />
+                            <field
+                                name="financial_statement_opinion_date"
+                                string="Date"
+                            />
+                        </group>
+                    </page>
+                </xpath>
             </data>
         </field>
     </record>
