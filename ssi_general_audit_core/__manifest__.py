@@ -137,6 +137,7 @@
         "data/res_company.xml",
         "data/company_ownership_type.xml",
         "data/company_public_offering_type.xml",
+        "data/cancel_reason.xml",
         "menu.xml",
         "templates/web_login.xml",
         "templates/auth_signup_reset_password.xml",
