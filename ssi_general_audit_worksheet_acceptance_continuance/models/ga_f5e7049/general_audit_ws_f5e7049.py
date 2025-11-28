@@ -35,40 +35,36 @@ class GeneralAuditWSf5e7049(models.Model):
     @api.depends(
         "general_audit_id",
     )
-    def _compute_allowed_link_1_ids(self):
+    def _compute_link_1(self):
         for record in self:
+            result = False
             obj = self.env["general_audit_ws_842f0d6"]
             criteria = [
                 ("general_audit_id", "=", record.general_audit_id.id),
             ]
-            record.allowed_link_1_ids = obj.search(criteria).ids
-
-    allowed_link_1_ids = fields.Many2many(
-        string="Allowed Link 1",
-        comodel_name="general_audit_ws_842f0d6",
-        compute="_compute_allowed_link_1_ids",
-        store=False,
-    )
+            link_1_ids = obj.search(criteria)
+            if link_1_ids:
+                result = link_1_ids.id
+            record.link_1 = result
 
     link_1 = fields.Many2one(
         string="PE.110.2.1",
         ondelete="restrict",
         comodel_name="general_audit_ws_842f0d6",
+        compute_sudo=True,
+        compute="_compute_link_1",
+        store=True,
+        help="""Selected worksheet used for cross-referencing
+and risk derivation.""",
     )
 
-    @api.onchange(
-        "general_audit_id",
-    )
-    def onchange_link_1(self):
-        self.link_1 = False
-        if self.general_audit_id:
-            obj = self.env["general_audit_ws_842f0d6"]
-            criteria = [
-                ("general_audit_id", "=", self.general_audit_id.id),
-            ]
-            result = obj.search(criteria, limit=1)
-            if result:
-                self.link_1 = result.id
+    def action_reload_links(self):
+        for record in self.sudo():
+            record._reload_links()
+
+    def _reload_links(self):
+        self.ensure_one()
+        self._compute_link_1()
 
     def _get_fields_required_before_confirm(self):
         _super = super(GeneralAuditWSf5e7049, self)

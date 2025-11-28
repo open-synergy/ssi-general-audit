@@ -146,27 +146,24 @@ with the firm ('Initial Engagement' vs 'Recurring Engagement').""",
     @api.depends(
         "general_audit_id",
     )
-    def _compute_allowed_link_1_ids(self):
+    def _compute_link_1(self):
         for record in self:
+            result = False
             obj = self.env["general_audit_ws_369c5a5"]
             criteria = [
                 ("general_audit_id", "=", record.general_audit_id.id),
             ]
-            record.allowed_link_1_ids = obj.search(criteria).ids
-
-    allowed_link_1_ids = fields.Many2many(
-        string="Allowed Link 1",
-        comodel_name="general_audit_ws_369c5a5",
-        compute="_compute_allowed_link_1_ids",
-        store=False,
-        help="""Eligible worksheets from the same audit
-that can be linked.""",
-    )
+            link_1_ids = obj.search(criteria)
+            if link_1_ids:
+                result = link_1_ids.id
+            record.link_1 = result
 
     link_1 = fields.Many2one(
         string="PE.110.1",
         comodel_name="general_audit_ws_369c5a5",
-        ondelete="restrict",
+        compute_sudo=True,
+        compute="_compute_link_1",
+        store=True,
         help="""Selected worksheet used for cross-referencing
 and risk derivation.""",
     )
@@ -177,44 +174,28 @@ and risk derivation.""",
         help="Risk level propagated from the linked worksheet.",
     )
 
-    @api.onchange(
-        "general_audit_id",
-    )
-    def onchange_link_1(self):
-        self.link_1 = False
-        if self.general_audit_id:
-            obj = self.env["general_audit_ws_369c5a5"]
-            criteria = [
-                ("general_audit_id", "=", self.general_audit_id.id),
-            ]
-            result = obj.search(criteria)
-            if result:
-                self.link_1 = result.id
-
     # LINK - 2 (PE.110.2)
     @api.depends(
         "general_audit_id",
     )
-    def _compute_allowed_link_2_ids(self):
+    def _compute_link_2(self):
         for record in self:
+            result = False
             obj = self.env["general_audit_ws_f5e7049"]
             criteria = [
                 ("general_audit_id", "=", record.general_audit_id.id),
             ]
-            record.allowed_link_2_ids = obj.search(criteria).ids
+            link_2_ids = obj.search(criteria)
+            if link_2_ids:
+                result = link_2_ids.id
+            record.link_2 = result
 
-    allowed_link_2_ids = fields.Many2many(
-        string="Allowed Link 2",
-        comodel_name="general_audit_ws_f5e7049",
-        compute="_compute_allowed_link_2_ids",
-        store=False,
-        help="""Eligible worksheets from the same audit
-that can be linked.""",
-    )
     link_2 = fields.Many2one(
         string="PE.110.2",
         comodel_name="general_audit_ws_f5e7049",
-        ondelete="restrict",
+        compute_sudo=True,
+        compute="_compute_link_2",
+        store=True,
         help="""Selected worksheet used for cross-referencing
 and risk derivation.""",
     )
@@ -225,44 +206,28 @@ and risk derivation.""",
         help="Risk level propagated from the linked worksheet.",
     )
 
-    @api.onchange(
-        "general_audit_id",
-    )
-    def onchange_link_2(self):
-        self.link_2 = False
-        if self.general_audit_id:
-            obj = self.env["general_audit_ws_f5e7049"]
-            criteria = [
-                ("general_audit_id", "=", self.general_audit_id.id),
-            ]
-            result = obj.search(criteria)
-            if result:
-                self.link_2 = result.id
-
     # LINK - 3 (PE.110.3)
     @api.depends(
         "general_audit_id",
     )
-    def _compute_allowed_link_3_ids(self):
+    def _compute_link_3(self):
         for record in self:
+            result = False
             obj = self.env["general_audit_ws_b9d8a5c"]
             criteria = [
                 ("general_audit_id", "=", record.general_audit_id.id),
             ]
-            record.allowed_link_3_ids = obj.search(criteria).ids
+            link_3_ids = obj.search(criteria)
+            if link_3_ids:
+                result = link_3_ids.id
+            record.link_3 = result
 
-    allowed_link_3_ids = fields.Many2many(
-        string="Allowed Link 3",
-        comodel_name="general_audit_ws_b9d8a5c",
-        compute="_compute_allowed_link_3_ids",
-        store=False,
-        help="""Eligible worksheets from the same audit
-that can be linked.""",
-    )
     link_3 = fields.Many2one(
         string="PE.110.3",
         comodel_name="general_audit_ws_b9d8a5c",
-        ondelete="restrict",
+        compute_sudo=True,
+        compute="_compute_link_3",
+        store=True,
         help="""Selected worksheet used for cross-referencing
 and risk derivation.""",
     )
@@ -273,44 +238,28 @@ and risk derivation.""",
         help="Risk level propagated from the linked worksheet.",
     )
 
-    @api.onchange(
-        "general_audit_id",
-    )
-    def onchange_link_3(self):
-        self.link_3 = False
-        if self.general_audit_id:
-            obj = self.env["general_audit_ws_b9d8a5c"]
-            criteria = [
-                ("general_audit_id", "=", self.general_audit_id.id),
-            ]
-            result = obj.search(criteria)
-            if result:
-                self.link_3 = result.id
-
     # LINK - 4 (PE.110.4)
     @api.depends(
         "general_audit_id",
     )
-    def _compute_allowed_link_4_ids(self):
+    def _compute_link_4(self):
         for record in self:
+            result = False
             obj = self.env["general_audit_ws_0427d28"]
             criteria = [
                 ("general_audit_id", "=", record.general_audit_id.id),
             ]
-            record.allowed_link_4_ids = obj.search(criteria).ids
+            link_4_ids = obj.search(criteria)
+            if link_4_ids:
+                result = link_4_ids.id
+            record.link_4 = result
 
-    allowed_link_4_ids = fields.Many2many(
-        string="Allowed Link 4",
-        comodel_name="general_audit_ws_0427d28",
-        compute="_compute_allowed_link_4_ids",
-        store=False,
-        help="""Eligible worksheets from the same audit
-that can be linked.""",
-    )
     link_4 = fields.Many2one(
         string="PE.110.4",
         comodel_name="general_audit_ws_0427d28",
-        ondelete="restrict",
+        compute_sudo=True,
+        compute="_compute_link_4",
+        store=True,
         help="""Selected worksheet used for cross-referencing
 and risk derivation.""",
     )
@@ -321,19 +270,16 @@ and risk derivation.""",
         help="Risk level propagated from the linked worksheet.",
     )
 
-    @api.onchange(
-        "general_audit_id",
-    )
-    def onchange_link_4(self):
-        self.link_4 = False
-        if self.general_audit_id:
-            obj = self.env["general_audit_ws_0427d28"]
-            criteria = [
-                ("general_audit_id", "=", self.general_audit_id.id),
-            ]
-            result = obj.search(criteria)
-            if result:
-                self.link_4 = result.id
+    def action_reload_links(self):
+        for record in self.sudo():
+            record._reload_links()
+
+    def _reload_links(self):
+        self.ensure_one()
+        self._compute_link_1()
+        self._compute_link_2()
+        self._compute_link_3()
+        self._compute_link_4()
 
     def _get_fields_required_before_confirm(self):
         _super = super(GeneralAuditWS806C4E1, self)
@@ -342,7 +288,6 @@ and risk derivation.""",
             "link_1",
             "link_2",
             "link_3",
-            "link_4",
         ]
         return res
 
@@ -353,5 +298,4 @@ and risk derivation.""",
             "link_3": _(
                 "Competency, availability, and independency of assignment team"
             ),
-            "link_4": _("Communication with previous auditor"),
         }

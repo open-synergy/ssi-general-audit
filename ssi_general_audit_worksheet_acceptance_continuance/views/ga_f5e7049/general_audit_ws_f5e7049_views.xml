@@ -49,18 +49,17 @@
                 </xpath>
                 <xpath expr="//page[@name='note']" position="before">
                     <page name="links" string="Links">
+                        <button
+                            name="action_reload_links"
+                            type="object"
+                            string="Reload"
+                            class="oe_highlight"
+                            icon="fa-refresh"
+                            attrs="{'invisible': [('state', 'not in', ['open'])]}"
+                        />
                         <group>
                             <group name="link_1" string="Money Laundring Issues">
-                                <field
-                                    name="allowed_link_1_ids"
-                                    widget="many2many_tags"
-                                    invisible="1"
-                                />
-                                <field
-                                    name="link_1"
-                                    string="# Worksheet"
-                                    domain="[('id', '=', allowed_link_1_ids)]"
-                                />
+                                <field name="link_1" string="# Worksheet" />
                             </group>
                         </group>
                     </page>
