@@ -311,6 +311,49 @@ class GeneralAuditWorksheetMixin(models.AbstractModel):
             view_arch = self._reconfigure_statusbar_visible(view_arch)
         return view_arch
 
+    @ssi_decorator.pre_confirm_action()
+    def _10_predecessor_check(self):
+        self.ensure_one()
+        predecessors = self.type_id.predecessor_ids
+        missing = []
+        if not predecessors:
+            return
+
+        for predecessor in predecessors:
+            Worksheet = self.env[predecessor.model_name]
+            criteria = [
+                ("general_audit_id", "=", self.general_audit_id.id),
+            ]
+            found = Worksheet.search(criteria)
+            if not found:
+                missing.append(predecessor)
+            else:
+                if found.state != "done":
+                    missing.append(predecessor)
+
+        if missing:
+            names = "\n".join(f"• {p.display_name}" for p in missing)
+            msg = _(
+                "⚠️ You cannot confirm this worksheet.\n\n"
+                "⚙️ Context:\n"
+                "\t• Worksheet Type: %s\n"
+                "\t• Record ID : %s\n\n"
+                "❗ Predecessor Requirements Not Met:\n"
+                "%s\n\n"
+                "💡 Recommended Action:\n"
+                "• If the predecessor worksheet is missing: "
+                "create it first for this General Audit.\n"
+                "• If the predecessor worksheet is still not in 'Done': "
+                "open it and done it first.\n\n"
+                "Every predecessor must exist and be in status 'Done' "
+                "before this worksheet can be confirmed."
+            ) % (
+                self.type_id.display_name,
+                self.id,
+                names,
+            )
+            raise ValidationError(msg)
+
     @ssi_decorator.post_confirm_action()
     def _10_create_preparation_date(self):
         self.ensure_one()
