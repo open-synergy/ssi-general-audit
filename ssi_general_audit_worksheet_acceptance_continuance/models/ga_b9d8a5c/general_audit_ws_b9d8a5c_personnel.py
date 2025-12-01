@@ -7,7 +7,10 @@ from odoo import api, fields, models
 
 class GeneralAuditWSb9d8a5cPersonnel(models.Model):
     _name = "general_audit_ws_b9d8a5c.personnel"
-    _description = "Communication With Previous Auditor (b9d8a5c) - Personnel"
+    _description = (
+        "Competency, Availability and Independency "
+        "Of Assignment Team (b9d8a5c) - Personnel"
+    )
     _order = "sequence, id"
 
     worksheet_id = fields.Many2one(
