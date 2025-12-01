@@ -130,7 +130,7 @@ derived from the General Audit.""",
     def _compute_engagemet(self):
         for record in self:
             record.engagemet = "Initial Engagement"
-            if (record.general_audit_id.num_of_consecutive_audit_firm) >= 1:
+            if (record.general_audit_id.num_of_consecutive_audit_firm) > 1:
                 record.engagemet = "Recurring Engagement"
 
     engagemet = fields.Char(
