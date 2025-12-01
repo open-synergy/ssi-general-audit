@@ -12,7 +12,7 @@ class GeneralAuditWorksheetType(models.Model):
         "image.mixin",
     ]
     _description = "General Audit Worksheet Type"
-    _order = "category_id, sequence, code_internal, code"
+    _order = "sequence, category_id, code_internal, code"
     _show_code_on_display_name = False
 
     code_internal = fields.Char(
