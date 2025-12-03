@@ -7,7 +7,7 @@ from odoo import fields, models
 
 class GeneralAuditWSfc75636(models.Model):
     _name = "general_audit_ws_fc75636"
-    _description = "Independen Auditor Report (fc75636)"
+    _description = "Independen Auditor Report Review(fc75636)"
     _inherit = [
         "general_audit_worksheet_mixin",
         "mixin.checklist",
