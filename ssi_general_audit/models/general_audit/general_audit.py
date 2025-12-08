@@ -335,7 +335,6 @@ class GeneralAudit(models.Model):
         comodel_name="general_audit.detail",
         inverse_name="general_audit_id",
         readonly=True,
-        states={"draft": [("readonly", False)], "open": [("readonly", False)]},
         copy=False,
         help="Client accounts included in the General Audit scope.",
     )
