@@ -15,6 +15,14 @@
         <field name="arch" type="xml">
         <data>
             <xpath expr="//field[@name='company_id']" position="after">
+                <field name="partner_id" />
+                <field name="general_audit_id" />
+                <field name="accountant_id" />
+                <field name="title" />
+                <field name="date_start" />
+                <field name="date_end" />
+            </xpath>
+            <xpath expr="//field[@name='company_id']" position="after">
                 <field
                         name="operating_unit_id"
                         groups="operating_unit.group_multi_operating_unit"
@@ -27,6 +35,31 @@
                         string="Operating Unit"
                         context="{'group_by':'operating_unit_id'}"
                         groups="operating_unit.group_multi_operating_unit"
+                    />
+                <filter
+                        name="grp_partner_id"
+                        string="Partner"
+                        context="{'group_by':'partner_id'}"
+                    />
+                <filter
+                        name="grp_general_audit_id"
+                        string="General Audit"
+                        context="{'group_by':'general_audit_id'}"
+                    />
+                <filter
+                        name="grp_accountant_id"
+                        string="Accountant"
+                        context="{'group_by':'accountant_id'}"
+                    />
+                <filter
+                        name="grp_date_start"
+                        string="Start Date"
+                        context="{'group_by':'date_start'}"
+                    />
+                <filter
+                        name="grp_date_end"
+                        string="End Date"
+                        context="{'group_by':'date_end'}"
                     />
             </xpath>
         </data>
