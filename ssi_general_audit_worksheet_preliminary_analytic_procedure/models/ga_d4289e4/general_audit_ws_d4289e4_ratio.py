@@ -64,6 +64,12 @@ class GeneralAuditWSd4289e4Ratio(models.Model):
         store=True,
         help="Ratio computed using Previous period figures.",
     )
+    audited_amount = fields.Float(
+        string="Audited Amount",
+        related=False,
+        store=True,
+        help="Audited Amount.",
+    )
     industry_average = fields.Float(
         string="Industry Average",
         help="Industry benchmark for this ratio, for comparison purposes.",
@@ -87,11 +93,13 @@ class GeneralAuditWSd4289e4Ratio(models.Model):
         interim_amount = kwargs.get("interim", 0.0)
         previous_amount = kwargs.get("previous", 0.0)
         end_period_amount = kwargs.get("end_period", 0.0)
+        audited_amount = kwargs.get("audited", 0.0)
         data = {
             "extrapolation_amount": extrapolation_amount,
             "interim_amount": interim_amount,
             "previous_amount": previous_amount,
             "end_period_amount": end_period_amount,
+            "audited_amount": audited_amount,
         }
         return data
 
@@ -112,6 +120,7 @@ class GeneralAuditWSd4289e4Ratio(models.Model):
             interim_amount = localdict["result_interim"]
             previous_amount = localdict["result_previous"]
             end_period_amount = localdict["result_end_period"]
+            audited_amount = localdict["result_audited"]
             additional_dict.update(
                 {
                     self.financial_ratio_id.code: {
@@ -119,18 +128,20 @@ class GeneralAuditWSd4289e4Ratio(models.Model):
                         "interim": interim_amount,
                         "previous": previous_amount,
                         "end_period": end_period_amount,
+                        "audited": audited_amount,
                     }
                 }
             )
         except Exception:
             extrapolation_amount = interim_amount = previous_amount = 0.0
-            end_period_amount = 0.0
+            end_period_amount = audited_amount = 0.0
 
         data = self._prepare_ratio_data(
             extrapolation=extrapolation_amount,
             interim=interim_amount,
             previous=previous_amount,
             end_period=end_period_amount,
+            audited=audited_amount,
         )
         if self.worksheet_id.base_amount_source == "extrapolation":
             data["current_amount"] = extrapolation_amount
