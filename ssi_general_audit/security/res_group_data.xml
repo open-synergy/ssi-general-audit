@@ -276,7 +276,7 @@
         />
 </record>
 
-<!-- Data Ownership: Trial Balance -->
+<!-- Data Ownership: Balance Amount -->
 <record id="trial_balance_ou_group" model="res.groups">
     <field name="name">Operating Unit</field>
     <field name="category_id" ref="trial_balance_data_module_category" />
@@ -298,6 +298,10 @@
     <field name="name">All</field>
     <field name="category_id" ref="trial_balance_data_module_category" />
     <field name="implied_ids" eval="[(4, ref('trial_balance_company_child_group'))]" />
+    <field
+            name="users"
+            eval="[(4, ref('base.user_root')), (4, ref('base.user_admin'))]"
+        />
 </record>
 
 <!-- Workflow: Adjustment Entry -->

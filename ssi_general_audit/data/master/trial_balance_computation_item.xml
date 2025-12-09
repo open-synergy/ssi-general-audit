@@ -10,7 +10,7 @@
         <field name="category">summary</field>
         <field
             name="python_code"
-        >result = account_group["T001"] + account_group["T002"]</field>
+        >result = account_group.get("T001", 0.0) + account_group.get("T002", 0.0)</field>
     </record>
     <record
         id="trial_balance_computation_item_2_4cad10cf"
@@ -22,7 +22,7 @@
         <field name="category">summary</field>
         <field
             name="python_code"
-        >result = account_group["T003"] - account_group["T004"]</field>
+        >result = account_group.get("T003", 0.0) - account_group.get("T004", 0.0)</field>
     </record>
     <record
         id="trial_balance_computation_item_3_a1ff2fe0"
@@ -32,9 +32,7 @@
         <field name="name">Net Asset</field>
         <field name="sequence" eval="270" />
         <field name="category">summary</field>
-        <field
-            name="python_code"
-        >result = T001 - account_group["T003"] - account_group["T004"]</field>
+        <field name="python_code">result = T001 - T007</field>
     </record>
     <record
         id="trial_balance_computation_item_4_c118c3ed"
