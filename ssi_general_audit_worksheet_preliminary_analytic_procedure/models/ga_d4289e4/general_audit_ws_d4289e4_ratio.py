@@ -1,7 +1,8 @@
 # Copyright 2022 OpenSynergy Indonesia
 # Copyright 2022 PT. Simetri Sinergi Indonesia
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl-3.0-standalone.html).
-from odoo import fields, models
+from odoo import _, fields, models
+from odoo.exceptions import ValidationError
 from odoo.tools.safe_eval import safe_eval as eval  # pylint: disable=redefined-builtin
 
 
@@ -105,6 +106,8 @@ class GeneralAuditWSd4289e4Ratio(models.Model):
 
     def _recompute(self, additional_dict):
         self.ensure_one()
+        extrapolation_amount = interim_amount = previous_amount = 0.0
+        end_period_amount = audited_amount = 0.0
         python_code = self.financial_ratio_id.python_code
 
         localdict = self._get_localdict()
@@ -132,9 +135,9 @@ class GeneralAuditWSd4289e4Ratio(models.Model):
                     }
                 }
             )
-        except Exception:
-            extrapolation_amount = interim_amount = previous_amount = 0.0
-            end_period_amount = audited_amount = 0.0
+        except Exception as e:
+            msg_err = _(e)
+            raise ValidationError(msg_err)
 
         data = self._prepare_ratio_data(
             extrapolation=extrapolation_amount,
