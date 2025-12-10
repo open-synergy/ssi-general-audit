@@ -141,6 +141,8 @@ class GeneralAuditWSd4289e4(models.Model):
                         "end_period_avg": data.home_statement_avg,
                         "interim": data.interim_balance,
                         "interim_avg": data.interim_avg,
+                        "audited": data.audited_balance,
+                        "audited_avg": data.audited_avg,
                         "previous": data.previous_balance,
                     },
                 }
@@ -156,8 +158,10 @@ class GeneralAuditWSd4289e4(models.Model):
                         "end_period": data.home_statement_balance,
                         "end_period_avg": data.home_statement_avg,
                         "interim": data.interim_balance,
-                        "previous": data.previous_balance,
                         "interim_avg": data.interim_avg,
+                        "audited": data.audited_balance,
+                        "audited_avg": data.audited_avg,
+                        "previous": data.previous_balance,
                     },
                 }
             )
@@ -173,6 +177,8 @@ class GeneralAuditWSd4289e4(models.Model):
                         "end_period_avg": data.home_avg_amount,
                         "interim": data.interim_amount,
                         "interim_avg": data.interim_avg_amount,
+                        "audited": data.audited_amount,
+                        "audited_avg": data.audited_avg_amount,
                         "previous": data.previous_amount,
                     },
                 }

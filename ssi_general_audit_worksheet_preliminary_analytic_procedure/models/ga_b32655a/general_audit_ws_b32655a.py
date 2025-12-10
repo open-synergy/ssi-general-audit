@@ -121,7 +121,26 @@ class GeneralAuditWSb32655a(models.Model):
 
     def action_reload_analysis_ids(self):
         for record in self.sudo():
-            record.onchange_analysis_ids()
+            record._reload_analysis_ids()
+
+    def _reload_analysis_ids(self):
+        Detail = self.env["general_audit_ws_b32655a.vertical_horizontal_analysis"]
+
+        standard_detail = self.general_audit_id.standard_detail_ids
+        mapping = {chk.standard_detail_id.id: chk for chk in self.analysis_ids}
+        for detail in standard_detail:
+            if detail.id not in mapping:
+                Detail.create(
+                    {
+                        "worksheet_id": self.id,
+                        "standard_detail_id": detail.id,
+                    }
+                )
+
+        standard_detail_ids = set(standard_detail.ids)
+        for chk in self.analysis_ids:
+            if chk.standard_detail_id.id not in standard_detail_ids:
+                chk.unlink()
 
     @api.onchange("general_audit_id")
     def onchange_analysis_ids(self):
