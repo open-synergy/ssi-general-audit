@@ -1,414 +1,425 @@
 <?xml version='1.0' encoding='utf-8' ?>
 <odoo>
-  <record id="client_financial_ratio_1_f0ab3e10" model="client_financial_ratio">
-    <field name="sequence" eval="10" />
-    <field name="name">Current Ratio</field>
-    <field name="code">/</field>
-    <field name="category">liquidity</field>
-    <field
+    <record id="client_financial_ratio_1_f0ab3e10" model="client_financial_ratio">
+        <field name="sequence" eval="10" />
+        <field name="name">Current Ratio</field>
+        <field name="code">/</field>
+        <field name="category">liquidity</field>
+        <field
             name="python_code"
         >result_extrapolation = result_interim = result_previous = result_end_period = result_audited = 0.0
-if account_group["T003"]["extrapolation"]:
-  result_extrapolation = account_group["T001"]["extrapolation"] / account_group["T003"]["extrapolation"]
 
-if account_group["T003"]["interim"]:
-  result_interim = account_group["T001"]["interim"] / account_group["T003"]["interim"]
+if account_group.get("T003", {}).get("extrapolation", False):
+  result_extrapolation = account_group.get("T001", {}).get("extrapolation", 0.0) / account_group["T003"]["extrapolation"]
 
-if account_group["T003"]["previous"]:
-  result_previous = account_group["T001"]["previous"] / account_group["T003"]["previous"]
+if account_group.get("T003", {}).get("interim", False):
+  result_interim = account_group.get("T001", {}).get("interim", 0.0) / account_group["T003"]["interim"]
 
-if account_group["T003"]["end_period"]:
-  result_end_period = account_group["T001"]["end_period"] / account_group["T003"]["end_period"]
+if account_group.get("T003", {}).get("previous", False):
+  result_previous = account_group.get("T001", {}).get("previous", 0.0) / account_group["T003"]["previous"]
 
-if account_group["T003"]["audited"]:
-  result_audited = account_group["T001"]["audited"] / account_group["T003"]["audited"]</field>
-  </record>
+if account_group.get("T003", {}).get("end_period", False):
+  result_end_period = account_group.get("T001", {}).get("end_period", 0.0) / account_group["T003"]["end_period"]
 
-  <record id="client_financial_ratio_2_30a38c23" model="client_financial_ratio">
-    <field name="sequence" eval="20" />
-    <field name="name">Cash Ratio</field>
-    <field name="code">/</field>
-    <field name="category">liquidity</field>
-    <field
+if account_group.get("T003", {}).get("end_period", False):
+  result_end_period = account_group.get("T001", {}).get("end_period", 0.0) / account_group["T003"]["end_period"]
+
+if account_group.get("T003", {}).get("audited", False):
+  result_end_period = account_group.get("T001", {}).get("audited", 0.0) / account_group["T003"]["audited"]</field>
+    </record>
+    <record id="client_financial_ratio_2_30a38c23" model="client_financial_ratio">
+        <field name="sequence" eval="20" />
+        <field name="name">Cash Ratio</field>
+        <field name="code">/</field>
+        <field name="category">liquidity</field>
+        <field
             name="python_code"
-        >result_extrapolation = result_interim = result_previous = result_end_period = result_audited =0.0
+        >result_extrapolation = result_interim = result_previous = result_end_period = result_audited = 0.0
 
-if account_group["T003"]["extrapolation"]:
-  result_extrapolation = account_type["S111"]["extrapolation"] / account_group["T003"]["extrapolation"]
+if account_group.get("T003", {}).get("extrapolation", False):
+  result_extrapolation = account_type.get("S111", {}).get("extrapolation", 0.0) / account_group["T003"]["extrapolation"]
 
-if account_group["T003"]["interim"]:
-  result_interim = account_type["S111"]["interim"] / account_group["T003"]["interim"]
+if account_group.get("T003", {}).get("interim", False):
+  result_interim = account_type.get("S111", {}).get("interim", 0.0) / account_group["T003"]["interim"]
 
-if account_group["T003"]["previous"]:
-  result_previous = account_type["S111"]["previous"] / account_group["T003"]["previous"]
+if account_group.get("T003", {}).get("previous", False):
+  result_previous = account_type.get("S111", {}).get("previous", 0.0) / account_group["T003"]["previous"]
 
-if account_group["T003"]["end_period"]:
-  result_end_period = account_type["S111"]["end_period"] / account_group["T003"]["end_period"]
+if account_group.get("T003", {}).get("end_period", False):
+  result_end_period = account_type.get("S111", {}).get("end_period", 0.0) / account_group["T003"]["end_period"]
 
-if account_group["T003"]["audited"]:
-  result_audited = account_type["S111"]["audited"] / account_group["T003"]["audited"]</field>
-  </record>
-
-  <record id="client_financial_ratio_3_475786bf" model="client_financial_ratio">
-    <field name="sequence" eval="30" />
-    <field name="name">Quick Ratio</field>
-    <field name="code">/</field>
-    <field name="category">liquidity</field>
-    <field
+if account_group.get("T003", {}).get("audited", False):
+  result_end_period = account_type.get("S111", {}).get("audited", 0.0) / account_group["T003"]["audited"]
+</field>
+    </record>
+    <record id="client_financial_ratio_3_475786bf" model="client_financial_ratio">
+        <field name="sequence" eval="30" />
+        <field name="name">Quick Ratio</field>
+        <field name="code">/</field>
+        <field name="category">liquidity</field>
+        <field
             name="python_code"
-        >result_extrapolation = result_interim = result_previous = result_end_period = result_audited0.0
+        >result_extrapolation = result_interim = result_previous = result_end_period = result_audited = 0.0
 
-if account_group["T003"]["extrapolation"]:
-  result_extrapolation = (account_type.get("S111", {}).get("extrapolation", 0.0) + \
-      account_type.get("S112", {}).get("extrapolation", 0.0) + \
-      account_type.get("S114", {}).get("extrapolation", 0.0)) / account_group["T003"]["extrapolation"]
+if account_group.get("T003", {}).get("extrapolation", False):
+  result_extrapolation = (
+    account_type.get("S111", {}).get("extrapolation", 0.0) + \
+    account_type.get("S112", {}).get("extrapolation", 0.0) + \
+    account_type.get("S114", {}).get("extrapolation", 0.0)
+  ) / account_group["T003"]["extrapolation"]
 
-if account_group["T003"]["interim"]:
-  result_interim = (account_type.get("S111", {}).get("interim", 0.0) + \
-  account_type.get("S112", {}).get("interim", 0.0) + \
-  account_type.get("S114", {}).get("interim", 0.0)) / account_group["T003"]["interim"]
+if account_group.get("T003", {}).get("interim", False):
+  result_interim = (
+    account_type.get("S111", {}).get("interim", 0.0) + \
+    account_type.get("S112", {}).get("interim", 0.0) + \
+    account_type.get("S114", {}).get("interim", 0.0)
+  ) / account_group["T003"]["interim"]
 
-if account_group["T003"]["previous"]:
-  result_previous = (account_type.get("S111", {}).get("previous", 0.0) + \
-  account_type.get("S112", {}).get("previous", 0.0) + \
-  account_type.get("S114", {}).get("previous", 0.0)) / account_group["T003"]["previous"]
+if account_group.get("T003", {}).get("previous", False):
+  result_previous = (
+    account_type.get("S111", {}).get("previous", 0.0) + \
+    account_type.get("S112", {}).get("previous", 0.0) + \
+    account_type.get("S114", {}).get("previous", 0.0)
+  ) / account_group["T003"]["previous"]
 
-if account_group["T003"]["end_period"]:
-  result_end_period = (account_type.get("S111", {}).get("end_period", 0.0) + \
-  account_type.get("S112", {}).get("end_period", 0.0) + \
-  account_type.get("S114", {}).get("end_period", 0.0)) / account_group["T003"]["end_period"]
+if account_group.get("T003", {}).get("end_period", False):
+  result_end_period = (
+    account_type.get("S111", {}).get("end_period", 0.0) + \
+    account_type.get("S112", {}).get("end_period", 0.0) + \
+    account_type.get("S114", {}).get("end_period", 0.0)
+  ) / account_group["T003"]["end_period"]
 
-if account_group["T003"]["audited"]:
-  result_audited = (account_type.get("S111", {}).get("audited", 0.0) + \
-  account_type.get("S112", {}).get("audited", 0.0) + \
-  account_type.get("S114", {}).get("audited", 0.0)) / account_group["T003"]["audited"]
+if account_group.get("T003", {}).get("audited", False):
+  result_audited = (
+    account_type.get("S111", {}).get("audited", 0.0) + \
+    account_type.get("S112", {}).get("audited", 0.0) + \
+    account_type.get("S114", {}).get("audited", 0.0)
+  ) / account_group["T003"]["audited"]
     </field>
-  </record>
-
-  <record id="client_financial_ratio_4_b8515746" model="client_financial_ratio">
-    <field name="sequence" eval="40" />
-    <field name="name">Inventory Turnover</field>
-    <field name="code">/</field>
-    <field name="category">activity</field>
-    <field
+    </record>
+    <record id="client_financial_ratio_4_b8515746" model="client_financial_ratio">
+        <field name="sequence" eval="40" />
+        <field name="name">Inventory Turnover</field>
+        <field name="code">/</field>
+        <field name="category">activity</field>
+        <field
             name="python_code"
         >result_extrapolation = result_interim = result_previous = result_end_period = result_audited = 0.0
 
-if account_group["T003"]["extrapolation"]:
-  result_extrapolation = account_group["T011"]["extrapolation"] / account_type["S116"]["extrapolation_avg"]
+if account_type.get("S116", {}).get("extrapolation_avg", False):
+  result_extrapolation = account_group.get("T011", {}).get("extrapolation", 0.0) / account_type["S116"]["extrapolation_avg"]
 
-if account_group["T003"]["end_period"]:
-  result_end_period = account_group["T011"]["end_period"] / account_type["S116"]["end_period_avg"]
+if account_type.get("S116", {}).get("end_period_avg", False):
+  result_end_period = account_group.get("T011", {}).get("end_period", 0.0) / account_type["S116"]["end_period_avg"]
 
-if account_group["T003"]["audited"]:
-  result_audited = account_group["T011"]["audited"] / account_type["S116"]["audited_avg"]</field>
-  </record>
-
-  <record id="client_financial_ratio_5_7e888232" model="client_financial_ratio">
-    <field name="sequence" eval="50" />
-    <field name="name">Trade Receivable Turnover</field>
-    <field name="code">/</field>
-    <field name="category">activity</field>
-    <field
+if account_type.get("S116", {}).get("audited_avg", False):
+  result_audited = account_group.get("T011", {}).get("audited", 0.0) / account_type["S116"]["audited_avg"]</field>
+    </record>
+    <record id="client_financial_ratio_5_7e888232" model="client_financial_ratio">
+        <field name="sequence" eval="50" />
+        <field name="name">Trade Receivable Turnover</field>
+        <field name="code">/</field>
+        <field name="category">activity</field>
+        <field
             name="python_code"
         >result_extrapolation = result_interim = result_previous = result_end_period = result_audited = 0.0
 
-if account_group["T003"]["extrapolation"]:
-  result_extrapolation = account_group["T009"]["extrapolation"] / account_type["S112"]["extrapolation_avg"]
+if account_type.get("S112", {}).get("extrapolation_avg", False):
+  result_extrapolation = account_group.get("T009", {}).get("extrapolation", 0.0) / account_type["S112"]["extrapolation_avg"]
 
-if account_group["T003"]["end_period"]:
-  result_end_period = account_group["T009"]["end_period"] / account_type["S112"]["end_period_avg"]
+if account_type.get("S112", {}).get("end_period_avg", False):
+  result_end_period = account_group.get("T009", {}).get("end_period", 0.0) / account_type["S112"]["end_period_avg"]
 
-if account_group["T003"]["audited"]:
-  result_audited = account_group["T009"]["audited"] / account_type["S112"]["audited_avg"]</field>
-  </record>
-
-  <record id="client_financial_ratio_6_f65ecc52" model="client_financial_ratio">
-    <field name="sequence" eval="60" />
-    <field name="name">Total Asset Turnover</field>
-    <field name="code">/</field>
-    <field name="category">activity</field>
-    <field
-            name="python_code"
-        >result_extrapolation = result_interim = result_previous = result_end_period = result_audited 0.0
-
-if account_group["T003"]["extrapolation"]:
-  result_extrapolation = account_group["T009"]["extrapolation"] / computation["T001"]["extrapolation_avg"]
-
-if account_group["T003"]["end_period"]:
-  result_end_period = account_group["T009"]["end_period"] / computation["T001"]["end_period_avg"]
-
-if account_group["T003"]["audited"]:
-  result_audited = account_group["T009"]["audited"] / computation["T001"]["audited_avg"]</field>
-  </record>
-
-  <record id="client_financial_ratio_7_d95b93ed" model="client_financial_ratio">
-    <field name="sequence" eval="70" />
-    <field name="name">Working Capital Turnover</field>
-    <field name="code">/</field>
-    <field name="category">activity</field>
-    <field
+if account_type.get("S112", {}).get("audited_avg", False):
+  result_audited = account_group.get("T009", {}).get("audited", 0.0) / account_type["S112"]["audited_avg"]</field>
+    </record>
+    <record id="client_financial_ratio_6_f65ecc52" model="client_financial_ratio">
+        <field name="sequence" eval="60" />
+        <field name="name">Total Asset Turnover</field>
+        <field name="code">/</field>
+        <field name="category">activity</field>
+        <field
             name="python_code"
         >result_extrapolation = result_interim = result_previous = result_end_period = result_audited = 0.0
 
-if account_group["T003"]["extrapolation"]:
-  result_extrapolation = account_group["T009"]["extrapolation"] / computation["T009"]["extrapolation_avg"]
+if computation.get("T001", {}).get("extrapolation_avg", False):
+  result_extrapolation = account_group.get("T009", {}).get("extrapolation", 0.0) / computation["T001"]["extrapolation_avg"]
 
-if account_group["T003"]["end_period"]:
-  result_end_period = account_group["T009"]["end_period"] / computation["T009"]["end_period_avg"]
+if computation.get("T001", {}).get("end_period_avg", False):
+  result_end_period = account_group.get("T009", {}).get("end_period", 0.0) / computation["T001"]["end_period_avg"]
 
-if account_group["T003"]["audited"]:
-  result_audited = account_group["T009"]["audited"] / computation["T009"]["audited_avg"]</field>
-  </record>
-  <record id="client_financial_ratio_8_86b7a032" model="client_financial_ratio">
-    <field name="sequence" eval="80" />
-    <field name="name">Trade Payable Turnover</field>
-    <field name="code">/</field>
-    <field name="category">activity</field>
-    <field
+if computation.get("T001", {}).get("audited_avg", False):
+  result_audited = account_group.get("T009", {}).get("audited", 0.0) / computation["T001"]["audited_avg"]</field>
+    </record>
+    <record id="client_financial_ratio_7_d95b93ed" model="client_financial_ratio">
+        <field name="sequence" eval="70" />
+        <field name="name">Working Capital Turnover</field>
+        <field name="code">/</field>
+        <field name="category">activity</field>
+        <field
             name="python_code"
         >result_extrapolation = result_interim = result_previous = result_end_period = result_audited = 0.0
 
-if account_group["T003"]["extrapolation"]:
-  result_extrapolation = account_group["T011"]["extrapolation"] / account_type["S211"]["extrapolation_avg"]
+if computation.get("T009", {}).get("extrapolation_avg", False):
+  result_extrapolation = account_group.get("T009", {}).get("extrapolation", 0.0) / computation["T009"]["extrapolation_avg"]
 
-if account_group["T003"]["end_period"]:
-  result_end_period = account_group["T011"]["end_period"] / account_type["S211"]["end_period_avg"]
+if computation.get("T009", {}).get("end_period_avg", False):
+  result_end_period = account_group.get("T009", {}).get("end_period", 0.0) / computation["T009"]["end_period_avg"]
 
-if account_group["T003"]["audited"]:
-  result_audited = account_group["T011"]["audited"] / account_type["S211"]["audited_avg"]</field>
-  </record>
-
-  <record id="client_financial_ratio_9_4f4f8749" model="client_financial_ratio">
-    <field name="sequence" eval="90" />
-    <field name="name">Days inventory Outstanding</field>
-    <field name="code">/</field>
-    <field name="category">activity</field>
-    <field
+if computation.get("T009", {}).get("audited_avg", False):
+  result_audited = account_group.get("T009", {}).get("audited", 0.0) / computation["T009"]["audited_avg"]</field>
+    </record>
+    <record id="client_financial_ratio_8_86b7a032" model="client_financial_ratio">
+        <field name="sequence" eval="80" />
+        <field name="name">Trade Payable Turnover</field>
+        <field name="code">/</field>
+        <field name="category">activity</field>
+        <field
             name="python_code"
         >result_extrapolation = result_interim = result_previous = result_end_period = result_audited = 0.0
 
-if account_group["T003"]["extrapolation"]:
-  result_extrapolation = 365 / (account_group["T011"]["extrapolation"] / account_type["S116"]["extrapolation_avg"])
+if account_type.get("S211", {}).get("extrapolation_avg", False):
+  result_extrapolation = account_group.get("T011", {}).get("extrapolation", 0.0) / account_type["S211"]["extrapolation_avg"]
 
-if account_group["T003"]["end_period"]:
-  result_end_period = 365 / (account_group["T011"]["end_period"] / account_type["S116"]["end_period_avg"])
+if account_type.get("S211", {}).get("end_period_avg", False):
+  result_end_period = account_group.get("T011", {}).get("end_period", 0.0) / account_type["S211"]["end_period_avg"]
 
-if account_group["T003"]["audited"]:
-  result_audited = 365 / (account_group["T011"]["audited"] / account_type["S116"]["audited_avg"])</field>
-  </record>
-
-  <record id="client_financial_ratio_10_2666943a" model="client_financial_ratio">
-    <field name="sequence" eval="100" />
-    <field name="name">Days Trade Receivable Outstanding</field>
-    <field name="code">/</field>
-    <field name="category">activity</field>
-    <field
+if account_type.get("S211", {}).get("audited_avg", False):
+  result_audited = account_group.get("T011", {}).get("audited", 0.0) / account_type["S211"]["audited_avg"]</field>
+    </record>
+    <record id="client_financial_ratio_9_4f4f8749" model="client_financial_ratio">
+        <field name="sequence" eval="90" />
+        <field name="name">Days inventory Outstanding</field>
+        <field name="code">/</field>
+        <field name="category">activity</field>
+        <field
             name="python_code"
         >result_extrapolation = result_interim = result_previous = result_end_period = result_audited = 0.0
 
-if account_group["T003"]["extrapolation"]:
-  result_extrapolation = 365 / (account_group["T009"]["extrapolation"] / account_type["S112"]["extrapolation_avg"])
+if account_type.get("S116", {}).get("extrapolation_avg", False):
+  result_extrapolation = 365 / (account_group.get("T011", {}).get("extrapolation", 0.0) / account_type["S116"]["extrapolation_avg"])
 
-if account_group["T003"]["end_period"]:
-  result_end_period = 365 / (account_group["T009"]["end_period"] / account_type["S112"]["end_period_avg"])
+if account_type.get("S116", {}).get("end_period_avg", False):
+  result_end_period = 365 / (account_group.get("T011", {}).get("end_period", 0.0) / account_type["S116"]["end_period_avg"])
 
-if account_group["T003"]["audited"]:
-  result_audited = 365 / (account_group["T009"]["audited"] / account_type["S112"]["audited_avg"])</field>
-  </record>
-  <record id="client_financial_ratio_11_f39a4f43" model="client_financial_ratio">
-    <field name="sequence" eval="110" />
-    <field name="name">Days Trade Payable Outstanding</field>
-    <field name="code">/</field>
-    <field name="category">activity</field>
-    <field
+if account_type.get("S116", {}).get("audited_avg", False):
+  result_audited = 365 / (account_group.get("T011", {}).get("audited", 0.0) / account_type["S116"]["audited_avg"])</field>
+    </record>
+    <record id="client_financial_ratio_10_2666943a" model="client_financial_ratio">
+        <field name="sequence" eval="100" />
+        <field name="name">Days Trade Receivable Outstanding</field>
+        <field name="code">/</field>
+        <field name="category">activity</field>
+        <field
             name="python_code"
         >result_extrapolation = result_interim = result_previous = result_end_period = result_audited = 0.0
 
-if account_group["T003"]["extrapolation"]:
-  result_extrapolation = 365 / (account_group["T011"]["extrapolation"] / account_type["S211"]["extrapolation_avg"])
+if account_type.get("S112", {}).get("extrapolation_avg", False):
+  result_extrapolation = 365 / (account_group.get("T009", {}).get("extrapolation", 0.0) / account_type["S112"]["extrapolation_avg"])
 
-if account_group["T003"]["end_period"]:
-  result_end_period = 365 / (account_group["T011"]["end_period"] / account_type["S211"]["end_period_avg"])
+if account_type.get("S112", {}).get("end_period_avg", False):
+  result_end_period = 365 / (account_group.get("T009", {}).get("end_period", 0.0) / account_type["S112"]["end_period_avg"])
 
-if account_group["T003"]["audited"]:
-  result_audited = 365 / (account_group["T011"]["audited"] / account_type["S211"]["audited_avg"])</field>
-  </record>
-
-  <record id="client_financial_ratio_12_4313b355" model="client_financial_ratio">
-    <field name="sequence" eval="120" />
-    <field name="name">Net Operating Cycle</field>
-    <field name="code">/</field>
-    <field name="category">activity</field>
-    <field
+if account_type.get("S112", {}).get("audited_avg", False):
+  result_audited = 365 / (account_group.get("T009", {}).get("audited", 0.0) / account_type["S112"]["audited_avg"])</field>
+    </record>
+    <record id="client_financial_ratio_11_f39a4f43" model="client_financial_ratio">
+        <field name="sequence" eval="110" />
+        <field name="name">Days Trade Payable Outstanding</field>
+        <field name="code">/</field>
+        <field name="category">activity</field>
+        <field
             name="python_code"
         >result_extrapolation = result_interim = result_previous = result_end_period = result_audited = 0.0
 
-if account_group["T003"]["extrapolation"]:
-  result_extrapolation = (365 / (account_group["T011"]["extrapolation"] / account_type["S116"]["extrapolation_avg"])) + \
-  (365 / (account_group["T009"]["extrapolation"] / account_type["S112"]["extrapolation_avg"])) -\
-  (365 / (account_group["T011"]["extrapolation"] / account_type["S211"]["extrapolation_avg"]))
+if account_type.get("S211", {}).get("extrapolation_avg", False):
+  result_extrapolation = 365 / (account_group.get("T011", {}).get("extrapolation", 0.0) / account_type["S211"]["extrapolation_avg"])
 
-if account_group["T003"]["audited"]:
-  result_audited = (365 / (account_group["T011"]["audited"] / account_type["S116"]["audited_avg"])) + \
-  (365 / (account_group["T009"]["audited"] / account_type["S112"]["audited_avg"])) -\
-  (365 / (account_group["T011"]["audited"] / account_type["S211"]["audited_avg"]))
+if account_type.get("S211", {}).get("end_period_avg", False):
+  result_end_period = 365 / (account_group.get("T011", {}).get("end_period", 0.0) / account_type["S211"]["end_period_avg"])
 
-if account_group["T003"]["end_period"]:
-  result_end_period = (365 / (account_group["T011"]["end_period"] / account_type["S116"]["end_period_avg"])) + \
-  (365 / (account_group["T009"]["end_period"] / account_type["S112"]["end_period_avg"])) -\
-  (365 / (account_group["T011"]["end_period"] / account_type["S211"]["end_period_avg"]))</field>
-  </record>
-
-  <record id="client_financial_ratio_13_ee728e86" model="client_financial_ratio">
-    <field name="sequence" eval="130" />
-    <field name="name">Debt Equity Ratio</field>
-    <field name="code">/</field>
-    <field name="category">solvency</field>
-    <field
+if account_type.get("S211", {}).get("audited_avg", False):
+  result_audited = 365 / (account_group.get("T011", {}).get("audited", 0.0) / account_type["S211"]["audited_avg"])</field>
+    </record>
+    <record id="client_financial_ratio_12_4313b355" model="client_financial_ratio">
+        <field name="sequence" eval="120" />
+        <field name="name">Net Operating Cycle</field>
+        <field name="code">/</field>
+        <field name="category">activity</field>
+        <field
             name="python_code"
         >result_extrapolation = result_interim = result_previous = result_end_period = result_audited = 0.0
 
-if account_group["T003"]["extrapolation"]:
-  result_extrapolation = computation["T007"]["extrapolation"] / computation["T002"]["extrapolation"] * -1
+if (
+    account_type.get("S116", {}).get("extrapolation_avg", False) and \
+    account_type.get("S112", {}).get("extrapolation_avg", False) and \
+    account_type.get("S211", {}).get("extrapolation_avg", False)
+):
+  result_extrapolation = (365 / (account_group.get("T011", {}).get("extrapolation", 0.0) / account_type["S116"]["extrapolation_avg"])) + \
+  (365 / (account_group.get("T009", {}).get("extrapolation", 0.0) / account_type["S112"]["extrapolation_avg"])) -\
+  (365 / (account_group.get("T011", {}).get("extrapolation", 0.0) / account_type["S211"]["extrapolation_avg"]))
 
-if account_group["T003"]["end_period"]:
-  result_end_period = computation["T007"]["end_period"] / computation["T002"]["end_period"] *-1
+if (
+    account_type.get("S116", {}).get("end_period_avg", False) and \
+    account_type.get("S112", {}).get("end_period_avg", False) and \
+    account_type.get("S211", {}).get("end_period_avg", False)
+):
+  result_audited = (365 / (account_group.get("T011", {}).get("end_period", 0.0) / account_type["S116"]["audited_avg"])) + \
+  (365 / (account_group.get("T009", {}).get("end_period", 0.0) / account_type["S112"]["audited_avg"])) -\
+  (365 / (account_group.get("T011", {}).get("end_period", 0.0) / account_type["S211"]["audited_avg"]))
 
-if account_group["T003"]["previous"]:
-  result_previous = computation["T007"]["previous"] / computation["T002"]["previous"] *-1
-
-if account_group["T003"]["audited"]:
-  result_audited = computation["T007"]["audited"] / computation["T002"]["audited"] *-1</field>
-  </record>
-
-  <record id="client_financial_ratio_14_523c0216" model="client_financial_ratio">
-    <field name="sequence" eval="140" />
-    <field name="name">Leverage Ratio</field>
-    <field name="code">/</field>
-    <field name="category">solvency</field>
-    <field
+if (
+    account_type.get("S116", {}).get("audited_avg", False) and \
+    account_type.get("S112", {}).get("audited_avg", False) and \
+    account_type.get("S211", {}).get("audited_avg", False)
+):
+  result_audited = (365 / (account_group.get("T011", {}).get("audited", 0.0) / account_type["S116"]["audited_avg"])) + \
+  (365 / (account_group.get("T009", {}).get("audited", 0.0) / account_type["S112"]["audited_avg"])) -\
+  (365 / (account_group.get("T011", {}).get("audited", 0.0) / account_type["S211"]["audited_avg"]))
+  </field>
+    </record>
+    <record id="client_financial_ratio_13_ee728e86" model="client_financial_ratio">
+        <field name="sequence" eval="130" />
+        <field name="name">Debt Equity Ratio</field>
+        <field name="code">/</field>
+        <field name="category">solvency</field>
+        <field
             name="python_code"
         >result_extrapolation = result_interim = result_previous = result_end_period = result_audited = 0.0
 
-if account_group["T003"]["extrapolation"]:
-  result_extrapolation = computation["T001"]["extrapolation"] / computation["T002"]["extrapolation"]
+if computation.get("T002", {}).get("extrapolation", False):
+  result_extrapolation = (computation.get("T007", {}).get("extrapolation", 0.0) / computation["T002"]["extrapolation"]) * -1
 
-if account_group["T003"]["end_period"]:
-  result_end_period = computation["T001"]["end_period"] / computation["T002"]["end_period"]
+if computation.get("T002", {}).get("end_period", False):
+  result_end_period = (computation.get("T007", {}).get("end_period", 0.0) / computation["T002"]["end_period"]) *-1
 
-if account_group["T003"]["previous"]:
-  result_previous = computation["T001"]["previous"] / computation["T002"]["previous"]
+if computation.get("T002", {}).get("previous", False):
+  result_previous = (computation.get("T007", {}).get("previous", 0.0) / computation["T002"]["previous"]) *-1
 
-if account_group["T003"]["audited"]:
-  result_audited = computation["T001"]["audited"] / computation["T002"]["audited"]
+if computation.get("T002", {}).get("audited", False):
+  result_audited =(computation.get("T007", {}).get("audited", 0.0) / computation["T002"]["audited"]) *-1</field>
+    </record>
+    <record id="client_financial_ratio_14_523c0216" model="client_financial_ratio">
+        <field name="sequence" eval="140" />
+        <field name="name">Leverage Ratio</field>
+        <field name="code">/</field>
+        <field name="category">solvency</field>
+        <field
+            name="python_code"
+        >result_extrapolation = result_interim = result_previous = result_end_period = result_audited = 0.0
+
+if computation.get("T002", {}).get("extrapolation", False):
+  result_extrapolation = computation.get("T001", {}).get("extrapolation", 0.0) / computation["T002"]["extrapolation"]
+
+if computation.get("T002", {}).get("end_period", False):
+  result_end_period = computation.get("T001", {}).get("end_period", 0.0) / computation["T002"]["end_period"]
+
+if computation.get("T002", {}).get("previous", False):
+  result_previous = computation.get("T001", {}).get("previous", 0.0) / computation["T002"]["previous"]
+
+if computation.get("T002", {}).get("audited", False):
+  result_audited =computation.get("T001", {}).get("audited", 0.0) / computation["T002"]["audited"]</field>
+    </record>
+    <record id="client_financial_ratio_15_99f866a5" model="client_financial_ratio">
+        <field name="sequence" eval="150" />
+        <field name="name">Coverage Ratio</field>
+        <field name="code">/</field>
+        <field name="category">solvency</field>
+        <field
+            name="python_code"
+        >result_extrapolation = result_interim = result_previous = result_end_period = result_audited = 0.0
+
+if account_type.get("S531", {}).get("extrapolation", False):
+  result_extrapolation = computation.get("T005", {}).get("extrapolation", 0.0) / account_type["S531"]["extrapolation"]
+
+if account_type.get("S531", {}).get("end_period", False):
+  result_end_period = computation.get("T005", {}).get("end_period", 0.0) / account_type["S531"]["end_period"]
+
+if account_type.get("S531", {}).get("previous", False):
+  result_previous = computation.get("T005", {}).get("previous", 0.0) / account_type["S531"]["previous"]
+
+if account_type.get("S531", {}).get("audited", False):
+  result_audited = computation.get("T005", {}).get("audited", 0.0) / account_type["S531"]["audited"]</field>
+    </record>
+    <record id="client_financial_ratio_16_e9d4c603" model="client_financial_ratio">
+        <field name="sequence" eval="160" />
+        <field name="name">Gross Profit Margin</field>
+        <field name="code">/</field>
+        <field name="category">profitability</field>
+        <field
+            name="python_code"
+        >result_extrapolation = result_interim = result_previous = result_end_period = result_audited = 0.0
+
+if account_group.get("T009", {}).get("extrapolation", False):
+  result_extrapolation = (account_group.get("T009", {}).get("extrapolation", 0.0) - account_group.get("T011", {}).get("extrapolation", 0.0)) / account_group["T009"]["extrapolation"]
+
+if account_group.get("T009", {}).get("end_period", False):
+  result_end_period = (account_group.get("T009", {}).get("end_period", 0.0) - account_group.get("T011", {}).get("end_period", 0.0)) / account_group["T009"]["end_period"]
+
+if account_group.get("T009", {}).get("previous", False):
+  result_previous = (account_group.get("T009", {}).get("previous", 0.0) - account_group.get("T011", {}).get("previous", 0.0)) / account_group["T009"]["previous"]
+
+if account_group.get("T009", {}).get("audited", False):
+  result_audited = (account_group.get("T009", {}).get("audited", 0.0) - account_group.get("T011", {}).get("audited", 0.0)) / account_group["T009"]["audited"]
     </field>
-  </record>
-
-  <record id="client_financial_ratio_15_99f866a5" model="client_financial_ratio">
-    <field name="sequence" eval="150" />
-    <field name="name">Coverage Ratio</field>
-    <field name="code">/</field>
-    <field name="category">solvency</field>
-    <field
+    </record>
+    <record id="client_financial_ratio_17_2073110" model="client_financial_ratio">
+        <field name="sequence" eval="170" />
+        <field name="name">Net Profit Margin</field>
+        <field name="code">/</field>
+        <field name="category">profitability</field>
+        <field
             name="python_code"
         >result_extrapolation = result_interim = result_previous = result_end_period = result_audited = 0.0
 
-if account_group["T003"]["extrapolation"]:
-  result_extrapolation = computation["T005"]["extrapolation"] / account_type["S531"]["extrapolation"]
+if computation.get("T003", {}).get("extrapolation", False):
+  result_extrapolation = computation.get("T010", {}).get("extrapolation", 0.0) / computation["T003"]["extrapolation"]
 
-if account_group["T003"]["end_period"]:
-  result_end_period = computation["T005"]["end_period"] / account_type["S531"]["end_period"]
+if computation.get("T003", {}).get("end_period", False):
+  result_end_period = computation.get("T010", {}).get("end_period", 0.0) / computation["T003"]["end_period"]
 
-if account_group["T003"]["previous"]:
-  result_previous = computation["T005"]["previous"] / account_type["S531"]["previous"]
+if computation.get("T003", {}).get("previous", False):
+  result_previous = computation.get("T010", {}).get("previous", 0.0) / computation["T003"]["previous"]
 
-if account_group["T003"]["audited"]:
-  result_audited = computation["T005"]["audited"] / account_type["S531"]["audited"]</field>
-  </record>
-
-  <record id="client_financial_ratio_16_e9d4c603" model="client_financial_ratio">
-    <field name="sequence" eval="160" />
-    <field name="name">Gross Profit Margin</field>
-    <field name="code">/</field>
-    <field name="category">profitability</field>
-    <field
+if computation.get("T003", {}).get("audited", False):
+  result_audited = computation.get("T010", {}).get("audited", 0.0) / computation["T003"]["audited"]</field>
+    </record>
+    <record id="client_financial_ratio_18_b475fb31" model="client_financial_ratio">
+        <field name="sequence" eval="180" />
+        <field name="name">Return on Asset</field>
+        <field name="code">/</field>
+        <field name="category">profitability</field>
+        <field
             name="python_code"
         >result_extrapolation = result_interim = result_previous = result_end_period = result_audited = 0.0
 
-if account_group["T003"]["extrapolation"]:
-  result_extrapolation = (account_group["T009"]["extrapolation"] - account_group["T011"]["extrapolation"]) / account_group["T009"]["extrapolation"]
+if computation.get("T001", {}).get("extrapolation_avg", False):
+  result_extrapolation = computation.get("T010", {}).get("extrapolation", 0.0) / computation["T001"]["extrapolation_avg"]
 
-if account_group["T003"]["end_period"]:
-  result_end_period = (account_group["T009"]["end_period"] - account_group["T011"]["end_period"]) / account_group["T009"]["end_period"]
+if computation.get("T001", {}).get("end_period_avg", False):
+  result_end_period = computation.get("T010", {}).get("end_period", 0.0) / computation["T001"]["end_period_avg"]
 
-if account_group["T003"]["previous"]:
-  result_previous = (account_group["T009"]["previous"] - account_group["T011"]["previous"]) / account_group["T009"]["previous"]
-
-if account_group["T003"]["audited"]:
-  result_audited = (account_group["T009"]["audited"] - account_group["T011"]["audited"]) / account_group["T009"]["audited"]
-    </field>
-  </record>
-
-  <record id="client_financial_ratio_17_2073110" model="client_financial_ratio">
-    <field name="sequence" eval="170" />
-    <field name="name">Net Profit Margin</field>
-    <field name="code">/</field>
-    <field name="category">profitability</field>
-    <field
+if computation.get("T001", {}).get("audited_avg", False):
+  result_audited = computation.get("T010", {}).get("audited", 0.0) / computation["T001"]["audited_avg"]</field>
+    </record>
+    <record id="client_financial_ratio_19_89777c92" model="client_financial_ratio">
+        <field name="sequence" eval="190" />
+        <field name="name">Return on Equity</field>
+        <field name="code">/</field>
+        <field name="category">profitability</field>
+        <field
             name="python_code"
         >result_extrapolation = result_interim = result_previous = result_end_period = result_audited = 0.0
 
-if account_group["T003"]["extrapolation"]:
-  result_extrapolation = computation["T010"]["extrapolation"] / computation["T003"]["extrapolation"]
+if computation.get("T002", {}).get("extrapolation_avg", False):
+  result_extrapolation = computation.get("T010", {}).get("extrapolation", 0.0) / computation["T002"]["extrapolation_avg"]
 
-if account_group["T003"]["end_period"]:
-  result_end_period = computation["T010"]["end_period"] / computation["T003"]["end_period"]
+if computation.get("T002", {}).get("end_period_avg", False):
+  result_end_period = computation.get("T005", {}).get("end_period", 0.0) / computation["T002"]["end_period_avg"]
 
-if account_group["T003"]["previous"]:
-  result_previous = computation["T010"]["previous"] / computation["T003"]["previous"]
-
-if account_group["T003"]["audited"]:
-  result_audited = computation["T010"]["audited"] / computation["T003"]["audited"]</field>
-  </record>
-
-  <record id="client_financial_ratio_18_b475fb31" model="client_financial_ratio">
-    <field name="sequence" eval="180" />
-    <field name="name">Return on Asset</field>
-    <field name="code">/</field>
-    <field name="category">profitability</field>
-    <field
-            name="python_code"
-        >result_extrapolation = result_interim = result_previous = result_end_period = result_audited = 0.0
-
-if account_group["T003"]["extrapolation"]:
-  result_extrapolation = computation["T010"]["extrapolation"] / computation["T001"]["extrapolation_avg"]
-
-if account_group["T003"]["end_period"]:
-  result_end_period = computation["T010"]["end_period"] / computation["T001"]["end_period_avg"]
-
-if account_group["T003"]["audited"]:
-  result_audited = computation["T010"]["audited"] / computation["T001"]["audited_avg"]</field>
-  </record>
-
-  <record id="client_financial_ratio_19_89777c92" model="client_financial_ratio">
-    <field name="sequence" eval="190" />
-    <field name="name">Return on Equity</field>
-    <field name="code">/</field>
-    <field name="category">profitability</field>
-    <field
-            name="python_code"
-        >result_extrapolation = result_interim = result_previous = result_end_period = result_audited = 0.0
-
-if account_group["T003"]["extrapolation"]:
-  result_extrapolation = computation["T010"]["extrapolation"] / computation["T002"]["extrapolation_avg"]
-
-if account_group["T003"]["end_period"]:
-  result_end_period = computation["T005"]["end_period"] / computation["T002"]["end_period_avg"]
-
-if account_group["T003"]["audited"]:
-  result_audited = computation["T005"]["audited"] / computation["T002"]["audited_avg"]</field>
-  </record>
+if computation.get("T002", {}).get("audited_avg", False):
+  result_audited = computation.get("T005", {}).get("audited", 0.0) / computation["T002"]["audited_avg"]</field>
+    </record>
 
   <!-- Indonesian translations for client_financial_ratio -->
   <record id="l18n_id_client_financial_ratio_1_f0ab3e10" model="ir.translation">
