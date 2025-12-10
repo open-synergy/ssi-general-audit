@@ -122,6 +122,7 @@ class GeneralAuditWSb32655a(models.Model):
     def action_reload_analysis_ids(self):
         for record in self.sudo():
             record._reload_analysis_ids()
+            record.analysis_ids._compute_computation_item()
 
     def _reload_analysis_ids(self):
         Detail = self.env["general_audit_ws_b32655a.vertical_horizontal_analysis"]
