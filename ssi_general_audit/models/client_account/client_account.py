@@ -12,7 +12,7 @@ class ClientAccount(models.Model):
         "mixin.master_data",
     ]
     _description = "Client Account"
-    _order = "partner_id, sequence, code"
+    _order = "partner_id, type_id, sequence, code"
     _show_code_on_display_name = True
 
     sequence = fields.Integer(
