@@ -10,7 +10,7 @@ from odoo.exceptions import ValidationError
 class ClientTrialBalanceDetail(models.Model):
     _name = "client_trial_balance.detail"
     _description = "Accountant Client Trial Balance Detail"
-    _order = "sequence, trial_balance_id, id"
+    _order = "trial_balance_id, type_id, account_id, id"
 
     trial_balance_id = fields.Many2one(
         string="Trial Balance",
