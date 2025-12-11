@@ -7,6 +7,7 @@ from odoo import fields, models
 class ClientAccountMappingDetail(models.Model):
     _name = "client_account_mapping.detail"
     _description = "Account Mapping Detail"
+    _order = "mapping_id, type_id, account_id, id"
 
     mapping_id = fields.Many2one(
         string="# Mapping",
@@ -18,6 +19,7 @@ class ClientAccountMappingDetail(models.Model):
     sequence = fields.Integer(
         string="Sequence",
         related="account_id.sequence",
+        store=True,
         help="Sequence taken from the client account for ordering.",
     )
     account_id = fields.Many2one(
