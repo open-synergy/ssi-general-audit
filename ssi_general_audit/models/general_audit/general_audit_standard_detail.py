@@ -11,7 +11,7 @@ from odoo.tools.safe_eval import safe_eval as eval  # pylint: disable=redefined-
 class GeneralAuditStandardDetail(models.Model):
     _name = "general_audit.standard_detail"
     _description = "Accountant General Audit Standard Detail"
-    _order = "sequence, general_audit_id, id"
+    _order = "general_audit_id, type_id, id"
     _rec_name = "type_id"
 
     type_id = fields.Many2one(

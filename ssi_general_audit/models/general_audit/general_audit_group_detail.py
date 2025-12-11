@@ -9,7 +9,7 @@ from odoo import api, fields, models
 class GeneralAuditGroupDetail(models.Model):
     _name = "general_audit.group_detail"
     _description = "Accountant General Audit Group Detail"
-    _order = "sequence, general_audit_id, id"
+    _order = "general_audit_id, group_id, id"
 
     group_id = fields.Many2one(
         string="Account Group",
