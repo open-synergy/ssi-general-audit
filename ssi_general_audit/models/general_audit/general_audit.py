@@ -398,6 +398,14 @@ class GeneralAudit(models.Model):
         compute_sudo=True,
         help="Account types present in this audit's standard details.",
     )
+    account_ids = fields.Many2many(
+        string="Accounts",
+        comodel_name="client_account",
+        compute="_compute_account_ids",
+        store=False,
+        compute_sudo=True,
+        help="Client accounts included in this audit's detail lines.",
+    )
     industry_id = fields.Many2one(
         string="Industry",
         comodel_name="res.partner.industry",
@@ -467,6 +475,14 @@ class GeneralAudit(models.Model):
     def _compute_account_type_ids(self):
         for record in self:
             record.account_type_ids = record.standard_detail_ids.mapped("type_id")
+
+    @api.depends(
+        "detail_ids",
+        "detail_ids.account_id",
+    )
+    def _compute_account_ids(self):
+        for record in self:
+            record.account_ids = record.detail_ids.mapped("account_id")
 
     @api.depends(
         "account_mapping_ids",
