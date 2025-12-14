@@ -10,7 +10,7 @@ class GeneralAuditAuditProcedureCategory(models.Model):
     _inherit = [
         "mixin.master_data",
     ]
-    _description = "General Audit - Audit Procedure Category"
+    _description = "General Audit - Key Audit Procedure"
 
     code = fields.Char(
         default="/",
@@ -29,4 +29,10 @@ class GeneralAuditAuditProcedureCategory(models.Model):
         relation="rel_audit_procedure_category_2_assertion_type",
         column1="category_id",
         column2="assertion_type_id",
+    )
+    step_ids = fields.One2many(
+        comodel_name="general_audit_audit_procedure",
+        inverse_name="category_id",
+        string="Audit Procedure Steps",
+        help="List of audit procedure steps under this category.",
     )

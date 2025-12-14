@@ -15,17 +15,18 @@ class GeneralAuditWSe51bb1cDetail(models.Model):
         required=True,
         ondelete="cascade",
     )
-    audit_procedure_id = fields.Many2one(
-        comodel_name="general_audit_audit_procedure",
-        string="Audit Procedure",
-        required=True,
-        ondelete="restrict",
-    )
     audit_procedure_category_id = fields.Many2one(
         comodel_name="general_audit_audit_procedure_category",
-        string="Category",
-        related="audit_procedure_id.category_id",
-        store=True,
+        string="Key Audit Procesure",
+        related=False,
+    )
+    step_ids = fields.Many2many(
+        comodel_name="general_audit_audit_procedure",
+        string="Audit Procedure Steps",
+        required=False,
+        relation="rel_ws_e51bb1c_detail_2_audit_procedure",
+        column1="detail_id",
+        column2="audit_procedure_id",
     )
     assertion_type_ids = fields.Many2many(
         comodel_name="general_audit_assersion_type",

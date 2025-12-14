@@ -69,11 +69,12 @@
                                 delete="false"
                                 edit="false"
                             >
+                                <field name="audit_procedure_category_id" />
                                 <field
-                                    name="audit_procedure_category_id"
+                                    name="step_ids"
+                                    widget="many2many_tags"
                                     optional="hide"
                                 />
-                                <field name="audit_procedure_id" />
                                 <field
                                     name="assertion_type_ids"
                                     widget="many2many_tags"
@@ -90,7 +91,10 @@
                                 <sheet>
                                     <group>
                                         <field name="audit_procedure_category_id" />
-                                        <field name="audit_procedure_id" />
+                                        <field
+                                            name="step_ids"
+                                            widget="many2many_tags"
+                                        />
                                         <field
                                             name="assertion_type_ids"
                                             widget="many2many_tags"

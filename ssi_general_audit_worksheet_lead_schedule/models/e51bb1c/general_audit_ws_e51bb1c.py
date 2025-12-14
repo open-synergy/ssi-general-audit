@@ -83,12 +83,13 @@ class GeneralAuditWSe51bb1c(models.Model):
 
     def action_load_detail(self):
         for record in self.sudo():
+            record.detail_ids.unlink()
             record._load_detail()
 
     def _load_detail(self):
         self.ensure_one()
         Detail = self.env["general_audit_ws_e51bb1c.detail"]
-        Procedure = self.env["general_audit_audit_procedure"]
+        Procedure = self.env["general_audit_audit_procedure_category"]
 
         if not self.account_type_id:
             return True
@@ -97,19 +98,21 @@ class GeneralAuditWSe51bb1c(models.Model):
             ("account_type_id", "=", self.account_type_id.id),
         ]
         procedure_ids = Procedure.search(procedure_domain)
-        mapping = {chk.audit_procedure_id.id: chk for chk in self.detail_ids}
+        mapping = {chk.audit_procedure_category_id.id: chk for chk in self.detail_ids}
 
         if procedure_ids:
             for procedure in procedure_ids:
-                expected_assertions = procedure.category_id.assertion_type_ids.ids
+                expected_assertions = procedure.assertion_type_ids.ids
+                steps = procedure.step_ids
                 if procedure.id not in mapping:
                     Detail.create(
                         {
                             "worksheet_id": self.id,
-                            "audit_procedure_id": procedure.id,
+                            "audit_procedure_category_id": procedure.id,
                             "assertion_type_ids": [
-                                (6, 0, procedure.category_id.assertion_type_ids.ids)
+                                (6, 0, procedure.assertion_type_ids.ids)
                             ],
+                            "step_ids": [(6, 0, steps.ids)],
                         }
                     )
                 else:
@@ -117,11 +120,14 @@ class GeneralAuditWSe51bb1c(models.Model):
                     current_assertions = detail.assertion_type_ids.ids
                     if set(current_assertions) != set(expected_assertions):
                         detail.write(
-                            {"assertion_type_ids": [(6, 0, expected_assertions)]}
+                            {
+                                "assertion_type_ids": [(6, 0, expected_assertions)],
+                                "step_ids": [(6, 0, steps.ids)],
+                            }
                         )
-                    if detail.audit_procedure_id.id != procedure.id:
-                        detail.write({"audit_procedure_id": procedure.id})
+                    if detail.audit_procedure_category_id.id != procedure.id:
+                        detail.write({"audit_procedure_category_id": procedure.id})
 
             for chk in self.detail_ids:
-                if chk.audit_procedure_id.id not in procedure_ids.ids:
+                if chk.audit_procedure_category_id.id not in procedure_ids.ids:
                     chk.unlink()

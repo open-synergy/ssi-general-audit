@@ -10,7 +10,7 @@ class GeneralAuditAuditProcedure(models.Model):
     _inherit = [
         "mixin.master_data",
     ]
-    _description = "General Audit - Audit Procedure"
+    _description = "General Audit - Key Audit Procedure Steps"
 
     code = fields.Char(
         default="/",
