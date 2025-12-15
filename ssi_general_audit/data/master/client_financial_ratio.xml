@@ -9,22 +9,22 @@
             name="python_code"
         >result_extrapolation = result_interim = result_previous = result_end_period = result_audited = 0.0
 
-if account_group.get("T003", {}).get("extrapolation", False):
+if account_group.get("T003", {}).get("extrapolation", False) and account_group.get("T003", {}).get("extrapolation", False) != 0.0:
   result_extrapolation = account_group.get("T001", {}).get("extrapolation", 0.0) / account_group["T003"]["extrapolation"]
 
-if account_group.get("T003", {}).get("interim", False):
+if account_group.get("T003", {}).get("interim", False) and account_group.get("T003", {}).get("interim", False) != 0.0:
   result_interim = account_group.get("T001", {}).get("interim", 0.0) / account_group["T003"]["interim"]
 
-if account_group.get("T003", {}).get("previous", False):
+if account_group.get("T003", {}).get("previous", False) and account_group.get("T003", {}).get("previous", False) != 0.0:
   result_previous = account_group.get("T001", {}).get("previous", 0.0) / account_group["T003"]["previous"]
 
-if account_group.get("T003", {}).get("end_period", False):
+if account_group.get("T003", {}).get("end_period", False) and account_group.get("T003", {}).get("end_period", False) != 0.0:
   result_end_period = account_group.get("T001", {}).get("end_period", 0.0) / account_group["T003"]["end_period"]
 
-if account_group.get("T003", {}).get("end_period", False):
+if account_group.get("T003", {}).get("end_period", False) and account_group.get("T003", {}).get("end_period", False) != 0.0:
   result_end_period = account_group.get("T001", {}).get("end_period", 0.0) / account_group["T003"]["end_period"]
 
-if account_group.get("T003", {}).get("audited", False):
+if account_group.get("T003", {}).get("audited", False) and account_group.get("T003", {}).get("audited", False) != 0.0:
   result_end_period = account_group.get("T001", {}).get("audited", 0.0) / account_group["T003"]["audited"]</field>
     </record>
     <record id="client_financial_ratio_2_30a38c23" model="client_financial_ratio">
@@ -36,19 +36,19 @@ if account_group.get("T003", {}).get("audited", False):
             name="python_code"
         >result_extrapolation = result_interim = result_previous = result_end_period = result_audited = 0.0
 
-if account_group.get("T003", {}).get("extrapolation", False):
+if account_group.get("T003", {}).get("extrapolation", False) and account_group.get("T003", {}).get("extrapolation", False) != 0.0:
   result_extrapolation = account_type.get("S111", {}).get("extrapolation", 0.0) / account_group["T003"]["extrapolation"]
 
-if account_group.get("T003", {}).get("interim", False):
+if account_group.get("T003", {}).get("interim", False) and account_group.get("T003", {}).get("interim", False) != 0.0:
   result_interim = account_type.get("S111", {}).get("interim", 0.0) / account_group["T003"]["interim"]
 
-if account_group.get("T003", {}).get("previous", False):
+if account_group.get("T003", {}).get("previous", False) and account_group.get("T003", {}).get("previous", False) != 0.0:
   result_previous = account_type.get("S111", {}).get("previous", 0.0) / account_group["T003"]["previous"]
 
-if account_group.get("T003", {}).get("end_period", False):
+if account_group.get("T003", {}).get("end_period", False) and account_group.get("T003", {}).get("end_period", False) != 0.0:
   result_end_period = account_type.get("S111", {}).get("end_period", 0.0) / account_group["T003"]["end_period"]
 
-if account_group.get("T003", {}).get("audited", False):
+if account_group.get("T003", {}).get("audited", False) and account_group.get("T003", {}).get("audited", False) != 0.0:
   result_end_period = account_type.get("S111", {}).get("audited", 0.0) / account_group["T003"]["audited"]
 </field>
     </record>
@@ -61,35 +61,35 @@ if account_group.get("T003", {}).get("audited", False):
             name="python_code"
         >result_extrapolation = result_interim = result_previous = result_end_period = result_audited = 0.0
 
-if account_group.get("T003", {}).get("extrapolation", False):
+if account_group.get("T003", {}).get("extrapolation", False) and account_group.get("T003", {}).get("extrapolation", False) != 0.0:
   result_extrapolation = (
     account_type.get("S111", {}).get("extrapolation", 0.0) + \
     account_type.get("S112", {}).get("extrapolation", 0.0) + \
     account_type.get("S114", {}).get("extrapolation", 0.0)
   ) / account_group["T003"]["extrapolation"]
 
-if account_group.get("T003", {}).get("interim", False):
+if account_group.get("T003", {}).get("interim", False) and account_group.get("T003", {}).get("interim", False) != 0.0:
   result_interim = (
     account_type.get("S111", {}).get("interim", 0.0) + \
     account_type.get("S112", {}).get("interim", 0.0) + \
     account_type.get("S114", {}).get("interim", 0.0)
   ) / account_group["T003"]["interim"]
 
-if account_group.get("T003", {}).get("previous", False):
+if account_group.get("T003", {}).get("previous", False) and account_group.get("T003", {}).get("previous", False) != 0.0:
   result_previous = (
     account_type.get("S111", {}).get("previous", 0.0) + \
     account_type.get("S112", {}).get("previous", 0.0) + \
     account_type.get("S114", {}).get("previous", 0.0)
   ) / account_group["T003"]["previous"]
 
-if account_group.get("T003", {}).get("end_period", False):
+if account_group.get("T003", {}).get("end_period", False) and account_group.get("T003", {}).get("end_period", False) != 0.0:
   result_end_period = (
     account_type.get("S111", {}).get("end_period", 0.0) + \
     account_type.get("S112", {}).get("end_period", 0.0) + \
     account_type.get("S114", {}).get("end_period", 0.0)
   ) / account_group["T003"]["end_period"]
 
-if account_group.get("T003", {}).get("audited", False):
+if account_group.get("T003", {}).get("audited", False) and account_group.get("T003", {}).get("audited", False) != 0.0:
   result_audited = (
     account_type.get("S111", {}).get("audited", 0.0) + \
     account_type.get("S112", {}).get("audited", 0.0) + \
@@ -106,13 +106,13 @@ if account_group.get("T003", {}).get("audited", False):
             name="python_code"
         >result_extrapolation = result_interim = result_previous = result_end_period = result_audited = 0.0
 
-if account_type.get("S116", {}).get("extrapolation_avg", False):
+if account_type.get("S116", {}).get("extrapolation_avg", False) and account_type.get("S116", {}).get("extrapolation_avg", False) != 0.0:
   result_extrapolation = account_group.get("T011", {}).get("extrapolation", 0.0) / account_type["S116"]["extrapolation_avg"]
 
-if account_type.get("S116", {}).get("end_period_avg", False):
+if account_type.get("S116", {}).get("end_period_avg", False) and account_type.get("S116", {}).get("end_period_avg", False) != 0.0:
   result_end_period = account_group.get("T011", {}).get("end_period", 0.0) / account_type["S116"]["end_period_avg"]
 
-if account_type.get("S116", {}).get("audited_avg", False):
+if account_type.get("S116", {}).get("audited_avg", False) and account_type.get("S116", {}).get("audited_avg", False) != 0.0:
   result_audited = account_group.get("T011", {}).get("audited", 0.0) / account_type["S116"]["audited_avg"]</field>
     </record>
     <record id="client_financial_ratio_5_7e888232" model="client_financial_ratio">
@@ -124,13 +124,13 @@ if account_type.get("S116", {}).get("audited_avg", False):
             name="python_code"
         >result_extrapolation = result_interim = result_previous = result_end_period = result_audited = 0.0
 
-if account_type.get("S112", {}).get("extrapolation_avg", False):
+if account_type.get("S112", {}).get("extrapolation_avg", False) and account_type.get("S112", {}).get("extrapolation_avg", False) != 0.0:
   result_extrapolation = account_group.get("T009", {}).get("extrapolation", 0.0) / account_type["S112"]["extrapolation_avg"]
 
-if account_type.get("S112", {}).get("end_period_avg", False):
+if account_type.get("S112", {}).get("end_period_avg", False) and account_type.get("S112", {}).get("end_period_avg", False) != 0.0:
   result_end_period = account_group.get("T009", {}).get("end_period", 0.0) / account_type["S112"]["end_period_avg"]
 
-if account_type.get("S112", {}).get("audited_avg", False):
+if account_type.get("S112", {}).get("audited_avg", False) and account_type.get("S112", {}).get("audited_avg", False) != 0.0:
   result_audited = account_group.get("T009", {}).get("audited", 0.0) / account_type["S112"]["audited_avg"]</field>
     </record>
     <record id="client_financial_ratio_6_f65ecc52" model="client_financial_ratio">
@@ -142,13 +142,13 @@ if account_type.get("S112", {}).get("audited_avg", False):
             name="python_code"
         >result_extrapolation = result_interim = result_previous = result_end_period = result_audited = 0.0
 
-if computation.get("T001", {}).get("extrapolation_avg", False):
+if computation.get("T001", {}).get("extrapolation_avg", False) and computation.get("T001", {}).get("extrapolation_avg", False) != 0.0:
   result_extrapolation = account_group.get("T009", {}).get("extrapolation", 0.0) / computation["T001"]["extrapolation_avg"]
 
-if computation.get("T001", {}).get("end_period_avg", False):
+if computation.get("T001", {}).get("end_period_avg", False) and computation.get("T001", {}).get("end_period_avg", False) != 0.0:
   result_end_period = account_group.get("T009", {}).get("end_period", 0.0) / computation["T001"]["end_period_avg"]
 
-if computation.get("T001", {}).get("audited_avg", False):
+if computation.get("T001", {}).get("audited_avg", False) and computation.get("T001", {}).get("audited_avg", False) != 0.0:
   result_audited = account_group.get("T009", {}).get("audited", 0.0) / computation["T001"]["audited_avg"]</field>
     </record>
     <record id="client_financial_ratio_7_d95b93ed" model="client_financial_ratio">
@@ -160,13 +160,13 @@ if computation.get("T001", {}).get("audited_avg", False):
             name="python_code"
         >result_extrapolation = result_interim = result_previous = result_end_period = result_audited = 0.0
 
-if computation.get("T009", {}).get("extrapolation_avg", False):
+if computation.get("T009", {}).get("extrapolation_avg", False) and computation.get("T009", {}).get("extrapolation_avg", False) != 0.0:
   result_extrapolation = account_group.get("T009", {}).get("extrapolation", 0.0) / computation["T009"]["extrapolation_avg"]
 
-if computation.get("T009", {}).get("end_period_avg", False):
+if computation.get("T009", {}).get("end_period_avg", False) and computation.get("T009", {}).get("end_period_avg", False) != 0.0:
   result_end_period = account_group.get("T009", {}).get("end_period", 0.0) / computation["T009"]["end_period_avg"]
 
-if computation.get("T009", {}).get("audited_avg", False):
+if computation.get("T009", {}).get("audited_avg", False) and computation.get("T009", {}).get("audited_avg", False) != 0.0:
   result_audited = account_group.get("T009", {}).get("audited", 0.0) / computation["T009"]["audited_avg"]</field>
     </record>
     <record id="client_financial_ratio_8_86b7a032" model="client_financial_ratio">
@@ -178,13 +178,13 @@ if computation.get("T009", {}).get("audited_avg", False):
             name="python_code"
         >result_extrapolation = result_interim = result_previous = result_end_period = result_audited = 0.0
 
-if account_type.get("S211", {}).get("extrapolation_avg", False):
+if account_type.get("S211", {}).get("extrapolation_avg", False) and account_type.get("S211", {}).get("extrapolation_avg", False) != 0.0:
   result_extrapolation = account_group.get("T011", {}).get("extrapolation", 0.0) / account_type["S211"]["extrapolation_avg"]
 
-if account_type.get("S211", {}).get("end_period_avg", False):
+if account_type.get("S211", {}).get("end_period_avg", False) and account_type.get("S211", {}).get("end_period_avg", False) != 0.0:
   result_end_period = account_group.get("T011", {}).get("end_period", 0.0) / account_type["S211"]["end_period_avg"]
 
-if account_type.get("S211", {}).get("audited_avg", False):
+if account_type.get("S211", {}).get("audited_avg", False) and account_type.get("S211", {}).get("audited_avg", False) != 0.0:
   result_audited = account_group.get("T011", {}).get("audited", 0.0) / account_type["S211"]["audited_avg"]</field>
     </record>
     <record id="client_financial_ratio_9_4f4f8749" model="client_financial_ratio">
@@ -196,13 +196,13 @@ if account_type.get("S211", {}).get("audited_avg", False):
             name="python_code"
         >result_extrapolation = result_interim = result_previous = result_end_period = result_audited = 0.0
 
-if account_type.get("S116", {}).get("extrapolation_avg", False):
+if account_type.get("S116", {}).get("extrapolation_avg", False) and account_type.get("S116", {}).get("extrapolation_avg", False) != 0.0:
   result_extrapolation = 365 / (account_group.get("T011", {}).get("extrapolation", 0.0) / account_type["S116"]["extrapolation_avg"])
 
-if account_type.get("S116", {}).get("end_period_avg", False):
+if account_type.get("S116", {}).get("end_period_avg", False) and account_type.get("S116", {}).get("end_period_avg", False) != 0.0:
   result_end_period = 365 / (account_group.get("T011", {}).get("end_period", 0.0) / account_type["S116"]["end_period_avg"])
 
-if account_type.get("S116", {}).get("audited_avg", False):
+if account_type.get("S116", {}).get("audited_avg", False) and account_type.get("S116", {}).get("audited_avg", False) != 0.0:
   result_audited = 365 / (account_group.get("T011", {}).get("audited", 0.0) / account_type["S116"]["audited_avg"])</field>
     </record>
     <record id="client_financial_ratio_10_2666943a" model="client_financial_ratio">
@@ -214,13 +214,13 @@ if account_type.get("S116", {}).get("audited_avg", False):
             name="python_code"
         >result_extrapolation = result_interim = result_previous = result_end_period = result_audited = 0.0
 
-if account_type.get("S112", {}).get("extrapolation_avg", False):
+if account_type.get("S112", {}).get("extrapolation_avg", False) and account_type.get("S112", {}).get("extrapolation_avg", False) != 0.0:
   result_extrapolation = 365 / (account_group.get("T009", {}).get("extrapolation", 0.0) / account_type["S112"]["extrapolation_avg"])
 
-if account_type.get("S112", {}).get("end_period_avg", False):
+if account_type.get("S112", {}).get("end_period_avg", False) and account_type.get("S112", {}).get("end_period_avg", False) != 0.0:
   result_end_period = 365 / (account_group.get("T009", {}).get("end_period", 0.0) / account_type["S112"]["end_period_avg"])
 
-if account_type.get("S112", {}).get("audited_avg", False):
+if account_type.get("S112", {}).get("audited_avg", False) and account_type.get("S112", {}).get("audited_avg", False) != 0.0:
   result_audited = 365 / (account_group.get("T009", {}).get("audited", 0.0) / account_type["S112"]["audited_avg"])</field>
     </record>
     <record id="client_financial_ratio_11_f39a4f43" model="client_financial_ratio">
@@ -232,13 +232,13 @@ if account_type.get("S112", {}).get("audited_avg", False):
             name="python_code"
         >result_extrapolation = result_interim = result_previous = result_end_period = result_audited = 0.0
 
-if account_type.get("S211", {}).get("extrapolation_avg", False):
+if account_type.get("S211", {}).get("extrapolation_avg", False) and account_type.get("S211", {}).get("extrapolation_avg", False) != 0.0:
   result_extrapolation = 365 / (account_group.get("T011", {}).get("extrapolation", 0.0) / account_type["S211"]["extrapolation_avg"])
 
-if account_type.get("S211", {}).get("end_period_avg", False):
+if account_type.get("S211", {}).get("end_period_avg", False) and account_type.get("S211", {}).get("end_period_avg", False) != 0.0:
   result_end_period = 365 / (account_group.get("T011", {}).get("end_period", 0.0) / account_type["S211"]["end_period_avg"])
 
-if account_type.get("S211", {}).get("audited_avg", False):
+if account_type.get("S211", {}).get("audited_avg", False) and account_type.get("S211", {}).get("audited_avg", False) != 0.0:
   result_audited = 365 / (account_group.get("T011", {}).get("audited", 0.0) / account_type["S211"]["audited_avg"])</field>
     </record>
     <record id="client_financial_ratio_12_4313b355" model="client_financial_ratio">
@@ -252,8 +252,11 @@ if account_type.get("S211", {}).get("audited_avg", False):
 
 if (
     account_type.get("S116", {}).get("extrapolation_avg", False) and \
+    account_type.get("S116", {}).get("extrapolation_avg", False) != 0.0 and \
     account_type.get("S112", {}).get("extrapolation_avg", False) and \
-    account_type.get("S211", {}).get("extrapolation_avg", False)
+    account_type.get("S112", {}).get("extrapolation_avg", False) != 0.0 and \
+    account_type.get("S211", {}).get("extrapolation_avg", False) and \
+    account_type.get("S211", {}).get("extrapolation_avg", False) != 0.0
 ):
   result_extrapolation = (365 / (account_group.get("T011", {}).get("extrapolation", 0.0) / account_type["S116"]["extrapolation_avg"])) + \
   (365 / (account_group.get("T009", {}).get("extrapolation", 0.0) / account_type["S112"]["extrapolation_avg"])) -\
@@ -261,8 +264,11 @@ if (
 
 if (
     account_type.get("S116", {}).get("end_period_avg", False) and \
+    account_type.get("S116", {}).get("end_period_avg", False) != 0.0 and \
     account_type.get("S112", {}).get("end_period_avg", False) and \
-    account_type.get("S211", {}).get("end_period_avg", False)
+    account_type.get("S112", {}).get("end_period_avg", False) != 0.0 and \
+    account_type.get("S211", {}).get("end_period_avg", False) and \
+    account_type.get("S211", {}).get("end_period_avg", False) != 0.0
 ):
   result_audited = (365 / (account_group.get("T011", {}).get("end_period", 0.0) / account_type["S116"]["audited_avg"])) + \
   (365 / (account_group.get("T009", {}).get("end_period", 0.0) / account_type["S112"]["audited_avg"])) -\
@@ -270,8 +276,11 @@ if (
 
 if (
     account_type.get("S116", {}).get("audited_avg", False) and \
+    account_type.get("S116", {}).get("audited_avg", False) != 0.0 and \
     account_type.get("S112", {}).get("audited_avg", False) and \
-    account_type.get("S211", {}).get("audited_avg", False)
+    account_type.get("S112", {}).get("audited_avg", False) != 0.0 and \
+    account_type.get("S211", {}).get("audited_avg", False) and \
+    account_type.get("S211", {}).get("audited_avg", False) != 0.0
 ):
   result_audited = (365 / (account_group.get("T011", {}).get("audited", 0.0) / account_type["S116"]["audited_avg"])) + \
   (365 / (account_group.get("T009", {}).get("audited", 0.0) / account_type["S112"]["audited_avg"])) -\
@@ -287,16 +296,16 @@ if (
             name="python_code"
         >result_extrapolation = result_interim = result_previous = result_end_period = result_audited = 0.0
 
-if computation.get("T002", {}).get("extrapolation", False):
+if computation.get("T002", {}).get("extrapolation", False) and computation.get("T002", {}).get("extrapolation", False) != 0.0:
   result_extrapolation = (computation.get("T007", {}).get("extrapolation", 0.0) / computation["T002"]["extrapolation"]) * -1
 
-if computation.get("T002", {}).get("end_period", False):
+if computation.get("T002", {}).get("end_period", False) and computation.get("T002", {}).get("end_period", False) != 0.0:
   result_end_period = (computation.get("T007", {}).get("end_period", 0.0) / computation["T002"]["end_period"]) *-1
 
-if computation.get("T002", {}).get("previous", False):
+if computation.get("T002", {}).get("previous", False) and computation.get("T002", {}).get("previous", False) != 0.0:
   result_previous = (computation.get("T007", {}).get("previous", 0.0) / computation["T002"]["previous"]) *-1
 
-if computation.get("T002", {}).get("audited", False):
+if computation.get("T002", {}).get("audited", False) and computation.get("T002", {}).get("audited", False) != 0.0:
   result_audited =(computation.get("T007", {}).get("audited", 0.0) / computation["T002"]["audited"]) *-1</field>
     </record>
     <record id="client_financial_ratio_14_523c0216" model="client_financial_ratio">
@@ -308,16 +317,16 @@ if computation.get("T002", {}).get("audited", False):
             name="python_code"
         >result_extrapolation = result_interim = result_previous = result_end_period = result_audited = 0.0
 
-if computation.get("T002", {}).get("extrapolation", False):
+if computation.get("T002", {}).get("extrapolation", False) and computation.get("T002", {}).get("extrapolation", False) != 0.0:
   result_extrapolation = computation.get("T001", {}).get("extrapolation", 0.0) / computation["T002"]["extrapolation"]
 
-if computation.get("T002", {}).get("end_period", False):
+if computation.get("T002", {}).get("end_period", False) and computation.get("T002", {}).get("end_period", False) != 0.0:
   result_end_period = computation.get("T001", {}).get("end_period", 0.0) / computation["T002"]["end_period"]
 
-if computation.get("T002", {}).get("previous", False):
+if computation.get("T002", {}).get("previous", False) and computation.get("T002", {}).get("previous", False) != 0.0:
   result_previous = computation.get("T001", {}).get("previous", 0.0) / computation["T002"]["previous"]
 
-if computation.get("T002", {}).get("audited", False):
+if computation.get("T002", {}).get("audited", False) and computation.get("T002", {}).get("audited", False) != 0.0:
   result_audited =computation.get("T001", {}).get("audited", 0.0) / computation["T002"]["audited"]</field>
     </record>
     <record id="client_financial_ratio_15_99f866a5" model="client_financial_ratio">
@@ -329,16 +338,16 @@ if computation.get("T002", {}).get("audited", False):
             name="python_code"
         >result_extrapolation = result_interim = result_previous = result_end_period = result_audited = 0.0
 
-if account_type.get("S531", {}).get("extrapolation", False):
+if account_type.get("S531", {}).get("extrapolation", False) and account_type.get("S531", {}).get("extrapolation", False) != 0.0:
   result_extrapolation = computation.get("T005", {}).get("extrapolation", 0.0) / account_type["S531"]["extrapolation"]
 
-if account_type.get("S531", {}).get("end_period", False):
+if account_type.get("S531", {}).get("end_period", False) and account_type.get("S531", {}).get("end_period", False) != 0.0:
   result_end_period = computation.get("T005", {}).get("end_period", 0.0) / account_type["S531"]["end_period"]
 
-if account_type.get("S531", {}).get("previous", False):
+if account_type.get("S531", {}).get("previous", False) and account_type.get("S531", {}).get("previous", False) != 0.0:
   result_previous = computation.get("T005", {}).get("previous", 0.0) / account_type["S531"]["previous"]
 
-if account_type.get("S531", {}).get("audited", False):
+if account_type.get("S531", {}).get("audited", False) and account_type.get("S531", {}).get("audited", False) != 0.0:
   result_audited = computation.get("T005", {}).get("audited", 0.0) / account_type["S531"]["audited"]</field>
     </record>
     <record id="client_financial_ratio_16_e9d4c603" model="client_financial_ratio">
@@ -350,16 +359,16 @@ if account_type.get("S531", {}).get("audited", False):
             name="python_code"
         >result_extrapolation = result_interim = result_previous = result_end_period = result_audited = 0.0
 
-if account_group.get("T009", {}).get("extrapolation", False):
+if account_group.get("T009", {}).get("extrapolation", False) and account_group.get("T009", {}).get("extrapolation", False) != 0.0:
   result_extrapolation = (account_group.get("T009", {}).get("extrapolation", 0.0) - account_group.get("T011", {}).get("extrapolation", 0.0)) / account_group["T009"]["extrapolation"]
 
-if account_group.get("T009", {}).get("end_period", False):
+if account_group.get("T009", {}).get("end_period", False) and account_group.get("T009", {}).get("end_period", False) != 0.0:
   result_end_period = (account_group.get("T009", {}).get("end_period", 0.0) - account_group.get("T011", {}).get("end_period", 0.0)) / account_group["T009"]["end_period"]
 
-if account_group.get("T009", {}).get("previous", False):
+if account_group.get("T009", {}).get("previous", False) and account_group.get("T009", {}).get("previous", False) != 0.0:
   result_previous = (account_group.get("T009", {}).get("previous", 0.0) - account_group.get("T011", {}).get("previous", 0.0)) / account_group["T009"]["previous"]
 
-if account_group.get("T009", {}).get("audited", False):
+if account_group.get("T009", {}).get("audited", False) and account_group.get("T009", {}).get("audited", False) != 0.0:
   result_audited = (account_group.get("T009", {}).get("audited", 0.0) - account_group.get("T011", {}).get("audited", 0.0)) / account_group["T009"]["audited"]
     </field>
     </record>
@@ -372,16 +381,16 @@ if account_group.get("T009", {}).get("audited", False):
             name="python_code"
         >result_extrapolation = result_interim = result_previous = result_end_period = result_audited = 0.0
 
-if computation.get("T003", {}).get("extrapolation", False):
+if computation.get("T003", {}).get("extrapolation", False) and computation.get("T003", {}).get("extrapolation", False) != 0.0:
   result_extrapolation = computation.get("T010", {}).get("extrapolation", 0.0) / computation["T003"]["extrapolation"]
 
-if computation.get("T003", {}).get("end_period", False):
+if computation.get("T003", {}).get("end_period", False) and computation.get("T003", {}).get("end_period", False) != 0.0:
   result_end_period = computation.get("T010", {}).get("end_period", 0.0) / computation["T003"]["end_period"]
 
-if computation.get("T003", {}).get("previous", False):
+if computation.get("T003", {}).get("previous", False) and computation.get("T003", {}).get("previous", False) != 0.0:
   result_previous = computation.get("T010", {}).get("previous", 0.0) / computation["T003"]["previous"]
 
-if computation.get("T003", {}).get("audited", False):
+if computation.get("T003", {}).get("audited", False) and computation.get("T003", {}).get("audited", False) != 0.0:
   result_audited = computation.get("T010", {}).get("audited", 0.0) / computation["T003"]["audited"]</field>
     </record>
     <record id="client_financial_ratio_18_b475fb31" model="client_financial_ratio">
@@ -393,13 +402,13 @@ if computation.get("T003", {}).get("audited", False):
             name="python_code"
         >result_extrapolation = result_interim = result_previous = result_end_period = result_audited = 0.0
 
-if computation.get("T001", {}).get("extrapolation_avg", False):
+if computation.get("T001", {}).get("extrapolation_avg", False) and computation.get("T001", {}).get("extrapolation_avg", False) != 0.0:
   result_extrapolation = computation.get("T010", {}).get("extrapolation", 0.0) / computation["T001"]["extrapolation_avg"]
 
-if computation.get("T001", {}).get("end_period_avg", False):
+if computation.get("T001", {}).get("end_period_avg", False) and computation.get("T001", {}).get("end_period_avg", False) != 0.0:
   result_end_period = computation.get("T010", {}).get("end_period", 0.0) / computation["T001"]["end_period_avg"]
 
-if computation.get("T001", {}).get("audited_avg", False):
+if computation.get("T001", {}).get("audited_avg", False) and computation.get("T001", {}).get("audited_avg", False) != 0.0:
   result_audited = computation.get("T010", {}).get("audited", 0.0) / computation["T001"]["audited_avg"]</field>
     </record>
     <record id="client_financial_ratio_19_89777c92" model="client_financial_ratio">
@@ -411,13 +420,13 @@ if computation.get("T001", {}).get("audited_avg", False):
             name="python_code"
         >result_extrapolation = result_interim = result_previous = result_end_period = result_audited = 0.0
 
-if computation.get("T002", {}).get("extrapolation_avg", False):
+if computation.get("T002", {}).get("extrapolation_avg", False) and computation.get("T002", {}).get("extrapolation_avg", False) != 0.0:
   result_extrapolation = computation.get("T010", {}).get("extrapolation", 0.0) / computation["T002"]["extrapolation_avg"]
 
-if computation.get("T002", {}).get("end_period_avg", False):
+if computation.get("T002", {}).get("end_period_avg", False) and computation.get("T002", {}).get("end_period_avg", False) != 0.0:
   result_end_period = computation.get("T005", {}).get("end_period", 0.0) / computation["T002"]["end_period_avg"]
 
-if computation.get("T002", {}).get("audited_avg", False):
+if computation.get("T002", {}).get("audited_avg", False) and computation.get("T002", {}).get("audited_avg", False) != 0.0:
   result_audited = computation.get("T005", {}).get("audited", 0.0) / computation["T002"]["audited_avg"]</field>
     </record>
 
