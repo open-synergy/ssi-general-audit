@@ -27,6 +27,7 @@ class GeneralAuditWorksheetSummary(models.Model):
     category_id = fields.Many2one(
         related="type_id.category_id",
         string="Category",
+        compute_sudo=True,
         store=True,
     )
     is_required = fields.Boolean(
@@ -40,6 +41,7 @@ class GeneralAuditWorksheetSummary(models.Model):
     image_128 = fields.Image(
         related="type_id.image_128",
         string="Type Image",
+        compute_sudo=True,
     )
     num_of_worksheet = fields.Integer(
         string="Number of Worksheets",

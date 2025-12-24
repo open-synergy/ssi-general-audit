@@ -29,6 +29,7 @@ class ClientTrialBalanceDetail(models.Model):
     sequence = fields.Integer(
         string="Sequence",
         related="account_id.sequence",
+        compute_sudo=True,
         store=True,
         help="Ordering number inherited from the client account.",
     )
@@ -36,6 +37,7 @@ class ClientTrialBalanceDetail(models.Model):
         string="Account Type",
         comodel_name="client_account_type",
         related="account_id.type_id",
+        compute_sudo=True,
         store=True,
         readonly=False,
         help="Account type derived from the client account and can be adjusted if needed.",
@@ -44,6 +46,7 @@ class ClientTrialBalanceDetail(models.Model):
         string="Currency",
         comodel_name="res.currency",
         related="trial_balance_id.currency_id",
+        compute_sudo=True,
         store=True,
         help="Currency of amounts; inherited from the trial balance.",
     )

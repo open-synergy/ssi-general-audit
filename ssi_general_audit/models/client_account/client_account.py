@@ -42,11 +42,13 @@ class ClientAccount(models.Model):
     group_id = fields.Many2one(
         string="Account Group",
         related="type_id.group_id",
+        compute_sudo=True,
         store=True,
         help="Account group derived from the selected type.",
     )
     normal_balance = fields.Selection(
         related="type_id.normal_balance",
+        compute_sudo=True,
         store=True,
         help="Normal balance derived from the selected type.",
     )

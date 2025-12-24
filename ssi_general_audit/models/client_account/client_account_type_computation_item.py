@@ -20,6 +20,7 @@ class ClientAccountTypeComputationItem(models.Model):
     sequence = fields.Integer(
         string="Sequence",
         related="computation_id.sequence",
+        compute_sudo=True,
         store=True,
         help="Order derived from the referenced computation item.",
     )

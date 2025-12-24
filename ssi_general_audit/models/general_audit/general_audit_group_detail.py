@@ -93,6 +93,7 @@ class GeneralAuditGroupDetail(models.Model):
         comodel_name="client_trial_balance.group_detail",
         readonly=True,
         compute="_compute_group_line",
+        compute_sudo=True,
         store=True,
         help="Linked group detail for the end period trial balance.",
     )
@@ -101,6 +102,7 @@ class GeneralAuditGroupDetail(models.Model):
         comodel_name="client_trial_balance.group_detail",
         readonly=True,
         compute="_compute_group_line",
+        compute_sudo=True,
         store=True,
         help="Linked group detail for the interim trial balance.",
     )
@@ -109,6 +111,7 @@ class GeneralAuditGroupDetail(models.Model):
         comodel_name="client_trial_balance.group_detail",
         readonly=True,
         compute="_compute_group_line",
+        compute_sudo=True,
         store=True,
         help="Linked group detail for the previous period trial balance.",
     )
@@ -116,12 +119,14 @@ class GeneralAuditGroupDetail(models.Model):
         string="Currency",
         comodel_name="res.currency",
         related="general_audit_id.currency_id",
+        compute_sudo=True,
         store=True,
         help="Currency used for amounts; inherited from the General Audit.",
     )
     home_statement_balance = fields.Monetary(
         string="End Period Balance",
         related="home_group_line_id.balance",
+        compute_sudo=True,
         store=True,
         currency_field="currency_id",
         help="Net balance of the group from the end period trial balance.",
@@ -129,6 +134,7 @@ class GeneralAuditGroupDetail(models.Model):
     interim_balance = fields.Monetary(
         string="Interim Balance",
         related="interim_group_line_id.balance",
+        compute_sudo=True,
         store=True,
         currency_field="currency_id",
         help="Net balance of the group from the interim trial balance.",
@@ -164,6 +170,7 @@ class GeneralAuditGroupDetail(models.Model):
     previous_balance = fields.Monetary(
         string="Previous Balance",
         related="previous_group_line_id.balance",
+        compute_sudo=True,
         store=True,
         currency_field="currency_id",
         help="Net balance of the group from the previous period trial balance.",
@@ -250,6 +257,7 @@ class GeneralAuditGroupDetail(models.Model):
         comodel_name="general_audit.group_adjustment",
         readonly=True,
         compute="_compute_adjustment_id",
+        compute_sudo=True,
         store=True,
         help="Aggregated adjustments affecting this group.",
     )

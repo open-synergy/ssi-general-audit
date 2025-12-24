@@ -25,10 +25,12 @@ class MixinChecklistValue(models.AbstractModel):
     item_name = fields.Char(
         string="Item",
         related="item_id.name",
+        compute_sudo=True,
     )
     allowed_option_ids = fields.Many2many(
         string="Options",
         related="item_id.option_set_id.option_ids",
+        compute_sudo=True,
         help="Options allowed for this line, inherited from the item's option set.",
     )
     option_id = fields.Many2one(
@@ -41,6 +43,7 @@ class MixinChecklistValue(models.AbstractModel):
     sequence = fields.Integer(
         string="Sequence",
         related="item_id.sequence",
+        compute_sudo=True,
         store=True,
         readonly=False,
         help="Display order copied from the master item; can be adjusted if required.",

@@ -64,6 +64,7 @@ class ClientTrialBalanceStandardDetail(models.Model):
         string="Account Type",
         comodel_name="client_account_type",
         related="standard_detail_id.type_id",
+        compute_sudo=True,
         store=True,
         help="Account type derived from the linked standard detail.",
     )
@@ -71,12 +72,14 @@ class ClientTrialBalanceStandardDetail(models.Model):
         string="Currency",
         comodel_name="res.currency",
         related="standard_detail_id.currency_id",
+        compute_sudo=True,
         store=True,
         help="Currency of amounts; inherited from the standard detail.",
     )
     sequence = fields.Integer(
         string="Sequence",
         related="standard_detail_id.sequence",
+        compute_sudo=True,
         store=True,
         help="Ordering number from the standard detail.",
     )

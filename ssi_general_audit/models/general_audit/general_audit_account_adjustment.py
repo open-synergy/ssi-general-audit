@@ -33,6 +33,7 @@ class GeneralAuditAccountAdjustment(models.Model):
         string="Currency",
         comodel_name="res.currency",
         related="general_audit_id.currency_id",
+        compute_sudo=True,
         store=False,
         help="Currency used for displaying debit and credit amounts.",
     )

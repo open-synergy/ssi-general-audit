@@ -63,6 +63,7 @@ class GeneralAuditWorksheet(models.Model):
         readonly=True,
         store=True,
         help="Audit period start date.",
+        compute_sudo=True,
     )
     date_end = fields.Date(
         string="End Date",
@@ -70,6 +71,7 @@ class GeneralAuditWorksheet(models.Model):
         readonly=True,
         store=True,
         help="Audit period end date.",
+        compute_sudo=True,
     )
     interim_date_start = fields.Date(
         string="Interim Start Date",
@@ -77,6 +79,7 @@ class GeneralAuditWorksheet(models.Model):
         readonly=True,
         store=True,
         help="Start date for the interim period.",
+        compute_sudo=True,
     )
     interim_date_end = fields.Date(
         string="Interim End Date",
@@ -84,6 +87,7 @@ class GeneralAuditWorksheet(models.Model):
         readonly=True,
         store=True,
         help="End date for the interim period.",
+        compute_sudo=True,
     )
     previous_date_start = fields.Date(
         string="Previous Start Date",
@@ -91,6 +95,7 @@ class GeneralAuditWorksheet(models.Model):
         readonly=True,
         store=True,
         help="Start date of the previous period.",
+        compute_sudo=True,
     )
     previous_date_end = fields.Date(
         string="Previous End Date",
@@ -98,6 +103,7 @@ class GeneralAuditWorksheet(models.Model):
         readonly=True,
         store=True,
         help="End date of the previous period.",
+        compute_sudo=True,
     )
     preparation_date = fields.Date(
         string="Preparation Date",
@@ -122,6 +128,7 @@ class GeneralAuditWorksheet(models.Model):
         readonly=True,
         store=True,
         help="Currency used for amounts in this worksheet.",
+        compute_sudo=True,
     )
     account_type_set_id = fields.Many2one(
         string="Accoount Type Set",
@@ -130,24 +137,28 @@ class GeneralAuditWorksheet(models.Model):
         readonly=True,
         store=True,
         help="Account type set used by the linked General Audit.",
+        compute_sudo=True,
     )
     partner_id = fields.Many2one(
         string="Partner",
         related="general_audit_id.partner_id",
         store=True,
         help="Audited client company.",
+        compute_sudo=True,
     )
     accountant_id = fields.Many2one(
         string="Accountant",
         related="general_audit_id.accountant_id",
         store=True,
         help="Accountant responsible for the audit.",
+        compute_sudo=True,
     )
     title = fields.Char(
         string="Title",
         related="general_audit_id.title",
         store=True,
         help="Title of the General Audit engagement.",
+        compute_sudo=True,
     )
     parent_type_id = fields.Many2one(
         string="Parent Type",

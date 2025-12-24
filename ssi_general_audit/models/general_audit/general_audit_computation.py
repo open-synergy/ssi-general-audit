@@ -27,6 +27,7 @@ class GeneralAuditComputation(models.Model):
     sequence = fields.Integer(
         string="Sequence",
         related="computation_item_id.sequence",
+        compute_sudo=True,
         help="Ordering number derived from the computation item.",
     )
 
@@ -88,6 +89,7 @@ class GeneralAuditComputation(models.Model):
         comodel_name="client_trial_balance.computation",
         readonly=True,
         compute="_compute_computation",
+        compute_sudo=True,
         store=True,
         help="Computation line for the end period trial balance.",
     )
@@ -96,6 +98,7 @@ class GeneralAuditComputation(models.Model):
         comodel_name="client_trial_balance.computation",
         readonly=True,
         compute="_compute_computation",
+        compute_sudo=True,
         store=True,
         help="Computation line for the interim trial balance.",
     )
@@ -104,12 +107,14 @@ class GeneralAuditComputation(models.Model):
         comodel_name="client_trial_balance.computation",
         readonly=True,
         compute="_compute_computation",
+        compute_sudo=True,
         store=True,
         help="Computation line for the previous period trial balance.",
     )
     home_amount = fields.Float(
         string="End Period Amount",
         related="home_computation_id.amount",
+        compute_sudo=True,
         store=True,
         help="Amount from end period trial balance computation.",
     )
@@ -126,12 +131,14 @@ class GeneralAuditComputation(models.Model):
     interim_amount = fields.Float(
         string="Interim Amount",
         related="interim_computation_id.amount",
+        compute_sudo=True,
         store=True,
         help="Amount from interim trial balance computation.",
     )
     previous_amount = fields.Float(
         string="Previous Amount",
         related="previous_computation_id.amount",
+        compute_sudo=True,
         store=True,
         help="Amount from previous period trial balance computation.",
     )

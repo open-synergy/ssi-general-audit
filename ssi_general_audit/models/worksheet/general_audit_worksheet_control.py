@@ -41,6 +41,7 @@ class GeneralAuditWorksheetControl(models.Model):
         compute="_compute_worksheet_id",
         store=False,
         help="Linked worksheet record for this audit and type, if any.",
+        compute_sudo=True,
     )
     required = fields.Boolean(
         string="Required",
@@ -50,15 +51,18 @@ class GeneralAuditWorksheetControl(models.Model):
         string="Responsible",
         related="worksheet_id.user_id",
         help="Employee responsible for preparing the worksheet.",
+        compute_sudo=True,
     )
     conclusion_id = fields.Many2one(
         string="Conclusion",
         related="worksheet_id.conclusion_id",
+        compute_sudo=True,
         help="Conclusion selected on the worksheet.",
     )
     state = fields.Selection(
         string="State",
         related="worksheet_id.state",
+        compute_sudo=True,
         help="Current workflow state of the worksheet.",
     )
 

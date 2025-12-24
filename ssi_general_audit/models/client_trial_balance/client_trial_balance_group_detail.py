@@ -60,6 +60,7 @@ class ClientTrialBalanceGroupDetail(models.Model):
         string="Currency",
         comodel_name="res.currency",
         related="trial_balance_id.currency_id",
+        compute_sudo=True,
         store=True,
         help="Currency of amounts; inherited from the trial balance.",
     )

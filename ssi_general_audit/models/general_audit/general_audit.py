@@ -198,6 +198,7 @@ class GeneralAudit(models.Model):
         string="Teams",
         comodel_name="res.users",
         compute="_compute_team_allocation_user_ids",
+        compute_sudo=True,
         help=(
             "Users linked to employees assigned as team members "
             "in the team allocations for this General Audit engagement."
@@ -300,6 +301,7 @@ class GeneralAudit(models.Model):
         string="# End Period Trial Balance",
         comodel_name="client_trial_balance",
         compute="_compute_trial_balance_id",
+        compute_sudo=True,
         store=True,
         help="Link to the end period trial balance.",
     )
@@ -307,6 +309,7 @@ class GeneralAudit(models.Model):
         string="# Interim Trial Balance",
         comodel_name="client_trial_balance",
         compute="_compute_trial_balance_id",
+        compute_sudo=True,
         store=True,
         help="Link to the interim trial balance.",
     )
@@ -314,6 +317,7 @@ class GeneralAudit(models.Model):
         string="# Previous Trial Balance",
         comodel_name="client_trial_balance",
         compute="_compute_trial_balance_id",
+        compute_sudo=True,
         store=True,
         help="Link to the previous period trial balance.",
     )
@@ -327,6 +331,7 @@ class GeneralAudit(models.Model):
         string="# Account Mapping",
         comodel_name="client_account_mapping",
         compute="_compute_account_mapping_id",
+        compute_sudo=True,
         store=True,
         help="The active account mapping used by this audit.",
     )

@@ -34,12 +34,14 @@ class ClientAdjustmentEntryDetail(models.Model):
         comodel_name="general_audit.detail",
         help="Link to the related general audit detail, if applicable.",
         compute="_compute_detail_id",
+        compute_sudo=True,
         store=True,
     )
     currency_id = fields.Many2one(
         string="Currency",
         comodel_name="res.currency",
         related="entry_id.currency_id",
+        compute_sudo=True,
         store=True,
         help="Currency of amounts; inherited from the parent entry.",
     )

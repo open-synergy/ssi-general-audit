@@ -113,12 +113,14 @@ class GeneralAuditWorksheetMixin(models.AbstractModel):
         compute="_compute_standard_item_ids",
         store=False,
         help="Audit standard items relevant to this worksheet type.",
+        compute_sudo=True,
     )
     account_type_ids = fields.Many2many(
         string="Account Types",
         related="general_audit_id.account_type_ids",
         store=False,
         help="Account types available in the linked General Audit.",
+        compute_sudo=True,
     )
 
     @api.depends(
@@ -141,6 +143,7 @@ class GeneralAuditWorksheetMixin(models.AbstractModel):
         compute="_compute_allowed_conclusion_ids",
         store=False,
         help="Conclusions allowed for the selected worksheet type.",
+        compute_sudo=True,
     )
 
     @api.model

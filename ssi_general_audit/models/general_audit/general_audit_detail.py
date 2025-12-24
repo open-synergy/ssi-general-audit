@@ -23,6 +23,7 @@ class GeneralAuditDetail(models.Model):
         string="Currency",
         comodel_name="res.currency",
         related="general_audit_id.currency_id",
+        compute_sudo=True,
         store=True,
         help="Currency used for amounts; inherited from the General Audit.",
     )
@@ -37,6 +38,7 @@ class GeneralAuditDetail(models.Model):
         string="Account Type",
         comodel_name="client_account_type",
         related="account_id.type_id",
+        compute_sudo=True,
         store=True,
         readonly=False,
         help="Account type derived from the selected client account.",
@@ -44,6 +46,7 @@ class GeneralAuditDetail(models.Model):
     sequence = fields.Integer(
         string="Sequence",
         related="account_id.sequence",
+        compute_sudo=True,
         store=True,
         help="Ordering number inherited from the client account.",
     )
@@ -54,6 +57,7 @@ class GeneralAuditDetail(models.Model):
         comodel_name="client_trial_balance.detail",
         readonly=True,
         compute="_compute_detail",
+        compute_sudo=True,
         store=True,
         help="Linked trial balance detail for the end period.",
     )
@@ -62,6 +66,7 @@ class GeneralAuditDetail(models.Model):
         comodel_name="client_trial_balance.detail",
         readonly=True,
         compute="_compute_detail",
+        compute_sudo=True,
         store=True,
         help="Linked trial balance detail for the interim period.",
     )
@@ -70,6 +75,7 @@ class GeneralAuditDetail(models.Model):
         comodel_name="client_trial_balance.detail",
         readonly=True,
         compute="_compute_detail",
+        compute_sudo=True,
         store=True,
         help="Linked trial balance detail for the previous period.",
     )
@@ -78,6 +84,7 @@ class GeneralAuditDetail(models.Model):
     home_statement_opening_balance = fields.Monetary(
         string="End Period Opening Balance",
         related="home_line_id.opening_balance",
+        compute_sudo=True,
         store=True,
         currency_field="currency_id",
         help="Opening balance from the end period trial balance.",
@@ -85,6 +92,7 @@ class GeneralAuditDetail(models.Model):
     home_statement_balance = fields.Monetary(
         string="End Period Balance",
         related="home_line_id.balance",
+        compute_sudo=True,
         store=True,
         currency_field="currency_id",
         help="Net balance from the end period trial balance.",
@@ -92,6 +100,7 @@ class GeneralAuditDetail(models.Model):
     interim_opening_balance = fields.Monetary(
         string="Interim Opening Balance",
         related="interim_line_id.opening_balance",
+        compute_sudo=True,
         store=True,
         currency_field="currency_id",
         help="Opening balance from the interim trial balance.",
@@ -99,6 +108,7 @@ class GeneralAuditDetail(models.Model):
     interim_balance = fields.Monetary(
         string="Interim Balance",
         related="interim_line_id.balance",
+        compute_sudo=True,
         store=True,
         currency_field="currency_id",
         help="Net balance from the interim trial balance.",
@@ -106,6 +116,7 @@ class GeneralAuditDetail(models.Model):
     previous_opening_balance = fields.Monetary(
         string="Previous Opening Balance",
         related="previous_line_id.opening_balance",
+        compute_sudo=True,
         store=True,
         currency_field="currency_id",
         help="Opening balance from the previous period trial balance.",
@@ -113,6 +124,7 @@ class GeneralAuditDetail(models.Model):
     previous_balance = fields.Monetary(
         string="Previous Balance",
         related="previous_line_id.balance",
+        compute_sudo=True,
         store=True,
         currency_field="currency_id",
         help="Net balance from the previous period trial balance.",
@@ -200,6 +212,7 @@ class GeneralAuditDetail(models.Model):
         comodel_name="general_audit.account_adjustment",
         readonly=True,
         compute="_compute_adjustment_id",
+        compute_sudo=True,
         store=True,
         help="Aggregated adjustments affecting this account.",
     )
@@ -207,6 +220,7 @@ class GeneralAuditDetail(models.Model):
     adjustment_debit = fields.Monetary(
         string="Adjustment Debit",
         related="adjustment_id.debit",
+        compute_sudo=True,
         store=True,
         currency_field="currency_id",
         help="Total debit adjustments for this account.",
@@ -214,6 +228,7 @@ class GeneralAuditDetail(models.Model):
     adjustment_credit = fields.Monetary(
         string="Adjustment Credit",
         related="adjustment_id.credit",
+        compute_sudo=True,
         store=True,
         currency_field="currency_id",
         help="Total credit adjustments for this account.",
@@ -232,6 +247,7 @@ class GeneralAuditDetail(models.Model):
         column1="detail_id",
         column2="client_adjustment_entry_id",
         compute="_compute_adjustment_ids",
+        compute_sudo=True,
         store=True,
         help="Adjustment entries associated with this audit detail.",
     )

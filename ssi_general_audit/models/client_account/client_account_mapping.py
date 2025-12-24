@@ -84,6 +84,7 @@ class ClientAccountMapping(models.Model):
         string="Partner",
         comodel_name="res.partner",
         related="general_audit_id.partner_id",
+        compute_sudo=True,
         store=True,
         readonly=True,
         help="Client company for this audit.",
@@ -91,6 +92,7 @@ class ClientAccountMapping(models.Model):
     date_start = fields.Date(
         string="Start Date",
         related="general_audit_id.date_start",
+        compute_sudo=True,
         store=True,
         readonly=True,
         help="Audit period start date.",
@@ -98,12 +100,14 @@ class ClientAccountMapping(models.Model):
     date_end = fields.Date(
         string="End Date",
         related="general_audit_id.date_end",
+        compute_sudo=True,
         store=True,
         readonly=True,
         help="Audit period end date.",
     )
     need_interim = fields.Boolean(
         related="general_audit_id.need_interim",
+        compute_sudo=True,
         store=True,
         readonly=True,
         help="Indicates whether an interim period is required.",
@@ -111,6 +115,7 @@ class ClientAccountMapping(models.Model):
     interim_date_start = fields.Date(
         string="Interim Start Date",
         related="general_audit_id.interim_date_start",
+        compute_sudo=True,
         store=True,
         readonly=True,
         help="Interim period start date.",
@@ -118,12 +123,14 @@ class ClientAccountMapping(models.Model):
     interim_date_end = fields.Date(
         string="Interim End Date",
         related="general_audit_id.interim_date_end",
+        compute_sudo=True,
         store=True,
         readonly=True,
         help="Interim period end date.",
     )
     need_previous = fields.Boolean(
         related="general_audit_id.need_previous",
+        compute_sudo=True,
         store=True,
         readonly=True,
         help="Indicates whether a previous period is required.",
@@ -131,6 +138,7 @@ class ClientAccountMapping(models.Model):
     previous_date_start = fields.Date(
         string="Previous Start Date",
         related="general_audit_id.previous_date_start",
+        compute_sudo=True,
         store=True,
         readonly=True,
         help="Previous period start date.",
@@ -138,6 +146,7 @@ class ClientAccountMapping(models.Model):
     previous_date_end = fields.Date(
         string="Previous End Date",
         related="general_audit_id.previous_date_end",
+        compute_sudo=True,
         store=True,
         readonly=True,
         help="Previous period end date.",
@@ -146,6 +155,7 @@ class ClientAccountMapping(models.Model):
         string="Currency",
         comodel_name="res.currency",
         related="general_audit_id.currency_id",
+        compute_sudo=True,
         store=True,
         readonly=True,
         help="Currency used for this audit.",
@@ -153,6 +163,7 @@ class ClientAccountMapping(models.Model):
     account_type_set_id = fields.Many2one(
         string="Accoount Type Set",
         related="general_audit_id.account_type_set_id",
+        compute_sudo=True,
         store=True,
         readonly=True,
         help="Account type set used to classify client accounts.",
