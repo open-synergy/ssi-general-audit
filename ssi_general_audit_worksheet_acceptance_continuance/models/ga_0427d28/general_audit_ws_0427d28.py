@@ -44,7 +44,7 @@ class GeneralAuditWS0427d28(models.Model):
         for record in self:
             record.engagemet = "Initial Engagement"
             record.engagemet_ok = False
-            if (record.general_audit_id.num_of_consecutive_audit_firm) >= 1:
+            if (record.general_audit_id.num_of_consecutive_audit_firm) > 1:
                 record.engagemet = "Recurring Engagement"
                 record.engagemet_ok = True
 
