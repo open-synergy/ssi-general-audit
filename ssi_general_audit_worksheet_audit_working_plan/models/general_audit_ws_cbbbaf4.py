@@ -28,9 +28,11 @@ class GeneralAuditWSCBBBAF4(models.Model):
     )
     industry_id = fields.Many2one(
         related="general_audit_id.industry_id",
+        compute_sudo=True,
     )
     ownership_type_id = fields.Many2one(
         related="general_audit_id.ownership_type_id",
+        compute_sudo=True,
     )
     engagement_date = fields.Date(
         string="Pre-Engagement Date",
@@ -386,6 +388,7 @@ class GeneralAuditWSCBBBAF4(models.Model):
     link_1_risk = fields.Selection(
         string="Risk (PE.110)",
         related="link_1.risk",
+        compute_sudo=True,
         store=True,
     )
 
@@ -429,6 +432,7 @@ class GeneralAuditWSCBBBAF4(models.Model):
     link_2_risk = fields.Selection(
         string="Risk (PE.110.3)",
         related="link_2.risk",
+        compute_sudo=True,
         store=True,
     )
 

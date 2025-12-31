@@ -22,6 +22,7 @@ class GeneralAuditWSCBBBAF4TeamAllocation(models.Model):
     )
     general_audit_id = fields.Many2one(
         related="worksheet_id.general_audit_id",
+        compute_sudo=True,
         store=True,
         help=(
             "Related General Audit engagement for this worksheet. Stored "
@@ -154,6 +155,7 @@ class GeneralAuditWSCBBBAF4TeamAllocation(models.Model):
     )
     state = fields.Selection(
         related="worksheet_id.state",
+        compute_sudo=True,
         help=(
             "Status of the parent worksheet. The state controls whether fields "
             "on this line are editable."
