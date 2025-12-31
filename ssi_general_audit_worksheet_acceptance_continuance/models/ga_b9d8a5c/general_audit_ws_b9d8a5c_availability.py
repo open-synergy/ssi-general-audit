@@ -58,4 +58,5 @@ class GeneralAuditWSb9d8a5cAvailability(models.Model):
     )
     state = fields.Selection(
         related="worksheet_id.state",
+        compute_sudo=True,
     )

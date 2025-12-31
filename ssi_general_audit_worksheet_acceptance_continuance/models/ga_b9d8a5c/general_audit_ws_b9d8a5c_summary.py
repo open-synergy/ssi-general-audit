@@ -119,6 +119,7 @@ class GeneralAuditWSb9d8a5cSummary(models.Model):
     )
     initials = fields.Char(
         related="employee_id.initials",
+        compute_sudo=True,
     )
     team_role_id = fields.Many2one(
         string="Team Role",
@@ -133,4 +134,5 @@ class GeneralAuditWSb9d8a5cSummary(models.Model):
     )
     state = fields.Selection(
         related="worksheet_id.state",
+        compute_sudo=True,
     )

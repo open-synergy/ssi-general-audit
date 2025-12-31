@@ -76,6 +76,7 @@ class GeneralAuditWSb9d8a5cPersonnel(models.Model):
 
     state = fields.Selection(
         related="worksheet_id.state",
+        compute_sudo=True,
     )
 
     @api.onchange(

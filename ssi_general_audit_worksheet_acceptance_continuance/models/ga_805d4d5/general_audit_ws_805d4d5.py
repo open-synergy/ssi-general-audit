@@ -41,6 +41,7 @@ class GeneralAuditWS805d4d5(models.Model):
     link_1_pmpj = fields.Selection(
         string="Risk (110.2.1)",
         related="link_1.pmpj",
+        compute_sudo=True,
         store=True,
         help="""Risk level propagated from the linked worksheet
 (Simplified/Intermediate/Enhanced).""",
@@ -101,6 +102,7 @@ Enhanced due diligence applies.""",
         string="Entity Name",
         comodel_name="res.partner",
         related="general_audit_id.partner_id",
+        compute_sudo=True,
         help="Client entity (res.partner) as specified in the General Audit.",
     )
     entity_type_id = fields.Many2one(
@@ -165,6 +167,7 @@ conducts its activities.""",
         string="Partner Name",
         comodel_name="res.partner",
         related="general_audit_id.accountant_id",
+        compute_sudo=True,
         help="Engagement partner (res.partner) responsible for the audit.",
     )
     service = fields.Char(
