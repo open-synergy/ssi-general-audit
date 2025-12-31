@@ -25,5 +25,6 @@ class GeneralAuditWSa753ab9Checklist(models.Model):
     )
     checklist_type = fields.Selection(
         related="item_id.checklist_type",
+        compute_sudo=True,
         help="Type/category of the checklist item, inherited from the item.",
     )

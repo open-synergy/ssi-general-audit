@@ -29,10 +29,12 @@ class GeneralAuditWSfbbe0f8(models.Model):
 
     financial_accounting_standard_id = fields.Many2one(
         related="general_audit_id.financial_accounting_standard_id",
+        compute_sudo=True,
         store=True,
     )
     other_report_ids = fields.Many2many(
         related="general_audit_id.other_report_ids",
+        compute_sudo=True,
         relation="rel_ga_ws_fbbe0f8_2_ga_other_report",
         column1="ws_fbbe0f8_id",
         column2="other_report_id",
@@ -40,6 +42,7 @@ class GeneralAuditWSfbbe0f8(models.Model):
     )
     expert_type_ids = fields.Many2many(
         related="general_audit_id.expert_type_ids",
+        compute_sudo=True,
         relation="rel_ga_ws_fbbe0f8_2_ga_expert_type",
         column1="ws_fbbe0f8_id",
         column2="expert_type_id",
@@ -105,14 +108,17 @@ class GeneralAuditWSfbbe0f8(models.Model):
     )
     mgmt_communication_planning_date = fields.Date(
         related="link_10_id.mgmt_communication_planning_date",
+        compute_sudo=True,
         store=True,
     )
     mgmt_communication_date = fields.Date(
         related="link_10_id.mgmt_communication_date",
+        compute_sudo=True,
         store=True,
     )
     mgmt_communication_reporting_date = fields.Date(
         related="link_10_id.mgmt_communication_reporting_date",
+        compute_sudo=True,
         store=True,
     )
     label_tcwg = fields.Char(
@@ -120,14 +126,17 @@ class GeneralAuditWSfbbe0f8(models.Model):
     )
     tcwg_communication_planning_date = fields.Date(
         related="link_10_id.tcwg_communication_planning_date",
+        compute_sudo=True,
         store=True,
     )
     tcwg_communication_date = fields.Date(
         related="link_10_id.tcwg_communication_date",
+        compute_sudo=True,
         store=True,
     )
     tcwg_communication_reporting_date = fields.Date(
         related="link_10_id.tcwg_communication_reporting_date",
+        compute_sudo=True,
         store=True,
     )
     label_internal_auditor = fields.Char(
@@ -135,27 +144,33 @@ class GeneralAuditWSfbbe0f8(models.Model):
     )
     ia_communication_planning_date = fields.Date(
         related="link_10_id.ia_communication_planning_date",
+        compute_sudo=True,
         store=True,
     )
     ia_communication_date = fields.Date(
         related="link_10_id.ia_communication_date",
+        compute_sudo=True,
         store=True,
     )
     ia_communication_reporting_date = fields.Date(
         related="link_10_id.ia_communication_reporting_date",
+        compute_sudo=True,
         store=True,
     )
     label_shedule_meeting_team = fields.Char()
     communication_planning_date = fields.Date(
         related="link_6_id.communication_planning_date",
+        compute_sudo=True,
         store=True,
     )
     communication_date = fields.Date(
         related="link_6_id.communication_date",
+        compute_sudo=True,
         store=True,
     )
     communication_reporting_date = fields.Date(
         related="link_6_id.communication_reporting_date",
+        compute_sudo=True,
         store=True,
     )
 
