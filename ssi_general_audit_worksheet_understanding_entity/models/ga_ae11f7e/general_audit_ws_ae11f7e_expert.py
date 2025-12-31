@@ -22,6 +22,7 @@ class GeneralAuditWSAE11F7EDetail(models.Model):
     )
     general_audit_id = fields.Many2one(
         related="worksheet_id.general_audit_id",
+        compute_sudo=True,
         store=True,
         help=(
             "General Audit derived from the worksheet; used to link expert-related work "

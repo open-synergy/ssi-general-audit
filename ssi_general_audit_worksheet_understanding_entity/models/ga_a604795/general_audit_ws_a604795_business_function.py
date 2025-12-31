@@ -23,6 +23,7 @@ class GeneralAuditWSA604795BusinessFunction(models.Model):
     )
     worksheet_id = fields.Many2one(
         related="detail_id.worksheet_id",
+        compute_sudo=True,
         store=True,
         help=(
             "Reference to the parent worksheet (a604795) automatically derived from "

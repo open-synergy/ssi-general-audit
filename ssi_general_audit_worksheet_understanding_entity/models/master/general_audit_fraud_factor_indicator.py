@@ -25,5 +25,6 @@ class GeneralAuditFraudFactorIndicator(models.Model):
     )
     category_id = fields.Many2one(
         related="factor_id.category_id",
+        compute_sudo=True,
         store=True,
     )

@@ -18,6 +18,7 @@ class GeneralAuditWSae11f7e(models.Model):
     business_cycle_ids = fields.Many2many(
         string="Business Cycles",
         related="general_audit_id.business_cycle_ids",
+        compute_sudo=True,
         inverse="_inverse_business_cycle_ids",
         readonly=True,
         states={
@@ -134,6 +135,7 @@ class GeneralAuditWSae11f7e(models.Model):
     other_report_ids = fields.Many2many(
         string="Other Reports",
         related="general_audit_id.other_report_ids",
+        compute_sudo=True,
         inverse="_inverse_other_report_ids",
         readonly=True,
         states={

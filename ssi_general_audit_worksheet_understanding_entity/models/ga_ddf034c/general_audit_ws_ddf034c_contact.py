@@ -32,6 +32,7 @@ class GeneralAuditWSddf034cContact(models.Model):
     worksheet_partner_id = fields.Many2one(
         string="Worksheet Partner",
         related="worksheet_id.partner_id",
+        compute_sudo=True,
         help=(
             "Customer/partner company associated with the worksheet. "
             "Used to filter available contact persons."
@@ -39,6 +40,7 @@ class GeneralAuditWSddf034cContact(models.Model):
     )
     state = fields.Selection(
         related="worksheet_id.state",
+        compute_sudo=True,
         help=(
             "Status of the parent worksheet. "
             "Read-only and synchronized from the worksheet."

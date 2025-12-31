@@ -33,6 +33,7 @@ class GeneralAuditWSddf034cEstShareholding(models.Model):
     )
     state = fields.Selection(
         related="worksheet_id.state",
+        compute_sudo=True,
         help=(
             "Status of the parent worksheet. "
             "This value is read-only and synchronized from the worksheet."
