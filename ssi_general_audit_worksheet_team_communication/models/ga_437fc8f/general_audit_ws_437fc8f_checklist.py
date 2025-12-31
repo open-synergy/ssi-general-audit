@@ -34,4 +34,5 @@ class GeneralAuditWS437fc8fChecklist(models.Model):
     )
     communication_type = fields.Selection(
         related="item_id.communication_type",
+        compute_sudo=True,
     )
