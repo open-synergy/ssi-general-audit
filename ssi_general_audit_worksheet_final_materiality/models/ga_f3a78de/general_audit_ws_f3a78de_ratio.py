@@ -32,6 +32,7 @@ class GeneralAuditWSf3a78deRatio(models.Model):
     category = fields.Selection(
         string="Category",
         related="financial_ratio_id.category",
+        compute_sudo=True,
         help="Ratio category derived from the selected ratio definition.",
     )
     end_period_amount = fields.Float(

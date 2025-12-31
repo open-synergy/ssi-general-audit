@@ -129,30 +129,35 @@ class GeneralAuditWSbb33b94(models.Model):
     computation_item_id = fields.Many2one(
         string="Computation Item",
         related="ws_d9d2b44_id.computation_item_id",
+        compute_sudo=True,
         readonly=True,
         store=True,
     )
     general_audit_computation_id = fields.Many2one(
         string="General Audit Computation",
         related="ws_d9d2b44_id.general_audit_computation_id",
+        compute_sudo=True,
         readonly=True,
         store=True,
     )
     other_amount_ok = fields.Boolean(
         string="Use Other Amount",
         related="ws_d9d2b44_id.other_amount_ok",
+        compute_sudo=True,
         readonly=True,
         store=True,
     )
     other_amount_source = fields.Char(
         string="Other Amount Source",
         related="ws_d9d2b44_id.other_amount_source",
+        compute_sudo=True,
         readonly=True,
         store=True,
     )
     other_base_amount = fields.Monetary(
         string="Other Base Amount",
         related="ws_d9d2b44_id.other_base_amount",
+        compute_sudo=True,
         readonly=True,
         store=True,
     )

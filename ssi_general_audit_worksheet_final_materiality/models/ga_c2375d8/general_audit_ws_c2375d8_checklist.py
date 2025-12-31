@@ -28,5 +28,6 @@ Required. Deleting the worksheet cascades and removes its checklist lines.""",
     )
     analysis_type = fields.Selection(
         related="item_id.analysis_type",
+        compute_sudo=True,
         help="Type of analysis for this line, inherited from the linked checklist item.",
     )
