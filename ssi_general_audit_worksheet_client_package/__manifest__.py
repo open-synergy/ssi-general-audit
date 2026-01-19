@@ -14,38 +14,53 @@
     ],
     "data": [
         "security/ir_module_category_data.xml",
-        "data/general_audit_worksheet_type_data.xml",
+        "security/ir_module_category/general_audit_ws_d209914.xml",
+        # res.groups
+        "security/res_group/general_audit_ws_abd82ed.xml",
+        "security/res_group/general_audit_ws_e301171.xml",
+        "security/res_group/general_audit_ws_f5a3cee.xml",
+        "security/res_group/general_audit_ws_d209914.xml",
+        # ir.model.access
+        "security/ir.model.access.csv",
+        "security/ir_model_access/general_audit_ws_d209914.xml",
+        # ir.rule
+        "security/ir_rule/general_audit_ws_abd82ed.xml",
+        "security/ir_rule/general_audit_ws_e301171.xml",
+        "security/ir_rule/general_audit_ws_f5a3cee.xml",
+        "security/ir_rule/general_audit_ws_d209914.xml",
+        # approval_template
+        "data/approval_template/general_audit_ws_d209914.xml",
+        "data/approval_template/general_audit_ws_abd82ed.xml",
+        "data/approval_template/general_audit_ws_f5a3cee.xml",
+        "data/approval_template/general_audit_ws_e301171.xml",
+        # ir.sequence
+        "data/ir_sequence/general_audit_ws_abd82ed.xml",
+        "data/ir_sequence/general_audit_ws_e301171.xml",
+        "data/ir_sequence/general_audit_ws_f5a3cee.xml",
+        "data/ir_sequence/general_audit_ws_d209914.xml",
+        # sequence_template
+        "data/sequence_template/general_audit_ws_abd82ed.xml",
+        "data/sequence_template/general_audit_ws_e301171.xml",
+        "data/sequence_template/general_audit_ws_f5a3cee.xml",
+        "data/sequence_template/general_audit_ws_d209914.xml",
+        # policy_template
+        "data/policy_template/general_audit_ws_abd82ed.xml",
+        "data/policy_template/general_audit_ws_e301171.xml",
+        "data/policy_template/general_audit_ws_f5a3cee.xml",
+        "data/policy_template/general_audit_ws_d209914.xml",
         # MASTER DATA
+        "data/general_audit_worksheet_type_data.xml",
+        "data/general_audit_worksheet_type_data/general_audit_ws_d209914.xml",
         "data/master/general_audit_worksheet_conclusion.xml",
         "data/master/general_audit_ws_e301171_item.xml",
         "data/master/general_audit_ws_abd82ed_item.xml",
-        # abd82ed - Client Assistance Package
-        "security/res_group/general_audit_ws_abd82ed.xml",
-        "security/ir_rule/general_audit_ws_abd82ed.xml",
-        "data/ir_sequence/general_audit_ws_abd82ed.xml",
-        "data/sequence_template/general_audit_ws_abd82ed.xml",
-        "data/policy_template/general_audit_ws_abd82ed.xml",
-        "data/approval_template/general_audit_ws_abd82ed.xml",
+        # ir.ui.view
         "views/ga_abd82ed/general_audit_ws_abd82ed_views.xml",
         "views/ga_abd82ed/general_audit_ws_abd82ed_item_views.xml",
-        # e301171 - Journal Entry Testing
-        "security/res_group/general_audit_ws_e301171.xml",
-        "security/ir_rule/general_audit_ws_e301171.xml",
-        "data/ir_sequence/general_audit_ws_e301171.xml",
-        "data/sequence_template/general_audit_ws_e301171.xml",
-        "data/policy_template/general_audit_ws_e301171.xml",
-        "data/approval_template/general_audit_ws_e301171.xml",
         "views/ga_e301171/general_audit_ws_e301171_views.xml",
         "views/ga_e301171/general_audit_ws_e301171_item_views.xml",
-        # f5a3cee - Data Collection
-        "security/res_group/general_audit_ws_f5a3cee.xml",
-        "security/ir_rule/general_audit_ws_f5a3cee.xml",
-        "data/ir_sequence/general_audit_ws_f5a3cee.xml",
-        "data/sequence_template/general_audit_ws_f5a3cee.xml",
-        "data/policy_template/general_audit_ws_f5a3cee.xml",
-        "data/approval_template/general_audit_ws_f5a3cee.xml",
         "views/ga_f5a3cee/general_audit_ws_f5a3cee_views.xml",
-        "security/ir.model.access.csv",
+        "views/general_audit_ws_d209914.xml",
     ],
     "demo": [],
 }
