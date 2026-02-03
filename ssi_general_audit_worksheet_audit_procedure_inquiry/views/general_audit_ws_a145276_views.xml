@@ -1,0 +1,137 @@
+<?xml version="1.0" ?>
+<!-- Copyright 2025 OpenSynergy Indonesia
+     Copyright 2025 PT. Simetri Sinergi Indonesia
+     License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl-3.0-standalone.html). -->
+<odoo>
+
+    <record id="general_audit_ws_a145276_view_search" model="ir.ui.view">
+        <field name="name">general_audit_ws_a145276 form</field>
+        <field name="model">general_audit_ws_a145276</field>
+        <field
+            name="inherit_id"
+            ref="ssi_general_audit.general_audit_worksheet_mixin_view_search"
+        />
+        <field name="mode">primary</field>
+        <field name="arch" type="xml">
+            <data />
+        </field>
+    </record>
+
+    <record id="general_audit_ws_a145276_view_tree" model="ir.ui.view">
+        <field name="name">general_audit_ws_a145276 tree</field>
+        <field name="model">general_audit_ws_a145276</field>
+        <field name="mode">primary</field>
+        <field
+            name="inherit_id"
+            ref="ssi_general_audit.general_audit_worksheet_mixin_view_tree"
+        />
+        <field name="arch" type="xml">
+            <data>
+                <xpath expr="//field[@name='general_audit_id']" position="after">
+                    <field name="account_type_id" />
+                    <field name="key_audit_procedure_id" />
+                    <field
+                        name="assertion_type_ids"
+                        widget="many2many_tags"
+                        optional="hide"
+                    />
+                </xpath>
+            </data>
+        </field>
+    </record>
+
+    <record id="general_audit_ws_a145276_view_form" model="ir.ui.view">
+        <field name="name">general_audit_ws_a145276 form</field>
+        <field name="model">general_audit_ws_a145276</field>
+        <field name="mode">primary</field>
+        <field
+            name="inherit_id"
+            ref="ssi_general_audit.general_audit_worksheet_mixin_view_form"
+        />
+        <field name="arch" type="xml">
+            <data>
+                <xpath expr="//group[@name='header_center']" position="inside">
+                    <field
+                        name="ws_e51bb1c_id"
+                        domain="[('general_audit_id', '=', general_audit_id),('state','in',['open','done'])]"
+                    />
+                    <field
+                        name="allowed_account_type_ids"
+                        widget="many2many_tags"
+                        invisible="1"
+                    />
+                    <field
+                        name="account_type_id"
+                        domain="[('id', 'in', allowed_account_type_ids)]"
+                    />
+                    <field
+                        name="allowed_key_audit_procedure_ids"
+                        widget="many2many_tags"
+                        invisible="1"
+                    />
+                    <field
+                        name="key_audit_procedure_id"
+                        domain="[('id', 'in', allowed_key_audit_procedure_ids)]"
+                    />
+                    <field name="detail_ws_e51bb1c_id" invisible="1" />
+                    <field
+                        name="allowed_assertion_type_ids"
+                        widget="many2many_tags"
+                        invisible="1"
+                    />
+                    <field
+                        name="assertion_type_ids"
+                        widget="many2many_tags"
+                        domain="[('id','in', allowed_assertion_type_ids)]"
+                    />
+                </xpath>
+                <xpath expr="//page[1]" position="before">
+                    <page name="background" string="Background">
+                        <field name="background" />
+                    </page>
+                    <page name="question" string="Questions">
+                        <field name="question_ids">
+                            <tree editable="bottom">
+                                <field name="sequence" widget="handle" />
+                                <field
+                                    name="question"
+                                    style="white-space: normal; word-wrap: break-word; overflow-wrap: break-word;"
+                                />
+                                <field
+                                    name="answer"
+                                    style="white-space: normal; word-wrap: break-word; overflow-wrap: break-word;"
+                                />
+                            </tree>
+                            <form>
+                                <group>
+                                    <field name="sequence" />
+                                    <field name="question" />
+                                    <field name="answer" />
+                                </group>
+                            </form>
+                        </field>
+                    </page>
+                    <page name="summary" string="Summary">
+                        <field name="summary" />
+                    </page>
+                </xpath>
+            </data>
+        </field>
+    </record>
+
+    <record id="general_audit_ws_a145276_action" model="ir.actions.act_window">
+        <field name="name">Inquiry Audit Procedures</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">general_audit_ws_a145276</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+    <menuitem
+        id="general_audit_ws_a145276_menu"
+        name="Inquiries"
+        parent="ssi_general_audit_worksheet_lead_schedule.general_audit_audit_procedure_root_menu"
+        action="general_audit_ws_a145276_action"
+        sequence="110"
+        groups="general_audit_ws_a145276_viewer_group"
+    />
+</odoo>
