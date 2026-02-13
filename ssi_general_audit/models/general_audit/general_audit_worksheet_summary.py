@@ -64,6 +64,26 @@ class GeneralAuditWorksheetSummary(models.Model):
         compute_sudo=True,
         help="True if all required worksheets of this type are finished.",
     )
+    worksheet_ids = fields.Many2many(
+        string="Worksheets",
+        comodel_name="general_audit_worksheet",
+        compute="_compute_worksheet_ids",
+        store=False,
+        compute_sudo=True,
+    )
+
+    @api.depends(
+        "general_audit_id",
+        "type_id",
+    )
+    def _compute_worksheet_ids(self):
+        Worksheet = self.env["general_audit_worksheet"]
+        for record in self:
+            domain = [
+                ("general_audit_id", "=", record.general_audit_id.id),
+                ("parent_type_id", "=", record.type_id.id),
+            ]
+            record.worksheet_ids = Worksheet.search(domain).ids
 
     @api.depends(
         "general_audit_id",
