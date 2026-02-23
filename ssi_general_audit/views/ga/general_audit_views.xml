@@ -14,6 +14,16 @@
     <field name="mode">primary</field>
     <field name="arch" type="xml">
         <data>
+            <xpath expr="//field[@name='name']" position="after">
+                <field name="partner_id" />
+            </xpath>
+            <xpath expr="//group[@name='group_by']" position="inside">
+                <filter
+                        name="grp_client"
+                        string="Client"
+                        context="{'group_by':'partner_id'}"
+                    />
+            </xpath>
             <xpath expr="//field[@name='company_id']" position="after">
                 <field
                         name="operating_unit_id"
