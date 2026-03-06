@@ -82,6 +82,19 @@ class GeneralAudit(models.Model):
     partner_id = fields.Many2one(
         string="Client",
     )
+    date = fields.Date(
+        string="Date",
+        required=True,
+        readonly=True,
+        states={
+            "draft": [
+                ("readonly", False),
+            ],
+        },
+        copy=False,
+        default=fields.Date.context_today,
+        help="Audit period date.",
+    )
     date_start = fields.Date(
         string="Start Date",
         required=True,

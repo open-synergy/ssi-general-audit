@@ -16,6 +16,7 @@
         <data>
             <xpath expr="//field[@name='name']" position="after">
                 <field name="partner_id" />
+                <field name="date" />
             </xpath>
             <xpath expr="//group[@name='group_by']" position="inside">
                 <filter
@@ -23,6 +24,7 @@
                         string="Client"
                         context="{'group_by':'partner_id'}"
                     />
+                <filter name="grp_date" string="Date" context="{'group_by':'date'}" />
             </xpath>
             <xpath expr="//field[@name='company_id']" position="after">
                 <field
@@ -38,6 +40,7 @@
                         context="{'group_by':'operating_unit_id'}"
                         groups="operating_unit.group_multi_operating_unit"
                     />
+                <filter string="Date" name="date" date="date" />
             </xpath>
         </data>
     </field>
@@ -60,6 +63,7 @@
             <xpath expr="//field[@name='user_id']" position="after">
                 <field name="title" optional="hide" />
                 <field name="partner_id" widget="many2one_avatar" />
+                <field name="date" />
                 <field name="date_start" />
                 <field name="date_end" />
                 <field name="previous_date_start" optional="hide" />
@@ -126,6 +130,7 @@
                 <field name="team_allocation_user_ids" widget="many2many_tags_avatar" />
             </xpath>
             <xpath expr="//group[@name='header_right']" position="inside">
+                <field name="date" />
                 <label for="date_start" string="Audit Period" />
                 <div class="o_row">
                     <field name="date_start" class="oe_inline" />
