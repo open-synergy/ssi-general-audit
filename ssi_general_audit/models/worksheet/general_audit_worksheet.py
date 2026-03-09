@@ -27,13 +27,14 @@ class GeneralAuditWorksheet(models.Model):
     def _get_policy_field(self):
         res = super(GeneralAuditWorksheet, self)._get_policy_field()
         policy_field = [
-            "open_ok",
             "confirm_ok",
+            "open_ok",
             "approve_ok",
             "done_ok",
             "cancel_ok",
             "reject_ok",
             "restart_ok",
+            "restart_approval_ok",
             "manual_number_ok",
         ]
         res += policy_field

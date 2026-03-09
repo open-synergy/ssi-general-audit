@@ -1,7 +1,7 @@
 # Copyright 2022 OpenSynergy Indonesia
 # Copyright 2022 PT. Simetri Sinergi Indonesia
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl-3.0-standalone.html).
-
+# pylint: disable=W0104
 from odoo import api, fields, models
 
 
@@ -117,3 +117,16 @@ class GeneralAuditWorksheetSummary(models.Model):
             ("general_audit_id", "=", self.general_audit_id.id),
         ]
         return action
+
+    def action_reload_worksheet(self):
+        self.env["general_audit_worksheet"]
+
+        for record in self:
+            model_name = record.type_id.model_name
+            Object = self.env[model_name]
+            criteria = [
+                ("general_audit_id", "=", record.general_audit_id.id),
+            ]
+            object_ids = Object.search(criteria)
+            if object_ids:
+                object_ids._update_parent_worksheet()

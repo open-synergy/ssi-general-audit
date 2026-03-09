@@ -38,7 +38,8 @@ class GeneralAuditWorksheetMixin(models.AbstractModel):
     _automatically_insert_multiple_approval_page = True
     _statusbar_visible_label = "draft,confirm,done"
     _policy_field_order = [
-        "open_ok" "confirm_ok",
+        "open_ok",
+        "confirm_ok",
         "approve_ok",
         "reject_ok",
         "restart_approval_ok",
@@ -191,6 +192,7 @@ class GeneralAuditWorksheetMixin(models.AbstractModel):
             {
                 "name": self.name,
                 "user_id": self.user_id.id,
+                "reviewer_id": self.reviewer_id.id,
                 "state": self.state,
                 "parent_type_id": self.type_id.id,
             }
