@@ -6,6 +6,31 @@ from odoo import api, fields, models
 
 
 class GeneralAuditWSd45dd19(models.Model):
+    """Worksheet for External Confirmation Audit Procedure.
+
+    This worksheet implements the **external confirmation** audit procedure
+    as defined in ISA 505 / SA 505 (External Confirmations). External
+    confirmation is the process of obtaining and evaluating audit evidence
+    through a direct written response from a third party (the confirming
+    party) to the auditor, in paper form or by electronic or other medium.
+
+    Typical use cases include:
+    - Confirming account receivable balances directly with customers
+    - Confirming bank account balances and credit facilities with banks
+    - Confirming terms of contracts or agreements with counterparties
+    - Confirming legal matters with the client's legal counsel
+
+    Workflow context:
+    - References a Key Audit Procedures worksheet (WS-E51BB1C / Lead Schedule)
+      to link each confirmation to a specific audit area and assertion
+    - Linked to a specific key audit procedure category and assertion types
+      (e.g., Existence, Rights & Obligations, Completeness, Accuracy)
+    - The ``account_type_id`` field ties the confirmation to the relevant
+      financial statement account being audited
+
+    ISA/SA references: ISA 505, SA 505 — External Confirmations
+    """
+
     _name = "general_audit_ws_d45dd19"
     _description = "Confirmation Audit Procedure (d45dd19)"
     _inherit = [
