@@ -6,6 +6,17 @@ from odoo import fields, models
 
 
 class GeneralAuditWSd8aaebcItem(models.Model):
+    """
+    Engagement Letter Checklist — Item Master (d8aaebc)
+
+    Master-data model that holds the library of checklist questions /
+    requirements used when completing the Engagement Letter Checklist
+    worksheet (WS.010.1).  Items are loaded automatically onto the
+    worksheet via ``mixin.checklist``.  Inherits
+    ``mixin.checklist.item`` which provides the name, description, and
+    is_required flag.
+    """
+
     _name = "general_audit_ws_d8aaebc.item"
     _inherit = [
         "mixin.checklist.item",

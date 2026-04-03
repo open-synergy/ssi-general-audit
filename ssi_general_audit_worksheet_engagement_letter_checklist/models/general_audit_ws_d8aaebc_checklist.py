@@ -6,6 +6,17 @@ from odoo import fields, models
 
 
 class GeneralAuditWSd8aaebcChecklist(models.Model):
+    """
+    Engagement Letter Checklist — Checklist Line (d8aaebc)
+
+    Represents a single assessed checklist item within the Engagement
+    Letter Checklist worksheet (WS.010.1).  Each line records the
+    auditor's response (Yes / No / N-A) and any explanatory notes for
+    one specific requirement drawn from the configured item master.
+
+    Child of ``general_audit_ws_d8aaebc``.  Cascades on parent delete.
+    """
+
     _name = "general_audit_ws_d8aaebc.checklist"
     _inherit = [
         "mixin.checklist.value",
