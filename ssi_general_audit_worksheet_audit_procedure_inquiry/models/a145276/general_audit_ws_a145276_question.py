@@ -6,6 +6,20 @@ from odoo import fields, models
 
 
 class GeneralAuditWSa145276Question(models.Model):
+    """Individual question-and-answer record within an Inquiry worksheet (WS-A145276).
+
+    Each record represents a single question posed to the inquiry source during
+    the audit inquiry procedure, together with the answer received.
+
+    Inquiry questions are used to gather audit evidence from knowledgeable
+    persons inside or outside the entity (ISA 500 / SA 500). The structured
+    Q&A format ensures that all relevant topics are covered and that responses
+    are documented for audit trail purposes.
+
+    Records are ordered by ``sequence`` within their parent worksheet, allowing
+    the auditor to present questions in a logical, controlled order.
+    """
+
     _name = "general_audit_ws_a145276.question"
     _description = "Inquiry Audit Procedure - Question (a145276)"
     _order = "worksheet_id, sequence, id"

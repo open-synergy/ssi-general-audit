@@ -6,6 +6,30 @@ from odoo import api, fields, models
 
 
 class GeneralAuditWSa145276(models.Model):
+    """Worksheet for documenting Inquiry audit procedures (WS-A145276).
+
+    In accordance with ISA 500 / SA 500 (Audit Evidence) and ISA 240 / SA 240,
+    inquiry is one of the primary audit procedures used to obtain audit evidence
+    by seeking information from knowledgeable persons — both financial and
+    non-financial — inside or outside the entity.
+
+    This worksheet records a structured inquiry session, including:
+    - The source of information (person or party being inquired)
+    - The position/role of the source within the entity
+    - The key audit procedure and assertion types being addressed
+    - A list of audit questions (``question_ids``) and the corresponding answers
+      obtained from the inquiry
+    - Background context for the inquiry
+    - A summary of findings
+    - An overall risk assessment (Low / Medium / High) based on the responses
+
+    The worksheet is linked to the Key Audit Procedures worksheet (WS-E51BB1C /
+    Lead Schedule) so that inquiry findings can be traced back to the specific
+    planned audit procedure that they support.
+
+    Workflow: Draft → Open → Confirm → Done
+    """
+
     _name = "general_audit_ws_a145276"
     _description = "Inquiry Audit Procedure (a145276)"
     _inherit = [
