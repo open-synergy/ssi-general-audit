@@ -118,9 +118,23 @@ class GeneralAuditWSd209914(models.Model):
         store=True,
         compute_sudo=True,
     )
+    initial_balance = fields.Monetary(
+        string="Initial Balance",
+        currency_field="currency_id",
+        required=False,
+        readonly=True,
+        states={"open": [("readonly", False)]},
+    )
+    ending_balance = fields.Monetary(
+        string="Ending Balance",
+        currency_field="currency_id",
+        compute="_compute_ending_balance",
+        store=True,
+        compute_sudo=True,
+    )
 
     @api.depends("general_audit_id", "account_id")
-    def _coompute_detail_id(self):
+    def _compute_detail_id(self):
         for record in self:
             result = False
             if record.general_audit_id and record.account_id:
@@ -201,3 +215,8 @@ class GeneralAuditWSd209914(models.Model):
                     record.balance = record.debit - record.credit
                 else:
                     record.balance = record.credit - record.debit
+
+    @api.depends("initial_balance", "balance")
+    def _compute_ending_balance(self):
+        for record in self:
+            record.ending_balance = record.initial_balance + record.balance

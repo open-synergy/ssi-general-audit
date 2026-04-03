@@ -55,6 +55,10 @@
                 </xpath>
                 <xpath expr="//notebook/page[1]" position="before">
                     <page name="raw_data" string="Raw Data">
+                        <group name="raw_sep" colspan="4" col="2">
+                            <field name="thousand_separator" />
+                            <field name="decimal_separator" />
+                        </group>
                         <group name="raw_1" colspan="4" col="2">
                             <group name="raw_1_1" colspan="1" col="2">
                                 <field name="debit_col_number" />
@@ -64,6 +68,8 @@
                                 <field name="debit" />
                                 <field name="credit" />
                                 <field name="balance" />
+                                <field name="initial_balance" />
+                                <field name="ending_balance" />
                             </group>
                         </group>
                         <field name="raw_data" nolabel="1" widget="csv_table" />
