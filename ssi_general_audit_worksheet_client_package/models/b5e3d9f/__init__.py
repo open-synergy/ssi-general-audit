@@ -3,3 +3,4 @@
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl-3.0-standalone.html).
 
 from . import general_audit_ws_b5e3d9f
+from . import general_audit_ws_b5e3d9f_amount

@@ -2,9 +2,6 @@
 # Copyright 2025 PT. Simetri Sinergi Indonesia
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl-3.0-standalone.html).
 
-import csv
-import io
-
 from odoo import api, fields, models
 
 
@@ -50,10 +47,10 @@ class GeneralAuditWSb5e3d9f(models.Model):
         readonly=True,
         states={"open": [("readonly", False)]},
     )
-    amount_col_number = fields.Integer(
-        string="Amount Column Number",
-        help="Column number for Amount values (starting from 1)",
-        required=False,
+    amount_ids = fields.One2many(
+        comodel_name="general_audit_ws_b5e3d9f.amount",
+        inverse_name="worksheet_id",
+        string="Amounts",
         readonly=True,
         states={"open": [("readonly", False)]},
     )
@@ -73,13 +70,6 @@ class GeneralAuditWSb5e3d9f(models.Model):
         readonly=True,
         states={"open": [("readonly", False)]},
     )
-    amount = fields.Monetary(
-        string="Amount",
-        currency_field="currency_id",
-        compute="_compute_amount",
-        store=True,
-        compute_sudo=True,
-    )
 
     @api.depends("general_audit_id", "account_id")
     def _compute_detail_id(self):
@@ -94,33 +84,3 @@ class GeneralAuditWSb5e3d9f(models.Model):
                     limit=1,
                 )
             record.detail_id = result
-
-    @api.depends(
-        "raw_data", "amount_col_number", "thousand_separator", "decimal_separator"
-    )
-    def _compute_amount(self):
-        for record in self:
-            amount_total = 0.0
-            if record.raw_data and record.amount_col_number:
-                try:
-                    reader = csv.reader(io.StringIO(record.raw_data))
-                    next(reader, None)  # Skip header row if present
-                    for row in reader:
-                        if len(row) >= record.amount_col_number:
-                            value_str = row[record.amount_col_number - 1].strip()
-                            if value_str:
-                                # Remove thousand separator
-                                value_str = value_str.replace(
-                                    record.thousand_separator, ""
-                                )
-                                # Replace decimal separator with '.'
-                                value_str = value_str.replace(
-                                    record.decimal_separator, "."
-                                )
-                                value = float(value_str)
-                            else:
-                                value = 0.0
-                            amount_total += value
-                except Exception:
-                    amount_total = 0.0
-            record.amount = amount_total

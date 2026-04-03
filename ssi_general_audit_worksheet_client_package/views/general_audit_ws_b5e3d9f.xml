@@ -55,14 +55,18 @@
                 </xpath>
                 <xpath expr="//notebook/page[1]" position="before">
                     <page name="raw_data" string="Raw Data">
-                        <group name="raw_1" colspan="4" col="2">
-                            <group name="raw_1_1" colspan="1" col="2">
-                                <field name="amount_col_number" />
-                            </group>
-                            <group name="raw_1_2" colspan="1" col="2">
-                                <field name="amount" />
-                            </group>
+                        <group name="raw_sep" colspan="4" col="2">
+                            <field name="thousand_separator" />
+                            <field name="decimal_separator" />
                         </group>
+                        <field name="amount_ids">
+                            <tree editable="bottom">
+                                <field name="sequence" widget="handle" />
+                                <field name="label" />
+                                <field name="col_number" />
+                                <field name="amount" />
+                            </tree>
+                        </field>
                         <field name="raw_data" nolabel="1" widget="ace" />
                     </page>
                 </xpath>
