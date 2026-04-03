@@ -6,6 +6,13 @@ from odoo import fields, models
 
 
 class GeneralAuditWSabd82edItem(models.Model):
+    """Checklist item master for the Client Assistance Package worksheet (abd82ed).
+
+    Defines the individual items (documents or data files) that the client must
+    provide.  These drive the checklist lines (``general_audit_ws_abd82ed.checklist``)
+    auto-created on each worksheet instance via ``mixin.checklist``.
+    """
+
     _name = "general_audit_ws_abd82ed.item"
     _inherit = [
         "mixin.checklist.item",

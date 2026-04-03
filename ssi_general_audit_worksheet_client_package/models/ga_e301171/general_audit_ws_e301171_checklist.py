@@ -6,6 +6,13 @@ from odoo import fields, models
 
 
 class GeneralAuditWSe301171Checklist(models.Model):
+    """Checklist value line for the Journal Entry Testing worksheet (e301171).
+
+    Stores the auditor's response and notes for one journal-entry testing step.
+    Auto-created for each active item in the ``general_audit_ws_e301171.item``
+    master via the ``mixin.checklist`` mixin.
+    """
+
     _name = "general_audit_ws_e301171.checklist"
     _inherit = [
         "mixin.checklist.value",

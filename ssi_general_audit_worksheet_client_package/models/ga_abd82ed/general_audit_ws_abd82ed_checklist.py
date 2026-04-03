@@ -6,6 +6,13 @@ from odoo import fields, models
 
 
 class GeneralAuditWSabd82edChecklist(models.Model):
+    """Checklist value line for the Client Assistance Package worksheet (abd82ed).
+
+    Stores the auditor's response (yes / no / N/A) and any comments for one
+    checklist item.  The set of items is driven by the related ``item`` master
+    and the ``mixin.checklist`` mixin that auto-populates this one2many.
+    """
+
     _name = "general_audit_ws_abd82ed.checklist"
     _inherit = [
         "mixin.checklist.value",

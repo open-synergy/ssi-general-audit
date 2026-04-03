@@ -5,6 +5,22 @@ from odoo import fields, models
 
 
 class GeneralAuditWSf5a3cee(models.Model):
+    """Worksheet — Data Collection (f5a3cee).
+
+    Tracks the receipt and completeness of client-provided data per account
+    type.  Detail lines (``detail_ids``) are auto-populated via
+    ``action_populate_details`` from the client's account mapping, and each
+    line is marked complete once the relevant data or supporting documents have
+    been received and attached.
+
+    This worksheet gives the engagement team a consolidated view of outstanding
+    data requests and ensures no account type is overlooked before fieldwork
+    begins.
+
+    ISA/SA references: ISA 500/SA 500 (Audit Evidence);
+    ISA 315/SA 315 (Identifying and Assessing Risks).
+    """
+
     _name = "general_audit_ws_f5a3cee"
     _description = "Data Collection (f5a3cee)"
     _inherit = [

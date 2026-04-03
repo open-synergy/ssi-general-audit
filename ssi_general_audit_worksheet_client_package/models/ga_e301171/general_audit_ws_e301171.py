@@ -6,6 +6,21 @@ from odoo import fields, models
 
 
 class GeneralAuditWSe301171(models.Model):
+    """Worksheet — Journal Entry Testing (e301171).
+
+    A checklist-based worksheet for documenting the auditor's procedures over
+    journal entries, addressing the risk of management override of controls
+    as required by ISA 240 / SA 240.
+
+    Journal entry testing verifies that all journal entries (including manual
+    and non-standard entries) are authorised, supported, and recorded
+    correctly.  The worksheet guides the auditor through a structured list of
+    testing steps and documents whether each step was performed and the result.
+
+    ISA/SA references: ISA 240/SA 240 (Fraud in an Audit);
+    ISA 500/SA 500 (Audit Evidence).
+    """
+
     _name = "general_audit_ws_e301171"
     _description = "Journal Entry Testing (e301171)"
     _inherit = [

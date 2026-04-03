@@ -6,6 +6,14 @@ from odoo import fields, models
 
 
 class GeneralAuditWSf5a3ceeDetail(models.Model):
+    """Detail line for the Data Collection worksheet (f5a3cee).
+
+    Tracks data receipt for one client account type.  Each line records the
+    collection date, any supporting attachments, and a boolean ``complete_ok``
+    flag indicating that all required data for this account type has been
+    received and reviewed.
+    """
+
     _name = "general_audit_ws_f5a3cee.detail"
     _description = "Data Collection (f5a3cee) - Details"
 

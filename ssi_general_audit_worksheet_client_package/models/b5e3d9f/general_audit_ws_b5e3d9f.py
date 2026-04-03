@@ -6,6 +6,24 @@ from odoo import api, fields, models
 
 
 class GeneralAuditWSb5e3d9f(models.Model):
+    """Worksheet — Subledger data import (b5e3d9f).
+
+    Accepts client subledger data in CSV format for a selected client account
+    and parses it into structured amount lines (``amount_ids``).  The worksheet
+    is linked to the relevant lead-schedule detail (``detail_id``) so that the
+    parsed amounts can be cross-referenced to the lead-schedule balance.
+
+    Each ``amount_ids`` line specifies a column number and a label; the total
+    monetary values are computed by summing the specified column across all CSV
+    rows.  Configurable thousand and decimal separators support various client
+    number formats.
+
+    Typical use: import accounts-receivable ageing, inventory listing, or any
+    other subledger schedule provided by the client.
+
+    ISA/SA references: ISA 500/SA 500 (Audit Evidence).
+    """
+
     _name = "general_audit_ws_b5e3d9f"
     _description = "Subledger (b5e3d9f)"
     _inherit = [

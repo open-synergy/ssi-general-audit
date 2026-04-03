@@ -9,6 +9,23 @@ from odoo import api, fields, models
 
 
 class GeneralAuditWSd209914(models.Model):
+    """Worksheet — General Ledger data import (d209914).
+
+    Accepts client general-ledger transaction data in CSV format for a selected
+    client account and parses debit/credit columns to compute the net movement
+    and ending balance.  Configurable column numbers (``debit_col_number``,
+    ``credit_col_number``) and separators allow flexible handling of
+    client-specific export formats.
+
+    The worksheet is linked to the lead-schedule detail (``detail_id``) so that
+    the computed ledger totals can be reconciled to the trial balance figure.
+    This supports the lead-schedule tie-out procedure and substantive testing
+    of account balances.
+
+    ISA/SA references: ISA 500/SA 500 (Audit Evidence);
+    ISA 520/SA 520 (Analytical Procedures).
+    """
+
     _name = "general_audit_ws_d209914"
     _description = "General Ledger (d209914)"
     _inherit = [

@@ -6,6 +6,14 @@ from odoo import fields, models
 
 
 class GeneralAuditWSe301171Item(models.Model):
+    """Checklist item master for the Journal Entry Testing worksheet (e301171).
+
+    Defines one journal-entry testing procedure step.  These items drive the
+    auto-populated checklist lines on each worksheet instance and can be
+    maintained centrally to reflect changes in the firm's testing methodology
+    or updates to ISA 240 / SA 240 guidance.
+    """
+
     _name = "general_audit_ws_e301171.item"
     _inherit = [
         "mixin.checklist.item",

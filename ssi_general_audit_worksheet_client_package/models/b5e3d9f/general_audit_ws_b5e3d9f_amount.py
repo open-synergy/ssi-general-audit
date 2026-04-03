@@ -9,6 +9,14 @@ from odoo import api, fields, models
 
 
 class GeneralAuditWSb5e3d9fAmount(models.Model):
+    """Parsed amount line for the Subledger worksheet (b5e3d9f).
+
+    Each line identifies one monetary column in the client's CSV subledger file
+    (via ``col_number`` and a descriptive ``label``).  The ``amount`` field is
+    computed by summing all values in that column across every CSV row, giving
+    the auditor a quick total to compare against the lead-schedule balance.
+    """
+
     _name = "general_audit_ws_b5e3d9f.amount"
     _description = "Subledger (b5e3d9f) - Amount"
 

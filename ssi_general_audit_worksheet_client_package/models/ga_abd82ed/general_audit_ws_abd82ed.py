@@ -6,6 +6,22 @@ from odoo import fields, models
 
 
 class GeneralAuditWSabd82ed(models.Model):
+    """Worksheet — Client Assistance Package Checklist (abd82ed).
+
+    A checklist-based worksheet that documents all documents, schedules, and
+    data files the client is required to provide to the auditor before or
+    during fieldwork.  Items are ticked off as received and verified.
+
+    The ``position`` field distinguishes between worksheets prepared for the
+    *current* (year-end) period and those prepared for an *interim* period.
+
+    Completed worksheets serve as evidence that the audit team has obtained
+    the minimum client-provided data required to commence substantive testing.
+
+    ISA/SA references: ISA 500/SA 500 (Audit Evidence);
+    ISA 315/SA 315 (Identifying and Assessing Risks).
+    """
+
     _name = "general_audit_ws_abd82ed"
     _description = "Client Assistance Package (abd82ed)"
     _inherit = [
