@@ -6,6 +6,47 @@
 General Audit Worksheet - Independence Statement
 ================================================
 
+This module provides the worksheet for documenting the **independence
+assessment checklist** for the engagement team, as required by ISA 200 /
+SA 200 (Overall Objectives of the Independent Auditor) and the IESBA Code
+of Ethics (as adopted in Indonesian professional standards).
+
+Independence is a fundamental ethical and professional requirement for all
+audit engagements.  Before commencing fieldwork, every member of the
+engagement team must evaluate potential threats to independence and confirm
+that no such threats exist or that appropriate safeguards have been applied.
+Categories of threats assessed include:
+
+- Financial and business interests in the client.
+- Family or personal relationships with client personnel.
+- Non-audit services provided to the client.
+- Advocacy, self-review, self-interest, familiarity, and intimidation
+  threats.
+
+The worksheet in this module covers:
+
+1. **WS.020.1 — Independence Statement** — A structured Yes / No / N-A
+   checklist that systematically verifies each independence requirement for
+   the engagement team.  Any "No" or "Yes" response that indicates a
+   potential threat must be accompanied by an explanation and the application
+   of appropriate safeguards before the engagement can proceed.
+
+**Key features:**
+
+- Captures independence confirmation responses for all required checklist items
+- Follows the standard worksheet workflow: Draft → Open → Confirm → Done
+- Checklist items are configurable via the item master
+
+**Models:**
+
+- ``general_audit_ws_09253fe``          — WS.020.1 Independence Statement
+- ``general_audit_ws_09253fe.checklist`` — Detail line (one per checklist item)
+- ``general_audit_ws_09253fe.item``      — Checklist item master
+
+**ISA / SA references:** ISA 200 / SA 200 — Overall Objectives of the
+Independent Auditor and the Conduct of an Audit in Accordance with
+International Standards on Auditing; IESBA Code of Ethics
+
 
 Installation
 ============

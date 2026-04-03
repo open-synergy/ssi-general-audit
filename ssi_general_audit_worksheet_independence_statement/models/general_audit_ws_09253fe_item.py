@@ -6,6 +6,18 @@ from odoo import fields, models
 
 
 class GeneralAuditWS09253feItem(models.Model):
+    """
+    Independence Statement — Checklist Item Master (09253fe)
+
+    Master-data model holding the library of independence requirements
+    used in the Independence Statement worksheet (WS.020.1).  Items
+    correspond to the independence threats and safeguard checks
+    prescribed by the IESBA Code of Ethics and ISA 200 / SA 200, such
+    as financial interest, family relationships, and non-audit services.
+    Items are loaded automatically onto the worksheet via
+    ``mixin.checklist``.
+    """
+
     _name = "general_audit_ws_09253fe.item"
     _inherit = [
         "mixin.checklist.item",

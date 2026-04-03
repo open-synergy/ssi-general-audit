@@ -6,6 +6,17 @@ from odoo import fields, models
 
 
 class GeneralAuditWS09253feChecklist(models.Model):
+    """
+    Independence Statement — Checklist Line (09253fe)
+
+    A single assessed checklist item within the Independence Statement
+    worksheet (WS.020.1).  Each line captures the engagement team
+    member's Yes / No / N-A response and, where applicable, an
+    explanation for a specific independence requirement.
+
+    Child of ``general_audit_ws_09253fe``.  Cascades on parent delete.
+    """
+
     _name = "general_audit_ws_09253fe.checklist"
     _inherit = [
         "mixin.checklist.value",

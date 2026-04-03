@@ -6,6 +6,34 @@ from odoo import fields, models
 
 
 class GeneralAuditWS09253fe(models.Model):
+    """
+    WS.020.1 — Independence Statement (09253fe)
+
+    Documents the **independence assessment and confirmation checklist**
+    for the engagement team as required by ISA 200 / SA 200
+    (Overall Objectives of the Independent Auditor) and the
+    International Ethics Standards Board for Accountants (IESBA) Code
+    of Ethics (as adopted in Indonesian audit standards).
+
+    Professional independence is a fundamental requirement for all audit
+    engagements.  Before commencing work, each engagement team member
+    must evaluate and confirm the absence of:
+
+    - Financial or business relationships with the client.
+    - Family or personal relationships that impair independence.
+    - Non-audit services that threaten independence.
+    - Advocacy, intimidation, self-review, or other identified threats.
+
+    This checklist worksheet systematically captures Yes / No / N-A
+    responses for each independence requirement, ensuring that the
+    engagement team's independence is formally assessed and documented
+    before and during the engagement.
+
+    **ISA / SA references:** ISA 200 / SA 200 — Overall Objectives of
+    the Independent Auditor and the Conduct of an Audit in Accordance
+    with International Standards on Auditing; IESBA Code of Ethics
+    """
+
     _name = "general_audit_ws_09253fe"
     _description = "Independence Letter (09253fe)"
     _inherit = [
