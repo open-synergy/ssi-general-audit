@@ -6,6 +6,36 @@ from odoo import api, fields, models
 
 
 class GeneralAuditWSd4d1ac0(models.Model):
+    """
+    Observation Audit Procedure Worksheet (WS-D4D1AC0).
+
+    Implements the **Observation** audit procedure as defined in ISA 500 / SA 500
+    (Audit Evidence). Observation consists of looking at a process or procedure
+    being performed by others — for example, watching entity personnel conduct a
+    physical inventory count or execute an internal control activity.
+
+    Unlike inquiry (which relies on the representations of knowledgeable persons),
+    evidence obtained through observation is limited to the point in time at which
+    the observation takes place. Auditors therefore supplement observations with
+    other corroborating procedures.
+
+    **Audit purpose:**
+
+    - Documents what the auditor directly watched or witnessed during the audit.
+    - Associates each observation session with a specific Key Audit Procedure
+      (from WS-E51BB1C) and the relevant financial statement assertions.
+    - Groups individual observations by subject, allowing multiple observations
+      per session to be individually recorded via ``general_audit_ws_d4d1ac0.observation``.
+    - Captures background context and primary concerns identified before commencing
+      observation, and a summary of overall findings afterwards.
+    - Links to the relevant business cycle (class of transaction) and standard
+      account type for cross-referencing with the overall audit plan.
+
+    **ISA / SA references:** ISA 500 / SA 500 — Audit Evidence;
+    ISA 315 / SA 315 — Identifying and Assessing the Risks of Material Misstatement;
+    ISA 330 / SA 330 — The Auditor's Responses to Assessed Risks.
+    """
+
     _name = "general_audit_ws_d4d1ac0"
     _description = "Observation Audit Procedure (d4d1ac0)"
     _inherit = [

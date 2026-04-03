@@ -6,6 +6,43 @@
 General Audit Worksheet - Observation Audit Procedure
 =====================================================
 
+This module provides the worksheet for documenting **observation** audit
+procedures, as required by ISA 500 / SA 500 (Audit Evidence) and ISA 315 /
+SA 315 (Identifying and Assessing the Risks of Material Misstatement).
+
+Observation consists of looking at a process or procedure being performed by
+others — for example, watching entity personnel conduct a physical inventory
+count or execute an internal control activity. Unlike inquiry (which relies on
+the representations of knowledgeable persons), evidence obtained through
+observation is restricted to the point in time at which the observation takes
+place, so auditors typically supplement it with other corroborating procedures.
+
+**Key features:**
+
+- Links each observation session to a specific audit area via the Key Audit
+  Procedures worksheet (Lead Schedule / WS-E51BB1C)
+- Associates the observation with relevant financial statement assertions
+  (e.g., Existence, Completeness, Rights & Obligations, Accuracy)
+- Ties the observation to the relevant standard account type and business cycle
+  (class of transaction)
+- Captures background context and a primary concern identified before
+  commencing the observation
+- Supports a structured observation log
+  (``general_audit_ws_d4d1ac0.observation``) so that each subject and its
+  corresponding observation are individually documented
+- Records an overall summary of findings after all observations are complete
+- Follows the standard worksheet workflow: Draft → Open → Confirm → Done
+
+**Models:**
+
+- ``general_audit_ws_d4d1ac0`` — Main observation worksheet header
+- ``general_audit_ws_d4d1ac0.observation`` — Individual observation lines
+  (subject + observation detail) within an observation worksheet
+
+**ISA / SA references:** ISA 500, SA 500 — Audit Evidence;
+ISA 315, SA 315 — Identifying and Assessing the Risks of Material
+Misstatement; ISA 330, SA 330 — The Auditor's Responses to Assessed Risks
+
 
 Installation
 ============
