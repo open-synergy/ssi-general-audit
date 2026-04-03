@@ -6,6 +6,15 @@ from odoo import fields, models
 
 
 class GeneralAuditWSc2375d8Item(models.Model):
+    """
+    Final Analytical Procedures Checklist — Checklist Item Master (c2375d8)
+
+    Master-data model for the checklist items used in the Final Analytical
+    Procedures Checklist worksheet (WS.080.2).  Each item carries an
+    ``analysis_type`` selection (vertical_horizontal or ratio) that
+    classifies the procedure and enables grouped display on the worksheet.
+    """
+
     _name = "general_audit_ws_c2375d8.item"
     _inherit = [
         "mixin.checklist.item",

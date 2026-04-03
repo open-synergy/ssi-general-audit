@@ -7,6 +7,18 @@ from odoo.tools.safe_eval import safe_eval as eval  # pylint: disable=redefined-
 
 
 class GeneralAuditWSf3a78deRatio(models.Model):
+    """
+    Final Analytical Procedures — Ratio Analysis Detail Line (f3a78de)
+
+    One ratio computation line within the Final Analytical Procedures —
+    Ratio Analysis worksheet (WS.080.4).  Each line references a
+    ``client_financial_ratio`` master record whose Python formula is
+    evaluated against the previous, end-period, and audited trial balance
+    amounts.
+
+    Child of ``general_audit_ws_f3a78de``.  Cascades on parent delete.
+    """
+
     _name = "general_audit_ws_f3a78de.ratio"
     _description = "Final Analytical Procedures (f3a78de) -  Ratio"
 

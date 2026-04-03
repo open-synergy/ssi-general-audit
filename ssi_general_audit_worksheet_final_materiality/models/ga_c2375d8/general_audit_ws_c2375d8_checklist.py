@@ -6,6 +6,17 @@ from odoo import fields, models
 
 
 class GeneralAuditWSc2375d8Checklist(models.Model):
+    """
+    Final Analytical Procedures Checklist — Checklist Line (c2375d8)
+
+    A single assessed checklist item within the Final Analytical
+    Procedures Checklist worksheet (WS.080.2).  The ``analysis_type``
+    field (derived from the item master) categorises the line as
+    either a vertical/horizontal analysis or a ratio analysis procedure.
+
+    Child of ``general_audit_ws_c2375d8``.  Cascades on parent delete.
+    """
+
     _name = "general_audit_ws_c2375d8.checklist"
     _inherit = [
         "mixin.checklist.value",

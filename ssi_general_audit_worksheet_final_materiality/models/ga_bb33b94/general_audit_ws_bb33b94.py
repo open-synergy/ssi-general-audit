@@ -6,6 +6,35 @@ from odoo import api, fields, models
 
 
 class GeneralAuditWSbb33b94(models.Model):
+    """
+    WS.080.1 — Final Materiality (bb33b94)
+
+    Performs the **final reassessment of materiality** at the completion
+    of audit fieldwork, as required by ISA 320 / SA 320 (Materiality in
+    Planning and Performing an Audit).  At the conclusion of fieldwork
+    the auditor must compare the materiality levels established during
+    planning with the actual audited financial amounts and determine
+    whether any revision is required before issuing the report.
+
+    This worksheet consolidates three sets of materiality figures and
+    computes the variances between them:
+
+    - **Planning** — Overall Materiality (OM), Performance Materiality
+      (PM), and Tolerable Misstatement (TM) derived from the Preliminary
+      Materiality worksheet used at the planning stage.
+    - **End Period (Unaudited)** — OM / PM / TM recalculated on the
+      end-period (unaudited) trial balance.
+    - **Audited** — Final OM / PM / TM based on the audited trial balance
+      amounts, set by the auditor as the definitive materiality thresholds.
+
+    Variances relative to both the unaudited and planning amounts are
+    computed and stored to support professional-judgement documentation.
+
+    **ISA / SA references:** ISA 320 / SA 320 — Materiality in Planning
+    and Performing an Audit; ISA 450 / SA 450 — Evaluation of Misstatements
+    Identified during the Audit
+    """
+
     _name = "general_audit_ws_bb33b94"
     _description = "Final Materiality (bb33b94)"
     _inherit = [

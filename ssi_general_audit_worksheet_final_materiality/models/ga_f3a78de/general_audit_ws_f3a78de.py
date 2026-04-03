@@ -8,6 +8,25 @@ from odoo.addons.ssi_decorator import ssi_decorator
 
 
 class GeneralAuditWSf3a78de(models.Model):
+    """
+    WS.080.4 — Final Analytical Procedures — Ratio Analysis (f3a78de)
+
+    Implements the quantitative **ratio analysis** component of the final
+    analytical procedures, as required by ISA 520 / SA 520.
+    This worksheet is linked to the corresponding Preliminary Analytic
+    Procedure — Ratio Analysis worksheet (``general_audit_ws_d4289e4``)
+    from the planning phase and computes final financial ratios on the
+    audited amounts for comparison.
+
+    For each configured financial ratio the worksheet stores computed
+    results for the previous, end-period, and audited balances and compares
+    them against industry averages.  Ratios are auto-loaded from the client
+    financial ratio master and recalculated using the associated Python
+    formula.
+
+    **ISA / SA references:** ISA 520 / SA 520 — Analytical Procedures
+    """
+
     _name = "general_audit_ws_f3a78de"
     _description = "Final Analytical Procedures (f3a78de) - " "Ratio Analysis"
     _inherit = [

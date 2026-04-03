@@ -6,6 +6,34 @@ from odoo import api, fields, models
 
 
 class GeneralAuditWSe1f2d98(models.Model):
+    """
+    WS.080.3 — Final Analytical Procedures — Vertical and Horizontal
+    Analysis (e1f2d98)
+
+    Implements the quantitative **vertical and horizontal analysis**
+    component of the final analytical procedures, as required by ISA 520 /
+    SA 520.  This worksheet is linked to the corresponding Preliminary
+    Analytic Procedure worksheet (``general_audit_ws_b32655a``) from the
+    planning phase, loading the same line items and adding audited-
+    period figures for comparison.
+
+    For each line item the worksheet records:
+
+    - **Vertical analysis** (common-size %) for the previous, end-period,
+      and audited trial balances.
+    - **Horizontal analysis** (period-over-period Δ%) comparing previous
+      to end-period and previous to audited amounts.
+    - Whether each line warrants attention (inherited from the preliminary
+      worksheet but updatable by the auditor).
+    - A free-text explanation for lines flagged as requiring attention.
+
+    Total asset and total revenue amounts are computed automatically from
+    the General Audit computation records to serve as base figures for
+    the vertical analysis denominators.
+
+    **ISA / SA references:** ISA 520 / SA 520 — Analytical Procedures
+    """
+
     _name = "general_audit_ws_e1f2d98"
     _description = (
         "Final Analytical Procedures (e1f2d98) - " "Vertical and Horisontal Analysis"

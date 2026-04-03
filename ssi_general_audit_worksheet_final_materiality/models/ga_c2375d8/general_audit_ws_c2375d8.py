@@ -5,6 +5,31 @@ from odoo import fields, models
 
 
 class GeneralAuditWSc2375d8(models.Model):
+    """
+    WS.080.2 — Final Analytical Procedures — Checklist (c2375d8)
+
+    Contains a structured **checklist** for the final analytical
+    procedures performed at the end of fieldwork as required by
+    ISA 520 / SA 520 (Analytical Procedures).  Near the end of the
+    audit the auditor must apply analytical procedures that assist in
+    forming an overall conclusion on the financial statements.
+
+    Checklist items are classified by analysis type:
+
+    - *vertical_horizontal* — Balance sheet / income statement
+      vertical (common-size) and horizontal (trend) comparisons.
+    - *ratio* — Financial ratio analysis (liquidity, profitability,
+      leverage, etc.).
+
+    The checklist tracks completion of each analytical procedure,
+    supplementing the quantitative worksheets WS.080.3 (Vertical and
+    Horizontal Analysis) and WS.080.4 (Ratio Analysis).
+
+    **ISA / SA references:** ISA 520 / SA 520 — Analytical Procedures;
+    ISA 315 / SA 315 — Identifying and Assessing the Risks of Material
+    Misstatement
+    """
+
     _name = "general_audit_ws_c2375d8"
     _description = "Final Analytical Procedures (c2375d8)"
     _inherit = [

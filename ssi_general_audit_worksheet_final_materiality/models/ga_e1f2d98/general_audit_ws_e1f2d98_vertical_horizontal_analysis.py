@@ -5,6 +5,28 @@ from odoo import api, fields, models
 
 
 class WSE1F2D98VerticalHorizontalAnalysis(models.Model):
+    """
+    Final Analytical Procedures — Vertical and Horizontal Analysis Detail
+    Line (e1f2d98)
+
+    One analysis line within the Final Analytical Procedures — Vertical
+    and Horizontal Analysis worksheet (WS.080.3).  Each line mirrors a
+    line from the linked Preliminary Analytic Procedure worksheet
+    (``general_audit_ws_b32655a``) and adds audited-period balances.
+
+    The line stores:
+
+    - Previous, end-period, and audited monetary balances (from the
+      standard detail).
+    - Vertical (%) and horizontal (Δ%) analysis results computed for
+      all three trial balance periods.
+    - Flags for lines requiring auditor attention (inherited from the
+      preliminary worksheet and editable in the final worksheet).
+    - An explanation field for lines flagged as needing attention.
+
+    Child of ``general_audit_ws_e1f2d98``.  Cascades on parent delete.
+    """
+
     _name = "general_audit_ws_e1f2d98.vertical_horizontal_analysis"
     _description = (
         "Final Analytic Procedure - "
