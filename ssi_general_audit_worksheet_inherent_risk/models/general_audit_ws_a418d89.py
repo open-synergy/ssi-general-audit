@@ -6,6 +6,35 @@ from odoo import fields, models
 
 
 class GeneralAuditWSA418D89(models.Model):
+    """
+    WS.060.2 — Account Level Inherent Risk (a418d89)
+
+    Documents the **account-level inherent risk assessment** for each
+    standard detail (account / disclosure area) of the engagement, as
+    required by ISA 315 / SA 315.  For each account the auditor assesses:
+
+    - Inherent risk factors *without* direct impact — contextual factors
+      that inform but do not automatically elevate the risk level.
+    - Inherent risk factors *with* direct impact — factors whose
+      presence directly raises the assessed risk.
+    - **Likelihood of risk occurring** (low / high).
+    - **Magnitude / impact of risk** (low / high).
+
+    The resulting ``inherent_risk`` (low / medium / high) and
+    ``significant_risk`` flag are computed from the likelihood and
+    impact assessments, then written back to the linked
+    ``general_audit.standard_detail`` record so that they are available
+    to downstream worksheets (e.g. WS.060.3, WS.070 control risk,
+    WS.080 materiality).
+
+    Action ``action_load_detail`` populates one detail line per standard
+    detail of the engagement.
+
+    **ISA / SA references:** ISA 315 / SA 315 — Identifying and Assessing
+    the Risks of Material Misstatement through Understanding the Entity
+    and Its Environment
+    """
+
     _name = "general_audit_ws_a418d89"
     _description = "Account Level Inherent Risk (a418d89)"
     _inherit = [

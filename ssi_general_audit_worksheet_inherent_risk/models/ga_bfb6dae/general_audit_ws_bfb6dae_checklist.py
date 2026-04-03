@@ -6,6 +6,16 @@ from odoo import fields, models
 
 
 class GeneralAuditWSbfb6daeChecklist(models.Model):
+    """
+    Inherent Risk Assessment Checklist — Checklist Line (bfb6dae)
+
+    A single assessed checklist item within the Inherent Risk Assessment
+    Checklist worksheet (WS.060.1).  Each line captures the auditor's
+    Yes / No / N-A response for one specific risk indicator.
+
+    Child of ``general_audit_ws_bfb6dae``.  Cascades on parent delete.
+    """
+
     _name = "general_audit_ws_bfb6dae.checklist"
     _inherit = [
         "mixin.checklist.value",

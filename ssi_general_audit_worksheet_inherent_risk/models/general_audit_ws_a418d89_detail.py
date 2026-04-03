@@ -6,6 +6,32 @@ from odoo import api, fields, models
 
 
 class GeneralAuditWSA418D89Detail(models.Model):
+    """
+    Account Level Inherent Risk — Detail Line (a418d89)
+
+    One risk-assessment line within the Account Level Inherent Risk
+    worksheet (WS.060.2), corresponding to a single standard detail
+    (account / disclosure area) of the engagement.
+
+    The auditor selects:
+
+    - **Inherent risk factors without direct impact** — risk
+      considerations that provide context but do not alone change the
+      assessed risk level.
+    - **Inherent risk factors with direct impact** — factors whose
+      presence directly elevates the risk, potentially to significant risk.
+    - **Likelihood of risk occurring** (low / high).
+    - **Impact of risk** (low / high).
+    - **Other significant risk factor** flag for additional considerations.
+
+    ``inherent_risk`` and ``significant_risk`` are computed from the
+    above inputs and written back to the parent
+    ``general_audit.standard_detail`` via the inverse method, keeping
+    the canonical standard detail in sync.
+
+    Child of ``general_audit_ws_a418d89``.  Cascades on parent delete.
+    """
+
     _name = "general_audit_ws_a418d89.detail"
     _description = "Worksheet a418d89 - Detail"
     _order = "worksheet_id, standard_detail_id"

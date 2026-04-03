@@ -6,6 +6,37 @@ from odoo import fields, models
 
 
 class GeneralAuditWSc16abd7(models.Model):
+    """
+    WS.060.3 — Financial Statement Level Inherent Risk (c16abd7)
+
+    Documents the auditor's **financial-statement level inherent risk**
+    assessment as required by ISA 315 / SA 315.  Unlike account-level
+    inherent risk (WS.060.2), this worksheet looks at risks that affect
+    the financial statements as a whole — i.e., risks that are pervasive
+    rather than specific to particular assertions or accounts.
+
+    The auditor evaluates financial-statement level risks by reviewing
+    conclusions from several upstream understanding-phase worksheets:
+
+    - **Fraud Factor Analysis** (``general_audit_ws_c0e0eec``) — Identifies
+      fraud risk factors per ISA 240 / SA 240 requirements.
+    - **Understanding of Preparation of Financial Statements**
+      (``general_audit_ws_f6a227``) — Assessment of the entity's financial
+      reporting framework and competence.
+    - **Going Concern Analysis** (``general_audit_ws_c0d0898``) — Evaluation
+      of going-concern risk factors per ISA 570 / SA 570.
+    - **Understanding of the Business Environment**
+      (``general_audit_ws_bdcdfc5``, multiple) — Entity-level risk factors.
+
+    The auditor documents a conclusion on the overall financial-statement
+    level inherent risk (low / medium / high) and records the review notes
+    from each linked upstream worksheet.
+
+    **ISA / SA references:** ISA 240 / SA 240 — The Auditor's Responsibilities
+    Relating to Fraud; ISA 315 / SA 315 — Identifying and Assessing the Risks
+    of Material Misstatement; ISA 570 / SA 570 — Going Concern
+    """
+
     _name = "general_audit_ws_c16abd7"
     _description = "Financial Statement Level Inherent Risk (c16abd7)"
     _inherit = [

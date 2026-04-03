@@ -6,6 +6,24 @@ from odoo import api, fields, models
 
 
 class GeneralAudit(models.Model):
+    """
+    General Audit — Inherent Risk Extension
+
+    Extends ``general_audit`` with a computed field that aggregates the
+    account types identified as having **significant risk** based on the
+    inherent risk assessments recorded in the standard detail lines.
+
+    ``significant_risk_account_type_ids`` is recomputed whenever the
+    ``significant_risk`` flag is updated on any
+    ``general_audit.standard_detail`` line belonging to this engagement.
+    The field is consumed by the Financial Statement Level Inherent Risk
+    worksheet (WS.060.3) and other downstream modules that need to know
+    which account types carry significant risk for this engagement.
+
+    **ISA / SA references:** ISA 315 / SA 315 — Identifying and Assessing
+    the Risks of Material Misstatement
+    """
+
     _name = "general_audit"
     _description = "General Audit"
     _inherit = [
