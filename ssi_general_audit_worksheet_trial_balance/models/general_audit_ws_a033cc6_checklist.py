@@ -6,6 +6,17 @@ from odoo import fields, models
 
 
 class GeneralAuditWSa033cc6Checklist(models.Model):
+    """Checklist value instance for the Trial Balance worksheet.
+
+    Each record represents an auditor's response to one checklist item within
+    the ``general_audit_ws_a033cc6`` (Trial Balance) worksheet. Stores the
+    actual value/response provided by the auditor for each verification
+    checkpoint, linking the master item definition to the worksheet instance.
+
+    Inherits from ``mixin.checklist.value`` which provides response fields
+    (e.g., answer, notes, conclusion) standardised across all checklist models.
+    """
+
     _name = "general_audit_ws_a033cc6.checklist"
     _inherit = [
         "mixin.checklist.value",
