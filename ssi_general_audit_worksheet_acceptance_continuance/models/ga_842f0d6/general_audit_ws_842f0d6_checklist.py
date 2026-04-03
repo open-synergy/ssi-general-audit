@@ -6,6 +6,23 @@ from odoo import api, fields, models
 
 
 class GeneralAuditWS842f0d6Checklist(models.Model):
+    """Checklist value line for Money Laundering Issues (PMPJ) worksheet.
+
+    Each record represents one evaluated checklist criterion within a
+    ``general_audit_ws_842f0d6`` worksheet. Inherits ``mixin.checklist.value``
+    which provides the response fields.
+
+    In addition to the standard checklist fields, each line also contains:
+    - ``none_below``: Flag indicating none of the sub-items below apply
+    - ``item_ids``: Many2many link to ``general_audit_ws_842f0d6.item_categ``
+      records that represent specific risk indicators under the selected item
+    - ``allowed_item_ids``: Computed filter limiting available item categories
+      to those matching the current checklist item's category
+
+    Model: ``general_audit_ws_842f0d6.checklist``
+    Parent worksheet: ``general_audit_ws_842f0d6``
+    """
+
     _name = "general_audit_ws_842f0d6.checklist"
     _inherit = [
         "mixin.checklist.value",

@@ -6,6 +6,26 @@ from odoo import _, api, fields, models
 
 
 class GeneralAuditWSf5e7049(models.Model):
+    """Worksheet: Management Integrity.
+
+    Evaluates the integrity and ethical values of the client's management
+    team as part of the pre-engagement procedures required by SA 220 (Quality
+    Control for an Audit of Financial Statements) and ISQC 1. The auditor
+    assesses whether there are red flags suggesting management lacks integrity
+    (e.g., unethical conduct, history of fraud, conflicts of interest).
+
+    This worksheet cross-references the Money Laundering Issues worksheet
+    (842f0d6) via the ``link_1`` computed field to incorporate PMPJ risk
+    findings into the management integrity assessment.
+
+    The resulting risk level (Low / Medium / High) contributes to the
+    Acceptance and Continuance of Client Relationships Analysis (806c4e1).
+
+    Model: ``general_audit_ws_f5e7049``
+    SA Reference: SA 220, ISQC 1
+    Module: ``ssi_general_audit_worksheet_acceptance_continuance``
+    """
+
     _name = "general_audit_ws_f5e7049"
     _description = "Management Integrity (f5e7049)"
     _inherit = [

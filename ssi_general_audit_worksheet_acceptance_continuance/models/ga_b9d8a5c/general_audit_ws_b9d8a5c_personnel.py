@@ -6,6 +6,23 @@ from odoo import api, fields, models
 
 
 class GeneralAuditWSb9d8a5cPersonnel(models.Model):
+    """Detail line: Candidate personnel for the audit engagement team.
+
+    Records each employee being considered for inclusion in the engagement
+    team within the ``general_audit_ws_b9d8a5c`` worksheet. Each line
+    captures the candidate's job role, years of experience, whether they
+    are formally proposed as a team member, and supporting evidence
+    attachments for competency verification.
+
+    Only employees with ``audit_ok = True`` can be selected. This dataset
+    forms the basis for the competency, availability, and independency
+    analysis sub-records generated via ``action_create_summary``.
+
+    Model: ``general_audit_ws_b9d8a5c.personnel``
+    Parent worksheet: ``general_audit_ws_b9d8a5c``
+    SA Reference: SA 220
+    """
+
     _name = "general_audit_ws_b9d8a5c.personnel"
     _description = (
         "Competency, Availability and Independency "

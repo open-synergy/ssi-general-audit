@@ -5,6 +5,35 @@ from odoo import fields, models
 
 
 class GeneralAuditWSb9d8a5c(models.Model):
+    """Worksheet: Competency, Availability, and Independency of Assignment Team.
+
+    Assesses whether the proposed audit engagement team collectively meets the
+    quality control requirements mandated by SA 220 (Quality Control for an
+    Audit of Financial Statements) and ISQC 1 across three dimensions:
+
+    - **Competency** (``competency_analysis_ids``): Each team member has
+      the professional knowledge and technical skills required for the
+      engagement.
+    - **Availability** (``availability_analysis_ids``): Each team member has
+      sufficient scheduled time without conflicts or constraints.
+    - **Independency** (``independency_analysis_ids``): Each team member is
+      independent from the client and free from conflicts of interest.
+
+    Workflow:
+    1. Populate the candidate personnel list (``action_populate_personnel``).
+    2. Generate the analysis sub-records and summary
+       (``action_create_summary``).
+    3. Review each analysis dimension and set the overall risk level
+       (Low / Medium / High).
+
+    The ``summary_ids`` field provides a consolidated per-person view of
+    all three assessment results.
+
+    Model: ``general_audit_ws_b9d8a5c``
+    SA Reference: SA 220, ISQC 1
+    Module: ``ssi_general_audit_worksheet_acceptance_continuance``
+    """
+
     _name = "general_audit_ws_b9d8a5c"
     _description = (
         "Competency, Availability and Independency " "Of Assignment Team (b9d8a5c)"

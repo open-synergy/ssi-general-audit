@@ -6,6 +6,31 @@ from odoo import _, api, fields, models
 
 
 class GeneralAuditWS842f0d6(models.Model):
+    """Worksheet: Money Laundering Issues — PMPJ Risk Assessment.
+
+    Evaluates the client's money laundering risk profile in accordance with
+    Indonesian PMPJ (Prinsip Mengenal Pengguna Jasa) regulations. The
+    assessment covers four risk dimensions via checklist items:
+
+    - **Profile**: Client ownership structure and identity risk
+    - **Country**: Jurisdictional risk (sanctioned countries, tax havens)
+    - **Business**: Industry sector risk (e.g., cash-intensive businesses)
+    - **Product/Service**: Risk from specific products or services offered
+
+    The ``pmpj`` field summarises the overall risk category:
+
+    - ``simplified``: Low risk — basic Customer Due Diligence (CDD) applies
+    - ``intermediate``: Medium risk — standard enhanced procedures apply
+    - ``enhanced``: High risk — full Enhanced Due Diligence (EDD) required
+
+    This result is consumed by the KYC worksheet (805d4d5) via ``link_1`` to
+    determine which sections of the PMPJ checklist must be completed.
+
+    Model: ``general_audit_ws_842f0d6``
+    Regulation: PMPJ (Indonesian AML/CDD Regulation)
+    Module: ``ssi_general_audit_worksheet_acceptance_continuance``
+    """
+
     _name = "general_audit_ws_842f0d6"
     _description = "Money Laudring Issues (842f0d6)"
     _inherit = [

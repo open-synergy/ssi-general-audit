@@ -5,6 +5,28 @@ from odoo import _, api, fields, models
 
 
 class GeneralAuditWS805d4d5(models.Model):
+    """Worksheet: Know Your Customer (KYC) Principles — PMPJ.
+
+    Documents the Know Your Customer (KYC) due diligence procedures for the
+    audit client in compliance with Indonesian Anti-Money Laundering regulations
+    (PMPJ — Prinsip Mengenal Pengguna Jasa / Customer Due Diligence Principles).
+
+    The required level of due diligence is derived automatically from the
+    Money Laundering Issues worksheet (842f0d6) via the computed ``link_1``
+    field, which propagates the PMPJ risk category (``link_1_pmpj``):
+
+    - ``pmpj_simplified = True``: Simplified due diligence applies (low risk)
+    - ``pmpj_intermediate = True``: Standard enhanced procedures required
+    - ``pmpj_enhanced = True``: Full enhanced due diligence required (high risk)
+
+    The three boolean flags are computed to control the visibility of the
+    applicable KYC checklist sections in the view.
+
+    Model: ``general_audit_ws_805d4d5``
+    Regulation: PMPJ (Indonesian AML/CDD Regulation)
+    Module: ``ssi_general_audit_worksheet_acceptance_continuance``
+    """
+
     _name = "general_audit_ws_805d4d5"
     _description = "Know Your Customer Principles (805d4d5)"
     _inherit = [

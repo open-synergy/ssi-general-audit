@@ -6,6 +6,17 @@ from odoo import fields, models
 
 
 class GeneralAuditWS806c4e1Checklist(models.Model):
+    """Checklist value line for Acceptance and Continuance of Client Relationships Analysis.
+
+    Each record represents one evaluated checklist criterion within a
+    ``general_audit_ws_806c4e1`` worksheet. Inherits ``mixin.checklist.value``
+    which provides the response fields (e.g., Yes / No / N/A) and links
+    each response to a predefined item template (``general_audit_ws_806c4e1.item``).
+
+    Model: ``general_audit_ws_806c4e1.checklist``
+    Parent worksheet: ``general_audit_ws_806c4e1``
+    """
+
     _name = "general_audit_ws_806c4e1.checklist"
     _inherit = [
         "mixin.checklist.value",

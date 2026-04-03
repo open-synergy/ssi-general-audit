@@ -6,6 +6,26 @@ from odoo import fields, models
 
 
 class GeneralAuditWSb9d8a5cIndependency(models.Model):
+    """Analysis line: Independence assessment per engagement team member.
+
+    Represents the individual independence evaluation for one team member
+    within the ``general_audit_ws_b9d8a5c`` worksheet. The auditor assesses
+    whether the employee is free from relationships, financial interests, or
+    other circumstances that could compromise independence from the client.
+
+    The ``analysis_item_ids`` field links to the predefined independence
+    threat items (``general_audit_ws_b9d8a5c.independency_item``) that were
+    identified for this team member.
+
+    Result values:
+    - ``sufficient``: The team member is independent from the client.
+    - ``insufficient``: Independence threats exist that cannot be mitigated.
+
+    Model: ``general_audit_ws_b9d8a5c.independency``
+    Parent worksheet: ``general_audit_ws_b9d8a5c``
+    SA Reference: SA 220, ISQC 1
+    """
+
     _name = "general_audit_ws_b9d8a5c.independency"
     _description = (
         "Competency, Availability and Independency "

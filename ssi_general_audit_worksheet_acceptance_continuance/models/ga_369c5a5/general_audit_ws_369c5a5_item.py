@@ -6,6 +6,18 @@ from odoo import fields, models
 
 
 class GeneralAuditWS0427d28Item(models.Model):
+    """Master data: Checklist item template for Communication With Previous Auditor.
+
+    Defines the predefined criteria and questions used in the checklist of
+    the ``general_audit_ws_0427d28`` worksheet. Inherits ``mixin.checklist.item``
+    providing the item title, option set, and scoring structure.
+
+    Note: This class is physically located in the ``ga_369c5a5`` directory
+    but defines the ``general_audit_ws_0427d28.item`` model.
+
+    Model: ``general_audit_ws_0427d28.item``
+    """
+
     _name = "general_audit_ws_0427d28.item"
     _inherit = [
         "mixin.checklist.item",

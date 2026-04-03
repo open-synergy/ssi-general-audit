@@ -6,6 +6,33 @@ from odoo import _, api, fields, models
 
 
 class GeneralAuditWS806C4E1(models.Model):
+    """Worksheet: Acceptance and Continuance of Client Relationships Analysis.
+
+    Implements the auditor's pre-engagement evaluation procedures as required by
+    SA 220 (Quality Control for an Audit of Financial Statements). Before
+    accepting or continuing an audit engagement, the auditor must assess the
+    overall risk level by considering the client's industry, ownership type,
+    public offering status, and findings from related sub-worksheets.
+
+    This worksheet aggregates risk findings from the following sub-worksheets
+    within this module:
+    - Previous Financial Reporting Issues (369c5a5)
+    - Management Integrity (f5e7049)
+    - Money Laundering Issues / PMPJ (842f0d6)
+    - Know Your Customer / PMPJ (805d4d5)
+    - Communication with Previous Auditor (0427d28)
+    - Competency, Availability, and Independency of Team (b9d8a5c)
+
+    Key outputs:
+    - ``risk``: Overall aggregated risk level (Low / Medium / High)
+    - ``client_relationship``: Decision whether to continue the engagement
+      (Yes / No)
+
+    Model: ``general_audit_ws_806c4e1``
+    SA Reference: SA 220, SA 300
+    Module: ``ssi_general_audit_worksheet_acceptance_continuance``
+    """
+
     _name = "general_audit_ws_806c4e1"
     _description = (
         "Acceptance and Continuance of " "Client Relationships Analysis (806c4e1)"

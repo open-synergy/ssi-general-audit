@@ -6,6 +6,30 @@ from odoo import api, fields, models
 
 
 class GeneralAuditWS0427d28(models.Model):
+    """Worksheet: Communication With Previous Auditor.
+
+    Documents the incoming auditor's communication with the predecessor
+    (previous) auditor when accepting a new audit engagement, as required by
+    SA 300 (Planning an Audit of Financial Statements) and the IAPI Code of
+    Ethics. This step is mandatory for initial engagements.
+
+    The worksheet automatically distinguishes engagement type based on
+    ``num_of_consecutive_audit_firm`` from the parent General Audit record:
+
+    - **Initial Engagement** (``engagemet_ok = False``): Fewer than 2
+      consecutive years with the same firm; communication with the predecessor
+      auditor is required.
+    - **Recurring Engagement** (``engagemet_ok = True``): Firm has audited
+      the client for 2 or more consecutive years; communication is not mandatory.
+
+    A checklist evaluates whether the required communications have been made
+    and any relevant information from the predecessor has been obtained.
+
+    Model: ``general_audit_ws_0427d28``
+    SA Reference: SA 300, Code of Ethics IAPI
+    Module: ``ssi_general_audit_worksheet_acceptance_continuance``
+    """
+
     _name = "general_audit_ws_0427d28"
     _description = "Communication With Previous Auditor (0427d28)"
     _inherit = [

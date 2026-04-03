@@ -5,6 +5,27 @@ from odoo import api, fields, models
 
 
 class GeneralAuditWSb9d8a5cSummary(models.Model):
+    """Summary line: Aggregated assessment results per engagement team member.
+
+    Provides a consolidated, per-person view of the competency, availability,
+    and independency evaluation results within the ``general_audit_ws_b9d8a5c``
+    worksheet. The summary is automatically populated from the individual
+    analysis sub-records via computed fields.
+
+    Computed fields:
+    - ``compentency_result``: Derived from ``competency_analysis_ids``
+    - ``availability_result``: Derived from ``availability_analysis_ids``
+    - ``independency_result``: Derived from ``independency_analysis_ids``
+
+    This summary allows the engagement partner to make a holistic decision
+    about each proposed team member's overall suitability for the engagement,
+    as required by SA 220 (Quality Control for an Audit of Financial Statements).
+
+    Model: ``general_audit_ws_b9d8a5c.summary``
+    Parent worksheet: ``general_audit_ws_b9d8a5c``
+    SA Reference: SA 220
+    """
+
     _name = "general_audit_ws_b9d8a5c.summary"
     _description = (
         "Competency, Availability and Independency "

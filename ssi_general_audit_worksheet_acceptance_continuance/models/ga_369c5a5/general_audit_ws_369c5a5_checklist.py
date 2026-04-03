@@ -6,6 +6,20 @@ from odoo import fields, models
 
 
 class GeneralAuditWS0427d28Checklist(models.Model):
+    """Checklist value line for Communication With Previous Auditor worksheet.
+
+    Each record represents one evaluated checklist criterion within a
+    ``general_audit_ws_0427d28`` worksheet. Inherits ``mixin.checklist.value``
+    which provides the response fields and links each response to a predefined
+    item template (``general_audit_ws_0427d28.item``).
+
+    Note: This class is physically located in the ``ga_369c5a5`` directory
+    but defines the ``general_audit_ws_0427d28.checklist`` model.
+
+    Model: ``general_audit_ws_0427d28.checklist``
+    Parent worksheet: ``general_audit_ws_0427d28``
+    """
+
     _name = "general_audit_ws_0427d28.checklist"
     _inherit = [
         "mixin.checklist.value",

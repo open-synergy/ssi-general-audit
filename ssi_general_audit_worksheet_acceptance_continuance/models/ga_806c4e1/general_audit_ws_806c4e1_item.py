@@ -6,6 +6,18 @@ from odoo import fields, models
 
 
 class GeneralAuditWS806c4e1Item(models.Model):
+    """Master data: Checklist item template for Acceptance and Continuance Analysis.
+
+    Defines the predefined criteria and questions used in the checklist of
+    the ``general_audit_ws_806c4e1`` worksheet. Inherits ``mixin.checklist.item``
+    which provides the item title, option set, and scoring structure.
+
+    These items cover risk factors such as client integrity, fee history,
+    management changes, litigation history, and other acceptance criteria.
+
+    Model: ``general_audit_ws_806c4e1.item``
+    """
+
     _name = "general_audit_ws_806c4e1.item"
     _inherit = [
         "mixin.checklist.item",

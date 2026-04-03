@@ -6,6 +6,26 @@ from odoo import fields, models
 
 
 class GeneralAuditWSb9d8a5cAvailability(models.Model):
+    """Analysis line: Availability assessment per engagement team member.
+
+    Represents the individual time-availability evaluation for one team
+    member within the ``general_audit_ws_b9d8a5c`` worksheet. The auditor
+    assesses whether the employee has adequate scheduled time to fulfil the
+    engagement obligations without conflicts or time constraints.
+
+    The ``analysis_item_ids`` field links to the predefined availability
+    criteria (``general_audit_ws_b9d8a5c.availability_item``) that were
+    evaluated.
+
+    Result values:
+    - ``sufficient``: The team member has adequate capacity for the engagement.
+    - ``time_constraint``: Scheduling conflicts or workload issues exist.
+
+    Model: ``general_audit_ws_b9d8a5c.availability``
+    Parent worksheet: ``general_audit_ws_b9d8a5c``
+    SA Reference: SA 220
+    """
+
     _name = "general_audit_ws_b9d8a5c.availability"
     _description = (
         "Competency, Availability and Independency "

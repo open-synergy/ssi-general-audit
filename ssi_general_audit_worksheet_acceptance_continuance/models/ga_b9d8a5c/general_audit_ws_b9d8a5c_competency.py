@@ -5,6 +5,26 @@ from odoo import api, fields, models
 
 
 class GeneralAuditWSb9d8a5cComptency(models.Model):
+    """Analysis line: Competency assessment per engagement team member.
+
+    Represents the individual professional competency evaluation for one
+    team member within the ``general_audit_ws_b9d8a5c`` worksheet. The
+    auditor assesses whether the employee has sufficient knowledge, skills,
+    and qualifications for the specific requirements of the engagement.
+
+    The ``year_experience`` is automatically derived from the corresponding
+    ``general_audit_ws_b9d8a5c.personnel`` record. The ``analysis_item_ids``
+    field links to the predefined competency criteria that were evaluated.
+
+    Result values:
+    - ``sufficient``: The team member meets the competency requirements.
+    - ``need_update``: Additional training or supervision required.
+
+    Model: ``general_audit_ws_b9d8a5c.competency``
+    Parent worksheet: ``general_audit_ws_b9d8a5c``
+    SA Reference: SA 220
+    """
+
     _name = "general_audit_ws_b9d8a5c.competency"
     _description = (
         "Competency, Availability and Independency "
