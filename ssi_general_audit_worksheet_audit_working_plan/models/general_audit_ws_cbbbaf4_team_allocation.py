@@ -6,6 +6,21 @@ from odoo import api, fields, models
 
 
 class GeneralAuditWSCBBBAF4TeamAllocation(models.Model):
+    """Team allocation line for the Audit Working Plan (WS-CBBBAF4).
+
+    Records the planned man-hours for one team member across the four audit
+    phases: Pre-Engagement (``pe_allocation``), Risk Assessment (``ra_allocation``),
+    Risk Response / Fieldwork (``rr_allocation``), and Reporting (``wr_allocation``).
+
+    This line also records the team member's engagement role (e.g., Partner,
+    Manager, Senior).  The aggregate of all allocation lines feeds the total
+    man-hour budget compared against the ``total_budget_hour`` on the parent
+    worksheet.
+
+    ISA/SA references: ISA 220/SA 220 (Quality Control for an Audit);
+    ISA 300/SA 300 (Planning an Audit).
+    """
+
     _name = "general_audit_ws_cbbbaf4.team_allocation"
     _description = "Audit Working Plan (cbbbaf4) - Team Allocation"
     _order = "worksheet_id, sequence, id"

@@ -6,6 +6,13 @@ from odoo import fields, models
 
 
 class AllocatioTotalHour(models.Model):
+    """Master data — predefined total man-hour option for audit engagements.
+
+    Provides a library of commonly used total manhour values (e.g., 500 h,
+    1 000 h) that can be selected on the Audit Working Plan worksheet to
+    auto-fill the total budget, saving time during engagement planning.
+    """
+
     _name = "allocation_total_hour"
     _inherit = [
         "mixin.master_data",

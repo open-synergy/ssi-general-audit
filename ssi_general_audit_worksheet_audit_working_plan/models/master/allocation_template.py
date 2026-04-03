@@ -1,11 +1,26 @@
 # Copyright 2025 OpenSynergy Indonesia
 # Copyright 2025 PT. Simetri Sinergi Indonesia
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl-3.0-standalone.html).
-from odoo import api, fields, models
+from odoo import _, api, fields, models
 from odoo.exceptions import ValidationError
 
 
 class AllocationTemplate(models.Model):
+    """Master data — man-hour allocation template for audit engagements.
+
+    Defines the percentage split of total budgeted man-hours across four
+    audit phases:
+    * ``pe_percentage``  — Pre-Engagement (%)
+    * ``ra_percentage``  — Risk Assessment (%)
+    * ``rr_percentage``  — Risk Response / Fieldwork (%)
+    * ``wr_percentage``  — Reporting (%)
+
+    A constraint ensures the four percentages always sum to 100 %.  A default
+    template can be configured at the company level (``res.company.
+    allocation_template_id``) and applied automatically when new Audit Working
+    Plan worksheets are created.
+    """
+
     _name = "allocation_template"
     _inherit = [
         "mixin.master_data",
@@ -56,8 +71,12 @@ class AllocationTemplate(models.Model):
                 + record.wr_percentage
             )
             if round(total, 2) != 100.00:
+                total_str = "{:.2f}".format(total)
                 raise ValidationError(
-                    "The total allocation of Pre-Engagement, Risk Assessment, "
-                    "Risk Response, and Reporting must be exactly 100%. "
-                    f"Currently: {total:.2f}%"
+                    _(
+                        "The total allocation of Pre-Engagement, Risk Assessment, "
+                        "Risk Response, and Reporting must be exactly 100%%. "
+                        "Currently: %s%%"
+                    )
+                    % total_str
                 )

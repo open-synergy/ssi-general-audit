@@ -10,6 +10,31 @@ from odoo.addons.ssi_decorator import ssi_decorator
 
 
 class GeneralAuditWSCBBBAF4(models.Model):
+    """Worksheet — Audit Working Plan (WS-CBBBAF4).
+
+    Records the overall strategic plan for the audit engagement, covering the
+    four key audit phases: Pre-Engagement, Risk Assessment, Risk Response
+    (Fieldwork), and Reporting.  Prepared at the beginning of engagement
+    planning in accordance with ISA 300 / SA 300.
+
+    Key attributes captured:
+    * **Timeline milestones** — Pre-Engagement date, Risk Assessment date,
+      Fieldwork date, and Pullout (wrap-up) date.
+    * **Man-hour budget** — total budgeted hours distributed across phases
+      using a configurable allocation template; planning hours per team member
+      are stored in ``team_allocation_ids``.
+    * **Budget status** — indicates whether the man-hour budget has been
+      prepared (``budget_plan_status``: prepared / not_prepared).
+    * **Team allocation** — each audit team member with their role and planned
+      hours per phase (see ``GeneralAuditWSCBBBAF4TeamAllocation``).
+    * **Competency analysis** — competency gap analysis per team member
+      (see ``GeneralAuditWSCBBBAF4TeamCompetency``).
+
+    Workflow: Draft → Open → Confirm → Done
+    ISA/SA references: ISA 300/SA 300 (Planning an Audit);
+    ISA 220/SA 220 (Quality Control for an Audit).
+    """
+
     _name = "general_audit_ws_cbbbaf4"
     _description = "Audit Working Plan (cbbbaf4)"
     _inherit = [

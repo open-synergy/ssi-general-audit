@@ -6,6 +6,16 @@ from odoo import api, fields, models
 
 
 class GeneralAudit(models.Model):
+    """Extension of the General Audit model for Audit Working Plan data.
+
+    Adds aggregated team-allocation data to the General Audit engagement record:
+    * ``detail_team_allocation_ids`` — all team allocation lines from the
+      Audit Working Plan worksheets (WS-CBBBAF4) within this engagement,
+      providing a consolidated view of staffing across phase worksheets.
+    * ``team_allocation_user_ids`` — the Odoo users linked to the allocated
+      employees, used for access control and notification purposes.
+    """
+
     _name = "general_audit"
     _description = "General Audit"
     _inherit = [

@@ -6,6 +6,21 @@ from odoo import fields, models
 
 
 class GeneralAuditWSCBBBAF4TeamCompetency(models.Model):
+    """Team competency analysis line for the Audit Working Plan (WS-CBBBAF4).
+
+    Assesses whether each team member has the required competencies for the
+    engagement.  If a gap is identified, the required competency upgrades
+    (``competency_upgrade_ids``) are recorded alongside supporting attachments
+    (training materials, certificates, etc.).
+
+    This analysis supports the engagement quality review required under
+    ISA 220 / SA 220, ensuring that the audit team collectively possesses the
+    competence and capabilities needed to perform the engagement.
+
+    ISA/SA references: ISA 220/SA 220 (Quality Control for an Audit);
+    ISQM 1 (Quality Management for Firms).
+    """
+
     _name = "general_audit_ws_cbbbaf4.team_competency"
     _description = "Audit Working Plan (cbbbaf4) - Team Competency Analysis"
     _order = "worksheet_id, sequence, id"
