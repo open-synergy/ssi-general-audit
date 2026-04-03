@@ -6,6 +6,51 @@ from odoo import api, fields, models
 
 
 class GeneralAuditWSaa899baf(models.Model):
+    """Plausible Relationship Audit Procedure (WS-AA899BAF).
+
+    Worksheet untuk mendokumentasikan **Prosedur Audit Analitis — Hubungan
+    yang Masuk Akal** (*Plausible Relationship*) sebagai bagian dari fase
+    **Risk Responses** audit umum, sesuai **SA 520** (Prosedur Analitis).
+
+    Prosedur ini mengidentifikasi dan mengevaluasi hubungan yang diperkirakan
+    ada di antara data keuangan dan non-keuangan, atau di antara item-item
+    dalam laporan keuangan itu sendiri.  Contoh hubungan yang masuk akal:
+
+    * Antara jumlah karyawan dengan biaya gaji.
+    * Antara volume produksi dengan biaya bahan baku.
+    * Antara saldo piutang dengan pendapatan penjualan.
+
+    Auditor menetapkan ekspektasi nilai (*expected value*) berdasarkan
+    hubungan tersebut, kemudian membandingkannya dengan nilai tercatat.
+    Selisih yang signifikan di luar ambang yang dapat diterima (*threshold*)
+    merupakan indikasi potensi salah saji yang harus ditindaklanjuti.
+
+    **SA Reference:** SA 520 (Prosedur Analitis), SA 330 (Respons Auditor
+    atas Risiko yang Dinilai)
+
+    **Worksheet Category:** Risk Responses (RE)
+    **Worksheet Type Code:** AA899BAF
+
+    Hubungan ke Worksheet Lain
+    --------------------------
+    Worksheet ini mensyaratkan referensi ke **WS-E51BB1C** (Key Audit
+    Procedures) yang telah berstatus *performed*, sehingga auditor hanya
+    dapat memilih prosedur audit kunci yang memang sudah direncanakan dan
+    dimuat dalam program audit.
+
+    Field Utama
+    -----------
+    ws_e51bb1c_id : Many2one ke ``general_audit_ws_e51bb1c``
+        Worksheet Key Audit Procedures yang menjadi dasar pemilihan prosedur.
+    key_audit_procedure_id : Many2one ke ``general_audit_audit_procedure_category``
+        Prosedur audit kunci (kategori prosedur) yang sedang direspons.
+    account_type_id : Many2one ke ``client_account_type``
+        Tipe akun standar yang menjadi subjek prosedur analitis ini.
+    assertion_type_ids : Many2many ke ``general_audit_assersion_type``
+        Asersi laporan keuangan (SA 315) yang diuji melalui prosedur ini,
+        misalnya: Keberadaan, Kelengkapan, Penilaian, Penyajian.
+    """
+
     _name = "general_audit_ws_aa899baf"
     _description = "Plausible Relationship Audit Procedure (aa899baf)"
     _inherit = [

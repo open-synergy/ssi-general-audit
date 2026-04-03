@@ -6,6 +6,52 @@ from odoo import api, fields, models
 
 
 class GeneralAuditWSde3244b(models.Model):
+    """Comparative Audit Procedure (WS-DE3244B).
+
+    Worksheet untuk mendokumentasikan **Prosedur Audit Analitis — Komparatif**
+    (*Comparative*) sebagai bagian dari fase **Risk Responses** audit umum,
+    sesuai **SA 520** (Prosedur Analitis).
+
+    Prosedur komparatif membandingkan informasi keuangan periode berjalan
+    dengan informasi pembanding yang relevan, antara lain:
+
+    * Informasi yang sebanding dari periode sebelumnya (*prior-year*).
+    * Anggaran (*budget*) atau prakiraan (*forecast*) yang disetujui manajemen.
+    * Rata-rata industri atau entitas sejenis untuk periode yang sama.
+    * Ekspektasi auditor yang dibangun dari tren historis.
+
+    Dengan membandingkan angka-angka tersebut, auditor dapat mengidentifikasi
+    fluktuasi atau hubungan yang tidak konsisten dengan informasi lain yang
+    relevan, atau yang menyimpang dari nilai yang diharapkan.  Perbedaan
+    signifikan merupakan indikasi potensi salah saji yang harus
+    ditindaklanjuti lebih lanjut (SA 520.6).
+
+    **SA Reference:** SA 520 (Prosedur Analitis), SA 330 (Respons Auditor
+    atas Risiko yang Dinilai)
+
+    **Worksheet Category:** Risk Responses (RE)
+    **Worksheet Type Code:** DE3244B
+
+    Hubungan ke Worksheet Lain
+    --------------------------
+    Worksheet ini mensyaratkan referensi ke **WS-E51BB1C** (Key Audit
+    Procedures) yang telah berstatus *performed*, sehingga prosedur
+    komparatif yang dibuat terhubung langsung dengan program audit yang
+    direncanakan auditor.
+
+    Field Utama
+    -----------
+    ws_e51bb1c_id : Many2one ke ``general_audit_ws_e51bb1c``
+        Worksheet Key Audit Procedures yang menjadi dasar pemilihan prosedur.
+    key_audit_procedure_id : Many2one ke ``general_audit_audit_procedure_category``
+        Prosedur audit kunci (kategori prosedur) yang sedang direspons.
+    account_type_id : Many2one ke ``client_account_type``
+        Tipe akun standar yang menjadi subjek prosedur komparatif ini.
+    assertion_type_ids : Many2many ke ``general_audit_assersion_type``
+        Asersi laporan keuangan (SA 315) yang diuji melalui prosedur ini,
+        misalnya: Keberadaan, Kelengkapan, Penilaian, Penyajian.
+    """
+
     _name = "general_audit_ws_de3244b"
     _description = "Comparative Audit Procedure (de3244b)"
     _inherit = [
