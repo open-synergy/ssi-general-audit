@@ -27,6 +27,11 @@
         />
         <field name="arch" type="xml">
             <data>
+                <xpath expr="//field[@name='general_audit_id']" position="after">
+                    <field name="account_mode" />
+                    <field name="account_id" optional="show" />
+                    <field name="account_type_id" optional="show" />
+                </xpath>
             </data>
         </field>
     </record>
@@ -43,6 +48,7 @@
         <field name="arch" type="xml">
             <data>
                 <xpath expr="//group[@name='header_center']" position="inside">
+                    <field name="account_mode" />
                     <field
                         name="allowed_account_ids"
                         widget="many2many_tags"
@@ -51,6 +57,17 @@
                     <field
                         name="account_id"
                         domain="[('id', 'in', allowed_account_ids)]"
+                        attrs="{'invisible': [('account_mode', '!=', 'account')]}"
+                    />
+                    <field
+                        name="allowed_account_type_ids"
+                        widget="many2many_tags"
+                        invisible="1"
+                    />
+                    <field
+                        name="account_type_id"
+                        domain="[('id', 'in', allowed_account_type_ids)]"
+                        attrs="{'invisible': [('account_mode', '!=', 'standard_account')]}"
                     />
                 </xpath>
                 <xpath expr="//notebook/page[1]" position="before">

@@ -33,6 +33,20 @@ class GeneralAuditWSb5e3d9f(models.Model):
         "ssi_general_audit_worksheet_client_package." "worksheet_type_b5e3d9f"
     )
 
+    account_mode = fields.Selection(
+        string="Account Mode",
+        selection=[
+            ("account", "Account"),
+            ("standard_account", "Standard Account"),
+        ],
+        default="account",
+        required=True,
+        readonly=True,
+        states={
+            "open": [("readonly", False)],
+        },
+        help="Determines whether to select by Account or Standard Account.",
+    )
     account_id = fields.Many2one(
         comodel_name="client_account",
         string="Account",
@@ -48,6 +62,24 @@ class GeneralAuditWSb5e3d9f(models.Model):
         comodel_name="client_account",
         string="Allowed Accounts",
         related="general_audit_id.account_ids",
+        compute_sudo=True,
+    )
+    account_type_id = fields.Many2one(
+        comodel_name="client_account_type",
+        string="Standard Account",
+        required=False,
+        readonly=True,
+        states={
+            "open": [("readonly", False)],
+        },
+        help="Standard account type related to this subledger entry.",
+    )
+    allowed_account_type_ids = fields.Many2many(
+        comodel_name="client_account_type",
+        related="general_audit_id.account_type_ids",
+        string="Allowed Account Types",
+        store=False,
+        help="Account types allowed for selection in this subledger.",
         compute_sudo=True,
     )
     detail_id = fields.Many2one(
