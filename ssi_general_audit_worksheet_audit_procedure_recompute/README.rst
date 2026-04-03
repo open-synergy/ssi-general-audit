@@ -25,7 +25,18 @@ recalculation provides high-quality, reliable evidence for the **Accuracy** and
   Procedures worksheet (Lead Schedule / WS-E51BB1C)
 - Associates the recalculation with relevant financial statement assertions
   (e.g., Accuracy, Valuation and Allocation)
-- Ties the recalculation to the relevant standard account type being audited
+- Ties the recalculation to the relevant standard account type and/or specific
+  client account being audited
+- Imports raw data from either a **General Ledger** (WS-D209914) or a
+  **Subledger** (WS-B5E3D9F) worksheet, selected via the *Data Mode* field
+- Provides configurable column mapping (Ref column, Original Amount column)
+  and number-format settings (thousand/decimal separators)
+- Allows the auditor to define a **recompute formula** using ``col_N``
+  variables (e.g., ``col_3 + col_4 - col_5``) that reference columns from the
+  raw data
+- Automatically generates a comparison result (*Recompute Data*) containing
+  Ref, Original Amount, Recompute Amount, Diff, and Result (Ok / Not Ok)
+  columns
 - Follows the standard worksheet workflow: Draft → Open → Confirm → Done
 
 **Models:**

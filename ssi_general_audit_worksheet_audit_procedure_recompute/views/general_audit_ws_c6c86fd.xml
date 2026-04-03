@@ -29,6 +29,10 @@
             <data>
                 <xpath expr="//field[@name='general_audit_id']" position="after">
                     <field name="account_type_id" />
+                    <field name="account_id" optional="hide" />
+                    <field name="data_mode" optional="hide" />
+                    <field name="general_ledger_id" optional="hide" />
+                    <field name="subledger_id" optional="hide" />
                     <field name="key_audit_procedure_id" />
                     <field
                         name="assertion_type_ids"
@@ -64,6 +68,11 @@
                         name="account_type_id"
                         domain="[('id', 'in', allowed_account_type_ids)]"
                     />
+                    <field name="allowed_account_ids" invisible="1" />
+                    <field
+                        name="account_id"
+                        domain="[('id', 'in', allowed_account_ids), ('type_id', '=', account_type_id)]"
+                    />
                     <field
                         name="allowed_key_audit_procedure_ids"
                         widget="many2many_tags"
@@ -84,8 +93,69 @@
                         widget="many2many_tags"
                         domain="[('id','in', allowed_assertion_type_ids)]"
                     />
+                    <field name="data_mode" />
+                    <field name="allowed_general_ledger_ids" invisible="1" />
+                    <field
+                        name="general_ledger_id"
+                        domain="[('id', 'in', allowed_general_ledger_ids)]"
+                        attrs="{'invisible': [('data_mode', '!=', 'gl')]}"
+                    />
+                    <field name="allowed_subledger_ids" invisible="1" />
+                    <field
+                        name="subledger_id"
+                        domain="[('id', 'in', allowed_subledger_ids)]"
+                        attrs="{'invisible': [('data_mode', '!=', 'subledger')]}"
+                    />
                 </xpath>
                 <xpath expr="//page[1]" position="before">
+                    <page name="recompute_config" string="Recompute Configuration">
+                        <group>
+                            <group>
+                                <field name="ref_col_number" />
+                                <field name="original_amount_col_number" />
+                            </group>
+                            <group>
+                                <field name="thousand_separator" />
+                                <field name="decimal_separator" />
+                            </group>
+                        </group>
+                    </page>
+                    <page name="raw_data" string="Raw Data">
+                        <field name="raw_data" nolabel="1" widget="csv_table" />
+                    </page>
+                    <page name="recompute_formula" string="Recompute Formula">
+                        <button
+                            name="action_recompute"
+                            type="object"
+                            string="Recompute"
+                            class="btn-primary"
+                            attrs="{'invisible': [('state', '!=', 'open')]}"
+                        />
+                        <separator string="Recompute Formula" />
+                        <field name="recompute_formula" nolabel="1" widget="ace" />
+                        <div class="alert alert-info" role="alert">
+                            <p><strong>How to write the formula:</strong></p>
+                            <p>Use <code
+                                >col_N</code> to reference column N from the raw data (1-based). For example:</p>
+                            <ul>
+                                <li><code
+                                    >col_3 + col_4</code> — sum of columns 3 and 4</li>
+                                <li><code
+                                    >col_3 - col_4</code> — difference between columns 3 and 4</li>
+                                <li><code
+                                    >col_3 * col_4 / col_5</code> — multiply col 3 by col 4, then divide by col 5</li>
+                                <li><code
+                                    >col_3 + col_4 - col_5</code> — combine addition and subtraction</li>
+                            </ul>
+                            <p>Standard Python arithmetic operators are supported: <code
+                                >+</code>, <code>-</code>, <code>*</code>, <code
+                                >/</code>, <code>//</code> (floor division), <code
+                                >**</code> (power), <code>%</code> (modulo).</p>
+                        </div>
+                    </page>
+                    <page name="recompute_data" string="Recompute Data">
+                        <field name="recompute_data" nolabel="1" widget="csv_table" />
+                    </page>
                 </xpath>
             </data>
         </field>
