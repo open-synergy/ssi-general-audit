@@ -5,6 +5,22 @@ from odoo import fields, models
 
 
 class MixinExpertDetail(models.AbstractModel):
+    """
+    Abstract base class for Expert Evaluation Detail Lines.
+
+    Provides the common fields for a single evaluation detail line on
+    an expert worksheet.  Concrete models (``general_audit_ws_bab9d32.detail``
+    for Auditor's Expert and ``general_audit_ws_cda3a68.detail`` for
+    Management's Expert) inherit this mixin.  Each line records:
+
+    - The evaluation factor being assessed.
+    - The factor's category (derived from the factor).
+    - A free-text explanation or reference supporting the evaluation.
+
+    Detail lines are sorted by sequence, then category, which mirrors the
+    structured evaluation format prescribed by ISA 620 / SA 620 and ISA 500.
+    """
+
     _name = "mixin.expert.detail"
     _description = "Abstract Base for Expert Details"
     _abstract = True

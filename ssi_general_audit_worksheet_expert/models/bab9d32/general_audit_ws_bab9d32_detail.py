@@ -6,6 +6,17 @@ from odoo import fields, models
 
 
 class GeneralAuditWSbab9d32Detail(models.Model):
+    """
+    Auditor's Expert Worksheet — Evaluation Detail Line (bab9d32)
+
+    One evaluation line within the Auditor's Expert worksheet
+    (WS.040.1).  Each line covers a specific evaluation factor (e.g.,
+    competence, objectivity, scope) and allows the auditor to record an
+    explanation or reference supporting the assessment of that factor.
+
+    Child of ``general_audit_ws_bab9d32``.  Cascades on parent delete.
+    """
+
     _name = "general_audit_ws_bab9d32.detail"
     _inherit = [
         "mixin.expert.detail",

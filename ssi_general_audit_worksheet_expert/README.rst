@@ -6,6 +6,49 @@
 General Audit Worksheet - Expert
 ================================
 
+This module provides the worksheets for documenting the **evaluation of
+experts** (both auditor-engaged and management-engaged) as required by
+ISA 620 / SA 620 (Using the Work of an Auditor's Expert) and ISA 500 /
+SA 500 (Audit Evidence).
+
+When an expert's work is used during an audit, the auditor must evaluate
+whether the expert has the competence, capabilities, and objectivity
+necessary, and whether the scope and methods are adequate.  The worksheets
+in this module cover:
+
+1. **WS.040.1 — Auditor's Expert** — Documents the evaluation of an
+   individual or organisation engaged directly by the auditor.  Evaluation
+   factors are grouped by category (competence, capabilities, objectivity)
+   and each factor is assessed with a free-text explanation.
+2. **WS.040.2 — Management's Expert** — Documents the auditor's review of
+   an expert engaged by management to produce information used as audit
+   evidence.  Uses the same structured factor-based evaluation as WS.040.1.
+
+**Key features:**
+
+- Factor-based evaluation with configurable categories and factors
+- Auto-populate detail lines from the master factor library
+- Separate worksheets for auditor-engaged vs management-engaged experts
+- Follows the standard worksheet workflow: Draft → Open → Confirm → Done
+
+**Models:**
+
+- ``general_audit_ws_bab9d32``          — WS.040.1 Auditor's Expert
+- ``general_audit_ws_bab9d32.detail``   — Evaluation detail line (Auditor's Expert)
+- ``general_audit_ws_bab9d32.factor``   — Evaluation factor master (Auditor's Expert)
+- ``general_audit_ws_bab9d32.category`` — Factor category master (Auditor's Expert)
+- ``general_audit_ws_cda3a68``          — WS.040.2 Management's Expert
+- ``general_audit_ws_cda3a68.detail``   — Evaluation detail line (Management's Expert)
+- ``general_audit_ws_cda3a68.factor``   — Evaluation factor master (Management's Expert)
+- ``general_audit_ws_cda3a68.category`` — Factor category master (Management's Expert)
+- ``mixin.expert``                      — Abstract mixin providing expert worksheet behaviour
+- ``mixin.expert.detail``               — Abstract base for evaluation detail lines
+- ``mixin.expert.factor``               — Abstract base for evaluation factor masters
+- ``mixin.expert.category``             — Abstract base for factor categories
+
+**ISA / SA references:** ISA 500 / SA 500 — Audit Evidence;
+ISA 620 / SA 620 — Using the Work of an Auditor's Expert
+
 
 Installation
 ============

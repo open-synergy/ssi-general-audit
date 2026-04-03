@@ -6,6 +6,17 @@ from odoo import fields, models
 
 
 class GeneralAuditWScda3a68Detail(models.Model):
+    """
+    Management's Expert Worksheet — Evaluation Detail Line (cda3a68)
+
+    One evaluation line within the Management's Expert worksheet
+    (WS.040.2).  Each line covers a specific evaluation factor and
+    allows the auditor to record an explanation or reference supporting
+    the assessment of that factor for the management-engaged expert.
+
+    Child of ``general_audit_ws_cda3a68``.  Cascades on parent delete.
+    """
+
     _name = "general_audit_ws_cda3a68.detail"
     _inherit = [
         "mixin.expert.detail",

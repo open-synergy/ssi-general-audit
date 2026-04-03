@@ -6,6 +6,15 @@ from odoo import fields, models
 
 
 class GeneralAuditWScda3a68Factor(models.Model):
+    """
+    Management's Expert Worksheet — Evaluation Factor Master (cda3a68)
+
+    Master-data model containing the library of evaluation factors for
+    the Management's Expert worksheet (WS.040.2).  Factors are grouped
+    by category and each is linked to exactly one
+    ``general_audit_ws_cda3a68.category``.
+    """
+
     _name = "general_audit_ws_cda3a68.factor"
     _inherit = [
         "mixin.expert.factor",

@@ -8,6 +8,25 @@ from odoo.addons.ssi_decorator import ssi_decorator
 
 
 class MixinExpert(models.AbstractModel):
+    """
+    Abstract mixin that provides the common Expert worksheet behaviour.
+
+    Both ``general_audit_ws_bab9d32`` (Auditor's Expert, WS.040.1) and
+    ``general_audit_ws_cda3a68`` (Management's Expert, WS.040.2) inherit
+    this mixin.  It supplies:
+
+    - Identity fields for the expert (name, field of expertise, contracting
+      party, and affected accounts).
+    - A ``detail_ids`` One2many linking to the evaluation factor lines.
+    - Action ``action_populate_expert`` that auto-creates one detail line
+      per configured factor, keeping the worksheet consistent with the master.
+    - View-injection helpers that insert the expert header group and
+      detail tab into the concrete worksheet form view.
+
+    Subclasses must set ``_detail_model_name`` and ``_factor_model_name`` to
+    the concrete model names for the detail lines and factor master.
+    """
+
     _name = "mixin.expert"
     _description = "Mixin for Expert"
     _detail_model_name = ""

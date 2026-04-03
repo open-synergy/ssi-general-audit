@@ -5,6 +5,19 @@ from odoo import fields, models
 
 
 class MixinExpertFactor(models.AbstractModel):
+    """
+    Abstract base class for Expert Evaluation Factors.
+
+    Provides the common fields for a master-data evaluation factor used in
+    expert worksheets.  Concrete models (``general_audit_ws_bab9d32.factor``
+    for Auditor's Expert and ``general_audit_ws_cda3a68.factor`` for
+    Management's Expert) inherit this mixin.  Each factor belongs to one
+    category and appears as one evaluation line on the worksheet.
+
+    Factors are translatable so their names can be adapted to local language
+    requirements.
+    """
+
     _name = "mixin.expert.factor"
     _inherit = [
         "mixin.master_data",

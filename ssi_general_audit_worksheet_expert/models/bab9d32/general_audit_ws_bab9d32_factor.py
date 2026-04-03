@@ -6,6 +6,16 @@ from odoo import fields, models
 
 
 class GeneralAuditWSbab9d32Factor(models.Model):
+    """
+    Auditor's Expert Worksheet — Evaluation Factor Master (bab9d32)
+
+    Master-data model containing the library of evaluation factors for
+    the Auditor's Expert worksheet (WS.040.1).  Examples of factors
+    include: competence, capabilities, objectivity, scope adequacy.
+    Factors are grouped by category and each is linked to exactly one
+    ``general_audit_ws_bab9d32.category``.
+    """
+
     _name = "general_audit_ws_bab9d32.factor"
     _inherit = [
         "mixin.expert.factor",
