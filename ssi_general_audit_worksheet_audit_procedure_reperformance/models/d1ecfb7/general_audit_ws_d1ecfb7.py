@@ -6,6 +6,40 @@ from odoo import api, fields, models
 
 
 class GeneralAuditWSd1ecfb7(models.Model):
+    """
+    Re-performance Audit Procedure Worksheet (WS-D1ECfb7).
+
+    Implements the **Re-performance** audit procedure as defined in ISA 500 /
+    SA 500 (Audit Evidence). Re-performance involves the auditor's independent
+    execution of procedures or controls that were originally performed as part of
+    the entity's internal control system — for example, re-performing the ageing
+    of accounts receivable, re-reconciling a bank account, or independently
+    re-executing an approval workflow to confirm that the control operates as
+    designed.
+
+    Unlike recalculation (which verifies only mathematical accuracy),
+    re-performance re-executes the **complete procedure end-to-end**. This makes
+    it especially effective as a test of controls: the auditor determines whether
+    the control would have detected or prevented a material misstatement if it had
+    been operating properly during the period under audit.
+
+    **Audit purpose:**
+
+    - Documents the auditor's full independent re-execution of a client procedure
+      or internal control activity.
+    - Links the re-performance to a specific Key Audit Procedure (WS-E51BB1C)
+      and the relevant financial statement assertions.
+    - Associates the worksheet with the relevant standard account type for
+      traceability across the audit file.
+    - Provides substantive evidence or test-of-controls evidence that complements
+      inquiry, observation, and analytical procedures, supporting the auditor's
+      conclusion under ISA 330.
+
+    **ISA / SA references:** ISA 500 / SA 500 — Audit Evidence;
+    ISA 315 / SA 315 — Identifying and Assessing the Risks of Material
+    Misstatement; ISA 330 / SA 330 — The Auditor's Responses to Assessed Risks.
+    """
+
     _name = "general_audit_ws_d1ecfb7"
     _description = "Reperformance Audit Procedure (d1ecfb7)"
     _inherit = [

@@ -6,6 +6,39 @@
 General Audit Worksheet - Reperformance Audit Procedure
 =======================================================
 
+This module provides the worksheet for documenting **re-performance** audit
+procedures, as required by ISA 500 / SA 500 (Audit Evidence) and ISA 330 /
+SA 330 (The Auditor's Responses to Assessed Risks).
+
+Re-performance involves the auditor's independent execution of procedures or
+controls that were originally performed as part of the entity's internal
+control system — for example, re-performing the ageing of accounts receivable,
+re-reconciling a bank account, or independently re-executing an approval
+workflow to confirm that the control operates as designed.
+
+Unlike recalculation (which verifies mathematical accuracy only),
+re-performance re-executes the **complete procedure end-to-end**. This makes
+it especially effective as a **test of controls**: the auditor determines
+whether the control would have detected or prevented a material misstatement.
+
+**Key features:**
+
+- Links each re-performance session to a specific audit area via the Key Audit
+  Procedures worksheet (Lead Schedule / WS-E51BB1C)
+- Associates the re-performance with relevant financial statement assertions
+  (e.g., Completeness, Accuracy, Existence, Rights & Obligations)
+- Ties the re-performance to the relevant standard account type for
+  traceability in the overall audit file
+- Follows the standard worksheet workflow: Draft → Open → Confirm → Done
+
+**Models:**
+
+- ``general_audit_ws_d1ecfb7`` — Main re-performance worksheet
+
+**ISA / SA references:** ISA 500, SA 500 — Audit Evidence;
+ISA 315, SA 315 — Identifying and Assessing the Risks of Material
+Misstatement; ISA 330, SA 330 — The Auditor's Responses to Assessed Risks
+
 
 Installation
 ============
