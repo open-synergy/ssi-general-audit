@@ -11,6 +11,7 @@
     "installable": True,
     "depends": [
         "ssi_general_audit",
+        "ssi_web_widget_csv_table",
     ],
     "data": [
         "security/ir_module_category_data.xml",
