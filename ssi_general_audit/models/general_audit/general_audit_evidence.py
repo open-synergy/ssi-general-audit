@@ -5,6 +5,16 @@ from odoo import fields, models
 
 
 class GeneralAuditEvidence(models.Model):
+    """
+    Tipe Bukti Audit (Audit Evidence).
+
+    Master data yang mendefinisikan jenis-jenis bukti audit yang dapat
+    diperoleh auditor, seperti inspeksi (inspection), konfirmasi
+    (confirmation), observasi (observation), tanya-jawab (inquiry),
+    komputasi ulang (recomputation), dan reperformansi (reperformance).
+    Mengacu pada ISA 500 / SA 500 (Audit Evidence).
+    """
+
     _name = "general_audit_evidence"
     _inherit = [
         "mixin.master_data",

@@ -11,6 +11,23 @@ _logger = logging.getLogger(__name__)
 
 
 class MixinChecklist(models.AbstractModel):
+    """
+    Abstract Mixin untuk Fungsionalitas Checklist pada Worksheet.
+
+    Mixin abstrak yang dapat diwarisi oleh model worksheet manapun untuk
+    mendapatkan fungsionalitas checklist berbasis master data. Mixin ini
+    secara otomatis:
+    - Menyuntikkan tab "Checklist" ke dalam form view worksheet
+    - Membuat baris checklist (``mixin.checklist.value``) dari master item
+      saat dokumen dibuka
+    - Memvalidasi bahwa semua butir checklist telah diisi sebelum dokumen
+      dapat dikonfirmasi
+
+    Digunakan oleh worksheet-worksheet yang memerlukan konfirmasi  terhadap
+    serangkaian pertanyaan standar, misalnya checklist penerimaan/keberlanjutan
+    klien (SQCS / ISQC 1) dan checklist prosedur audit.
+    """
+
     _name = "mixin.checklist"
     _description = "Mixin for checklist from master items"
     _checklist_model_name = ""

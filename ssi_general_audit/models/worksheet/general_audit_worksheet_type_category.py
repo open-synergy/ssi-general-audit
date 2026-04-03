@@ -6,6 +6,15 @@ from odoo import fields, models
 
 
 class GeneralAuditWorksheetTypeCategory(models.Model):
+    """
+    Kategori Tipe Worksheet Audit.
+
+    Master data untuk mengelompokkan tipe-tipe worksheet ke dalam kategori
+    yang mencerminkan fase audit (mis. Perencanaan / Planning, Pelaksanaan /
+    Fieldwork, Pelaporan / Reporting). Digunakan untuk navigasi dan pengelompokan
+    tampilan worksheet dalam dashboard audit.
+    """
+
     _name = "general_audit_worksheet_type_category"
     _inherit = ["mixin.master_data", "image.mixin"]
     _description = "General Audit Worksheet Type Category"

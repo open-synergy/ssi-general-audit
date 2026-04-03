@@ -5,6 +5,19 @@ from odoo import api, fields, models
 
 
 class ResCompany(models.Model):
+    """
+    Extension Model Perusahaan (KAP) untuk Konfigurasi Audit.
+
+    Menambahkan konfigurasi default pada ``res.company`` untuk keperluan
+    komputasi materialitas (ISA 320 / SA 320). KAP dapat mengonfigurasi:
+    - ``ta_computation_item_id``: item komputasi untuk Total Aset, yang
+      digunakan sebagai basis materialitas untuk entitas yang berfokus pada
+      aset (mis. perbankan, perusahaan properti)
+    - ``tr_computation_item_id``: item komputasi untuk Total Pendapatan,
+      yang digunakan sebagai basis materialitas untuk entitas yang berfokus
+      pada pendapatan (mis. perusahaan manufaktur, perdagangan, jasa)
+    """
+
     _inherit = "res.company"
     _ta_computation_item_id = (
         "ssi_general_audit." "trial_balance_computation_item_1_d0b0cb3e"

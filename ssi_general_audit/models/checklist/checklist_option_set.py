@@ -5,6 +5,16 @@ from odoo import fields, models
 
 
 class ChecklistOptionSet(models.Model):
+    """
+    Set Opsi Checklist.
+
+    Master data yang mendefinisikan kumpulan opsi jawaban (``checklist.option``)
+    yang dapat digunakan bersama-sama dalam sebuah checklist (mis. set
+    "Ya/Tidak", set "Ya/Tidak/Tidak Berlaku", set "Sesuai/Tidak Sesuai/Pengecualian").
+    Setiap item checklist (``mixin.checklist.item``) merujuk ke satu option_set
+    untuk menentukan pilihan jawaban yang tersedia.
+    """
+
     _name = "checklist.option_set"
     _inherit = [
         "mixin.master_data",

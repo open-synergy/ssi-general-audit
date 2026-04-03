@@ -9,6 +9,18 @@ from odoo.addons.ssi_decorator import ssi_decorator
 
 
 class ClientAccountMapping(models.Model):
+    """
+    Dokumen Pemetaan Akun Klien (Client Account Mapping).
+
+    Dokumen transaksional yang secara formal mendokumentasikan pemetaan
+    antara akun-akun yang digunakan klien (``client_account``) dengan
+    tipe akun standar (``client_account_type``) yang ditetapkan KAP.
+    Proses pemetaan ini memerlukan approval dan menghasilkan konfigurasi
+    yang digunakan selama engagement audit berlangsung.
+
+    Alur status: draft → open → confirm → done.
+    """
+
     _name = "client_account_mapping"
     _description = "Client Account Mapping"
     _inherit = [

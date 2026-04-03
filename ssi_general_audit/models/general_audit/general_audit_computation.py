@@ -7,6 +7,19 @@ from odoo.tools.safe_eval import safe_eval as eval  # pylint: disable=redefined-
 
 
 class GeneralAuditComputation(models.Model):
+    """
+    Baris Komputasi Ringkasan pada General Audit.
+
+    Menyimpan hasil komputasi item-item ringkasan (mis. Total Aset, Total
+    Pendapatan, Current Ratio) yang dihitung dari neraca saldo klien untuk
+    tiga periode. Digunakan sebagai dasar penetapan materialitas (ISA 320 /
+    SA 320) dan prosedur analitis awal (ISA 520 / SA 520).
+
+    Setiap baris merujuk ke satu ``trial_balance_computation_item`` dan
+    menarik nilai yang sudah dihitung dari masing-masing neraca saldo
+    (home, interim, previous) yang terhubung ke general audit.
+    """
+
     _name = "general_audit.computation"
     _description = "Accountant General Audit Computation"
 

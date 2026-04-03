@@ -6,6 +6,15 @@ from odoo import fields, models, tools
 
 
 class GeneralAuditWorksheetControlAdditional(models.Model):
+    """
+    Tipe Worksheet Tambahan per Audit (SQL View).
+
+    View read-only yang memuat seluruh tipe worksheet yang bersifat opsional
+    (``required = False``) atau ditambahkan sesuai kebutuhan khusus engagement.
+    Digunakan sebagai subset dari ``general_audit.worksheet_control`` untuk
+    memisahkan worksheet tambahan dari worksheet wajib.
+    """
+
     _name = "general_audit.worksheet_control_additional"
     _description = "Accountant General Audit Additional Worksheet Control"
     _auto = False

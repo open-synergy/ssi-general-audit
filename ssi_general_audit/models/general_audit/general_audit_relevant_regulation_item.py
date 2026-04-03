@@ -6,6 +6,15 @@ from odoo import fields, models
 
 
 class GeneralAuditRelevantRegulationItem(models.Model):
+    """
+    Butir dalam Regulasi yang Relevan.
+
+    Detail hierarkis di bawah ``general_audit_relevant_regulation``. Setiap
+    butir merepresentasikan satu pasal, ayat, atau ketentuan spesifik dari
+    regulasi yang relevan dengan entitas yang diaudit. Mendukung struktur
+    bersarang melalui ``parent_id`` untuk mengelompokkan butir-butir terkait.
+    """
+
     _name = "general_audit_relevant_regulation.item"
     _description = "General Audit Relevant Regulation - Items"
     _order = "regulation_id, parent_id, sequence, id"

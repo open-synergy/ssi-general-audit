@@ -7,6 +7,18 @@ from odoo import api, fields, models
 
 
 class GeneralAuditDetail(models.Model):
+    """
+    Baris Akun Klien dalam General Audit.
+
+    Setiap baris merepresentasikan satu akun klien (``client_account``) yang
+    dimasukkan ke dalam dokumen general audit. Model ini menjadi penghubung antara
+    akun klien dengan baris neraca saldo (``client_trial_balance.detail``) untuk
+    tiga periode: periode berjalan (home), interim, dan periode sebelumnya.
+
+    Digunakan oleh auditor untuk menelusuri saldo dan mutasi masing-masing akun
+    klien lintas periode dalam satu engagement audit.
+    """
+
     _name = "general_audit.detail"
     _description = "Accountant General Audit Detail"
     _order = "general_audit_id, type_id, account_id, id"

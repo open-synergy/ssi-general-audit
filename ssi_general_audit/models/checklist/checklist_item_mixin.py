@@ -5,6 +5,17 @@ from odoo import fields, models
 
 
 class MixinChecklistItem(models.AbstractModel):
+    """
+    Abstract Base untuk Master Item Checklist.
+
+    Model abstrak yang menjadi landasan bagi model-model master item
+    checklist pada masing-masing worksheet. Setiap item mendefinisikan
+    satu pertanyaan atau titik kontrol (control point) beserta set opsi
+    jawaban yang tersedia. Model konkret yang mewarisi mixin ini dibuat
+    secara terpisah per tipe worksheet (mis. item checklist acceptance &
+    continuance, item checklist engagement letter).
+    """
+
     _name = "mixin.checklist.item"
     _inherit = [
         "mixin.master_data",

@@ -7,6 +7,17 @@ from odoo import api, fields, models
 
 
 class ClientTrialBalanceStandardDetail(models.Model):
+    """
+    Aggregasi Saldo per Tipe Akun Standar dalam Neraca Saldo.
+
+    Menjumlahkan saldo seluruh akun klien (``client_trial_balance.detail``)
+    yang memiliki tipe akun yang sama ke dalam satu baris ringkasan per
+    tipe akun standar (``client_account_type``). Digunakan sebagai dasar:
+    - Komputasi item ringkasan (Total Aset, Total Liabilitas, dll.)
+    - Prosedur analitis per tipe akun (ISA 520 / SA 520)
+    - Penetapan materialitas per tipe akun
+    """
+
     _name = "client_trial_balance.standard_detail"
     _description = "Accountant Client Trial Balance Standard Detail"
     _order = "sequence, trial_balance_id, id"

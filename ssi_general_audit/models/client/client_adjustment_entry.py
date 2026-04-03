@@ -7,6 +7,23 @@ from odoo.exceptions import UserError
 
 
 class ClientAdjustmentEntry(models.Model):
+    """
+    Jurnal Penyesuaian Audit (Audit Adjustment Journal).
+
+    Dokumen transaksional yang mencatat usulan penyesuaian/koreksi audit
+    yang diidentifikasi auditor selama pelaksanaan audit. Setiap entri
+    berisi baris-baris debit dan kredit (``client_adjustment_entry.detail``)
+    yang menunjukkan koreksi yang perlu dilakukan klien atas laporan
+    keuangannya.
+
+    Penyesuaian audit diklasifikasikan sesuai ISA 450 / SA 450
+    (Evaluation of Misstatements Identified During the Audit), mencakup:
+    - Koreksi yang disetujui klien
+    - Salah saji yang tidak material namun perlu dicatat
+
+    Alur status: draft → confirm → done.
+    """
+
     _name = "client_adjustment_entry"
     _description = "Accountant Client Adjustment Entry"
     _inherit = [

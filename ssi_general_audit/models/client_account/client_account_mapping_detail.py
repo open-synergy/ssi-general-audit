@@ -5,6 +5,16 @@ from odoo import fields, models
 
 
 class ClientAccountMappingDetail(models.Model):
+    """
+    Baris Pemetaan Akun Klien.
+
+    Satu baris dalam dokumen ``client_account_mapping`` yang menyatakan
+    bahwa satu akun klien (``client_account``) dipetakan ke tipe akun
+    standar tertentu (``client_account_type``). Field ``type_id`` dapat
+    dikustomisasi per baris untuk mengakomodasi pemetaan yang lebih
+    spesifik dari default tipe akun.
+    """
+
     _name = "client_account_mapping.detail"
     _description = "Account Mapping Detail"
     _order = "mapping_id, type_id, account_id, id"

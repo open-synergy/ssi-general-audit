@@ -7,6 +7,16 @@ from odoo.exceptions import UserError
 
 
 class ClientAdjustmentEntryDetail(models.Model):
+    """
+    Baris Debit/Kredit Jurnal Penyesuaian Audit.
+
+    Satu baris debit atau kredit dalam ``client_adjustment_entry``. Setiap
+    baris mengidentifikasi akun klien yang terdampak penyesuaian beserta
+    jumlah debit atau kreditnya. Baris ini juga terhubung ke baris detail
+    general audit (``general_audit.detail``) untuk memudahkan penelusuran
+    dampak penyesuaian terhadap saldo akun yang sedang diaudit.
+    """
+
     _name = "client_adjustment_entry.detail"
     _description = "Accountant Client Adjustment Entry Detail"
 

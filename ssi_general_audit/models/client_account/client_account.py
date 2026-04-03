@@ -7,6 +7,19 @@ from odoo.exceptions import UserError
 
 
 class ClientAccount(models.Model):
+    """
+    Akun Klien (Chart of Accounts Klien).
+
+    Menyimpan daftar akun-akun yang digunakan oleh klien yang diaudit.
+    Setiap akun klien dipetakan ke satu tipe akun standar (``client_account_type``)
+    sehingga dapat dianalisis dalam konteks audit. Akun-akun ini menjadi dasar
+    pengisian neraca saldo klien (``client_trial_balance``) dan jurnal penyesuaian
+    audit (``client_adjustment_entry``).
+
+    Proses pemetaan akun klien ke tipe akun standar diformalkan melalui
+    dokumen ``client_account_mapping`` yang memerlukan approval.
+    """
+
     _name = "client_account"
     _inherit = [
         "mixin.master_data",

@@ -11,6 +11,24 @@ from odoo.addons.ssi_decorator import ssi_decorator
 
 
 class GeneralAuditWorksheetMixin(models.AbstractModel):
+    """
+    Abstract Mixin sebagai Landasan Semua Model Worksheet Konkret.
+
+    Mixin abstrak yang harus diwarisi oleh setiap model worksheet konkret
+    (mis. ``general_audit_ws_acceptance``, ``general_audit_ws_audit_result``).
+    Menggunakan ``_inherits`` ke ``general_audit_worksheet`` sehingga setiap
+    worksheet konkret mendelegasikan field-field umumnya ke model induk.
+
+    Fitur yang disediakan mixin ini:
+    - Alur approval (draft → open → confirm → done)
+    - Injeksi elemen view otomatis (approval page, status bar)
+    - Validasi bahwa setiap worksheet konkret harus terhubung ke
+      ``general_audit_worksheet`` melalui field ``worksheet_id``
+
+    Setiap modul worksheet yang terpisah (``ssi_general_audit_worksheet_*``)
+    harus mewarisi mixin ini untuk mendapatkan perilaku standar worksheet.
+    """
+
     _name = "general_audit_worksheet_mixin"
     _description = "General Audit Worksheet Mixin"
     _inherits = {

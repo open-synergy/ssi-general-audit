@@ -6,6 +6,19 @@ from odoo import fields, models
 
 
 class GeneralAuditWorksheetType(models.Model):
+    """
+    Tipe Worksheet Audit.
+
+    Master data yang mendefinisikan jenis-jenis worksheet yang dapat dibuat
+    dalam satu engagement audit (mis. Acceptance & Continuance, Surat Penugasan,
+    Program Audit, Risk Assessment, Hasil Audit, Pelaporan). Menentukan apakah
+    worksheet bersifat wajib (required) atau opsional, berapa jumlah maksimum
+    yang diperbolehkan per audit, serta model teknis Odoo yang digunakan.
+
+    Digunakan untuk mengonfigurasi dokumentasi audit wajib sesuai ketentuan
+    standar pengendalian mutu KAP (SQCS / ISQC 1).
+    """
+
     _name = "general_audit_worksheet_type"
     _inherit = [
         "mixin.master_data",

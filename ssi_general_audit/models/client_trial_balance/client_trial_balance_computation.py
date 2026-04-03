@@ -7,6 +7,19 @@ from odoo.tools.safe_eval import safe_eval as eval  # pylint: disable=redefined-
 
 
 class ClientTrialBalanceComputation(models.Model):
+    """
+    Hasil Komputasi Item Ringkasan pada Neraca Saldo.
+
+    Menyimpan hasil perhitungan satu item komputasi (``trial_balance_computation_item``)
+    untuk neraca saldo tertentu. Nilai dihitung menggunakan kode Python dari
+    item komputasi atau override kustom dari ``client_account_type.computation_item``
+    dalam konteks set tipe akun yang digunakan.
+
+    Digunakan sebagai sumber angka untuk:
+    - Penetapan materialitas (ISA 320 / SA 320): Total Aset, Total Pendapatan
+    - Rasio keuangan: Current Ratio, Debt-to-Equity, ROA, dll. (ISA 520 / SA 520)
+    """
+
     _name = "client_trial_balance.computation"
     _description = "Accountant Client Trial Balance Computation"
 

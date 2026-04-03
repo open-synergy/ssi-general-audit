@@ -6,6 +6,21 @@ from odoo import fields, models
 
 
 class ClientAccountType(models.Model):
+    """
+    Tipe Akun Standar Klien.
+
+    Master data yang mendefinisikan klasifikasi akun standar yang digunakan
+    dalam audit (mis. Kas & Setara Kas, Piutang Usaha, Persediaan, Utang
+    Usaha). Setiap tipe akun:
+    - diklasifikasikan ke dalam satu ``client_account_group``
+    - memiliki saldo normal (debit atau kredit)
+    - dapat memiliki kode Python untuk menghitung nilai audit tertentu
+    - dapat dikaitkan dengan item prosedur analitis (ISA 520 / SA 520)
+
+    Digunakan sebagai standar pemetaan antara akun klien dan tipe akun
+    yang ditetapkan KAP untuk keperluan analisis dan pelaporan audit.
+    """
+
     _name = "client_account_type"
     _inherit = ["mixin.master_data"]
     _description = "Client Account Type"

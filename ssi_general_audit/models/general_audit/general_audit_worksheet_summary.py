@@ -6,6 +6,17 @@ from odoo import api, fields, models
 
 
 class GeneralAuditWorksheetSummary(models.Model):
+    """
+    Ringkasan Kelengkapan Worksheet per General Audit.
+
+    Menyimpan status kelengkapan worksheet untuk setiap tipe worksheet
+    (``general_audit_worksheet_type``) dalam satu engagement audit.
+    Melacak jumlah worksheet yang sudah dibuat, yang sudah selesai (done),
+    dan apakah semua worksheet wajib sudah terpenuhi. Digunakan sebagai
+    dashboard pengendalian mutu audit untuk memastikan seluruh dokumentasi
+    wajib sesuai standar audit telah diselesaikan.
+    """
+
     _name = "general_audit.worksheet_summary"
     _description = "General Audit - Worksheet"
     _auto = True

@@ -6,6 +6,17 @@ from odoo import fields, models, tools
 
 
 class GeneralAuditWorksheetControl(models.Model):
+    """
+    Kontrol Kelengkapan Worksheet per Audit (SQL View).
+
+    View read-only yang menggabungkan (UNION) worksheet wajib (required) dan
+    worksheet tambahan (additional) untuk satu dokumen general audit. Digunakan
+    di halaman utama general audit sebagai panel kontrol untuk memantau status
+    setiap jenis worksheet: apakah sudah dibuat, siapa penanggungjawabnya, dan
+    apa kesimpulannya. Membantu manajer KAP memastikan kelengkapan berkas audit
+    sesuai pemantauan pengendalian mutu.
+    """
+
     _name = "general_audit.worksheet_control"
     _description = "Accountant General Audit Worksheet Control"
     _auto = False

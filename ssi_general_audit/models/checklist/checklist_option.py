@@ -5,6 +5,15 @@ from odoo import fields, models
 
 
 class ChecklistOption(models.Model):
+    """
+    Opsi Jawaban Checklist.
+
+    Master data yang merepresentasikan satu pilihan jawaban yang dapat
+    dipilih dalam checklist audit (mis. "Ya", "Tidak", "Tidak Berlaku",
+    "Dalam Proses"). Opsi-opsi ini dikelompokkan dalam ``checklist.option_set``
+    dan ditampilkan sebagai pilihan pada setiap baris checklist worksheet.
+    """
+
     _name = "checklist.option"
     _inherit = [
         "mixin.master_data",

@@ -6,6 +6,15 @@ from odoo import fields, models
 
 
 class ClientAccountGroup(models.Model):
+    """
+    Grup Akun Klien.
+
+    Master data yang mengelompokkan tipe-tipe akun klien ke dalam kelompok
+    akun yang lebih tinggi (mis. Aset Lancar, Aset Tidak Lancar, Liabilitas
+    Jangka Pendek, Ekuitas, Pendapatan, Beban). Digunakan untuk penyajian
+    laporan keuangan dan analisis material per kelompok akun dalam audit.
+    """
+
     _name = "client_account_group"
     _inherit = [
         "mixin.master_data",

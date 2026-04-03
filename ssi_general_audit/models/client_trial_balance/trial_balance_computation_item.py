@@ -6,6 +6,22 @@ from odoo import fields, models
 
 
 class TrialBalanceComputationItem(models.Model):
+    """
+    Item Komputasi Neraca Saldo (Computation Item).
+
+    Master data yang mendefinisikan formula (kode Python) untuk menghitung
+    satu angka ringkasan dari neraca saldo. Setiap item dikategorikan ke
+    dalam kelompok:
+    - ``summary``       : ringkasan neraca saldo (Total Aset, Total Ekuitas, dll.)
+    - ``liquidity``     : rasio likuiditas (Current Ratio, Quick Ratio)
+    - ``activity``      : rasio aktivitas (Receivable Turnover, dll.)
+    - ``solvency``      : rasio solvabilitas (Debt to Equity, dll.)
+    - ``profitability``  : rasio profitabilitas (ROA, ROE, GPM, dll.)
+
+    Digunakan sebagai dasar penetapan materialitas (ISA 320 / SA 320)
+    dan prosedur analitis (ISA 520 / SA 520).
+    """
+
     _name = "trial_balance_computation_item"
     _inherit = [
         "mixin.master_data",

@@ -7,6 +7,16 @@ from odoo import api, fields, models
 
 
 class GeneralAuditGroupDetail(models.Model):
+    """
+    Baris Grup Akun dalam General Audit.
+
+    Menyimpan referensi ke grup akun klien (``client_account_group``) yang
+    relevan dalam satu engagement audit, beserta saldo teragregasi yang
+    dihitung dari baris grup neraca saldo (``client_trial_balance.group_detail``)
+    untuk tiga periode. Digunakan untuk analisis komparatif saldo per grup
+    akun lintas periode audit.
+    """
+
     _name = "general_audit.group_detail"
     _description = "Accountant General Audit Group Detail"
     _order = "general_audit_id, group_id, id"

@@ -8,6 +8,20 @@ from odoo.exceptions import ValidationError
 
 
 class ClientTrialBalanceDetail(models.Model):
+    """
+    Baris Akun dalam Neraca Saldo Klien.
+
+    Satu baris dalam ``client_trial_balance`` yang mewakili satu akun klien
+    untuk periode tersebut. Menyimpan saldo awal (opening balance), mutasi
+    debit, mutasi kredit, dan saldo akhir (balance). Saldo akhir dihitung
+    sesuai saldo normal (debit/kredit) dari tipe akun terkait.
+
+    Digunakan sebagai sumber data utama untuk:
+    - Aggregasi per tipe akun (``client_trial_balance.standard_detail``)
+    - Aggregasi per grup akun (``client_trial_balance.group_detail``)
+    - Komputasi materialitas dan prosedur analitis
+    """
+
     _name = "client_trial_balance.detail"
     _description = "Accountant Client Trial Balance Detail"
     _order = "trial_balance_id, type_id, account_id, id"

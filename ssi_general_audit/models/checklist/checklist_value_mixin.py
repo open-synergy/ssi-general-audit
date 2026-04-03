@@ -5,6 +5,17 @@ from odoo import fields, models
 
 
 class MixinChecklistValue(models.AbstractModel):
+    """
+    Abstract Base untuk Nilai/Jawaban Checklist.
+
+    Model abstrak yang merepresentasikan satu baris checklist (jawaban)
+    pada sebuah dokumen worksheet. Setiap baris merujuk ke satu master
+    item (``mixin.checklist.item``) dan menyimpan opsi jawaban yang
+    dipilih auditor (``option_id``) beserta keterangan tambahan. Model
+    konkret yang mewarisi mixin ini dibuat secara terpisah per tipe
+    worksheet untuk memisahkan data antar worksheet.
+    """
+
     _name = "mixin.checklist.value"
     _description = "Abstract Base for Checklist"
 

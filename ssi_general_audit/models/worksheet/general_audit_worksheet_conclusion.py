@@ -6,6 +6,16 @@ from odoo import fields, models
 
 
 class GeneralAuditWorksheetConclusion(models.Model):
+    """
+    Kesimpulan Worksheet Audit.
+
+    Master data yang mendefinisikan pilihan kesimpulan yang dapat dipilih
+    auditor saat menyelesaikan sebuah worksheet (mis. "Bukti audit cukup
+    diperoleh", "Terdapat keterbatasan ruang lingkup", "Risiko signifikan
+    teridentifikasi"). Setiap kesimpulan terikat pada satu tipe worksheet
+    tertentu (``type_id``) sesuai konteks prosedur audit yang dilakukan.
+    """
+
     _name = "general_audit_worksheet_conclusion"
     _inherit = [
         "mixin.master_data",

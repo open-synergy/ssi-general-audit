@@ -6,6 +6,22 @@ from odoo import api, fields, models
 
 
 class GeneralAuditWorksheet(models.Model):
+    """
+    Record Bersama untuk Seluruh Worksheet Audit (Shadow Record).
+
+    Model konkret yang menjadi dasar bagi setiap worksheet audit melalui
+    mekanisme *delegated inheritance* (``_inherits``). Satu record
+    ``general_audit_worksheet`` dibuat otomatis ketika worksheet konkret
+    dibuat, dan dihapus otomatis ketika worksheet konkretnya dihapus.
+
+    Menyimpan field-field umum yang dimiliki oleh semua tipe worksheet:
+    tanggal persiapan, tanggal review, penanggungjawab, kesimpulan, dan
+    catatan review. Alur status: draft → open → confirm → done.
+
+    Semua worksheet konkret (mis. acceptance & continuance, assignment letter,
+    audit program) mewarisi field ini melalui ``GeneralAuditWorksheetMixin``.
+    """
+
     _name = "general_audit_worksheet"
     _description = "General Audit Worksheet"
     _inherit = [

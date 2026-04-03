@@ -9,6 +9,25 @@ from odoo.addons.ssi_decorator import ssi_decorator
 
 
 class GeneralAudit(models.Model):
+    """
+    General Audit (Audit Umum).
+
+    Dokumen transaksional utama yang merepresentasikan satu engagement audit umum
+    (general audit) sesuai standar ISA / SA Indonesia. Satu record ``general_audit``
+    menjadi induk dari seluruh proses audit: pemetaan akun klien, neraca saldo,
+    jurnal penyesuaian, worksheet, serta laporan hasil audit.
+
+    Alur status: draft → open → confirm → done (memerlukan approval untuk done).
+
+    Relasi penting:
+    - ``partner_id``          : klien yang diaudit
+    - ``home_trial_balance_id``: neraca saldo periode berjalan
+    - ``interim_trial_balance_id``: neraca saldo interim (jika ada)
+    - ``previous_trial_balance_id``: neraca saldo periode sebelumnya
+    - ``worksheet_ids``       : seluruh worksheet yang terkait
+    - ``adjustment_entry_ids``: seluruh jurnal penyesuaian audit
+    """
+
     _name = "general_audit"
     _description = "General Audit"
     _inherit = [

@@ -9,6 +9,17 @@ from odoo.tools.safe_eval import safe_eval as eval  # pylint: disable=redefined-
 
 
 class GeneralAuditStandardDetail(models.Model):
+    """
+    Baris Tipe Akun Standar dalam General Audit.
+
+    Menyimpan referensi ke tipe akun standar (``client_account_type``) yang
+    dianalisis dalam satu engagement audit, beserta saldo komparatif tiga
+    periode yang diambil dari baris standar neraca saldo
+    (``client_trial_balance.standard_detail``). Digunakan sebagai dasar
+    prosedur analitis substansi (ISA 520 / SA 520) dan penetapan
+    signifikansi material per tipe akun.
+    """
+
     _name = "general_audit.standard_detail"
     _description = "Accountant General Audit Standard Detail"
     _order = "general_audit_id, type_id, id"

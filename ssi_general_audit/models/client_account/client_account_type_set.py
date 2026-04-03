@@ -6,6 +6,19 @@ from odoo import fields, models
 
 
 class ClientAccountTypeSet(models.Model):
+    """
+    Set Tipe Akun Klien.
+
+    Master data yang mengelompokkan tipe-tipe akun standar ke dalam satu
+    konfigurasi yang dapat digunakan ulang di berbagai engagement audit.
+    Setiap ``client_account_type_set`` mendefinisikan:
+    - daftar tipe akun yang relevant (``detail_ids``)
+    - item komputasi khusus yang berlaku untuk set ini (``computation_ids``)
+
+    Digunakan untuk mengonfigurasi konteks akun yang berbeda antar klien
+    (mis. klien manufaktur vs jasa vs keuangan).
+    """
+
     _name = "client_account_type_set"
     _inherit = [
         "mixin.master_data",

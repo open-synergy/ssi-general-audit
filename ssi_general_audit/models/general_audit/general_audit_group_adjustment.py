@@ -7,6 +7,16 @@ from odoo import fields, models, tools
 
 
 class GeneralAuditGroupAdjustment(models.Model):
+    """
+    Ringkasan Penyesuaian Audit per Grup Akun (SQL View).
+
+    View read-only yang mengagregasi seluruh jurnal penyesuaian audit
+    (``client_adjustment_entry_detail``) per grup akun klien
+    (``client_account_group``) dan per dokumen general audit. Digunakan
+    untuk menampilkan total debit dan kredit penyesuaian pada level grup
+    akun (mis. Aset Lancar, Liabilitas Jangka Pendek) di ringkasan audit.
+    """
+
     _name = "general_audit.group_adjustment"
     _description = "Accountant General Audit Group Adjustment"
     _auto = False

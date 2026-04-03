@@ -7,6 +7,16 @@ from odoo import api, fields, models
 
 
 class ClientTrialBalanceGroupDetail(models.Model):
+    """
+    Aggregasi Saldo per Grup Akun dalam Neraca Saldo.
+
+    Menjumlahkan saldo seluruh tipe akun standar (``client_trial_balance.standard_detail``)
+    yang berada dalam grup akun yang sama (``client_account_group``) ke dalam
+    satu baris ringkasan per grup. Digunakan untuk analisis komparatif
+    saldo per kelompok akun lintas periode dan sebagai bahan prosedur
+    analitis pendahuluan.
+    """
+
     _name = "client_trial_balance.group_detail"
     _description = "Accountant Client Trial Balance Group Detail"
     _order = "sequence, trial_balance_id, id"

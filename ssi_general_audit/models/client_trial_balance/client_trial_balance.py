@@ -9,6 +9,23 @@ from odoo.addons.ssi_decorator import ssi_decorator
 
 
 class ClientTrialBalance(models.Model):
+    """
+    Neraca Saldo Klien (Client Trial Balance).
+
+    Dokumen transaksional yang menyimpan neraca saldo klien untuk satu
+    periode tertentu. Dalam satu engagement audit umum, dapat terdapat
+    hingga tiga neraca saldo:
+    - **Home (End Period)**: periode berjalan yang diaudit
+    - **Interim**: periode interim jika audit dilakukan dua tahap
+    - **Previous**: periode sebelumnya sebagai pembanding
+
+    Neraca saldo klien berisi baris-baris akun (``client_trial_balance.detail``)
+    yang menjadi dasar seluruh analisis audit: prosedur analitis, penetapan
+    materialitas, identifikasi risiko, dan penentuan penyesuaian audit.
+
+    Alur status: draft → open → confirm → done.
+    """
+
     _name = "client_trial_balance"
     _description = "Accountant Client Trial Balance"
     _inherit = [

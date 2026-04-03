@@ -6,6 +6,17 @@ from odoo import fields, models, tools
 
 
 class GeneralAuditWorksheetControlRequired(models.Model):
+    """
+    Tipe Worksheet Wajib per Audit (SQL View).
+
+    View read-only yang memuat seluruh tipe worksheet yang bersifat wajib
+    (``required = True``) bagi sebuah dokumen general audit. Data diambil
+    dari konfigurasi ``general_audit_worksheet_type`` yang ditandai sebagai
+    wajib pada engagement audit tertentu. Digunakan sebagai subset dari
+    ``general_audit.worksheet_control`` untuk memisahkan worksheet wajib
+    dari worksheet tambahan.
+    """
+
     _name = "general_audit.worksheet_control_required"
     _description = "Accountant General Audit Required Worksheet Control"
     _auto = False

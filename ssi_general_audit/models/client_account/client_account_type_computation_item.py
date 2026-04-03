@@ -6,6 +6,18 @@ from odoo import api, fields, models
 
 
 class ClientAccountTypeComputationItem(models.Model):
+    """
+    Override Komputasi untuk Tipe Akun dalam suatu Set.
+
+    Mendefinisikan kode Python kustom untuk menghitung nilai item komputasi
+    tertentu (``trial_balance_computation_item``) dalam konteks ``client_account_type_set``
+    tertentu. Jika ``use_default = True``, kode Python dari item komputasi
+    induk digunakan; jika False, kode Python pada baris ini yang digunakan.
+
+    Digunakan untuk menyesuaikan formula komputasi materialitas dan prosedur
+    analitis agar sesuai dengan karakteristik spesifik setiap set tipe akun.
+    """
+
     _name = "client_account_type.computation_item"
     _description = "Client Account Type Computation Item"
     _order = "account_type_set_id, sequence, id"
