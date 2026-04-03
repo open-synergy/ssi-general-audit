@@ -6,6 +6,56 @@
 General Audit Worksheet - Audit Result
 ======================================
 
+This module provides the worksheets for documenting **audit results** at the
+conclusion of fieldwork, as required by ISA 450 / SA 450 (Evaluation of
+Misstatements), ISA 265 / SA 265 (Communicating Deficiencies in Internal
+Control), ISA 700 / SA 700 (Forming an Opinion), and ISA 260 / SA 260
+(Communication with Those Charged with Governance).
+
+The Audit Result phase consolidates all open findings and control deficiencies
+into a structured discussion and formulation process before the audit opinion
+is signed.  The worksheets in this module cover:
+
+1. **WR.110.1 — Findings That Influence Opinion** — The primary register for
+   audit misstatements (factual, judgemental, or projected) accumulated during
+   fieldwork.  Each finding is documented in the standard 5-C format (Condition,
+   Criteria, Cause, Effect, Recommendation) and classified as *major* or
+   *minor*.
+2. **WR.110.2 — Control Deficiencies** — Documents identified internal
+   control deficiencies.  Under ISA 265 / SA 265, significant deficiencies
+   must be communicated in writing to those charged with governance.
+3. **WR.110.3 — Audit Result Formulation** — Aggregates the findings from
+   WR.110.1 and WR.110.2 onto a single engagement-partner view to support
+   formulation of the audit opinion.
+4. **WR.110.4 — Audit Result Discussion** — Records the formal audit results
+   discussion with management, tracking whether each finding or deficiency has
+   been *resolved* or *escalated* (e.g., to the Management Letter).
+
+**Key features:**
+
+- Captures findings and control deficiencies with the 5-C audit format
+- Classifies severity (major / minor) for prioritisation and communication
+- Automatically populates the discussion worksheet from upstream findings
+- Tracks resolution status (resolved / escalated) per finding
+- Follows the standard worksheet workflow: Draft → Open → Confirm → Done
+
+**Models:**
+
+- ``general_audit_ws_a0319a2``         — WR.110.1 Findings That Influence Opinion
+- ``general_audit_ws_a0319a2.detail``  — Detail line for each finding
+- ``general_audit_ws_d33420f``         — WR.110.2 Control Deficiencies
+- ``general_audit_ws_d33420f.detail``  — Detail line for each deficiency
+- ``general_audit_ws_ab19fd4``         — WR.110.3 Audit Result Formulation
+- ``general_audit_ws_bc3e272``         — WR.110.4 Audit Result Discussion
+- ``general_audit_ws_bc3e272.influence`` — Discussion line for findings
+- ``general_audit_ws_bc3e272.control``   — Discussion line for deficiencies
+
+**ISA / SA references:** ISA 260 / SA 260 — Communication with TCWG;
+ISA 265 / SA 265 — Communicating Deficiencies in Internal Control;
+ISA 450 / SA 450 — Evaluation of Misstatements Identified during the Audit;
+ISA 700 / SA 700 — Forming an Opinion and Reporting on Financial Statements;
+ISA 705 / SA 705 — Modifications to the Opinion in the Independent Auditor's Report
+
 
 Installation
 ============

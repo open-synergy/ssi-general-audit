@@ -6,6 +6,21 @@ from odoo import fields, models
 
 
 class GeneralAuditWSa0319a2Detail(models.Model):
+    """Detail line for WR.110.1 — individual finding that influences the opinion.
+
+    Each line represents one identified misstatement or significant audit
+    finding.  The standard 5-C audit finding format is used:
+
+    * **Condition**      — what was actually observed during the audit.
+    * **Criteria**       — the standard, policy, or expectation that should be met.
+    * **Cause**          — the root reason the condition occurred.
+    * **Effect**         — the monetary or qualitative impact on the financial statements.
+    * **Recommendation** — corrective action proposed to management.
+
+    The ``risk`` field (major / minor) classifies the materiality level of the
+    finding, supporting the auditor's communication obligations under ISA 265 / SA 265.
+    """
+
     _name = "general_audit_ws_a0319a2.detail"
     _description = "Findings That Influence Opinion (a0319a2) - Detail"
     _order = "sequence, id"

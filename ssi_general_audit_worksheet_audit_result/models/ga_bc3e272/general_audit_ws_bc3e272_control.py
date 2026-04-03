@@ -6,6 +6,14 @@ from odoo import fields, models
 
 
 class GeneralAuditWSbc3e272Control(models.Model):
+    """Discussion line for WR.110.4 — control deficiency under discussion.
+
+    References a control deficiency detail from WR.110.2 (``detail_id``) and
+    captures the outcome of the audit result discussion: whether the deficiency
+    has been *resolved* or *escalated* (e.g., to be communicated in writing
+    to management or TCWG via the Management Letter).
+    """
+
     _name = "general_audit_ws_bc3e272.control"
     _description = "Audit Result Discussion (bc3e272) - " "Control Deficiencies"
     _order = "sequence, id"

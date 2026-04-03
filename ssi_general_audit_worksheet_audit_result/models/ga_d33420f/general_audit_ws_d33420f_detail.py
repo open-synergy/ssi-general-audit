@@ -6,6 +6,16 @@ from odoo import fields, models
 
 
 class GeneralAuditWSd33420fDetail(models.Model):
+    """Detail line for WR.110.2 — individual internal control deficiency.
+
+    Documents one control deficiency using the standard 5-C audit finding
+    format: Condition, Criteria, Cause, Effect, and Recommendation.
+    The ``risk`` field classifies severity (major / minor) to assist the
+    auditor in fulfilling the written-communication requirements of
+    ISA 265 / SA 265 (significant deficiencies to TCWG; other deficiencies
+    to management).
+    """
+
     _name = "general_audit_ws_d33420f.detail"
     _description = "Control Deficiencies (d33420f) - Detail"
     _order = "sequence, id"

@@ -7,6 +7,24 @@ from odoo.addons.ssi_decorator import ssi_decorator
 
 
 class GeneralAuditWSbc3e272(models.Model):
+    """Worksheet WR.110.4 — Audit Result Discussion.
+
+    Facilitates the formal discussion of audit findings and control deficiencies
+    with management or those charged with governance (TCWG).  Each item in the
+    discussion is linked to an upstream finding (WR.110.1 via ``influence_ids``)
+    or a control deficiency (WR.110.2 via ``control_ids``), and is tracked to
+    conclude as either *resolved* or *escalated*.
+
+    ``action_populate`` auto-imports items from the upstream worksheets,
+    ensuring all open findings and deficiencies are included in the discussion.
+    Escalated items subsequently feed into the Management Letter (WR.140.1).
+
+    Workflow: Draft → Open → Confirm → Done
+    ISA/SA references: ISA 260/SA 260 (Communication with TCWG);
+    ISA 265/SA 265 (Communicating Deficiencies);
+    ISA 450/SA 450 (Evaluation of Misstatements).
+    """
+
     _name = "general_audit_ws_bc3e272"
     _description = "Audit Result Discussion (bc3e272)"
     _inherit = [

@@ -6,6 +6,25 @@ from odoo import api, fields, models
 
 
 class GeneralAuditWSab19fd4(models.Model):
+    """Worksheet WR.110.3 — Audit Result Formulation.
+
+    Consolidates all findings from WR.110.1 (Findings That Influence Opinion)
+    and control deficiencies from WR.110.2 (Control Deficiencies) onto a
+    single engagement-partner view to support the formulation of the final
+    audit opinion.
+
+    The ``link_1_ids`` field aggregates the detail lines of all WR.110.1
+    worksheets within the same general audit, and ``link_2_ids`` aggregates
+    the detail lines of all WR.110.2 worksheets.  Both fields are recomputed
+    via ``action_recompute``, which should be called after upstream worksheets
+    have been confirmed.
+
+    Workflow: Draft → Open → Confirm → Done
+    ISA/SA references: ISA 700/SA 700 (Forming an Opinion);
+    ISA 450/SA 450 (Evaluation of Misstatements);
+    ISA 265/SA 265 (Communicating Deficiencies).
+    """
+
     _name = "general_audit_ws_ab19fd4"
     _description = "Audit Result Formulation (ab19fd4)"
     _inherit = [

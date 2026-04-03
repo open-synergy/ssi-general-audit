@@ -5,6 +5,24 @@ from odoo import fields, models
 
 
 class GeneralAuditWSa0319a2(models.Model):
+    """Worksheet WR.110.1 — Findings That Influence Opinion.
+
+    Records audit findings (misstatements or conditions) discovered during
+    fieldwork that may affect the type of audit opinion to be issued.
+    Each finding is documented in the standard 5-C format (Condition, Criteria,
+    Cause, Effect, Recommendation) and classified by risk severity (major/minor).
+
+    Under ISA 450 / SA 450, the auditor accumulates identified misstatements —
+    factual, judgemental, and projected — and evaluates whether uncorrected
+    misstatements, individually or in aggregate, are material to the financial
+    statements.  This worksheet is the primary register for such misstatements
+    that require management attention and/or disclosure in the auditor's report.
+
+    Workflow: Draft → Open → Confirm → Done
+    ISA/SA references: ISA 450/SA 450 (Evaluation of Misstatements);
+    ISA 700/SA 700 (Forming an Opinion).
+    """
+
     _name = "general_audit_ws_a0319a2"
     _description = "Findings That Influence Opinion (a0319a2)"
     _inherit = [

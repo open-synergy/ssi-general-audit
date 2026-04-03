@@ -5,6 +5,24 @@ from odoo import fields, models
 
 
 class GeneralAuditWSd33420f(models.Model):
+    """Worksheet WR.110.2 — Control Deficiencies.
+
+    Documents internal control deficiencies identified during the audit.
+    Under ISA 265 / SA 265, the auditor is required to communicate significant
+    deficiencies in writing to those charged with governance (TCWG), and other
+    deficiencies to management where appropriate.
+
+    A deficiency exists when a control is designed, implemented, or operated
+    in a way that does not prevent, or detect-and-correct, misstatements in
+    the financial statements on a timely basis.  This worksheet captures each
+    deficiency in the 5-C format (Condition, Criteria, Cause, Effect,
+    Recommendation) with a risk severity classification (major / minor).
+
+    Workflow: Draft → Open → Confirm → Done
+    ISA/SA references: ISA 265/SA 265 (Communicating Deficiencies in Internal
+    Control); ISA 315/SA 315 (Identifying and Assessing the Risks).
+    """
+
     _name = "general_audit_ws_d33420f"
     _description = "Control Deficiencies (d33420f)"
     _inherit = [

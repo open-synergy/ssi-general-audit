@@ -6,6 +6,14 @@ from odoo import fields, models
 
 
 class GeneralAuditWSbc3e272Influence(models.Model):
+    """Discussion line for WR.110.4 — finding that influences the audit opinion.
+
+    References a finding detail from WR.110.1 (``detail_id``) and captures
+    the outcome of the audit result discussion: whether the finding has been
+    *resolved* (management has corrected it) or *escalated* (require further
+    action, e.g., modification of the audit opinion or disclosure).
+    """
+
     _name = "general_audit_ws_bc3e272.influence"
     _description = (
         "Audit Result Discussion (bc3e272) - " "Findings That Influence Opinion"
