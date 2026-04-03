@@ -6,6 +6,31 @@ from odoo import fields, models
 
 
 class GeneralAuditWSae48e68(models.Model):
+    """
+    WS.050.1 — External Communication Schedule (ae48e68)
+
+    Master schedule for documenting planned and actual **external
+    communications** during the engagement.  As required by ISA 260 /
+    SA 260 (Communication with Those Charged with Governance), ISA 265 /
+    SA 265 (Communicating Deficiencies in Internal Control), and
+    ISA 315 / SA 315, the auditor must plan and execute timely
+    communication with:
+
+    - **Management** (planning, execution, and reporting phases).
+    - **Those Charged with Governance (TCWG)** (planning, execution, and
+      reporting phases).
+    - **Internal Audit (IA)** (planning, execution, and reporting phases).
+
+    This worksheet captures the planned and actual dates for each
+    communication phase alongside a general checklist confirming all
+    required communication activities have been completed.
+
+    **ISA / SA references:** ISA 260 / SA 260 — Communication with TCWG;
+    ISA 265 / SA 265 — Communicating Deficiencies in Internal Control;
+    ISA 315 / SA 315 — Identifying and Assessing the Risks of Material
+    Misstatement
+    """
+
     _name = "general_audit_ws_ae48e68"
     _description = "External Communication (ae48e68)"
     _inherit = [

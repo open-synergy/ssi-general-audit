@@ -6,6 +6,17 @@ from odoo import fields, models
 
 
 class GeneralAuditWSd133f46Checklist(models.Model):
+    """
+    Use of Internal Auditor's Work Results — Checklist Line (d133f46)
+
+    A single assessed checklist item within the Use of Internal Auditor's
+    Work Results worksheet (WS.050.4).  The ``communication_type`` field
+    (derived from the item master) groups lines by evaluation aspect:
+    objectivity, technical competence, or professional due care.
+
+    Child of ``general_audit_ws_d133f46``.  Cascades on parent delete.
+    """
+
     _name = "general_audit_ws_d133f46.checklist"
     _inherit = [
         "mixin.checklist.value",

@@ -6,6 +6,26 @@ from odoo import fields, models
 
 
 class GeneralAuditWSc94e287(models.Model):
+    """
+    WS.050.3 — Communication With Those Charged With Governance (c94e287)
+
+    Documents the structured communication between the auditor and
+    **those charged with governance (TCWG)** — typically the board of
+    directors or audit committee — as required by ISA 260 / SA 260.
+    The checklist items are classified by communication type:
+
+    - *Understanding* — Establishing a mutual understanding of a
+      supportive working relationship with TCWG.
+    - *Audit info* — Relevant audit plan information communicated to
+      TCWG.
+    - *Expected info* — Information expected to be obtained from TCWG.
+    - *Significant findings* — Significant audit findings communicated
+      to TCWG before the report is issued.
+
+    **ISA / SA references:** ISA 260 / SA 260 — Communication with
+    Those Charged with Governance
+    """
+
     _name = "general_audit_ws_c94e287"
     _description = "Communication With TCWG (c94e287)"
     _inherit = [

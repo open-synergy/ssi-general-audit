@@ -6,6 +6,17 @@ from odoo import fields, models
 
 
 class GeneralAuditWSc94e287Checklist(models.Model):
+    """
+    Communication With TCWG — Checklist Line (c94e287)
+
+    A single assessed checklist item within the Communication With TCWG
+    worksheet (WS.050.3).  The ``communication_type`` field (derived from
+    the item master) groups lines by the nature of the communication
+    activity with those charged with governance.
+
+    Child of ``general_audit_ws_c94e287``.  Cascades on parent delete.
+    """
+
     _name = "general_audit_ws_c94e287.checklist"
     _inherit = [
         "mixin.checklist.value",

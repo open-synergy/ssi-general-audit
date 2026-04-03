@@ -6,6 +6,26 @@ from odoo import fields, models
 
 
 class GeneralAuditWSb3ff42f(models.Model):
+    """
+    WS.050.2 — Communication With Management (b3ff42f)
+
+    Documents the structured communication between the auditor and
+    **management** as required by ISA 260 / SA 260 and ISA 265 / SA 265.
+    The checklist items are classified by communication type:
+
+    - *Understanding* — Establishing a mutual understanding of a
+      supportive working relationship.
+    - *Audit info* — Relevant audit plan information communicated to
+      management.
+    - *Expected info* — Information expected to be obtained from
+      management.
+    - *Significant findings* — Significant audit findings communicated
+      to management before the report is issued.
+
+    **ISA / SA references:** ISA 260 / SA 260 — Communication with TCWG;
+    ISA 265 / SA 265 — Communicating Deficiencies in Internal Control
+    """
+
     _name = "general_audit_ws_b3ff42f"
     _description = "Communication With Management (b3ff42f)"
     _inherit = [

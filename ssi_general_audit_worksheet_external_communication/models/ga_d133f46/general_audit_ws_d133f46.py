@@ -6,6 +6,28 @@ from odoo import fields, models
 
 
 class GeneralAuditWSd133f46(models.Model):
+    """
+    WS.050.4 — Use of Internal Auditor's Work Results (d133f46)
+
+    Documents the external auditor's evaluation of whether the work
+    performed by the client's **internal audit function** can be used
+    as audit evidence, as required by ISA 610 / SA 610 (Using the Work
+    of Internal Auditors).  The evaluation criteria are:
+
+    - *Objectivity* — Whether the internal audit function operates
+      independently and objectively.
+    - *Technical competence* — Whether the internal auditors possess
+      adequate technical skills and expertise.
+    - *Professional due care* — Whether the work has been planned,
+      supervised, reviewed, and documented appropriately.
+
+    Only work meeting all three criteria may be used as a substitute
+    for or supplement to the external auditor's own procedures.
+
+    **ISA / SA references:** ISA 610 / SA 610 — Using the Work of
+    Internal Auditors
+    """
+
     _name = "general_audit_ws_d133f46"
     _description = "Use of Internal Auditor's Work Results (d133f46)"
     _inherit = [

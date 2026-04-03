@@ -6,6 +6,16 @@ from odoo import fields, models
 
 
 class GeneralAuditWSb3ff42fItem(models.Model):
+    """
+    Communication With Management — Checklist Item Master (b3ff42f)
+
+    Master-data model for the checklist items used in the Communication
+    With Management worksheet (WS.050.2).  Each item carries a
+    ``communication_type`` selection that classifies it into one of the
+    four ISA 260 / SA 260 management-communication categories:
+    understanding, audit info, expected info, or significant findings.
+    """
+
     _name = "general_audit_ws_b3ff42f.item"
     _inherit = [
         "mixin.checklist.item",

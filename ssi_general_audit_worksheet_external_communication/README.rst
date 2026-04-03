@@ -6,6 +6,59 @@
 General Audit Worksheet - External Communication
 ================================================
 
+This module provides worksheets for documenting **external communications**
+during the audit engagement, as required by ISA 260 / SA 260 (Communication
+with Those Charged with Governance), ISA 265 / SA 265 (Communicating
+Deficiencies in Internal Control), and ISA 610 / SA 610 (Using the Work
+of Internal Auditors).
+
+Effective communication with management, those charged with governance
+(TCWG), and the internal audit function is a fundamental audit quality
+requirement.  The worksheets in this module cover:
+
+1. **WS.050.1 — External Communication Schedule** — Master schedule
+   capturing the planned and actual dates of all communication activities
+   with management, TCWG, and internal audit across planning, fieldwork,
+   and reporting phases.
+2. **WS.050.2 — Communication With Management** — Structured checklist
+   of required communications with management, classified into:
+   mutual understanding, audit-plan information, information to be
+   obtained from management, and significant findings.
+3. **WS.050.3 — Communication With TCWG** — Structured checklist of
+   required communications with those charged with governance (board /
+   audit committee), using the same four-category classification.
+4. **WS.050.4 — Use of Internal Auditor's Work Results** — Evaluation
+   checklist for deciding whether the internal audit function's work
+   can be relied upon, covering objectivity, technical competence, and
+   professional due care (ISA 610 / SA 610).
+
+**Key features:**
+
+- Date-tracking fields for each communication phase (planning, execution,
+  reporting) with management, TCWG, and internal audit
+- Communication-type classification for grouped reporting
+- Configurable checklist item masters per worksheet
+- Follows the standard worksheet workflow: Draft → Open → Confirm → Done
+
+**Models:**
+
+- ``general_audit_ws_ae48e68``           — WS.050.1 External Communication Schedule
+- ``general_audit_ws_ae48e68.checklist`` — Checklist line (External Communication Schedule)
+- ``general_audit_ws_ae48e68.item``      — Checklist item master
+- ``general_audit_ws_b3ff42f``           — WS.050.2 Communication With Management
+- ``general_audit_ws_b3ff42f.checklist`` — Checklist line (Communication With Management)
+- ``general_audit_ws_b3ff42f.item``      — Checklist item master
+- ``general_audit_ws_c94e287``           — WS.050.3 Communication With TCWG
+- ``general_audit_ws_c94e287.checklist`` — Checklist line (Communication With TCWG)
+- ``general_audit_ws_c94e287.item``      — Checklist item master
+- ``general_audit_ws_d133f46``           — WS.050.4 Use of Internal Auditor's Work Results
+- ``general_audit_ws_d133f46.checklist`` — Checklist line (Internal Auditor's Work)
+- ``general_audit_ws_d133f46.item``      — Checklist item master
+
+**ISA / SA references:** ISA 260 / SA 260 — Communication with Those
+Charged with Governance; ISA 265 / SA 265 — Communicating Deficiencies
+in Internal Control; ISA 610 / SA 610 — Using the Work of Internal Auditors
+
 
 Installation
 ============

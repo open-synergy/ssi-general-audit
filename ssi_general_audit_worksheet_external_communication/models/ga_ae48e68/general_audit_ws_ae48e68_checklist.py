@@ -6,6 +6,16 @@ from odoo import fields, models
 
 
 class GeneralAuditWSae48e68Checklist(models.Model):
+    """
+    External Communication Schedule — Checklist Line (ae48e68)
+
+    A single assessed checklist item within the External Communication
+    Schedule worksheet (WS.050.1).  Captures the auditor's Yes / No / N-A
+    response for one specific communication-related procedure.
+
+    Child of ``general_audit_ws_ae48e68``.  Cascades on parent delete.
+    """
+
     _name = "general_audit_ws_ae48e68.checklist"
     _inherit = [
         "mixin.checklist.value",

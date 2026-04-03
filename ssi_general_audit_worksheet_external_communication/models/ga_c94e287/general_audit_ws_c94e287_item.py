@@ -6,6 +6,16 @@ from odoo import fields, models
 
 
 class GeneralAuditWSc94e287Item(models.Model):
+    """
+    Communication With TCWG — Checklist Item Master (c94e287)
+
+    Master-data model for the checklist items used in the Communication
+    With TCWG worksheet (WS.050.3).  Each item carries a
+    ``communication_type`` selection that classifies it into one of the
+    four ISA 260 / SA 260 TCWG-communication categories:
+    understanding, audit info, expected info, or significant findings.
+    """
+
     _name = "general_audit_ws_c94e287.item"
     _inherit = [
         "mixin.checklist.item",

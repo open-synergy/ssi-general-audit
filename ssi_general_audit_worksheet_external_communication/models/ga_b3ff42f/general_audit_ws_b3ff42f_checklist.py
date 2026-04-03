@@ -6,6 +6,17 @@ from odoo import fields, models
 
 
 class GeneralAuditWSb3ff42fChecklist(models.Model):
+    """
+    Communication With Management — Checklist Line (b3ff42f)
+
+    A single assessed checklist item within the Communication With
+    Management worksheet (WS.050.2).  The ``communication_type`` field
+    (derived from the item master) groups lines by the nature of the
+    communication activity.
+
+    Child of ``general_audit_ws_b3ff42f``.  Cascades on parent delete.
+    """
+
     _name = "general_audit_ws_b3ff42f.checklist"
     _inherit = [
         "mixin.checklist.value",

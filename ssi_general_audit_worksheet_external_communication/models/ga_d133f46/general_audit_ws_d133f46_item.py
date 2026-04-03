@@ -6,6 +6,16 @@ from odoo import fields, models
 
 
 class GeneralAuditWSd133f46Item(models.Model):
+    """
+    Use of Internal Auditor's Work Results — Checklist Item Master (d133f46)
+
+    Master-data model for checklist items used in the Use of Internal
+    Auditor's Work Results worksheet (WS.050.4).  Each item carries a
+    ``communication_type`` selection that classifies it into one of the
+    three ISA 610 / SA 610 evaluation aspects: objectivity, technical
+    competence, or professional due care.
+    """
+
     _name = "general_audit_ws_d133f46.item"
     _inherit = [
         "mixin.checklist.item",
