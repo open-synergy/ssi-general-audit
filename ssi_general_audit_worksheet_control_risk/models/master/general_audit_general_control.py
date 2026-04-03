@@ -6,6 +6,18 @@ from odoo import fields, models
 
 
 class GeneralAuditGeneralControl(models.Model):
+    """Master data — general (non-IT) control library item.
+
+    Represents one control within the entity-level general control
+    environment (e.g., a specific policy, procedure, or oversight activity).
+    Controls are grouped by ``category_id`` and evaluated using the responses
+    defined in ``option_set_id`` (e.g., Effective / Partially Effective / Not
+    Effective).
+
+    Grouped into control sets (``general_audit_general_control_set``) that are
+    assigned to the General Control Evaluation worksheet (d3d2719).
+    """
+
     _name = "general_audit_general_control"
     _inherit = [
         "mixin.master_data",

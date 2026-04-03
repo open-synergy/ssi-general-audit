@@ -6,6 +6,14 @@ from odoo import models
 
 
 class GeneralAuditControlActivity(models.Model):
+    """Master data — control activity classification.
+
+    References a type of control activity as defined in the COSO or ISA
+    framework (e.g., Authorisation, Reconciliation, Physical Safeguard,
+    Segregation of Duties, IT Controls).  Used to classify key internal
+    controls in the ``general_audit_key_internal_control`` master.
+    """
+
     _name = "general_audit_control_activity"
     _inherit = [
         "mixin.master_data",

@@ -6,6 +6,13 @@ from odoo import fields, models
 
 
 class GeneralAuditITControlCategory(models.Model):
+    """Master data — category for grouping IT General Controls (ITGC).
+
+    Organises IT control items into logical groups (e.g., Logical Access,
+    Change Management, IT Operations, Data Backup) for structured
+    presentation in the IT Control Evaluation.
+    """
+
     _name = "general_audit_it_control_category"
     _inherit = [
         "mixin.master_data",

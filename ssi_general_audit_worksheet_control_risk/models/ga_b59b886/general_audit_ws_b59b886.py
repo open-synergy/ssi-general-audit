@@ -8,6 +8,26 @@ from odoo.addons.ssi_decorator import ssi_decorator
 
 
 class GeneralAuditWSb59b886(models.Model):
+    """Worksheet — Control Risk at Entity Level (b59b886).
+
+    Evaluates the entity-level control environment by assessing general
+    controls (``general_control_ids``) and IT general controls (``it_control_ids``)
+    drawn from confirmed evaluation worksheets (d3d2719 and f63f569 respectively).
+
+    The ``action_populate`` method auto-imports the detailed evaluation results
+    from those upstream worksheets into this entity-level view.  The auditor
+    then records whether any control deficiency or significant deficiency has
+    been identified, and provides an overall conclusion.
+
+    Feeds into the Control Risk Summary worksheet (a58e29c) and, where
+    deficiencies are identified, into the Control Deficiencies worksheet
+    (WR.110.2 / d33420f).
+
+    Workflow: Draft → Open → Confirm → Done
+    ISA/SA references: ISA 315/SA 315 (Identifying and Assessing Risks);
+    ISA 265/SA 265 (Communicating Deficiencies in Internal Control).
+    """
+
     _name = "general_audit_ws_b59b886"
     _description = "Control Risk - Entity Level (b59b886)"
     _inherit = [

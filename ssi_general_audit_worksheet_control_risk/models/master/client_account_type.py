@@ -6,6 +6,14 @@ from odoo import fields, models
 
 
 class ClientAccountType(models.Model):
+    """Extension of the Client Account Type model for Control Risk data.
+
+    Adds ``account_key_internal_control_ids`` to the standard account type,
+    linking the account type to its applicable key internal controls for
+    significant accounts.  Used in the Significant Account Internal Control
+    worksheet (ba9b2f0) to filter controls relevant to the selected account.
+    """
+
     _name = "client_account_type"
     _inherit = ["client_account_type"]
 

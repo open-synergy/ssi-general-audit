@@ -6,6 +6,17 @@ from odoo import fields, models
 
 
 class GeneralAuditAccountKeyInternalControl(models.Model):
+    """Master data — key internal control for significant accounts.
+
+    Defines one key internal control relevant to one or more standard account
+    types (significant accounts such as Revenue, Inventory, Fixed Assets).
+    Linked to a control activity classification and the assertions it addresses.
+
+    Used in the Significant Account Internal Control worksheet (ba9b2f0) to
+    guide the auditor in evaluating whether relevant controls over significant
+    accounts are properly designed and operating effectively.
+    """
+
     _name = "general_audit_account_key_internal_control"
     _inherit = [
         "mixin.master_data",

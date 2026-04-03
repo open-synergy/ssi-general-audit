@@ -6,6 +6,17 @@ from odoo import fields, models
 
 
 class GeneralAuditKeyInternalControl(models.Model):
+    """Master data — key internal control for a business cycle.
+
+    Defines one key internal control that the entity should have in place
+    within one or more business cycles.  Each control is linked to a control
+    activity classification and the financial-statement assertions it addresses.
+
+    Used in the Business Cycle Internal Control worksheet (eabdaad) to guide
+    the auditor's evaluation of whether relevant controls are designed and
+    operating effectively.
+    """
+
     _name = "general_audit_key_internal_control"
     _inherit = [
         "mixin.master_data",

@@ -6,6 +6,25 @@ from odoo import fields, models
 
 
 class GeneralAuditWSD3D2719(models.Model):
+    """Worksheet — General Control Evaluation (d3d2719).
+
+    Evaluates the design and operating effectiveness of entity-level **general
+    (non-IT) controls** using a pre-configured control set (``set_id``).
+    When ``action_load_detail`` is called, detail lines are generated
+    automatically for every control in the set, and indicator lines are
+    generated for each control's indicators.
+
+    The auditor assigns a response (option from the control's ``option_set``)
+    to each indicator.  The aggregated result feeds into the entity-level
+    Control Risk worksheet (b59b886) via the populate mechanism.
+
+    Typical controls covered: tone at the top, organisational structure,
+    segregation of duties, authorisation policies, physical safeguards.
+
+    Workflow: Draft → Open → Confirm → Done
+    ISA/SA references: ISA 315/SA 315 (Identifying and Assessing Risks).
+    """
+
     _name = "general_audit_ws_d3d2719"
     _description = "General Control Evaluation (d3d2719)"
     _inherit = [

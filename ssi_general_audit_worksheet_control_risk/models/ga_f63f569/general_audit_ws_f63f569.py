@@ -6,6 +6,25 @@ from odoo import fields, models
 
 
 class GeneralAuditWSF63F569(models.Model):
+    """Worksheet — IT Control Evaluation (f63f569).
+
+    Evaluates the design and operating effectiveness of **IT General Controls
+    (ITGC)** using a pre-configured IT control set (``set_id``).
+    When ``action_load_detail`` is called, detail and indicator lines are
+    generated for each IT control and its indicators in the selected set.
+
+    Typical ITGCs covered: logical access controls, change management, IT
+    operations and availability, data backup and recovery.
+
+    Results are aggregated into the entity-level Control Risk worksheet
+    (b59b886) via the populate mechanism.  Significant ITGC deficiencies
+    are escalated to the Control Deficiencies worksheet (WR.110.2).
+
+    Workflow: Draft → Open → Confirm → Done
+    ISA/SA references: ISA 315/SA 315 (Identifying and Assessing Risks);
+    ISA 265/SA 265 (Communicating Deficiencies in Internal Control).
+    """
+
     _name = "general_audit_ws_f63f569"
     _description = "IT Control Evaluation (f63f569)"
     _inherit = [

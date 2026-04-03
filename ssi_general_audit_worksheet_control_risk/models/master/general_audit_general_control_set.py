@@ -6,6 +6,18 @@ from odoo import api, fields, models
 
 
 class GeneralAuditGeneralControlSet(models.Model):
+    """Master data — packaged general control set for evaluation.
+
+    Groups a collection of general control indicators
+    (``general_audit_general_control_indicator``) into a named set that can be
+    assigned to a General Control Evaluation worksheet (d3d2719).  The distinct
+    controls referenced by those indicators are exposed via the computed
+    ``general_control_ids`` field.
+
+    Allows the firm to maintain different control sets for different industry
+    types or engagement sizes.
+    """
+
     _name = "general_audit_general_control_set"
     _inherit = [
         "mixin.master_data",

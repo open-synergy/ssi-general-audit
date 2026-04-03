@@ -6,6 +6,16 @@ from odoo import fields, models
 
 
 class GeneralAuditITControlIndicator(models.Model):
+    """Master data — indicator for evaluating an IT General Control (ITGC).
+
+    Provides a specific observable criterion for evaluating one IT control
+    (e.g., 'User access reviews are performed and documented quarterly').
+    Linked to an IT control item and a response option set.
+
+    Auditor responses are captured in the IT Control Evaluation worksheet
+    (f63f569) indicator lines.
+    """
+
     _name = "general_audit_it_control_indicator"
     _inherit = [
         "mixin.master_data",

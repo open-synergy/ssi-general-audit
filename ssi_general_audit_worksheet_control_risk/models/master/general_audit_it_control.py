@@ -6,6 +6,16 @@ from odoo import fields, models
 
 
 class GeneralAuditITControl(models.Model):
+    """Master data — IT General Control (ITGC) library item.
+
+    Represents one IT control (e.g., Logical Access Review, Password Policy,
+    Change Control Approval) within a given IT control category.  Controls
+    are evaluated using the responses defined in ``option_set_id``.
+
+    Grouped into IT control sets (``general_audit_it_control_set``) that are
+    assigned to the IT Control Evaluation worksheet (f63f569).
+    """
+
     _name = "general_audit_it_control"
     _inherit = [
         "mixin.master_data",

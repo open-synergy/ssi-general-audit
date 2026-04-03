@@ -6,6 +6,14 @@ from odoo import fields, models
 
 
 class ClientBusinessProcess(models.Model):
+    """Extension of the Client Business Process model for Control Risk data.
+
+    Adds ``key_internal_control_ids`` to the client business process
+    (business cycle) model, linking the cycle to its applicable key internal
+    controls.  These are used as the basis for the Business Cycle Internal
+    Control worksheet (eabdaad) evaluation.
+    """
+
     _name = "client_business_process"
     _inherit = [
         "client_business_process",

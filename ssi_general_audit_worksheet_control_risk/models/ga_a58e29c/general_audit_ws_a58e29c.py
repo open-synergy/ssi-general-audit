@@ -6,6 +6,25 @@ from odoo import _, api, fields, models
 
 
 class GeneralAuditWSa58e29c(models.Model):
+    """Worksheet — Control Risk Summary (a58e29c).
+
+    Consolidates the results of all control-risk worksheets for a given general
+    audit engagement onto a single view to support the auditor's final
+    control-risk conclusion:
+
+    * ``link_1_id``  — links to the Control Risk – Entity Level worksheet (b59b886),
+      reflecting the entity-wide control environment assessment.
+    * ``link_2_ids`` — links to all Business Cycle Internal Control worksheets
+      (eabdaad) in the same engagement, one per in-scope business cycle.
+    * ``link_3_id``  — links to the Key Audit Procedures worksheet (lead schedule)
+      to provide traceability between the control-risk conclusion and the
+      planned audit response.
+
+    Workflow: Draft → Open → Confirm → Done
+    ISA/SA references: ISA 315/SA 315 (Identifying and Assessing Risks);
+    ISA 330/SA 330 (Auditor's Responses to Assessed Risks).
+    """
+
     _name = "general_audit_ws_a58e29c"
     _description = "Control Risk (a58e29c)"
     _inherit = [

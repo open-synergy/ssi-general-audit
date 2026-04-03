@@ -8,6 +8,28 @@ from odoo.addons.ssi_decorator import ssi_decorator
 
 
 class GeneralAuditWSEABDAAD(models.Model):
+    """Worksheet — Business Cycle Internal Control (eabdaad).
+
+    Evaluates the design and operating effectiveness of key internal controls
+    for one business cycle (e.g., Sales & Receivables, Purchases & Payables,
+    Payroll).  The auditor selects the relevant ``business_cycle_id`` and the
+    applicable key internal controls are drawn from the master.
+
+    For each key control, the worksheet records:
+    * Control detail including the control activity and applicable assertions
+    * What-Can-Go-Wrong (WCGW) scenarios at the assertion level
+    * Risk identification items showing the risk the control is meant to address
+    * The auditor's evaluation of control effectiveness, resulting in an overall
+      ``risk`` conclusion (Low / High) for the cycle
+
+    A 'Low' conclusion indicates the auditor intends to rely on those controls
+    and will plan tests of controls; 'High' triggers expanded substantive testing.
+
+    Workflow: Draft → Open → Confirm → Done
+    ISA/SA references: ISA 315/SA 315 (Identifying and Assessing Risks);
+    ISA 330/SA 330 (Auditor's Responses to Assessed Risks).
+    """
+
     _name = "general_audit_ws_eabdaad"
     _description = "Business Cycle Internal Control (eabdaad)"
     _inherit = [

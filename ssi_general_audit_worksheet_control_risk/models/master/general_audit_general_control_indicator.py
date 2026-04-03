@@ -6,6 +6,17 @@ from odoo import fields, models
 
 
 class GeneralAuditGeneralControlIndicator(models.Model):
+    """Master data — indicator for evaluating a general control.
+
+    Provides a specific, observable criterion or test point for evaluating
+    one general control (e.g., 'Management review of monthly financial
+    reports is evidenced by sign-off').  Each indicator is linked to a
+    control and a response option set.
+
+    An auditor's response to each indicator is recorded in the General
+    Control Evaluation worksheet (d3d2719) detail lines.
+    """
+
     _name = "general_audit_general_control_indicator"
     _inherit = [
         "mixin.master_data",

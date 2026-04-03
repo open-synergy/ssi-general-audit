@@ -8,6 +8,28 @@ from odoo.addons.ssi_decorator import ssi_decorator
 
 
 class GeneralAuditWSBA9B2F0(models.Model):
+    """Worksheet — Significant Account Internal Control (ba9b2f0).
+
+    Evaluates the design and operating effectiveness of key internal controls
+    for one significant account type (e.g., Revenue, Accounts Receivable,
+    Inventory).  The auditor selects the relevant ``account_type_id`` and the
+    applicable key internal controls are auto-filtered from the master.
+
+    For each control, the auditor identifies:
+    * What can go wrong (WCGW) at the assertion level
+    * Risk identification items linked to the business-risk register
+    * Assessment of whether the control is effective (driving the overall
+      ``risk`` conclusion: Low or High)
+
+    This worksheet is central to the risk-response strategy: a 'Low' control
+    risk conclusion supports a reliance-on-controls testing approach, while
+    'High' calls for expanded substantive procedures.
+
+    Workflow: Draft → Open → Confirm → Done
+    ISA/SA references: ISA 315/SA 315 (Identifying and Assessing Risks);
+    ISA 330/SA 330 (Auditor's Responses to Assessed Risks).
+    """
+
     _name = "general_audit_ws_ba9b2f0"
     _description = "Significant Account Internal Control (ba9b2f0)"
     _inherit = [
