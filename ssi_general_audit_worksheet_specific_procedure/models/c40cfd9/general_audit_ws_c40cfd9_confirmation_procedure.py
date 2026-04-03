@@ -6,6 +6,14 @@ from odoo import fields, models
 
 
 class GeneralAuditWSc40cfd9ConfirmationProcedure(models.Model):
+    """Confirmation procedure line for the Related Party Transaction worksheet (c40cfd9).
+
+    Each line represents one confirmation procedure from the master list of
+    related party confirmation procedures, recording whether it was performed
+    and any relevant notes. Supports completeness documentation for related
+    party audit procedures under ISA 550.
+    """
+
     _name = "general_audit_ws_c40cfd9.confirmation_procedure"
     _description = "Related Party Transaction (c40cfd9) - Confirmation Procedure"
     _order = "worksheet_id, confirmation_procedure_id"

@@ -6,6 +6,14 @@ from odoo import fields, models
 
 
 class GeneralAuditRelatedPartyConfirmationProcedure(models.Model):
+    """Master: Related Party Confirmation Procedure.
+
+    Defines standard confirmation procedures used when auditing related party
+    transactions under ISA 550. These procedure items are referenced in the
+    Related Party Transaction worksheet (c40cfd9) to track which confirmation
+    steps have been performed for each engagement.
+    """
+
     _name = "general_audit_related_party_confirmation_procedure"
     _inherit = [
         "mixin.master_data",

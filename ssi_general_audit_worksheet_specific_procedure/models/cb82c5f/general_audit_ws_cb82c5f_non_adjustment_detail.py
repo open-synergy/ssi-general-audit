@@ -6,6 +6,14 @@ from odoo import fields, models
 
 
 class GeneralAuditWScb82c5fNonAdjustmentDetail(models.Model):
+    """Non-adjustment event detail line for the Subsequent Event worksheet (cb82c5f).
+
+    Each line documents one subsequent event that requires disclosure only
+    (a Type 2 subsequent event under ISA 560) but does not necessitate adjustment
+    to the financial statements. The auditor records occurrence status and the
+    planned disclosure response.
+    """
+
     _name = "general_audit_ws_cb82c5f.non_adjustment_detail"
     _description = "Subsequent Event (cb82c5f) - Non Adjustment Detail"
 

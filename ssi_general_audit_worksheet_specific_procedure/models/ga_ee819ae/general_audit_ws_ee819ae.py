@@ -6,6 +6,17 @@ from odoo import fields, models
 
 
 class GeneralAuditWSee819ae(models.Model):
+    """WS: Commitment and Contingent (ee819ae) — ISA 501.
+
+    This checklist worksheet evaluates the completeness of disclosure for
+    commitments and contingent liabilities in accordance with ISA 501
+    (Audit Evidence: Specific Considerations for Selected Items). The auditor
+    responds to checklist items from the master item list and provides
+    explanations or references for each response, documenting the procedures
+    performed to identify unrecorded commitments and contingencies that may
+    require adjustment or disclosure in the financial statements.
+    """
+
     _name = "general_audit_ws_ee819ae"
     _description = "Commitment and Contingent (ee819ae)"
     _inherit = [

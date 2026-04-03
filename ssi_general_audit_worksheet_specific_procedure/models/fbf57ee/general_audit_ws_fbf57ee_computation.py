@@ -6,6 +6,14 @@ from odoo import api, fields, models
 
 
 class GeneralAuditWSfbf57eeComputation(models.Model):
+    """Z-Score computation line for the Going Concern worksheet (fbf57ee).
+
+    Each line links one trial balance computation result to the Altman Z-Score
+    formula. The auditor reviews the computed values and their contribution to
+    the overall Z-Score, which is used to quantitatively assess the client's
+    probability of financial distress under ISA 570.
+    """
+
     _name = "general_audit_ws_fbf57ee.computation"
     _description = "Going Concern (fbf57ee) - Computation"
     _order = "worksheet_id, computation_item_id"

@@ -6,6 +6,19 @@ from odoo import fields, models
 
 
 class GeneralAuditWScb82c5f(models.Model):
+    """WS: Subsequent Event (cb82c5f) — ISA 560.
+
+    This worksheet documents events occurring after the balance sheet date
+    (subsequent events) in accordance with ISA 560. Events are classified into:
+
+    - Adjustment events (Type 1): requiring financial statement adjustment.
+    - Non-adjustment events (Type 2): requiring disclosure but no adjustment.
+
+    The auditor records each relevant event, its classification, occurrence status,
+    and the audit response, providing evidence of procedures performed to identify
+    and respond to subsequent events up to the date of the auditor's report.
+    """
+
     _name = "general_audit_ws_cb82c5f"
     _description = "Subsequent Event (cb82c5f)"
     _inherit = [

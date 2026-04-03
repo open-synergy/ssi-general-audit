@@ -6,6 +6,15 @@ from odoo import fields, models
 
 
 class GeneralAuditGoingConcernZScoreCoefficientSetItem(models.Model):
+    """Master: Going Concern Z-Score Coefficient Set Item.
+
+    Defines one coefficient within a Z-Score coefficient set, linking a
+    trial balance computation item (e.g., Working Capital / Total Assets)
+    to its corresponding weighting coefficient in the Altman Z-Score formula.
+    Used to drive the automatic computation lines in the Going Concern
+    worksheet (fbf57ee) under ISA 570.
+    """
+
     _name = "general_audit_going_concern_z_score_coeficient_set.item"
     _description = "General Audit - Going Concern Z-Score Coefficient Set - Item"
 

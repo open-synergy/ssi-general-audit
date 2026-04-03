@@ -6,6 +6,14 @@ from odoo import fields, models
 
 
 class GeneralAuditGoingConcernConfirmationProcedure(models.Model):
+    """Master: Going Concern Confirmation Procedure.
+
+    Defines standard confirmation procedures used during the going concern
+    assessment under ISA 570. These procedures are referenced in the Going
+    Concern worksheet (fbf57ee) to systematically document the evidence-gathering
+    steps performed to evaluate whether a material uncertainty exists.
+    """
+
     _name = "general_audit_going_concern_confirmation_procedure"
     _inherit = [
         "mixin.master_data",

@@ -6,6 +6,13 @@ from odoo import api, fields, models
 
 
 class GeneralAuditWScb82c5fAdjustmentDetail(models.Model):
+    """Adjustment event detail line for the Subsequent Event worksheet (cb82c5f).
+
+    Each line documents one subsequent event that requires an adjustment to the
+    financial statements (a Type 1 subsequent event under ISA 560). The auditor
+    records the subsequent event type, whether it occurred, and the audit response.
+    """
+
     _name = "general_audit_ws_cb82c5f.adjustment_detail"
     _description = "Subsequent Event (cb82c5f) - Adjustment Detail"
 

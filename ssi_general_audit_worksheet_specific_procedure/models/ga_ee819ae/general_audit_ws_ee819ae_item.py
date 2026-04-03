@@ -6,6 +6,14 @@ from odoo import fields, models
 
 
 class GeneralAuditWSee819aeItem(models.Model):
+    """Checklist item master for the Commitment and Contingent worksheet (ee819ae).
+
+    Defines the set of standard checklist items/questions used across all
+    Commitment and Contingent worksheets. Each item has a code, description,
+    and checklist type, providing a reusable framework for the commitment and
+    contingent liability assessment under ISA 501.
+    """
+
     _name = "general_audit_ws_ee819ae.item"
     _inherit = [
         "mixin.checklist.item",

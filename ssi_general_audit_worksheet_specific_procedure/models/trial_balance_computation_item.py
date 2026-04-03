@@ -6,6 +6,14 @@ from odoo import fields, models
 
 
 class TrialBalanceComputationItem(models.Model):
+    """Extension of trial_balance_computation_item for Going Concern analysis.
+
+    Adds the ``going_concern_ok`` boolean flag to the trial balance computation
+    item model, indicating whether this item is eligible for use as an input
+    variable in the Altman Z-Score going concern computation in the Going Concern
+    worksheet (fbf57ee) under ISA 570.
+    """
+
     _name = "trial_balance_computation_item"
     _inherit = "trial_balance_computation_item"
 

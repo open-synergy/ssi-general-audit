@@ -6,6 +6,22 @@ from odoo import api, fields, models
 
 
 class GeneralAuditWSfbf57ee(models.Model):
+    """WS: Going Concern (fbf57ee) — ISA 570.
+
+    This worksheet assesses the client's ability to continue as a going concern
+    in accordance with ISA 570. The auditor evaluates:
+
+    - Going concern indicators (financial, operational, and other factors).
+    - Altman Z-Score computation using trial balance computation items and
+      configurable coefficient sets.
+    - Confirmation procedures to gather additional evidence.
+
+    The Z-Score analysis provides a quantitative basis for the going concern
+    assessment, supplementing the qualitative indicator review. The auditor
+    concludes on whether material uncertainty exists and determines the
+    appropriate reporting response.
+    """
+
     _name = "general_audit_ws_fbf57ee"
     _description = "Going Concern (fbf57ee)"
     _inherit = [

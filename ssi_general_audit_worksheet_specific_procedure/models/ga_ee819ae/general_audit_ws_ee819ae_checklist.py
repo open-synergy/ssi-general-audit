@@ -6,6 +6,14 @@ from odoo import fields, models
 
 
 class GeneralAuditWSee819aeChecklist(models.Model):
+    """Checklist answer line for the Commitment and Contingent worksheet (ee819ae).
+
+    Each line corresponds to one checklist item from the master item list and
+    records the auditor's response (e.g., yes/no/N/A) along with an explanation
+    or reference. These lines document the procedures performed to identify the
+    completeness of commitment and contingent liability disclosures under ISA 501.
+    """
+
     _name = "general_audit_ws_ee819ae.checklist"
     _inherit = [
         "mixin.checklist.value",

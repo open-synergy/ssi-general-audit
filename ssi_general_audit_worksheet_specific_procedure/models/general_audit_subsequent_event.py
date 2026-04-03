@@ -6,6 +6,14 @@ from odoo import fields, models
 
 
 class GeneralAuditSubsequentEvent(models.Model):
+    """Master: Subsequent Event Type.
+
+    Defines a catalog of subsequent events to be assessed by the auditor under
+    ISA 560, categorized by whether the event requires adjustment (Type 1) or
+    only disclosure (Type 2) to the financial statements. Used to populate the
+    event lines in the Subsequent Event worksheet (cb82c5f).
+    """
+
     _name = "general_audit_subsequent_event"
     _inherit = [
         "mixin.master_data",

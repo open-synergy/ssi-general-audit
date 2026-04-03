@@ -6,6 +6,14 @@ from odoo import fields, models
 
 
 class GeneralAuditWSfbf57eeAnalysis(models.Model):
+    """Going concern indicator analysis line for the Going Concern worksheet (fbf57ee).
+
+    Each line evaluates one specific going concern indicator grouped by category
+    (financial distress, operational issues, other factors, etc.). The auditor
+    assesses whether each indicator is present, its significance, and the planned
+    audit response, in accordance with ISA 570.
+    """
+
     _name = "general_audit_ws_fbf57ee.analysis"
     _description = "Going Concern (fbf57ee) - Analysis"
     _order = "worksheet_id, going_concern_category_id, going_concern_id"

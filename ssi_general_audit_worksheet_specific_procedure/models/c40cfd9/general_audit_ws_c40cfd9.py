@@ -6,6 +6,19 @@ from odoo import fields, models
 
 
 class GeneralAuditWSc40cfd9(models.Model):
+    """WS: Related Party Transaction (c40cfd9) — ISA 550.
+
+    This worksheet documents the identification and evaluation of related party
+    transactions in accordance with ISA 550 (Related Parties). The auditor records
+    identified related parties, describes their transactions with the audit client,
+    and tracks confirmation procedures performed to obtain sufficient appropriate
+    evidence.
+
+    Key components include a related party identification table and a confirmation
+    procedure checklist, enabling systematic documentation of the auditor's work
+    on related party disclosures and transactions.
+    """
+
     _name = "general_audit_ws_c40cfd9"
     _description = "Related Party Transaction (c40cfd9)"
     _inherit = [

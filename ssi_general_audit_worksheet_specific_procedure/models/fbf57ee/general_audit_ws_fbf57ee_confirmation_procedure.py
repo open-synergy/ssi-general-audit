@@ -6,6 +6,14 @@ from odoo import fields, models
 
 
 class GeneralAuditWSfbf57eeConfirmationProcedure(models.Model):
+    """Confirmation procedure line for the Going Concern worksheet (fbf57ee).
+
+    Each line represents one going concern confirmation procedure from the
+    master list, recording whether the procedure was performed and documenting
+    any relevant observations. Supports evidence gathering for the going concern
+    assessment under ISA 570.
+    """
+
     _name = "general_audit_ws_fbf57ee.confirmation_procedure"
     _description = "Going Concern (fbf57ee) - Confirmation Procedure"
     _order = "worksheet_id, confirmation_procedure_id"

@@ -6,6 +6,17 @@ from odoo import api, fields, models
 
 
 class GeneralAuditWSa8f4d88(models.Model):
+    """WS: Accounting Estimation (a8f4d88) — ISA 540.
+
+    This worksheet evaluates significant accounting estimates made by management
+    in accordance with ISA 540 (Auditing Accounting Estimates, Including Fair Value
+    Accounting Estimates). The auditor identifies each account type that involves
+    estimation, records the method used, and notes any external experts involved.
+
+    Supports risk assessment for estimation uncertainty and helps determine whether
+    the estimates are reasonable given the audit evidence obtained.
+    """
+
     _name = "general_audit_ws_a8f4d88"
     _description = "Accounting Estimation (a8f4d88)"
     _inherit = [

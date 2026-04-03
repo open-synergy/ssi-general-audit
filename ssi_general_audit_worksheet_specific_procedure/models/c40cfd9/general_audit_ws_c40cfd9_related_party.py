@@ -6,6 +6,14 @@ from odoo import fields, models
 
 
 class GeneralAuditWSc40cfd9RelatedParty(models.Model):
+    """Related party entry for the Related Party Transaction worksheet (c40cfd9).
+
+    Each line identifies one related party of the audit client, including the
+    party's name, reference, and any associated transactions. This table forms
+    the basis for evaluating related party relationships and transactions
+    in accordance with ISA 550.
+    """
+
     _name = "general_audit_ws_c40cfd9.related_party"
     _description = "Related Party Transaction (c40cfd9) - Related Party"
 

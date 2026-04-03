@@ -6,6 +6,13 @@ from odoo import fields, models
 
 
 class GeneralAuditAccountingEstimationMethod(models.Model):
+    """Master: Accounting Estimation Method.
+
+    Defines approved estimation methods applicable to specific account types.
+    Used to populate the method selection in the Accounting Estimation worksheet
+    (a8f4d88) for each account type being evaluated under ISA 540.
+    """
+
     _name = "general_audit_accounting_estimation_method"
     _inherit = [
         "mixin.master_data",

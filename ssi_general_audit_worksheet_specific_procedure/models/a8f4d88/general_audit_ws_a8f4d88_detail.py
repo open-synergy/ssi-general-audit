@@ -6,6 +6,14 @@ from odoo import fields, models
 
 
 class GeneralAuditWSa8f4d88Detail(models.Model):
+    """Detail line for the Accounting Estimation worksheet (a8f4d88).
+
+    Each line represents one account type being assessed for accounting estimation.
+    The auditor records the estimation method applicable to that account type and
+    identifies any external experts (e.g., actuaries, valuators) involved in the
+    estimation process, as required by ISA 540.
+    """
+
     _name = "general_audit_ws_a8f4d88.detail"
     _description = "Accounting Estimation (a8f4d88) - Detail"
 
