@@ -6,6 +6,45 @@
 General Audit Worksheet - Final Report
 ======================================
 
+This module provides the worksheets for the **final reporting phase** of the
+audit engagement, as required by ISA 700 / SA 700 (Forming an Opinion and
+Reporting on Financial Statements), ISA 701 / SA 701 (Key Audit Matters),
+ISA 705 / SA 705 (Modifications to the Opinion), ISA 706 / SA 706
+(Emphasis-of-Matter Paragraphs), and ISA 220 / SA 220 (Quality Control).
+
+The final reporting phase consolidates all audit conclusions into formal
+deliverables.  The worksheets in this module cover:
+
+1. **WS.090.1 — Audit Final Memorandum** — The engagement partner's
+   formal summary confirming that all significant risks have been addressed,
+   sufficient and appropriate evidence has been obtained, and the financial
+   statements as a whole are fairly presented.  This is the internal sign-off
+   document that authorises issuance of the auditor's report.
+2. **WS.090.2 — Independent Auditor's Report** — Working-paper record for
+   drafting and reviewing the report issued to users of the financial
+   statements, including opinion type, basis for opinion, key audit matters,
+   and other reporting responsibilities.
+3. **WS.090.3 — Audit Report** — Internal audit report document capturing the
+   opinion, basis narrative, and all additional paragraphs (emphasis of
+   matter, other matter) before finalising the client-facing report.
+
+**Key features:**
+
+- Follows the standard worksheet workflow: Draft → Open → Confirm → Done
+- Conclusion and review fields support engagement partner sign-off
+- Predecessor worksheet checks ensure all upstream worksheets are done
+
+**Models:**
+
+- ``general_audit_ws_a8c54f3`` — WS.090.1 Audit Final Memorandum
+- ``general_audit_ws_b66777d`` — WS.090.2 Independent Auditor's Report
+- ``general_audit_ws_f3ed115`` — WS.090.3 Audit Report
+
+**ISA / SA references:** ISA 220 / SA 220 — Quality Control for an Audit;
+ISA 700 / SA 700 — Forming an Opinion and Reporting on Financial Statements;
+ISA 701 / SA 701 — Key Audit Matters; ISA 705 / SA 705 — Modifications to
+the Opinion; ISA 706 / SA 706 — Emphasis-of-Matter Paragraphs
+
 
 Installation
 ============
