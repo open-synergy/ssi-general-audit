@@ -6,6 +6,25 @@ from odoo import fields, models
 
 
 class GeneralAuditWSe78a3c6(models.Model):
+    """Worksheet: Structure Organization and Responsibilities (e78a3c6) — RA.150.2.
+
+    Documents the entity's organizational structure, hierarchy, and division of
+    responsibilities, as required by ISA 315 (Revised) / SA 315 when obtaining
+    an understanding of the entity and its environment.
+
+    This worksheet supports the auditor's assessment of:
+    - Governance structure and oversight mechanisms (ISA 265 / SA 265)
+    - Segregation of duties and control environment (COSO framework)
+    - Decision-making authority and reporting lines
+    - Whether management structure creates risks of override or misstatement
+
+    Information captured:
+    - Organizational unit names and their responsibilities (tabular)
+    - Organization structure chart image (visual documentation)
+
+    Inherits from ``general_audit_worksheet_mixin``.
+    """
+
     _name = "general_audit_ws_e78a3c6"
     _description = "Structure Organization and Responsibilities (e78a3c6)"
     _inherit = [

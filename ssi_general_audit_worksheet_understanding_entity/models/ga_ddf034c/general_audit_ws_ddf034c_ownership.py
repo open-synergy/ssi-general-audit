@@ -6,6 +6,14 @@ from odoo import fields, models
 
 
 class GeneralAuditWSddf034cOwnership(models.Model):
+    """Ownership status record per location for the General Info worksheet.
+
+    Documents the ownership or tenancy status of each significant location
+    (head office, branches, factories, warehouses) operated by the audit client.
+    Ownership status (owned/leased/other) informs the auditor's understanding
+    of the entity's asset base and potential off-balance-sheet commitments.
+    """
+
     _name = "general_audit_ws_ddf034c.ownership"
     _description = "General Information and Legal Aspec (ddf034c) - " "Ownership"
     _order = "sequence, id"

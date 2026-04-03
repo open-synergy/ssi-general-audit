@@ -6,6 +6,14 @@ from odoo import fields, models
 
 
 class GeneralAuditWSAE11F7ECustomer(models.Model):
+    """Key customer entry within the Main Business Activity worksheet.
+
+    Records significant customers of the entity, their total sales value, and
+    the percentage they represent of total revenues. Customer concentration
+    information supports the auditor's risk assessment of revenue recognition
+    and the going concern evaluation (ISA 315, ISA 570).
+    """
+
     _name = "general_audit_ws_ae11f7e.customer"
     _description = "Worksheet ae11f7e - Customer"
     _order = "worksheet_id, id"

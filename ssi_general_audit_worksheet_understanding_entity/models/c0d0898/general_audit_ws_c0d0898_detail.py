@@ -6,6 +6,15 @@ from odoo import fields, models
 
 
 class GeneralAuditWSc0d0898ODetail(models.Model):
+    """Going concern indicator assessment line in the preliminary going concern worksheet.
+
+    Represents a single going concern indicator evaluated by the auditor during
+    the planning/understanding phase. Indicators are pre-populated from the
+    master list and categorized (financial, operational, other). For each
+    indicator, the auditor assesses whether it exists at the entity and
+    documents the potential impact on the financial report (ISA 315, ISA 570).
+    """
+
     _name = "general_audit_ws_c0d0898.detail"
     _description = "Worksheet c0d0898 - Detail"
     _order = "worksheet_id, going_concern_category_id, going_concern_id, id"

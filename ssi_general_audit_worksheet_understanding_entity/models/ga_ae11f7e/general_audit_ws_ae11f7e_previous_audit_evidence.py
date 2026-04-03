@@ -6,6 +6,15 @@ from odoo import fields, models
 
 
 class GeneralAuditWSAE11F7EPreviousAuditEvidence(models.Model):
+    """Previous audit evidence carry-forward within the Main Business Activity worksheet.
+
+    Records audit evidence from prior engagement periods that remains relevant
+    to the current audit. Per ISA 315 (Revised), prior year information can be
+    used as audit evidence if the auditor validates its continued reliability.
+    This model links prior evidence records with account types to support
+    risk carry-forward assessments.
+    """
+
     _name = "general_audit_ws_ae11f7e.previous_audit_evidence"
     _description = "Worksheet ae11f7e - Previous Audit Evidence"
     _order = "worksheet_id, id"

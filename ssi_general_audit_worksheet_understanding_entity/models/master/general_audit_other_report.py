@@ -6,6 +6,15 @@ from odoo import fields, models
 
 
 class GeneralAuditOtherReport(models.Model):
+    """Master: Other Report Type.
+
+    Reference list of other reports relevant to the audit engagement (e.g.,
+    internal audit reports, management letters, regulatory examination reports,
+    tax audit reports, sustainability reports). Used in the General Audit record
+    to document other reports reviewed by the auditor as part of understanding
+    the entity per ISA 315 and ISA 265.
+    """
+
     _name = "general_audit_other_report"
     _inherit = [
         "mixin.master_data",

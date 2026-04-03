@@ -6,6 +6,18 @@ from odoo import api, fields, models
 
 
 class GeneralAuditWSbdcdfc5ODetail(models.Model):
+    """Detail assessment line within the Business Environment worksheet.
+
+    Captures the auditor's understanding for a specific aspect of the entity's
+    external business environment. Each line documents:
+    - The understanding result (key observations about this aspect)
+    - Potential impact on the financial statements
+    - Related standard account types affected
+
+    These lines feed into the risk of material misstatement assessment and
+    help auditors design responses proportionate to identified environmental risks.
+    """
+
     _name = "general_audit_ws_bdcdfc5.detail"
     _description = "Worksheet bdcdfc5 - Detail"
     _order = "worksheet_id, sequence, id"

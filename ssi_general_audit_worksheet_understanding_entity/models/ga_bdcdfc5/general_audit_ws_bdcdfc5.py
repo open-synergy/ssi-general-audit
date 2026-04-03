@@ -8,6 +8,28 @@ from odoo.addons.ssi_decorator import ssi_decorator
 
 
 class GeneralAuditWSbdcdfc5(models.Model):
+    """Worksheet: Understanding of the Business Environment (bdcdfc5) — RA.150.5.
+
+    Documents the auditor's understanding of the entity's external business
+    environment, in accordance with ISA 315 (Revised) / SA 315, paragraph 11 —
+    which requires auditors to understand the industry, regulatory, and other
+    external factors affecting the entity.
+
+    A separate worksheet instance is created for each distinct business
+    environment dimension (e.g., economic conditions, competitive landscape,
+    regulatory environment, technological changes). Each worksheet captures:
+
+    - The business environment dimension (``business_environment_id``)
+    - Detailed understanding results per assessment line (``detail_ids``)
+    - Potential impact on the financial statements
+    - Related standard account types affected
+
+    This worksheet feeds into the overall risk of material misstatement
+    assessment and helps auditors identify industry-specific risks.
+
+    Inherits from ``general_audit_worksheet_mixin``.
+    """
+
     _name = "general_audit_ws_bdcdfc5"
     _description = "Understanding of the business environment (bdcdfc5)"
     _inherit = [

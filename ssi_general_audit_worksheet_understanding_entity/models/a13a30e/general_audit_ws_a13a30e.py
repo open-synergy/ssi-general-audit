@@ -6,6 +6,27 @@ from odoo import fields, models
 
 
 class GeneralAuditWSa13a30e(models.Model):
+    """Worksheet: Understanding of Relevant Regulations (a13a30e) — RA.150.7.
+
+    Documents the auditor's identification and assessment of laws and
+    regulations applicable to the entity, in accordance with:
+    - ISA 315 (Revised) / SA 315 — Understanding the regulatory environment
+    - ISA 250 / SA 250 — Consideration of Laws and Regulations
+
+    For each applicable regulation, the auditor captures:
+    - The regulation reference and specific item/section being assessed
+    - Related standard account types affected by the regulation
+    - Whether the regulation has a significant impact on the financial
+      statements (``significant_impact``)
+
+    Understanding the regulatory framework enables auditors to:
+    - Identify potential non-compliance risks (ISA 250)
+    - Assess how regulatory requirements affect accounting treatments
+    - Link regulatory impacts to specific account areas for targeted testing
+
+    Inherits from ``general_audit_worksheet_mixin``.
+    """
+
     _name = "general_audit_ws_a13a30e"
     _description = "Understanding of Relevant Regulations (a13a30e)"
     _inherit = [

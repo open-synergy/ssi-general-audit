@@ -6,6 +6,15 @@ from odoo import fields, models
 
 
 class GeneralAuditWSe78a3c6OrganizationStructure(models.Model):
+    """Organization unit line within the Org Structure worksheet.
+
+    Represents a single organizational unit (department, division, team) in
+    the entity's hierarchy. Captures the unit's name and its responsibilities.
+    Used together with the organization structure chart image to give the
+    auditor a complete picture of governance and segregation of duties
+    (ISA 315, ISA 265).
+    """
+
     _name = "general_audit_ws_e78a3c6.organization_structure"
     _description = "Worksheet e78a3c6 - Organization Structure"
     _order = "worksheet_id, sequence, id"

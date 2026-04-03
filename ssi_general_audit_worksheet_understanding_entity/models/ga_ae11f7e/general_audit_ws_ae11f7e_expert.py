@@ -6,6 +6,17 @@ from odoo import api, fields, models
 
 
 class GeneralAuditWSAE11F7EDetail(models.Model):
+    """Expert engagement record within the Main Business Activity worksheet.
+
+    Records external experts engaged by the audit team or by management in
+    relation to the audit engagement (e.g., valuation specialists, actuaries,
+    legal counsel, IT experts). Per ISA 620 / SA 620, auditors must document
+    their evaluation of an expert's competence, capabilities, and objectivity.
+
+    Each record captures the expert's name, type, supporting documentation,
+    and the related account types impacted by the expert's work.
+    """
+
     _name = "general_audit_ws_ae11f7e.expert"
     _description = "Worksheet ae11f7e - Expert"
     _order = "worksheet_id, id"

@@ -6,6 +6,15 @@ from odoo import api, fields, models
 
 
 class GeneralAuditWSa13a30eOrganizationStructure(models.Model):
+    """Regulation detail line within the Relevant Regulations worksheet.
+
+    Records a specific regulation and item/section applicable to the audit
+    entity. Each line links the regulation to affected standard account types
+    and flags whether the regulation has significant impact on the financial
+    statements. This enables auditors to trace regulatory requirements to
+    specific audit areas and design compliance-focused procedures (ISA 250).
+    """
+
     _name = "general_audit_ws_a13a30e.detail"
     _description = "Worksheet a13a30e - Detail"
     _order = "worksheet_id, sequence, id"

@@ -6,6 +6,17 @@ from odoo import fields, models
 
 
 class GeneralAuditWSAE11F7EAccountingPolicy(models.Model):
+    """Relevant accounting policy record within the Main Business Activity worksheet.
+
+    Captures specific accounting policies adopted by the entity that are
+    relevant to the audit. Per ISA 315 (Revised), auditors must understand the
+    entity's selection and application of accounting policies, including
+    significant changes, to assess risks of material misstatement.
+
+    Each policy record includes the policy description, the account types
+    affected, and the applicable accounting standards.
+    """
+
     _name = "general_audit_ws_ae11f7e.accounting_policy"
     _description = "Worksheet ae11f7e - Relevant Accounting Policy"
     _order = "worksheet_id, id"

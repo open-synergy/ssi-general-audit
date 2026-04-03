@@ -8,6 +8,31 @@ from odoo.addons.ssi_decorator import ssi_decorator
 
 
 class GeneralAuditWSa604795(models.Model):
+    """Worksheet: Business Cycle Summaries (a604795) — RA.150.4.
+
+    Documents the detailed analysis of the entity's business cycles (transaction
+    classes) as part of understanding the entity and its environment, in
+    accordance with ISA 315 (Revised) / SA 315.
+
+    For each business cycle (e.g., revenue cycle, procurement cycle, payroll
+    cycle), the auditor documents:
+
+    - Business process selected (``business_process_id``)
+    - Estimated transaction volume for the period
+    - Classes of transactions within the cycle (``detail_ids``)
+    - Business functions that drive each transaction class
+    - Business documents used or generated per function
+    - Related account types affected by the cycle
+    - Assigned audit team members responsible for this cycle
+    - Link to the Audit Working Plan worksheet (``ws_cbbbaf4_id``)
+
+    Understanding transaction classes and business functions enables the auditor
+    to assess where misstatements could arise, identify controls to test, and
+    design appropriate audit responses.
+
+    Inherits from ``general_audit_worksheet_mixin``.
+    """
+
     _name = "general_audit_ws_a604795"
     _description = "Business Cycle Summaries (a604795)"
     _inherit = [

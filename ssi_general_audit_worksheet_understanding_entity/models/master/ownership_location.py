@@ -5,6 +5,15 @@ from odoo import fields, models
 
 
 class OwnershipLocation(models.Model):
+    """Master: Ownership Location.
+
+    Reference list of location types or specific sites (e.g., Head Office,
+    Branch Office, Warehouse, Factory) relevant to the entity's operations.
+    Used in the General Information and Legal Aspect worksheet (ddf034c) to
+    document the entity's ownership or lease status at each location as part
+    of ISA 315 entity understanding.
+    """
+
     _name = "ownership_location"
     _inherit = [
         "mixin.master_data",

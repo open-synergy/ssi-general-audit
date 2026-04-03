@@ -6,6 +6,14 @@ from odoo import api, fields, models
 
 
 class GeneralAuditWSAE11F7EOtherInformation(models.Model):
+    """Significant other information entry within the Main Business Activity worksheet.
+
+    Documents significant information obtained from external or internal sources
+    (e.g., management letters, regulatory reports, board minutes, press releases)
+    that is relevant to understanding the entity and its environment (ISA 315).
+    Each entry includes a summary, narrative documentation, and optional attachments.
+    """
+
     _name = "general_audit_ws_ae11f7e.other_information"
     _description = "Worksheet ae11f7e - Significant Other Information"
     _order = "worksheet_id, id"

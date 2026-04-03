@@ -6,6 +6,20 @@ from odoo import api, fields, models
 
 
 class GeneralAudit(models.Model):
+    """Extension of the General Audit record for Understanding Entity data.
+
+    Extends the core ``general_audit`` model to add fields required for the
+    Understanding Entity and Its Environment phase of the audit (ISA 315):
+
+    - ``business_cycle_ids``: business cycles relevant to the engagement
+    - ``other_report_ids``: other reports reviewed (internal audit, regulatory)
+    - ``expert_type_ids``: computed set of expert types needed (from ae11f7e)
+    - ``expert_impacted_account_type_ids``: account types impacted by expert use
+
+    These fields enable cross-worksheet aggregation and navigation between the
+    understanding worksheets and other audit phases.
+    """
+
     _name = "general_audit"
     _description = "General Audit"
     _inherit = [

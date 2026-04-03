@@ -7,6 +7,24 @@ from odoo import api, fields, models
 
 
 class GeneralAuditStandardDetail(models.Model):
+    """Extension of General Audit Standard Detail for understanding impacts.
+
+    Extends ``general_audit.standard_detail`` to track which standard account
+    detail lines are impacted by findings from the Understanding Entity
+    worksheets. Computed boolean flags indicate whether each account detail
+    is impacted by:
+
+    - Regulations (from worksheet a13a30e — Relevant Regulations)
+    - Business Environment (from worksheet bdcdfc5)
+    - Fraud Factors (from worksheet c0e0eec — Fraud Factor Analysis)
+    - Use of Experts (from worksheet ae11f7e — Main Business Activity)
+    - Going Concern (from worksheet c0d0898)
+    - Financial Statement Preparation (from worksheet f6a227)
+
+    These flags are used to focus substantive and risk-response procedures
+    on account areas with identified impacts at the audit planning stage.
+    """
+
     _name = "general_audit.standard_detail"
     _inherit = ["general_audit.standard_detail"]
 

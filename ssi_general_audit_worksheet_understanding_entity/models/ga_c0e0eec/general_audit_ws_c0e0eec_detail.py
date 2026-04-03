@@ -6,6 +6,20 @@ from odoo import api, fields, models
 
 
 class GeneralAuditWSC0E0EECDetail(models.Model):
+    """Fraud indicator assessment line within the Fraud Factor Analysis worksheet.
+
+    Represents one fraud risk indicator evaluated by the audit team. Indicators
+    are drawn from the fraud triangle (incentives/pressures, opportunities,
+    attitudes/rationalizations) per ISA 240 / SA 240. For each indicator,
+    the auditor documents observations from three angles:
+    - TCGW (Those Charged With Governance)
+    - Management
+    - Other sources
+
+    Results feed directly into the overall fraud risk assessment and the design
+    of unpredictable and fraud-responsive audit procedures.
+    """
+
     _name = "general_audit_ws_c0e0eec.detail"
     _description = "Worksheet c0e0eec - Detail"
     _order = "worksheet_id, category_id, factor_id, indicator_id, id"

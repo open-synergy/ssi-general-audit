@@ -6,6 +6,44 @@ from odoo import fields, models
 
 
 class GeneralAuditWSae11f7e(models.Model):
+    """Worksheet: Main Business Activity Process (ae11f7e) — RA.150.3.
+
+    Documents the entity's main business activities, external relationships,
+    and operational context as required by ISA 315 (Revised) / SA 315 and
+    ISA 550 / SA 550 (Related Parties).
+
+    This worksheet captures a comprehensive picture of the entity's business
+    environment including:
+
+    **Business Structure & Cycles**
+    - Business cycles (synchronized with the General Audit record)
+
+    **External Parties**
+    - Related parties: names, relationships, impacted account types
+    - Other significant investments: entity equity interests
+    - Primary funding sources: lenders, facility types, outstanding balances
+
+    **Market Context**
+    - Key customers: names, sales values, percentage of total sales
+    - Key suppliers: names, purchase values, percentage of total purchases
+    - Competitors: names, relative market size
+
+    **Financial Reporting Infrastructure**
+    - Information systems and accounting applications used
+    - Other provided services (outsourced processes)
+    - Experts engaged for fair value, actuarial, legal, or technical matters
+
+    **Evidence & Prior Audit Information**
+    - Previous audit evidence and information (carry-forward from prior periods)
+    - Other information from external sources relevant to the audit
+    - Relevant accounting policies applied by the entity
+
+    Understanding these elements enables the auditor to identify risks of
+    material misstatement at the financial statement and assertion levels.
+
+    Inherits from ``general_audit_worksheet_mixin``.
+    """
+
     _name = "general_audit_ws_ae11f7e"
     _description = "Main Business Activity Process (ae11f7e)"
     _inherit = [

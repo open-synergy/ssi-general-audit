@@ -6,6 +6,14 @@ from odoo import api, fields, models
 
 
 class GeneralAuditWSAE11F7EPreviousAuditInformation(models.Model):
+    """Previous significant audit information within the Main Business Activity worksheet.
+
+    Captures significant audit findings, conclusions, or observations from prior
+    engagement periods that are relevant to the current audit year. Provides
+    continuity of audit knowledge across periods per ISA 315 and ISA 300
+    (Planning). Includes a summary, documentation, and optional attachments.
+    """
+
     _name = "general_audit_ws_ae11f7e.previous_audit_information"
     _description = "Worksheet ae11f7e - Previous Significant Audit Information"
     _order = "worksheet_id, id"

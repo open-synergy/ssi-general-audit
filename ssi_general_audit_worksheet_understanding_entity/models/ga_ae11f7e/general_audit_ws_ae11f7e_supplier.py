@@ -6,6 +6,14 @@ from odoo import fields, models
 
 
 class GeneralAuditWSAE11F7ESupplier(models.Model):
+    """Key supplier entry within the Main Business Activity worksheet.
+
+    Records significant suppliers of the entity, their total purchase value,
+    and the percentage they represent of total procurement. Supplier
+    concentration and dependence information supports the auditor's assessment
+    of supply chain risks and the going concern evaluation (ISA 315, ISA 570).
+    """
+
     _name = "general_audit_ws_ae11f7e.supplier"
     _description = "Worksheet ae11f7e - Supplier"
     _order = "worksheet_id, id"

@@ -6,6 +6,15 @@ from odoo import fields, models
 
 
 class GeneralAuditGoingConcern(models.Model):
+    """Master: Going Concern Indicator.
+
+    Defines the going concern indicators to be assessed in the preliminary
+    going concern worksheet (c0d0898). Each indicator belongs to a category
+    (financial, operational, or other) per ISA 570 (Revised) / SA 570. The
+    master list is automatically loaded into each worksheet when the worksheet
+    is opened, ensuring all standard indicators are evaluated for every audit.
+    """
+
     _name = "general_audit_going_concern"
     _inherit = [
         "mixin.master_data",

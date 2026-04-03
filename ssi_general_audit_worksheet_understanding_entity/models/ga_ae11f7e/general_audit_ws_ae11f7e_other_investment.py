@@ -6,6 +6,14 @@ from odoo import fields, models
 
 
 class GeneralAuditWSAE11F7EOtherInvestment(models.Model):
+    """Other investment entry within the Main Business Activity worksheet.
+
+    Records significant equity investments or financial instruments held by
+    the entity (other than primary operating subsidiaries). Understanding
+    the entity's investment portfolio helps the auditor identify fair value
+    risks, impairment assessments, and related party interests (ISA 315, ISA 550).
+    """
+
     _name = "general_audit_ws_ae11f7e.other_investment"
     _description = "Worksheet ae11f7e - Other Investments"
     _order = "worksheet_id, id"

@@ -6,6 +6,14 @@ from odoo import fields, models
 
 
 class GeneralAuditWSddf034cEstShareholding(models.Model):
+    """Shareholding structure from the Deed of Establishment.
+
+    Records the initial sharehoilding structure of the entity as per its
+    original Deed of Establishment. This baseline ownership data is used to
+    understand the original capital structure, track ownership changes over
+    time, and identify related parties and controlling interests (ISA 315, ISA 550).
+    """
+
     _name = "general_audit_ws_ddf034c.est_shareholding"
     _description = (
         "General Information and Legal Aspec (ddf034c) - " "Shareholding Structure"

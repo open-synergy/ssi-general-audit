@@ -6,6 +6,15 @@ from odoo import fields, models
 
 
 class GeneralAuditWSAE11F7ERelatedParty(models.Model):
+    """Related party entry within the Main Business Activity worksheet.
+
+    Identifies related parties of the audit client (subsidiaries, associates,
+    key management, shareholding entities) and the nature of their relationship.
+    Per ISA 550 / SA 550, auditors must identify related parties and assess
+    whether related party transactions are at arm's length and properly
+    disclosed in the financial statements.
+    """
+
     _name = "general_audit_ws_ae11f7e.related_party"
     _description = "Worksheet ae11f7e - Related Parties"
     _order = "worksheet_id, id"

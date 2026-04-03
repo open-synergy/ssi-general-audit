@@ -6,6 +6,32 @@ from odoo import _, api, fields, models
 
 
 class GeneralAuditWSf87b2e1(models.Model):
+    """Worksheet: Understanding of The Entity and Its Environment — Summary (f87b2e1).
+
+    This is the master summary worksheet that consolidates and cross-links all
+    individual understanding worksheets within the 'Understanding Entity and
+    Its Environment' audit phase. It serves as the auditor's central navigation
+    point for the entire ISA 315 understanding process.
+
+    In accordance with ISA 315 (Revised) / SA 315 — Identifying and Assessing
+    the Risks of Material Misstatement — auditors are required to obtain
+    understanding of the entity and its environment across several dimensions.
+    This worksheet stores computed links (``link_1_id`` through ``link_8_id``)
+    to each specific understanding worksheet, allowing auditors to navigate
+    between worksheets and assess completeness:
+
+    - link_1_id (RA.150.1): General Information and Legal Aspect (ddf034c)
+    - link_2_id (RA.150.2): Structure Organization and Responsibilities (e78a3c6)
+    - link_3_id (RA.150.3): Main Business Activity Process (ae11f7e)
+    - link_4_id (RA.150.4): Business Cycle Summaries (a604795)
+    - link_5_ids (RA.150.5): Understanding of the Business Environment (bdcdfc5)
+    - link_6_id (RA.150.6): Understanding of Preparation of Financial Statements (f6a227)
+    - link_7_id (RA.150.7): Understanding of Relevant Regulations (a13a30e)
+    - link_8_id (RA.150.8): Going Concern Analysis — Preliminary (c0d0898)
+
+    Inherits from ``general_audit_worksheet_mixin``.
+    """
+
     _name = "general_audit_ws_f87b2e1"
     _description = "Understanding of The Entity and it's Environment (f87b2e1)"
     _inherit = [

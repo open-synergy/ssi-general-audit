@@ -6,6 +6,15 @@ from odoo import api, fields, models
 
 
 class GeneralAuditWSAE11F7EOtherEvidence(models.Model):
+    """Other audit evidence record within the Main Business Activity worksheet.
+
+    Records additional audit evidence obtained from external sources (e.g.,
+    analyst reports, industry studies, third-party confirmations) that support
+    the auditor's understanding of the entity. Per ISA 500 / SA 500, auditors
+    must gather sufficient appropriate evidence; this model tracks non-standard
+    evidence items beyond the primary audit procedures.
+    """
+
     _name = "general_audit_ws_ae11f7e.other_evidence"
     _description = "Worksheet ae11f7e - Other Evidence"
     _order = "worksheet_id, id"

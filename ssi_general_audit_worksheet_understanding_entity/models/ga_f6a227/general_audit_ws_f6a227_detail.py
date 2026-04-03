@@ -6,6 +6,16 @@ from odoo import api, fields, models
 
 
 class GeneralAuditWSf6a227Detail(models.Model):
+    """Detail line for one step of the financial statement preparation process.
+
+    Documents the auditor's understanding of a specific financial statement
+    preparation step (e.g., journal entry processing, period-end close,
+    consolidation). For each step the auditor captures the understanding
+    result, control activities, audit relevancy, and potential misstatements.
+    This information directly informs the test of controls and substantive
+    procedures designed per ISA 330 / SA 330.
+    """
+
     _name = "general_audit_ws_f6a227.detail"
     _description = "Worksheet f6a227 - Detail"
     _order = "worksheet_id, sequence, id"

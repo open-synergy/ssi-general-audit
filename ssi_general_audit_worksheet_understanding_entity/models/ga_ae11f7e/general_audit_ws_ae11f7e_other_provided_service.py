@@ -6,6 +6,14 @@ from odoo import fields, models
 
 
 class GeneralAuditWSAE11F7EOtherProvidedService(models.Model):
+    """Other provided service entry within the Main Business Activity worksheet.
+
+    Documents outsourced services or third-party arrangements relevant to the
+    entity's operations (e.g., shared service centres, IT outsourcing, payroll
+    processing). Per ISA 402 / SA 402, auditors must understand service
+    organisation arrangements and their impact on internal controls.
+    """
+
     _name = "general_audit_ws_ae11f7e.other_provided_service"
     _description = "Worksheet ae11f7e - Other Provided Service"
     _order = "worksheet_id, id"

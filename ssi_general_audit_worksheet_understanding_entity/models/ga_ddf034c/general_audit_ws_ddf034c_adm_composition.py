@@ -6,6 +6,14 @@ from odoo import fields, models
 
 
 class GeneralAuditWSddf034cAdmComposition(models.Model):
+    """Management/shareholder composition line from deed amendment.
+
+    Records the composition of management (directors, commissioners) or
+    shareholders as stated in amendments to the entity's deed of establishment.
+    This information supports the auditor's understanding of governance,
+    related party identification, and management override risk (ISA 315, ISA 550).
+    """
+
     _name = "general_audit_ws_ddf034c.adm_composition"
     _description = (
         "General Information and Legal Aspec (ddf034c) - " "Composition (Amendment)"

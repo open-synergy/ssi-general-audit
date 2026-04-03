@@ -6,6 +6,15 @@ from odoo import fields, models
 
 
 class GeneralAuditBusinessFunction(models.Model):
+    """Master: Business Function.
+
+    Reference list of operational business functions (e.g., order taking,
+    invoicing, cash receipt, goods receipt) that are part of the entity's
+    transaction processing cycles. Each function belongs to a transaction class
+    and is linked to relevant business documents. Used in the Business Cycle
+    Summaries worksheet (a604795) to map entity processes per ISA 315.
+    """
+
     _name = "general_audit_business_function"
     _inherit = [
         "mixin.master_data",

@@ -6,6 +6,19 @@ from odoo import api, fields, models
 
 
 class GeneralAuditWSA604795Detail(models.Model):
+    """Transaction class detail line within the Business Cycle Summaries worksheet.
+
+    Represents a single class of transaction within the business cycle being
+    documented. Per ISA 315 (Revised), auditors must understand classes of
+    transactions, account balances, and disclosures, including the related
+    business functions and documents that flow through the cycle.
+
+    Each detail line captures:
+    - The class of transaction (e.g., sales, purchases, payroll)
+    - Business functions driving the transaction class
+    - Related standard account types affected
+    """
+
     _name = "general_audit_ws_a604795.detail"
     _description = "Worksheet a604795 - Detail"
     _order = "worksheet_id, id"

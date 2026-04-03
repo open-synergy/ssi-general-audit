@@ -6,6 +6,16 @@ from odoo import fields, models
 
 
 class GeneralAuditClassTransaction(models.Model):
+    """Master: Class of Transaction.
+
+    Reference list of transaction classes relevant to the audit (e.g., Revenue
+    and Receipts, Purchases and Payments, Payroll, Fixed Assets). Per ISA 315,
+    auditors must understand the entity's significant classes of transactions,
+    how they are initiated, recorded, processed, and reported. Used in the
+    Business Cycle Summaries worksheet (a604795) and links to related account
+    types for traceability across the audit.
+    """
+
     _name = "general_audit_class_transaction"
     _inherit = [
         "mixin.master_data",

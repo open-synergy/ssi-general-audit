@@ -6,6 +6,16 @@ from odoo import fields, models
 
 
 class GeneralAuditFraudFactor(models.Model):
+    """Master: Fraud Factor.
+
+    Defines the fraud factors (conditions) to be assessed during the audit's
+    fraud risk evaluation per ISA 240 / SA 240. Each factor belongs to a
+    category aligned to the fraud triangle (incentives/pressures, opportunities,
+    rationalizations). Factors group sets of specific fraud indicators
+    (``general_audit_fraud_factor_indicator``) used in the Fraud Factor
+    Analysis worksheet (c0e0eec).
+    """
+
     _name = "general_audit_fraud_factor"
     _inherit = [
         "mixin.master_data",

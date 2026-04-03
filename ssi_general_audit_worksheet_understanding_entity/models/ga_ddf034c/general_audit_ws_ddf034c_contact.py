@@ -6,6 +6,14 @@ from odoo import api, fields, models
 
 
 class GeneralAuditWSddf034cContact(models.Model):
+    """Client contact person within the General Info & Legal Aspect worksheet.
+
+    Records the key contact persons at the client entity relevant to the
+    audit engagement. Contacts are linked to the entity's partner record and
+    are used for communication planning and audit documentation purposes
+    (ISA 315 / SA 315 — understanding the entity).
+    """
+
     _name = "general_audit_ws_ddf034c.contact"
     _description = "General Information and Legal Aspec (ddf034c) - " "Client Contacts"
     _order = "sequence, id"

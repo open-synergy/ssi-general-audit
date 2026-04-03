@@ -6,6 +6,15 @@ from odoo import fields, models
 
 
 class GeneralAuditWSAE11F7EPrimaryFunding(models.Model):
+    """Primary funding source entry within the Main Business Activity worksheet.
+
+    Records the entity's primary external funding arrangements (bank loans,
+    bonds, credit facilities, equity funding). Understanding the entity's
+    capital structure and financing sources is required by ISA 315 (Revised)
+    and supports the going concern assessment (ISA 570) and the audit of
+    interest-bearing liabilities.
+    """
+
     _name = "general_audit_ws_ae11f7e.primary_funding"
     _description = "Worksheet ae11f7e - Primary Fundings"
     _order = "worksheet_id, id"

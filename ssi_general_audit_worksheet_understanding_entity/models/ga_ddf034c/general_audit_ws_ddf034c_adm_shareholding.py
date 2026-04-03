@@ -6,6 +6,14 @@ from odoo import fields, models
 
 
 class GeneralAuditWSddf034cAdmShareholding(models.Model):
+    """Shareholding structure from the most recent deed amendment.
+
+    Records the current shareholding composition as stated in the latest
+    amendment to the entity's deed of establishment. Tracks changes in
+    ownership since incorporation. Used for related party identification,
+    beneficial ownership analysis, and governance risk assessment (ISA 315, ISA 550).
+    """
+
     _name = "general_audit_ws_ddf034c.adm_shareholding"
     _description = (
         "General Information and Legal Aspec (ddf034c) - "

@@ -6,6 +6,14 @@ from odoo import fields, models
 
 
 class GeneralAuditWSddf034cEstComposition(models.Model):
+    """Management/shareholder composition line from the Deed of Establishment.
+
+    Records the initial management (directors, commissioners) or shareholder
+    composition as stated in the entity's original Deed of Establishment.
+    This baseline composition supports related party identification and
+    governance understanding at the time of incorporation (ISA 315, ISA 550).
+    """
+
     _name = "general_audit_ws_ddf034c.est_composition"
     _description = "General Information and Legal Aspec (ddf034c) - " "Composition"
     _order = "sequence, id"

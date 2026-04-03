@@ -6,6 +6,27 @@ from odoo import api, fields, models
 
 
 class GeneralAuditWSddf034c(models.Model):
+    """Worksheet: General Information and Legal Aspect (ddf034c) — RA.150.1.
+
+    Records the entity's foundational legal and general information as part of
+    understanding the entity, in accordance with ISA 315 (Revised) / SA 315.
+
+    This worksheet captures:
+    - Client contact persons (names, roles, communication details)
+    - Deed of Establishment (notarial deed number, date, notary details)
+    - Subsequent amendments to the deed (amendment history)
+    - Composition of management and shareholders (establishment and amendments)
+    - Ownership of locations (head office, branches, facilities: owned/leased)
+    - Licensing, registration, and legal/regulatory information
+
+    Understanding the entity's legal structure and key persons enables the
+    auditor to assess governance, identify related parties, and evaluate
+    compliance with applicable regulations and reporting frameworks
+    (ISA 250 / SA 250 — Consideration of Laws and Regulations).
+
+    Inherits from ``general_audit_worksheet_mixin``.
+    """
+
     _name = "general_audit_ws_ddf034c"
     _description = "General Information and Legal Aspec (ddf034c)"
     _inherit = [

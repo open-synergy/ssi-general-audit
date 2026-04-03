@@ -6,6 +6,15 @@ from odoo import fields, models
 
 
 class GeneralAuditWSA604795BusinessFunction(models.Model):
+    """Business function line within a Business Cycle Summaries detail.
+
+    Represents a specific operational function (e.g., order receipt, invoicing,
+    cash collection) that contributes to a class of transaction in the entity's
+    business cycle. Each function is linked to its associated business documents
+    (inputs and outputs). Understanding business functions enables auditors to
+    trace transaction flows and identify control points (ISA 315).
+    """
+
     _name = "general_audit_ws_a604795.business_function"
     _description = "Worksheet a604795 - Business Function"
     _order = "worksheet_id, id"

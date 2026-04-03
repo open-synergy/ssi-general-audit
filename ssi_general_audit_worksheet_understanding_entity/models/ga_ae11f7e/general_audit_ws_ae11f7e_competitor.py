@@ -6,6 +6,14 @@ from odoo import fields, models
 
 
 class GeneralAuditWSAE11F7ECompetitor(models.Model):
+    """Competitor entry within the Main Business Activity worksheet.
+
+    Records key competitors of the audit client and their relative market
+    position. Understanding competitive pressures helps the auditor assess
+    industry-related risks (ISA 315) and evaluate management's business
+    assumptions in areas such as revenue recognition and asset impairment.
+    """
+
     _name = "general_audit_ws_ae11f7e.competitor"
     _description = "Worksheet ae11f7e - Competitor"
     _order = "worksheet_id, id"
