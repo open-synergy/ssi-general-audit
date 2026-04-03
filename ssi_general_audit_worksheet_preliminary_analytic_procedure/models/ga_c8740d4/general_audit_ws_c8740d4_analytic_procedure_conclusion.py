@@ -6,6 +6,22 @@ from odoo import fields, models
 
 
 class GeneralAuditWSb32655aAnalyticProcedureConclusion(models.Model):
+    """
+    Conclusion narrative line for the Preliminary Analytic Procedure Summary (c8740d4).
+
+    Each record stores the auditor's **written conclusion** for one conclusion
+    category (e.g., "Revenue Trend", "Liquidity Position").  The ``category_id``
+    determines the section heading and the display order (via ``parent_sequence``
+    and ``sequence``).
+
+    The auditor uses this model to document:
+
+    * What was found (significant fluctuations, unusual ratios).
+    * The explanation obtained from management or identified through audit
+      procedures.
+    * The impact on the audit plan (e.g., increased procedures in area X).
+    """
+
     _name = "general_audit_ws_c8740d4.analytic_procedure_conclusion"
     _description = "Analytic Procedure Consulsion Category"
     _order = "parent_sequence, sequence, id"

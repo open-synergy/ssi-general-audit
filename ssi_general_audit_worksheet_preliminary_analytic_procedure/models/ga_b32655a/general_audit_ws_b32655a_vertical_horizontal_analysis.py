@@ -5,6 +5,27 @@ from odoo import api, fields, models
 
 
 class WS1401VerticalHorizontalAnalysis(models.Model):
+    """
+    Analysis detail line for the Vertical and Horizontal Analysis worksheet (b32655a).
+
+    One record is created per standard detail line included in the General
+    Audit.  Each line computes:
+
+    * **Current amount** — End Period or Extrapolation figure depending on
+      the parent worksheet's ``base_amount_source``.
+    * **Previous amount** — prior-year audited balance from the standard detail.
+    * **Interim amount** — interim period figure.
+    * **Horizontal analysis** — absolute and percentage change between current
+      and previous amounts.
+    * **Vertical analysis** — ratio of the line amount to a base-figure
+      computation item (e.g., Total Revenue for income statement lines,
+      Total Assets for balance sheet lines), derived via
+      ``computation_item_id``.
+
+    Unusual variances (horizontal) or disproportionate weights (vertical) are
+    highlighted to guide risk assessment during planning.
+    """
+
     _name = "general_audit_ws_b32655a.vertical_horizontal_analysis"
     _description = (
         "Preliminary Analytic Procedure - "

@@ -6,6 +6,24 @@ from odoo import fields, models
 
 
 class GeneralAuditWSc8740d4(models.Model):
+    """
+    WS: Preliminary Analytic Procedure — Summary (c8740d4) — ISA 315 / SA 315.
+
+    The primary worksheet for documenting the results of preliminary analytical
+    procedures performed during the audit planning phase.  It combines:
+
+    * A **structured checklist** (``checklist_ids``) where the auditor
+      responds Yes / No / N-A to confirm that each prescribed step of the
+      preliminary analytical procedure has been performed.
+    * **Conclusion narratives** (``conclusion_ids``) where the auditor documents
+      the results and inferences drawn from the analyses, organised by
+      ``analytic_procedure_conclusion_category``.
+
+    This worksheet serves as the audit team leader's sign-off document that
+    preliminary analytical procedures have been completed and that identified
+    risks and unusual items have been considered in the audit plan.
+    """
+
     _name = "general_audit_ws_c8740d4"
     _description = "Preliminary Analytic Procedure (c8740d4)"
     _inherit = [

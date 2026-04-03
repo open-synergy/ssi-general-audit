@@ -6,6 +6,27 @@ from odoo import fields, models
 
 
 class AnalyticProcedureConsulsionCategory(models.Model):
+    """
+    Master: Analytic Procedure Conclusion Category.
+
+    Provides a **configurable hierarchy of categories** used to organise the
+    auditor's conclusion narratives on the Preliminary Analytic Procedure
+    summary worksheet (``general_audit_ws_c8740d4``).
+
+    Examples of categories and their hierarchy:
+
+    * Revenue and Cost of Sales
+      * Net Revenue Trend
+      * Gross Margin Analysis
+    * Liquidity Position
+    * Going Concern Indicators
+
+    ``sequence`` and ``parent_id`` control the display order in the conclusion
+    section of the form view.  Conclusion lines
+    (``general_audit_ws_c8740d4.analytic_procedure_conclusion``) reference
+    a category to determine their position in the structured narrative.
+    """
+
     _name = "analytic_procedure_conclusion_category"
     _inherit = [
         "mixin.master_data",

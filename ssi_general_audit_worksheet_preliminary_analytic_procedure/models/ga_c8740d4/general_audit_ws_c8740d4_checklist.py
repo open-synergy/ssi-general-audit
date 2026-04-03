@@ -6,6 +6,16 @@ from odoo import fields, models
 
 
 class GeneralAuditWSc8740d4Checklist(models.Model):
+    """
+    Checklist answer line for the Preliminary Analytic Procedure Summary (c8740d4).
+
+    Each record stores the auditor's response (Yes / No / N-A) to one
+    checklist item defined in ``general_audit_ws_c8740d4.item``.  The checklist
+    confirms that all required steps (e.g., vertical analysis completed,
+    ratio analysis completed, unusual items identified and documented)
+    have been performed by the audit team.
+    """
+
     _name = "general_audit_ws_c8740d4.checklist"
     _inherit = [
         "mixin.checklist.value",

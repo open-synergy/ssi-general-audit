@@ -8,6 +8,31 @@ from odoo.addons.ssi_decorator import ssi_decorator
 
 
 class GeneralAuditWSd4289e4(models.Model):
+    """
+    WS: Ratio Analysis (d4289e4) — ISA 315 / SA 315.
+
+    Computes **financial ratios** for the current audit period and compares
+    them with prior-period audited figures and industry averages, fulfilling
+    the requirement under ISA 315 / SA 315 to perform analytical procedures
+    during risk assessment.
+
+    Ratio categories supported:
+
+    * **Liquidity** — current ratio, quick ratio, cash ratio.
+    * **Activity** — receivable days, inventory days, payable days.
+    * **Profitability** — gross margin, net margin, return on assets/equity.
+    * **Solvency** — debt-to-equity, interest coverage.
+
+    Each ratio is defined in the ``client_financial_ratio`` master using a
+    Python formula that references account balances via``trial_balance_computation_item``.
+    The worksheet auto-populates ``ratio_ids`` from the ratio master
+    (``action_load_ratio``) and then executes each ratio's formula to compute
+    End Period, Extrapolation, Interim, Previous, and Audited figures.
+
+    Unusual ratios or significant changes from prior year are indicators of
+    potential material misstatement that should be investigated further.
+    """
+
     _name = "general_audit_ws_d4289e4"
     _description = "Preliminary Analytic Procedure - Ratio Analysis (d4289e4)"
     _inherit = [

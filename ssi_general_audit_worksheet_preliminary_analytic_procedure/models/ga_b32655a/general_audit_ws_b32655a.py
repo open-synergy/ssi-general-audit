@@ -8,6 +8,29 @@ from odoo.addons.ssi_decorator import ssi_decorator
 
 
 class GeneralAuditWSb32655a(models.Model):
+    """
+    WS: Vertical and Horizontal Analysis (b32655a) — ISA 315 / SA 315.
+
+    Performs **preliminary analytical procedures** on the client's financial
+    data by computing both horizontal (period-over-period) and vertical
+    (common-size) analyses for each standard detail line in the General Audit.
+
+    The worksheet:
+
+    * Lets the auditor choose between **Extrapolation** (forecasted) and
+      **End Period** (actual) figures as the current-period base via
+      ``base_amount_source``.
+    * Auto-populates ``analysis_ids`` lines from the General Audit standard
+      details (``action_reload_analysis``).
+    * For each standard detail line the system computes current, prior, and
+      interim figures and calculates absolute and percentage differences.
+    * Identifies **unusual fluctuations** that the auditor should investigate
+      further as potential indicators of material misstatement risk.
+
+    Results from this worksheet are consumed by the Planning Memorandum
+    detail worksheet (``general_audit_ws_fbbe0f8``).
+    """
+
     _name = "general_audit_ws_b32655a"
     _description = (
         "Preliminary Analytic Procedure - Vertical and Horizontal Analysis (b32655a)"

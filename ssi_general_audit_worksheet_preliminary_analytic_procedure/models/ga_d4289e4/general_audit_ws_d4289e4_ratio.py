@@ -7,6 +7,29 @@ from odoo.tools.safe_eval import safe_eval as eval  # pylint: disable=redefined-
 
 
 class GeneralAuditWSd4289e4Ratio(models.Model):
+    """
+    Ratio computation line for the Ratio Analysis worksheet (d4289e4).
+
+    Each record computes and stores one financial ratio for the audit period.
+    The ratio formula is defined on ``client_financial_ratio`` and is executed
+    via ``safe_eval`` against the client's trial balance computation data.
+
+    Stored figures per ratio:
+
+    * ``end_period_amount``     — ratio using End Period (actual) figures.
+    * ``extrapolation_amount``  — ratio using Extrapolation (forecast) figures.
+    * ``interim_amount``        — ratio using Interim figures.
+    * ``previous_amount``       — ratio using Prior Year figures.
+    * ``audited_amount``        — ratio using prior-year audited figures.
+    * ``current_amount``        — displayed current figure (follows parent
+      ``base_amount_source``).
+    * ``industry_average``      — manually entered benchmark.
+    * ``analysis``              — auditor's brief narrative analysis.
+
+    Ratios are grouped by ``category`` (liquidity, activity, profitability,
+    solvency) for display in the worksheet form view.
+    """
+
     _name = "general_audit_ws_d4289e4.ratio"
     _description = "Preliminary Analytic Procedure - Ratio Analysis (d4289e4) - Ratio"
 
