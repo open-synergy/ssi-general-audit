@@ -6,6 +6,31 @@ from odoo import api, fields, models
 
 
 class GeneralAuditWSe51bb1c(models.Model):
+    """
+    WS: Key Audit Procedures by Account Type (e51bb1c) — ISA 300 / SA 300.
+
+    Documents the **key audit procedures** selected for a specific account
+    type (``account_type_id``) in the current audit engagement.  The worksheet
+    is scoped to one account type and lists all procedure categories that are
+    applicable to that account type together with:
+
+    * The relevant **assertion types** (existence, completeness, accuracy, etc.)
+    * The individual **procedure steps** to be performed.
+    * The **engagement team member** responsible for each procedure.
+    * A **status** field indicating whether the procedure has been performed,
+      not performed, or deemed not relevant.
+    * A **reference** cross-linking the procedure to its working paper.
+
+    Use ``action_load_detail`` to auto-populate lines from the
+    ``general_audit_audit_procedure_category`` master for the selected
+    account type.  The method also synchronises assertion types when the
+    master is updated.
+
+    Allowed account types are restricted to those registered on the parent
+    General Audit.  Allowed team members are restricted to the team members
+    selected in the Team Roster worksheet (``general_audit_ws_b9d8a5c``).
+    """
+
     _name = "general_audit_ws_e51bb1c"
     _description = "Key Audit Procedures (e51bb1c)"
     _inherit = [

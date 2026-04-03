@@ -6,6 +6,23 @@ from odoo import api, fields, models
 
 
 class GeneralAuditWSb26d482Detail(models.Model):
+    """
+    Detail line for the All Accounts Lead Schedule (b26d482).
+
+    One record is created per GL account included in the General Audit.
+    The line mirrors the parent ``general_audit.detail`` record and exposes:
+
+    * ``current_balance`` — computed from End Period or Interim balance
+      depending on the parent worksheet's ``balance_type``.
+    * ``adjustment_dr`` / ``adjustment_cr`` — total debit/credit adjustments
+      from the audit detail.
+    * ``adjusted_balance`` — net balance after applying adjustments, honouring
+      the account's normal balance convention.
+    * ``previous_balance`` — prior-year comparative carried from the detail.
+    * ``ws_f9f3299_id`` — optional cross-reference to the per-account-type
+      lead schedule (``general_audit_ws_f9f3299``).
+    """
+
     _name = "general_audit_ws_b26d482.detail"
     _description = "Worksheet (b26d482) - Detail"
 

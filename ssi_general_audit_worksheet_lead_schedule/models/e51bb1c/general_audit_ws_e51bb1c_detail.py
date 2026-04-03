@@ -6,6 +6,23 @@ from odoo import fields, models
 
 
 class GeneralAuditWSe51bb1cDetail(models.Model):
+    """
+    Detail line for the Key Audit Procedures worksheet (e51bb1c).
+
+    Each line represents one **audit procedure category** within the selected
+    account type and captures:
+
+    * ``audit_procedure_category_id`` — the procedure category (e.g.,
+      *Existence - Cash*, *Completeness - Revenue*).
+    * ``assertion_type_ids`` — the assertion types that the category addresses.
+    * ``step_ids`` — the individual procedure steps within the category.
+    * ``status`` — execution status: *Performed*, *Not Performed*, or
+      *Not Relevant*.
+    * ``employee_id`` — the team member assigned to perform this procedure.
+    * ``reference`` — cross-reference to the relevant working paper or
+      supporting document.
+    """
+
     _name = "general_audit_ws_e51bb1c.detail"
     _description = "Lead Schedule - Key Audit Procedures (e51bb1c) - Detail"
 

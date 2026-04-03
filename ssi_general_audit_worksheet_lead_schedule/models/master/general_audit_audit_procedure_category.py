@@ -6,6 +6,26 @@ from odoo import fields, models
 
 
 class GeneralAuditAuditProcedureCategory(models.Model):
+    """
+    Master: Audit Procedure Category.
+
+    Represents a **logical grouping of audit procedures** for a specific
+    account type and set of assertion types.  For example:
+    *"Existence and Occurrence – Accounts Receivable"*.
+
+    Each category is linked to:
+
+    * ``account_type_id`` — the account type to which the procedures apply.
+    * ``assertion_type_ids`` — the assertion types addressed (existence,
+      completeness, accuracy, cut-off, classification, presentation, etc.).
+    * ``step_ids`` — the individual procedure steps (``general_audit_audit_procedure``)
+      that belong to this category.
+
+    Categories form the **library** from which the Key Audit Procedures
+    worksheet (``general_audit_ws_e51bb1c``) is populated when the auditor
+    calls *Load Detail*.
+    """
+
     _name = "general_audit_audit_procedure_category"
     _inherit = [
         "mixin.master_data",

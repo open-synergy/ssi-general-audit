@@ -6,6 +6,27 @@ from odoo import fields, models
 
 
 class GeneralAuditWSb26d482(models.Model):
+    """
+    WS: All Accounts Lead Schedule (b26d482) — ISA 230 / SA 230.
+
+    Aggregates *every* GL account included in the General Audit engagement into
+    a single lead schedule (top schedule / trial balance schedule).  For each
+    account the worksheet shows:
+
+    * **Current balance** — either End Period or Interim depending on
+      ``balance_type``.
+    * **Debit / Credit adjustments** — proposed adjustment journal entries
+      sourced from the audit detail record.
+    * **Adjusted balance** — current balance ± adjustments, respecting the
+      account's normal balance side.
+    * **Previous balance** — prior-year comparative.
+    * Cross-reference to the per-account-type lead schedule
+      (``general_audit_ws_f9f3299``).
+
+    Use ``action_load_detail`` to synchronise the detail lines with the
+    accounts registered on the parent General Audit.
+    """
+
     _name = "general_audit_ws_b26d482"
     _description = "Worksheet (b26d482)"
     _inherit = [

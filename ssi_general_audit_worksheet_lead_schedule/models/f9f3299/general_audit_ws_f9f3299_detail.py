@@ -6,6 +6,24 @@ from odoo import api, fields, models
 
 
 class GeneralAuditWSf9f3299Detail(models.Model):
+    """
+    Detail line for the per-Account-Type Lead Schedule (f9f3299).
+
+    One record is created per GL account that belongs to the account type
+    selected on the parent worksheet.  The line exposes:
+
+    * ``account_id`` — the client GL account.
+    * ``current_balance`` — End Period or Interim balance (follows parent
+      ``balance_type``).
+    * ``supporting_schedule`` — free-text reference to the sub-workpaper.
+    * ``adjustment_ids`` / ``adjustment_dr`` / ``adjustment_cr`` — all
+      proposed adjustment entries and their debit/credit totals.
+    * ``adjusted_balance`` — balance after adjustments, sign-aware.
+    * ``previous_balance`` — prior-year comparative.
+    * ``diff`` — year-on-year percentage change, useful for preliminary
+      analytical procedures.
+    """
+
     _name = "general_audit_ws_f9f3299.detail"
     _description = "Lead Schedule - Account (f9f3299) - Detail"
 

@@ -6,6 +6,32 @@ from odoo import api, fields, models
 
 
 class GeneralAuditWSf9f3299(models.Model):
+    """
+    WS: Lead Schedule – per Account Type (f9f3299) — ISA 230 / SA 230.
+
+    Produces a detailed lead schedule scoped to a **specific account type**
+    (e.g., Cash and Cash Equivalents, Receivables, Inventories).  For each
+    account within the selected type the worksheet shows:
+
+    * **Current balance** — End Period or Interim depending on
+      ``balance_type``.
+    * **Supporting schedule** reference — cross-link to the sub-schedule
+      where audit work was performed.
+    * **Adjustment journal entries** — linked debit/credit adjustment records.
+    * **Adjusted balance** — balance after applying adjustments, respecting
+      normal balance side.
+    * **Previous balance** — prior-year comparative.
+    * **Year-on-year difference (%)** — percentage change between adjusted and
+      previous balances for preliminary analytical review.
+
+    Account lines are populated via ``action_reload_account``; the method
+    removes existing lines and regenerates them from the General Audit detail
+    list filtered to ``account_type_id``.
+
+    Allowed account types are restricted to types registered on the parent
+    General Audit standard details.
+    """
+
     _name = "general_audit_ws_f9f3299"
     _description = "Lead Schedule - Account (f9f3299)"
     _inherit = [
