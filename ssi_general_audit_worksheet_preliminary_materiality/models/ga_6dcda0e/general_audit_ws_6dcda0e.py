@@ -8,6 +8,31 @@ from odoo.addons.ssi_decorator import ssi_decorator
 
 
 class GeneralAuditWS6dcda0e(models.Model):
+    """
+    WS: Specific Materiality (6dcda0e) — ISA 320 / SA 320.
+
+    Maps each standard detail (account type) in the General Audit against
+    the materiality thresholds computed in the Materiality Computation
+    worksheet (``general_audit_ws_d9d2b44``) to determine whether individual
+    account balances are **Material (M)** or **Immaterial (IM)**.
+
+    The classification logic per mapping line:
+
+    * If |account balance| ≥ base materiality threshold → **Material**.
+    * Otherwise → **Immaterial**.
+    * The auditor can override by ticking ``use_specific_materiality`` and
+      entering a custom ``specific_materiality`` amount for an account.
+      When overridden, the final classification is always *Material*.
+
+    ``materiality_type`` controls whether Overall Materiality or Performance
+    Materiality is used as the comparison threshold.  ``base_amount_source``
+    is inherited from the linked computation worksheet and determines which
+    account balance (Extrapolation or End Period) is compared.
+
+    The specific materiality mapping results feed the Planning Memorandum
+    (``general_audit_ws_fbbe0f8``) for summary reporting.
+    """
+
     _name = "general_audit_ws_6dcda0e"
     _description = "Specific Materiality (6dcda0e)"
     _inherit = [

@@ -5,6 +5,26 @@ from odoo import api, fields, models
 
 
 class GeneralAuditWS6dcda0e1MaterialityMapping(models.Model):
+    """
+    Materiality mapping line for the Specific Materiality worksheet (6dcda0e).
+
+    One record per standard detail (account/section).  The line determines
+    whether the account balance meets the materiality threshold and stores:
+
+    * ``balance`` — account balance sourced from End Period or Extrapolation
+      figures (determined by the linked computation worksheet's
+      ``base_amount_source``).
+    * ``materiality`` — raw materiality classification: *M* (material) or
+      *IM* (immaterial) based on balance vs. threshold comparison.
+    * ``use_specific_materiality`` / ``specific_materiality`` — override
+      fields; when ticked, ``final_materiality`` is forced to *M*.
+    * ``final_materiality`` — the definitive classification used for audit
+      scope decisions.
+
+    Material accounts identified here drive the scope of substantive testing
+    and are referenced in the audit work program.
+    """
+
     _name = "general_audit_ws_6dcda0e_materiality_mapping"
     _description = "General Audit WS 6DCDA0E1 - Materiality Mapping"
     _order = "sequence, worksheet_id, id"

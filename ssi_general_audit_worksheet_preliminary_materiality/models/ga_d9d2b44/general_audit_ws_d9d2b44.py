@@ -8,6 +8,29 @@ from odoo.addons.ssi_decorator import ssi_decorator
 
 
 class GeneralAuditWSd9d2b44(models.Model):
+    """
+    WS: Materiality Computation (d9d2b44) — ISA 320 / SA 320.
+
+    Calculates the three materiality thresholds required by ISA 320:
+
+    * **Overall Materiality (OM)** =
+      ``overall_materiality_percentage`` / 100 × ``base_computation_amount``
+    * **Performance Materiality (PM)** =
+      ``performance_materiality_percentage`` / 100 × OM
+    * **Tolerable Misstatement (TM)** =
+      ``tolerable_misstatement_percentage`` / 100 × PM
+
+    The **base amount** is derived from a ``trial_balance_computation_item``
+    record (e.g., total revenue, total assets, normalised profit before tax)
+    and can be sourced from either *Extrapolation* or *End Period* figures
+    via ``base_amount_source``.  Alternatively the auditor can tick
+    ``other_amount_ok`` and enter a manual ``other_base_amount``.
+
+    The computed OM, PM, and TM figures flow into the Specific Materiality
+    worksheet (``general_audit_ws_6dcda0e``) and the Planning Memorandum
+    detail (``general_audit_ws_fbbe0f8``).
+    """
+
     _name = "general_audit_ws_d9d2b44"
     _description = "Materiality Computation (d9d2b44)"
     _inherit = [

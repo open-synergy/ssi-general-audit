@@ -6,6 +6,18 @@ from odoo import fields, models
 
 
 class GeneralAuditWS1d9338dItem(models.Model):
+    """
+    Checklist item master for the Preliminary Materiality Checklist (1d9338d).
+
+    Each item defines a **single materiality procedure step** that the auditor
+    must confirm has been completed.  Items are categorised by ``checklist_type``:
+
+    * ``materiality_comp``  — Steps related to performing and documenting the
+      materiality computation (base amount, percentages, OM/PM/TM).
+    * ``account_mapping``   — Steps related to mapping account balances against
+      materiality thresholds and identifying material accounts.
+    """
+
     _name = "general_audit_ws_1d9338d.item"
     _inherit = [
         "mixin.checklist.item",

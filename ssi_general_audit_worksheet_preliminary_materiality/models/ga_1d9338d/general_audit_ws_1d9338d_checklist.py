@@ -6,6 +6,15 @@ from odoo import fields, models
 
 
 class GeneralAuditWS1d9338dChecklist(models.Model):
+    """
+    Checklist answer line for the Preliminary Materiality Checklist (1d9338d).
+
+    Each record stores the auditor's response (Yes / No / N-A) to one item
+    from the ``general_audit_ws_1d9338d.item`` master.  The ``checklist_type``
+    carried from the item allows grouping in the form view by planning area
+    (Materiality Computation steps vs. Material Accounts Mapping steps).
+    """
+
     _name = "general_audit_ws_1d9338d.checklist"
     _inherit = [
         "mixin.checklist.value",

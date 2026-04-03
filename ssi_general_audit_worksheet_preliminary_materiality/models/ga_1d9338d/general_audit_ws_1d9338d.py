@@ -6,6 +6,22 @@ from odoo import fields, models
 
 
 class GeneralAuditWS1d9338d(models.Model):
+    """
+    WS: Preliminary Materiality Checklist (1d9338d) — ISA 320 / SA 320.
+
+    A structured Yes / No / N-A checklist that confirms the auditor has
+    followed the prescribed steps for establishing and documenting materiality.
+
+    Checklist item types (``checklist_type``):
+
+    * ``materiality_comp``   — Confirms that the materiality computation
+      process (base amount selection, percentage determination, OM/PM/TM
+      calculation) has been properly performed and documented.
+    * ``account_mapping``    — Confirms that all significant accounts have
+      been assessed against materiality thresholds and that material
+      accounts have been identified for additional audit focus.
+    """
+
     _name = "general_audit_ws_1d9338d"
     _description = "Preliminary Materiality (1d9338d)"
     _inherit = [
