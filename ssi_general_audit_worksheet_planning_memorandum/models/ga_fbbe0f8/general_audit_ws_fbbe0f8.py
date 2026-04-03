@@ -9,6 +9,38 @@ from odoo import _, api, fields, models
 
 
 class GeneralAuditWSfbbe0f8(models.Model):
+    """
+    WS: Audit Planning Memorandum — Detail Summary (fbbe0f8) — ISA 300 / SA 300.
+
+    A consolidated partner-reviewable narrative that aggregates key information
+    from multiple upstream worksheets into a single Audit Planning Memorandum
+    document.  This worksheet is the "cover page" of the planning phase and
+    is intended to be reviewed and approved by the Engagement Partner before
+    fieldwork commences.
+
+    The following information is pulled from linked upstream worksheets:
+
+    * **Business environment** (``link_1_ids``) — IT environment details,
+      IT risk review, regulatory/legal environment review, and amendment
+      review notes.
+    * **Business cycles** (``link_2_ids``) — Significant transaction cycles,
+      assigned team members, estimated transaction volumes, and entities
+      flagged for unannounced audit.
+    * **Preliminary materiality** (``link_3_ids``) — Overall materiality (OM),
+      performance materiality (PM), and tolerable misstatement (TM).
+    * **Specific materiality** (``link_4_ids``) — Material account type
+      mappings.
+    * **Inherent risk finance** (``link_5_id``) — Review note.
+    * **Team preliminary engagement** (``link_6_id``) — Review note.
+    * **Understanding of the entity** (``link_7_id``) — Prior auditor history,
+      other services provided, prior audit evidence, and other evidence.
+
+    Dynamic field labels are generated from the ``general_audit_ws_a753ab9``
+    checklist items via ``get_dynamic_labels()`` (LRU-cached), allowing the
+    form view to reflect the custom planning area labels configured in the item
+    master without modifying XML.
+    """
+
     _name = "general_audit_ws_fbbe0f8"
     _description = "Audit Planning Memorandum - Detail (fbbe0f8)"
     _inherit = [
