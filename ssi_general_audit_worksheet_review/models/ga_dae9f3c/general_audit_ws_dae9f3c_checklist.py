@@ -6,6 +6,15 @@ from odoo import fields, models
 
 
 class GeneralAuditWSdae9f3cChecklist(models.Model):
+    """
+    Checklist answer line for the Audit Evidence Evaluation Checklist (dae9f3c).
+
+    Each record stores the auditor's response (Yes / No / N-A) to one
+    checklist item in ``general_audit_ws_dae9f3c.item``.  Responses confirm
+    that evidence quality requirements prescribed by ISA 500 have been met
+    for each significant assertion area.
+    """
+
     _name = "general_audit_ws_dae9f3c.checklist"
     _inherit = [
         "mixin.checklist.value",

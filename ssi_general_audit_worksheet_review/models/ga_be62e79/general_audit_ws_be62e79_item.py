@@ -6,6 +6,16 @@ from odoo import fields, models
 
 
 class GeneralAuditWSbe62e79Item(models.Model):
+    """
+    Checklist item master for the Financial Statement Disclosure Review (be62e79).
+
+    Each item represents a disclosure requirement categorised as:
+
+    * ``primary``    — Mandatory disclosures required by the accounting standard.
+    * ``additional`` — Encouraged but not strictly mandatory disclosures.
+    * ``new``        — New disclosure requirements from recent standard amendments.
+    """
+
     _name = "general_audit_ws_be62e79.item"
     _inherit = [
         "mixin.checklist.item",

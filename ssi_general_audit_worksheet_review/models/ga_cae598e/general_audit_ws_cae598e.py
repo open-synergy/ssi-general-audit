@@ -5,6 +5,24 @@ from odoo import fields, models
 
 
 class GeneralAuditWScae598e(models.Model):
+    """
+    WS: Audit Evidence Evaluation (cae598e) — ISA 500 / SA 500.
+
+    Evaluates the **sufficiency and appropriateness** of audit evidence
+    obtained for each main worksheet in the engagement, as required by ISA 500.
+    The evaluator reviews each quality review detail from
+    ``general_audit_ws_bcc0d76`` and assesses:
+
+    * Whether evidence is **sufficient** (quantity of evidence).
+    * Whether evidence is **appropriate** (quality/reliability).
+    * Whether any **deficiencies** were identified and how they were addressed.
+    * Whether the findings have any **impact on the audit opinion**.
+
+    Use ``action_populate`` to auto-populate evaluation lines from all quality
+    review detail lines (``general_audit_ws_bcc0d76.detail``) in the same
+    General Audit engagement.
+    """
+
     _name = "general_audit_ws_cae598e"
     _description = "Audit Evidence Evaluation Detail (cae598e)"
     _inherit = [

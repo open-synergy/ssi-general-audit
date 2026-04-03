@@ -6,6 +6,23 @@ from odoo import fields, models
 
 
 class GeneralAuditWSbcc0d76ODetail(models.Model):
+    """
+    Quality review detail line for Audit Quality Review (bcc0d76).
+
+    One record per main worksheet reviewed; stores the reviewer's quality
+    assessment for that worksheet including:
+
+    * ``general_worksheet_id`` — the linked ``general_audit_worksheet`` record.
+    * ``parent_type_id`` / ``sequence`` / ``code_internal`` — for ordering.
+    * ``conclusion_id`` / ``review`` — conclusion and review notes carried
+      from the worksheet record.
+    * ``review_result`` — reviewer's quality judgment (Satisfactory,
+      Needs Improvement, Unsatisfactory, etc.).
+
+    These records are referenced 1-to-1 by the Audit Evidence Evaluation
+    worksheet (``general_audit_ws_cae598e.detail``).
+    """
+
     _name = "general_audit_ws_bcc0d76.detail"
     _description = "Audit Quality (bcc0d76) - Detail"
     _order = "worksheet_id, sequence, general_worksheet_id, id"

@@ -6,6 +6,17 @@ from odoo import fields, models
 
 
 class GeneralAuditWSa025441Checklist(models.Model):
+    """
+    Checklist answer line for the Financial Statement Disclosure Checklist (a025441).
+
+    Each record stores the auditor's response (Yes / No / N-A) to one
+    disclosure item defined in ``general_audit_ws_a025441.item``.  Carries
+    the ``financial_accounting_standard_id`` and
+    ``relevant_accounting_standard_id`` from the item for display and
+    filtering.  The ``ref`` field provides a cross-reference to the
+    financial statement note or working paper evidencing the disclosure.
+    """
+
     _name = "general_audit_ws_a025441.checklist"
     _inherit = [
         "mixin.checklist.value",

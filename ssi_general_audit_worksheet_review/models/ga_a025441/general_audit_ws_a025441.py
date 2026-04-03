@@ -6,6 +6,28 @@ from odoo import fields, models
 
 
 class GeneralAuditWSa025441(models.Model):
+    """
+    WS: Financial Statement Disclosure Checklist (a025441) — ISA 700 / SA 700.
+
+    A detailed Yes / No / N-A checklist that verifies all required financial
+    statement disclosures have been made in the client's financial statements
+    before the audit report is issued.
+
+    Checklist item scope is dynamically filtered to items whose
+    ``financial_accounting_standard_id`` matches the standard selected on
+    the parent General Audit (e.g., IFRS, PSAK).  This ensures only
+    applicable disclosure requirements are reviewed.
+
+    For each item the auditor can record:
+
+    * A Yes / No / N-A response.
+    * A ``ref`` cross-reference to the financial statement note or working
+      paper that evidences the disclosure.
+
+    The checklist is a pre-issuance quality control step to ensure completeness
+    of disclosures as required by the applicable financial reporting framework.
+    """
+
     _name = "general_audit_ws_a025441"
     _description = "Financial Statement Disclosure (a025441)"
     _inherit = [

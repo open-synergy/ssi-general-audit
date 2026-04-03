@@ -6,6 +6,20 @@ from odoo import fields, models
 
 
 class GeneralAuditWScae598eODetail(models.Model):
+    """
+    Evidence evaluation detail line for Audit Evidence Evaluation (cae598e).
+
+    One record per quality review detail (``general_audit_ws_bcc0d76.detail``).
+    Captures the evaluator's judgment on evidence sufficiency and impact:
+
+    * ``detail_id`` — the linked quality review detail being evaluated.
+    * ``evidence_sufficiency`` — whether sufficient appropriate audit evidence
+      was obtained (e.g., Sufficient / Insufficient).
+    * ``deficiency`` — description of any identified evidence gap.
+    * ``impact`` — assessment of whether the deficiency impacts the audit
+      opinion and how it was resolved or mitigated.
+    """
+
     _name = "general_audit_ws_cae598e.detail"
     _description = "Audit Evidence Evaluation Detail (cae598e) - Detail"
     _order = "worksheet_id, sequence, id"

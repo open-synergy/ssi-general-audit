@@ -6,6 +6,15 @@ from odoo import fields, models
 
 
 class GeneralAuditWSbe62e79Checklist(models.Model):
+    """
+    Checklist answer line for the Financial Statement Disclosure Review (be62e79).
+
+    Each record stores the auditor's response (Yes / No / N-A) to one
+    disclosure review item from ``general_audit_ws_be62e79.item``.  The
+    ``checklist_type`` (primary / additional / new) carried from the item
+    allows grouping of items by disclosure category in the form view.
+    """
+
     _name = "general_audit_ws_be62e79.checklist"
     _inherit = [
         "mixin.checklist.value",

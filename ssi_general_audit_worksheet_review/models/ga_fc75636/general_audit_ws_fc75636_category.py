@@ -5,6 +5,16 @@ from odoo import fields, models
 
 
 class GeneralAuditWSfc75636Category(models.Model):
+    """
+    Master: Independent Auditor's Report Section Category (fc75636).
+
+    Provides a configurable category hierarchy used to group items in
+    the Independent Auditor's Report Review checklist (fc75636) by report
+    section.  Examples: *Report Title*, *Addressee*, *Basis for Opinion*,
+    *Key Audit Matters*, *Management Responsibility*, *Auditor's
+    Responsibility*, *Opinion paragraph*.
+    """
+
     _name = "general_audit_ws_fc75636.category"
     _inherit = [
         "mixin.master_data",

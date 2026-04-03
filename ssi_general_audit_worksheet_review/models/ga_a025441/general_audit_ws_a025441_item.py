@@ -6,6 +6,22 @@ from odoo import fields, models
 
 
 class GeneralAuditWSa025441Item(models.Model):
+    """
+    Checklist item master for the Financial Statement Disclosure Checklist (a025441).
+
+    Each item represents a **single disclosure requirement** from a specific
+    financial accounting standard and relevant accounting standard.  Examples:
+
+    * "PSAK 1 — Presentation of Financial Statements: Basis of preparation
+      disclosed" (under Fair Presentation and Compliance framework).
+    * "PSAK 25 — Accounting Policies, Changes in Accounting Estimates and
+      Errors: Nature of changes and reason for change disclosed".
+
+    Items are ordered by ``financial_accounting_standard_id`` then
+    ``sequence``, enabling systematic review of all applicable disclosure
+    requirements grouped by standard.
+    """
+
     _name = "general_audit_ws_a025441.item"
     _inherit = [
         "mixin.checklist.item",

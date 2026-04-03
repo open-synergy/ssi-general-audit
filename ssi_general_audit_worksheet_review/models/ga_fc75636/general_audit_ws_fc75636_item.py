@@ -6,6 +6,22 @@ from odoo import fields, models
 
 
 class GeneralAuditWSfc75636Item(models.Model):
+    """
+    Checklist item master for the Independent Auditor's Report Review (fc75636).
+
+    Each item represents a **specific reporting requirement** from ISA 700 /
+    SA 700 series, categorised as:
+
+    * ``unmodified``     — Requirements for clean opinion reports.
+    * ``modified``       — Requirements when a modified opinion is used.
+    * ``emphasis_other`` — Requirements for emphasis and other-matter
+      paragraphs.
+
+    ``category_id`` provides a finer grouping within each opinion type
+    (e.g., *Report Title*, *Addressee*, *Basis for Opinion*,
+    *Key Audit Matters*).
+    """
+
     _name = "general_audit_ws_fc75636.item"
     _inherit = [
         "mixin.checklist.item",

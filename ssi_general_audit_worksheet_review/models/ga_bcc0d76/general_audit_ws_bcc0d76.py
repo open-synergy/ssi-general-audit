@@ -5,6 +5,30 @@ from odoo import fields, models
 
 
 class GeneralAuditWSbcc0d76(models.Model):
+    """
+    WS: Audit Quality Review (bcc0d76) — ISA 220 / SA 220.
+
+    Provides a **consolidated quality review summary** for all main worksheets
+    included in the engagement.  The reviewer (typically the Engagement
+    Partner or Manager) assesses whether each worksheet meets quality
+    standards before the audit opinion is issued.
+
+    For each main worksheet the detail line captures:
+
+    * The **state** of the worksheet (Draft / Open / Confirmed / Done).
+    * The worksheet's **conclusion** and **review notes**.
+    * A reviewer-assigned **review result** (e.g., Satisfactory / Needs
+      Improvement / Unsatisfactory).
+    * Any **quality issues** identified and the required follow-up actions.
+
+    Use ``action_populate`` to auto-populate detail lines from all worksheets
+    where ``parent_type_id.main_worksheet = True``; the method avoids
+    duplicates and creates only one line per worksheet type.
+
+    The detail lines from this worksheet feed the Audit Evidence Evaluation
+    worksheet (``general_audit_ws_cae598e``).
+    """
+
     _name = "general_audit_ws_bcc0d76"
     _description = "Audit Quality (bcc0d76)"
     _inherit = [

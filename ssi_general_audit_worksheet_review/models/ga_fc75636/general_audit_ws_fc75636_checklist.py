@@ -6,6 +6,15 @@ from odoo import fields, models
 
 
 class GeneralAuditWSfc75636Checklist(models.Model):
+    """
+    Checklist answer line for the Independent Auditor's Report Review (fc75636).
+
+    Each record stores the auditor's response (Yes / No / N-A) to one
+    report-review item from ``general_audit_ws_fc75636.item``.  Carries
+    ``checklist_type`` (opinion type) and ``category_id`` (report section)
+    from the item master for grouping in the form view.
+    """
+
     _name = "general_audit_ws_fc75636.checklist"
     _inherit = [
         "mixin.checklist.value",

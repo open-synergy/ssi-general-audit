@@ -6,6 +6,23 @@ from odoo import fields, models
 
 
 class GeneralAuditWSbe62e79(models.Model):
+    """
+    WS: Financial Statement Disclosure Review (be62e79) — ISA 700 / SA 700.
+
+    A supplementary disclosure review worksheet that provides an additional
+    level of systematic review beyond the primary disclosure checklist
+    (``general_audit_ws_a025441``).
+
+    Checklist item categories (``checklist_type``):
+
+    * ``primary``     — Primary disclosures required by the accounting
+      standard (mandatory, material).
+    * ``additional``  — Additional disclosures encouraged but not strictly
+      mandatory.
+    * ``new``         — New or changed disclosures resulting from amendments
+      to the applicable accounting standard in the current period.
+    """
+
     _name = "general_audit_ws_be62e79"
     _description = "Financial Statement Disclosure Review (be62e79)"
     _inherit = [
