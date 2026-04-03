@@ -6,6 +6,37 @@ from odoo import api, fields, models
 
 
 class GeneralAuditWSc6c86fd(models.Model):
+    """
+    Recalculation (Recompute) Audit Procedure Worksheet (WS-C6C86FD).
+
+    Implements the **Recalculation** audit procedure as defined in ISA 500 /
+    SA 500 (Audit Evidence). Recalculation consists of checking the mathematical
+    accuracy of documents or records — for example, independently verifying
+    depreciation schedules, interest accrual computations, payroll calculations,
+    tax provisions, or totals and subtotals in financial schedules.
+
+    Recalculation may be performed manually, using spreadsheet software, or by
+    re-running the client's own calculation model. Because the auditor executes
+    it entirely without reliance on client representations, recalculation
+    provides high-quality, reliable evidence for the **Accuracy** and
+    **Valuation** financial statement assertions.
+
+    **Audit purpose:**
+
+    - Documents the auditor's independent re-execution of mathematical
+      calculations that underlie figures in the financial statements.
+    - Links the procedure to a specific Key Audit Procedure (WS-E51BB1C) and
+      the relevant financial statement assertions (e.g., Accuracy, Valuation
+      and Allocation).
+    - Associates the recalculation with the relevant standard account type for
+      traceability in the overall audit file.
+    - Supports completeness of substantive testing evidence under ISA 330.
+
+    **ISA / SA references:** ISA 500 / SA 500 — Audit Evidence;
+    ISA 330 / SA 330 — The Auditor's Responses to Assessed Risks;
+    ISA 520 / SA 520 — Analytical Procedures.
+    """
+
     _name = "general_audit_ws_c6c86fd"
     _description = "Recompute Audit Procedure (c6c86fd)"
     _inherit = [

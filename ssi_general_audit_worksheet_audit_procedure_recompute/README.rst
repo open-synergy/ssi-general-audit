@@ -6,6 +6,36 @@
 General Audit Worksheet - Recompute Audit Procedure
 ===================================================
 
+This module provides the worksheet for documenting **recalculation**
+(recompute) audit procedures, as required by ISA 500 / SA 500
+(Audit Evidence).
+
+Recalculation consists of checking the mathematical accuracy of documents or
+records — for example, independently verifying depreciation schedules, interest
+accrual computations, payroll calculations, tax provisions, or totals in
+financial schedules. Recalculation may be performed manually, with spreadsheet
+software, or by re-running the client's own calculation model. Because it is
+executed entirely by the auditor without reliance on client representations,
+recalculation provides high-quality, reliable evidence for the **Accuracy** and
+**Valuation** financial statement assertions.
+
+**Key features:**
+
+- Links each recalculation session to a specific audit area via the Key Audit
+  Procedures worksheet (Lead Schedule / WS-E51BB1C)
+- Associates the recalculation with relevant financial statement assertions
+  (e.g., Accuracy, Valuation and Allocation)
+- Ties the recalculation to the relevant standard account type being audited
+- Follows the standard worksheet workflow: Draft → Open → Confirm → Done
+
+**Models:**
+
+- ``general_audit_ws_c6c86fd`` — Main recalculation worksheet
+
+**ISA / SA references:** ISA 500, SA 500 — Audit Evidence;
+ISA 330, SA 330 — The Auditor's Responses to Assessed Risks;
+ISA 520, SA 520 — Analytical Procedures
+
 
 Installation
 ============
