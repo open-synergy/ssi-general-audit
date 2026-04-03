@@ -6,6 +6,16 @@ from odoo import fields, models
 
 
 class GeneralAuditWSb1f820cChecklist(models.Model):
+    """Checklist value instance for Team Communication Risk Assessment worksheet.
+
+    Each record represents one auditor's response to a specific checklist item
+    within the ``general_audit_ws_b1f820c`` worksheet. Links the master item
+    definition with the worksheet instance, storing the team's actual response
+    for each risk assessment communication point.
+
+    Inherits from ``mixin.checklist.value`` for response fields and behaviour.
+    """
+
     _name = "general_audit_ws_b1f820c.checklist"
     _inherit = [
         "mixin.checklist.value",

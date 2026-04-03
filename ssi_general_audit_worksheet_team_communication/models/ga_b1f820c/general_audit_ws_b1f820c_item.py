@@ -6,6 +6,20 @@ from odoo import fields, models
 
 
 class GeneralAuditWSb1f820cItem(models.Model):
+    """Master item definition for Team Communication Risk Assessment checklist.
+
+    Defines the standard audit checklist items used in the
+    ``general_audit_ws_b1f820c`` worksheet. Items express risk areas and
+    communication requirements per ISA 315 and ISA 240, and are classified
+    by ``communication_type`` to differentiate entity understanding discussions
+    from specialist consultations.
+
+    This master list is shared across all audit engagements. Auditors respond
+    to each item in ``general_audit_ws_b1f820c.checklist`` per engagement.
+
+    Inherits from ``mixin.checklist.item``.
+    """
+
     _name = "general_audit_ws_b1f820c.item"
     _inherit = [
         "mixin.checklist.item",

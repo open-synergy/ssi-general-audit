@@ -6,6 +6,57 @@
 General Audit Worksheet - Team Communication
 ============================================
 
+This module provides worksheets for documenting engagement team communications
+throughout a general audit engagement, in accordance with:
+
+- **ISQC 1 / SA 220** — Quality Control for an Audit of Financial Statements
+- **ISA 265 / SA 265** — Communicating Deficiencies in Internal Control
+- **ISA 315 (Revised) / SA 315** — Identifying and Assessing Risks of Material Misstatement
+- **ISA 240 / SA 240** — The Auditor's Responsibilities Relating to Fraud
+
+Team communication is a required element at multiple stages of the audit. The
+engagement team must discuss independence, competency, risk areas, and the
+susceptibility of financial statements to material misstatement (including fraud).
+This module captures those discussions as structured, checkable worksheets.
+
+Worksheets Covered
+==================
+
+- **WS: Team Communication Pre-Engagement (437fc8f)** — Documents team discussions
+  prior to and at the beginning of the engagement: acceptance, continuance, roles,
+  independence, and preliminary planning consultations (ISQC 1 / SA 220).
+- **WS: Team Communication Risk Assessment (b1f820c)** — Documents the engagement
+  team's brainstorming on risks of material misstatement during the risk assessment
+  phase, including fraud risks (ISA 315 / SA 315, ISA 240 / SA 240).
+
+Key Features
+============
+
+- Checklist-based documentation with configurable master items per communication type
+- Communication type classification: ``Engagement Team Understanding`` vs
+  ``Consultation during the Engagement``
+- Planning, execution, and reporting date tracking per communication session
+- All worksheets follow the standard ``general_audit_worksheet_mixin`` architecture
+  (delegated inheritance from ``general_audit_worksheet``)
+
+Models
+======
+
++---------------------------------------+-------------------------------------------------------+
+| Model                                 | Description                                           |
++=======================================+=======================================================+
+| ``general_audit_ws_437fc8f``          | WS: Team Communication Pre-Engagement                 |
++---------------------------------------+-------------------------------------------------------+
+| ``general_audit_ws_437fc8f.checklist``| Pre-Engagement Communication — checklist value        |
++---------------------------------------+-------------------------------------------------------+
+| ``general_audit_ws_437fc8f.item``     | Pre-Engagement Communication — master checklist item  |
++---------------------------------------+-------------------------------------------------------+
+| ``general_audit_ws_b1f820c``          | WS: Team Communication Risk Assessment                |
++---------------------------------------+-------------------------------------------------------+
+| ``general_audit_ws_b1f820c.checklist``| Risk Assessment Communication — checklist value       |
++---------------------------------------+-------------------------------------------------------+
+| ``general_audit_ws_b1f820c.item``     | Risk Assessment Communication — master checklist item |
++---------------------------------------+-------------------------------------------------------+
 
 Installation
 ============

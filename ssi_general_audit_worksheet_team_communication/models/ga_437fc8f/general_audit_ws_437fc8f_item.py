@@ -6,6 +6,19 @@ from odoo import fields, models
 
 
 class GeneralAuditWS437fc8fItem(models.Model):
+    """Master item definition for Team Communication Pre-Engagement checklist.
+
+    Defines the standard audit checklist items to be evaluated in the
+    ``general_audit_ws_437fc8f`` worksheet. Items are seeded from master data
+    and categorized by ``communication_type`` to distinguish pre-engagement
+    understanding matters from in-engagement consultations.
+
+    This master list is shared across all audit engagements. Auditors respond
+    to each item in ``general_audit_ws_437fc8f.checklist`` per engagement.
+
+    Inherits from ``mixin.checklist.item`` for consistent item management.
+    """
+
     _name = "general_audit_ws_437fc8f.item"
     _inherit = [
         "mixin.checklist.item",

@@ -6,6 +6,28 @@ from odoo import fields, models
 
 
 class GeneralAuditWSb1f820c(models.Model):
+    """Worksheet: Team Communication - Risk Assessment (b1f820c).
+
+    Documents the engagement team's discussion during the risk assessment
+    phase of a general audit engagement, in accordance with
+    ISA 315 (Revised) / SA 315 — Identifying and Assessing the Risks of
+    Material Misstatement.
+
+    ISA 315 requires the engagement partner and key team members to discuss
+    the susceptibility of the entity's financial statements to material
+    misstatement (including those due to fraud per ISA 240 / SA 240). This
+    worksheet captures those discussions as a checklist of risk-related
+    communication points.
+
+    Checklist items are classified by ``communication_type``:
+    - ``understanding``: team understanding of the entity and its environment
+    - ``consultation``: specialist or senior-level consultations on risk matters
+
+    Inherits from:
+    - ``general_audit_worksheet_mixin``: standard audit worksheet lifecycle
+    - ``mixin.checklist``: checklist item population from master item list
+    """
+
     _name = "general_audit_ws_b1f820c"
     _description = "Team Communication Risk Assessment (b1f820c)"
     _inherit = [
