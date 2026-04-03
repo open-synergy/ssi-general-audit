@@ -6,6 +6,13 @@ from odoo import fields, models
 
 
 class GeneralAuditWSbbbdfe7Checklist(models.Model):
+    """Checklist line for the Management Representation worksheet (bbbdfe7).
+
+    Stores the auditor's response and any comments/attachments for one
+    management representation item.  Lines are auto-populated via
+    ``mixin.checklist`` from the ``general_audit_ws_bbbdfe7.item`` master.
+    """
+
     _name = "general_audit_ws_bbbdfe7.checklist"
     _inherit = [
         "mixin.checklist.value",

@@ -6,6 +6,24 @@ from odoo import fields, models
 
 
 class GeneralAuditWSde69c2f(models.Model):
+    """Worksheet — Final Discussion (de69c2f).
+
+    A checklist-driven worksheet guiding the engagement team through the
+    final pre-issuance quality review before the audit report is signed.  Each
+    checklist item (``checklist_ids``) represents a required step or check that
+    must be completed and documented before the opinion can be issued.
+
+    Typical items include: confirming all open points are resolved, verifying
+    the completeness of the audit file, reviewing subsequent events through
+    the report date, confirming management representations are obtained, and
+    obtaining partner approval sign-off.
+
+    Workflow: Draft → Open → Confirm → Done
+    ISA/SA references: ISA 560/SA 560 (Subsequent Events);
+    ISA 700/SA 700 (Forming an Opinion);
+    ISA 220/SA 220 (Quality Control for an Audit).
+    """
+
     _name = "general_audit_ws_de69c2f"
     _description = "Final Discussion (de69c2f)"
     _inherit = [

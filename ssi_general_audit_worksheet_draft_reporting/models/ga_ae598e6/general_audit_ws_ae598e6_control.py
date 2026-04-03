@@ -6,6 +6,14 @@ from odoo import fields, models
 
 
 class GeneralAuditWSae598e6Control(models.Model):
+    """Control deficiency line in the Management Letter worksheet (ae598e6).
+
+    References an escalated control deficiency from the Audit Result
+    Discussion (``control_id`` → bc3e272.control → d33420f.detail) and
+    captures the formal management-letter content: a description of the
+    deficiency, its root cause, effect, and the recommended management action.
+    """
+
     _name = "general_audit_ws_ae598e6.control"
     _description = "Management Letter (ae598e6) - " "Control Deficiencies"
     _order = "sequence, id"

@@ -6,6 +6,14 @@ from odoo import fields, models
 
 
 class GeneralAuditWSde69c2fChecklist(models.Model):
+    """Checklist line for the Final Discussion worksheet (de69c2f).
+
+    Stores the auditor's response for one pre-issuance review step.  Lines
+    are auto-populated via ``mixin.checklist`` from the
+    ``general_audit_ws_de69c2f.item`` master and can be categorised by
+    ``checklist_type`` for filtering and reporting.
+    """
+
     _name = "general_audit_ws_de69c2f.checklist"
     _inherit = [
         "mixin.checklist.value",

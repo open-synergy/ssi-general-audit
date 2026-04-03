@@ -7,6 +7,28 @@ from odoo.addons.ssi_decorator import ssi_decorator
 
 
 class GeneralAuditWSae598e6(models.Model):
+    """Worksheet — Management Letter (ae598e6).
+
+    Compiles the formal written communication to management (and/or TCWG)
+    of findings and control deficiencies identified during the audit.  Content
+    is auto-populated via ``action_populate`` from items marked as *escalated*
+    in the Audit Result Discussion worksheet (WR.110.4 / bc3e272).
+
+    Two categories of items are tracked:
+    * ``influence_ids`` — findings that influence the audit opinion
+      (from bc3e272.influence, linked back to WR.110.1 / a0319a2)
+    * ``control_ids`` — control deficiencies
+      (from bc3e272.control, linked back to WR.110.2 / d33420f)
+
+    Under ISA 265 / SA 265, a management letter is the primary vehicle for
+    communicating significant control deficiencies and material weaknesses
+    to TCWG and management.
+
+    Workflow: Draft → Open → Confirm → Done
+    ISA/SA references: ISA 260/SA 260 (Communication with TCWG);
+    ISA 265/SA 265 (Communicating Deficiencies in Internal Control).
+    """
+
     _name = "general_audit_ws_ae598e6"
     _description = "Management Letter (ae598e6)"
     _inherit = [

@@ -6,6 +6,14 @@ from odoo import fields, models
 
 
 class GeneralAuditWSae598e6Control(models.Model):
+    """Finding line in the Management Letter worksheet (ae598e6).
+
+    References an escalated audit finding from the Audit Result Discussion
+    (``influence_id`` → bc3e272.influence → a0319a2.detail) and captures the
+    formal management-letter content: finding description, root cause, effect,
+    and the recommended corrective action to be communicated to management.
+    """
+
     _name = "general_audit_ws_ae598e6.influence"
     _description = "Management Letter (ae598e6) - " "Findings That Influence Opinion"
     _order = "sequence, id"

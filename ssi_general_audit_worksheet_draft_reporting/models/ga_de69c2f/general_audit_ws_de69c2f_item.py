@@ -6,6 +6,14 @@ from odoo import fields, models
 
 
 class GeneralAuditWSde69c2fItem(models.Model):
+    """Checklist item master for the Final Discussion worksheet (de69c2f).
+
+    Defines individual pre-issuance review steps or quality checks (e.g.,
+    'All audit differences resolved or waived', 'Subsequent events reviewed
+    through the report date', 'Engagement quality control review completed').
+    Items can be typed (``checklist_type``) for categorised reporting.
+    """
+
     _name = "general_audit_ws_de69c2f.item"
     _inherit = [
         "mixin.checklist.item",

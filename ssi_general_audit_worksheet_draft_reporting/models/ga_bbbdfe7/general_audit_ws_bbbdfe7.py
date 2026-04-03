@@ -6,6 +6,22 @@ from odoo import fields, models
 
 
 class GeneralAuditWSbbbdfe7(models.Model):
+    """Worksheet — Management Representation (bbbdfe7).
+
+    A checklist-based worksheet for obtaining and documenting management's
+    written representations under ISA 580 / SA 580.  The auditor goes through
+    each required representation item (``checklist_ids``), records whether
+    management has confirmed it, adds any clarifying comments, and attaches
+    the signed representation letter.
+
+    Written representations are required as audit evidence for matters that
+    the auditor cannot otherwise obtain sufficient appropriate evidence, and
+    as corroboration of oral representations made during the audit.
+
+    Workflow: Draft → Open → Confirm → Done
+    ISA/SA references: ISA 580/SA 580 (Written Representations).
+    """
+
     _name = "general_audit_ws_bbbdfe7"
     _description = "Management Representation (bbbdfe7)"
     _inherit = [
