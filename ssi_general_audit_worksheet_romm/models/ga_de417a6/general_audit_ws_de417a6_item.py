@@ -6,6 +6,14 @@ from odoo import fields, models
 
 
 class GeneralAuditWSde417a6Item(models.Model):
+    """
+    Checklist item master for the ROMM Checklist (de417a6).
+
+    Each item represents a **single risk assessment procedure step** that
+    the auditor must confirm has been completed as part of the risk
+    identification and assessment process required by ISA 315 / SA 315.
+    """
+
     _name = "general_audit_ws_de417a6.item"
     _inherit = [
         "mixin.checklist.item",

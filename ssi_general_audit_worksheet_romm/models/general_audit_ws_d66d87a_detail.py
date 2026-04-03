@@ -6,6 +6,23 @@ from odoo import fields, models
 
 
 class GeneralAuditWSd66d87aDetail(models.Model):
+    """
+    ROMM detail line for the Account Level ROMM worksheet (d66d87a).
+
+    One record per standard detail (account/section).  The line carries
+    risk assessment attributes from the linked ``general_audit.standard_detail``:
+
+    * ``fraud_impacted``  — whether the account is affected by fraud risk.
+    * ``inherent_risk``   — Low / Medium / High.
+    * ``romm``            — overall ROMM (inherent × control risk).
+    * P&D assertion types (``pr_assersion_type_ids``).
+    * Planned response flags: analytical procedure, ToC, ToD, interim.
+
+    Changes made to these fields are written back to the parent
+    ``general_audit.standard_detail`` record via the ``_inverse`` method,
+    ensuring consistency between the worksheet and the master data.
+    """
+
     _name = "general_audit_ws_d66d87a.detail"
     _description = "Worksheet d66d87a - Detail"
     _order = "worksheet_id, standard_detail_id"

@@ -7,6 +7,28 @@ from odoo import fields, models
 
 
 class GeneralAuditStandardDetail(models.Model):
+    """
+    Extension of ``general_audit.standard_detail`` with ROMM assessment fields.
+
+    This inheritance adds **Risk of Material Misstatement (ROMM)** assessment
+    fields to each standard detail record, enabling the Account Level ROMM
+    worksheet (``general_audit_ws_d66d87a``) to capture assertion-level risk
+    evaluations directly on the detail.
+
+    Added fields:
+
+    * ``pr_assersion_type_ids`` — Presentation & Disclosure (P&D) assertion
+      types applicable to this account (in addition to transaction-level
+      assertions already on the base model).
+    * ``romm`` — Overall assessed ROMM level: Low / Medium / High.
+    * ``planned_response_analytic_procedure`` — Flag: analytical procedures
+      planned in response to identified ROMM.
+    * ``planned_response_toc`` — Flag: tests of controls (ToC) planned.
+    * ``planned_response_tod`` — Flag: tests of detail (ToD) planned.
+    * ``planned_response_interim`` — Flag: procedures planned for interim
+      period (before year-end).
+    """
+
     _name = "general_audit.standard_detail"
     _inherit = ["general_audit.standard_detail"]
 

@@ -6,6 +6,29 @@ from odoo import fields, models
 
 
 class GeneralAuditWSd66d87a(models.Model):
+    """
+    WS: Account / Assertion Level ROMM (d66d87a) — ISA 315 / SA 315.
+
+    Captures the **risk of material misstatement at the account and assertion
+    level** for each standard detail in the General Audit engagement.
+    This is the primary working paper where the auditor records:
+
+    * **Inherent risk** — the susceptibility of an assertion to a material
+      misstatement before considering controls.
+    * **Control risk** — the risk that a material misstatement will not be
+      prevented or detected by internal controls.
+    * **Overall ROMM** — combined assessment of inherent and control risk.
+    * **Fraud impact** — whether fraud risk factors affect the account.
+    * **Planned responses** — which audit procedures are planned to address
+      the risk: Analytical Procedures, Tests of Controls (ToC), Tests of
+      Detail (ToD), or Interim procedures.
+
+    Use ``action_load_detail`` to auto-populate lines from all standard
+    details in the system.  The results flow into the Financial Level ROMM
+    worksheet and drive the selection of audit procedures in the Lead
+    Schedule (Key Audit Procedures worksheet).
+    """
+
     _name = "general_audit_ws_d66d87a"
     _description = "Account Level ROMM (d66d87a)"
     _inherit = [

@@ -6,6 +6,23 @@ from odoo import fields, models
 
 
 class GeneralAuditWSde417a6(models.Model):
+    """
+    WS: ROMM Checklist (de417a6) — ISA 315 / SA 315.
+
+    A structured Yes / No / N-A checklist that confirms all required risk
+    assessment procedures prescribed by ISA 315 have been completed and
+    documented, including:
+
+    * Understanding of the entity and its environment has been sufficiently
+      obtained.
+    * Significant risks have been identified and a planned response has
+      been documented for each.
+    * Account-level and assertion-level ROMM has been assessed for all
+      material accounts.
+    * Financial statement-level risks and responses have been documented.
+    * ROMM assessment has been communicated to the audit team.
+    """
+
     _name = "general_audit_ws_de417a6"
     _description = "ROMM (de417a6)"
     _inherit = [

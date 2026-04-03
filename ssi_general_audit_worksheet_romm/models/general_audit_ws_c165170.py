@@ -6,6 +6,29 @@ from odoo import fields, models
 
 
 class GeneralAuditWSc165170(models.Model):
+    """
+    WS: Financial Statement Level ROMM (c165170) — ISA 315 / SA 315.
+
+    Documents the auditor's **financial statement-level risk of material
+    misstatement** assessment by aggregating risk information from multiple
+    upstream risk-assessment worksheets.  This worksheet is reviewed by the
+    Engagement Partner to confirm the overall engagement risk profile and
+    to determine whether the planned audit approach appropriately addresses
+    identified financial statement-level risks.
+
+    Linked upstream worksheets:
+
+    * ``ws_c0e0eec_id`` — Fraud Factor Analysis.
+    * ``ws_b59b886_id`` — Control Risk – Entity Level.
+    * ``ws_f6a227_id``  — Understanding of Financial Statement Preparation.
+
+    The worksheet carries forward review notes from each linked worksheet and
+    adds the auditor's overall financial statement-level ROMM narrative and
+    the planned audit responses at the financial statement level (e.g.,
+    assigning more experienced staff, emphasising professional scepticism,
+    applying element of unpredictability).
+    """
+
     _name = "general_audit_ws_c165170"
     _description = "Financial Level ROMM (c165170)"
     _inherit = [

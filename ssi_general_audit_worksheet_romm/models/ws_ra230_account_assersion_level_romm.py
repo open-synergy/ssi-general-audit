@@ -5,6 +5,21 @@ from odoo import fields, models
 
 
 class WS230AccountAssersionLevelRomm(models.Model):
+    """
+    Account / Assertion Level ROMM line for the legacy ROMM worksheet (ws_ra230).
+
+    .. deprecated::
+        This detail model belongs to the legacy ``ws_ra230`` worksheet.  New
+        implementations should use ``general_audit_ws_d66d87a.detail``.
+
+    Each record captures the assessment of ROMM at the account and assertion
+    level for one standard detail.  Includes assertion types for both
+    transaction-level and Presentation & Disclosure (P&D) assertions,
+    overall ROMM, and planned audit response flags.  Values are
+    synchronised with the parent ``standard_detail`` record via
+    ``_inverse_to_standard_detail``.
+    """
+
     _name = "ws_ra230.account_assersion_level_romm"
     _description = "General Audit - Account Assersion Level ROMM"
 

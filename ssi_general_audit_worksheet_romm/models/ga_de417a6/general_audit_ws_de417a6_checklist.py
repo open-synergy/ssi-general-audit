@@ -6,6 +6,15 @@ from odoo import fields, models
 
 
 class GeneralAuditWSde417a6Checklist(models.Model):
+    """
+    Checklist answer line for the ROMM Checklist worksheet (de417a6).
+
+    Each record stores the auditor's response (Yes / No / N-A) to one
+    checklist item from ``general_audit_ws_de417a6.item``.  Collectively
+    the responses confirm that all risk identification and assessment
+    procedures required by ISA 315 have been performed and documented.
+    """
+
     _name = "general_audit_ws_de417a6.checklist"
     _inherit = [
         "mixin.checklist.value",

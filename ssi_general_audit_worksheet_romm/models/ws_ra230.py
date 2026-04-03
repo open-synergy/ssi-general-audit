@@ -6,6 +6,23 @@ from odoo import api, fields, models
 
 
 class WSAuditRA230(models.Model):
+    """
+    WS: ROMM — Legacy model (ws_ra230) from the accountant module.
+
+    .. deprecated::
+        This model was part of the original ``ssi-accountant`` module structure
+        and used ``accountant.general_audit_worksheet_mixin``.  It has been
+        superseded by the current ROMM worksheets
+        (``general_audit_ws_c165170``, ``general_audit_ws_d66d87a``, and
+        ``general_audit_ws_de417a6``) which use the newer
+        ``general_audit_worksheet_mixin``.
+
+    Documents the financial statement-level ROMM assessment (overall risk
+    rating and auditor's response) and account/assertion-level ROMM lines
+    for each standard detail in the engagement.  Kept for backward
+    compatibility with existing data.
+    """
+
     _name = "ws_ra230"
     _description = "ROMM"
     _inherit = [
