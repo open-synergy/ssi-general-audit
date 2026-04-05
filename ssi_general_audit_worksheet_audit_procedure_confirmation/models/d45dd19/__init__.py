@@ -4,4 +4,6 @@
 
 from . import (
     general_audit_ws_d45dd19,
+    general_audit_ws_d45dd19_confirmation,
+    general_audit_ws_d45dd19_confirmation_detail,
 )

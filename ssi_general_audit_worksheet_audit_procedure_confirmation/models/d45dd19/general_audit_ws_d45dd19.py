@@ -112,6 +112,150 @@ class GeneralAuditWSd45dd19(models.Model):
         },
         help="Assertion types relevant to this observation procedure.",
     )
+    confirmation_ids = fields.One2many(
+        comodel_name="general_audit_ws_d45dd19.confirmation",
+        inverse_name="worksheet_id",
+        string="Confirmations",
+        readonly=True,
+        states={
+            "open": [("readonly", False)],
+        },
+        help="List of external confirmation requests associated with this "
+        "confirmation procedure worksheet.",
+    )
+    # ── Audit Results — Kfo ──────────────────────────────────────────────────
+    kfo_amount = fields.Float(
+        string="Kfo – Amount (Rp)",
+        digits=(16, 2),
+        compute="_compute_audit_results",
+        store=True,
+        compute_sudo=True,
+        help="Total book balance (IDR) of confirmations with status Kfo "
+        "(Confirmation returned, agreed).",
+    )
+    kfo_percentage = fields.Float(
+        string="Kfo – Percentage (%)",
+        digits=(5, 2),
+        compute="_compute_audit_results",
+        store=True,
+        compute_sudo=True,
+    )
+    kfo_alternative_procedure = fields.Boolean(
+        string="Kfo – Alternative Procedure",
+        default=False,
+        readonly=True,
+        states={"open": [("readonly", False)]},
+    )
+    kfo_conclusion = fields.Text(
+        string="Kfo – Conclusion",
+        readonly=True,
+        states={"open": [("readonly", False)]},
+    )
+    # ── Audit Results — Kfb ──────────────────────────────────────────────────
+    kfb_amount = fields.Float(
+        string="Kfb – Amount (Rp)",
+        digits=(16, 2),
+        compute="_compute_audit_results",
+        store=True,
+        compute_sudo=True,
+        help="Total book balance (IDR) of confirmations with status Kfb "
+        "(Confirmation returned, different).",
+    )
+    kfb_percentage = fields.Float(
+        string="Kfb – Percentage (%)",
+        digits=(5, 2),
+        compute="_compute_audit_results",
+        store=True,
+        compute_sudo=True,
+    )
+    kfb_alternative_procedure = fields.Boolean(
+        string="Kfb – Alternative Procedure",
+        default=False,
+        readonly=True,
+        states={"open": [("readonly", False)]},
+    )
+    kfb_conclusion = fields.Text(
+        string="Kfb – Conclusion",
+        readonly=True,
+        states={"open": [("readonly", False)]},
+    )
+    # ── Audit Results — Kft ──────────────────────────────────────────────────
+    kft_amount = fields.Float(
+        string="Kft – Amount (Rp)",
+        digits=(16, 2),
+        compute="_compute_audit_results",
+        store=True,
+        compute_sudo=True,
+        help="Total book balance (IDR) of confirmations with status Kft "
+        "(Confirmation not returned).",
+    )
+    kft_percentage = fields.Float(
+        string="Kft – Percentage (%)",
+        digits=(5, 2),
+        compute="_compute_audit_results",
+        store=True,
+        compute_sudo=True,
+    )
+    kft_alternative_procedure = fields.Boolean(
+        string="Kft – Alternative Procedure",
+        default=False,
+        readonly=True,
+        states={"open": [("readonly", False)]},
+    )
+    kft_conclusion = fields.Text(
+        string="Kft – Conclusion",
+        readonly=True,
+        states={"open": [("readonly", False)]},
+    )
+    # ── Audit Results — Kfk ──────────────────────────────────────────────────
+    kfk_amount = fields.Float(
+        string="Kfk – Amount (Rp)",
+        digits=(16, 2),
+        compute="_compute_audit_results",
+        store=True,
+        compute_sudo=True,
+        help="Total book balance (IDR) of confirmations with status Kfk "
+        "(Confirmation undeliverable).",
+    )
+    kfk_percentage = fields.Float(
+        string="Kfk – Percentage (%)",
+        digits=(5, 2),
+        compute="_compute_audit_results",
+        store=True,
+        compute_sudo=True,
+    )
+    kfk_alternative_procedure = fields.Boolean(
+        string="Kfk – Alternative Procedure",
+        default=False,
+        readonly=True,
+        states={"open": [("readonly", False)]},
+    )
+    kfk_conclusion = fields.Text(
+        string="Kfk – Conclusion",
+        readonly=True,
+        states={"open": [("readonly", False)]},
+    )
+
+    @api.depends(
+        "confirmation_ids",
+        "confirmation_ids.result_status",
+        "confirmation_ids.detail_ids.book_amount",
+    )
+    def _compute_audit_results(self):
+        for record in self:
+            all_details = record.confirmation_ids.detail_ids
+            total = sum(all_details.mapped("book_amount"))
+            for status in ("kfo", "kfb", "kft", "kfk"):
+                confs = record.confirmation_ids.filtered(
+                    lambda c, s=status: c.result_status == s
+                )
+                amount = sum(confs.detail_ids.mapped("book_amount"))
+                setattr(record, f"{status}_amount", amount)
+                setattr(
+                    record,
+                    f"{status}_percentage",
+                    (amount / total * 100.0) if total else 0.0,
+                )
 
     @api.depends(
         "ws_e51bb1c_id",
@@ -162,3 +306,13 @@ class GeneralAuditWSd45dd19(models.Model):
     )
     def onchange_ws_e51bb1c_id(self):
         self.ws_e51bb1c_id = False
+
+    def action_open_confirmations(self):
+        self.ensure_one()
+        action = self.env.ref(
+            "ssi_general_audit_worksheet_audit_procedure_confirmation"
+            ".general_audit_ws_d45dd19_confirmation_action"
+        ).read()[0]
+        action["domain"] = [("worksheet_id", "=", self.id)]
+        action["context"] = {"default_worksheet_id": self.id}
+        return action

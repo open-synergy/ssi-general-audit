@@ -4,6 +4,112 @@
      License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl-3.0-standalone.html). -->
 <odoo>
 
+    <!-- ================================================================
+         CONFIRMATION MODEL VIEWS
+         ================================================================ -->
+
+    <!-- CONFIRMATION TREE VIEW -->
+    <record id="general_audit_ws_d45dd19_confirmation_view_tree" model="ir.ui.view">
+        <field name="name">general_audit_ws_d45dd19.confirmation tree</field>
+        <field name="model">general_audit_ws_d45dd19.confirmation</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="sequence" widget="handle" />
+                <field name="partner_id" />
+                <field name="confirmation_type" />
+                <field name="date_sent" />
+                <field name="date_received" />
+                <field name="result_status" />
+                <field name="internal_confirmation_result" />
+                <field name="party_address" optional="hide" />
+                <field name="data_mode" optional="hide" />
+                <field name="general_ledger_id" optional="hide" />
+                <field name="subledger_id" optional="hide" />
+            </tree>
+        </field>
+    </record>
+
+    <!-- CONFIRMATION FORM VIEW -->
+    <record id="general_audit_ws_d45dd19_confirmation_view_form" model="ir.ui.view">
+        <field name="name">general_audit_ws_d45dd19.confirmation form</field>
+        <field name="model">general_audit_ws_d45dd19.confirmation</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <group>
+                        <group string="Confirmation Party">
+                            <field name="worksheet_id" invisible="1" />
+                            <field name="sequence" />
+                            <field name="partner_id" />
+                            <field name="party_address" />
+                            <field name="confirmation_type" />
+                        </group>
+                        <group string="Dates &amp; Result">
+                            <field name="date_sent" />
+                            <field name="date_received" />
+                            <field name="result_status" readonly="1" />
+                            <field name="internal_confirmation_result" readonly="1" />
+                        </group>
+                    </group>
+                    <group string="Data Source">
+                        <group>
+                            <field name="data_mode" />
+                            <field name="allowed_general_ledger_ids" invisible="1" />
+                            <field
+                                name="general_ledger_id"
+                                domain="[('id', 'in', allowed_general_ledger_ids)]"
+                                attrs="{'invisible': [('data_mode', '!=', 'gl')]}"
+                            />
+                            <field name="allowed_subledger_ids" invisible="1" />
+                            <field
+                                name="subledger_id"
+                                domain="[('id', 'in', allowed_subledger_ids)]"
+                                attrs="{'invisible': [('data_mode', '!=', 'subledger')]}"
+                            />
+                        </group>
+                    </group>
+                    <group
+                        string="Raw Data"
+                        attrs="{'invisible': [('data_mode', '=', False)]}"
+                    >
+                        <field name="raw_data" nolabel="1" widget="csv_table" />
+                    </group>
+                    <group string="Confirmation Details">
+                        <field name="detail_ids" nolabel="1">
+                            <tree>
+                                <field name="sequence" widget="handle" />
+                                <field name="ref_col_number" />
+                                <field name="ref_value" />
+                                <field name="book_amount" />
+                                <field name="confirmation_amount" />
+                                <field name="diff" />
+                                <field name="status" />
+                            </tree>
+                        </field>
+                    </group>
+                    <group string="Explanation">
+                        <field name="explanation" nolabel="1" />
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- CONFIRMATION ACTION -->
+    <record
+        id="general_audit_ws_d45dd19_confirmation_action"
+        model="ir.actions.act_window"
+    >
+        <field name="name">Confirmations</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">general_audit_ws_d45dd19.confirmation</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+    <!-- ================================================================
+         WORKSHEET VIEWS
+         ================================================================ -->
+
     <record id="general_audit_ws_d45dd19_view_search" model="ir.ui.view">
         <field name="name">general_audit_ws_d45dd19 form</field>
         <field name="model">general_audit_ws_d45dd19</field>
@@ -86,6 +192,65 @@
                     />
                 </xpath>
                 <xpath expr="//page[1]" position="before">
+                    <page name="confirmations" string="Confirmations">
+                        <div class="mb-2">
+                            <button
+                                name="action_open_confirmations"
+                                type="object"
+                                string="Open Confirmations"
+                                class="btn-primary"
+                            />
+                        </div>
+                        <field name="confirmation_ids" readonly="1" nolabel="1">
+                            <tree create="0" edit="0" delete="0">
+                                <field name="sequence" widget="handle" />
+                                <field name="partner_id" />
+                                <field name="confirmation_type" />
+                                <field name="date_sent" />
+                                <field name="date_received" />
+                                <field name="result_status" />
+                                <field name="internal_confirmation_result" />
+                                <field name="party_address" optional="hide" />
+                                <field name="data_mode" optional="hide" />
+                                <field name="general_ledger_id" optional="hide" />
+                                <field name="subledger_id" optional="hide" />
+                            </tree>
+                        </field>
+                    </page>
+                    <page name="audit_results" string="Audit Results">
+                        <p class="text-muted">
+                            Summary of confirmation outcomes grouped by status category
+                            (Kfo / Kfb / Kft / Kfk) as per the Audit Results table in SA 505.
+                        </p>
+                        <group>
+                            <group string="Kfo – Confirmation returned, agreed">
+                                <field name="kfo_amount" />
+                                <field name="kfo_percentage" />
+                                <field name="kfo_alternative_procedure" />
+                                <field name="kfo_conclusion" />
+                            </group>
+                            <group string="Kfb – Confirmation returned, different">
+                                <field name="kfb_amount" />
+                                <field name="kfb_percentage" />
+                                <field name="kfb_alternative_procedure" />
+                                <field name="kfb_conclusion" />
+                            </group>
+                        </group>
+                        <group>
+                            <group string="Kft – Confirmation not returned">
+                                <field name="kft_amount" />
+                                <field name="kft_percentage" />
+                                <field name="kft_alternative_procedure" />
+                                <field name="kft_conclusion" />
+                            </group>
+                            <group string="Kfk – Confirmation undeliverable">
+                                <field name="kfk_amount" />
+                                <field name="kfk_percentage" />
+                                <field name="kfk_alternative_procedure" />
+                                <field name="kfk_conclusion" />
+                            </group>
+                        </group>
+                    </page>
                 </xpath>
             </data>
         </field>
