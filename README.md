@@ -81,6 +81,7 @@ Auditor mengumpulkan bukti audit yang cukup dan tepat melalui berbagai prosedur:
 | `ssi_general_audit_worksheet_audit_procedure_observation` | WS d4d1ac0: Observation — pengamatan langsung atas aktivitas/proses klien | ISA 500/315/330 |
 | `ssi_general_audit_worksheet_audit_procedure_recompute` | WS c6c86fd: Recomputation — perhitungan ulang angka-angka keuangan | ISA 500/330/520 |
 | `ssi_general_audit_worksheet_audit_procedure_reperformance` | WS d1ecfb7: Reperformance — pelaksanaan ulang kontrol/proses klien | ISA 500/330 |
+| `ssi_general_audit_worksheet_test_of_control` | WS e3f4a5b: Test of Control — pengujian efektivitas operasional pengendalian internal klien melalui attribute sampling statistis berbasis tabel AICPA | ISA 330/530 |
 
 ### Fase 5 — Penyelesaian & Pelaporan (Completion & Reporting)
 
@@ -151,6 +152,7 @@ addon | version | maintainers | summary
 [ssi_general_audit_worksheet_preliminary_analytic_procedure](ssi_general_audit_worksheet_preliminary_analytic_procedure/) | 14.0.1.0.0 |  | General Audit Worksheet - Preliminary Analytic Procedure
 [ssi_general_audit_worksheet_preliminary_materiality](ssi_general_audit_worksheet_preliminary_materiality/) | 14.0.1.0.0 |  | General Audit Worksheet - Preliminary Materiality
 [ssi_general_audit_worksheet_romm](ssi_general_audit_worksheet_romm/) | 14.0.1.1.0 |  | General Audit Worksheet - ROMM
+[ssi_general_audit_worksheet_test_of_control](ssi_general_audit_worksheet_test_of_control/) | 14.0.1.0.0 |  | General Audit Worksheet - Test of Control
 [ssi_general_audit_worksheet_understanding_entity](ssi_general_audit_worksheet_understanding_entity/) | 14.0.1.10.0 |  | General Audit Worksheet - Understanding Entity and It's Environment
 
 [//]: # (end addons)
