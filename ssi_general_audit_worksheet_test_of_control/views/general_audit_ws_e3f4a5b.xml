@@ -1,0 +1,276 @@
+<?xml version="1.0" ?>
+<!-- Copyright 2025 OpenSynergy Indonesia
+     Copyright 2025 PT. Simetri Sinergi Indonesia
+     License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl-3.0-standalone.html). -->
+<odoo>
+
+    <!-- ================================================================
+         ATTRIBUTE MODEL VIEWS
+         ================================================================ -->
+
+    <!-- ATTRIBUTE LIST VIEW -->
+    <record id="general_audit_ws_e3f4a5b_attribute_view_tree" model="ir.ui.view">
+        <field name="name">general_audit_ws_e3f4a5b.attribute tree</field>
+        <field name="model">general_audit_ws_e3f4a5b.attribute</field>
+        <field name="arch" type="xml">
+            <tree
+                decoration-success="conclusion == 'effective'"
+                decoration-danger="conclusion == 'not_effective'"
+            >
+                <field name="sequence" widget="handle" />
+                <field name="currency_id" invisible="1" />
+                <field name="worksheet_id" />
+                <field name="name" />
+                <field name="eper" />
+                <field name="tdr" />
+                <field name="aro" />
+                <field name="sample_5pct" optional="show" />
+                <field name="sample_10pct" optional="show" />
+                <field name="sample_initial" />
+                <field name="population_count" />
+                <field name="sample_final" />
+                <field name="sample_actual" />
+                <field name="deviation_count" />
+                <field name="deviation_rate_sample" optional="hide" />
+                <field name="deviation_rate_population" optional="hide" />
+                <field name="cuer_5pct" optional="show" />
+                <field name="cuer_10pct" optional="show" />
+                <field name="cuer" />
+                <field name="conclusion" />
+            </tree>
+        </field>
+    </record>
+
+    <!-- ATTRIBUTE FORM VIEW -->
+    <record id="general_audit_ws_e3f4a5b_attribute_view_form" model="ir.ui.view">
+        <field name="name">general_audit_ws_e3f4a5b.attribute form</field>
+        <field name="model">general_audit_ws_e3f4a5b.attribute</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <group string="Attribute" name="attr_header" col="2">
+                        <field name="currency_id" invisible="1" />
+                        <field name="worksheet_id" invisible="1" />
+                        <field name="sequence" />
+                        <field name="name" />
+                        <field name="description" />
+                    </group>
+                    <group string="Sampling Plan" name="attr_plan" col="2">
+                        <group name="plan_left" colspan="1">
+                            <field name="eper" />
+                            <field name="tdr" />
+                            <field name="aro" />
+                        </group>
+                        <group name="plan_right" colspan="1">
+                            <field name="sample_5pct" />
+                            <field name="sample_10pct" />
+                            <field name="sample_initial" />
+                            <field name="population_count" />
+                            <field name="sample_final" />
+                        </group>
+                    </group>
+                    <group string="Sampling Execution" name="attr_exec" col="2">
+                        <group name="exec_left" colspan="1">
+                            <field name="sample_actual" />
+                            <field name="deviation_count" />
+                            <field name="deviation_rate_sample" />
+                            <field name="deviation_rate_population" />
+                        </group>
+                        <group name="exec_right" colspan="1">
+                            <field name="cuer_5pct" />
+                            <field name="cuer_10pct" />
+                            <field name="cuer" />
+                            <field name="conclusion" />
+                        </group>
+                    </group>
+                    <notebook>
+                        <page name="sample_data" string="Sample Data">
+                            <div class="mb-2">
+                                <button
+                                    name="action_generate_sample"
+                                    type="object"
+                                    string="Generate Sample"
+                                    class="btn-primary"
+                                />
+                            </div>
+                            <field name="sample_data" nolabel="1" widget="csv_table" />
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- ATTRIBUTE ACTION -->
+    <record
+        id="general_audit_ws_e3f4a5b_attribute_action"
+        model="ir.actions.act_window"
+    >
+        <field name="name">Attribute Sampling</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">general_audit_ws_e3f4a5b.attribute</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+    <!-- ================================================================
+         WORKSHEET VIEWS
+         ================================================================ -->
+
+    <!-- SEARCH VIEW -->
+    <record id="general_audit_ws_e3f4a5b_view_search" model="ir.ui.view">
+        <field name="name">general_audit_ws_e3f4a5b search</field>
+        <field name="model">general_audit_ws_e3f4a5b</field>
+        <field
+            name="inherit_id"
+            ref="ssi_general_audit.general_audit_worksheet_mixin_view_search"
+        />
+        <field name="mode">primary</field>
+        <field name="arch" type="xml">
+            <data />
+        </field>
+    </record>
+
+    <!-- LIST VIEW -->
+    <record id="general_audit_ws_e3f4a5b_view_tree" model="ir.ui.view">
+        <field name="name">general_audit_ws_e3f4a5b tree</field>
+        <field name="model">general_audit_ws_e3f4a5b</field>
+        <field name="mode">primary</field>
+        <field
+            name="inherit_id"
+            ref="ssi_general_audit.general_audit_worksheet_mixin_view_tree"
+        />
+        <field name="arch" type="xml">
+            <data>
+                <xpath expr="//field[@name='general_audit_id']" position="after">
+                    <field name="cycle_id" />
+                    <field name="account_type_id" optional="hide" />
+                    <field name="account_id" optional="hide" />
+                    <field name="data_mode" optional="hide" />
+                    <field name="general_ledger_id" optional="hide" />
+                    <field name="subledger_id" optional="hide" />
+                </xpath>
+            </data>
+        </field>
+    </record>
+
+    <!-- FORM VIEW -->
+    <record id="general_audit_ws_e3f4a5b_view_form" model="ir.ui.view">
+        <field name="name">general_audit_ws_e3f4a5b form</field>
+        <field name="model">general_audit_ws_e3f4a5b</field>
+        <field name="priority" eval="100" />
+        <field name="mode">primary</field>
+        <field
+            name="inherit_id"
+            ref="ssi_general_audit.general_audit_worksheet_mixin_view_form"
+        />
+        <field name="arch" type="xml">
+            <data>
+                <!-- Add cycle and population data source fields in header center group -->
+                <xpath expr="//group[@name='header_center']" position="inside">
+                    <field name="cycle_id" />
+                    <field
+                        name="allowed_account_type_ids"
+                        widget="many2many_tags"
+                        invisible="1"
+                    />
+                    <field
+                        name="account_type_id"
+                        domain="[('id', 'in', allowed_account_type_ids)]"
+                    />
+                    <field name="allowed_account_ids" invisible="1" />
+                    <field
+                        name="account_id"
+                        domain="[('id', 'in', allowed_account_ids), ('type_id', '=', account_type_id)]"
+                    />
+                    <field name="data_mode" />
+                    <field name="allowed_general_ledger_ids" invisible="1" />
+                    <field
+                        name="general_ledger_id"
+                        domain="[('id', 'in', allowed_general_ledger_ids)]"
+                        attrs="{'invisible': [('data_mode', '!=', 'gl')]}"
+                    />
+                    <field name="allowed_subledger_ids" invisible="1" />
+                    <field
+                        name="subledger_id"
+                        domain="[('id', 'in', allowed_subledger_ids)]"
+                        attrs="{'invisible': [('data_mode', '!=', 'subledger')]}"
+                    />
+                    <field name="population_count" />
+                    <field name="ref_col_number" />
+                    <field name="amount_col_number" />
+                </xpath>
+
+                <!-- Raw Data page -->
+                <xpath expr="//page[@name='note']" position="before">
+                    <page name="raw_data" string="Raw Data">
+                        <field name="raw_data" nolabel="1" widget="csv_table" />
+                    </page>
+                </xpath>
+
+                <!-- Attribute Sampling page -->
+                <xpath expr="//page[@name='note']" position="before">
+                    <page name="attribute_sampling" string="Attribute Sampling">
+                        <div class="mb-2">
+                            <button
+                                name="action_open_attributes"
+                                type="object"
+                                string="Open Attributes"
+                                class="btn-primary"
+                            />
+                        </div>
+                        <field name="attribute_ids" readonly="1" nolabel="1">
+                            <tree
+                                decoration-success="conclusion == 'effective'"
+                                decoration-danger="conclusion == 'not_effective'"
+                                create="0"
+                                edit="0"
+                                delete="0"
+                            >
+                                <field name="sequence" widget="handle" />
+                                <field name="currency_id" invisible="1" />
+                                <field name="name" />
+                                <field name="eper" />
+                                <field name="tdr" />
+                                <field name="aro" />
+                                <field name="sample_5pct" optional="show" />
+                                <field name="sample_10pct" optional="show" />
+                                <field name="sample_initial" />
+                                <field name="population_count" />
+                                <field name="sample_final" />
+                                <field name="sample_actual" />
+                                <field name="deviation_count" />
+                                <field name="deviation_rate_sample" optional="hide" />
+                                <field
+                                    name="deviation_rate_population"
+                                    optional="hide"
+                                />
+                                <field name="cuer_5pct" optional="show" />
+                                <field name="cuer_10pct" optional="show" />
+                                <field name="cuer" />
+                                <field name="conclusion" />
+                            </tree>
+                        </field>
+                    </page>
+                </xpath>
+            </data>
+        </field>
+    </record>
+
+    <!-- ACTION -->
+    <record id="general_audit_ws_e3f4a5b_action" model="ir.actions.act_window">
+        <field name="name">Test of Control</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">general_audit_ws_e3f4a5b</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+    <menuitem
+        id="general_audit_ws_e3f4a5b_menu"
+        name="Test of Controls"
+        parent="ssi_general_audit.menu_general_audit_control_risk"
+        action="general_audit_ws_e3f4a5b_action"
+        sequence="4"
+        groups="general_audit_ws_e3f4a5b_viewer_group"
+    />
+
+</odoo>
