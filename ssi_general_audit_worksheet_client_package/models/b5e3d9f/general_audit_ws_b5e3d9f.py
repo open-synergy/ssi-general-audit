@@ -120,6 +120,20 @@ class GeneralAuditWSb5e3d9f(models.Model):
         readonly=True,
         states={"open": [("readonly", False)]},
     )
+    title = fields.Char(
+        string="Title",
+        required=False,
+        default="-",
+        readonly=True,
+        states={"open": [("readonly", False)]},
+    )
+
+    @api.onchange("account_mode")
+    def onchange_account_mode(self):
+        if self.account_mode == "account":
+            self.account_type_id = False
+        elif self.account_mode == "standard_account":
+            self.account_id = False
 
     @api.depends("general_audit_id", "account_id")
     def _compute_detail_id(self):

@@ -31,6 +31,7 @@
                     <field name="account_mode" />
                     <field name="account_id" optional="show" />
                     <field name="account_type_id" optional="show" />
+                    <field name="title" optional="show" />
                 </xpath>
             </data>
         </field>
@@ -69,6 +70,7 @@
                         domain="[('id', 'in', allowed_account_type_ids)]"
                         attrs="{'invisible': [('account_mode', '!=', 'standard_account')]}"
                     />
+                    <field name="title" />
                 </xpath>
                 <xpath expr="//notebook/page[1]" position="before">
                     <page name="raw_data" string="Raw Data">
