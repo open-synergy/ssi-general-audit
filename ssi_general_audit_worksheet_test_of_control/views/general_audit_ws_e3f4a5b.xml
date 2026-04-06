@@ -92,6 +92,12 @@
                                     string="Generate Sample"
                                     class="btn-primary"
                                 />
+                                <button
+                                    name="action_compute_deviation"
+                                    type="object"
+                                    string="Compute Deviation"
+                                    class="btn-secondary"
+                                />
                             </div>
                             <field name="sample_data" nolabel="1" widget="csv_table" />
                         </page>
@@ -197,6 +203,8 @@
                     />
                     <field name="population_count" />
                     <field name="ref_col_number" />
+                    <field name="note_col_number" />
+                    <field name="sample_actual" />
                 </xpath>
 
                 <!-- Raw Data page -->
@@ -249,6 +257,21 @@
                                 <field name="conclusion" />
                             </tree>
                         </field>
+                    </page>
+                </xpath>
+
+                <!-- Sample Data page -->
+                <xpath expr="//page[1]" position="before">
+                    <page name="sample_data_ws" string="Sample Data">
+                        <div class="mb-2">
+                            <button
+                                name="action_generate_sample"
+                                type="object"
+                                string="Generate Sample"
+                                class="btn-primary"
+                            />
+                        </div>
+                        <field name="sample_data" nolabel="1" widget="csv_table" />
                     </page>
                 </xpath>
             </data>

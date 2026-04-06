@@ -5,7 +5,6 @@
 import csv
 import io
 import math
-import random
 
 from odoo import _, api, fields, models
 from odoo.exceptions import UserError
@@ -257,19 +256,38 @@ class GeneralAuditWSe3f4a5bAttribute(models.Model):
     """
     Attribute Sampling — Test of Control (e3f4a5b).
 
-    Merepresentasikan satu atribut pengendalian yang diuji dalam
-    worksheet Test of Control. Setiap record mencakup:
+    Represents a single control attribute tested within a Test of Control
+    worksheet (``general_audit_ws_e3f4a5b``). Each record manages four
+    stages: planning, population correction, execution, and conclusion.
 
-    - **Rencana sampling**: EPER, TDR, ARO, dan ukuran sampel yang
-      dihitung otomatis dari tabel AICPA (5% dan 10% risk).
-    - **Koreksi populasi terbatas**: ukuran sampel final dihitung
-      menggunakan finite population correction (FPC).
-    - **Pelaksanaan sampling**: data sampel acak yang di-generate
-      dari raw data populasi worksheet induk.
-    - **Kesimpulan**: perbandingan CUER terhadap TDR untuk menentukan
-      apakah pengendalian efektif atau tidak efektif.
+    **Sampling Plan**
+    From the EPER, TDR, and ARO parameters, the system computes the initial
+    sample sizes (``sample_5pct`` / ``sample_10pct``) using the AICPA table.
+    ``sample_initial`` is selected based on the active ARO level; FPC
+    (Finite Population Correction) is then applied to derive ``sample_final``.
 
-    Referensi standar: ISA 530 / SA 530 — Audit Sampling.
+    **Sampling Execution**
+    ``action_generate_sample`` copies the master sample from ``ws.sample_data``
+    into this attribute's ``sample_data``, resetting Deviation→FALSE and
+    Note→"" so the auditor can record fieldwork results.
+
+    After the auditor fills in the Deviation column, the **Compute Deviation**
+    button (``action_compute_deviation``) calls ``_compute_sample_actual_deviation``
+    which re-reads ``sample_data`` to calculate:
+    - ``sample_actual``: number of non-empty data rows.
+    - ``deviation_count``: rows where Deviation is TRUE / 1 / YES / X.
+
+    **CUER and Conclusion**
+    - ``deviation_rate_sample`` / ``deviation_rate_population``: computed as
+      ``deviation_count / sample_actual × 100%`` (``@api.depends``).
+    - ``cuer_5pct`` / ``cuer_10pct``: CUER from the AICPA table with linear
+      interpolation between rows; falls back to chi-square approximation for
+      sample sizes outside the table range or k > 10.
+    - ``cuer``: effective CUER based on the selected ARO level.
+    - ``conclusion``: Effective if CUER ≤ TDR, Not Effective if CUER > TDR.
+
+    Reference standards: ISA 530 / SA 530 — Audit Sampling;
+    ISA 330 / SA 330 — Auditor Responses to Assessed Risks.
     """
 
     _name = "general_audit_ws_e3f4a5b.attribute"
@@ -456,7 +474,6 @@ class GeneralAuditWSe3f4a5bAttribute(models.Model):
                 record.sample_initial, record.population_count
             )
 
-    @api.depends("sample_data")
     def _compute_sample_actual_deviation(self):
         for record in self:
             sample_actual = 0
@@ -482,48 +499,44 @@ class GeneralAuditWSe3f4a5bAttribute(models.Model):
             record.sample_actual = sample_actual
             record.deviation_count = deviation_count
 
+    def action_compute_deviation(self):
+        self._compute_sample_actual_deviation()
+
     def action_generate_sample(self):
         self.ensure_one()
         ws = self.worksheet_id
-        if not ws.raw_data:
+        if not ws.sample_data:
             raise UserError(
-                _("No raw data available. Please select a data source first.")
-            )
-        if self.sample_final <= 0:
-            raise UserError(
-                _("Sample size is zero. " "Please configure EPER, TDR, and ARO first.")
+                _(
+                    "No sample data available on worksheet. "
+                    "Please generate worksheet sample first."
+                )
             )
 
-        reader = csv.reader(io.StringIO(ws.raw_data))
+        reader = csv.reader(io.StringIO(ws.sample_data))
         header = next(reader, None)
         if not header:
-            raise UserError(_("Raw data has no header row."))
+            raise UserError(_("Worksheet sample data has no header row."))
 
-        data_rows = []
-        for idx, row in enumerate(reader, start=1):
-            if row and any(cell.strip() for cell in row):
-                data_rows.append((idx, row))
-
-        if not data_rows:
-            raise UserError(_("Raw data has no data rows."))
-
-        n = min(self.sample_final, len(data_rows))
-        selected = sorted(random.sample(data_rows, n), key=lambda x: x[0])
-
-        ref_col_header = "Document Ref"
-        if ws.ref_col_number and ws.ref_col_number <= len(header):
-            ref_col_header = header[ws.ref_col_number - 1].strip() or ref_col_header
+        header_lower = [h.strip().lower() for h in header]
+        dev_idx = (
+            header_lower.index("deviation") if "deviation" in header_lower else None
+        )
+        note_idx = header_lower.index("note") if "note" in header_lower else None
 
         output = io.StringIO()
         writer = csv.writer(output)
-        writer.writerow(["Seq", "Item No", ref_col_header, "Deviation", "Note"])
+        writer.writerow(header)
 
-        for seq, (item_no, row) in enumerate(selected, start=1):
-            ref = ""
-            if ws.ref_col_number and ws.ref_col_number <= len(row):
-                ref = row[ws.ref_col_number - 1].strip()
-
-            writer.writerow([seq, item_no, ref, "FALSE", ""])
+        for row in reader:
+            if not row or not any(cell.strip() for cell in row):
+                continue
+            new_row = list(row)
+            if dev_idx is not None and dev_idx < len(new_row):
+                new_row[dev_idx] = "FALSE"
+            if note_idx is not None and note_idx < len(new_row):
+                new_row[note_idx] = ""
+            writer.writerow(new_row)
 
         self.sample_data = output.getvalue()
 

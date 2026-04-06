@@ -19,20 +19,29 @@ General Audit Worksheet - Test of Control
 
 |badge1| |badge2| |badge3|
 
-Modul worksheet **Test of Control (ToC)** untuk General Audit.
+Worksheet module for **Test of Control (ToC)** within General Audit.
 
-Worksheet ini mengimplementasikan prosedur **pengujian pengendalian** menggunakan
-pendekatan **attribute sampling** sesuai standar AICPA. Worksheet mencakup:
+Implements **test of controls** procedures using a statistical **attribute
+sampling** approach in accordance with AICPA standards. Covers the full
+workflow from population preparation and per-attribute sampling plan, through
+master sample generation, fieldwork execution, CUER computation, and conclusion.
 
-- **Data Populasi**: Daftar transaksi/dokumen yang menjadi populasi pengujian.
-- **Rencana Sampling**: Definisi atribut pengendalian, EPER, TDR, ARO, dan
-  penghitungan ukuran sampel otomatis berdasarkan tabel AICPA.
-- **Pelaksanaan Sampling**: Pencatatan hasil pengujian aktual, deviasi yang ditemukan,
-  dan penghitungan CUER (Computed Upper Exception Rate).
-- **Kesimpulan**: Otomatis — Efektif jika CUER ≤ TDR, Tidak Efektif jika CUER > TDR.
+- **Population Data Source**: General Ledger or Subledger linked to the same
+  audit engagement; population count is computed automatically.
+- **Sample Column Configuration**: *Ref Column Number* and *Note Column Number*
+  can be configured to pre-fill the corresponding columns in the sample CSV.
+- **Per-Attribute Sampling Plan**: EPER, TDR, ARO → automatic sample size from
+  the AICPA table (5% and 10% risk), adjusted with FPC (*Finite Population
+  Correction*).
+- **Generate Sample**: The worksheet randomly selects items from the population
+  and automatically copies the master sample to all control attributes.
+- **Compute Deviation**: A per-attribute button that counts actual tested items
+  and deviations found after the auditor fills in the Deviation column.
+- **Automatic Conclusion**: CUER is computed from the AICPA table (chi-square
+  fallback) and compared against TDR — Effective if CUER ≤ TDR.
 
-Standar audit yang dirujuk: **ISA 330 / SA 330** (Responses to Assessed Risks),
-**ISA 315** (Risk Assessment).
+Reference standards: **ISA 330 / SA 330** (Responses to Assessed Risks),
+**ISA 530 / SA 530** (Audit Sampling).
 
 **Table of contents**
 
@@ -55,20 +64,32 @@ No special configuration required. The module is ready to use after installation
 Usage
 =====
 
-1. Buka **General Audit** dan pilih engagement audit yang akan diuji.
-2. Buat worksheet baru dengan tipe **Test of Control** (kode E3F4A5B).
-3. Isi field **Cycle (Siklus)** dengan nama siklus yang diuji (mis. Penjualan).
-4. Di tab **Population Data**, masukkan seluruh transaksi/dokumen yang menjadi populasi.
-5. Di tab **Attribute Sampling**:
+1. Open **General Audit** and select the audit engagement to be tested.
+2. Go to the **Test of Controls** menu and create a new worksheet.
+3. Fill in the **Cycle**, then select the **Data Mode** (General Ledger or Subledger)
+   and choose the appropriate population data source.
+4. Set the **Ref Column Number** (document reference column) and
+   **Note Column Number** (note column) matching the column structure of the
+   population data.
+5. Click **Open Attributes** on the **Attribute Sampling** tab to manage
+   control attributes:
 
-   - Tambahkan atribut pengendalian yang akan diuji (mis. Otorisasi, Verifikasi).
-   - Isi **EPER** (expected error rate), **TDR** (tolerable deviation rate), dan **ARO**.
-   - Sistem otomatis menghitung **Sample 5%**, **Sample 10%**, **Initial Sample**,
-     dan **Final Sample** (dengan koreksi populasi terbatas).
-   - Setelah pengujian lapangan, isi **Actual Sample** dan **Deviations Found**.
-   - Sistem otomatis menghitung **CUER** dan **Kesimpulan** (Efektif/Tidak Efektif).
+   - Add each attribute (e.g. Authorization, Verification) and fill in **EPER**, **TDR**, **ARO**.
+   - The system automatically computes **Sample 5%**, **Sample 10%**, **Initial Sample**,
+     and **Final Sample** (with FPC — Finite Population Correction).
 
-6. Isi **Conclusion** dan **Review** di bagian bawah form, lalu confirm worksheet.
+6. Return to the worksheet form and click **Generate Sample** on the **Sample Data** tab.
+
+   - The system randomly selects items from the population equal to the largest
+     sample size across all attributes.
+   - The master sample is automatically copied to all attributes; the Deviation
+     column is reset to FALSE.
+
+7. Open each attribute and fill in the **Deviation** column (TRUE/FALSE) on the
+   **Sample Data** tab based on fieldwork results.
+8. Click **Compute Deviation** to automatically calculate the actual item count,
+   deviations found, deviation rates, CUER, and Conclusion.
+9. Fill in the **Conclusion** and **Review** on the main worksheet form, then confirm.
 
 Bug Tracker
 ===========
