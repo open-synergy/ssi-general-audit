@@ -48,17 +48,11 @@ class GeneralAuditWSd45dd19Confirmation(models.Model):
         string="Sequence",
         default=10,
     )
-    partner_id = fields.Many2one(
-        comodel_name="res.partner",
+    party_name = fields.Char(
         string="Confirmation Party",
-        required=True,
-        help="External party (e.g. bank, debtor, legal counsel) from whom "
-        "confirmation is requested.",
     )
     party_address = fields.Char(
         string="Party Address",
-        related="partner_id.contact_address",
-        readonly=True,
     )
     confirmation_type = fields.Selection(
         string="Confirmation Type",

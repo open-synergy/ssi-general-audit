@@ -15,7 +15,7 @@
         <field name="arch" type="xml">
             <tree>
                 <field name="sequence" widget="handle" />
-                <field name="partner_id" />
+                <field name="party_name" />
                 <field name="confirmation_type" />
                 <field name="date_sent" />
                 <field name="date_received" />
@@ -40,7 +40,7 @@
                         <group string="Confirmation Party">
                             <field name="worksheet_id" invisible="1" />
                             <field name="sequence" />
-                            <field name="partner_id" />
+                            <field name="party_name" />
                             <field name="party_address" />
                             <field name="confirmation_type" />
                         </group>
@@ -204,7 +204,7 @@
                         <field name="confirmation_ids" readonly="1" nolabel="1">
                             <tree create="0" edit="0" delete="0">
                                 <field name="sequence" widget="handle" />
-                                <field name="partner_id" />
+                                <field name="party_name" />
                                 <field name="confirmation_type" />
                                 <field name="date_sent" />
                                 <field name="date_received" />
