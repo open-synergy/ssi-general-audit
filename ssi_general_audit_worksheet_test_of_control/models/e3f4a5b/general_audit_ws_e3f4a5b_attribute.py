@@ -514,28 +514,16 @@ class GeneralAuditWSe3f4a5bAttribute(models.Model):
         if ws.ref_col_number and ws.ref_col_number <= len(header):
             ref_col_header = header[ws.ref_col_number - 1].strip() or ref_col_header
 
-        amount_col_header = "Amount"
-        if ws.amount_col_number and ws.amount_col_number <= len(header):
-            amount_col_header = (
-                header[ws.amount_col_number - 1].strip() or amount_col_header
-            )
-
         output = io.StringIO()
         writer = csv.writer(output)
-        writer.writerow(
-            ["Seq", "Item No", ref_col_header, amount_col_header, "Deviation", "Note"]
-        )
+        writer.writerow(["Seq", "Item No", ref_col_header, "Deviation", "Note"])
 
         for seq, (item_no, row) in enumerate(selected, start=1):
             ref = ""
             if ws.ref_col_number and ws.ref_col_number <= len(row):
                 ref = row[ws.ref_col_number - 1].strip()
 
-            amount = ""
-            if ws.amount_col_number and ws.amount_col_number <= len(row):
-                amount = row[ws.amount_col_number - 1].strip()
-
-            writer.writerow([seq, item_no, ref, amount, "FALSE", ""])
+            writer.writerow([seq, item_no, ref, "FALSE", ""])
 
         self.sample_data = output.getvalue()
 

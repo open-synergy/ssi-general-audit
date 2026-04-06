@@ -149,12 +149,6 @@ class GeneralAuditWSe3f4a5b(models.Model):
         readonly=True,
         states={"open": [("readonly", False)]},
     )
-    amount_col_number = fields.Integer(
-        string="Amount Column Number",
-        help="Column number from raw data for amount (starting from 1).",
-        readonly=True,
-        states={"open": [("readonly", False)]},
-    )
 
     @api.depends(
         "general_audit_id",
