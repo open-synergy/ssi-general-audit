@@ -146,24 +146,111 @@ def _chi2_ppf_approx(p, df):
     return v * (term**3)
 
 
+# ---------------------------------------------------------------------------
+# CUER Lookup Tables (standard AICPA attribute sampling CUER tables)
+# Rows = Sample Size (n), Cols index = Deviations Found k (0..10)
+# None = not applicable (CUER exceeds meaningful table limit, ~>20%)
+# ---------------------------------------------------------------------------
+_CUER_5PCT = {
+    20: [None, None, None, None, None, None, None, None, None, None, None],
+    25: [11.3, 17.6, None, None, None, None, None, None, None, None, None],
+    30: [9.5, 14.9, 19.5, None, None, None, None, None, None, None, None],
+    35: [8.2, 12.9, 16.9, None, None, None, None, None, None, None, None],
+    40: [7.2, 11.3, 14.9, 18.3, None, None, None, None, None, None, None],
+    45: [6.4, 10.1, 13.3, 16.3, 19.2, None, None, None, None, None, None],
+    50: [5.8, 9.1, 12.1, 14.8, 17.4, 19.9, None, None, None, None, None],
+    55: [5.3, 8.3, 11.0, 13.5, 15.9, 18.1, None, None, None, None, None],
+    60: [4.9, 7.7, 10.1, 12.4, 14.6, 16.7, 18.8, None, None, None, None],
+    65: [4.5, 7.1, 9.4, 11.5, 13.5, 15.5, 17.4, 19.3, None, None, None],
+    70: [4.2, 6.6, 8.7, 10.7, 12.6, 14.4, 16.2, 18.0, 19.7, None, None],
+    75: [3.9, 6.2, 8.2, 10.0, 11.8, 13.5, 15.2, 16.9, 18.4, 20.0, None],
+    80: [3.7, 5.8, 7.7, 9.4, 11.1, 12.7, 14.3, 15.8, 17.3, 18.8, None],
+    90: [3.3, 5.2, 6.8, 8.4, 9.9, 11.3, 12.7, 14.1, 15.5, 16.8, 18.1],
+    100: [3.0, 4.7, 6.2, 7.6, 8.9, 10.2, 11.5, 12.7, 14.0, 15.2, 16.4],
+    125: [2.4, 3.7, 4.9, 6.1, 7.2, 8.2, 9.3, 10.3, 11.3, 12.2, 13.2],
+    150: [2.0, 3.1, 4.1, 5.1, 6.0, 6.9, 7.7, 8.6, 9.4, 10.2, 11.0],
+    200: [1.5, 2.3, 3.1, 3.8, 4.5, 5.2, 5.8, 6.5, 7.1, 7.7, 8.3],
+}
+
+_CUER_10PCT = {
+    20: [10.9, 18.1, None, None, None, None, None, None, None, None, None],
+    25: [8.8, 14.7, 19.9, None, None, None, None, None, None, None, None],
+    30: [7.4, 12.4, 16.8, None, None, None, None, None, None, None, None],
+    35: [6.4, 10.7, 14.5, 18.1, None, None, None, None, None, None, None],
+    40: [5.6, 9.4, 12.8, 15.9, 19.0, None, None, None, None, None, None],
+    45: [5.0, 8.4, 11.4, 14.2, 17.0, 19.6, None, None, None, None, None],
+    50: [4.5, 7.6, 10.3, 12.9, 15.4, 17.8, None, None, None, None, None],
+    55: [4.1, 6.9, 9.4, 11.7, 14.0, 16.2, 18.4, None, None, None, None],
+    60: [3.8, 6.3, 8.6, 10.8, 12.9, 14.9, 16.9, 18.8, None, None, None],
+    65: [3.5, 5.9, 8.0, 10.1, 12.0, 13.9, 15.8, 17.5, None, None, None],
+    70: [3.2, 5.4, 7.4, 9.3, 11.1, 12.8, 14.6, 16.2, 17.9, 19.5, None],
+    75: [3.0, 5.1, 7.0, 8.8, 10.4, 12.1, 13.7, 15.3, 16.8, 18.4, None],
+    80: [2.8, 4.8, 6.5, 8.3, 9.7, 11.3, 12.8, 14.3, 15.7, 17.2, 18.6],
+    90: [2.5, 4.3, 5.8, 7.3, 8.7, 10.1, 11.4, 12.7, 14.0, 15.3, 16.6],
+    100: [2.3, 3.8, 5.2, 6.6, 7.8, 9.1, 10.3, 11.5, 12.7, 13.8, 15.0],
+    125: [1.9, 3.2, 4.4, 5.5, 6.6, 7.6, 8.6, 9.6, 10.6, 11.6, 12.5],
+    150: [1.4, 2.4, 3.3, 4.1, 4.9, 5.7, 6.5, 7.2, 8.0, 8.7, 9.5],
+    200: [1.1, 1.9, 2.6, 3.3, 4.0, 4.6, 5.2, 5.8, 6.4, 7.0, 7.6],
+}
+
+
 def _compute_cuer(deviation_count, sample_actual, aro):
     """
-    Compute the Computed Upper Exception Rate (CUER) using the chi-square formula.
-    CUER = chi2(2*(k+1), 1-ARO/100) / (2*n) * 100 (as %)
+    Compute the Computed Upper Exception Rate (CUER) using the standard
+    AICPA attribute sampling CUER table. For sample sizes between table rows,
+    linear interpolation is used. For n > 200 or k > 10, or for None table
+    cells, falls back to the chi-square approximation.
 
     deviation_count : number of deviations found in sample (k)
     sample_actual   : actual sample size tested (n)
     aro             : Acceptable Risk of Overreliance (% integer: 5 or 10)
-    Returns CUER as percentage (float).
+    Returns CUER as percentage (float), or 0.0 if not determinable.
     """
     if sample_actual <= 0:
         return 0.0
     k = deviation_count
     n = sample_actual
-    confidence = 1.0 - aro / 100.0
-    df = 2 * (k + 1)
-    chi2_val = _chi2_ppf_approx(confidence, df)
-    return round(chi2_val / (2.0 * n) * 100.0, 2)
+
+    def _chi2_fallback():
+        confidence = 1.0 - aro / 100.0
+        df = 2 * (k + 1)
+        chi2_val = _chi2_ppf_approx(confidence, df)
+        return round(chi2_val / (2.0 * n) * 100.0, 2)
+
+    table = _CUER_5PCT if aro == 5 else _CUER_10PCT
+
+    # k outside table column range → chi-square fallback
+    if k < 0 or k > 10:
+        return _chi2_fallback()
+
+    sorted_ns = sorted(table.keys())
+    min_n = sorted_ns[0]
+    max_n = sorted_ns[-1]
+
+    # n outside table row range → chi-square fallback
+    if n < min_n or n > max_n:
+        return _chi2_fallback()
+
+    # Exact match
+    if n in table:
+        val = table[n][k]
+        return round(val, 2) if val is not None else _chi2_fallback()
+
+    # Linear interpolation between bracketing rows
+    n_low = max(ns for ns in sorted_ns if ns < n)
+    n_high = min(ns for ns in sorted_ns if ns > n)
+    val_low = table[n_low][k]
+    val_high = table[n_high][k]
+
+    if val_low is None and val_high is None:
+        return _chi2_fallback()
+    if val_low is None:
+        return round(val_high, 2)
+    if val_high is None:
+        return round(val_low, 2)
+
+    ratio = (n - n_low) / (n_high - n_low)
+    return round(val_low + ratio * (val_high - val_low), 2)
 
 
 class GeneralAuditWSe3f4a5bAttribute(models.Model):
