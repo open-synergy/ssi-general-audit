@@ -300,6 +300,10 @@ class GeneralAuditWSd45dd19(models.Model):
         readonly=True,
         states={"open": [("readonly", False)]},
     )
+    worksheet_result = fields.Text(
+        string="Worksheet Result",
+        help="Rich-text result or conclusion of this confirmation audit procedure.",
+    )
 
     @api.depends(
         "confirmation_ids",
