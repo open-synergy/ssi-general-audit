@@ -166,6 +166,10 @@ class GeneralAuditWSa145276(models.Model):
         },
         help="List of questions and answers for this inquiry procedure.",
     )
+    worksheet_result = fields.Text(
+        string="Worksheet Result",
+        help="Rich-text result or conclusion of this inquiry audit procedure.",
+    )
 
     @api.depends(
         "ws_e51bb1c_id",
