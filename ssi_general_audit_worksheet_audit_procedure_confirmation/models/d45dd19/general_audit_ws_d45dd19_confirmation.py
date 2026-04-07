@@ -293,7 +293,7 @@ class GeneralAuditWSd45dd19Confirmation(models.Model):
     @api.depends(
         "date_sent",
         "date_received",
-        "detail_ids.status",
+        "detail_ids.confirmation_data",
     )
     def _compute_result_status(self):
         for record in self:
@@ -303,7 +303,7 @@ class GeneralAuditWSd45dd19Confirmation(models.Model):
                 record.result_status = "kft"
             elif record.date_received:
                 details = record.detail_ids
-                if details and all(d.status == "agreed" for d in details):
+                if details and all(d._check_agreed() for d in details):
                     record.result_status = "kfo"
                 elif details:
                     record.result_status = "kfb"
@@ -312,15 +312,27 @@ class GeneralAuditWSd45dd19Confirmation(models.Model):
             else:
                 record.result_status = False
 
-    @api.depends("detail_ids.status")
+    @api.depends("detail_ids.confirmation_data")
     def _compute_internal_confirmation_result(self):
         for record in self:
-            statuses = record.detail_ids.mapped("status")
-            if not statuses:
+            details = record.detail_ids
+            if not details:
                 record.internal_confirmation_result = False
-            elif all(s == "agreed" for s in statuses):
+                continue
+            agreed_list = [d._check_agreed() for d in details]
+            if all(agreed_list):
                 record.internal_confirmation_result = "ok"
-            elif all(s == "different" for s in statuses):
+            elif not any(agreed_list):
                 record.internal_confirmation_result = "not_ok"
             else:
                 record.internal_confirmation_result = "partial"
+
+    def action_open_confirmation_details(self):
+        self.ensure_one()
+        action = self.env.ref(
+            "ssi_general_audit_worksheet_audit_procedure_confirmation"
+            ".general_audit_ws_d45dd19_confirmation_detail_action"
+        ).read()[0]
+        action["domain"] = [("confirmation_id", "=", self.id)]
+        action["context"] = {"default_confirmation_id": self.id}
+        return action

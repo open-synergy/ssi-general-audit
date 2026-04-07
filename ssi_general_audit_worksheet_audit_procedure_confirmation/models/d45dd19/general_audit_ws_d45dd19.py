@@ -123,6 +123,15 @@ class GeneralAuditWSd45dd19(models.Model):
         help="List of external confirmation requests associated with this "
         "confirmation procedure worksheet.",
     )
+    tolerable_amount = fields.Float(
+        string="Tolerable Amount",
+        digits=(16, 2),
+        default=0.0,
+        readonly=True,
+        states={"open": [("readonly", False)]},
+        help="Absolute tolerance for comparing Original vs Confirmation Amount. "
+        "Differences within this threshold are considered agreed.",
+    )
     # ── Audit Results — Kfo ──────────────────────────────────────────────────
     kfo_amount = fields.Float(
         string="Kfo – Amount (Rp)",
@@ -295,17 +304,22 @@ class GeneralAuditWSd45dd19(models.Model):
     @api.depends(
         "confirmation_ids",
         "confirmation_ids.result_status",
-        "confirmation_ids.detail_ids.book_amount",
+        "confirmation_ids.detail_ids.confirmation_data",
     )
     def _compute_audit_results(self):
         for record in self:
-            all_details = record.confirmation_ids.detail_ids
-            total = sum(all_details.mapped("book_amount"))
+            total = 0.0
+            for conf in record.confirmation_ids:
+                for detail in conf.detail_ids:
+                    total += detail._get_total_original_amount()
             for status in ("kfo", "kfb", "kft", "kfk"):
                 confs = record.confirmation_ids.filtered(
                     lambda c, s=status: c.result_status == s
                 )
-                amount = sum(confs.detail_ids.mapped("book_amount"))
+                amount = 0.0
+                for conf in confs:
+                    for detail in conf.detail_ids:
+                        amount += detail._get_total_original_amount()
                 setattr(record, f"{status}_amount", amount)
                 setattr(
                     record,

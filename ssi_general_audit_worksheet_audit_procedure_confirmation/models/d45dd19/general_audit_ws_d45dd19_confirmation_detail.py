@@ -2,22 +2,13 @@
 # Copyright 2025 PT. Simetri Sinergi Indonesia
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl-3.0-standalone.html).
 
-from odoo import api, fields, models
+import csv
+import io
+
+from odoo import fields, models
 
 
 class GeneralAuditWSd45dd19ConfirmationDetail(models.Model):
-    """
-    Detail line for a Confirmation record of WS-D45DD19.
-
-    Each line represents one reference item included in the parent confirmation
-    request.  The auditor specifies which column in the linked raw data
-    identifies the item (``ref_col_number`` / ``ref_value``), records the book
-    balance and the amount confirmed by the external party, and the system
-    derives the confirmation status automatically.
-
-    **ISA / SA references:** ISA 505 / SA 505 — External Confirmations.
-    """
-
     _name = "general_audit_ws_d45dd19.confirmation.detail"
     _description = "Confirmation Audit Procedure WS - Confirmation Detail"
     _order = "confirmation_id, sequence, id"
@@ -33,54 +24,122 @@ class GeneralAuditWSd45dd19ConfirmationDetail(models.Model):
         string="Sequence",
         default=10,
     )
-    ref_col_number = fields.Integer(
-        string="Ref Column Number",
-        help="Column number (1-based) in the linked raw data that contains "
-        "the reference identifier for this item (e.g. account number column).",
+    confirmation_type = fields.Char(
+        string="Confirmation Type",
     )
-    ref_value = fields.Char(
-        string="Reference Value",
-        help="The reference identifier for this item (e.g. account number). "
-        "Entered manually or derived from the raw data column above.",
+    filter_where_clause = fields.Text(
+        string="Filter (WHERE clause)",
+        help="Optional SQL WHERE clause to filter the raw data.\n"
+        "Use column names from the CSV header row.\n"
+        "Spaces and special characters in column names are replaced "
+        "by underscores.\n"
+        "Example: Entry_Label = 'posted' AND Debit > 1000",
     )
-    book_amount = fields.Float(
-        string="Book Amount (IDR)",
-        digits=(16, 2),
-        help="Book balance in IDR as recorded in the client's books for this "
-        "reference item.",
+    confirmation_data = fields.Text(
+        string="Confirmation Data",
     )
-    confirmation_amount = fields.Float(
-        string="Confirmation Amount (IDR)",
-        digits=(16, 2),
-        help="Amount confirmed by the external party in IDR for this reference "
-        "item.",
+    reference_col_number = fields.Integer(
+        string="Reference Column Number",
+        help="Column number (1-based) in the raw data that contains "
+        "the reference identifier.",
     )
-    diff = fields.Float(
-        string="Difference",
-        digits=(16, 2),
-        compute="_compute_diff",
-        store=True,
-        help="Difference between the book amount and the confirmed amount.  "
-        "Zero means the confirmation agrees with the books.",
-    )
-    status = fields.Selection(
-        string="Status",
-        selection=[
-            ("agreed", "Agreed"),
-            ("different", "Different"),
-        ],
-        compute="_compute_status",
-        store=True,
-        help="Confirmation status derived automatically from the difference: "
-        "'Agreed' when diff = 0, 'Different' otherwise.",
+    amount_original_col_number = fields.Integer(
+        string="Amount Original Column Number",
+        help="Column number (1-based) in the raw data that contains "
+        "the original amount.",
     )
 
-    @api.depends("book_amount", "confirmation_amount")
-    def _compute_diff(self):
+    def action_generate_data(self):
         for record in self:
-            record.diff = record.book_amount - record.confirmation_amount
+            raw_data = record.confirmation_id.raw_data
+            if not raw_data:
+                record.confirmation_data = False
+                continue
 
-    @api.depends("diff")
-    def _compute_status(self):
-        for record in self:
-            record.status = "agreed" if record.diff == 0.0 else "different"
+            if record.filter_where_clause:
+                raw_data = record.confirmation_id._apply_where_clause(
+                    raw_data, record.filter_where_clause
+                )
+
+            if not raw_data:
+                record.confirmation_data = False
+                continue
+
+            reader = csv.reader(io.StringIO(raw_data))
+            headers = next(reader, None)
+            if not headers:
+                record.confirmation_data = False
+                continue
+
+            rows = list(reader)
+            if not rows:
+                record.confirmation_data = False
+                continue
+
+            ref_idx = (record.reference_col_number or 1) - 1
+            amt_idx = (record.amount_original_col_number or 1) - 1
+
+            out = io.StringIO()
+            writer = csv.writer(out)
+            writer.writerow(["Ref", "Original", "Confirmation Amount"])
+            for row in rows:
+                ref_val = row[ref_idx] if ref_idx < len(row) else ""
+                amt_val = row[amt_idx] if amt_idx < len(row) else ""
+                writer.writerow([ref_val, amt_val, amt_val])
+
+            record.confirmation_data = out.getvalue()
+
+    def _get_total_original_amount(self):
+        """Sum the 'Original' column from confirmation_data CSV."""
+        self.ensure_one()
+        if not self.confirmation_data:
+            return 0.0
+        reader = csv.reader(io.StringIO(self.confirmation_data))
+        headers = next(reader, None)
+        if not headers:
+            return 0.0
+        try:
+            orig_idx = headers.index("Original")
+        except ValueError:
+            return 0.0
+        total = 0.0
+        for row in reader:
+            if len(row) <= orig_idx:
+                continue
+            try:
+                total += float(row[orig_idx]) if row[orig_idx] else 0.0
+            except (ValueError, TypeError):
+                continue
+        return total
+
+    def _check_agreed(self):
+        """Check if all rows in confirmation_data have
+        Original == Confirmation Amount within tolerable_amount."""
+        self.ensure_one()
+        if not self.confirmation_data:
+            return True
+        tolerable = (
+            self.confirmation_id.worksheet_id.tolerable_amount
+            if self.confirmation_id and self.confirmation_id.worksheet_id
+            else 0.0
+        )
+        reader = csv.reader(io.StringIO(self.confirmation_data))
+        headers = next(reader, None)
+        if not headers:
+            return True
+        try:
+            orig_idx = headers.index("Original")
+            conf_idx = headers.index("Confirmation Amount")
+        except ValueError:
+            return True
+        for row in reader:
+            if len(row) <= max(orig_idx, conf_idx):
+                continue
+            try:
+                orig_val = float(row[orig_idx]) if row[orig_idx] else 0.0
+                conf_val = float(row[conf_idx]) if row[conf_idx] else 0.0
+            except (ValueError, TypeError):
+                continue
+            if abs(orig_val - conf_val) > tolerable:
+                return False
+        return True

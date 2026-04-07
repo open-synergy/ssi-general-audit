@@ -5,6 +5,81 @@
 <odoo>
 
     <!-- ================================================================
+         CONFIRMATION DETAIL MODEL VIEWS
+         ================================================================ -->
+
+    <!-- CONFIRMATION DETAIL TREE VIEW -->
+    <record
+        id="general_audit_ws_d45dd19_confirmation_detail_view_tree"
+        model="ir.ui.view"
+    >
+        <field name="name">general_audit_ws_d45dd19.confirmation.detail tree</field>
+        <field name="model">general_audit_ws_d45dd19.confirmation.detail</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="sequence" widget="handle" />
+                <field name="confirmation_type" />
+                <field name="reference_col_number" />
+                <field name="amount_original_col_number" />
+                <field name="filter_where_clause" optional="hide" />
+            </tree>
+        </field>
+    </record>
+
+    <!-- CONFIRMATION DETAIL FORM VIEW -->
+    <record
+        id="general_audit_ws_d45dd19_confirmation_detail_view_form"
+        model="ir.ui.view"
+    >
+        <field name="name">general_audit_ws_d45dd19.confirmation.detail form</field>
+        <field name="model">general_audit_ws_d45dd19.confirmation.detail</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="confirmation_id" invisible="1" />
+                            <field name="sequence" />
+                            <field name="confirmation_type" />
+                            <field name="reference_col_number" />
+                            <field name="amount_original_col_number" />
+                        </group>
+                    </group>
+                    <group string="Filter">
+                        <field
+                            name="filter_where_clause"
+                            widget="ace"
+                            colspan="2"
+                            nolabel="1"
+                        />
+                    </group>
+                    <div class="mb-2">
+                        <button
+                            name="action_generate_data"
+                            type="object"
+                            string="Generate Data"
+                            class="btn-primary"
+                        />
+                    </div>
+                    <separator string="Confirmation Data" />
+                    <field name="confirmation_data" nolabel="1" widget="csv_table" />
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- CONFIRMATION DETAIL ACTION -->
+    <record
+        id="general_audit_ws_d45dd19_confirmation_detail_action"
+        model="ir.actions.act_window"
+    >
+        <field name="name">Confirmation Details</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">general_audit_ws_d45dd19.confirmation.detail</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+    <!-- ================================================================
          CONFIRMATION MODEL VIEWS
          ================================================================ -->
 
@@ -102,15 +177,21 @@
                     />
                     <field name="raw_data" nolabel="1" widget="csv_table" />
                     <group string="Confirmation Details">
-                        <field name="detail_ids" nolabel="1">
-                            <tree>
+                        <div class="mb-2" colspan="2">
+                            <button
+                                name="action_open_confirmation_details"
+                                type="object"
+                                string="Open Confirmation Details"
+                                class="btn-primary"
+                            />
+                        </div>
+                        <field name="detail_ids" nolabel="1" readonly="1" colspan="2">
+                            <tree create="0" edit="0" delete="0">
                                 <field name="sequence" widget="handle" />
-                                <field name="ref_col_number" />
-                                <field name="ref_value" />
-                                <field name="book_amount" />
-                                <field name="confirmation_amount" />
-                                <field name="diff" />
-                                <field name="status" />
+                                <field name="confirmation_type" />
+                                <field name="reference_col_number" />
+                                <field name="amount_original_col_number" />
+                                <field name="filter_where_clause" optional="hide" />
                             </tree>
                         </field>
                     </group>
@@ -217,6 +298,7 @@
                         widget="many2many_tags"
                         domain="[('id','in', allowed_assertion_type_ids)]"
                     />
+                    <field name="tolerable_amount" />
                 </xpath>
                 <xpath expr="//page[1]" position="before">
                     <page name="confirmations" string="Confirmations">
