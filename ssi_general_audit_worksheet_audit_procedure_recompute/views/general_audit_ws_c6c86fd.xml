@@ -106,6 +106,7 @@
                         domain="[('id', 'in', allowed_subledger_ids)]"
                         attrs="{'invisible': [('data_mode', '!=', 'subledger')]}"
                     />
+                    <field name="raw_data_title" readonly="1" />
                 </xpath>
                 <xpath expr="//page[1]" position="before">
                     <page name="recompute_config" string="Recompute Configuration">
