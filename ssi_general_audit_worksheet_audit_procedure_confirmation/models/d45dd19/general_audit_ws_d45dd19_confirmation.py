@@ -2,6 +2,11 @@
 # Copyright 2025 PT. Simetri Sinergi Indonesia
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl-3.0-standalone.html).
 
+import csv
+import io
+import re
+import sqlite3
+
 from odoo import api, fields, models
 
 
@@ -108,6 +113,14 @@ class GeneralAuditWSd45dd19Confirmation(models.Model):
         required=False,
         help="Subledger worksheet used as data source for this confirmation.",
     )
+    filter_where_clause = fields.Text(
+        string="Filter (WHERE clause)",
+        help="Optional SQL WHERE clause to filter the raw data.\n"
+        "Use column names from the CSV header row.\n"
+        "Spaces and special characters in column names are replaced "
+        "by underscores.\n"
+        "Example: Entry_Label = 'posted' AND Debit > 1000",
+    )
     raw_data = fields.Text(
         string="Raw Data",
         compute="_compute_raw_data",
@@ -191,15 +204,83 @@ class GeneralAuditWSd45dd19Confirmation(models.Model):
         "data_mode",
         "general_ledger_id",
         "subledger_id",
+        "filter_where_clause",
     )
     def _compute_raw_data(self):
         for record in self:
             if record.data_mode == "gl" and record.general_ledger_id:
-                record.raw_data = record.general_ledger_id.raw_data
+                source_data = record.general_ledger_id.raw_data
             elif record.data_mode == "subledger" and record.subledger_id:
-                record.raw_data = record.subledger_id.raw_data
+                source_data = record.subledger_id.raw_data
             else:
-                record.raw_data = False
+                source_data = False
+
+            if source_data and record.filter_where_clause:
+                source_data = record._apply_where_clause(
+                    source_data, record.filter_where_clause
+                )
+            record.raw_data = source_data
+
+    @api.model
+    def _apply_where_clause(self, raw_csv, where_clause):
+        """Filter CSV data using a SQL WHERE clause via in-memory SQLite."""
+        where_clause = (where_clause or "").strip()
+        if not where_clause:
+            return raw_csv
+
+        # Reject dangerous SQL keywords
+        _FORBIDDEN = re.compile(
+            r"\b(INSERT|UPDATE|DELETE|DROP|ALTER|CREATE|ATTACH|DETACH"
+            r"|REPLACE|PRAGMA|REINDEX|VACUUM|SAVEPOINT|RELEASE"
+            r"|BEGIN|COMMIT|ROLLBACK)\b",
+            re.IGNORECASE,
+        )
+        if _FORBIDDEN.search(where_clause):
+            return raw_csv
+
+        reader = csv.reader(io.StringIO(raw_csv))
+        headers = next(reader, None)
+        if not headers:
+            return raw_csv
+
+        rows = list(reader)
+        if not rows:
+            return raw_csv
+
+        # Sanitise header names: replace non-alphanumeric chars with _
+        safe_cols = []
+        for h in headers:
+            col = re.sub(r"[^\w]", "_", h.strip())
+            if not col or col[0].isdigit():
+                col = "c_" + col
+            safe_cols.append(col)
+
+        col_defs = ", ".join('"{}" TEXT'.format(c) for c in safe_cols)
+        placeholders = ", ".join(["?"] * len(safe_cols))
+
+        try:
+            conn = sqlite3.connect(":memory:")
+            cur = conn.cursor()
+            cur.execute("CREATE TABLE data ({})".format(col_defs))
+            for row in rows:
+                # Pad or trim row to match header count
+                padded = list(row) + [""] * (len(safe_cols) - len(row))
+                cur.execute(
+                    "INSERT INTO data VALUES ({})".format(placeholders),
+                    padded[: len(safe_cols)],
+                )
+            cur.execute("SELECT * FROM data WHERE {}".format(where_clause))
+            filtered = cur.fetchall()
+            conn.close()
+        except Exception:
+            return raw_csv
+
+        # Rebuild CSV output
+        out = io.StringIO()
+        writer = csv.writer(out)
+        writer.writerow(headers)
+        writer.writerows(filtered)
+        return out.getvalue()
 
     @api.onchange("data_mode")
     def onchange_general_ledger_id(self):

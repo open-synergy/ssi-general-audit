@@ -146,6 +146,20 @@ class GeneralAuditWSd45dd19(models.Model):
         readonly=True,
         states={"open": [("readonly", False)]},
     )
+    kfo_alternative_procedure_info = fields.Text(
+        string="Kfo – Alternative Procedure Info",
+        readonly=True,
+        states={"open": [("readonly", False)]},
+        help="Description of alternative audit procedure performed when "
+        "confirmation returned and agreed (Kfo).",
+    )
+    kfo_document_ref = fields.Char(
+        string="Kfo – Document Reference",
+        readonly=True,
+        states={"open": [("readonly", False)]},
+        help="Reference number of the supporting document for the "
+        "alternative procedure (Kfo).",
+    )
     kfo_conclusion = fields.Text(
         string="Kfo – Conclusion",
         readonly=True,
@@ -173,6 +187,20 @@ class GeneralAuditWSd45dd19(models.Model):
         default=False,
         readonly=True,
         states={"open": [("readonly", False)]},
+    )
+    kfb_alternative_procedure_info = fields.Text(
+        string="Kfb – Alternative Procedure Info",
+        readonly=True,
+        states={"open": [("readonly", False)]},
+        help="Description of alternative audit procedure performed when "
+        "confirmation returned with differences (Kfb).",
+    )
+    kfb_document_ref = fields.Char(
+        string="Kfb – Document Reference",
+        readonly=True,
+        states={"open": [("readonly", False)]},
+        help="Reference number of the supporting document for the "
+        "alternative procedure (Kfb).",
     )
     kfb_conclusion = fields.Text(
         string="Kfb – Conclusion",
@@ -202,6 +230,20 @@ class GeneralAuditWSd45dd19(models.Model):
         readonly=True,
         states={"open": [("readonly", False)]},
     )
+    kft_alternative_procedure_info = fields.Text(
+        string="Kft – Alternative Procedure Info",
+        readonly=True,
+        states={"open": [("readonly", False)]},
+        help="Description of alternative audit procedure performed when "
+        "confirmation was not returned (Kft).",
+    )
+    kft_document_ref = fields.Char(
+        string="Kft – Document Reference",
+        readonly=True,
+        states={"open": [("readonly", False)]},
+        help="Reference number of the supporting document for the "
+        "alternative procedure (Kft).",
+    )
     kft_conclusion = fields.Text(
         string="Kft – Conclusion",
         readonly=True,
@@ -229,6 +271,20 @@ class GeneralAuditWSd45dd19(models.Model):
         default=False,
         readonly=True,
         states={"open": [("readonly", False)]},
+    )
+    kfk_alternative_procedure_info = fields.Text(
+        string="Kfk – Alternative Procedure Info",
+        readonly=True,
+        states={"open": [("readonly", False)]},
+        help="Description of alternative audit procedure performed when "
+        "confirmation was undeliverable (Kfk).",
+    )
+    kfk_document_ref = fields.Char(
+        string="Kfk – Document Reference",
+        readonly=True,
+        states={"open": [("readonly", False)]},
+        help="Reference number of the supporting document for the "
+        "alternative procedure (Kfk).",
     )
     kfk_conclusion = fields.Text(
         string="Kfk – Conclusion",

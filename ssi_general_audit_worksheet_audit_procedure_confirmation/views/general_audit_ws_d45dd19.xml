@@ -68,6 +68,34 @@
                             />
                         </group>
                     </group>
+                    <group
+                        string="Filter"
+                        attrs="{'invisible': [('data_mode', '=', False)]}"
+                    >
+                        <div colspan="2" class="alert alert-info" role="alert">
+                            <strong>WHERE Clause Guide:</strong>
+                            <ul class="mb-0">
+                                <li
+                                >Spaces &amp; special characters in column names are replaced by <code
+                                    >_</code> (e.g. "Entry Label" → <code
+                                    >Entry_Label</code>)</li>
+                                <li>Contains text: <code
+                                    >Entry_Label LIKE '%FRONT WALL%'</code></li>
+                                <li>Exact match: <code>JRNL = 'INV'</code></li>
+                                <li>Greater / less than: <code>Debit > 1000</code></li>
+                                <li>Combine conditions: <code
+                                    >JRNL = 'INV' AND Entry_Label LIKE '%WALL%'</code></li>
+                                <li>Either condition: <code
+                                    >JRNL = 'INV' OR JRNL = 'BILL'</code></li>
+                            </ul>
+                        </div>
+                        <field
+                            name="filter_where_clause"
+                            widget="ace"
+                            colspan="2"
+                            nolabel="1"
+                        />
+                    </group>
                     <separator
                         string="Raw Data"
                         attrs="{'invisible': [('data_mode', '=', False)]}"
@@ -226,12 +254,28 @@
                                 <field name="kfo_amount" />
                                 <field name="kfo_percentage" />
                                 <field name="kfo_alternative_procedure" />
+                                <field
+                                    name="kfo_alternative_procedure_info"
+                                    attrs="{'invisible': [('kfo_alternative_procedure', '=', False)]}"
+                                />
+                                <field
+                                    name="kfo_document_ref"
+                                    attrs="{'invisible': [('kfo_alternative_procedure', '=', False)]}"
+                                />
                                 <field name="kfo_conclusion" />
                             </group>
                             <group string="Kfb – Confirmation returned, different">
                                 <field name="kfb_amount" />
                                 <field name="kfb_percentage" />
                                 <field name="kfb_alternative_procedure" />
+                                <field
+                                    name="kfb_alternative_procedure_info"
+                                    attrs="{'invisible': [('kfb_alternative_procedure', '=', False)]}"
+                                />
+                                <field
+                                    name="kfb_document_ref"
+                                    attrs="{'invisible': [('kfb_alternative_procedure', '=', False)]}"
+                                />
                                 <field name="kfb_conclusion" />
                             </group>
                         </group>
@@ -240,12 +284,28 @@
                                 <field name="kft_amount" />
                                 <field name="kft_percentage" />
                                 <field name="kft_alternative_procedure" />
+                                <field
+                                    name="kft_alternative_procedure_info"
+                                    attrs="{'invisible': [('kft_alternative_procedure', '=', False)]}"
+                                />
+                                <field
+                                    name="kft_document_ref"
+                                    attrs="{'invisible': [('kft_alternative_procedure', '=', False)]}"
+                                />
                                 <field name="kft_conclusion" />
                             </group>
                             <group string="Kfk – Confirmation undeliverable">
                                 <field name="kfk_amount" />
                                 <field name="kfk_percentage" />
                                 <field name="kfk_alternative_procedure" />
+                                <field
+                                    name="kfk_alternative_procedure_info"
+                                    attrs="{'invisible': [('kfk_alternative_procedure', '=', False)]}"
+                                />
+                                <field
+                                    name="kfk_document_ref"
+                                    attrs="{'invisible': [('kfk_alternative_procedure', '=', False)]}"
+                                />
                                 <field name="kfk_conclusion" />
                             </group>
                         </group>
