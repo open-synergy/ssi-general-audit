@@ -133,6 +133,10 @@ class GeneralAuditWSde3244b(models.Model):
         },
         help="Assertion types relevant to this observation procedure.",
     )
+    worksheet_result = fields.Text(
+        string="Worksheet Result",
+        help="Rich-text result or conclusion of this comparative audit procedure.",
+    )
 
     @api.depends(
         "ws_e51bb1c_id",
