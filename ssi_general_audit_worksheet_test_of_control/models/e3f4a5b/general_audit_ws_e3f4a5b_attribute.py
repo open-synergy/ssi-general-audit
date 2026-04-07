@@ -535,14 +535,19 @@ class GeneralAuditWSe3f4a5bAttribute(models.Model):
         writer = csv.writer(output)
         writer.writerow(out_header)
 
+        count = 0
+        limit = self.sample_final
         for row in reader:
             if not row or not any(cell.strip() for cell in row):
                 continue
+            if limit and count >= limit:
+                break
             new_row = list(row)
             new_row = new_row[:dev_col] + ["FALSE"] + new_row[dev_col:]
             if note_col is not None and note_col < len(new_row):
                 new_row[note_col] = ""
             writer.writerow(new_row)
+            count += 1
 
         self.sample_data = output.getvalue()
 
