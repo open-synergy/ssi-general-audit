@@ -127,6 +127,12 @@ class GeneralAuditWSd45dd19Confirmation(models.Model):
         store=False,
         compute_sudo=True,
     )
+    raw_data_title = fields.Char(
+        string="Raw Data Title",
+        compute="_compute_raw_data_title",
+        store=True,
+        compute_sudo=True,
+    )
     result_status = fields.Selection(
         string="Result Status",
         selection=[
@@ -281,6 +287,20 @@ class GeneralAuditWSd45dd19Confirmation(models.Model):
         writer.writerow(headers)
         writer.writerows(filtered)
         return out.getvalue()
+
+    @api.depends(
+        "data_mode",
+        "general_ledger_id",
+        "subledger_id",
+    )
+    def _compute_raw_data_title(self):
+        for record in self:
+            if record.data_mode == "gl" and record.general_ledger_id:
+                record.raw_data_title = record.general_ledger_id.title
+            elif record.data_mode == "subledger" and record.subledger_id:
+                record.raw_data_title = record.subledger_id.title
+            else:
+                record.raw_data_title = False
 
     @api.onchange("data_mode")
     def onchange_general_ledger_id(self):
