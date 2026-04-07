@@ -207,10 +207,19 @@
                     <field name="sample_actual" />
                 </xpath>
 
-                <!-- Raw Data page -->
+
+                <!-- Sample Data page -->
                 <xpath expr="//page[1]" position="before">
-                    <page name="raw_data" string="Raw Data">
-                        <field name="raw_data" nolabel="1" widget="csv_table" />
+                    <page name="sample_data_ws" string="Sample Data">
+                        <div class="mb-2">
+                            <button
+                                name="action_generate_sample"
+                                type="object"
+                                string="Generate Sample"
+                                class="btn-primary"
+                            />
+                        </div>
+                        <field name="sample_data" nolabel="1" widget="csv_table" />
                     </page>
                 </xpath>
 
@@ -260,20 +269,13 @@
                     </page>
                 </xpath>
 
-                <!-- Sample Data page -->
+                <!-- Raw Data page -->
                 <xpath expr="//page[1]" position="before">
-                    <page name="sample_data_ws" string="Sample Data">
-                        <div class="mb-2">
-                            <button
-                                name="action_generate_sample"
-                                type="object"
-                                string="Generate Sample"
-                                class="btn-primary"
-                            />
-                        </div>
-                        <field name="sample_data" nolabel="1" widget="csv_table" />
+                    <page name="raw_data" string="Raw Data">
+                        <field name="raw_data" nolabel="1" widget="csv_table" />
                     </page>
                 </xpath>
+
             </data>
         </field>
     </record>
