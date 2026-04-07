@@ -326,7 +326,7 @@ class GeneralAuditWSe3f4a5b(models.Model):
 
         output = io.StringIO()
         writer = csv.writer(output)
-        writer.writerow(["Seq", "Item No", ref_col_header, "Deviation", "Note"])
+        writer.writerow(["Seq", "Item No", ref_col_header, "Note"])
 
         for seq, (item_no, row) in enumerate(selected, start=1):
             ref = ""
@@ -337,7 +337,7 @@ class GeneralAuditWSe3f4a5b(models.Model):
             if self.note_col_number and self.note_col_number <= len(row):
                 note = row[self.note_col_number - 1].strip()
 
-            writer.writerow([seq, item_no, ref, "FALSE", note])
+            writer.writerow([seq, item_no, ref, note])
 
         self.sample_data = output.getvalue()
         for attr in self.attribute_ids:

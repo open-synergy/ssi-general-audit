@@ -519,23 +519,29 @@ class GeneralAuditWSe3f4a5bAttribute(models.Model):
             raise UserError(_("Worksheet sample data has no header row."))
 
         header_lower = [h.strip().lower() for h in header]
-        dev_idx = (
-            header_lower.index("deviation") if "deviation" in header_lower else None
-        )
         note_idx = header_lower.index("note") if "note" in header_lower else None
+
+        # Insert "Deviation" column before "Note" (or append if no Note column)
+        if note_idx is not None:
+            out_header = header[:note_idx] + ["Deviation"] + header[note_idx:]
+            dev_col = note_idx
+            note_col = note_idx + 1
+        else:
+            out_header = header + ["Deviation"]
+            dev_col = len(header)
+            note_col = None
 
         output = io.StringIO()
         writer = csv.writer(output)
-        writer.writerow(header)
+        writer.writerow(out_header)
 
         for row in reader:
             if not row or not any(cell.strip() for cell in row):
                 continue
             new_row = list(row)
-            if dev_idx is not None and dev_idx < len(new_row):
-                new_row[dev_idx] = "FALSE"
-            if note_idx is not None and note_idx < len(new_row):
-                new_row[note_idx] = ""
+            new_row = new_row[:dev_col] + ["FALSE"] + new_row[dev_col:]
+            if note_col is not None and note_col < len(new_row):
+                new_row[note_col] = ""
             writer.writerow(new_row)
 
         self.sample_data = output.getvalue()
