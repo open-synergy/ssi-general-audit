@@ -146,6 +146,12 @@ class GeneralAuditWSe3f4a5b(models.Model):
         store=False,
         compute_sudo=True,
     )
+    raw_data_title = fields.Char(
+        string="Raw Data Title",
+        compute="_compute_raw_data_title",
+        store=True,
+        compute_sudo=True,
+    )
     attribute_ids = fields.One2many(
         string="Attribute Sampling",
         comodel_name="general_audit_ws_e3f4a5b.attribute",
@@ -262,6 +268,20 @@ class GeneralAuditWSe3f4a5b(models.Model):
                 record.raw_data = record.subledger_id.raw_data
             else:
                 record.raw_data = False
+
+    @api.depends(
+        "data_mode",
+        "general_ledger_id",
+        "subledger_id",
+    )
+    def _compute_raw_data_title(self):
+        for record in self:
+            if record.data_mode == "gl" and record.general_ledger_id:
+                record.raw_data_title = record.general_ledger_id.title
+            elif record.data_mode == "subledger" and record.subledger_id:
+                record.raw_data_title = record.subledger_id.title
+            else:
+                record.raw_data_title = False
 
     @api.depends("attribute_ids.sample_final")
     def _compute_sample_actual(self):
