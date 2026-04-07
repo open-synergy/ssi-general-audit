@@ -181,6 +181,9 @@ class GeneralAuditWSc6c86fd(models.Model):
         string="Recompute Data",
         readonly=True,
     )
+    worksheet_result = fields.Text(
+        string="Worksheet Result",
+    )
     ref_col_number = fields.Integer(
         string="Ref Column Number",
         help="Column number for Ref values (starting from 1)",
