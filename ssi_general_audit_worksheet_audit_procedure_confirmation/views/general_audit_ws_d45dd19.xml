@@ -68,12 +68,11 @@
                             />
                         </group>
                     </group>
-                    <group
+                    <separator
                         string="Raw Data"
                         attrs="{'invisible': [('data_mode', '=', False)]}"
-                    >
-                        <field name="raw_data" nolabel="1" widget="csv_table" />
-                    </group>
+                    />
+                    <field name="raw_data" nolabel="1" widget="csv_table" />
                     <group string="Confirmation Details">
                         <field name="detail_ids" nolabel="1">
                             <tree>
