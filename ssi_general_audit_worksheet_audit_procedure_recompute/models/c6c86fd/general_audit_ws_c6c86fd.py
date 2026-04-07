@@ -215,6 +215,15 @@ class GeneralAuditWSc6c86fd(models.Model):
         readonly=True,
         states={"open": [("readonly", False)]},
     )
+    tolerable_amount = fields.Float(
+        string="Tolerable Amount",
+        digits=(16, 2),
+        default=0.0,
+        readonly=True,
+        states={"open": [("readonly", False)]},
+        help="Absolute tolerance for comparing Original Amount vs Recompute Amount. "
+        "Differences within this threshold are considered Ok.",
+    )
     allowed_assertion_type_ids = fields.Many2many(
         comodel_name="general_audit_assersion_type",
         string="Allowed Assertion Types",
@@ -439,7 +448,7 @@ class GeneralAuditWSc6c86fd(models.Model):
                 )
 
             diff = original_amount - recompute_amount
-            result = "Ok" if diff == 0.0 else "Not Ok"
+            result = "Ok" if abs(diff) <= self.tolerable_amount else "Not Ok"
 
             writer.writerow([ref, original_amount, recompute_amount, diff, result])
 
