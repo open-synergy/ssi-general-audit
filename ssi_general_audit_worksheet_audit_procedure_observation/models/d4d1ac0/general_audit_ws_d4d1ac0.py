@@ -168,6 +168,10 @@ class GeneralAuditWSd4d1ac0(models.Model):
         },
         help="Summary of findings from this observation procedure.",
     )
+    worksheet_result = fields.Text(
+        string="Worksheet Result",
+        help="Rich-text result or conclusion of this observation audit procedure.",
+    )
 
     @api.depends(
         "ws_e51bb1c_id",
