@@ -121,6 +121,43 @@ class GeneralAuditWSd1ecfb7(models.Model):
         },
         help="Assertion types relevant to this observation procedure.",
     )
+    background = fields.Html(
+        string="Background",
+        readonly=True,
+        states={
+            "open": [("readonly", False)],
+        },
+        help=(
+            "Background information for this re-performance procedure"
+            " (Section A: Latar Belakang)."
+        ),
+    )
+    procedure_control = fields.Html(
+        string="Procedure / Control Re-performed",
+        readonly=True,
+        states={
+            "open": [("readonly", False)],
+        },
+        help=(
+            "Description of the procedure or internal control that was independently "
+            "re-executed by the auditor (Section B: Prosedur/Pengendalian yang Dilakukan "
+            "Pelaksanaan Ulang)."
+        ),
+    )
+    step_ids = fields.One2many(
+        comodel_name="general_audit_ws_d1ecfb7.step",
+        inverse_name="worksheet_id",
+        string="Re-performance Steps",
+        help=(
+            "Ordered steps of the procedure or control that were re-performed, "
+            "together with the result of each step "
+            "(Section C: Tahapan Prosedur/Pengendalian yang Diuji)."
+        ),
+        readonly=True,
+        states={
+            "open": [("readonly", False)],
+        },
+    )
     worksheet_result = fields.Text(
         string="Worksheet Result",
         help="Rich-text result or conclusion of this reperformance audit procedure.",

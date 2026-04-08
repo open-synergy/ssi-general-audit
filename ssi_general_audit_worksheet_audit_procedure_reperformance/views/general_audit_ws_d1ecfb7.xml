@@ -86,6 +86,47 @@
                     />
                 </xpath>
                 <xpath expr="//page[1]" position="before">
+                    <page name="background" string="Background">
+                        <field name="background" widget="html" nolabel="1" />
+                    </page>
+                    <page
+                        name="procedure_control"
+                        string="Procedure / Control Re-performed"
+                    >
+                        <field name="procedure_control" widget="html" nolabel="1" />
+                    </page>
+                    <page name="steps" string="Re-performance Steps">
+                        <field name="step_ids">
+                            <tree>
+                                <field name="sequence" widget="handle" />
+                                <field
+                                    name="procedure_step"
+                                    style="white-space: normal; word-wrap: break-word; overflow-wrap: break-word;"
+                                />
+                                <field
+                                    name="reperformance_result"
+                                    style="white-space: normal; word-wrap: break-word; overflow-wrap: break-word;"
+                                />
+                            </tree>
+                            <form>
+                                <group>
+                                    <field name="sequence" />
+                                </group>
+                                <notebook>
+                                    <page name="step_result" string="Step &amp; Result">
+                                        <separator string="Procedure / Control Step" />
+                                        <field name="procedure_step" />
+                                        <separator string="Re-performance Result" />
+                                        <field
+                                            name="reperformance_result"
+                                            widget="html"
+                                            nolabel="1"
+                                        />
+                                    </page>
+                                </notebook>
+                            </form>
+                        </field>
+                    </page>
                 </xpath>
                 <xpath expr="//notebook" position="after">
                     <group string="Worksheet Result" colspan="4" col="1">
