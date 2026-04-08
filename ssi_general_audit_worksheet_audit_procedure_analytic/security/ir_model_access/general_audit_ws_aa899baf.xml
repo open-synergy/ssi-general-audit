@@ -20,4 +20,40 @@
     <field name="perm_write" eval="1" />
     <field name="perm_unlink" eval="1" />
 </record>
+<!-- general_audit_ws_aa899baf.variable -->
+<record id="general_audit_ws_aa899baf_variable_all_access" model="ir.model.access">
+    <field name="name">general_audit_ws_aa899baf.variable - all</field>
+    <field name="model_id" ref="model_general_audit_ws_aa899baf_variable" />
+    <field name="perm_read" eval="1" />
+    <field name="perm_create" eval="0" />
+    <field name="perm_write" eval="0" />
+    <field name="perm_unlink" eval="0" />
+</record>
+<record id="general_audit_ws_aa899baf_variable_user_access" model="ir.model.access">
+    <field name="name">general_audit_ws_aa899baf.variable - user</field>
+    <field name="model_id" ref="model_general_audit_ws_aa899baf_variable" />
+    <field name="group_id" ref="general_audit_ws_aa899baf_user_group" />
+    <field name="perm_read" eval="1" />
+    <field name="perm_create" eval="1" />
+    <field name="perm_write" eval="1" />
+    <field name="perm_unlink" eval="1" />
+</record>
+<!-- general_audit_ws_aa899baf.relation -->
+<record id="general_audit_ws_aa899baf_relation_all_access" model="ir.model.access">
+    <field name="name">general_audit_ws_aa899baf.relation - all</field>
+    <field name="model_id" ref="model_general_audit_ws_aa899baf_relation" />
+    <field name="perm_read" eval="1" />
+    <field name="perm_create" eval="0" />
+    <field name="perm_write" eval="0" />
+    <field name="perm_unlink" eval="0" />
+</record>
+<record id="general_audit_ws_aa899baf_relation_user_access" model="ir.model.access">
+    <field name="name">general_audit_ws_aa899baf.relation - user</field>
+    <field name="model_id" ref="model_general_audit_ws_aa899baf_relation" />
+    <field name="group_id" ref="general_audit_ws_aa899baf_user_group" />
+    <field name="perm_read" eval="1" />
+    <field name="perm_create" eval="1" />
+    <field name="perm_write" eval="1" />
+    <field name="perm_unlink" eval="1" />
+</record>
 </odoo>

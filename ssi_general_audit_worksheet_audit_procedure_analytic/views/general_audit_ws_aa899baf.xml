@@ -4,6 +4,188 @@
      License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl-3.0-standalone.html). -->
 <odoo>
 
+    <!-- ================================================================
+         VARIABLE MODEL VIEWS
+         ================================================================ -->
+
+    <!-- VARIABLE TREE VIEW -->
+    <record id="general_audit_ws_aa899baf_variable_view_tree" model="ir.ui.view">
+        <field name="name">general_audit_ws_aa899baf.variable tree</field>
+        <field name="model">general_audit_ws_aa899baf.variable</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="sequence" widget="handle" />
+                <field name="name" />
+                <field name="data_mode" />
+                <field name="general_ledger_id" optional="hide" />
+                <field name="subledger_id" optional="hide" />
+                <field name="value_col_number" />
+                <field name="value" />
+            </tree>
+        </field>
+    </record>
+
+    <!-- VARIABLE FORM VIEW -->
+    <record id="general_audit_ws_aa899baf_variable_view_form" model="ir.ui.view">
+        <field name="name">general_audit_ws_aa899baf.variable form</field>
+        <field name="model">general_audit_ws_aa899baf.variable</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="worksheet_id" invisible="1" />
+                            <field name="sequence" />
+                            <field name="name" />
+                            <field name="value_col_number" />
+                            <field name="thousand_separator" />
+                            <field name="decimal_separator" />
+                            <field name="value" readonly="1" />
+                        </group>
+                        <group string="Data Source">
+                            <field name="data_mode" />
+                            <field name="allowed_general_ledger_ids" invisible="1" />
+                            <field
+                                name="general_ledger_id"
+                                domain="[('id', 'in', allowed_general_ledger_ids)]"
+                                attrs="{'invisible': [('data_mode', '!=', 'gl')]}"
+                            />
+                            <field name="allowed_subledger_ids" invisible="1" />
+                            <field
+                                name="subledger_id"
+                                domain="[('id', 'in', allowed_subledger_ids)]"
+                                attrs="{'invisible': [('data_mode', '!=', 'subledger')]}"
+                            />
+                        </group>
+                    </group>
+                    <group
+                        string="Filter"
+                        attrs="{'invisible': [('data_mode', '=', False)]}"
+                    >
+                        <div colspan="2" class="alert alert-info" role="alert">
+                            <strong>WHERE Clause Guide:</strong>
+                            <ul class="mb-0">
+                                <li
+                                >Spaces &amp; special characters in column names are replaced by
+                                    <code>_</code> (e.g. "Entry Label" → <code
+                                    >Entry_Label</code>)</li>
+                                <li>Contains text:
+                                    <code>Entry_Label LIKE '%FRONT WALL%'</code></li>
+                                <li>Exact match: <code>JRNL = 'INV'</code></li>
+                                <li>Greater / less than: <code>Debit > 1000</code></li>
+                                <li>Combine conditions:
+                                    <code
+                                    >JRNL = 'INV' AND Entry_Label LIKE '%WALL%'</code></li>
+                                <li>Either condition:
+                                    <code>JRNL = 'INV' OR JRNL = 'BILL'</code></li>
+                            </ul>
+                        </div>
+                        <field
+                            name="filter_where_clause"
+                            widget="ace"
+                            colspan="2"
+                            nolabel="1"
+                        />
+                    </group>
+                    <separator
+                        string="Raw Data"
+                        attrs="{'invisible': [('data_mode', '=', False)]}"
+                    />
+                    <field name="raw_data" nolabel="1" widget="csv_table" />
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- VARIABLE ACTION -->
+    <record
+        id="general_audit_ws_aa899baf_variable_action"
+        model="ir.actions.act_window"
+    >
+        <field name="name">Plausible Relationship Variables</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">general_audit_ws_aa899baf.variable</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+    <!-- ================================================================
+         RELATION MODEL VIEWS
+         ================================================================ -->
+
+    <!-- RELATION TREE VIEW -->
+    <record id="general_audit_ws_aa899baf_relation_view_tree" model="ir.ui.view">
+        <field name="name">general_audit_ws_aa899baf.relation tree</field>
+        <field name="model">general_audit_ws_aa899baf.relation</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="sequence" widget="handle" />
+                <field name="variable1_id" />
+                <field name="variable2_id" />
+                <field name="amount1" />
+                <field name="amount2" />
+                <field name="realization" />
+                <field name="hypothesis" />
+                <field name="div" />
+                <field name="result" optional="hide" />
+            </tree>
+        </field>
+    </record>
+
+    <!-- RELATION FORM VIEW -->
+    <record id="general_audit_ws_aa899baf_relation_view_form" model="ir.ui.view">
+        <field name="name">general_audit_ws_aa899baf.relation form</field>
+        <field name="model">general_audit_ws_aa899baf.relation</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="worksheet_id" invisible="1" />
+                            <field name="sequence" />
+                            <field
+                                name="variable1_id"
+                                domain="[('worksheet_id', '=', worksheet_id)]"
+                            />
+                            <field
+                                name="variable2_id"
+                                domain="[('worksheet_id', '=', worksheet_id)]"
+                            />
+                        </group>
+                        <group string="Values">
+                            <field name="amount1" readonly="1" />
+                            <field name="amount2" readonly="1" />
+                            <field name="realization" readonly="1" />
+                        </group>
+                    </group>
+                    <group>
+                        <group string="Hypothesis &amp; Deviation">
+                            <field name="hypothesis" />
+                            <field name="div" readonly="1" />
+                        </group>
+                    </group>
+                    <group string="Result" colspan="4" col="1">
+                        <field name="result" nolabel="1" widget="html" colspan="1" />
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- RELATION ACTION -->
+    <record
+        id="general_audit_ws_aa899baf_relation_action"
+        model="ir.actions.act_window"
+    >
+        <field name="name">Plausible Relationship Relations</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">general_audit_ws_aa899baf.relation</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+    <!-- ================================================================
+         WORKSHEET VIEWS
+         ================================================================ -->
+
     <record id="general_audit_ws_aa899baf_view_search" model="ir.ui.view">
         <field name="name">general_audit_ws_aa899baf form</field>
         <field name="model">general_audit_ws_aa899baf</field>
@@ -86,6 +268,50 @@
                     />
                 </xpath>
                 <xpath expr="//page[1]" position="before">
+                    <page name="variables" string="Variables">
+                        <div class="mb-2">
+                            <button
+                                name="action_open_variables"
+                                type="object"
+                                string="Open Variables"
+                                class="btn-primary"
+                            />
+                        </div>
+                        <field name="variable_ids" readonly="1" nolabel="1">
+                            <tree create="0" edit="0" delete="0">
+                                <field name="sequence" widget="handle" />
+                                <field name="name" />
+                                <field name="data_mode" />
+                                <field name="general_ledger_id" optional="hide" />
+                                <field name="subledger_id" optional="hide" />
+                                <field name="value_col_number" />
+                                <field name="value" />
+                            </tree>
+                        </field>
+                    </page>
+                    <page name="relations" string="Relations">
+                        <div class="mb-2">
+                            <button
+                                name="action_open_relations"
+                                type="object"
+                                string="Open Relations"
+                                class="btn-primary"
+                            />
+                        </div>
+                        <field name="relation_ids" readonly="1" nolabel="1">
+                            <tree create="0" edit="0" delete="0">
+                                <field name="sequence" widget="handle" />
+                                <field name="variable1_id" />
+                                <field name="variable2_id" />
+                                <field name="amount1" />
+                                <field name="amount2" />
+                                <field name="realization" />
+                                <field name="hypothesis" />
+                                <field name="div" />
+                                <field name="result" optional="hide" />
+                            </tree>
+                        </field>
+                    </page>
                 </xpath>
                 <xpath expr="//notebook" position="after">
                     <group string="Worksheet Result" colspan="4" col="1">

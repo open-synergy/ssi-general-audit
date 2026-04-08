@@ -133,6 +133,18 @@ class GeneralAuditWSaa899baf(models.Model):
         },
         help="Assertion types relevant to this observation procedure.",
     )
+    variable_ids = fields.One2many(
+        comodel_name="general_audit_ws_aa899baf.variable",
+        inverse_name="worksheet_id",
+        string="Variables",
+        help="Variables used in the plausible relationship comparison.",
+    )
+    relation_ids = fields.One2many(
+        comodel_name="general_audit_ws_aa899baf.relation",
+        inverse_name="worksheet_id",
+        string="Relations",
+        help="Plausible relationship comparisons between variables.",
+    )
     worksheet_result = fields.Text(
         string="Worksheet Result",
         help="Rich-text result or conclusion of this plausible relationship audit procedure.",
@@ -187,3 +199,23 @@ class GeneralAuditWSaa899baf(models.Model):
     )
     def onchange_ws_e51bb1c_id(self):
         self.ws_e51bb1c_id = False
+
+    def action_open_variables(self):
+        self.ensure_one()
+        action = self.env.ref(
+            "ssi_general_audit_worksheet_audit_procedure_analytic"
+            ".general_audit_ws_aa899baf_variable_action"
+        ).read()[0]
+        action["domain"] = [("worksheet_id", "=", self.id)]
+        action["context"] = {"default_worksheet_id": self.id}
+        return action
+
+    def action_open_relations(self):
+        self.ensure_one()
+        action = self.env.ref(
+            "ssi_general_audit_worksheet_audit_procedure_analytic"
+            ".general_audit_ws_aa899baf_relation_action"
+        ).read()[0]
+        action["domain"] = [("worksheet_id", "=", self.id)]
+        action["context"] = {"default_worksheet_id": self.id}
+        return action

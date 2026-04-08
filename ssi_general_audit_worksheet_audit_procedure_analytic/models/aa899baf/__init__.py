@@ -4,4 +4,6 @@
 
 from . import (
     general_audit_ws_aa899baf,
+    general_audit_ws_aa899baf_variable,
+    general_audit_ws_aa899baf_relation,
 )
