@@ -32,11 +32,13 @@ class GeneralAuditWSaa899bafRelation(models.Model):
     variable1_id = fields.Many2one(
         comodel_name="general_audit_ws_aa899baf.variable",
         string="Variable 1",
+        required=True,
         help="First variable in the plausible relationship comparison.",
     )
     variable2_id = fields.Many2one(
         comodel_name="general_audit_ws_aa899baf.variable",
         string="Variable 2",
+        required=True,
         help="Second variable in the plausible relationship comparison.",
     )
     amount1 = fields.Float(
@@ -67,6 +69,7 @@ class GeneralAuditWSaa899bafRelation(models.Model):
     hypothesis = fields.Float(
         string="Hypothesis",
         digits=(16, 4),
+        required=True,
         help="Expected ratio based on the auditor's hypothesis "
         "(plausible relationship).",
     )

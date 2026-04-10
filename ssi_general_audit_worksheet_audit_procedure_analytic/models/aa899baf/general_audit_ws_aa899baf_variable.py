@@ -45,6 +45,7 @@ class GeneralAuditWSaa899bafVariable(models.Model):
             ("gl", "General Ledger"),
             ("subledger", "Subledger"),
         ],
+        required=True,
         help="Determines whether to use General Ledger or Subledger data as population.",
     )
     allowed_general_ledger_ids = fields.Many2many(
@@ -73,6 +74,12 @@ class GeneralAuditWSaa899bafVariable(models.Model):
         required=False,
         help="Subledger worksheet used as data source for this variable.",
     )
+    data_title = fields.Char(
+        string="Data Title",
+        compute="_compute_data_title",
+        store=False,
+        compute_sudo=True,
+    )
     filter_where_clause = fields.Text(
         string="Filter (WHERE clause)",
         help="Optional SQL WHERE clause to filter the raw data.\n"
@@ -89,17 +96,20 @@ class GeneralAuditWSaa899bafVariable(models.Model):
     )
     value_col_number = fields.Integer(
         string="Value Column Number",
+        required=True,
         help="1-based column index from the raw data CSV to sum as the "
         "variable's value.",
     )
     thousand_separator = fields.Char(
         string="Thousand Separator",
+        required=True,
         help="Character used as thousand separator in the CSV data. "
         "Leave empty if the data uses no thousand separator.",
         default=",",
     )
     decimal_separator = fields.Char(
         string="Decimal Separator",
+        required=True,
         help="Character used as decimal separator in the CSV data. "
         "Leave empty to use the default '.' separator.",
         default=".",
@@ -112,6 +122,20 @@ class GeneralAuditWSaa899bafVariable(models.Model):
         compute_sudo=True,
         help="Sum of the selected column from the filtered raw data.",
     )
+
+    @api.depends(
+        "data_mode",
+        "general_ledger_id",
+        "subledger_id",
+    )
+    def _compute_data_title(self):
+        for record in self:
+            if record.data_mode == "gl" and record.general_ledger_id:
+                record.data_title = record.general_ledger_id.title
+            elif record.data_mode == "subledger" and record.subledger_id:
+                record.data_title = record.subledger_id.title
+            else:
+                record.data_title = False
 
     @api.depends(
         "worksheet_id",
