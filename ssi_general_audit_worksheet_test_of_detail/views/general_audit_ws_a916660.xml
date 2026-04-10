@@ -1,0 +1,171 @@
+<?xml version="1.0" ?>
+<!-- Copyright 2025 OpenSynergy Indonesia
+     Copyright 2025 PT. Simetri Sinergi Indonesia
+     License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl-3.0-standalone.html). -->
+<odoo>
+
+    <record id="general_audit_ws_a916660_view_search" model="ir.ui.view">
+        <field name="name">general_audit_ws_a916660 form</field>
+        <field name="model">general_audit_ws_a916660</field>
+        <field
+            name="inherit_id"
+            ref="ssi_general_audit.general_audit_worksheet_mixin_view_search"
+        />
+        <field name="mode">primary</field>
+        <field name="arch" type="xml">
+            <data />
+        </field>
+    </record>
+
+    <record id="general_audit_ws_a916660_view_tree" model="ir.ui.view">
+        <field name="name">general_audit_ws_a916660 tree</field>
+        <field name="model">general_audit_ws_a916660</field>
+        <field name="mode">primary</field>
+        <field
+            name="inherit_id"
+            ref="ssi_general_audit.general_audit_worksheet_mixin_view_tree"
+        />
+        <field name="arch" type="xml">
+            <data>
+                <xpath expr="//field[@name='general_audit_id']" position="after">
+                    <field name="data_mode" optional="hide" />
+                    <field name="general_ledger_id" optional="hide" />
+                    <field name="subledger_id" optional="hide" />
+                </xpath>
+            </data>
+        </field>
+    </record>
+
+    <record id="general_audit_ws_a916660_view_form" model="ir.ui.view">
+        <field name="name">general_audit_ws_a916660 form</field>
+        <field name="model">general_audit_ws_a916660</field>
+        <field name="mode">primary</field>
+        <field
+            name="inherit_id"
+            ref="ssi_general_audit.general_audit_worksheet_mixin_view_form"
+        />
+        <field name="arch" type="xml">
+            <data>
+                <xpath expr="//group[@name='header_center']" position="inside">
+                    <field name="data_mode" />
+                    <field name="allowed_general_ledger_ids" invisible="1" />
+                    <field
+                        name="general_ledger_id"
+                        domain="[('id', 'in', allowed_general_ledger_ids)]"
+                        attrs="{'invisible': [('data_mode', '!=', 'gl')]}"
+                    />
+                    <field name="allowed_subledger_ids" invisible="1" />
+                    <field
+                        name="subledger_id"
+                        domain="[('id', 'in', allowed_subledger_ids)]"
+                        attrs="{'invisible': [('data_mode', '!=', 'subledger')]}"
+                    />
+                </xpath>
+                <xpath expr="//page[1]" position="before">
+                    <page name="data" string="Data">
+                        <group name="data_1" colspan="4" col="2">
+                            <group
+                                name="data_1_1"
+                                colspan="1"
+                                col="2"
+                                string="Col. Number"
+                            >
+                                <field
+                                    name="identifier_col_number"
+                                    string="Identifier"
+                                />
+                                <field name="monetary_col_number" string="Monetary" />
+                                <field
+                                    name="additional_info_col_number"
+                                    string="Additional Info"
+                                />
+                            </group>
+                            <group
+                                name="data_1_2"
+                                colspan="1"
+                                col="2"
+                                string="MUS Parameters"
+                            >
+                                <field name="confidence_level" />
+                                <field name="tolerable_misstatement" />
+                                <field name="reliability_factor" />
+                                <field name="sampling_interval" />
+                            </group>
+                        </group>
+                        <group name="data_2" colspan="4" col="2">
+                            <group
+                                name="data_2_1"
+                                colspan="1"
+                                col="2"
+                                string="Population"
+                            >
+                                <field name="population_count" />
+                                <field name="population_amount" />
+                            </group>
+                            <group
+                                name="data_2_2"
+                                colspan="1"
+                                col="2"
+                                string="Key Items"
+                            >
+                                <field name="key_item_count" />
+                                <field name="key_item_amount" />
+                            </group>
+                        </group>
+                        <group name="data_3" colspan="4" col="2">
+                            <group
+                                name="data_3_1"
+                                colspan="1"
+                                col="2"
+                                string="Sample Pool"
+                            >
+                                <field name="sample_count" />
+                                <field name="sample_amount" />
+                            </group>
+                            <group
+                                name="data_3_2"
+                                colspan="1"
+                                col="2"
+                                string="MUS Selection"
+                            >
+                                <field name="computed_sample_size" />
+                            </group>
+                        </group>
+                        <button
+                            name="action_generate_sampling"
+                            type="object"
+                            string="Generate Sampling"
+                            class="oe_highlight"
+                            attrs="{'invisible': [('state', '!=', 'open')]}"
+                        />
+                        <field
+                            name="raw_data"
+                            nolabel="1"
+                            widget="csv_table"
+                            readonly="1"
+                        />
+                    </page>
+                    <page name="sampling_data" string="Sampling Data">
+                        <field name="sampling_data" nolabel="1" widget="csv_table" />
+                    </page>
+                </xpath>
+            </data>
+        </field>
+    </record>
+
+    <record id="general_audit_ws_a916660_action" model="ir.actions.act_window">
+        <field name="name">Tests of Detail</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">general_audit_ws_a916660</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+    <menuitem
+        id="general_audit_ws_a916660_menu"
+        name="Tests of Detail"
+        parent="ssi_general_audit_worksheet_lead_schedule.general_audit_audit_procedure_root_menu"
+        action="general_audit_ws_a916660_action"
+        sequence="120"
+        groups="general_audit_ws_a916660_viewer_group"
+    />
+</odoo>
