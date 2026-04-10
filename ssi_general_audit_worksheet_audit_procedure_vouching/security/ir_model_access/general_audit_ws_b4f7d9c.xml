@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!-- Copyright 2025 OpenSynergy Indonesia
+     Copyright 2025 PT. Simetri Sinergi Indonesia
+     License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl). -->
+<odoo>
+<record id="general_audit_ws_b4f7d9c_all_access" model="ir.model.access">
+    <field name="name">general_audit_ws_b4f7d9c - all</field>
+    <field name="model_id" ref="model_general_audit_ws_b4f7d9c" />
+    <field name="perm_read" eval="1" />
+    <field name="perm_create" eval="0" />
+    <field name="perm_write" eval="0" />
+    <field name="perm_unlink" eval="0" />
+</record>
+<record id="general_audit_ws_b4f7d9c_user_access" model="ir.model.access">
+    <field name="name">general_audit_ws_b4f7d9c - user</field>
+    <field name="model_id" ref="model_general_audit_ws_b4f7d9c" />
+    <field name="group_id" ref="general_audit_ws_b4f7d9c_user_group" />
+    <field name="perm_read" eval="1" />
+    <field name="perm_create" eval="1" />
+    <field name="perm_write" eval="1" />
+    <field name="perm_unlink" eval="1" />
+</record>
+<!-- Data Comparison -->
+<record
+        id="general_audit_ws_b4f7d9c_data_comparison_all_access"
+        model="ir.model.access"
+    >
+    <field name="name">general_audit_ws_b4f7d9c.data_comparison - all</field>
+    <field name="model_id" ref="model_general_audit_ws_b4f7d9c_data_comparison" />
+    <field name="perm_read" eval="1" />
+    <field name="perm_create" eval="0" />
+    <field name="perm_write" eval="0" />
+    <field name="perm_unlink" eval="0" />
+</record>
+<record
+        id="general_audit_ws_b4f7d9c_data_comparison_user_access"
+        model="ir.model.access"
+    >
+    <field name="name">general_audit_ws_b4f7d9c.data_comparison - user</field>
+    <field name="model_id" ref="model_general_audit_ws_b4f7d9c_data_comparison" />
+    <field name="group_id" ref="general_audit_ws_b4f7d9c_user_group" />
+    <field name="perm_read" eval="1" />
+    <field name="perm_create" eval="1" />
+    <field name="perm_write" eval="1" />
+    <field name="perm_unlink" eval="1" />
+</record>
+<!-- Vouching -->
+<record id="general_audit_ws_b4f7d9c_vouching_all_access" model="ir.model.access">
+    <field name="name">general_audit_ws_b4f7d9c.vouching - all</field>
+    <field name="model_id" ref="model_general_audit_ws_b4f7d9c_vouching" />
+    <field name="perm_read" eval="1" />
+    <field name="perm_create" eval="0" />
+    <field name="perm_write" eval="0" />
+    <field name="perm_unlink" eval="0" />
+</record>
+<record id="general_audit_ws_b4f7d9c_vouching_user_access" model="ir.model.access">
+    <field name="name">general_audit_ws_b4f7d9c.vouching - user</field>
+    <field name="model_id" ref="model_general_audit_ws_b4f7d9c_vouching" />
+    <field name="group_id" ref="general_audit_ws_b4f7d9c_user_group" />
+    <field name="perm_read" eval="1" />
+    <field name="perm_create" eval="1" />
+    <field name="perm_write" eval="1" />
+    <field name="perm_unlink" eval="1" />
+</record>
+</odoo>
