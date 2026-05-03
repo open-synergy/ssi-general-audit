@@ -1,0 +1,163 @@
+<?xml version="1.0" ?>
+<!-- Copyright 2026 OpenSynergy Indonesia
+     Copyright 2026 PT. Simetri Sinergi Indonesia
+     License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl-3.0-standalone.html). -->
+<odoo>
+
+    <!-- ================================================================
+         DETAIL MODEL VIEWS
+         ================================================================ -->
+
+    <!-- DETAIL LIST VIEW (embedded in parent) -->
+    <record id="general_audit_ws_f9a2c3d_detail_view_tree" model="ir.ui.view">
+        <field name="name">general_audit_ws_f9a2c3d.detail tree</field>
+        <field name="model">general_audit_ws_f9a2c3d.detail</field>
+        <field name="arch" type="xml">
+            <tree editable="bottom">
+                <field name="sequence" widget="handle" />
+                <field name="currency_id" invisible="1" />
+                <field name="standard_detail_id" />
+                <field name="account_type_id" optional="show" />
+                <field name="audited_balance" optional="show" />
+                <field name="materiality" />
+                <field name="romm" />
+                <field name="significant_account" optional="hide" />
+                <field name="need_ap" string="AP" />
+                <field name="need_tod" string="ToD" />
+                <field name="timing" />
+                <field name="direct_examination" string="Direct Exam" optional="hide" />
+                <field name="need_sampling" string="Sampling" />
+                <field name="key_item_amount" />
+                <field name="sampling_amount" />
+                <field name="confidence_factor" />
+                <field name="sampling_interval" optional="hide" />
+                <field name="sample_count" />
+                <field name="ap_result" optional="show" />
+            </tree>
+        </field>
+    </record>
+
+    <!-- ================================================================
+         WORKSHEET VIEWS
+         ================================================================ -->
+
+    <!-- SEARCH VIEW -->
+    <record id="general_audit_ws_f9a2c3d_view_search" model="ir.ui.view">
+        <field name="name">general_audit_ws_f9a2c3d search</field>
+        <field name="model">general_audit_ws_f9a2c3d</field>
+        <field
+            name="inherit_id"
+            ref="ssi_general_audit.general_audit_worksheet_mixin_view_search"
+        />
+        <field name="mode">primary</field>
+        <field name="arch" type="xml">
+            <data />
+        </field>
+    </record>
+
+    <!-- LIST VIEW -->
+    <record id="general_audit_ws_f9a2c3d_view_tree" model="ir.ui.view">
+        <field name="name">general_audit_ws_f9a2c3d tree</field>
+        <field name="model">general_audit_ws_f9a2c3d</field>
+        <field name="mode">primary</field>
+        <field
+            name="inherit_id"
+            ref="ssi_general_audit.general_audit_worksheet_mixin_view_tree"
+        />
+        <field name="arch" type="xml">
+            <data />
+        </field>
+    </record>
+
+    <!-- FORM VIEW -->
+    <record id="general_audit_ws_f9a2c3d_view_form" model="ir.ui.view">
+        <field name="name">general_audit_ws_f9a2c3d form</field>
+        <field name="model">general_audit_ws_f9a2c3d</field>
+        <field name="priority" eval="100" />
+        <field name="mode">primary</field>
+        <field
+            name="inherit_id"
+            ref="ssi_general_audit.general_audit_worksheet_mixin_view_form"
+        />
+        <field name="arch" type="xml">
+            <data>
+                <!-- Add test planning detail tab before the note page -->
+                <xpath expr="//page[1]" position="before">
+                    <page name="test_planning" string="Test Planning">
+                        <group name="test_planning_config">
+                            <group name="test_planning_config_left">
+                                <field
+                                    name="preliminary_materiality_id"
+                                    domain="[('id', 'in', allowed_preliminary_materiality_ids)]"
+                                    attrs="{'readonly': [('state', 'not in', ['open'])]}"
+                                />
+                                <field name="tolerable_misstatement" />
+                            </group>
+                            <group name="test_planning_config_right">
+                                <field
+                                    name="allowed_preliminary_materiality_ids"
+                                    invisible="1"
+                                />
+                            </group>
+                        </group>
+                        <button
+                            name="action_load_detail"
+                            type="object"
+                            string="Load / Sync Standard Accounts"
+                            class="oe_highlight"
+                            icon="fa-refresh"
+                            attrs="{'invisible': [('state', 'not in', ['open'])]}"
+                        />
+                        <field
+                            name="detail_ids"
+                            nolabel="1"
+                            widget="one2many"
+                            mode="tree"
+                        >
+                            <tree editable="bottom">
+                                <field name="sequence" widget="handle" />
+                                <field name="currency_id" invisible="1" />
+                                <field name="standard_detail_id" invisible="1" />
+                                <field name="account_type_id" />
+                                <field name="audited_balance" />
+                                <field name="materiality" optional="hide" />
+                                <field name="romm" optional="hide" />
+                                <field name="significant_account" optional="hide" />
+                                <field name="need_ap" string="AP" optional="hide" />
+                                <field name="need_tod" string="ToD" optional="hide" />
+                                <field name="timing" optional="hide" />
+                                <field name="ap_result" optional="hide" />
+                                <field name="direct_examination" string="Direct Exam" />
+                                <field name="need_sampling" string="Sampling" />
+                                <field name="key_item_amount" />
+                                <field name="sampling_amount" />
+                                <field name="confidence_factor" />
+                                <field name="sampling_interval" />
+                                <field name="sample_count" />
+
+                            </tree>
+                        </field>
+                    </page>
+                </xpath>
+            </data>
+        </field>
+    </record>
+
+    <!-- ACTION -->
+    <record id="general_audit_ws_f9a2c3d_action" model="ir.actions.act_window">
+        <field name="name">Test Planning</field>
+        <field name="res_model">general_audit_ws_f9a2c3d</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+    <!-- MENU -->
+    <menuitem
+        id="general_audit_ws_f9a2c3d_menu"
+        name="Testing Plans"
+        parent="ssi_general_audit.menu_general_audit_lead_schedule"
+        action="general_audit_ws_f9a2c3d_action"
+        sequence="3"
+        groups="general_audit_ws_f9a2c3d_viewer_group"
+    />
+
+</odoo>
