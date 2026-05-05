@@ -154,6 +154,47 @@ class GeneralAuditWSf9a2c3d(models.Model):
         ),
     )
 
+    @api.depends("standard_detail_id", "general_audit_id")
+    def _compute_specific_materiality(self):
+        Mapping = self.env["general_audit_ws_6dcda0e_materiality_mapping"]
+        for record in self:
+            if not record.standard_detail_id or not record.general_audit_id:
+                record.specific_materiality = 0.0
+                continue
+            mapping = Mapping.search(
+                [
+                    ("standard_detail_id", "=", record.standard_detail_id.id),
+                    (
+                        "worksheet_id.general_audit_id",
+                        "=",
+                        record.general_audit_id.id,
+                    ),
+                ],
+                limit=1,
+            )
+            record.specific_materiality = (
+                mapping.specific_materiality if mapping else 0.0
+            )
+
+    specific_materiality = fields.Monetary(
+        string="Specific Materiality",
+        currency_field="currency_id",
+        compute="_compute_specific_materiality",
+        store=True,
+        compute_sudo=True,
+        help=(
+            "Specific Materiality for this account type, sourced from the "
+            "Specific Materiality worksheet (6dcda0e) mapping."
+        ),
+    )
+    risk_factor_adjustment = fields.Float(
+        string="Risk Factor Adjustment",
+        digits=(12, 2),
+        readonly=True,
+        states={"open": [("readonly", False)]},
+        help="Risk Factor Adjustment for this account type.",
+    )
+
     # --- Preliminary Materiality linkage ---
 
     @api.depends("general_audit_id")
@@ -262,7 +303,7 @@ class GeneralAuditWSf9a2c3d(models.Model):
     )
     direct_examination = fields.Boolean(
         string="Direct Examination",
-        default=False,
+        default=True,
         readonly=True,
         states={"open": [("readonly", False)]},
         help="Whether 100%% direct examination (no sampling) is applied.",
@@ -317,6 +358,13 @@ class GeneralAuditWSf9a2c3d(models.Model):
             "Sampling Interval and are examined in full (ISA 530 MUS)."
         ),
     )
+
+    @api.onchange("direct_examination", "need_sampling")
+    def _onchange_examination_sampling(self):
+        if self.direct_examination and not self.need_sampling:
+            self.key_item_amount = self.audited_balance
+        elif not self.direct_examination and self.need_sampling:
+            self.key_item_amount = 0.0
 
     @api.depends("audited_balance", "key_item_amount")
     def _compute_sampling_amount(self):

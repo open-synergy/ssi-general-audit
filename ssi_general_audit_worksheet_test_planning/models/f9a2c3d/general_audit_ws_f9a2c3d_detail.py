@@ -102,6 +102,32 @@ class GeneralAuditWSf9a2c3dDetail(models.Model):
 
     # --- Sampling parameters ---
 
+    specific_materiality = fields.Monetary(
+        string="Specific Materiality (Rp)",
+        currency_field="currency_id",
+        help=(
+            "Specific Materiality for this individual account. "
+            "Manually entered by the auditor."
+        ),
+    )
+    direct_examination = fields.Boolean(
+        string="Direct Examination",
+        default=True,
+        help="Whether 100%% direct examination (no sampling) is applied.",
+    )
+    need_sampling = fields.Boolean(
+        string="Statistical Sampling",
+        default=False,
+        help="Whether statistical sampling is planned for this account.",
+    )
+
+    @api.onchange("direct_examination", "need_sampling")
+    def _onchange_examination_sampling(self):
+        if self.direct_examination and not self.need_sampling:
+            self.key_item_amount = self.audited_balance
+        elif not self.direct_examination and self.need_sampling:
+            self.key_item_amount = 0.0
+
     tolerable_misstatement = fields.Monetary(
         string="Tolerable Misstatement (Rp)",
         currency_field="currency_id",
