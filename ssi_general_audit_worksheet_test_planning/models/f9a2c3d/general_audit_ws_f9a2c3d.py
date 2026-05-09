@@ -154,26 +154,11 @@ class GeneralAuditWSf9a2c3d(models.Model):
         ),
     )
 
-    @api.depends("standard_detail_id", "general_audit_id")
+    @api.depends("risk_factor_adjustment", "tolerable_misstatement")
     def _compute_specific_materiality(self):
-        Mapping = self.env["general_audit_ws_6dcda0e_materiality_mapping"]
         for record in self:
-            if not record.standard_detail_id or not record.general_audit_id:
-                record.specific_materiality = 0.0
-                continue
-            mapping = Mapping.search(
-                [
-                    ("standard_detail_id", "=", record.standard_detail_id.id),
-                    (
-                        "worksheet_id.general_audit_id",
-                        "=",
-                        record.general_audit_id.id,
-                    ),
-                ],
-                limit=1,
-            )
             record.specific_materiality = (
-                mapping.specific_materiality if mapping else 0.0
+                record.risk_factor_adjustment / 100.0 * record.tolerable_misstatement
             )
 
     specific_materiality = fields.Monetary(
@@ -183,16 +168,16 @@ class GeneralAuditWSf9a2c3d(models.Model):
         store=True,
         compute_sudo=True,
         help=(
-            "Specific Materiality for this account type, sourced from the "
-            "Specific Materiality worksheet (6dcda0e) mapping."
+            "Specific Materiality = Risk Factor Adjustment (%) × Tolerable Misstatement."
         ),
     )
     risk_factor_adjustment = fields.Float(
-        string="Risk Factor Adjustment",
+        string="Risk Factor Adjustment (%)",
         digits=(12, 2),
         readonly=True,
         states={"open": [("readonly", False)]},
-        help="Risk Factor Adjustment for this account type.",
+        help="Risk Factor Adjustment percentage applied to Tolerable "
+        "Misstatement to derive Specific Materiality.",
     )
 
     # --- Preliminary Materiality linkage ---
@@ -309,7 +294,7 @@ class GeneralAuditWSf9a2c3d(models.Model):
         help="Whether 100%% direct examination (no sampling) is applied.",
     )
     need_sampling = fields.Boolean(
-        string="Statistical Sampling",
+        string="Sampling",
         default=False,
         readonly=True,
         states={"open": [("readonly", False)]},
@@ -347,7 +332,7 @@ class GeneralAuditWSf9a2c3d(models.Model):
         help="Audited balance of the account type from the trial balance.",
     )
     key_item_amount = fields.Monetary(
-        string="Key Items (Rp)",
+        string="Direct Examination (Rp)",
         currency_field="currency_id",
         readonly=True,
         states={"open": [("readonly", False)]},
@@ -372,7 +357,7 @@ class GeneralAuditWSf9a2c3d(models.Model):
             record.sampling_amount = record.audited_balance - record.key_item_amount
 
     sampling_amount = fields.Monetary(
-        string="Sampling Pool (Rp)",
+        string="Sampling (Rp)",
         currency_field="currency_id",
         compute="_compute_sampling_amount",
         store=True,

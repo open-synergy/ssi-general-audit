@@ -116,7 +116,7 @@ class GeneralAuditWSf9a2c3dDetail(models.Model):
         help="Whether 100%% direct examination (no sampling) is applied.",
     )
     need_sampling = fields.Boolean(
-        string="Statistical Sampling",
+        string="Sampling",
         default=False,
         help="Whether statistical sampling is planned for this account.",
     )
@@ -137,7 +137,7 @@ class GeneralAuditWSf9a2c3dDetail(models.Model):
         ),
     )
     key_item_amount = fields.Monetary(
-        string="Key Items (Rp)",
+        string="Direct Examination (Rp)",
         currency_field="currency_id",
         help=(
             "Total amount of key items and directly examined items "
@@ -151,7 +151,7 @@ class GeneralAuditWSf9a2c3dDetail(models.Model):
             record.sampling_amount = record.audited_balance - record.key_item_amount
 
     sampling_amount = fields.Monetary(
-        string="Sampling Pool (Rp)",
+        string="Sampling (Rp)",
         currency_field="currency_id",
         compute="_compute_sampling_amount",
         store=True,
