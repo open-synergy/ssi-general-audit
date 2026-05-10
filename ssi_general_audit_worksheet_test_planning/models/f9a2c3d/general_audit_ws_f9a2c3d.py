@@ -344,14 +344,22 @@ class GeneralAuditWSf9a2c3d(models.Model):
         ),
     )
 
-    @api.onchange("direct_examination", "need_sampling")
+    @api.onchange(
+        "standard_detail_id",
+        "direct_examination",
+        "need_sampling",
+    )
     def _onchange_examination_sampling(self):
         if self.direct_examination and not self.need_sampling:
             self.key_item_amount = self.audited_balance
         elif not self.direct_examination and self.need_sampling:
             self.key_item_amount = 0.0
 
-    @api.depends("audited_balance", "key_item_amount")
+    @api.depends(
+        "standard_detail_id",
+        "audited_balance",
+        "key_item_amount",
+    )
     def _compute_sampling_amount(self):
         for record in self:
             record.sampling_amount = record.audited_balance - record.key_item_amount
