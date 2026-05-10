@@ -102,12 +102,24 @@ class GeneralAuditWSf9a2c3dDetail(models.Model):
 
     # --- Sampling parameters ---
 
+    @api.depends("tolerable_misstatement", "worksheet_id.risk_factor_adjustment")
+    def _compute_specific_materiality(self):
+        for record in self:
+            record.specific_materiality = (
+                record.tolerable_misstatement
+                * record.worksheet_id.risk_factor_adjustment
+                / 100.0
+            )
+
     specific_materiality = fields.Monetary(
         string="Specific Materiality (Rp)",
         currency_field="currency_id",
+        compute="_compute_specific_materiality",
+        store=True,
+        compute_sudo=True,
         help=(
-            "Specific Materiality for this individual account. "
-            "Manually entered by the auditor."
+            "Specific Materiality = Tolerable Misstatement × Risk Factor Adjustment (%). "
+            "Inherited from the parent worksheet."
         ),
     )
     direct_examination = fields.Boolean(
@@ -122,7 +134,7 @@ class GeneralAuditWSf9a2c3dDetail(models.Model):
     )
 
     @api.onchange(
-        "account_id",
+        "audit_detail_id",
         "direct_examination",
         "need_sampling",
     )
@@ -149,7 +161,11 @@ class GeneralAuditWSf9a2c3dDetail(models.Model):
         ),
     )
 
-    @api.depends("audited_balance", "key_item_amount")
+    @api.depends(
+        "audit_detail_id",
+        "audited_balance",
+        "key_item_amount",
+    )
     def _compute_sampling_amount(self):
         for record in self:
             record.sampling_amount = record.audited_balance - record.key_item_amount
