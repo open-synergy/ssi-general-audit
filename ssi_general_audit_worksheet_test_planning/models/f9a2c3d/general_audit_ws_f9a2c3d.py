@@ -469,6 +469,7 @@ class GeneralAuditWSf9a2c3d(models.Model):
                     {
                         "worksheet_id": self.id,
                         "audit_detail_id": ad.id,
+                        "key_item_amount": ad.audited_balance,
                     }
                 )
 

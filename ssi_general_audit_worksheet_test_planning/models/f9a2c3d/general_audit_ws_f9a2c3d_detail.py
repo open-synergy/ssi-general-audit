@@ -121,7 +121,11 @@ class GeneralAuditWSf9a2c3dDetail(models.Model):
         help="Whether statistical sampling is planned for this account.",
     )
 
-    @api.onchange("direct_examination", "need_sampling")
+    @api.onchange(
+        "account_id",
+        "direct_examination",
+        "need_sampling",
+    )
     def _onchange_examination_sampling(self):
         if self.direct_examination and not self.need_sampling:
             self.key_item_amount = self.audited_balance
