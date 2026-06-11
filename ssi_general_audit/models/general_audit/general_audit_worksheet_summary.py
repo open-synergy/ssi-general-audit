@@ -140,4 +140,5 @@ class GeneralAuditWorksheetSummary(models.Model):
             ]
             object_ids = Object.search(criteria)
             if object_ids:
-                object_ids._update_parent_worksheet()
+                for object_id in object_ids:
+                    object_id._update_parent_worksheet()
