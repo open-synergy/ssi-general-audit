@@ -220,6 +220,9 @@ class GeneralAuditWorksheet(models.Model):
             "open": [
                 ("readonly", False),
             ],
+            "confirm": [
+                ("readonly", False),
+            ],
         },
         help="Notes and observations from the review of the worksheet.",
     )
