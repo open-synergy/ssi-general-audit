@@ -43,7 +43,7 @@ class GeneralAuditWS805d4d5(models.Model):
     def _compute_link_1(self):
         for record in self:
             result = False
-            obj = self.env["general_audit_ws_805d4d5"]
+            obj = self.env["general_audit_ws_842f0d6"]
             criteria = [
                 ("general_audit_id", "=", record.general_audit_id.id),
             ]

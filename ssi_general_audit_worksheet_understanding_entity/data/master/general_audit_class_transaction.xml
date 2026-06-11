@@ -4,389 +4,276 @@
         id="general_audit_class_transaction_1_9f4dc8a4"
         model="general_audit_class_transaction"
     >
-        <field name="code">S1.1</field>
-        <field name="name">Sales (Revenue) Transactions</field>
+        <field name="code">CT01.1</field>
+        <field name="name">Sales Transactions</field>
         <field name="sequence" eval="10" />
         <field
             name="related_account_type_ids"
             eval="[(6, 0, [ref('ssi_general_audit.client_account_type_2_4fbd7be2'), ref('ssi_general_audit.client_account_type_3_11680e89'), ref('ssi_general_audit.client_account_type_21_990bf488'), ref('ssi_general_audit.client_account_type_46_8408865a')])]"
         />
-        <field
-            name="note"
-        >These transactions involve the sale of goods or services to customers, either on credit (accounts receivable) or for immediate payment (cash sales). Sales transactions increase revenue and are recorded based on the accrual accounting principle (when earned).</field>
     </record>
     <record
         id="general_audit_class_transaction_2_6320a433"
         model="general_audit_class_transaction"
     >
-        <field name="code">S1.2</field>
-        <field name="name">Cash Receipts from Customers</field>
+        <field name="code">CT01.2</field>
+        <field name="name">Cash Receipts Transactions</field>
         <field name="sequence" eval="10" />
-        <field
-            name="note"
-        >These transactions involve collecting cash from customers, either in the form of payments for current sales (cash sales) or collections of accounts receivable (credit sales). Cash receipts are recorded when the payment is received, regardless of when the sale occurred.</field>
     </record>
     <record
         id="general_audit_class_transaction_3_c46b1df1"
         model="general_audit_class_transaction"
     >
-        <field name="code">S1.3</field>
-        <field name="name">Sales return and allowances</field>
+        <field name="code">CT01.3</field>
+        <field name="name">Sales Return Transactions</field>
         <field name="sequence" eval="10" />
-        <field
-            name="note"
-        >These transactions occur when customers return goods after a sale or receive allowances (price reductions) due to defective or damaged goods. These reduce the company’s total sales and result in adjustments to accounts receivable or cash refunds.</field>
     </record>
     <record
         id="general_audit_class_transaction_4_0c85f536"
         model="general_audit_class_transaction"
     >
-        <field name="code">S1.5</field>
-        <field name="name">Bad Debts and Write-offs</field>
+        <field name="code">CT01.4</field>
+        <field name="name">Sales Allowance Transactions</field>
         <field name="sequence" eval="10" />
-        <field
-            name="note"
-        >Bad debts occur when a company determines that an outstanding receivable is unlikely to be collected. The company may write off these receivables as uncollectible, reducing accounts receivable and recognizing a bad debt expense.</field>
     </record>
     <record
         id="general_audit_class_transaction_5_273e68a9"
         model="general_audit_class_transaction"
     >
-        <field name="code">S1.6</field>
-        <field name="name">Allowance for Doubtful Accounts</field>
+        <field name="code">CT01.5</field>
+        <field name="name">Sales Discount Transactions</field>
         <field name="sequence" eval="10" />
-        <field
-            name="note"
-        >This is an estimate of the portion of accounts receivable that the company expects to be uncollectible. It is recorded as an expense in the same period as the related sales to adhere to the matching principle.</field>
     </record>
     <record
         id="general_audit_class_transaction_6_833dbb76"
         model="general_audit_class_transaction"
     >
-        <field name="code">S2.1</field>
-        <field name="name">Purchases of Goods and Services</field>
+        <field name="code">CT01.6</field>
+        <field name="name">Bad Debt Write-Off Transactions</field>
         <field name="sequence" eval="10" />
-        <field
-            name="note"
-        >These transactions involve acquiring inventory, supplies, or services from suppliers. Purchases can be made on credit (accounts payable) or for immediate payment (cash purchases). This is the starting point of the acquisition cycle, and it impacts inventory (for goods) or expenses (for services) and liabilities (accounts payable).</field>
     </record>
     <record
         id="general_audit_class_transaction_7_0b9d9d56"
         model="general_audit_class_transaction"
     >
-        <field name="code">S2.2</field>
-        <field name="name">Cash Payments to Suppliers</field>
+        <field name="code">CT01.7</field>
+        <field name="name">Allowance Adjustmenr Transactions</field>
         <field name="sequence" eval="10" />
-        <field
-            name="note"
-        >These transactions represent payments made to suppliers for goods or services that were previously acquired, either on credit or for immediate payment. They reduce the company’s cash balance and accounts payable.</field>
     </record>
     <record
         id="general_audit_class_transaction_8_977a350d"
         model="general_audit_class_transaction"
     >
-        <field name="code">S2.3</field>
-        <field name="name">Purchase return and allowances</field>
+        <field name="code">CT02.1</field>
+        <field name="name">Acquisition Transactions</field>
         <field name="sequence" eval="10" />
-        <field
-            name="note"
-        >Purchase returns occur when a company returns goods to a supplier due to defects or other reasons. Purchase allowances are reductions in the amount owed to a supplier due to damaged goods or poor service, without returning the goods. Both types of transactions reduce the amount owed (accounts payable) and may affect inventory or expense accounts.</field>
     </record>
     <record
         id="general_audit_class_transaction_9_2253689f"
         model="general_audit_class_transaction"
     >
-        <field name="code">S3.1</field>
-        <field name="name">Purchases of Inventory</field>
+        <field name="code">CT02.2</field>
+        <field name="name">Cash Payment Transactions</field>
         <field name="sequence" eval="10" />
-        <field
-            name="note"
-        >These transactions involve acquiring raw materials, finished goods, or other inventory items from suppliers. These purchases can be made on credit (resulting in accounts payable) or with immediate cash payments.</field>
     </record>
     <record
         id="general_audit_class_transaction_10_408a6fc8"
         model="general_audit_class_transaction"
     >
-        <field name="code">S3.2</field>
-        <field name="name">Receiving Inventory</field>
+        <field name="code">CT02.3</field>
+        <field name="name">Purchase Return and Allowances</field>
         <field name="sequence" eval="10" />
-        <field
-            name="note"
-        >When goods are received from a supplier, the receiving department typically checks the items against the purchase order (PO) and records them as inventory. The receipt of inventory is an internal control point that ensures only authorized purchases are accepted.</field>
     </record>
     <record
         id="general_audit_class_transaction_11_bb71d92d"
         model="general_audit_class_transaction"
     >
-        <field name="code">S3.3</field>
-        <field name="name">Inventory Transfers and Movements</field>
+        <field name="code">CT02.4</field>
+        <field name="name">Purchase Discounts</field>
         <field name="sequence" eval="10" />
-        <field
-            name="note"
-        >Inventory may be transferred between different locations within a company, such as between warehouses or production departments. These movements should be tracked to maintain accurate records of inventory quantities at each location.</field>
     </record>
     <record
         id="general_audit_class_transaction_12_90899573"
         model="general_audit_class_transaction"
     >
-        <field name="code">S3.4</field>
-        <field
-            name="name"
-        >Inventory Adjustments (Shrinkage, Obsolescence, and Damages)</field>
+        <field name="code">CT02.5</field>
+        <field name="name">Accrual Transactions</field>
         <field name="sequence" eval="10" />
-        <field
-            name="note"
-        >These transactions involve adjusting inventory records for discrepancies between physical stock counts and the amounts recorded in the system. Shrinkage can occur due to theft, damage, spoilage, or errors. Obsolete inventory is written down when it is no longer usable or sellable.</field>
     </record>
     <record
         id="general_audit_class_transaction_13_46cef7aa"
         model="general_audit_class_transaction"
     >
-        <field name="code">S3.5</field>
-        <field name="name">Cost of Goods Sold (COGS)</field>
+        <field name="code">CT02.6</field>
+        <field name="name">Accounts Payable Adjustments</field>
         <field name="sequence" eval="10" />
-        <field
-            name="note"
-        >COGS represents the direct costs of producing goods that have been sold. When inventory is sold, the cost associated with that inventory is transferred from the balance sheet to the income statement as COGS. This is a key element in determining a company’s gross profit.</field>
     </record>
     <record
         id="general_audit_class_transaction_14_c8893673"
         model="general_audit_class_transaction"
     >
-        <field name="code">S3.6</field>
-        <field
-            name="name"
-        >Inventory Returns (Sales Returns and Purchase Returns)</field>
+        <field name="code">CT03.1</field>
+        <field name="name">Raw Material Usage Transactions</field>
         <field name="sequence" eval="10" />
-        <field
-            name="note"
-        >Sales Returns: These transactions occur when customers return goods after a sale. The returned goods are added back to inventory, and the cost of those goods is subtracted from COGS.
-Purchase Returns: When the company returns goods to a supplier, inventory is reduced, and accounts payable is adjusted if the original purchase was made on credit.
-</field>
     </record>
     <record
         id="general_audit_class_transaction_15_34a8019b"
         model="general_audit_class_transaction"
     >
-        <field name="code">S6.2</field>
-        <field name="name">Repayment of Debt</field>
+        <field name="code">CT03.2</field>
+        <field name="name">Labor Cost Allocation Transactions</field>
         <field name="sequence" eval="10" />
-        <field
-            name="note"
-        >These transactions involve repaying the principal and interest on borrowed funds. The principal repayment reduces the company's liabilities, and interest payments are recorded as an expense.</field>
     </record>
     <record
         id="general_audit_class_transaction_16_04e5ec39"
         model="general_audit_class_transaction"
     >
-        <field name="code">S5.2.1</field>
-        <field
-            name="name"
-        >Purchase of Property, Plan, and Equipment (Acquisition /addition)</field>
+        <field name="code">CT03.3</field>
+        <field name="name">Manufacturing Overhead Allocatiob Transactions</field>
         <field name="sequence" eval="10" />
-        <field
-            name="note"
-        >These transactions involve purchasing or internally constructing assets such as land, buildings, machinery, or equipment. Acquisitions increase the PPE balance on the balance sheet.</field>
     </record>
     <record
         id="general_audit_class_transaction_17_4ed2528c"
         model="general_audit_class_transaction"
     >
-        <field name="code">S6.1</field>
-        <field name="name">Issuance of Debt (Borrowing)</field>
+        <field name="code">CT03.4</field>
+        <field name="name">Production Completion Transactions</field>
         <field name="sequence" eval="10" />
-        <field
-            name="note"
-        >These transactions involve raising capital through borrowing from lenders, such as banks or issuing bonds to the public. The company receives cash in exchange for agreeing to repay the borrowed amount with interest over time. Debt issuance increases the company’s liabilities and cash.</field>
     </record>
     <record
         id="general_audit_class_transaction_18_8e2b3076"
         model="general_audit_class_transaction"
     >
-        <field name="code">S6.3</field>
-        <field name="name">Issuance of Equity (Selling Stock)</field>
+        <field name="code">CT03.5</field>
+        <field name="name">Inventory Transfer Transactions</field>
         <field name="sequence" eval="10" />
-        <field
-            name="note"
-        >These transactions involve raising capital by issuing shares of stock to investors. The company receives cash in exchange for ownership shares, increasing both cash and shareholders’ equity.</field>
     </record>
     <record
         id="general_audit_class_transaction_19_3114cbe5"
         model="general_audit_class_transaction"
     >
-        <field name="code">S6.4</field>
-        <field name="name">Repurchase of Stock (Treasury Stock)</field>
+        <field name="code">CT03.6</field>
+        <field name="name">Inventory Adjustment Transactions</field>
         <field name="sequence" eval="10" />
-        <field
-            name="note"
-        >When a company buys back its own shares from the market, it reduces shareholders’ equity. Treasury stock represents shares that are issued but not outstanding and can be reissued later or retired permanently.</field>
     </record>
     <record
         id="general_audit_class_transaction_20_fd33bc12"
         model="general_audit_class_transaction"
     >
-        <field name="code">S6.5</field>
-        <field name="name">Payment of dividend</field>
+        <field name="code">CT03.7</field>
+        <field name="name">Cost of Goods Manufactured Transactions</field>
         <field name="sequence" eval="10" />
-        <field
-            name="note"
-        >These transactions involve distributing a portion of the company’s earnings to shareholders. Dividends can be paid in cash or stock and represent a return on investment to shareholders. Dividends reduce retained earnings and cash (for cash dividends).</field>
     </record>
     <record
         id="general_audit_class_transaction_21_c8dd9953"
         model="general_audit_class_transaction"
     >
-        <field name="code">S3.7</field>
-        <field name="name">Periodic and Perpetual Inventory Systems</field>
+        <field name="code">CT03.8</field>
+        <field name="name">Cost of Goods Sold Transactions</field>
         <field name="sequence" eval="10" />
-        <field
-            name="note"
-        >Companies use either a periodic or perpetual inventory system to track inventory.
-Periodic System: Inventory is only updated at the end of a period when a physical count is performed. Purchases are recorded in a purchases account, and inventory adjustments are made at the end of the period.
-Perpetual System: Inventory is updated continuously in real-time whenever transactions like purchases, sales, and returns occur.
-</field>
     </record>
     <record
         id="general_audit_class_transaction_22_6eec17ca"
         model="general_audit_class_transaction"
     >
-        <field name="code">S4.1</field>
-        <field name="name">Salary and Wage Payments</field>
+        <field name="code">CT04.1</field>
+        <field name="name">Payroll Transactions</field>
         <field name="sequence" eval="10" />
     </record>
     <record
         id="general_audit_class_transaction_23_a344ff86"
         model="general_audit_class_transaction"
     >
-        <field name="code">S3.8</field>
-        <field name="name">Inventory Valuation Methods</field>
+        <field name="code">CT04.2</field>
+        <field name="name">Payroll Disbursement Transactions</field>
         <field name="sequence" eval="10" />
-        <field
-            name="note"
-        >The method used to value inventory affects both the cost of inventory and COGS. Common valuation methods include:
-•	FIFO (First-In, First-Out): The oldest inventory is sold first.
-•	LIFO (Last-In, First-Out): The most recently acquired inventory is sold first.
-•	Weighted Average: The cost of goods sold and ending inventory are based on the average cost of all units available for sale.
-</field>
     </record>
     <record
         id="general_audit_class_transaction_24_94fd839c"
         model="general_audit_class_transaction"
     >
-        <field name="code">S3.9</field>
-        <field
-            name="name"
-        >Manufacturing Transactions (Work in Process, Finished Goods)</field>
+        <field name="code">CT04.3</field>
+        <field name="name">Payroll Tax transactions</field>
         <field name="sequence" eval="10" />
-        <field
-            name="note"
-        >For manufacturing companies, inventory is divided into raw materials, work-in-process (WIP), and finished goods. When raw materials are used in production, their cost is transferred to WIP, and once production is complete, the cost is transferred to finished goods.</field>
     </record>
     <record
         id="general_audit_class_transaction_25_cadd92bd"
         model="general_audit_class_transaction"
     >
-        <field name="code">S5.2.2</field>
-        <field name="name">Sales of Property, Plan, and Equipment (Disposals)</field>
+        <field name="code">CT04.4</field>
+        <field name="name">Employee Benefit Transactions</field>
         <field name="sequence" eval="10" />
-        <field
-            name="note"
-        >These transactions occur when an asset is sold, scrapped, or otherwise removed from service. Disposals decrease the PPE balance and may result in a gain or loss on disposal, which affects the income statement.</field>
     </record>
     <record
         id="general_audit_class_transaction_26_7907d15e"
         model="general_audit_class_transaction"
     >
-        <field name="code">S5.2.3</field>
-        <field name="name">Depreciation of Property, Plant, and Equipment</field>
+        <field name="code">CT04.5</field>
+        <field name="name">Accrued Payroll Transactions</field>
         <field name="sequence" eval="10" />
-        <field
-            name="note"
-        >Depreciation is the periodic allocation of the cost of an asset over its useful life. It reduces the asset’s book value on the balance sheet and is recognized as an expense on the income statement.</field>
     </record>
     <record
         id="general_audit_class_transaction_27_d70ce3e7"
         model="general_audit_class_transaction"
     >
-        <field name="code">S5.2.4</field>
-        <field name="name">Impairment of Property, Plant, and Equipment</field>
+        <field name="code">CT04.6</field>
+        <field name="name">Personnel Transactions</field>
         <field name="sequence" eval="10" />
-        <field
-            name="note"
-        >Impairment occurs when the carrying value of an asset exceeds its recoverable amount (the higher of fair value less costs to sell or its value in use). This results in a write-down of the asset's value on the balance sheet.</field>
     </record>
     <record
         id="general_audit_class_transaction_28_406048a6"
         model="general_audit_class_transaction"
     >
-        <field name="code">S5.2.5</field>
-        <field name="name">Repair and maintenance</field>
+        <field name="code">CT05.1</field>
+        <field name="name">Acquisitons Transactions</field>
         <field name="sequence" eval="10" />
-        <field
-            name="note"
-        >Regular expenses incurred to maintain or restore an asset’s productive capacity. These do not increase the useful life or enhance the asset’s capacity and are expensed in the period incurred.</field>
     </record>
     <record
         id="general_audit_class_transaction_29_4841ddb6"
         model="general_audit_class_transaction"
     >
-        <field name="code">S5.2.6</field>
-        <field name="name">Capital improvement (betterment)</field>
+        <field name="code">CT05.2</field>
+        <field name="name">Capitalization Transactions</field>
         <field name="sequence" eval="10" />
-        <field
-            name="note"
-        >These are expenditures that extend the useful life of an asset, enhance its capacity, or improve its efficiency. Unlike repairs, these expenditures are capitalized and increase the book value of the PPE.</field>
     </record>
     <record
         id="general_audit_class_transaction_30_a50f6109"
         model="general_audit_class_transaction"
     >
-        <field name="code">S5.1.1</field>
-        <field name="name">Purchases of Investments (Acquisitions)</field>
+        <field name="code">CT05.3</field>
+        <field name="name">Construction Transactions</field>
         <field name="sequence" eval="10" />
-        <field
-            name="note"
-        >These transactions occur when the business buys investments, such as stocks, bonds, real estate, or other financial instruments. They increase the company’s investments on the balance sheet.</field>
     </record>
     <record
         id="general_audit_class_transaction_31_7f4883e6"
         model="general_audit_class_transaction"
     >
-        <field name="code">S5.1.2</field>
-        <field name="name">Sales of Investments (Disposals)</field>
+        <field name="code">CT05.4</field>
+        <field name="name">Investment Income Transactions</field>
         <field name="sequence" eval="10" />
-        <field
-            name="note"
-        >These transactions occur when the company sells or disposes of investments. Disposals reduce the investments on the balance sheet and may result in a gain or loss on the sale, affecting the income statement.</field>
     </record>
     <record
         id="general_audit_class_transaction_32_ce21062b"
         model="general_audit_class_transaction"
     >
-        <field name="code">S5.1.3</field>
-        <field name="name">Dividend and Interest Income</field>
+        <field name="code">CT05.5</field>
+        <field name="name">Depreciations Transactions</field>
         <field name="sequence" eval="10" />
-        <field
-            name="note"
-        >These transactions represent earnings from investments, such as dividends from equity securities or interest from bonds. This income affects the income statement and is usually recognized when earned.</field>
     </record>
     <record
         id="general_audit_class_transaction_33_8f0d95ce"
         model="general_audit_class_transaction"
     >
-        <field name="code">S5.1.5</field>
-        <field name="name">Realized Gains or Losses on Investments</field>
+        <field name="code">CT05.6</field>
+        <field name="name">Impairment Transactions</field>
         <field name="sequence" eval="10" />
-        <field
-            name="note"
-        >Realized gains or losses are recognized when an investment is sold, and the difference between the sale price and the book value is recorded. These gains or losses directly affect the income statement.</field>
     </record>
     <record
         id="general_audit_class_transaction_34_2042e498"
         model="general_audit_class_transaction"
     >
-        <field name="code">S5.1.6</field>
-        <field name="name">Impairment of Investments</field>
+        <field name="code">CT05.7</field>
+        <field name="name">Fair Value Adjustment Transactions</field>
         <field name="sequence" eval="10" />
         <field
             name="note"
@@ -396,1351 +283,99 @@ Perpetual System: Inventory is updated continuously in real-time whenever transa
         id="general_audit_class_transaction_35_e0d2e1e3"
         model="general_audit_class_transaction"
     >
-        <field name="code">S5.1.7</field>
-        <field name="name">Investment in Subsidiaries or Joint Ventures</field>
+        <field name="code">CT05.8</field>
+        <field name="name">Maintenance and Repair Transactions</field>
         <field name="sequence" eval="10" />
-        <field
-            name="note"
-        >These transactions involve making equity investments in subsidiaries or joint ventures, where the business takes a significant or controlling interest in another entity. The accounting treatment varies based on the level of control or influence.</field>
     </record>
     <record
         id="general_audit_class_transaction_36_f9a0246e"
         model="general_audit_class_transaction"
     >
-        <field name="code">S4.2</field>
-        <field name="name">Payroll Taxes (Employer's Portion)</field>
+        <field name="code">CT05.9</field>
+        <field name="name">Disposal Transactions</field>
         <field name="sequence" eval="10" />
     </record>
     <record
         id="general_audit_class_transaction_37_a0483f5c"
         model="general_audit_class_transaction"
     >
-        <field name="code">S4.3</field>
-        <field name="name">Withholdings and Deductions</field>
+        <field name="code">CT05.10</field>
+        <field name="name">Reclassification Transactions</field>
         <field name="sequence" eval="10" />
     </record>
     <record
         id="general_audit_class_transaction_38_e1651b0b"
         model="general_audit_class_transaction"
     >
-        <field name="code">S4.4</field>
-        <field name="name">Bonuses and Commissions</field>
+        <field name="code">CT06.1</field>
+        <field name="name">Debt isssuance Transactions</field>
         <field name="sequence" eval="10" />
     </record>
     <record
         id="general_audit_class_transaction_39_dea8ae8c"
         model="general_audit_class_transaction"
     >
-        <field name="code">S4.5</field>
-        <field name="name">Accrual of Wages and Salaries</field>
+        <field name="code">CT06.2</field>
+        <field name="name">Debt Repayment Transactions</field>
         <field name="sequence" eval="10" />
     </record>
     <record
         id="general_audit_class_transaction_40_06024b27"
         model="general_audit_class_transaction"
     >
-        <field name="code">S4.6</field>
-        <field name="name">Employee Benefits</field>
+        <field name="code">CT06.3</field>
+        <field name="name">Interest Transactions</field>
         <field name="sequence" eval="10" />
     </record>
     <record
         id="general_audit_class_transaction_41_1c31f650"
         model="general_audit_class_transaction"
     >
-        <field name="code">S4.7</field>
-        <field name="name">Overtime and Shift Differentials</field>
+        <field name="code">CT06.4</field>
+        <field name="name">Share Capital Issuance Transactions</field>
         <field name="sequence" eval="10" />
     </record>
     <record
         id="general_audit_class_transaction_42_4fd271d1"
         model="general_audit_class_transaction"
     >
-        <field name="code">S4.8</field>
-        <field name="name">Payroll Adjustments</field>
+        <field name="code">CT06.5</field>
+        <field name="name">Dividend Transactions</field>
         <field name="sequence" eval="10" />
     </record>
     <record
         id="general_audit_class_transaction_43_46fc1057"
         model="general_audit_class_transaction"
     >
-        <field name="code">S4.9</field>
-        <field name="name">Termination and Severance Pay</field>
+        <field name="code">CT06.6</field>
+        <field name="name">Treasury Share Transactions</field>
         <field name="sequence" eval="10" />
+        <field
+            name="note"
+        >When employees are terminated, companies may provide severance pay or other post-employment benefits. These must be recorded as payroll expenses and accrued if they are not immediately paid.</field>
     </record>
     <record
         id="general_audit_class_transaction_44_1077ac72"
         model="general_audit_class_transaction"
     >
-        <field name="code">S1.4</field>
-        <field name="name">Sales Discounts (Cash Discounts)</field>
+        <field name="code">CT06.7</field>
+        <field name="name">Debt Modification Transactions</field>
         <field name="sequence" eval="10" />
-        <field
-            name="note"
-        >Sales discounts are reductions offered to customers as incentives for early payment. These discounts are typically offered under terms such as "2/10, net 30," meaning a 2% discount is given if payment is made within 10 days, otherwise the full amount is due in 30 days. Sales discounts reduce the total receivable amount and are recorded separately as a contra-revenue account.</field>
     </record>
     <record
         id="general_audit_class_transaction_45_80f4fc03"
         model="general_audit_class_transaction"
     >
-        <field name="code">S1.7</field>
-        <field name="name">Advance Receipts (Unearned Revenue)</field>
+        <field name="code">CT06.8</field>
+        <field name="name">Share-Based Compensation Transactions</field>
         <field name="sequence" eval="10" />
-        <field
-            name="note"
-        >In some cases, customers may make payments in advance of receiving goods or services. These receipts are recorded as a liability (unearned revenue) until the company delivers the goods or services.</field>
     </record>
     <record
         id="general_audit_class_transaction_46_c9de3eff"
         model="general_audit_class_transaction"
     >
-        <field name="code">S1.8</field>
-        <field name="name">Freight and Shipping Charges</field>
+        <field name="code">CT06.9</field>
+        <field name="name">Capital Reduction Transactions</field>
         <field name="sequence" eval="10" />
-        <field
-            name="note"
-        >For some sales, companies charge customers separately for shipping or freight costs. These charges are added to the total sales amount and recorded as revenue.</field>
-    </record>
-    <record
-        id="general_audit_class_transaction_47_96d21aa3"
-        model="general_audit_class_transaction"
-    >
-        <field name="code">S2.4</field>
-        <field name="name">Purchase Discounts</field>
-        <field name="sequence" eval="10" />
-        <field
-            name="note"
-        >Purchase discounts (also called cash discounts) are reductions in the amount payable to suppliers if payments are made within a certain time period (e.g., "2/10, net 30" means a 2% discount if paid within 10 days). These discounts incentivize early payments and reduce the total payment made to suppliers.</field>
-    </record>
-    <record
-        id="general_audit_class_transaction_48_922e868e"
-        model="general_audit_class_transaction"
-    >
-        <field name="code">S2.5</field>
-        <field name="name">Freight and Shipping Charges (Freight-in)</field>
-        <field name="sequence" eval="10" />
-        <field
-            name="note"
-        >These transactions involve costs incurred by the company for shipping goods from suppliers to their location. Freight charges are typically added to the cost of inventory or expenses. In some cases, the company may need to record freight separately.</field>
-    </record>
-    <record
-        id="general_audit_class_transaction_49_ae0f06bc"
-        model="general_audit_class_transaction"
-    >
-        <field name="code">S2.6</field>
-        <field name="name">Accrued Liabilities for Unbilled Purchases</field>
-        <field name="sequence" eval="10" />
-        <field
-            name="note"
-        >At the end of an accounting period, companies may receive goods or services that haven’t yet been billed by the supplier. To reflect the obligation to pay in the correct period, the company accrues a liability for the unbilled purchases.</field>
-    </record>
-    <record
-        id="general_audit_class_transaction_50_14b9ad02"
-        model="general_audit_class_transaction"
-    >
-        <field name="code">S2.7</field>
-        <field name="name">Prepayments (Advance Payments)</field>
-        <field name="sequence" eval="10" />
-        <field
-            name="note"
-        >These transactions occur when a company pays a supplier in advance for goods or services to be received in the future. Prepayments are initially recorded as assets (prepaid expenses) and are expensed over time as the goods or services are received.</field>
-    </record>
-    <record
-        id="general_audit_class_transaction_51_f7e462ce"
-        model="general_audit_class_transaction"
-    >
-        <field name="code">S2.8</field>
-        <field name="name">Expense Recognition</field>
-        <field name="sequence" eval="10" />
-        <field
-            name="note"
-        >Certain acquisitions are directly recorded as expenses, particularly when goods or services are immediately consumed or when services are rendered. These expenses affect the income statement in the period in which they are incurred.</field>
-    </record>
-    <record
-        id="general_audit_class_transaction_52_c3b027cf"
-        model="general_audit_class_transaction"
-    >
-        <field name="code">S5.1.4</field>
-        <field name="name">Unrealized Gains or Losses on Investments</field>
-        <field name="sequence" eval="10" />
-        <field
-            name="note"
-        >Unrealized gains or losses arise from changes in the fair market value of investments that are still held by the company. These are recorded when the company marks its investments to market, typically at period-end. They affect the balance sheet and, depending on the accounting treatment (held for trading or available-for-sale securities), may also affect the income statement or other comprehensive income.</field>
-    </record>
-    <record
-        id="general_audit_class_transaction_53_fc1e1fd0"
-        model="general_audit_class_transaction"
-    >
-        <field name="code">S6.6</field>
-        <field name="name">Stock Dividends and Stock Splits</field>
-        <field name="sequence" eval="10" />
-        <field
-            name="note"
-        >Stock dividends involve issuing additional shares to existing shareholders instead of cash. Stock splits increase the number of shares outstanding by dividing each share into multiple shares without changing the total equity.</field>
-    </record>
-    <record
-        id="general_audit_class_transaction_54_0cae8885"
-        model="general_audit_class_transaction"
-    >
-        <field name="code">S6.7</field>
-        <field name="name">Loan Covenants and Compliance Costs</field>
-        <field name="sequence" eval="10" />
-        <field
-            name="note"
-        >Certain debt agreements contain covenants requiring the company to maintain specific financial ratios or make certain financial disclosures. Any costs associated with complying with loan covenants, such as legal fees, are recorded as expenses.</field>
-    </record>
-    <record
-        id="general_audit_class_transaction_55_5ec5f9cf"
-        model="general_audit_class_transaction"
-    >
-        <field name="code">S6.8</field>
-        <field name="name">Convertible Debt and Equity Instruments</field>
-        <field name="sequence" eval="10" />
-        <field
-            name="note"
-        >Convertible bonds or preferred stock can be converted into common stock at the option of the holder. These transactions involve complex accounting because they combine features of both debt and equity.</field>
-    </record>
-    <record
-        id="general_audit_class_transaction_56_a741d58e"
-        model="general_audit_class_transaction"
-    >
-        <field name="code">S6.9</field>
-        <field name="name">Interest Payments on Debt</field>
-        <field name="sequence" eval="10" />
-        <field
-            name="note"
-        >These transactions involve paying interest on borrowed funds. Interest payments are considered expenses and reduce the company's cash balance. These payments may occur periodically (e.g., monthly, quarterly, or annually) depending on the terms of the debt agreement.</field>
-    </record>
-    <!-- Indonesian translations for general_audit_class_transaction names and notes -->
-    <record
-        id="l18n_id_general_audit_class_transaction_1_9f4dc8a4_name"
-        model="ir.translation"
-    >
-        <field name="name">general_audit_class_transaction,name</field>
-        <field name="lang">id_ID</field>
-        <field name="type">model</field>
-        <field name="res_id" ref="general_audit_class_transaction_1_9f4dc8a4" />
-        <field name="value">Transaksi Penjualan (Pendapatan)</field>
-    </record>
-    <record
-        id="l18n_id_general_audit_class_transaction_1_9f4dc8a4_note"
-        model="ir.translation"
-    >
-        <field name="name">general_audit_class_transaction,note</field>
-        <field name="lang">id_ID</field>
-        <field name="type">model</field>
-        <field name="res_id" ref="general_audit_class_transaction_1_9f4dc8a4" />
-        <field
-            name="value"
-        >Transaksi ini melibatkan penjualan barang atau jasa kepada pelanggan, baik secara kredit (piutang usaha) maupun pembayaran langsung (penjualan tunai). Transaksi penjualan meningkatkan pendapatan dan dicatat berdasarkan prinsip akrual (saat diperoleh).</field>
-    </record>
-    <record
-        id="l18n_id_general_audit_class_transaction_2_6320a433_name"
-        model="ir.translation"
-    >
-        <field name="name">general_audit_class_transaction,name</field>
-        <field name="lang">id_ID</field>
-        <field name="type">model</field>
-        <field name="res_id" ref="general_audit_class_transaction_2_6320a433" />
-        <field name="value">Penerimaan Kas dari Pelanggan</field>
-    </record>
-    <record
-        id="l18n_id_general_audit_class_transaction_2_6320a433_note"
-        model="ir.translation"
-    >
-        <field name="name">general_audit_class_transaction,note</field>
-        <field name="lang">id_ID</field>
-        <field name="type">model</field>
-        <field name="res_id" ref="general_audit_class_transaction_2_6320a433" />
-        <field
-            name="value"
-        >Transaksi ini berupa penerimaan kas dari pelanggan, baik atas penjualan saat ini (penjualan tunai) maupun penagihan piutang usaha (penjualan kredit). Penerimaan kas dicatat saat kas diterima terlepas dari kapan penjualan terjadi.</field>
-    </record>
-    <record
-        id="l18n_id_general_audit_class_transaction_3_c46b1df1_name"
-        model="ir.translation"
-    >
-        <field name="name">general_audit_class_transaction,name</field>
-        <field name="lang">id_ID</field>
-        <field name="type">model</field>
-        <field name="res_id" ref="general_audit_class_transaction_3_c46b1df1" />
-        <field name="value">Retur Penjualan dan Pengurangan Harga</field>
-    </record>
-    <record
-        id="l18n_id_general_audit_class_transaction_3_c46b1df1_note"
-        model="ir.translation"
-    >
-        <field name="name">general_audit_class_transaction,note</field>
-        <field name="lang">id_ID</field>
-        <field name="type">model</field>
-        <field name="res_id" ref="general_audit_class_transaction_3_c46b1df1" />
-        <field
-            name="value"
-        >Transaksi ini terjadi saat pelanggan mengembalikan barang setelah penjualan atau menerima pengurangan harga karena barang cacat/rusak. Ini menurunkan total penjualan dan menghasilkan penyesuaian piutang usaha atau pengembalian kas.</field>
-    </record>
-    <record
-        id="l18n_id_general_audit_class_transaction_4_0c85f536_name"
-        model="ir.translation"
-    >
-        <field name="name">general_audit_class_transaction,name</field>
-        <field name="lang">id_ID</field>
-        <field name="type">model</field>
-        <field name="res_id" ref="general_audit_class_transaction_4_0c85f536" />
-        <field name="value">Piutang Tak Tertagih dan Penghapusan</field>
-    </record>
-    <record
-        id="l18n_id_general_audit_class_transaction_4_0c85f536_note"
-        model="ir.translation"
-    >
-        <field name="name">general_audit_class_transaction,note</field>
-        <field name="lang">id_ID</field>
-        <field name="type">model</field>
-        <field name="res_id" ref="general_audit_class_transaction_4_0c85f536" />
-        <field
-            name="value"
-        >Piutang tak tertagih terjadi ketika perusahaan menetapkan suatu piutang tidak mungkin ditagih. Piutang tersebut dihapus (write-off), menurunkan piutang usaha dan diakui sebagai beban piutang tak tertagih.</field>
-    </record>
-    <record
-        id="l18n_id_general_audit_class_transaction_5_273e68a9_name"
-        model="ir.translation"
-    >
-        <field name="name">general_audit_class_transaction,name</field>
-        <field name="lang">id_ID</field>
-        <field name="type">model</field>
-        <field name="res_id" ref="general_audit_class_transaction_5_273e68a9" />
-        <field name="value">Penyisihan Piutang Ragu-ragu</field>
-    </record>
-    <record
-        id="l18n_id_general_audit_class_transaction_5_273e68a9_note"
-        model="ir.translation"
-    >
-        <field name="name">general_audit_class_transaction,note</field>
-        <field name="lang">id_ID</field>
-        <field name="type">model</field>
-        <field name="res_id" ref="general_audit_class_transaction_5_273e68a9" />
-        <field
-            name="value"
-        >Ini adalah estimasi bagian piutang usaha yang diperkirakan tidak tertagih. Dicatat sebagai beban pada periode yang sama dengan penjualan terkait untuk menerapkan prinsip matching.</field>
-    </record>
-    <record
-        id="l18n_id_general_audit_class_transaction_6_833dbb76_name"
-        model="ir.translation"
-    >
-        <field name="name">general_audit_class_transaction,name</field>
-        <field name="lang">id_ID</field>
-        <field name="type">model</field>
-        <field name="res_id" ref="general_audit_class_transaction_6_833dbb76" />
-        <field name="value">Pembelian Barang dan Jasa</field>
-    </record>
-    <record
-        id="l18n_id_general_audit_class_transaction_6_833dbb76_note"
-        model="ir.translation"
-    >
-        <field name="name">general_audit_class_transaction,note</field>
-        <field name="lang">id_ID</field>
-        <field name="type">model</field>
-        <field name="res_id" ref="general_audit_class_transaction_6_833dbb76" />
-        <field
-            name="value"
-        >Transaksi ini melibatkan perolehan persediaan, perlengkapan, atau jasa dari pemasok. Pembelian dapat secara kredit (utang usaha) atau tunai. Ini adalah titik awal siklus akuisisi dan memengaruhi persediaan (barang) atau beban (jasa) serta utang usaha.</field>
-    </record>
-    <record
-        id="l18n_id_general_audit_class_transaction_7_0b9d9d56_name"
-        model="ir.translation"
-    >
-        <field name="name">general_audit_class_transaction,name</field>
-        <field name="lang">id_ID</field>
-        <field name="type">model</field>
-        <field name="res_id" ref="general_audit_class_transaction_7_0b9d9d56" />
-        <field name="value">Pembayaran Kas kepada Pemasok</field>
-    </record>
-    <record
-        id="l18n_id_general_audit_class_transaction_7_0b9d9d56_note"
-        model="ir.translation"
-    >
-        <field name="name">general_audit_class_transaction,note</field>
-        <field name="lang">id_ID</field>
-        <field name="type">model</field>
-        <field name="res_id" ref="general_audit_class_transaction_7_0b9d9d56" />
-        <field
-            name="value"
-        >Transaksi berupa pembayaran kepada pemasok atas barang atau jasa yang sebelumnya diperoleh, baik kredit maupun tunai. Mengurangi saldo kas dan utang usaha.</field>
-    </record>
-    <record
-        id="l18n_id_general_audit_class_transaction_8_977a350d_name"
-        model="ir.translation"
-    >
-        <field name="name">general_audit_class_transaction,name</field>
-        <field name="lang">id_ID</field>
-        <field name="type">model</field>
-        <field name="res_id" ref="general_audit_class_transaction_8_977a350d" />
-        <field name="value">Retur Pembelian dan Pengurangan Harga</field>
-    </record>
-    <record
-        id="l18n_id_general_audit_class_transaction_8_977a350d_note"
-        model="ir.translation"
-    >
-        <field name="name">general_audit_class_transaction,note</field>
-        <field name="lang">id_ID</field>
-        <field name="type">model</field>
-        <field name="res_id" ref="general_audit_class_transaction_8_977a350d" />
-        <field
-            name="value"
-        >Retur terjadi saat perusahaan mengembalikan barang ke pemasok karena cacat atau alasan lain. Pengurangan harga adalah penurunan jumlah terutang tanpa pengembalian barang. Keduanya menurunkan utang usaha dan dapat memengaruhi persediaan atau beban.</field>
-    </record>
-    <record
-        id="l18n_id_general_audit_class_transaction_9_2253689f_name"
-        model="ir.translation"
-    >
-        <field name="name">general_audit_class_transaction,name</field>
-        <field name="lang">id_ID</field>
-        <field name="type">model</field>
-        <field name="res_id" ref="general_audit_class_transaction_9_2253689f" />
-        <field name="value">Pembelian Persediaan</field>
-    </record>
-    <record
-        id="l18n_id_general_audit_class_transaction_9_2253689f_note"
-        model="ir.translation"
-    >
-        <field name="name">general_audit_class_transaction,note</field>
-        <field name="lang">id_ID</field>
-        <field name="type">model</field>
-        <field name="res_id" ref="general_audit_class_transaction_9_2253689f" />
-        <field
-            name="value"
-        >Transaksi ini melibatkan pembelian bahan baku, barang jadi, atau item persediaan lain dari pemasok, baik secara kredit (utang usaha) maupun tunai.</field>
-    </record>
-    <record
-        id="l18n_id_general_audit_class_transaction_10_408a6fc8_name"
-        model="ir.translation"
-    >
-        <field name="name">general_audit_class_transaction,name</field>
-        <field name="lang">id_ID</field>
-        <field name="type">model</field>
-        <field name="res_id" ref="general_audit_class_transaction_10_408a6fc8" />
-        <field name="value">Penerimaan Persediaan</field>
-    </record>
-    <record
-        id="l18n_id_general_audit_class_transaction_10_408a6fc8_note"
-        model="ir.translation"
-    >
-        <field name="name">general_audit_class_transaction,note</field>
-        <field name="lang">id_ID</field>
-        <field name="type">model</field>
-        <field name="res_id" ref="general_audit_class_transaction_10_408a6fc8" />
-        <field
-            name="value"
-        >Saat barang diterima dari pemasok, bagian penerimaan memeriksa terhadap Purchase Order dan mencatatnya sebagai persediaan. Penerimaan adalah titik pengendalian internal untuk memastikan hanya pembelian yang sah diterima.</field>
-    </record>
-    <record
-        id="l18n_id_general_audit_class_transaction_11_bb71d92d_name"
-        model="ir.translation"
-    >
-        <field name="name">general_audit_class_transaction,name</field>
-        <field name="lang">id_ID</field>
-        <field name="type">model</field>
-        <field name="res_id" ref="general_audit_class_transaction_11_bb71d92d" />
-        <field name="value">Transfer dan Pergerakan Persediaan</field>
-    </record>
-    <record
-        id="l18n_id_general_audit_class_transaction_11_bb71d92d_note"
-        model="ir.translation"
-    >
-        <field name="name">general_audit_class_transaction,note</field>
-        <field name="lang">id_ID</field>
-        <field name="type">model</field>
-        <field name="res_id" ref="general_audit_class_transaction_11_bb71d92d" />
-        <field
-            name="value"
-        >Persediaan dapat dipindahkan antar lokasi seperti gudang atau departemen produksi. Pergerakan harus dilacak untuk menjaga akurasi kuantitas per lokasi.</field>
-    </record>
-    <record
-        id="l18n_id_general_audit_class_transaction_12_90899573_name"
-        model="ir.translation"
-    >
-        <field name="name">general_audit_class_transaction,name</field>
-        <field name="lang">id_ID</field>
-        <field name="type">model</field>
-        <field name="res_id" ref="general_audit_class_transaction_12_90899573" />
-        <field
-            name="value"
-        >Penyesuaian Persediaan (Kehilangan, Kedaluwarsa, Kerusakan)</field>
-    </record>
-    <record
-        id="l18n_id_general_audit_class_transaction_12_90899573_note"
-        model="ir.translation"
-    >
-        <field name="name">general_audit_class_transaction,note</field>
-        <field name="lang">id_ID</field>
-        <field name="type">model</field>
-        <field name="res_id" ref="general_audit_class_transaction_12_90899573" />
-        <field
-            name="value"
-        >Transaksi ini menyesuaikan catatan persediaan atas selisih antara jumlah fisik dan sistem. Kehilangan bisa karena pencurian, kerusakan, kadaluarsa, atau kesalahan. Persediaan usang diturunkan nilainya ketika tidak lagi dapat digunakan atau dijual.</field>
-    </record>
-    <record
-        id="l18n_id_general_audit_class_transaction_13_46cef7aa_name"
-        model="ir.translation"
-    >
-        <field name="name">general_audit_class_transaction,name</field>
-        <field name="lang">id_ID</field>
-        <field name="type">model</field>
-        <field name="res_id" ref="general_audit_class_transaction_13_46cef7aa" />
-        <field name="value">Harga Pokok Penjualan (HPP)</field>
-    </record>
-    <record
-        id="l18n_id_general_audit_class_transaction_13_46cef7aa_note"
-        model="ir.translation"
-    >
-        <field name="name">general_audit_class_transaction,note</field>
-        <field name="lang">id_ID</field>
-        <field name="type">model</field>
-        <field name="res_id" ref="general_audit_class_transaction_13_46cef7aa" />
-        <field
-            name="value"
-        >HPP merepresentasikan biaya langsung produksi barang yang dijual. Saat persediaan terjual, biaya terkait dipindahkan dari neraca ke laba rugi sebagai HPP. Ini elemen kunci penentuan laba kotor.</field>
-    </record>
-    <record
-        id="l18n_id_general_audit_class_transaction_14_c8893673_name"
-        model="ir.translation"
-    >
-        <field name="name">general_audit_class_transaction,name</field>
-        <field name="lang">id_ID</field>
-        <field name="type">model</field>
-        <field name="res_id" ref="general_audit_class_transaction_14_c8893673" />
-        <field
-            name="value"
-        >Retur Persediaan (Retur Penjualan &amp;amp; Retur Pembelian)</field>
-    </record>
-    <record
-        id="l18n_id_general_audit_class_transaction_14_c8893673_note"
-        model="ir.translation"
-    >
-        <field name="name">general_audit_class_transaction,note</field>
-        <field name="lang">id_ID</field>
-        <field name="type">model</field>
-        <field name="res_id" ref="general_audit_class_transaction_14_c8893673" />
-        <field
-            name="value"
-        >Retur Penjualan: terjadi saat pelanggan mengembalikan barang; barang kembali ke persediaan dan HPP disesuaikan. Retur Pembelian: saat perusahaan mengembalikan barang ke pemasok, persediaan turun dan utang disesuaikan.</field>
-    </record>
-    <record
-        id="l18n_id_general_audit_class_transaction_15_34a8019b_name"
-        model="ir.translation"
-    >
-        <field name="name">general_audit_class_transaction,name</field>
-        <field name="lang">id_ID</field>
-        <field name="type">model</field>
-        <field name="res_id" ref="general_audit_class_transaction_15_34a8019b" />
-        <field name="value">Pelunasan Utang</field>
-    </record>
-    <record
-        id="l18n_id_general_audit_class_transaction_15_34a8019b_note"
-        model="ir.translation"
-    >
-        <field name="name">general_audit_class_transaction,note</field>
-        <field name="lang">id_ID</field>
-        <field name="type">model</field>
-        <field name="res_id" ref="general_audit_class_transaction_15_34a8019b" />
-        <field
-            name="value"
-        >Transaksi ini melibatkan pembayaran kembali pokok dan bunga atas dana yang dipinjam. Pokok menurunkan liabilitas dan bunga dicatat sebagai beban.</field>
-    </record>
-    <record
-        id="l18n_id_general_audit_class_transaction_16_04e5ec39_name"
-        model="ir.translation"
-    >
-        <field name="name">general_audit_class_transaction,name</field>
-        <field name="lang">id_ID</field>
-        <field name="type">model</field>
-        <field name="res_id" ref="general_audit_class_transaction_16_04e5ec39" />
-        <field
-            name="value"
-        >Pembelian Properti, Pabrik, &amp; Peralatan (Perolehan/Penambahan)</field>
-    </record>
-    <record
-        id="l18n_id_general_audit_class_transaction_16_04e5ec39_note"
-        model="ir.translation"
-    >
-        <field name="name">general_audit_class_transaction,note</field>
-        <field name="lang">id_ID</field>
-        <field name="type">model</field>
-        <field name="res_id" ref="general_audit_class_transaction_16_04e5ec39" />
-        <field
-            name="value"
-        >Transaksi ini mencakup pembelian atau konstruksi internal aset seperti tanah, bangunan, mesin, atau peralatan. Perolehan meningkatkan saldo aset tetap (PPE).</field>
-    </record>
-    <record
-        id="l18n_id_general_audit_class_transaction_17_4ed2528c_name"
-        model="ir.translation"
-    >
-        <field name="name">general_audit_class_transaction,name</field>
-        <field name="lang">id_ID</field>
-        <field name="type">model</field>
-        <field name="res_id" ref="general_audit_class_transaction_17_4ed2528c" />
-        <field name="value">Penerbitan Utang (Pinjaman)</field>
-    </record>
-    <record
-        id="l18n_id_general_audit_class_transaction_17_4ed2528c_note"
-        model="ir.translation"
-    >
-        <field name="name">general_audit_class_transaction,note</field>
-        <field name="lang">id_ID</field>
-        <field name="type">model</field>
-        <field name="res_id" ref="general_audit_class_transaction_17_4ed2528c" />
-        <field
-            name="value"
-        >Transaksi ini menggalang modal melalui pinjaman dari bank atau penerbitan obligasi. Perusahaan menerima kas dan berkomitmen mengembalikan pokok plus bunga. Meningkatkan liabilitas dan kas.</field>
-    </record>
-    <record
-        id="l18n_id_general_audit_class_transaction_18_8e2b3076_name"
-        model="ir.translation"
-    >
-        <field name="name">general_audit_class_transaction,name</field>
-        <field name="lang">id_ID</field>
-        <field name="type">model</field>
-        <field name="res_id" ref="general_audit_class_transaction_18_8e2b3076" />
-        <field name="value">Penerbitan Ekuitas (Menjual Saham)</field>
-    </record>
-    <record
-        id="l18n_id_general_audit_class_transaction_18_8e2b3076_note"
-        model="ir.translation"
-    >
-        <field name="name">general_audit_class_transaction,note</field>
-        <field name="lang">id_ID</field>
-        <field name="type">model</field>
-        <field name="res_id" ref="general_audit_class_transaction_18_8e2b3076" />
-        <field
-            name="value"
-        >Transaksi ini menggalang modal dengan menerbitkan saham kepada investor. Perusahaan menerima kas dan meningkatkan kas serta ekuitas pemegang saham.</field>
-    </record>
-    <record
-        id="l18n_id_general_audit_class_transaction_19_3114cbe5_name"
-        model="ir.translation"
-    >
-        <field name="name">general_audit_class_transaction,name</field>
-        <field name="lang">id_ID</field>
-        <field name="type">model</field>
-        <field name="res_id" ref="general_audit_class_transaction_19_3114cbe5" />
-        <field name="value">Pembelian Kembali Saham (Saham Treasury)</field>
-    </record>
-    <record
-        id="l18n_id_general_audit_class_transaction_19_3114cbe5_note"
-        model="ir.translation"
-    >
-        <field name="name">general_audit_class_transaction,note</field>
-        <field name="lang">id_ID</field>
-        <field name="type">model</field>
-        <field name="res_id" ref="general_audit_class_transaction_19_3114cbe5" />
-        <field
-            name="value"
-        >Saat perusahaan membeli kembali sahamnya di pasar, ekuitas pemegang saham berkurang. Saham treasury adalah saham yang diterbitkan namun tidak beredar dan dapat diterbitkan ulang atau dipensiunkan.</field>
-    </record>
-    <record
-        id="l18n_id_general_audit_class_transaction_20_fd33bc12_name"
-        model="ir.translation"
-    >
-        <field name="name">general_audit_class_transaction,name</field>
-        <field name="lang">id_ID</field>
-        <field name="type">model</field>
-        <field name="res_id" ref="general_audit_class_transaction_20_fd33bc12" />
-        <field name="value">Pembayaran Dividen</field>
-    </record>
-    <record
-        id="l18n_id_general_audit_class_transaction_20_fd33bc12_note"
-        model="ir.translation"
-    >
-        <field name="name">general_audit_class_transaction,note</field>
-        <field name="lang">id_ID</field>
-        <field name="type">model</field>
-        <field name="res_id" ref="general_audit_class_transaction_20_fd33bc12" />
-        <field
-            name="value"
-        >Transaksi ini mendistribusikan sebagian laba perusahaan kepada pemegang saham dalam bentuk kas atau saham. Dividen mengurangi laba ditahan dan kas (untuk dividen kas).</field>
-    </record>
-    <record
-        id="l18n_id_general_audit_class_transaction_21_c8dd9953_name"
-        model="ir.translation"
-    >
-        <field name="name">general_audit_class_transaction,name</field>
-        <field name="lang">id_ID</field>
-        <field name="type">model</field>
-        <field name="res_id" ref="general_audit_class_transaction_21_c8dd9953" />
-        <field name="value">Sistem Persediaan Periodik dan Perpetual</field>
-    </record>
-    <record
-        id="l18n_id_general_audit_class_transaction_21_c8dd9953_note"
-        model="ir.translation"
-    >
-        <field name="name">general_audit_class_transaction,note</field>
-        <field name="lang">id_ID</field>
-        <field name="type">model</field>
-        <field name="res_id" ref="general_audit_class_transaction_21_c8dd9953" />
-        <field
-            name="value"
-        >Perusahaan memakai sistem periodik atau perpetual. Sistem Periodik: Persediaan diperbarui di akhir periode setelah hitung fisik; pembelian dicatat di akun pembelian. Sistem Perpetual: Persediaan diperbarui terus menerus saat terjadi pembelian, penjualan, dan retur.</field>
-    </record>
-    <record
-        id="l18n_id_general_audit_class_transaction_22_6eec17ca_name"
-        model="ir.translation"
-    >
-        <field name="name">general_audit_class_transaction,name</field>
-        <field name="lang">id_ID</field>
-        <field name="type">model</field>
-        <field name="res_id" ref="general_audit_class_transaction_22_6eec17ca" />
-        <field name="value">Pembayaran Gaji dan Upah</field>
-    </record>
-    <record
-        id="l18n_id_general_audit_class_transaction_23_a344ff86_name"
-        model="ir.translation"
-    >
-        <field name="name">general_audit_class_transaction,name</field>
-        <field name="lang">id_ID</field>
-        <field name="type">model</field>
-        <field name="res_id" ref="general_audit_class_transaction_23_a344ff86" />
-        <field name="value">Metode Penilaian Persediaan</field>
-    </record>
-    <record
-        id="l18n_id_general_audit_class_transaction_23_a344ff86_note"
-        model="ir.translation"
-    >
-        <field name="name">general_audit_class_transaction,note</field>
-        <field name="lang">id_ID</field>
-        <field name="type">model</field>
-        <field name="res_id" ref="general_audit_class_transaction_23_a344ff86" />
-        <field
-            name="value"
-        >Metode penilaian memengaruhi biaya persediaan dan HPP. Metode umum: FIFO (masuk pertama keluar pertama), LIFO (masuk terakhir keluar pertama), Rata-rata Tertimbang.</field>
-    </record>
-    <record
-        id="l18n_id_general_audit_class_transaction_24_94fd839c_name"
-        model="ir.translation"
-    >
-        <field name="name">general_audit_class_transaction,name</field>
-        <field name="lang">id_ID</field>
-        <field name="type">model</field>
-        <field name="res_id" ref="general_audit_class_transaction_24_94fd839c" />
-        <field name="value">Transaksi Manufaktur (BDP, Barang Jadi)</field>
-    </record>
-    <record
-        id="l18n_id_general_audit_class_transaction_24_94fd839c_note"
-        model="ir.translation"
-    >
-        <field name="name">general_audit_class_transaction,note</field>
-        <field name="lang">id_ID</field>
-        <field name="type">model</field>
-        <field name="res_id" ref="general_audit_class_transaction_24_94fd839c" />
-        <field
-            name="value"
-        >Pada perusahaan manufaktur, persediaan dibagi bahan baku, barang dalam proses (BDP), dan barang jadi. Saat bahan baku dipakai, biayanya dipindah ke BDP, lalu ke barang jadi setelah selesai.</field>
-    </record>
-    <record
-        id="l18n_id_general_audit_class_transaction_25_cadd92bd_name"
-        model="ir.translation"
-    >
-        <field name="name">general_audit_class_transaction,name</field>
-        <field name="lang">id_ID</field>
-        <field name="type">model</field>
-        <field name="res_id" ref="general_audit_class_transaction_25_cadd92bd" />
-        <field
-            name="value"
-        >Penjualan Properti, Pabrik, &amp; Peralatan (Disposal)</field>
-    </record>
-    <record
-        id="l18n_id_general_audit_class_transaction_25_cadd92bd_note"
-        model="ir.translation"
-    >
-        <field name="name">general_audit_class_transaction,note</field>
-        <field name="lang">id_ID</field>
-        <field name="type">model</field>
-        <field name="res_id" ref="general_audit_class_transaction_25_cadd92bd" />
-        <field
-            name="value"
-        >Terjadi saat aset dijual, dibuang, atau dihentikan pemakaiannya. Menurunkan saldo aset tetap dan dapat menghasilkan laba/rugi pelepasan.</field>
-    </record>
-    <record
-        id="l18n_id_general_audit_class_transaction_26_7907d15e_name"
-        model="ir.translation"
-    >
-        <field name="name">general_audit_class_transaction,name</field>
-        <field name="lang">id_ID</field>
-        <field name="type">model</field>
-        <field name="res_id" ref="general_audit_class_transaction_26_7907d15e" />
-        <field name="value">Depresiasi Properti, Pabrik, &amp; Peralatan</field>
-    </record>
-    <record
-        id="l18n_id_general_audit_class_transaction_26_7907d15e_note"
-        model="ir.translation"
-    >
-        <field name="name">general_audit_class_transaction,note</field>
-        <field name="lang">id_ID</field>
-        <field name="type">model</field>
-        <field name="res_id" ref="general_audit_class_transaction_26_7907d15e" />
-        <field
-            name="value"
-        >Depresiasi adalah alokasi periodik biaya aset sepanjang umur manfaatnya. Mengurangi nilai buku di neraca dan diakui sebagai beban.</field>
-    </record>
-    <record
-        id="l18n_id_general_audit_class_transaction_27_d70ce3e7_name"
-        model="ir.translation"
-    >
-        <field name="name">general_audit_class_transaction,name</field>
-        <field name="lang">id_ID</field>
-        <field name="type">model</field>
-        <field name="res_id" ref="general_audit_class_transaction_27_d70ce3e7" />
-        <field name="value">Penurunan Nilai Properti, Pabrik, &amp; Peralatan</field>
-    </record>
-    <record
-        id="l18n_id_general_audit_class_transaction_27_d70ce3e7_note"
-        model="ir.translation"
-    >
-        <field name="name">general_audit_class_transaction,note</field>
-        <field name="lang">id_ID</field>
-        <field name="type">model</field>
-        <field name="res_id" ref="general_audit_class_transaction_27_d70ce3e7" />
-        <field
-            name="value"
-        >Penurunan nilai terjadi saat nilai tercatat aset melebihi jumlah terpulihkan. Menghasilkan penurunan nilai aset di neraca.</field>
-    </record>
-    <record
-        id="l18n_id_general_audit_class_transaction_28_406048a6_name"
-        model="ir.translation"
-    >
-        <field name="name">general_audit_class_transaction,name</field>
-        <field name="lang">id_ID</field>
-        <field name="type">model</field>
-        <field name="res_id" ref="general_audit_class_transaction_28_406048a6" />
-        <field name="value">Perbaikan dan Pemeliharaan</field>
-    </record>
-    <record
-        id="l18n_id_general_audit_class_transaction_28_406048a6_note"
-        model="ir.translation"
-    >
-        <field name="name">general_audit_class_transaction,note</field>
-        <field name="lang">id_ID</field>
-        <field name="type">model</field>
-        <field name="res_id" ref="general_audit_class_transaction_28_406048a6" />
-        <field
-            name="value"
-        >Beban rutin untuk mempertahankan atau memulihkan kapasitas produktif aset. Tidak menambah umur manfaat atau kapasitas; dibebankan pada periode terjadinya.</field>
-    </record>
-    <record
-        id="l18n_id_general_audit_class_transaction_29_4841ddb6_name"
-        model="ir.translation"
-    >
-        <field name="name">general_audit_class_transaction,name</field>
-        <field name="lang">id_ID</field>
-        <field name="type">model</field>
-        <field name="res_id" ref="general_audit_class_transaction_29_4841ddb6" />
-        <field name="value">Peningkatan Modal (Betterment)</field>
-    </record>
-    <record
-        id="l18n_id_general_audit_class_transaction_29_4841ddb6_note"
-        model="ir.translation"
-    >
-        <field name="name">general_audit_class_transaction,note</field>
-        <field name="lang">id_ID</field>
-        <field name="type">model</field>
-        <field name="res_id" ref="general_audit_class_transaction_29_4841ddb6" />
-        <field
-            name="value"
-        >Pengeluaran yang memperpanjang umur manfaat, menambah kapasitas, atau meningkatkan efisiensi aset. Dikapitalisasi dan menaikkan nilai buku aset tetap.</field>
-    </record>
-    <record
-        id="l18n_id_general_audit_class_transaction_30_a50f6109_name"
-        model="ir.translation"
-    >
-        <field name="name">general_audit_class_transaction,name</field>
-        <field name="lang">id_ID</field>
-        <field name="type">model</field>
-        <field name="res_id" ref="general_audit_class_transaction_30_a50f6109" />
-        <field name="value">Pembelian Investasi (Perolehan)</field>
-    </record>
-    <record
-        id="l18n_id_general_audit_class_transaction_30_a50f6109_note"
-        model="ir.translation"
-    >
-        <field name="name">general_audit_class_transaction,note</field>
-        <field name="lang">id_ID</field>
-        <field name="type">model</field>
-        <field name="res_id" ref="general_audit_class_transaction_30_a50f6109" />
-        <field
-            name="value"
-        >Transaksi saat bisnis membeli investasi seperti saham, obligasi, real estat, atau instrumen keuangan lain. Meningkatkan akun investasi di neraca.</field>
-    </record>
-    <record
-        id="l18n_id_general_audit_class_transaction_31_7f4883e6_name"
-        model="ir.translation"
-    >
-        <field name="name">general_audit_class_transaction,name</field>
-        <field name="lang">id_ID</field>
-        <field name="type">model</field>
-        <field name="res_id" ref="general_audit_class_transaction_31_7f4883e6" />
-        <field name="value">Penjualan Investasi (Disposal)</field>
-    </record>
-    <record
-        id="l18n_id_general_audit_class_transaction_31_7f4883e6_note"
-        model="ir.translation"
-    >
-        <field name="name">general_audit_class_transaction,note</field>
-        <field name="lang">id_ID</field>
-        <field name="type">model</field>
-        <field name="res_id" ref="general_audit_class_transaction_31_7f4883e6" />
-        <field
-            name="value"
-        >Transaksi saat perusahaan menjual atau melepas investasi. Menurunkan investasi dan dapat menimbulkan laba/rugi penjualan di laba rugi.</field>
-    </record>
-    <record
-        id="l18n_id_general_audit_class_transaction_32_ce21062b_name"
-        model="ir.translation"
-    >
-        <field name="name">general_audit_class_transaction,name</field>
-        <field name="lang">id_ID</field>
-        <field name="type">model</field>
-        <field name="res_id" ref="general_audit_class_transaction_32_ce21062b" />
-        <field name="value">Pendapatan Dividen dan Bunga</field>
-    </record>
-    <record
-        id="l18n_id_general_audit_class_transaction_32_ce21062b_note"
-        model="ir.translation"
-    >
-        <field name="name">general_audit_class_transaction,note</field>
-        <field name="lang">id_ID</field>
-        <field name="type">model</field>
-        <field name="res_id" ref="general_audit_class_transaction_32_ce21062b" />
-        <field
-            name="value"
-        >Pendapatan dari investasi seperti dividen atas sekuritas ekuitas atau bunga dari obligasi. Diakui di laba rugi saat diperoleh.</field>
-    </record>
-    <record
-        id="l18n_id_general_audit_class_transaction_33_8f0d95ce_name"
-        model="ir.translation"
-    >
-        <field name="name">general_audit_class_transaction,name</field>
-        <field name="lang">id_ID</field>
-        <field name="type">model</field>
-        <field name="res_id" ref="general_audit_class_transaction_33_8f0d95ce" />
-        <field name="value">Laba/Rugi Terealisasi atas Investasi</field>
-    </record>
-    <record
-        id="l18n_id_general_audit_class_transaction_33_8f0d95ce_note"
-        model="ir.translation"
-    >
-        <field name="name">general_audit_class_transaction,note</field>
-        <field name="lang">id_ID</field>
-        <field name="type">model</field>
-        <field name="res_id" ref="general_audit_class_transaction_33_8f0d95ce" />
-        <field
-            name="value"
-        >Diakui saat investasi dijual; selisih harga jual dan nilai buku dicatat. Mempengaruhi laba rugi.</field>
-    </record>
-    <record
-        id="l18n_id_general_audit_class_transaction_34_2042e498_name"
-        model="ir.translation"
-    >
-        <field name="name">general_audit_class_transaction,name</field>
-        <field name="lang">id_ID</field>
-        <field name="type">model</field>
-        <field name="res_id" ref="general_audit_class_transaction_34_2042e498" />
-        <field name="value">Penurunan Nilai Investasi</field>
-    </record>
-    <record
-        id="l18n_id_general_audit_class_transaction_34_2042e498_note"
-        model="ir.translation"
-    >
-        <field name="name">general_audit_class_transaction,note</field>
-        <field name="lang">id_ID</field>
-        <field name="type">model</field>
-        <field name="res_id" ref="general_audit_class_transaction_34_2042e498" />
-        <field
-            name="value"
-        >Terjadi saat ada penurunan permanen nilai investasi (misal kebangkrutan pihak penerbit). Mengakibatkan penurunan nilai dan memengaruhi laba rugi.</field>
-    </record>
-    <record
-        id="l18n_id_general_audit_class_transaction_35_e0d2e1e3_name"
-        model="ir.translation"
-    >
-        <field name="name">general_audit_class_transaction,name</field>
-        <field name="lang">id_ID</field>
-        <field name="type">model</field>
-        <field name="res_id" ref="general_audit_class_transaction_35_e0d2e1e3" />
-        <field name="value">Investasi pada Entitas Anak atau Ventura Bersama</field>
-    </record>
-    <record
-        id="l18n_id_general_audit_class_transaction_35_e0d2e1e3_note"
-        model="ir.translation"
-    >
-        <field name="name">general_audit_class_transaction,note</field>
-        <field name="lang">id_ID</field>
-        <field name="type">model</field>
-        <field name="res_id" ref="general_audit_class_transaction_35_e0d2e1e3" />
-        <field
-            name="value"
-        >Transaksi berupa investasi ekuitas di entitas anak atau ventura bersama dengan pengaruh signifikan atau kontrol. Perlakuan akuntansi bergantung tingkat pengaruh atau kontrol.</field>
-    </record>
-    <record
-        id="l18n_id_general_audit_class_transaction_36_f9a0246e_name"
-        model="ir.translation"
-    >
-        <field name="name">general_audit_class_transaction,name</field>
-        <field name="lang">id_ID</field>
-        <field name="type">model</field>
-        <field name="res_id" ref="general_audit_class_transaction_36_f9a0246e" />
-        <field name="value">Pajak Penggajian (Porsi Pemberi Kerja)</field>
-    </record>
-    <record
-        id="l18n_id_general_audit_class_transaction_37_a0483f5c_name"
-        model="ir.translation"
-    >
-        <field name="name">general_audit_class_transaction,name</field>
-        <field name="lang">id_ID</field>
-        <field name="type">model</field>
-        <field name="res_id" ref="general_audit_class_transaction_37_a0483f5c" />
-        <field name="value">Pemotongan dan Potongan</field>
-    </record>
-    <record
-        id="l18n_id_general_audit_class_transaction_38_e1651b0b_name"
-        model="ir.translation"
-    >
-        <field name="name">general_audit_class_transaction,name</field>
-        <field name="lang">id_ID</field>
-        <field name="type">model</field>
-        <field name="res_id" ref="general_audit_class_transaction_38_e1651b0b" />
-        <field name="value">Bonus dan Komisi</field>
-    </record>
-    <record
-        id="l18n_id_general_audit_class_transaction_39_dea8ae8c_name"
-        model="ir.translation"
-    >
-        <field name="name">general_audit_class_transaction,name</field>
-        <field name="lang">id_ID</field>
-        <field name="type">model</field>
-        <field name="res_id" ref="general_audit_class_transaction_39_dea8ae8c" />
-        <field name="value">Akrual Gaji dan Upah</field>
-    </record>
-    <record
-        id="l18n_id_general_audit_class_transaction_40_06024b27_name"
-        model="ir.translation"
-    >
-        <field name="name">general_audit_class_transaction,name</field>
-        <field name="lang">id_ID</field>
-        <field name="type">model</field>
-        <field name="res_id" ref="general_audit_class_transaction_40_06024b27" />
-        <field name="value">Imbalan Karyawan</field>
-    </record>
-    <record
-        id="l18n_id_general_audit_class_transaction_41_1c31f650_name"
-        model="ir.translation"
-    >
-        <field name="name">general_audit_class_transaction,name</field>
-        <field name="lang">id_ID</field>
-        <field name="type">model</field>
-        <field name="res_id" ref="general_audit_class_transaction_41_1c31f650" />
-        <field name="value">Lembur dan Perbedaan Shift</field>
-    </record>
-    <record
-        id="l18n_id_general_audit_class_transaction_42_4fd271d1_name"
-        model="ir.translation"
-    >
-        <field name="name">general_audit_class_transaction,name</field>
-        <field name="lang">id_ID</field>
-        <field name="type">model</field>
-        <field name="res_id" ref="general_audit_class_transaction_42_4fd271d1" />
-        <field name="value">Penyesuaian Penggajian</field>
-    </record>
-    <record
-        id="l18n_id_general_audit_class_transaction_43_46fc1057_name"
-        model="ir.translation"
-    >
-        <field name="name">general_audit_class_transaction,name</field>
-        <field name="lang">id_ID</field>
-        <field name="type">model</field>
-        <field name="res_id" ref="general_audit_class_transaction_43_46fc1057" />
-        <field name="value">Pemutusan Hubungan Kerja dan Pesangon</field>
-    </record>
-    <record
-        id="l18n_id_general_audit_class_transaction_44_1077ac72_name"
-        model="ir.translation"
-    >
-        <field name="name">general_audit_class_transaction,name</field>
-        <field name="lang">id_ID</field>
-        <field name="type">model</field>
-        <field name="res_id" ref="general_audit_class_transaction_44_1077ac72" />
-        <field name="value">Diskon Penjualan (Diskon Tunai)</field>
-    </record>
-    <record
-        id="l18n_id_general_audit_class_transaction_44_1077ac72_note"
-        model="ir.translation"
-    >
-        <field name="name">general_audit_class_transaction,note</field>
-        <field name="lang">id_ID</field>
-        <field name="type">model</field>
-        <field name="res_id" ref="general_audit_class_transaction_44_1077ac72" />
-        <field
-            name="value"
-        >Diskon penjualan adalah pengurangan yang ditawarkan kepada pelanggan sebagai insentif pembayaran lebih awal (misal 2/10, net 30). Mengurangi jumlah piutang dan dicatat sebagai akun kontra pendapatan.</field>
-    </record>
-    <record
-        id="l18n_id_general_audit_class_transaction_45_80f4fc03_name"
-        model="ir.translation"
-    >
-        <field name="name">general_audit_class_transaction,name</field>
-        <field name="lang">id_ID</field>
-        <field name="type">model</field>
-        <field name="res_id" ref="general_audit_class_transaction_45_80f4fc03" />
-        <field name="value">Penerimaan Dimuka (Pendapatan Ditangguhkan)</field>
-    </record>
-    <record
-        id="l18n_id_general_audit_class_transaction_45_80f4fc03_note"
-        model="ir.translation"
-    >
-        <field name="name">general_audit_class_transaction,note</field>
-        <field name="lang">id_ID</field>
-        <field name="type">model</field>
-        <field name="res_id" ref="general_audit_class_transaction_45_80f4fc03" />
-        <field
-            name="value"
-        >Pelanggan kadang membayar di muka sebelum barang/jasa diterima. Dicatat sebagai liabilitas (pendapatan ditangguhkan) sampai penyerahan dilakukan.</field>
-    </record>
-    <record
-        id="l18n_id_general_audit_class_transaction_46_c9de3eff_name"
-        model="ir.translation"
-    >
-        <field name="name">general_audit_class_transaction,name</field>
-        <field name="lang">id_ID</field>
-        <field name="type">model</field>
-        <field name="res_id" ref="general_audit_class_transaction_46_c9de3eff" />
-        <field name="value">Biaya Angkut dan Pengiriman</field>
-    </record>
-    <record
-        id="l18n_id_general_audit_class_transaction_46_c9de3eff_note"
-        model="ir.translation"
-    >
-        <field name="name">general_audit_class_transaction,note</field>
-        <field name="lang">id_ID</field>
-        <field name="type">model</field>
-        <field name="res_id" ref="general_audit_class_transaction_46_c9de3eff" />
-        <field
-            name="value"
-        >Untuk beberapa penjualan, perusahaan membebankan biaya pengiriman/angkut kepada pelanggan secara terpisah. Biaya ini ditambahkan ke total penjualan dan dicatat sebagai pendapatan.</field>
-    </record>
-    <record
-        id="l18n_id_general_audit_class_transaction_47_96d21aa3_name"
-        model="ir.translation"
-    >
-        <field name="name">general_audit_class_transaction,name</field>
-        <field name="lang">id_ID</field>
-        <field name="type">model</field>
-        <field name="res_id" ref="general_audit_class_transaction_47_96d21aa3" />
-        <field name="value">Diskon Pembelian</field>
-    </record>
-    <record
-        id="l18n_id_general_audit_class_transaction_47_96d21aa3_note"
-        model="ir.translation"
-    >
-        <field name="name">general_audit_class_transaction,note</field>
-        <field name="lang">id_ID</field>
-        <field name="type">model</field>
-        <field name="res_id" ref="general_audit_class_transaction_47_96d21aa3" />
-        <field
-            name="value"
-        >Diskon pembelian (cash discount) adalah pengurangan jumlah terutang bila dibayar dalam periode tertentu (misal 2/10, net 30). Mendorong pembayaran lebih cepat dan menurunkan total pembayaran.</field>
-    </record>
-    <record
-        id="l18n_id_general_audit_class_transaction_48_922e868e_name"
-        model="ir.translation"
-    >
-        <field name="name">general_audit_class_transaction,name</field>
-        <field name="lang">id_ID</field>
-        <field name="type">model</field>
-        <field name="res_id" ref="general_audit_class_transaction_48_922e868e" />
-        <field name="value">Biaya Angkut dan Pengiriman (Freight-in)</field>
-    </record>
-    <record
-        id="l18n_id_general_audit_class_transaction_48_922e868e_note"
-        model="ir.translation"
-    >
-        <field name="name">general_audit_class_transaction,note</field>
-        <field name="lang">id_ID</field>
-        <field name="type">model</field>
-        <field name="res_id" ref="general_audit_class_transaction_48_922e868e" />
-        <field
-            name="value"
-        >Transaksi ini adalah biaya pengiriman barang dari pemasok ke lokasi perusahaan. Biasanya ditambahkan ke biaya persediaan atau beban dan kadang dicatat terpisah.</field>
-    </record>
-    <record
-        id="l18n_id_general_audit_class_transaction_49_ae0f06bc_name"
-        model="ir.translation"
-    >
-        <field name="name">general_audit_class_transaction,name</field>
-        <field name="lang">id_ID</field>
-        <field name="type">model</field>
-        <field name="res_id" ref="general_audit_class_transaction_49_ae0f06bc" />
-        <field name="value">Liabilitas Akrual atas Pembelian Belum Ditagih</field>
-    </record>
-    <record
-        id="l18n_id_general_audit_class_transaction_49_ae0f06bc_note"
-        model="ir.translation"
-    >
-        <field name="name">general_audit_class_transaction,note</field>
-        <field name="lang">id_ID</field>
-        <field name="type">model</field>
-        <field name="res_id" ref="general_audit_class_transaction_49_ae0f06bc" />
-        <field
-            name="value"
-        >Di akhir periode, perusahaan mungkin menerima barang/jasa yang belum ditagih. Untuk mencerminkan kewajiban dengan benar, perusahaan mengakui liabilitas akrual atas pembelian belum ditagih.</field>
-    </record>
-    <record
-        id="l18n_id_general_audit_class_transaction_50_14b9ad02_name"
-        model="ir.translation"
-    >
-        <field name="name">general_audit_class_transaction,name</field>
-        <field name="lang">id_ID</field>
-        <field name="type">model</field>
-        <field name="res_id" ref="general_audit_class_transaction_50_14b9ad02" />
-        <field name="value">Uang Muka (Pembayaran Dimuka)</field>
-    </record>
-    <record
-        id="l18n_id_general_audit_class_transaction_50_14b9ad02_note"
-        model="ir.translation"
-    >
-        <field name="name">general_audit_class_transaction,note</field>
-        <field name="lang">id_ID</field>
-        <field name="type">model</field>
-        <field name="res_id" ref="general_audit_class_transaction_50_14b9ad02" />
-        <field
-            name="value"
-        >Transaksi saat perusahaan membayar pemasok di muka atas barang/jasa yang akan diterima. Dicatat sebagai aset (biaya dibayar dimuka) lalu diamortisasi saat diterima.</field>
-    </record>
-    <record
-        id="l18n_id_general_audit_class_transaction_51_f7e462ce_name"
-        model="ir.translation"
-    >
-        <field name="name">general_audit_class_transaction,name</field>
-        <field name="lang">id_ID</field>
-        <field name="type">model</field>
-        <field name="res_id" ref="general_audit_class_transaction_51_f7e462ce" />
-        <field name="value">Pengakuan Beban</field>
-    </record>
-    <record
-        id="l18n_id_general_audit_class_transaction_51_f7e462ce_note"
-        model="ir.translation"
-    >
-        <field name="name">general_audit_class_transaction,note</field>
-        <field name="lang">id_ID</field>
-        <field name="type">model</field>
-        <field name="res_id" ref="general_audit_class_transaction_51_f7e462ce" />
-        <field
-            name="value"
-        >Beberapa akuisisi langsung dicatat sebagai beban saat barang/jasa segera dikonsumsi atau jasa telah diberikan. Mempengaruhi laba rugi pada periode terjadinya.</field>
-    </record>
-    <record
-        id="l18n_id_general_audit_class_transaction_52_c3b027cf_name"
-        model="ir.translation"
-    >
-        <field name="name">general_audit_class_transaction,name</field>
-        <field name="lang">id_ID</field>
-        <field name="type">model</field>
-        <field name="res_id" ref="general_audit_class_transaction_52_c3b027cf" />
-        <field name="value">Laba/Rugi Belum Terealisasi atas Investasi</field>
-    </record>
-    <record
-        id="l18n_id_general_audit_class_transaction_52_c3b027cf_note"
-        model="ir.translation"
-    >
-        <field name="name">general_audit_class_transaction,note</field>
-        <field name="lang">id_ID</field>
-        <field name="type">model</field>
-        <field name="res_id" ref="general_audit_class_transaction_52_c3b027cf" />
-        <field
-            name="value"
-        >Muncul dari perubahan nilai wajar investasi yang masih dimiliki. Dicatat saat mark-to-market di akhir periode; memengaruhi neraca dan tergantung klasifikasi dapat memengaruhi laba rugi atau OCI.</field>
-    </record>
-    <record
-        id="l18n_id_general_audit_class_transaction_53_fc1e1fd0_name"
-        model="ir.translation"
-    >
-        <field name="name">general_audit_class_transaction,name</field>
-        <field name="lang">id_ID</field>
-        <field name="type">model</field>
-        <field name="res_id" ref="general_audit_class_transaction_53_fc1e1fd0" />
-        <field name="value">Dividen Saham dan Stock Split</field>
-    </record>
-    <record
-        id="l18n_id_general_audit_class_transaction_53_fc1e1fd0_note"
-        model="ir.translation"
-    >
-        <field name="name">general_audit_class_transaction,note</field>
-        <field name="lang">id_ID</field>
-        <field name="type">model</field>
-        <field name="res_id" ref="general_audit_class_transaction_53_fc1e1fd0" />
-        <field
-            name="value"
-        >Dividen saham menerbitkan saham tambahan kepada pemegang saham alih-alih kas. Stock split menambah jumlah saham beredar tanpa mengubah total ekuitas.</field>
-    </record>
-    <record
-        id="l18n_id_general_audit_class_transaction_54_0cae8885_name"
-        model="ir.translation"
-    >
-        <field name="name">general_audit_class_transaction,name</field>
-        <field name="lang">id_ID</field>
-        <field name="type">model</field>
-        <field name="res_id" ref="general_audit_class_transaction_54_0cae8885" />
-        <field name="value">Perjanjian Pinjaman (Covenant) &amp; Biaya Kepatuhan</field>
-    </record>
-    <record
-        id="l18n_id_general_audit_class_transaction_54_0cae8885_note"
-        model="ir.translation"
-    >
-        <field name="name">general_audit_class_transaction,note</field>
-        <field name="lang">id_ID</field>
-        <field name="type">model</field>
-        <field name="res_id" ref="general_audit_class_transaction_54_0cae8885" />
-        <field
-            name="value"
-        >Perjanjian utang mengandung covenant mewajibkan pemeliharaan rasio keuangan atau pengungkapan tertentu. Biaya kepatuhan seperti biaya hukum dicatat sebagai beban.</field>
-    </record>
-    <record
-        id="l18n_id_general_audit_class_transaction_55_5ec5f9cf_name"
-        model="ir.translation"
-    >
-        <field name="name">general_audit_class_transaction,name</field>
-        <field name="lang">id_ID</field>
-        <field name="type">model</field>
-        <field name="res_id" ref="general_audit_class_transaction_55_5ec5f9cf" />
-        <field name="value">Instrumen Utang dan Ekuitas Konversi</field>
-    </record>
-    <record
-        id="l18n_id_general_audit_class_transaction_55_5ec5f9cf_note"
-        model="ir.translation"
-    >
-        <field name="name">general_audit_class_transaction,note</field>
-        <field name="lang">id_ID</field>
-        <field name="type">model</field>
-        <field name="res_id" ref="general_audit_class_transaction_55_5ec5f9cf" />
-        <field
-            name="value"
-        >Obligasi konversi atau saham preferen dapat dikonversi menjadi saham biasa oleh pemegang. Akuntansinya kompleks karena menggabungkan fitur utang dan ekuitas.</field>
-    </record>
-    <record
-        id="l18n_id_general_audit_class_transaction_56_a741d58e_name"
-        model="ir.translation"
-    >
-        <field name="name">general_audit_class_transaction,name</field>
-        <field name="lang">id_ID</field>
-        <field name="type">model</field>
-        <field name="res_id" ref="general_audit_class_transaction_56_a741d58e" />
-        <field name="value">Pembayaran Bunga atas Utang</field>
-    </record>
-    <record
-        id="l18n_id_general_audit_class_transaction_56_a741d58e_note"
-        model="ir.translation"
-    >
-        <field name="name">general_audit_class_transaction,note</field>
-        <field name="lang">id_ID</field>
-        <field name="type">model</field>
-        <field name="res_id" ref="general_audit_class_transaction_56_a741d58e" />
-        <field
-            name="value"
-        >Transaksi ini berupa pembayaran bunga atas dana yang dipinjam. Bunga adalah beban dan mengurangi kas. Pembayaran dilakukan periodik sesuai syarat perjanjian utang.</field>
     </record>
 </odoo>
