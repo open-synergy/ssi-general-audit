@@ -41,6 +41,8 @@
         "data/master/general_audit_class_transaction.xml",
         "data/master/general_audit_expert_type.xml",
         "data/master/ownership_location.xml",
+        "data/master/general_audit_business_function.xml",
+        "data/master/general_audit_business_document.xml",
         "menu.xml",
         "views/master/ownership_location_views.xml",
         "views/master/accounting_application_views.xml",
