@@ -11,6 +11,7 @@
     "installable": True,
     "depends": [
         "ssi_general_audit",
+        "ssi_general_audit_worksheet_audit_working_plan",
     ],
     "data": [
         "security/ir_module_category_data.xml",
