@@ -60,7 +60,7 @@ class GeneralAuditWSb9d8a5cComptency(models.Model):
                 ("worksheet_id", "=", record.worksheet_id.id),
                 ("employee_id", "=", record.employee_id.id),
             ]
-            personnel = Personnel.search(criteria)
+            personnel = Personnel.search(criteria, limit=1)
             if personnel:
                 record.year_experience = personnel.year_experience
             else:
