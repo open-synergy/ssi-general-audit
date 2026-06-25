@@ -136,6 +136,7 @@ class ClientTrialBalanceDetail(models.Model):
         "debit",
         "credit",
         "account_id",
+        "account_id.normal_balance",
         "opening_balance_debit",
         "opening_balance_credit",
     )
