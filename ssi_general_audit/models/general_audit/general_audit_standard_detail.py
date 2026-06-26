@@ -24,6 +24,13 @@ class GeneralAuditStandardDetail(models.Model):
     _description = "Accountant General Audit Standard Detail"
     _order = "general_audit_id, type_id, id"
     _rec_name = "type_id"
+    _sql_constraints = [
+        (
+            "unique_general_audit_type",
+            "unique(general_audit_id, type_id)",
+            "Account type must be unique per General Audit.",
+        ),
+    ]
 
     type_id = fields.Many2one(
         string="Account Type",
