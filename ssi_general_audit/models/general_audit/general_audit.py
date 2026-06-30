@@ -954,6 +954,9 @@ class GeneralAudit(models.Model):
         StandardDetail = self.env["general_audit.standard_detail"]
 
         if self.account_mapping_id:
+            for tb in self.trial_balance_ids:
+                tb.standard_detail_ids.unlink()
+
             acc_mapping_type_ids = self.account_mapping_id.mapped("detail_ids").type_id
             mapping = {chk.type_id.id: chk for chk in self.standard_detail_ids}
 
@@ -972,6 +975,10 @@ class GeneralAudit(models.Model):
                 for chk in self.standard_detail_ids:
                     if chk.type_id.id not in acc_mapping_type_ids.ids:
                         chk.unlink()
+
+                for tb in self.trial_balance_ids:
+                    tb.action_reload_standard_detail_ids()
+
             self._reload_group_account()
 
     def action_reload_group_account(self):
@@ -987,7 +994,7 @@ class GeneralAudit(models.Model):
         for group in self.group_detail_ids:
             group._compute_group_line()
             group._compute_extrapolation_balance()
-            group._compute_extrapolation_balance()
+            group._compute_adjustment_id()
             group._compute_adjustment()
             group._compute_adjustment_audited_balance()
             group._compute_average()
