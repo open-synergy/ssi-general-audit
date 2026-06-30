@@ -22,7 +22,7 @@
         <field name="category">summary</field>
         <field
             name="python_code"
-        >result = account_group.get("T003", 0.0) - account_group.get("T004", 0.0)</field>
+        >result = account_group.get("T003", 0.0) + account_group.get("T004", 0.0)</field>
     </record>
     <record
         id="trial_balance_computation_item_3_a1ff2fe0"
@@ -336,7 +336,6 @@
             name="python_code"
         >result = T010 / (account_group["T001"] + account_group["T002"])</field>
     </record>
-
     <record
         id="trial_balance_computation_item_wc_ta"
         model="trial_balance_computation_item"
@@ -347,7 +346,6 @@
         <field name="category">summary</field>
         <field name="python_code">result = T009 / T001</field>
     </record>
-
     <record
         id="trial_balance_computation_item_re_ta"
         model="trial_balance_computation_item"
@@ -358,7 +356,6 @@
         <field name="category">summary</field>
         <field name="python_code">result = account_type.get("S332", 0.0) / T001</field>
     </record>
-
     <record
         id="trial_balance_computation_item_ebt_ta"
         model="trial_balance_computation_item"
@@ -369,7 +366,6 @@
         <field name="category">summary</field>
         <field name="python_code">result = T008 / T001</field>
     </record>
-
     <record
         id="trial_balance_computation_item_sc_tl"
         model="trial_balance_computation_item"
@@ -380,7 +376,6 @@
         <field name="category">summary</field>
         <field name="python_code">result = account_type.get("S311", 0.0) / T007 </field>
     </record>
-
     <record
         id="trial_balance_computation_item_revenue_ta"
         model="trial_balance_computation_item"
@@ -390,335 +385,5 @@
         <field name="sequence" eval="940" />
         <field name="category">summary</field>
         <field name="python_code">result = account_group["T009"] / T001</field>
-    </record>
-
-    <!-- Indonesian translations for trial_balance_computation_item -->
-    <record
-        id="l18n_id_trial_balance_computation_item_1_d0b0cb3e"
-        model="ir.translation"
-    >
-        <field name="name">trial_balance_computation_item,name</field>
-        <field name="lang">id_ID</field>
-        <field name="type">model</field>
-        <field name="res_id" ref="trial_balance_computation_item_1_d0b0cb3e" />
-        <field name="value">Total Aset</field>
-    </record>
-    <record
-        id="l18n_id_trial_balance_computation_item_2_4cad10cf"
-        model="ir.translation"
-    >
-        <field name="name">trial_balance_computation_item,name</field>
-        <field name="lang">id_ID</field>
-        <field name="type">model</field>
-        <field name="res_id" ref="trial_balance_computation_item_2_4cad10cf" />
-        <field name="value">Total Liabilitas</field>
-    </record>
-    <record
-        id="l18n_id_trial_balance_computation_item_3_a1ff2fe0"
-        model="ir.translation"
-    >
-        <field name="name">trial_balance_computation_item,name</field>
-        <field name="lang">id_ID</field>
-        <field name="type">model</field>
-        <field name="res_id" ref="trial_balance_computation_item_3_a1ff2fe0" />
-        <field name="value">Aset Neto</field>
-    </record>
-    <record
-        id="l18n_id_trial_balance_computation_item_4_c118c3ed"
-        model="ir.translation"
-    >
-        <field name="name">trial_balance_computation_item,name</field>
-        <field name="lang">id_ID</field>
-        <field name="type">model</field>
-        <field name="res_id" ref="trial_balance_computation_item_4_c118c3ed" />
-        <field name="value">Modal Kerja</field>
-    </record>
-    <record
-        id="l18n_id_trial_balance_computation_item_5_2a8e8641"
-        model="ir.translation"
-    >
-        <field name="name">trial_balance_computation_item,name</field>
-        <field name="lang">id_ID</field>
-        <field name="type">model</field>
-        <field name="res_id" ref="trial_balance_computation_item_5_2a8e8641" />
-        <field name="value">Total Pendapatan</field>
-    </record>
-    <record
-        id="l18n_id_trial_balance_computation_item_6_1684d695"
-        model="ir.translation"
-    >
-        <field name="name">trial_balance_computation_item,name</field>
-        <field name="lang">id_ID</field>
-        <field name="type">model</field>
-        <field name="res_id" ref="trial_balance_computation_item_6_1684d695" />
-        <field name="value">Beban Pokok Pendapatan</field>
-    </record>
-    <record
-        id="l18n_id_trial_balance_computation_item_7_7d917cee"
-        model="ir.translation"
-    >
-        <field name="name">trial_balance_computation_item,name</field>
-        <field name="lang">id_ID</field>
-        <field name="type">model</field>
-        <field name="res_id" ref="trial_balance_computation_item_7_7d917cee" />
-        <field name="value">Laba Sebelum Pajak (EBT)</field>
-    </record>
-    <record
-        id="l18n_id_trial_balance_computation_item_8_b3e9d7d4"
-        model="ir.translation"
-    >
-        <field name="name">trial_balance_computation_item,name</field>
-        <field name="lang">id_ID</field>
-        <field name="type">model</field>
-        <field name="res_id" ref="trial_balance_computation_item_8_b3e9d7d4" />
-        <field name="value">EBITDA</field>
-    </record>
-    <record
-        id="l18n_id_trial_balance_computation_item_9_f45b1d7d"
-        model="ir.translation"
-    >
-        <field name="name">trial_balance_computation_item,name</field>
-        <field name="lang">id_ID</field>
-        <field name="type">model</field>
-        <field name="res_id" ref="trial_balance_computation_item_9_f45b1d7d" />
-        <field name="value">EBIT</field>
-    </record>
-    <record
-        id="l18n_id_trial_balance_computation_item_10_5f080612"
-        model="ir.translation"
-    >
-        <field name="name">trial_balance_computation_item,name</field>
-        <field name="lang">id_ID</field>
-        <field name="type">model</field>
-        <field name="res_id" ref="trial_balance_computation_item_10_5f080612" />
-        <field name="value">Laba Setelah Pajak (EAT)</field>
-    </record>
-    <record
-        id="l18n_id_trial_balance_computation_item_11_9c15f1db"
-        model="ir.translation"
-    >
-        <field name="name">trial_balance_computation_item,name</field>
-        <field name="lang">id_ID</field>
-        <field name="type">model</field>
-        <field name="res_id" ref="trial_balance_computation_item_11_9c15f1db" />
-        <field name="value">Rasio Lancar</field>
-    </record>
-    <record
-        id="l18n_id_trial_balance_computation_item_12_ef288acf"
-        model="ir.translation"
-    >
-        <field name="name">trial_balance_computation_item,name</field>
-        <field name="lang">id_ID</field>
-        <field name="type">model</field>
-        <field name="res_id" ref="trial_balance_computation_item_12_ef288acf" />
-        <field name="value">Rasio Kas</field>
-    </record>
-    <record
-        id="l18n_id_trial_balance_computation_item_13_da94aee5"
-        model="ir.translation"
-    >
-        <field name="name">trial_balance_computation_item,name</field>
-        <field name="lang">id_ID</field>
-        <field name="type">model</field>
-        <field name="res_id" ref="trial_balance_computation_item_13_da94aee5" />
-        <field name="value">Rasio Cepat</field>
-    </record>
-    <record
-        id="l18n_id_trial_balance_computation_item_14_aa725845"
-        model="ir.translation"
-    >
-        <field name="name">trial_balance_computation_item,name</field>
-        <field name="lang">id_ID</field>
-        <field name="type">model</field>
-        <field name="res_id" ref="trial_balance_computation_item_14_aa725845" />
-        <field name="value">Rasio Perputaran Persediaan</field>
-    </record>
-    <record
-        id="l18n_id_trial_balance_computation_item_15_b0081633"
-        model="ir.translation"
-    >
-        <field name="name">trial_balance_computation_item,name</field>
-        <field name="lang">id_ID</field>
-        <field name="type">model</field>
-        <field name="res_id" ref="trial_balance_computation_item_15_b0081633" />
-        <field name="value">Rasio Perputaran Piutang Usaha</field>
-    </record>
-    <record
-        id="l18n_id_trial_balance_computation_item_16_6fe5e27b"
-        model="ir.translation"
-    >
-        <field name="name">trial_balance_computation_item,name</field>
-        <field name="lang">id_ID</field>
-        <field name="type">model</field>
-        <field name="res_id" ref="trial_balance_computation_item_16_6fe5e27b" />
-        <field name="value">Rasio Perputaran Total Aset</field>
-    </record>
-    <record
-        id="l18n_id_trial_balance_computation_item_17_728853c4"
-        model="ir.translation"
-    >
-        <field name="name">trial_balance_computation_item,name</field>
-        <field name="lang">id_ID</field>
-        <field name="type">model</field>
-        <field name="res_id" ref="trial_balance_computation_item_17_728853c4" />
-        <field name="value">Rasio Perputaran Modal Kerja</field>
-    </record>
-    <record
-        id="l18n_id_trial_balance_computation_item_18_c3307ac3"
-        model="ir.translation"
-    >
-        <field name="name">trial_balance_computation_item,name</field>
-        <field name="lang">id_ID</field>
-        <field name="type">model</field>
-        <field name="res_id" ref="trial_balance_computation_item_18_c3307ac3" />
-        <field name="value">Rasio Perputaran Utang Usaha</field>
-    </record>
-    <record
-        id="l18n_id_trial_balance_computation_item_19_673eec25"
-        model="ir.translation"
-    >
-        <field name="name">trial_balance_computation_item,name</field>
-        <field name="lang">id_ID</field>
-        <field name="type">model</field>
-        <field name="res_id" ref="trial_balance_computation_item_19_673eec25" />
-        <field name="value">Hari Persediaan Tersedia</field>
-    </record>
-    <record
-        id="l18n_id_trial_balance_computation_item_20_df9196a9"
-        model="ir.translation"
-    >
-        <field name="name">trial_balance_computation_item,name</field>
-        <field name="lang">id_ID</field>
-        <field name="type">model</field>
-        <field name="res_id" ref="trial_balance_computation_item_20_df9196a9" />
-        <field name="value">Hari Piutang Beredar</field>
-    </record>
-    <record
-        id="l18n_id_trial_balance_computation_item_21_7eb094ad"
-        model="ir.translation"
-    >
-        <field name="name">trial_balance_computation_item,name</field>
-        <field name="lang">id_ID</field>
-        <field name="type">model</field>
-        <field name="res_id" ref="trial_balance_computation_item_21_7eb094ad" />
-        <field name="value">Hari Utang Beredar</field>
-    </record>
-    <record
-        id="l18n_id_trial_balance_computation_item_22_e8f57551"
-        model="ir.translation"
-    >
-        <field name="name">trial_balance_computation_item,name</field>
-        <field name="lang">id_ID</field>
-        <field name="type">model</field>
-        <field name="res_id" ref="trial_balance_computation_item_22_e8f57551" />
-        <field name="value">Siklus Konversi Kas</field>
-    </record>
-    <record
-        id="l18n_id_trial_balance_computation_item_23_5db39ab3"
-        model="ir.translation"
-    >
-        <field name="name">trial_balance_computation_item,name</field>
-        <field name="lang">id_ID</field>
-        <field name="type">model</field>
-        <field name="res_id" ref="trial_balance_computation_item_23_5db39ab3" />
-        <field name="value">Rasio Utang terhadap Ekuitas</field>
-    </record>
-    <record
-        id="l18n_id_trial_balance_computation_item_24_33cc2638"
-        model="ir.translation"
-    >
-        <field name="name">trial_balance_computation_item,name</field>
-        <field name="lang">id_ID</field>
-        <field name="type">model</field>
-        <field name="res_id" ref="trial_balance_computation_item_24_33cc2638" />
-        <field name="value">Rasio Leverage Keuangan</field>
-    </record>
-    <record
-        id="l18n_id_trial_balance_computation_item_25_9e82b772"
-        model="ir.translation"
-    >
-        <field name="name">trial_balance_computation_item,name</field>
-        <field name="lang">id_ID</field>
-        <field name="type">model</field>
-        <field name="res_id" ref="trial_balance_computation_item_25_9e82b772" />
-        <field name="value">Rasio Cakupan Bunga</field>
-    </record>
-    <record
-        id="l18n_id_trial_balance_computation_item_26_bd510ed2"
-        model="ir.translation"
-    >
-        <field name="name">trial_balance_computation_item,name</field>
-        <field name="lang">id_ID</field>
-        <field name="type">model</field>
-        <field name="res_id" ref="trial_balance_computation_item_26_bd510ed2" />
-        <field name="value">Margin Laba Bersih</field>
-    </record>
-    <record
-        id="l18n_id_trial_balance_computation_item_27_673714ec"
-        model="ir.translation"
-    >
-        <field name="name">trial_balance_computation_item,name</field>
-        <field name="lang">id_ID</field>
-        <field name="type">model</field>
-        <field name="res_id" ref="trial_balance_computation_item_27_673714ec" />
-        <field name="value">Margin Laba Kotor</field>
-    </record>
-    <record
-        id="l18n_id_trial_balance_computation_item_28_947a1785"
-        model="ir.translation"
-    >
-        <field name="name">trial_balance_computation_item,name</field>
-        <field name="lang">id_ID</field>
-        <field name="type">model</field>
-        <field name="res_id" ref="trial_balance_computation_item_28_947a1785" />
-        <field name="value">ROA</field>
-    </record>
-    <record
-        id="l18n_id_trial_balance_computation_item_29_5b154bdf"
-        model="ir.translation"
-    >
-        <field name="name">trial_balance_computation_item,name</field>
-        <field name="lang">id_ID</field>
-        <field name="type">model</field>
-        <field name="res_id" ref="trial_balance_computation_item_29_5b154bdf" />
-        <field name="value">ROE</field>
-    </record>
-    <record id="l18n_id_trial_balance_computation_item_wc_ta" model="ir.translation">
-        <field name="name">trial_balance_computation_item,name</field>
-        <field name="lang">id_ID</field>
-        <field name="type">model</field>
-        <field name="res_id" ref="trial_balance_computation_item_wc_ta" />
-        <field name="value">Modal Kerja / Total Aset</field>
-    </record>
-    <record id="l18n_id_trial_balance_computation_item_re_ta" model="ir.translation">
-        <field name="name">trial_balance_computation_item,name</field>
-        <field name="lang">id_ID</field>
-        <field name="type">model</field>
-        <field name="res_id" ref="trial_balance_computation_item_re_ta" />
-        <field name="value">Laba Ditahan / Total Aset</field>
-    </record>
-    <record id="l18n_id_trial_balance_computation_item_ebt_ta" model="ir.translation">
-        <field name="name">trial_balance_computation_item,name</field>
-        <field name="lang">id_ID</field>
-        <field name="type">model</field>
-        <field name="res_id" ref="trial_balance_computation_item_ebt_ta" />
-        <field name="value">EBIT / Total Aset</field>
-    </record>
-    <record id="l18n_id_trial_balance_computation_item_sc_tl" model="ir.translation">
-        <field name="name">trial_balance_computation_item,name</field>
-        <field name="lang">id_ID</field>
-        <field name="type">model</field>
-        <field name="res_id" ref="trial_balance_computation_item_sc_tl" />
-        <field name="value">Modal Saham / Total Liabilitas</field>
-    </record>
-    <record
-        id="l18n_id_trial_balance_computation_item_revenue_ta"
-        model="ir.translation"
-    >
-        <field name="name">trial_balance_computation_item,name</field>
-        <field name="lang">id_ID</field>
-        <field name="type">model</field>
-        <field name="res_id" ref="trial_balance_computation_item_revenue_ta" />
-        <field name="value">Total Pendapatan / Total Aset</field>
     </record>
 </odoo>
