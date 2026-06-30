@@ -34,9 +34,16 @@ class ImportClientAccount(models.TransientModel):
             self._import_client_account(row)
         return {"type": "ir.actions.act_window_close"}
 
+    def _get_type_id(self, row):
+        if len(row) < 4 or not row[3]:
+            return False
+        types = self.env["client_account_type"].search([("code", "=", row[3])], limit=1)
+        return types.id if types else False
+
     def _import_client_account(self, row):
         self.ensure_one()
         Account = self.env["client_account"]
+        type_id = self._get_type_id(row)
         criteria = [
             ("partner_id", "=", self.mapping_id.partner_id.id),
             ("code", "=", row[0]),
@@ -44,12 +51,15 @@ class ImportClientAccount(models.TransientModel):
         accounts = Account.search(criteria)
         if len(accounts) > 0:
             account = accounts[0]
+            if type_id:
+                account.write({"type_id": type_id})
         else:
             account = Account.create(
                 {
                     "code": row[0],
                     "name": row[1],
                     "partner_id": self.mapping_id.partner_id.id,
+                    "type_id": type_id,
                 }
             )
 
