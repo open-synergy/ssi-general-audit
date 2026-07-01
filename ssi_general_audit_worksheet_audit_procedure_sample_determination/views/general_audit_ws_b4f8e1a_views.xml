@@ -1,0 +1,67 @@
+<?xml version="1.0" ?>
+<!-- Copyright 2026 OpenSynergy Indonesia
+     Copyright 2026 PT. Simetri Sinergi Indonesia
+     License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl-3.0-standalone.html). -->
+<odoo>
+
+    <!-- SEARCH VIEW -->
+    <record id="general_audit_ws_b4f8e1a_view_search" model="ir.ui.view">
+        <field name="name">general_audit_ws_b4f8e1a search</field>
+        <field name="model">general_audit_ws_b4f8e1a</field>
+        <field
+            name="inherit_id"
+            ref="ssi_general_audit.general_audit_worksheet_mixin_view_search"
+        />
+        <field name="mode">primary</field>
+        <field name="arch" type="xml">
+            <data />
+        </field>
+    </record>
+
+    <!-- LIST VIEW -->
+    <record id="general_audit_ws_b4f8e1a_view_tree" model="ir.ui.view">
+        <field name="name">general_audit_ws_b4f8e1a tree</field>
+        <field name="model">general_audit_ws_b4f8e1a</field>
+        <field name="mode">primary</field>
+        <field
+            name="inherit_id"
+            ref="ssi_general_audit.general_audit_worksheet_mixin_view_tree"
+        />
+        <field name="arch" type="xml">
+            <data />
+        </field>
+    </record>
+
+    <!-- FORM VIEW -->
+    <record id="general_audit_ws_b4f8e1a_view_form" model="ir.ui.view">
+        <field name="name">general_audit_ws_b4f8e1a form</field>
+        <field name="model">general_audit_ws_b4f8e1a</field>
+        <field name="priority" eval="100" />
+        <field name="mode">primary</field>
+        <field
+            name="inherit_id"
+            ref="ssi_general_audit.general_audit_worksheet_mixin_view_form"
+        />
+        <field name="arch" type="xml">
+            <data />
+        </field>
+    </record>
+
+    <!-- ACTION -->
+    <record id="general_audit_ws_b4f8e1a_action" model="ir.actions.act_window">
+        <field name="name">Sample Determination</field>
+        <field name="res_model">general_audit_ws_b4f8e1a</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+    <!-- MENU -->
+    <menuitem
+        id="general_audit_ws_b4f8e1a_menu"
+        name="Sample Determination"
+        parent="ssi_general_audit.menu_rr_substantive_test"
+        action="general_audit_ws_b4f8e1a_action"
+        sequence="4"
+        groups="general_audit_ws_b4f8e1a_viewer_group"
+    />
+
+</odoo>
