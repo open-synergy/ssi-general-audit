@@ -4,13 +4,12 @@
 from odoo import models
 
 
-class GeneralAuditWSA3C9D2E(models.Model):
-    _name = "general_audit_ws_a3c9d2e"
-    _description = "Analytical Procedures – Cycle (a3c9d2e)"
+class GeneralAuditWSB4F8E1A(models.Model):
+    _name = "general_audit_ws_b4f8e1a"
+    _description = "Sample Determination (b4f8e1a)"
     _inherit = [
         "general_audit_worksheet_mixin",
     ]
     _type_xml_id = (
-        "ssi_general_audit_worksheet_audit_procedure_analytic_cycle"
-        ".worksheet_type_a3c9d2e"
+        "ssi_general_audit_worksheet_sample_determination" ".worksheet_type_b4f8e1a"
     )
