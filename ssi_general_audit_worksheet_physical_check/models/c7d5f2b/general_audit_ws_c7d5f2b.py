@@ -10,4 +10,4 @@ class GeneralAuditWSC7D5F2B(models.Model):
     _inherit = [
         "general_audit_worksheet_mixin",
     ]
-    _type_xml_id = "ssi_general_audit_worksheet_inspection.worksheet_type_c7d5f2b"
+    _type_xml_id = "ssi_general_audit_worksheet_physical_check.worksheet_type_c7d5f2b"
