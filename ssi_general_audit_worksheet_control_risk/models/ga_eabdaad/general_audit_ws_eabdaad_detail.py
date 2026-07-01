@@ -27,7 +27,7 @@ class GeneralAuditWSeABDAADDetail(models.Model):
         string="Key Internal Control",
         comodel_name="general_audit_key_internal_control",
         required=True,
-        ondelete="restrict",
+        ondelete="cascade",
         help="Key internal control within the selected business cycle.",
     )
     name = fields.Char(

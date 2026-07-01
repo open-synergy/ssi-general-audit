@@ -954,8 +954,19 @@ class GeneralAudit(models.Model):
         StandardDetail = self.env["general_audit.standard_detail"]
 
         if self.account_mapping_id:
+            sd_ids = self.standard_detail_ids.ids
+
+            # Hapus semua dependent records — pola sama seperti TB
             for tb in self.trial_balance_ids:
                 tb.standard_detail_ids.unlink()
+            for model_name in [
+                "general_audit_ws_b32655a.vertical_horizontal_analysis",
+                "general_audit_ws_6dcda0e_materiality_mapping",
+            ]:
+                if model_name in self.env:
+                    self.env[model_name].search(
+                        [("standard_detail_id", "in", sd_ids)]
+                    ).unlink()
 
             acc_mapping_type_ids = self.account_mapping_id.mapped("detail_ids").type_id
             mapping = {chk.type_id.id: chk for chk in self.standard_detail_ids}
@@ -972,12 +983,42 @@ class GeneralAudit(models.Model):
                     else:
                         mapping[acc_type.id].write({"type_id": acc_type.id})
 
+                # Hapus standard_detail yang sudah tidak ada di mapping,
+                # beserta dependent records yang tidak punya reload method
                 for chk in self.standard_detail_ids:
                     if chk.type_id.id not in acc_mapping_type_ids.ids:
+                        for model_name in [
+                            "general_audit_ws_a418d89.detail",
+                            "general_audit_ws_d66d87a.detail",
+                        ]:
+                            if model_name in self.env:
+                                self.env[model_name].search(
+                                    [("standard_detail_id", "=", chk.id)]
+                                ).unlink()
                         chk.unlink()
 
+                # Reload semua — pola sama seperti TB
                 for tb in self.trial_balance_ids:
                     tb.action_reload_standard_detail_ids()
+
+                # Recompute balance fields di standard_detail dulu sebelum
+                # worksheet di-reload, agar analysis lines mendapat nilai benar
+                standard_detail = self.standard_detail_ids
+                standard_detail._compute_standard_line()
+                standard_detail._compute_standard_adjustment_id()
+                standard_detail._compute_extrapolation_balance()
+                standard_detail._compute_adjusted_extrapolation_balance()
+                standard_detail._compute_adjustment_audited_balance()
+                standard_detail._compute_average()
+
+                if "general_audit_ws_b32655a" in self.env:
+                    self.env["general_audit_ws_b32655a"].search(
+                        [("general_audit_id", "=", self.id)]
+                    ).action_reload_analysis_ids()
+                if "general_audit_ws_6dcda0e" in self.env:
+                    self.env["general_audit_ws_6dcda0e"].search(
+                        [("general_audit_id", "=", self.id)]
+                    ).action_reload_materiality_mapping()
 
             self._reload_group_account()
 
