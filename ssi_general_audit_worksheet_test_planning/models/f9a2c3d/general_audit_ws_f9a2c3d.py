@@ -38,7 +38,8 @@ class GeneralAuditWSf9a2c3d(models.Model):
       Misstatement per account manually.
 
     Sampling formula (ISA 530 MUS):
-      Sampling Interval = Tolerable Misstatement ÷ Confidence Factor
+      Sampling Interval = Performance Materiality ÷ Confidence Factor
+        (per account level: Tolerable Misstatement ÷ Confidence Factor)
       Sample Count      = Sampling Pool ÷ Sampling Interval
 
     ``Confidence Factor`` is determined by ROMM level and AP assurance
@@ -154,11 +155,11 @@ class GeneralAuditWSf9a2c3d(models.Model):
         ),
     )
 
-    @api.depends("risk_factor_adjustment", "tolerable_misstatement")
+    @api.depends("risk_factor_adjustment", "performance_materiality")
     def _compute_specific_materiality(self):
         for record in self:
             record.specific_materiality = (
-                record.risk_factor_adjustment / 100.0 * record.tolerable_misstatement
+                record.risk_factor_adjustment / 100.0 * record.performance_materiality
             )
 
     specific_materiality = fields.Monetary(
@@ -168,7 +169,7 @@ class GeneralAuditWSf9a2c3d(models.Model):
         store=True,
         compute_sudo=True,
         help=(
-            "Specific Materiality = Risk Factor Adjustment (%) × Tolerable Misstatement."
+            "Specific Materiality = Risk Factor Adjustment (%) × Performance Materiality."
         ),
     )
     risk_factor_adjustment = fields.Float(
@@ -212,14 +213,14 @@ class GeneralAuditWSf9a2c3d(models.Model):
             "the standard account level (tod_level = 'standard_account')."
         ),
     )
-    tolerable_misstatement = fields.Monetary(
-        string="Tolerable Misstatement",
-        related="preliminary_materiality_id.tolerable_misstatement",
+    performance_materiality = fields.Monetary(
+        string="Performance Materiality",
+        related="preliminary_materiality_id.performance_materiality",
         store=True,
         compute_sudo=True,
         currency_field="currency_id",
         help=(
-            "Tolerable Misstatement sourced from the linked "
+            "Performance Materiality sourced from the linked "
             "Preliminary Materiality worksheet. "
             "Used when tod_level = 'standard_account'."
         ),
@@ -389,12 +390,12 @@ class GeneralAuditWSf9a2c3d(models.Model):
         ),
     )
 
-    @api.depends("tolerable_misstatement", "confidence_factor")
+    @api.depends("performance_materiality", "confidence_factor")
     def _compute_sampling_interval(self):
         for record in self:
             if record.confidence_factor > 0:
                 record.sampling_interval = (
-                    record.tolerable_misstatement / record.confidence_factor
+                    record.performance_materiality / record.confidence_factor
                 )
             else:
                 record.sampling_interval = 0.0
@@ -405,7 +406,7 @@ class GeneralAuditWSf9a2c3d(models.Model):
         compute="_compute_sampling_interval",
         store=True,
         compute_sudo=True,
-        help="Sampling Interval = Tolerable Misstatement ÷ Confidence Factor (ISA 530 MUS).",
+        help="Sampling Interval = Performance Materiality ÷ Confidence Factor (ISA 530 MUS).",
     )
 
     @api.depends("sampling_amount", "sampling_interval")
