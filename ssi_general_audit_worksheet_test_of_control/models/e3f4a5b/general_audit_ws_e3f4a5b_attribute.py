@@ -284,7 +284,11 @@ class GeneralAuditWSe3f4a5bAttribute(models.Model):
       interpolation between rows; falls back to chi-square approximation for
       sample sizes outside the table range or k > 10.
     - ``cuer``: effective CUER based on the selected ARO level.
-    - ``conclusion``: Effective if CUER ≤ TDR, Not Effective if CUER > TDR.
+    - ``conclusion``: Effective if CUER ≤ ARO, Not Effective if CUER > ARO.
+      NOTE: this is a client-specific methodology choice. ISA 530 / the AICPA
+      Audit Guide compare CUER against TDR (Tolerable Deviation Rate), not
+      ARO; ARO is a sampling-risk parameter normally used only to select the
+      sample size / CUER table, not as the evaluation threshold.
 
     Reference standards: ISA 530 / SA 530 — Audit Sampling;
     ISA 330 / SA 330 — Auditor Responses to Assessed Risks.
@@ -448,7 +452,11 @@ class GeneralAuditWSe3f4a5bAttribute(models.Model):
         compute="_compute_conclusion",
         store=True,
         compute_sudo=True,
-        help="Conclusion: Effective if CUER ≤ TDR, Not Effective if CUER > TDR.",
+        help=(
+            "Conclusion: Effective if CUER <= ARO, Not Effective if CUER > ARO. "
+            "Client-specific methodology: deviates from the ISA 530 / AICPA "
+            "Audit Guide convention of comparing CUER against TDR."
+        ),
     )
 
     @api.depends("eper", "tdr")
@@ -579,11 +587,11 @@ class GeneralAuditWSe3f4a5bAttribute(models.Model):
             else:
                 record.cuer = record.cuer_10pct
 
-    @api.depends("cuer", "tdr")
+    @api.depends("cuer", "aro")
     def _compute_conclusion(self):
         for record in self:
-            if record.sample_actual > 0 and record.tdr > 0:
-                if record.cuer <= record.tdr:
+            if record.sample_actual > 0 and record.aro:
+                if record.cuer <= float(record.aro):
                     record.conclusion = "effective"
                 else:
                     record.conclusion = "not_effective"
