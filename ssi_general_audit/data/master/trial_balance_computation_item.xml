@@ -354,7 +354,7 @@
         <field name="name">Retained Earning / Total Asset</field>
         <field name="sequence" eval="900" />
         <field name="category">summary</field>
-        <field name="python_code">result = account_type.get("S332", 0.0) / T001</field>
+        <field name="python_code">result = account_group.get("T007", 0.0) / T001</field>
     </record>
     <record
         id="trial_balance_computation_item_ebt_ta"
@@ -374,7 +374,7 @@
         <field name="name">Share Capital / Total Liability</field>
         <field name="sequence" eval="930" />
         <field name="category">summary</field>
-        <field name="python_code">result = account_type.get("S311", 0.0) / T007 </field>
+        <field name="python_code">result = account_group.get("T005", 0.0) / T007</field>
     </record>
     <record
         id="trial_balance_computation_item_revenue_ta"
