@@ -1,0 +1,85 @@
+<?xml version='1.0' encoding='utf-8' ?>
+<odoo>
+    <record id="general_audit_ws_a01723b_internal_user_rule" model="ir.rule">
+        <field name="name">Population (a01723b) - Internal Users</field>
+        <field name="model_id" ref="model_general_audit_ws_a01723b" />
+        <field name="groups" eval="[(4, ref('base.group_user'))]" />
+        <field name="domain_force">[
+      '|',
+      '|',
+      '|',
+      ('user_id','=',user.id),
+      ('reviewer_id','=',user.id),
+      ('general_audit_id.user_id','=',user.id),
+      ('general_audit_id.reviewer_id','=',user.id),
+    ]</field>
+        <field name="perm_unlink" eval="1" />
+        <field name="perm_write" eval="1" />
+        <field name="perm_read" eval="1" />
+        <field name="perm_create" eval="1" />
+    </record>
+    <record id="general_audit_ws_a01723b_internal_user_team_rule" model="ir.rule">
+        <field name="name">Population (a01723b) - Internal Users - Audit Team</field>
+        <field name="model_id" ref="model_general_audit_ws_a01723b" />
+        <field name="groups" eval="[(4, ref('base.group_user'))]" />
+        <field name="domain_force">[
+        ("general_audit_id.team_allocation_user_ids", "in", [user.id])
+    ]</field>
+        <field name="perm_unlink" eval="0" />
+        <field name="perm_write" eval="0" />
+        <field name="perm_read" eval="1" />
+        <field name="perm_create" eval="0" />
+    </record>
+    <record id="general_audit_ws_a01723b_company_rule" model="ir.rule">
+        <field name="name">Population (a01723b) - Responsible to company data</field>
+        <field name="model_id" ref="model_general_audit_ws_a01723b" />
+        <field
+            name="groups"
+            eval="[(4, ref('general_audit_ws_a01723b_company_group'))]"
+        />
+        <field name="domain_force">[('company_id','=',user.company_id.id)]</field>
+        <field name="perm_unlink" eval="1" />
+        <field name="perm_write" eval="1" />
+        <field name="perm_read" eval="1" />
+        <field name="perm_create" eval="1" />
+    </record>
+    <record id="general_audit_ws_a01723b_companies_rule" model="ir.rule">
+        <field
+            name="name"
+        >Population (a01723b) - Responsible to company and all child companies data</field>
+        <field name="model_id" ref="model_general_audit_ws_a01723b" />
+        <field
+            name="groups"
+            eval="[(4, ref('general_audit_ws_a01723b_company_child_group'))]"
+        />
+        <field name="domain_force">[('company_id','in',user.company_ids.ids)]</field>
+        <field name="perm_unlink" eval="1" />
+        <field name="perm_write" eval="1" />
+        <field name="perm_read" eval="1" />
+        <field name="perm_create" eval="1" />
+    </record>
+    <record id="general_audit_ws_a01723b_all_rule" model="ir.rule">
+        <field name="name">Population (a01723b) - All</field>
+        <field name="model_id" ref="model_general_audit_ws_a01723b" />
+        <field name="groups" eval="[(4, ref('general_audit_ws_a01723b_all_group'))]" />
+        <field name="domain_force">[(1,'=',1)]</field>
+        <field name="perm_unlink" eval="1" />
+        <field name="perm_write" eval="1" />
+        <field name="perm_read" eval="1" />
+        <field name="perm_create" eval="1" />
+    </record>
+    <record id="general_audit_ws_a01723b_ou_role" model="ir.rule">
+        <field
+            name="name"
+        >Population (a01723b) - Responsible to operating unit data</field>
+        <field name="model_id" ref="model_general_audit_ws_a01723b" />
+        <field name="groups" eval="[(4, ref('general_audit_ws_a01723b_ou_group'))]" />
+        <field
+            name="domain_force"
+        >[('operating_unit_id','in',[g.id for g in user.operating_unit_ids])]</field>
+        <field name="perm_unlink" eval="0" />
+        <field name="perm_write" eval="0" />
+        <field name="perm_read" eval="1" />
+        <field name="perm_create" eval="0" />
+    </record>
+</odoo>
