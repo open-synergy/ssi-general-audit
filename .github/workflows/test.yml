@@ -55,14 +55,11 @@ jobs:
           persist-credentials: false
       - name: Install odoo-yaml-test from git
         run: pip install git+https://github.com/andhit-r/odoo-yaml-test.git@master#egg=odoo-yaml-test
-      - name: Install ks_dashboard_ninja
-        run: pip install git+https://x-access-token:${{ secrets.GIT_PUSH_TOKEN }}@github.com/open-synergy/ssi-app-store@14.0#subdirectory=setup/ks_dashboard_ninja
       - name: Install addons and dependencies
         run: oca_install_addons
         env:
           PIP_INDEX_URL: https://pypi.org/simple
           PIP_EXTRA_INDEX_URL: https://${{ secrets.SSI_PYPI_USER }}:${{ secrets.SSI_PYPI_PASSWORD }}@osmium.simetri-sinergi.biz.id/simple/
-          EXCLUDE: ks_dashboard_ninja
       - name: Check licenses
         run: manifestoo -d . check-licenses
         continue-on-error: true
