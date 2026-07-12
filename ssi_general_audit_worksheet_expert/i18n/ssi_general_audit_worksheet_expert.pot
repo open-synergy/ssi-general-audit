@@ -1,0 +1,2051 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* ssi_general_audit_worksheet_expert
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 14.0\n"
+"Report-Msgid-Bugs-To: \n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#. module: ssi_general_audit_worksheet_expert
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_general_audit_ws_bab9d32__name
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_general_audit_ws_cda3a68__name
+msgid "# Document"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_expert
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_general_audit_ws_bab9d32_detail__expert_id
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_general_audit_ws_cda3a68_detail__expert_id
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_mixin_expert_detail__expert_id
+msgid "# Expert"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_expert
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_mixin_expert_detail__factor_id
+msgid "# Factor"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_expert
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_general_audit_ws_bab9d32__general_audit_id
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_general_audit_ws_cda3a68__general_audit_id
+msgid "# General Audit"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_expert
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_general_audit_ws_bab9d32__worksheet_id
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_general_audit_ws_cda3a68__worksheet_id
+msgid "# Worksheet"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_expert
+#: model:ir.model,name:ssi_general_audit_worksheet_expert.model_mixin_expert_category
+msgid "Abstract Base for Expert Categories"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_expert
+#: model:ir.model,name:ssi_general_audit_worksheet_expert.model_mixin_expert_detail
+msgid "Abstract Base for Expert Details"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_expert
+#: model:ir.model,name:ssi_general_audit_worksheet_expert.model_mixin_expert_factor
+msgid "Abstract Base for Expert Factors"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_expert
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_general_audit_ws_bab9d32__account_type_set_id
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_general_audit_ws_cda3a68__account_type_set_id
+msgid "Accoount Type Set"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_expert
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_general_audit_ws_bab9d32__account_type_ids
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_general_audit_ws_cda3a68__account_type_ids
+msgid "Account Types"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_expert
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_expert.field_general_audit_ws_bab9d32__account_type_set_id
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_expert.field_general_audit_ws_cda3a68__account_type_set_id
+msgid "Account type set used by the linked General Audit."
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_expert
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_expert.field_general_audit_ws_bab9d32__account_type_ids
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_expert.field_general_audit_ws_cda3a68__account_type_ids
+msgid "Account types available in the linked General Audit."
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_expert
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_general_audit_ws_bab9d32__accountant_id
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_general_audit_ws_cda3a68__accountant_id
+msgid "Accountant"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_expert
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_expert.field_general_audit_ws_bab9d32__accountant_id
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_expert.field_general_audit_ws_cda3a68__accountant_id
+msgid "Accountant responsible for the audit."
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_expert
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_expert.field_general_audit_ws_bab9d32__expert_account_ids
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_expert.field_general_audit_ws_cda3a68__expert_account_ids
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_expert.field_mixin_expert__expert_account_ids
+msgid ""
+"Accounts or disclosures that are significantly influenced by the expert's "
+"work."
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_expert
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_general_audit_ws_bab9d32__message_needaction
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_general_audit_ws_bab9d32_category__message_needaction
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_general_audit_ws_bab9d32_factor__message_needaction
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_general_audit_ws_cda3a68__message_needaction
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_general_audit_ws_cda3a68_category__message_needaction
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_general_audit_ws_cda3a68_factor__message_needaction
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_mixin_expert_category__message_needaction
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_mixin_expert_factor__message_needaction
+msgid "Action Needed"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_expert
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_general_audit_ws_bab9d32_category__active
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_general_audit_ws_bab9d32_factor__active
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_general_audit_ws_cda3a68_category__active
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_general_audit_ws_cda3a68_factor__active
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_mixin_expert_category__active
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_mixin_expert_factor__active
+msgid "Active"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_expert
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_general_audit_ws_bab9d32__active_approval_ids
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_general_audit_ws_cda3a68__active_approval_ids
+msgid "Active Approvals"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_expert
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_general_audit_ws_bab9d32__active_approver_partner_ids
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_general_audit_ws_cda3a68__active_approver_partner_ids
+msgid "Active Partners"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_expert
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_general_audit_ws_bab9d32__active_approver_user_ids
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_general_audit_ws_cda3a68__active_approver_user_ids
+msgid "Active Users"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_expert
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_general_audit_ws_bab9d32__activity_ids
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_general_audit_ws_bab9d32_category__activity_ids
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_general_audit_ws_bab9d32_factor__activity_ids
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_general_audit_ws_cda3a68__activity_ids
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_general_audit_ws_cda3a68_category__activity_ids
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_general_audit_ws_cda3a68_factor__activity_ids
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_mixin_expert_category__activity_ids
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_mixin_expert_factor__activity_ids
+msgid "Activities"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_expert
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_general_audit_ws_bab9d32__activity_exception_decoration
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_general_audit_ws_bab9d32_category__activity_exception_decoration
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_general_audit_ws_bab9d32_factor__activity_exception_decoration
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_general_audit_ws_cda3a68__activity_exception_decoration
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_general_audit_ws_cda3a68_category__activity_exception_decoration
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_general_audit_ws_cda3a68_factor__activity_exception_decoration
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_mixin_expert_category__activity_exception_decoration
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_mixin_expert_factor__activity_exception_decoration
+msgid "Activity Exception Decoration"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_expert
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_general_audit_ws_bab9d32__activity_state
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_general_audit_ws_bab9d32_category__activity_state
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_general_audit_ws_bab9d32_factor__activity_state
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_general_audit_ws_cda3a68__activity_state
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_general_audit_ws_cda3a68_category__activity_state
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_general_audit_ws_cda3a68_factor__activity_state
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_mixin_expert_category__activity_state
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_mixin_expert_factor__activity_state
+msgid "Activity State"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_expert
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_general_audit_ws_bab9d32__activity_type_icon
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_general_audit_ws_bab9d32_category__activity_type_icon
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_general_audit_ws_bab9d32_factor__activity_type_icon
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_general_audit_ws_cda3a68__activity_type_icon
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_general_audit_ws_cda3a68_category__activity_type_icon
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_general_audit_ws_cda3a68_factor__activity_type_icon
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_mixin_expert_category__activity_type_icon
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_mixin_expert_factor__activity_type_icon
+msgid "Activity Type Icon"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_expert
+#: model:res.groups,name:ssi_general_audit_worksheet_expert.general_audit_ws_bab9d32_all_group
+#: model:res.groups,name:ssi_general_audit_worksheet_expert.general_audit_ws_cda3a68_all_group
+msgid "All"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_expert
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_general_audit_ws_bab9d32__allowed_conclusion_ids
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_general_audit_ws_cda3a68__allowed_conclusion_ids
+msgid "Allowed Conclusion"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_expert
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_general_audit_ws_bab9d32__allowed_policy_template_ids
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_general_audit_ws_cda3a68__allowed_policy_template_ids
+msgid "Allowed Policy Templates"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_expert
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_expert.field_general_audit_ws_bab9d32__approval_template_id
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_expert.field_general_audit_ws_cda3a68__approval_template_id
+msgid "Approval Configuration"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_expert
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_general_audit_ws_bab9d32__approval_template_id
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_general_audit_ws_cda3a68__approval_template_id
+msgid "Approval Template"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_expert
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_general_audit_ws_bab9d32__approval_ids
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_general_audit_ws_cda3a68__approval_ids
+msgid "Approvals"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_expert
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_expert.field_general_audit_ws_bab9d32__approve_ok
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_expert.field_general_audit_ws_cda3a68__approve_ok
+msgid ""
+"Approve policy\n"
+"\n"
+"* If active user can see and execute 'Approve' button"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_expert
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_general_audit_ws_bab9d32__approved
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_general_audit_ws_cda3a68__approved
+msgid "Approved"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_expert
+#: model:general_audit_ws_bab9d32.factor,name:ssi_general_audit_worksheet_expert.general_audit_ws_bab9d32_factor_23_8bbc180c
+msgid ""
+"Are there confidentiality arrangements between the auditor and the auditor's"
+" expert?"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_expert
+#: model:general_audit_ws_cda3a68.factor,name:ssi_general_audit_worksheet_expert.general_audit_ws_cda3a68_factor_2_5afc4797
+msgid ""
+"Are there regulations or standards governing the work of the Management "
+"Expert?"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_expert
+#: model:general_audit_ws_bab9d32.factor,name:ssi_general_audit_worksheet_expert.general_audit_ws_bab9d32_factor_31_ff315ecb
+msgid ""
+"Are those assumptions consistent with the requirements of the applicable "
+"financial reporting framework?"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_expert
+#: model:general_audit_ws_bab9d32.factor,name:ssi_general_audit_worksheet_expert.general_audit_ws_bab9d32_factor_33_78a3c62c
+msgid ""
+"Are those assumptions consistent with those used by management; if not, what"
+" are the reasons for and the effects of the differences?"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_expert
+#: model:general_audit_ws_bab9d32.factor,name:ssi_general_audit_worksheet_expert.general_audit_ws_bab9d32_factor_30_d8c1a787
+msgid ""
+"Are those assumptions generally accepted within the auditor's expert's field"
+" of expertise?"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_expert
+#: model:general_audit_ws_bab9d32.factor,name:ssi_general_audit_worksheet_expert.general_audit_ws_bab9d32_factor_29_5972f532
+msgid ""
+"Are those assumptions relevant to the objectives and scope of the auditor's "
+"expert's work?"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_expert
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_expert.field_general_audit_ws_bab9d32__expert_type_id
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_expert.field_general_audit_ws_cda3a68__expert_type_id
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_expert.field_mixin_expert__expert_type_id
+msgid "Area of specialization or professional expertise of the expert."
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_expert
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_general_audit_ws_bab9d32__message_attachment_count
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_general_audit_ws_bab9d32_category__message_attachment_count
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_general_audit_ws_bab9d32_factor__message_attachment_count
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_general_audit_ws_cda3a68__message_attachment_count
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_general_audit_ws_cda3a68_category__message_attachment_count
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_general_audit_ws_cda3a68_factor__message_attachment_count
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_mixin_expert_category__message_attachment_count
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_mixin_expert_factor__message_attachment_count
+msgid "Attachment Count"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_expert
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_expert.field_general_audit_ws_bab9d32__date_end
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_expert.field_general_audit_ws_cda3a68__date_end
+msgid "Audit period end date."
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_expert
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_expert.field_general_audit_ws_bab9d32__date_start
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_expert.field_general_audit_ws_cda3a68__date_start
+msgid "Audit period start date."
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_expert
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_expert.field_general_audit_ws_bab9d32__standard_item_ids
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_expert.field_general_audit_ws_cda3a68__standard_item_ids
+msgid "Audit standard items relevant to this worksheet type."
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_expert
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_expert.field_general_audit_ws_bab9d32__partner_id
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_expert.field_general_audit_ws_cda3a68__partner_id
+msgid "Audited client company."
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_expert
+#: model:general_audit_worksheet_type,name:ssi_general_audit_worksheet_expert.worksheet_type_bab9d32
+#: model:ir.actions.act_window,name:ssi_general_audit_worksheet_expert.general_audit_ws_bab9d32_action
+#: model:ir.ui.menu,name:ssi_general_audit_worksheet_expert.general_audit_ws_bab9d32_category_root_menu
+#: model:ir.ui.menu,name:ssi_general_audit_worksheet_expert.general_audit_ws_bab9d32_menu
+msgid "Auditor Expert"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_expert
+#: model:ir.model,name:ssi_general_audit_worksheet_expert.model_general_audit_ws_bab9d32
+#: model:ir.module.category,name:ssi_general_audit_worksheet_expert.general_audit_ws_bab9d32_data_module_category
+#: model:ir.module.category,name:ssi_general_audit_worksheet_expert.general_audit_ws_bab9d32_workflow_module_category
+msgid "Auditor Expert (bab9d32)"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_expert
+#: model:ir.model,name:ssi_general_audit_worksheet_expert.model_general_audit_ws_bab9d32_category
+msgid "Auditor Expert (bab9d32) - Category"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_expert
+#: model:ir.model,name:ssi_general_audit_worksheet_expert.model_general_audit_ws_bab9d32_detail
+msgid "Auditor Expert (bab9d32) - Details"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_expert
+#: model:ir.model,name:ssi_general_audit_worksheet_expert.model_general_audit_ws_bab9d32_factor
+msgid "Auditor Expert (bab9d32) - Factor"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_expert
+#: model:res.groups,name:ssi_general_audit_worksheet_expert.general_audit_ws_bab9d32_category_group
+msgid "Auditor Export Category"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_expert
+#: model:res.groups,name:ssi_general_audit_worksheet_expert.general_audit_ws_bab9d32_factor_group
+msgid "Auditor Export Factor"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_expert
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_general_audit_ws_bab9d32__approve_ok
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_general_audit_ws_cda3a68__approve_ok
+msgid "Can Approve"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_expert
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_general_audit_ws_bab9d32__cancel_ok
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_general_audit_ws_cda3a68__cancel_ok
+msgid "Can Cancel"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_expert
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_general_audit_ws_bab9d32__confirm_ok
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_general_audit_ws_cda3a68__confirm_ok
+msgid "Can Confirm"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_expert
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_general_audit_ws_bab9d32__done_ok
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_general_audit_ws_cda3a68__done_ok
+msgid "Can Finished"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_expert
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_general_audit_ws_bab9d32__manual_number_ok
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_general_audit_ws_cda3a68__manual_number_ok
+msgid "Can Input Manual Document Number"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_expert
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_general_audit_ws_bab9d32__reject_ok
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_general_audit_ws_cda3a68__reject_ok
+msgid "Can Reject"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_expert
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_general_audit_ws_bab9d32__restart_ok
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_general_audit_ws_cda3a68__restart_ok
+msgid "Can Restart"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_expert
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_general_audit_ws_bab9d32__restart_approval_ok
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_general_audit_ws_cda3a68__restart_approval_ok
+msgid "Can Restart Approval"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_expert
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_general_audit_ws_bab9d32__open_ok
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_general_audit_ws_cda3a68__open_ok
+msgid "Can Start"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_expert
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_general_audit_ws_bab9d32__cancel_reason_id
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_general_audit_ws_cda3a68__cancel_reason_id
+msgid "Cancel Reason"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_expert
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_expert.field_general_audit_ws_bab9d32__cancel_ok
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_expert.field_general_audit_ws_cda3a68__cancel_ok
+msgid ""
+"Cancel policy\n"
+"\n"
+"* If active user can see and execute 'Cancel' button"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_expert
+#: model:ir.actions.act_window,name:ssi_general_audit_worksheet_expert.general_audit_ws_bab9d32_category_action
+#: model:ir.ui.menu,name:ssi_general_audit_worksheet_expert.general_audit_ws_bab9d32_category_menu
+#: model:ir.ui.menu,name:ssi_general_audit_worksheet_expert.general_audit_ws_cda3a68_category_menu
+msgid "Categories"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_expert
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_general_audit_ws_bab9d32_detail__category_id
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_general_audit_ws_bab9d32_factor__category_id
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_general_audit_ws_cda3a68_detail__category_id
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_general_audit_ws_cda3a68_factor__category_id
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_mixin_expert_detail__category_id
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_mixin_expert_factor__category_id
+msgid "Category"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_expert
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_expert.field_general_audit_ws_bab9d32__detail_ids
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_expert.field_general_audit_ws_cda3a68__detail_ids
+msgid ""
+"Checklist lines associated with this worksheet (Previous Financial Reporting"
+" Issues)."
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_expert
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_general_audit_ws_bab9d32_category__code
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_general_audit_ws_bab9d32_factor__code
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_general_audit_ws_cda3a68_category__code
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_general_audit_ws_cda3a68_factor__code
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_mixin_expert_category__code
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_mixin_expert_factor__code
+msgid "Code"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_expert
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_general_audit_ws_bab9d32__company_id
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_general_audit_ws_cda3a68__company_id
+#: model:res.groups,name:ssi_general_audit_worksheet_expert.general_audit_ws_bab9d32_company_group
+#: model:res.groups,name:ssi_general_audit_worksheet_expert.general_audit_ws_cda3a68_company_group
+msgid "Company"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_expert
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_general_audit_ws_bab9d32__company_partner_id
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_general_audit_ws_cda3a68__company_partner_id
+msgid "Company Partner"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_expert
+#: model:res.groups,name:ssi_general_audit_worksheet_expert.general_audit_ws_bab9d32_company_child_group
+#: model:res.groups,name:ssi_general_audit_worksheet_expert.general_audit_ws_cda3a68_company_child_group
+msgid "Company and All Child Companies"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_expert
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_expert.field_general_audit_ws_bab9d32__company_id
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_expert.field_general_audit_ws_cda3a68__company_id
+msgid ""
+"Company that own the document\n"
+"\n"
+"* Automatically filled with user's company.\n"
+"  Default company can be changed"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_expert
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_general_audit_ws_bab9d32__conclusion_id
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_general_audit_ws_cda3a68__conclusion_id
+msgid "Conclusion"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_expert
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_general_audit_ws_bab9d32__conclusion
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_general_audit_ws_cda3a68__conclusion
+msgid "Conclusion Additional Explanation"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_expert
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_expert.field_general_audit_ws_bab9d32__allowed_conclusion_ids
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_expert.field_general_audit_ws_cda3a68__allowed_conclusion_ids
+msgid "Conclusions allowed for the selected worksheet type."
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_expert
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_expert.field_general_audit_ws_bab9d32__confirm_ok
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_expert.field_general_audit_ws_cda3a68__confirm_ok
+msgid ""
+"Confirm policy\n"
+"\n"
+"* If active user can see and execute 'Confirm' button"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_expert
+#: model_terms:ir.ui.view,arch_db:ssi_general_audit_worksheet_expert.expert_header
+msgid "Contracting Party"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_expert
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_general_audit_ws_bab9d32__create_uid
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_general_audit_ws_bab9d32_category__create_uid
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_general_audit_ws_bab9d32_detail__create_uid
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_general_audit_ws_bab9d32_factor__create_uid
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_general_audit_ws_cda3a68__create_uid
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_general_audit_ws_cda3a68_category__create_uid
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_general_audit_ws_cda3a68_detail__create_uid
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_general_audit_ws_cda3a68_factor__create_uid
+msgid "Created by"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_expert
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_general_audit_ws_bab9d32__create_date
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_general_audit_ws_bab9d32_category__create_date
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_general_audit_ws_bab9d32_detail__create_date
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_general_audit_ws_bab9d32_factor__create_date
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_general_audit_ws_cda3a68__create_date
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_general_audit_ws_cda3a68_category__create_date
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_general_audit_ws_cda3a68_detail__create_date
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_general_audit_ws_cda3a68_factor__create_date
+msgid "Created on"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_expert
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_general_audit_ws_bab9d32__currency_id
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_general_audit_ws_cda3a68__currency_id
+msgid "Currency"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_expert
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_expert.field_general_audit_ws_bab9d32__currency_id
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_expert.field_general_audit_ws_cda3a68__currency_id
+msgid "Currency used for amounts in this worksheet."
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_expert
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_expert.field_general_audit_ws_bab9d32__preparation_date
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_expert.field_general_audit_ws_cda3a68__preparation_date
+msgid "Date when the worksheet was prepared."
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_expert
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_expert.field_general_audit_ws_bab9d32__review_date
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_expert.field_general_audit_ws_cda3a68__review_date
+msgid "Date when the worksheet was reviewed."
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_expert
+#: model:general_audit_ws_cda3a68.factor,name:ssi_general_audit_worksheet_expert.general_audit_ws_cda3a68_factor_1_82e406b4
+msgid ""
+"Describe the auditor's prior knowledge or experience relevant to the matter "
+"for which the use of a Management Expert is being considered (if "
+"applicable)."
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_expert
+#: model:general_audit_ws_bab9d32.factor,name:ssi_general_audit_worksheet_expert.general_audit_ws_bab9d32_factor_13_311af702
+msgid ""
+"Describe the nature, scope, and objectives of the auditor's expert's work."
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_expert
+#: model:general_audit_ws_bab9d32.factor,name:ssi_general_audit_worksheet_expert.general_audit_ws_bab9d32_factor_22_31b7e85f
+msgid ""
+"Describe the nature, timing, and extent of communications between the "
+"auditor and the expert, including the form of the report to be provided by "
+"the expert."
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_expert
+#: model:general_audit_ws_cda3a68.factor,name:ssi_general_audit_worksheet_expert.general_audit_ws_cda3a68_factor_28_e39c4278
+msgid ""
+"Describe the relevance and reasonableness of significant assumptions and "
+"methods used in the Management Expert's work, if any."
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_expert
+#: model:general_audit_ws_bab9d32.factor,name:ssi_general_audit_worksheet_expert.general_audit_ws_bab9d32_factor_17_1ec07d7f
+msgid ""
+"Describe the respective roles and responsibilities of the auditor and the "
+"auditor's expert."
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_expert
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_general_audit_ws_bab9d32__detail_ids
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_general_audit_ws_cda3a68__detail_ids
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_mixin_expert__detail_ids
+#: model_terms:ir.ui.view,arch_db:ssi_general_audit_worksheet_expert.expert_page
+msgid "Details"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_expert
+#: model:general_audit_ws_cda3a68.category,name:ssi_general_audit_worksheet_expert.general_audit_ws_cda3a68_category_1_af0067cc
+msgid "Determination of the Need for Management Experts"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_expert
+#: model:general_audit_ws_bab9d32.category,name:ssi_general_audit_worksheet_expert.general_audit_ws_bab9d32_category_1_22ad05f1
+msgid "Determination of the Need for an Auditor's Expert"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_expert
+#: model:general_audit_ws_cda3a68.factor,name:ssi_general_audit_worksheet_expert.general_audit_ws_cda3a68_factor_13_955e2e12
+msgid ""
+"Discuss with the Management Expert the safeguards that can be implemented to"
+" reduce threats to the Management Expert's objectivity to an acceptable "
+"level."
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_expert
+#: model:general_audit_ws_bab9d32.factor,name:ssi_general_audit_worksheet_expert.general_audit_ws_bab9d32_factor_12_30bc9719
+msgid ""
+"Discuss with the auditor's expert the safeguards that can be applied to "
+"reduce threats to the expert's objectivity to an acceptable level."
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_expert
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_general_audit_ws_bab9d32__display_name
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_general_audit_ws_bab9d32_category__display_name
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_general_audit_ws_bab9d32_detail__display_name
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_general_audit_ws_bab9d32_factor__display_name
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_general_audit_ws_cda3a68__display_name
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_general_audit_ws_cda3a68_category__display_name
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_general_audit_ws_cda3a68_detail__display_name
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_general_audit_ws_cda3a68_factor__display_name
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_mixin_expert__display_name
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_mixin_expert_category__display_name
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_mixin_expert_detail__display_name
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_mixin_expert_factor__display_name
+msgid "Display Name"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_expert
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_expert.field_general_audit_ws_bab9d32_detail__factor_name
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_expert.field_general_audit_ws_bab9d32_factor__name
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_expert.field_general_audit_ws_cda3a68_detail__factor_name
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_expert.field_general_audit_ws_cda3a68_factor__name
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_expert.field_mixin_expert_detail__factor_name
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_expert.field_mixin_expert_factor__name
+msgid "Display name of the expert factor shown on forms and reports."
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_expert
+#: model:general_audit_ws_bab9d32.factor,name:ssi_general_audit_worksheet_expert.general_audit_ws_bab9d32_factor_32_b945675f
+msgid "Do those assumptions depend on a particular measurement model?"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_expert
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_expert.field_general_audit_ws_bab9d32_detail__expert_id
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_expert.field_general_audit_ws_cda3a68_detail__expert_id
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_expert.field_mixin_expert_detail__expert_id
+msgid "Document (Expert) that owns this expert line."
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_expert
+#: model:general_audit_ws_cda3a68.factor,name:ssi_general_audit_worksheet_expert.general_audit_ws_cda3a68_factor_4_b88ee615
+msgid ""
+"Does management use a Management Expert in preparing the financial "
+"statements?"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_expert
+#: model:general_audit_ws_cda3a68.factor,name:ssi_general_audit_worksheet_expert.general_audit_ws_cda3a68_factor_7_11c36fb4
+msgid ""
+"Does the Management Expert hold membership in a professional association, a "
+"license to practice, or recognition from external parties?"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_expert
+#: model:general_audit_ws_cda3a68.factor,name:ssi_general_audit_worksheet_expert.general_audit_ws_cda3a68_factor_11_dfb7b3bf
+msgid ""
+"Does the Management Expert's competence meet the requirements of auditing "
+"and accounting standards?"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_expert
+#: model:general_audit_ws_cda3a68.factor,name:ssi_general_audit_worksheet_expert.general_audit_ws_cda3a68_factor_25_f1905661
+msgid ""
+"Does the Management Expert's work make significant use of particular data "
+"sources?"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_expert
+#: model:general_audit_ws_cda3a68.factor,name:ssi_general_audit_worksheet_expert.general_audit_ws_cda3a68_factor_8_9709576c
+msgid ""
+"Does the auditor have prior experience with, or has previously discussed, "
+"the work of the Management Expert? When did this occur?"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_expert
+#: model:general_audit_ws_cda3a68.factor,name:ssi_general_audit_worksheet_expert.general_audit_ws_cda3a68_factor_20_4004157f
+msgid ""
+"Does the auditor require consent to include details of the Management "
+"Expert's findings and conclusions as a basis for a modified opinion in the "
+"independent auditor's report?"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_expert
+#: model:general_audit_ws_bab9d32.factor,name:ssi_general_audit_worksheet_expert.general_audit_ws_bab9d32_factor_20_8ef092a1
+msgid ""
+"Does the auditor require consent to include details of the expert's findings"
+" and conclusions as a basis for modifying the opinion in the independent "
+"auditor's report?"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_expert
+#: model:general_audit_ws_cda3a68.factor,name:ssi_general_audit_worksheet_expert.general_audit_ws_cda3a68_factor_19_6608a93b
+msgid ""
+"Does the auditor require the Management Expert's consent to discuss findings"
+" and conclusions with the entity or other parties?"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_expert
+#: model:general_audit_ws_bab9d32.factor,name:ssi_general_audit_worksheet_expert.general_audit_ws_bab9d32_factor_19_a7b84f9b
+msgid ""
+"Does the auditor require the expert's consent to discuss the expert's "
+"findings and conclusions with the entity or other parties?"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_expert
+#: model:general_audit_ws_bab9d32.factor,name:ssi_general_audit_worksheet_expert.general_audit_ws_bab9d32_factor_8_37806536
+msgid ""
+"Does the auditor's expert have published journal articles, books, or "
+"scholarly works?"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_expert
+#: model:general_audit_ws_bab9d32.factor,name:ssi_general_audit_worksheet_expert.general_audit_ws_bab9d32_factor_6_67b85aa1
+msgid ""
+"Does the auditor's expert hold membership in a relevant professional "
+"association, a license to practice, or recognition by external parties?"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_expert
+#: model:general_audit_ws_bab9d32.factor,name:ssi_general_audit_worksheet_expert.general_audit_ws_bab9d32_factor_10_edd704d8
+msgid ""
+"Does the competence of the auditor's expert satisfy the requirements of "
+"auditing and accounting standards?"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_expert
+#: model:general_audit_ws_bab9d32.factor,name:ssi_general_audit_worksheet_expert.general_audit_ws_bab9d32_factor_24_69ac7976
+msgid ""
+"Does the entity or management require the auditor's expert to agree to "
+"specific confidentiality provisions?"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_expert
+#: model:general_audit_ws_bab9d32.factor,name:ssi_general_audit_worksheet_expert.general_audit_ws_bab9d32_factor_25_2f7a05c0
+msgid ""
+"Does the expert's work involve data sources that are significant to the "
+"expert's work?"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_expert
+#: model:general_audit_ws_bab9d32.factor,name:ssi_general_audit_worksheet_expert.general_audit_ws_bab9d32_factor_28_d0016384
+msgid ""
+"Does the expert's work involve the use of significant assumptions and "
+"methods?"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_expert
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_expert.field_general_audit_ws_bab9d32__done_ok
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_expert.field_general_audit_ws_cda3a68__done_ok
+msgid ""
+"Done policy\n"
+"\n"
+"* If active user can see and execute 'Done' button"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_expert
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_expert.field_general_audit_ws_bab9d32__preparation_time
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_expert.field_general_audit_ws_cda3a68__preparation_time
+msgid "Effort spent preparing the worksheet (in hours or minutes)."
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_expert
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_expert.field_general_audit_ws_bab9d32__review_time
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_expert.field_general_audit_ws_cda3a68__review_time
+msgid "Effort spent reviewing the worksheet (in hours or minutes)."
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_expert
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_general_audit_ws_bab9d32__date_end
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_general_audit_ws_cda3a68__date_end
+msgid "End Date"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_expert
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_expert.field_general_audit_ws_bab9d32__interim_date_end
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_expert.field_general_audit_ws_cda3a68__interim_date_end
+msgid "End date for the interim period."
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_expert
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_expert.field_general_audit_ws_bab9d32__previous_date_end
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_expert.field_general_audit_ws_cda3a68__previous_date_end
+msgid "End date of the previous period."
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_expert
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_expert.field_general_audit_ws_bab9d32__contracting_party
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_expert.field_general_audit_ws_cda3a68__contracting_party
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_expert.field_mixin_expert__contracting_party
+msgid "Entity or individual who entered into a contract with the expert."
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_expert
+#: model:general_audit_ws_bab9d32.category,name:ssi_general_audit_worksheet_expert.general_audit_ws_bab9d32_category_4_0e010faa
+msgid "Evaluation of the Adequacy of the Work of the Auditor's Expert"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_expert
+#: model:general_audit_ws_cda3a68.category,name:ssi_general_audit_worksheet_expert.general_audit_ws_cda3a68_category_2_502af097
+msgid ""
+"Evaluation of the Competence, Capabilities, and Objectivity of Management "
+"Experts"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_expert
+#: model:general_audit_ws_bab9d32.category,name:ssi_general_audit_worksheet_expert.general_audit_ws_bab9d32_category_2_3dccc496
+msgid ""
+"Evaluation of the Competence, Capabilities, and Objectivity of the Auditor's"
+" Expert"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_expert
+#: model:general_audit_ws_cda3a68.category,name:ssi_general_audit_worksheet_expert.general_audit_ws_cda3a68_category_4_6dd4be03
+msgid ""
+"Evaluation of the Sufficiency of the Management Expert's Work as Audit "
+"Evidence"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_expert
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_expert.field_general_audit_ws_bab9d32_detail__category_id
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_expert.field_general_audit_ws_bab9d32_factor__category_id
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_expert.field_general_audit_ws_cda3a68_detail__category_id
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_expert.field_general_audit_ws_cda3a68_factor__category_id
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_expert.field_mixin_expert_detail__category_id
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_expert.field_mixin_expert_factor__category_id
+msgid "Expert Category."
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_expert
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_expert.field_mixin_expert__detail_ids
+msgid "Expert values generated from master items for this document."
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_expert
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_general_audit_ws_bab9d32_detail__explanation
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_general_audit_ws_cda3a68_detail__explanation
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_mixin_expert_detail__explanation
+msgid "Explanation/Reference"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_expert
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_general_audit_ws_bab9d32_detail__factor_id
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_general_audit_ws_bab9d32_detail__factor_name
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_general_audit_ws_cda3a68_detail__factor_id
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_general_audit_ws_cda3a68_detail__factor_name
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_mixin_expert_detail__factor_name
+msgid "Factor"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_expert
+#: model:ir.actions.act_window,name:ssi_general_audit_worksheet_expert.general_audit_ws_bab9d32_factor_action
+#: model:ir.ui.menu,name:ssi_general_audit_worksheet_expert.general_audit_ws_bab9d32_factor_menu
+#: model:ir.ui.menu,name:ssi_general_audit_worksheet_expert.general_audit_ws_cda3a68_factor_menu
+msgid "Factors"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_expert
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_general_audit_ws_bab9d32__expert_type_id
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_general_audit_ws_cda3a68__expert_type_id
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_mixin_expert__expert_type_id
+msgid "Field of Expertise"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_expert
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_general_audit_ws_bab9d32__message_follower_ids
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_general_audit_ws_bab9d32_category__message_follower_ids
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_general_audit_ws_bab9d32_factor__message_follower_ids
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_general_audit_ws_cda3a68__message_follower_ids
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_general_audit_ws_cda3a68_category__message_follower_ids
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_general_audit_ws_cda3a68_factor__message_follower_ids
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_mixin_expert_category__message_follower_ids
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_mixin_expert_factor__message_follower_ids
+msgid "Followers"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_expert
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_general_audit_ws_bab9d32__message_channel_ids
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_general_audit_ws_bab9d32_category__message_channel_ids
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_general_audit_ws_bab9d32_factor__message_channel_ids
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_general_audit_ws_cda3a68__message_channel_ids
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_general_audit_ws_cda3a68_category__message_channel_ids
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_general_audit_ws_cda3a68_factor__message_channel_ids
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_mixin_expert_category__message_channel_ids
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_mixin_expert_factor__message_channel_ids
+msgid "Followers (Channels)"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_expert
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_general_audit_ws_bab9d32__message_partner_ids
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_general_audit_ws_bab9d32_category__message_partner_ids
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_general_audit_ws_bab9d32_factor__message_partner_ids
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_general_audit_ws_cda3a68__message_partner_ids
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_general_audit_ws_cda3a68_category__message_partner_ids
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_general_audit_ws_cda3a68_factor__message_partner_ids
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_mixin_expert_category__message_partner_ids
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_mixin_expert_factor__message_partner_ids
+msgid "Followers (Partners)"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_expert
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_expert.field_general_audit_ws_bab9d32__activity_type_icon
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_expert.field_general_audit_ws_bab9d32_category__activity_type_icon
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_expert.field_general_audit_ws_bab9d32_factor__activity_type_icon
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_expert.field_general_audit_ws_cda3a68__activity_type_icon
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_expert.field_general_audit_ws_cda3a68_category__activity_type_icon
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_expert.field_general_audit_ws_cda3a68_factor__activity_type_icon
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_expert.field_mixin_expert_category__activity_type_icon
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_expert.field_mixin_expert_factor__activity_type_icon
+msgid "Font awesome icon e.g. fa-tasks"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_expert
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_expert.field_general_audit_ws_bab9d32__expert_name
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_expert.field_general_audit_ws_cda3a68__expert_name
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_expert.field_mixin_expert__expert_name
+msgid "Full name of the expert, either individual or organization."
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_expert
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_expert.field_general_audit_ws_bab9d32__general_audit_id
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_expert.field_general_audit_ws_cda3a68__general_audit_id
+msgid "General Audit to which this worksheet belongs."
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_expert
+#: model_terms:ir.ui.view,arch_db:ssi_general_audit_worksheet_expert.expert_header
+msgid "General Information on Experts"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_expert
+#: model:general_audit_ws_cda3a68.factor,name:ssi_general_audit_worksheet_expert.general_audit_ws_cda3a68_factor_27_fd8b2c8c
+msgid ""
+"Has the Management Expert evaluated the relevance, completeness, and "
+"accuracy of that data?"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_expert
+#: model:general_audit_ws_cda3a68.factor,name:ssi_general_audit_worksheet_expert.general_audit_ws_cda3a68_factor_9_fced290e
+msgid "Has the Management Expert published journal articles or books?"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_expert
+#: model:general_audit_ws_bab9d32.factor,name:ssi_general_audit_worksheet_expert.general_audit_ws_bab9d32_factor_15_f1870bd3
+msgid ""
+"Has the auditor considered the objectives of the auditor's expert's work in "
+"the context of materiality and risk considerations?"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_expert
+#: model:general_audit_ws_bab9d32.factor,name:ssi_general_audit_worksheet_expert.general_audit_ws_bab9d32_factor_34_e9e13186
+msgid ""
+"Has the auditor evaluated the adequacy of the auditor's expert's work "
+"regarding the relevance and appropriateness of the expert's findings and "
+"conclusions, and their consistency with other audit evidence?"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_expert
+#: model:general_audit_ws_cda3a68.factor,name:ssi_general_audit_worksheet_expert.general_audit_ws_cda3a68_factor_29_6a8240ee
+msgid ""
+"Has the auditor evaluated the sufficiency of the Management Expert's work "
+"with respect to the relevance and appropriateness of the expert's findings "
+"and conclusions, and their consistency with other audit evidence?"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_expert
+#: model:general_audit_ws_bab9d32.factor,name:ssi_general_audit_worksheet_expert.general_audit_ws_bab9d32_factor_7_4f27bb8e
+msgid ""
+"Has the auditor previously had experience with or discussed the auditor's "
+"expert's work, and when did this occur?"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_expert
+#: model:general_audit_ws_cda3a68.factor,name:ssi_general_audit_worksheet_expert.general_audit_ws_cda3a68_factor_24_7f6e49ca
+msgid ""
+"Has the entity or management requested the Management Expert to agree to "
+"specific confidentiality provisions?"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_expert
+#: model:general_audit_ws_cda3a68.factor,name:ssi_general_audit_worksheet_expert.general_audit_ws_cda3a68_factor_30_3efbeac7
+msgid ""
+"Have those findings and conclusions been appropriately reflected in the "
+"financial statements?"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_expert
+#: model:general_audit_ws_cda3a68.factor,name:ssi_general_audit_worksheet_expert.general_audit_ws_cda3a68_factor_16_0e024613
+msgid ""
+"How does the auditor consider the objectives of the Management Expert's work"
+" in the context of materiality and risk considerations?"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_expert
+#: model:general_audit_ws_bab9d32.factor,name:ssi_general_audit_worksheet_expert.general_audit_ws_bab9d32_factor_27_4fdd5ad3
+msgid "How is the data's relevance, completeness, and accuracy evaluated?"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_expert
+#: model:general_audit_ws_bab9d32.factor,name:ssi_general_audit_worksheet_expert.general_audit_ws_bab9d32_factor_26_c7d9ab9e
+msgid ""
+"How is the provenance of the data verified, including obtaining an "
+"understanding of and testing internal controls over that data (where "
+"applicable)?"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_expert
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_general_audit_ws_bab9d32__id
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_general_audit_ws_bab9d32_category__id
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_general_audit_ws_bab9d32_detail__id
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_general_audit_ws_bab9d32_factor__id
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_general_audit_ws_cda3a68__id
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_general_audit_ws_cda3a68_category__id
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_general_audit_ws_cda3a68_detail__id
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_general_audit_ws_cda3a68_factor__id
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_mixin_expert__id
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_mixin_expert_category__id
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_mixin_expert_detail__id
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_mixin_expert_factor__id
+msgid "ID"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_expert
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_general_audit_ws_bab9d32__activity_exception_icon
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_general_audit_ws_bab9d32_category__activity_exception_icon
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_general_audit_ws_bab9d32_factor__activity_exception_icon
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_general_audit_ws_cda3a68__activity_exception_icon
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_general_audit_ws_cda3a68_category__activity_exception_icon
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_general_audit_ws_cda3a68_factor__activity_exception_icon
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_mixin_expert_category__activity_exception_icon
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_mixin_expert_factor__activity_exception_icon
+msgid "Icon"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_expert
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_expert.field_general_audit_ws_bab9d32__activity_exception_icon
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_expert.field_general_audit_ws_bab9d32_category__activity_exception_icon
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_expert.field_general_audit_ws_bab9d32_factor__activity_exception_icon
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_expert.field_general_audit_ws_cda3a68__activity_exception_icon
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_expert.field_general_audit_ws_cda3a68_category__activity_exception_icon
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_expert.field_general_audit_ws_cda3a68_factor__activity_exception_icon
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_expert.field_mixin_expert_category__activity_exception_icon
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_expert.field_mixin_expert_factor__activity_exception_icon
+msgid "Icon to indicate an exception activity."
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_expert
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_expert.field_general_audit_ws_bab9d32__message_needaction
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_expert.field_general_audit_ws_bab9d32__message_unread
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_expert.field_general_audit_ws_bab9d32_category__message_needaction
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_expert.field_general_audit_ws_bab9d32_category__message_unread
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_expert.field_general_audit_ws_bab9d32_factor__message_needaction
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_expert.field_general_audit_ws_bab9d32_factor__message_unread
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_expert.field_general_audit_ws_cda3a68__message_needaction
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_expert.field_general_audit_ws_cda3a68__message_unread
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_expert.field_general_audit_ws_cda3a68_category__message_needaction
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_expert.field_general_audit_ws_cda3a68_category__message_unread
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_expert.field_general_audit_ws_cda3a68_factor__message_needaction
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_expert.field_general_audit_ws_cda3a68_factor__message_unread
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_expert.field_mixin_expert_category__message_needaction
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_expert.field_mixin_expert_category__message_unread
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_expert.field_mixin_expert_factor__message_needaction
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_expert.field_mixin_expert_factor__message_unread
+msgid "If checked, new messages require your attention."
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_expert
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_expert.field_general_audit_ws_bab9d32__message_has_error
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_expert.field_general_audit_ws_bab9d32_category__message_has_error
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_expert.field_general_audit_ws_bab9d32_factor__message_has_error
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_expert.field_general_audit_ws_cda3a68__message_has_error
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_expert.field_general_audit_ws_cda3a68_category__message_has_error
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_expert.field_general_audit_ws_cda3a68_factor__message_has_error
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_expert.field_mixin_expert_category__message_has_error
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_expert.field_mixin_expert_factor__message_has_error
+msgid "If checked, some messages have a delivery error."
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_expert
+#: model:general_audit_ws_cda3a68.factor,name:ssi_general_audit_worksheet_expert.general_audit_ws_cda3a68_factor_26_633c59eb
+msgid ""
+"If so, how has the Management Expert verified the provenance of the data, "
+"including obtaining an understanding of internal controls over that data, "
+"where relevant?"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_expert
+#: model:general_audit_ws_cda3a68.factor,name:ssi_general_audit_worksheet_expert.general_audit_ws_cda3a68_factor_6_acf6ca1a
+msgid ""
+"If so, to what extent can management influence or control the Management "
+"Expert's work?"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_expert
+#: model:general_audit_ws_cda3a68.factor,name:ssi_general_audit_worksheet_expert.general_audit_ws_cda3a68_factor_5_26db24c9
+msgid ""
+"If so, what are the nature, scope, and objectives of the Management Expert's"
+" work?"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_expert
+#: model:general_audit_ws_cda3a68.factor,name:ssi_general_audit_worksheet_expert.general_audit_ws_cda3a68_factor_12_e3cf6f94
+msgid ""
+"Inquire of the entity or management regarding interests and relationships "
+"between the entity and the Management Expert that may threaten the "
+"Management Expert's objectivity."
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_expert
+#: model:general_audit_ws_bab9d32.factor,name:ssi_general_audit_worksheet_expert.general_audit_ws_bab9d32_factor_11_81f1236f
+msgid ""
+"Inquire of the entity or management regarding interests and relationships "
+"between the entity and the auditor's expert that may threaten the expert's "
+"objectivity."
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_expert
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_general_audit_ws_bab9d32__interim_date_end
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_general_audit_ws_cda3a68__interim_date_end
+msgid "Interim End Date"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_expert
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_general_audit_ws_bab9d32__interim_date_start
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_general_audit_ws_cda3a68__interim_date_start
+msgid "Interim Start Date"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_expert
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_expert.field_general_audit_ws_bab9d32_category__code
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_expert.field_general_audit_ws_cda3a68_category__code
+msgid "Internal code/identifier for the Expert Category. Defaults to '/'."
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_expert
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_expert.field_general_audit_ws_bab9d32_factor__code
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_expert.field_general_audit_ws_cda3a68_factor__code
+msgid "Internal code/identifier for the Expert Factor. Defaults to '/'."
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_expert
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_general_audit_ws_bab9d32__message_is_follower
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_general_audit_ws_bab9d32_category__message_is_follower
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_general_audit_ws_bab9d32_factor__message_is_follower
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_general_audit_ws_cda3a68__message_is_follower
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_general_audit_ws_cda3a68_category__message_is_follower
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_general_audit_ws_cda3a68_factor__message_is_follower
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_mixin_expert_category__message_is_follower
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_mixin_expert_factor__message_is_follower
+msgid "Is Follower"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_expert
+#: model:general_audit_ws_cda3a68.factor,name:ssi_general_audit_worksheet_expert.general_audit_ws_cda3a68_factor_10_7efe04c1
+msgid ""
+"Is the Management Expert required to comply with specific technical or "
+"professional standards in performing their work?"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_expert
+#: model:general_audit_ws_bab9d32.factor,name:ssi_general_audit_worksheet_expert.general_audit_ws_bab9d32_factor_18_98f549ed
+msgid ""
+"Is the auditor or the expert responsible for performing detailed tests of "
+"source data?"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_expert
+#: model:general_audit_ws_bab9d32.factor,name:ssi_general_audit_worksheet_expert.general_audit_ws_bab9d32_factor_9_90e72916
+msgid ""
+"Is the auditor's expert required to comply with specific technical or "
+"professional standards in performing their work?"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_expert
+#: model:general_audit_ws_bab9d32.factor,name:ssi_general_audit_worksheet_expert.general_audit_ws_bab9d32_factor_5_ff238f29
+msgid ""
+"Is the expert subject to the audit firm's quality control policies and "
+"procedures?"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_expert
+#: model:general_audit_ws_cda3a68.factor,name:ssi_general_audit_worksheet_expert.general_audit_ws_cda3a68_factor_23_2253ab3e
+msgid ""
+"Is there a need for the Management Expert to observe confidentiality "
+"requirements?"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_expert
+#: model:general_audit_ws_cda3a68.factor,name:ssi_general_audit_worksheet_expert.general_audit_ws_cda3a68_factor_21_a5f99cb2
+msgid ""
+"Is there an agreement requiring the auditor to inform the Management Expert "
+"of the auditor's conclusions relating to the expert's work?"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_expert
+#: model:general_audit_ws_bab9d32.factor,name:ssi_general_audit_worksheet_expert.general_audit_ws_bab9d32_factor_21_7e9cb133
+msgid ""
+"Is there an agreement requiring the auditor to inform the auditor's expert "
+"of the auditor's conclusions related to the expert's work?"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_expert
+#: model:general_audit_ws_bab9d32.factor,name:ssi_general_audit_worksheet_expert.general_audit_ws_bab9d32_factor_16_108743f6
+msgid ""
+"Is there an engagement letter, written agreement, or memorandum regarding "
+"the cooperation with the auditor's expert?"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_expert
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_general_audit_ws_bab9d32____last_update
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_general_audit_ws_bab9d32_category____last_update
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_general_audit_ws_bab9d32_detail____last_update
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_general_audit_ws_bab9d32_factor____last_update
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_general_audit_ws_cda3a68____last_update
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_general_audit_ws_cda3a68_category____last_update
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_general_audit_ws_cda3a68_detail____last_update
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_general_audit_ws_cda3a68_factor____last_update
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_mixin_expert____last_update
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_mixin_expert_category____last_update
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_mixin_expert_detail____last_update
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_mixin_expert_factor____last_update
+msgid "Last Modified on"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_expert
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_general_audit_ws_bab9d32__write_uid
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_general_audit_ws_bab9d32_category__write_uid
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_general_audit_ws_bab9d32_detail__write_uid
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_general_audit_ws_bab9d32_factor__write_uid
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_general_audit_ws_cda3a68__write_uid
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_general_audit_ws_cda3a68_category__write_uid
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_general_audit_ws_cda3a68_detail__write_uid
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_general_audit_ws_cda3a68_factor__write_uid
+msgid "Last Updated by"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_expert
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_general_audit_ws_bab9d32__write_date
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_general_audit_ws_bab9d32_category__write_date
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_general_audit_ws_bab9d32_detail__write_date
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_general_audit_ws_bab9d32_factor__write_date
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_general_audit_ws_cda3a68__write_date
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_general_audit_ws_cda3a68_category__write_date
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_general_audit_ws_cda3a68_detail__write_date
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_general_audit_ws_cda3a68_factor__write_date
+msgid "Last Updated on"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_expert
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_general_audit_ws_bab9d32__message_main_attachment_id
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_general_audit_ws_bab9d32_category__message_main_attachment_id
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_general_audit_ws_bab9d32_factor__message_main_attachment_id
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_general_audit_ws_cda3a68__message_main_attachment_id
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_general_audit_ws_cda3a68_category__message_main_attachment_id
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_general_audit_ws_cda3a68_factor__message_main_attachment_id
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_mixin_expert_category__message_main_attachment_id
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_mixin_expert_factor__message_main_attachment_id
+msgid "Main Attachment"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_expert
+#: model:general_audit_worksheet_type,name:ssi_general_audit_worksheet_expert.worksheet_type_cda3a68
+#: model:ir.actions.act_window,name:ssi_general_audit_worksheet_expert.general_audit_ws_cda3a68_action
+#: model:ir.ui.menu,name:ssi_general_audit_worksheet_expert.general_audit_ws_cda3a68_category_root_menu
+#: model:ir.ui.menu,name:ssi_general_audit_worksheet_expert.general_audit_ws_cda3a68_menu
+msgid "Management Expert"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_expert
+#: model:ir.model,name:ssi_general_audit_worksheet_expert.model_general_audit_ws_cda3a68
+#: model:ir.module.category,name:ssi_general_audit_worksheet_expert.general_audit_ws_cda3a68_data_module_category
+#: model:ir.module.category,name:ssi_general_audit_worksheet_expert.general_audit_ws_cda3a68_workflow_module_category
+msgid "Management Expert (cda3a68)"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_expert
+#: model:ir.model,name:ssi_general_audit_worksheet_expert.model_general_audit_ws_cda3a68_category
+msgid "Management Expert (cda3a68) - Category"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_expert
+#: model:ir.model,name:ssi_general_audit_worksheet_expert.model_general_audit_ws_cda3a68_detail
+msgid "Management Expert (cda3a68) - Details"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_expert
+#: model:ir.model,name:ssi_general_audit_worksheet_expert.model_general_audit_ws_cda3a68_factor
+msgid "Management Expert (cda3a68) - Factor"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_expert
+#: model:ir.actions.act_window,name:ssi_general_audit_worksheet_expert.general_audit_ws_cda3a68_factor_action
+msgid "Management Expert Factors"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_expert
+#: model:ir.actions.act_window,name:ssi_general_audit_worksheet_expert.general_audit_ws_cda3a68_category_action
+msgid "Management Export Categories"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_expert
+#: model:res.groups,name:ssi_general_audit_worksheet_expert.general_audit_ws_cda3a68_category_group
+msgid "Management Export Category"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_expert
+#: model:res.groups,name:ssi_general_audit_worksheet_expert.general_audit_ws_cda3a68_factor_group
+msgid "Management Export Factor"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_expert
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_expert.field_general_audit_ws_bab9d32__manual_number_ok
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_expert.field_general_audit_ws_cda3a68__manual_number_ok
+msgid ""
+"Manual number assignment policy\n"
+"\n"
+"* If active user can edit document number"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_expert
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_expert.field_general_audit_ws_bab9d32_category__active
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_expert.field_general_audit_ws_bab9d32_factor__active
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_expert.field_general_audit_ws_cda3a68_category__active
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_expert.field_general_audit_ws_cda3a68_factor__active
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_expert.field_mixin_expert_category__active
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_expert.field_mixin_expert_factor__active
+msgid ""
+"Master data status\n"
+"\n"
+"* Inactive data can not be selected when creating new transaction\n"
+"* Transaction with inactive master data can still be viewed\n"
+"* Set master data as inactive if master data no longger needed,\n"
+"but master data already used on transaction"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_expert
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_expert.field_mixin_expert_factor__code
+msgid ""
+"Master data unique identifier.\n"
+"\n"
+"* Fill with '/' if You do not need unique identifier\n"
+"* Click 'Generate Code' button to automatically assign code.\n"
+"  Sequence template mush be set to perform this action\n"
+"  Only master data with '/' code will be assign automatic code"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_expert
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_expert.field_general_audit_ws_bab9d32_detail__factor_id
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_expert.field_general_audit_ws_cda3a68_detail__factor_id
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_expert.field_mixin_expert_detail__factor_id
+msgid "Master expert factor this line refers to."
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_expert
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_general_audit_ws_bab9d32__message_has_error
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_general_audit_ws_bab9d32_category__message_has_error
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_general_audit_ws_bab9d32_factor__message_has_error
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_general_audit_ws_cda3a68__message_has_error
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_general_audit_ws_cda3a68_category__message_has_error
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_general_audit_ws_cda3a68_factor__message_has_error
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_mixin_expert_category__message_has_error
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_mixin_expert_factor__message_has_error
+msgid "Message Delivery error"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_expert
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_general_audit_ws_bab9d32__message_ids
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_general_audit_ws_bab9d32_category__message_ids
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_general_audit_ws_bab9d32_factor__message_ids
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_general_audit_ws_cda3a68__message_ids
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_general_audit_ws_cda3a68_category__message_ids
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_general_audit_ws_cda3a68_factor__message_ids
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_mixin_expert_category__message_ids
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_mixin_expert_factor__message_ids
+msgid "Messages"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_expert
+#: model:ir.model,name:ssi_general_audit_worksheet_expert.model_mixin_expert
+msgid "Mixin for Expert"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_expert
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_general_audit_ws_bab9d32__my_activity_date_deadline
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_general_audit_ws_bab9d32_category__my_activity_date_deadline
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_general_audit_ws_bab9d32_factor__my_activity_date_deadline
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_general_audit_ws_cda3a68__my_activity_date_deadline
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_general_audit_ws_cda3a68_category__my_activity_date_deadline
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_general_audit_ws_cda3a68_factor__my_activity_date_deadline
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_mixin_expert_category__my_activity_date_deadline
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_mixin_expert_factor__my_activity_date_deadline
+msgid "My Activity Deadline"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_expert
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_general_audit_ws_bab9d32_category__name
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_general_audit_ws_bab9d32_factor__name
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_general_audit_ws_cda3a68_category__name
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_general_audit_ws_cda3a68_factor__name
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_mixin_expert_category__name
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_mixin_expert_factor__name
+msgid "Name"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_expert
+#: model_terms:ir.ui.view,arch_db:ssi_general_audit_worksheet_expert.expert_header
+msgid "Name of Expert"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_expert
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_general_audit_ws_bab9d32__expert_name
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_general_audit_ws_cda3a68__expert_name
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_mixin_expert__expert_name
+#: model_terms:ir.ui.view,arch_db:ssi_general_audit_worksheet_expert.expert_header
+msgid "Name of Expert (Individual/Organization)"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_expert
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_expert.field_general_audit_ws_bab9d32__conclusion
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_expert.field_general_audit_ws_cda3a68__conclusion
+msgid "Narrative explanation to support the selected conclusion."
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_expert
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_general_audit_ws_bab9d32__need_validation
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_general_audit_ws_cda3a68__need_validation
+msgid "Need Validation"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_expert
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_general_audit_ws_bab9d32__activity_date_deadline
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_general_audit_ws_bab9d32_category__activity_date_deadline
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_general_audit_ws_bab9d32_factor__activity_date_deadline
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_general_audit_ws_cda3a68__activity_date_deadline
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_general_audit_ws_cda3a68_category__activity_date_deadline
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_general_audit_ws_cda3a68_factor__activity_date_deadline
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_mixin_expert_category__activity_date_deadline
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_mixin_expert_factor__activity_date_deadline
+msgid "Next Activity Deadline"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_expert
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_general_audit_ws_bab9d32__activity_summary
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_general_audit_ws_bab9d32_category__activity_summary
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_general_audit_ws_bab9d32_factor__activity_summary
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_general_audit_ws_cda3a68__activity_summary
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_general_audit_ws_cda3a68_category__activity_summary
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_general_audit_ws_cda3a68_factor__activity_summary
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_mixin_expert_category__activity_summary
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_mixin_expert_factor__activity_summary
+msgid "Next Activity Summary"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_expert
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_general_audit_ws_bab9d32__activity_type_id
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_general_audit_ws_bab9d32_category__activity_type_id
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_general_audit_ws_bab9d32_factor__activity_type_id
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_general_audit_ws_cda3a68__activity_type_id
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_general_audit_ws_cda3a68_category__activity_type_id
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_general_audit_ws_cda3a68_factor__activity_type_id
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_mixin_expert_category__activity_type_id
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_mixin_expert_factor__activity_type_id
+msgid "Next Activity Type"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_expert
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_general_audit_ws_bab9d32__next_approval_ids
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_general_audit_ws_cda3a68__next_approval_ids
+msgid "Next Approvals"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_expert
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_general_audit_ws_bab9d32__note
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_general_audit_ws_bab9d32_category__note
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_general_audit_ws_bab9d32_factor__note
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_general_audit_ws_cda3a68__note
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_general_audit_ws_cda3a68_category__note
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_general_audit_ws_cda3a68_factor__note
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_mixin_expert_category__note
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_mixin_expert_factor__note
+msgid "Note"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_expert
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_expert.field_general_audit_ws_bab9d32__review
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_expert.field_general_audit_ws_cda3a68__review
+msgid "Notes and observations from the review of the worksheet."
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_expert
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_general_audit_ws_bab9d32__message_needaction_counter
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_general_audit_ws_bab9d32_category__message_needaction_counter
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_general_audit_ws_bab9d32_factor__message_needaction_counter
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_general_audit_ws_cda3a68__message_needaction_counter
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_general_audit_ws_cda3a68_category__message_needaction_counter
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_general_audit_ws_cda3a68_factor__message_needaction_counter
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_mixin_expert_category__message_needaction_counter
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_mixin_expert_factor__message_needaction_counter
+msgid "Number of Actions"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_expert
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_general_audit_ws_bab9d32__message_has_error_counter
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_general_audit_ws_bab9d32_category__message_has_error_counter
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_general_audit_ws_bab9d32_factor__message_has_error_counter
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_general_audit_ws_cda3a68__message_has_error_counter
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_general_audit_ws_cda3a68_category__message_has_error_counter
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_general_audit_ws_cda3a68_factor__message_has_error_counter
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_mixin_expert_category__message_has_error_counter
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_mixin_expert_factor__message_has_error_counter
+msgid "Number of errors"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_expert
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_expert.field_general_audit_ws_bab9d32__message_needaction_counter
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_expert.field_general_audit_ws_bab9d32_category__message_needaction_counter
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_expert.field_general_audit_ws_bab9d32_factor__message_needaction_counter
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_expert.field_general_audit_ws_cda3a68__message_needaction_counter
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_expert.field_general_audit_ws_cda3a68_category__message_needaction_counter
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_expert.field_general_audit_ws_cda3a68_factor__message_needaction_counter
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_expert.field_mixin_expert_category__message_needaction_counter
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_expert.field_mixin_expert_factor__message_needaction_counter
+msgid "Number of messages which requires an action"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_expert
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_expert.field_general_audit_ws_bab9d32__message_has_error_counter
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_expert.field_general_audit_ws_bab9d32_category__message_has_error_counter
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_expert.field_general_audit_ws_bab9d32_factor__message_has_error_counter
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_expert.field_general_audit_ws_cda3a68__message_has_error_counter
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_expert.field_general_audit_ws_cda3a68_category__message_has_error_counter
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_expert.field_general_audit_ws_cda3a68_factor__message_has_error_counter
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_expert.field_mixin_expert_category__message_has_error_counter
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_expert.field_mixin_expert_factor__message_has_error_counter
+msgid "Number of messages with delivery error"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_expert
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_expert.field_general_audit_ws_bab9d32__message_unread_counter
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_expert.field_general_audit_ws_bab9d32_category__message_unread_counter
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_expert.field_general_audit_ws_bab9d32_factor__message_unread_counter
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_expert.field_general_audit_ws_cda3a68__message_unread_counter
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_expert.field_general_audit_ws_cda3a68_category__message_unread_counter
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_expert.field_general_audit_ws_cda3a68_factor__message_unread_counter
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_expert.field_mixin_expert_category__message_unread_counter
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_expert.field_mixin_expert_factor__message_unread_counter
+msgid "Number of unread messages"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_expert
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_general_audit_ws_bab9d32__operating_unit_id
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_general_audit_ws_cda3a68__operating_unit_id
+#: model:res.groups,name:ssi_general_audit_worksheet_expert.general_audit_ws_bab9d32_ou_group
+#: model:res.groups,name:ssi_general_audit_worksheet_expert.general_audit_ws_cda3a68_ou_group
+msgid "Operating Unit"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_expert
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_expert.field_general_audit_ws_bab9d32_detail__sequence
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_expert.field_general_audit_ws_bab9d32_factor__sequence
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_expert.field_general_audit_ws_cda3a68_detail__sequence
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_expert.field_general_audit_ws_cda3a68_factor__sequence
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_expert.field_mixin_expert_detail__sequence
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_expert.field_mixin_expert_factor__sequence
+msgid "Ordering number controlling the display order (lower comes first)."
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_expert
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_general_audit_ws_bab9d32__parent_type_id
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_general_audit_ws_cda3a68__parent_type_id
+msgid "Parent Type"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_expert
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_expert.field_general_audit_ws_bab9d32__worksheet_id
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_expert.field_general_audit_ws_cda3a68__worksheet_id
+msgid "Parent worksheet record that stores common fields."
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_expert
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_general_audit_ws_bab9d32__partner_id
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_general_audit_ws_cda3a68__partner_id
+msgid "Partner"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_expert
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_general_audit_ws_bab9d32__contracting_party
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_general_audit_ws_cda3a68__contracting_party
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_mixin_expert__contracting_party
+#: model_terms:ir.ui.view,arch_db:ssi_general_audit_worksheet_expert.expert_header
+msgid "Party Entering into Contract with the Expert"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_expert
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_general_audit_ws_bab9d32__policy_template_id
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_general_audit_ws_cda3a68__policy_template_id
+msgid "Policy Template"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_expert
+#: model_terms:ir.ui.view,arch_db:ssi_general_audit_worksheet_expert.expert_page
+msgid "Populate"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_expert
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_general_audit_ws_bab9d32__preparation_date
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_general_audit_ws_cda3a68__preparation_date
+msgid "Preparation Date"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_expert
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_general_audit_ws_bab9d32__preparation_time
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_general_audit_ws_cda3a68__preparation_time
+msgid "Preparation Time"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_expert
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_general_audit_ws_bab9d32__previous_date_end
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_general_audit_ws_cda3a68__previous_date_end
+msgid "Previous End Date"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_expert
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_general_audit_ws_bab9d32__previous_date_start
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_general_audit_ws_cda3a68__previous_date_start
+msgid "Previous Start Date"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_expert
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_expert.field_general_audit_ws_bab9d32__reject_ok
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_expert.field_general_audit_ws_cda3a68__reject_ok
+msgid ""
+"Reject policy\n"
+"\n"
+"* If active user can see and execute 'Reject' button"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_expert
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_general_audit_ws_bab9d32__rejected
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_general_audit_ws_cda3a68__rejected
+msgid "Rejected"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_expert
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_general_audit_ws_bab9d32__standard_item_ids
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_general_audit_ws_cda3a68__standard_item_ids
+#: model_terms:ir.ui.view,arch_db:ssi_general_audit_worksheet_expert.expert_page
+msgid "Relevant Audit Standard Items"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_expert
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_general_audit_ws_bab9d32__user_id
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_general_audit_ws_cda3a68__user_id
+msgid "Responsible"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_expert
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_general_audit_ws_bab9d32__activity_user_id
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_general_audit_ws_bab9d32_category__activity_user_id
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_general_audit_ws_bab9d32_factor__activity_user_id
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_general_audit_ws_cda3a68__activity_user_id
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_general_audit_ws_cda3a68_category__activity_user_id
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_general_audit_ws_cda3a68_factor__activity_user_id
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_mixin_expert_category__activity_user_id
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_mixin_expert_factor__activity_user_id
+msgid "Responsible User"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_expert
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_expert.field_general_audit_ws_bab9d32__restart_approval_ok
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_expert.field_general_audit_ws_cda3a68__restart_approval_ok
+msgid ""
+"Restart approval policy\n"
+"\n"
+"* If active user can see and execute 'Restart Approval' button"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_expert
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_expert.field_general_audit_ws_bab9d32__restart_ok
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_expert.field_general_audit_ws_cda3a68__restart_ok
+msgid ""
+"Restart policy\n"
+"\n"
+"* If active user can see and execute 'Restart' button"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_expert
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_general_audit_ws_bab9d32__review_date
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_general_audit_ws_cda3a68__review_date
+msgid "Review Date"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_expert
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_general_audit_ws_bab9d32__review
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_general_audit_ws_cda3a68__review
+msgid "Review Notes"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_expert
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_general_audit_ws_bab9d32__review_time
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_general_audit_ws_cda3a68__review_time
+msgid "Review Time"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_expert
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_general_audit_ws_bab9d32__reviewer_id
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_general_audit_ws_cda3a68__reviewer_id
+msgid "Reviewer"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_expert
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_expert.field_general_audit_ws_bab9d32__conclusion_id
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_expert.field_general_audit_ws_cda3a68__conclusion_id
+msgid "Selected conclusion summarizing the worksheet's assessment."
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_expert
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_general_audit_ws_bab9d32_detail__sequence
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_general_audit_ws_bab9d32_factor__sequence
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_general_audit_ws_cda3a68_detail__sequence
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_general_audit_ws_cda3a68_factor__sequence
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_mixin_expert_detail__sequence
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_mixin_expert_factor__sequence
+msgid "Sequence"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_expert
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_general_audit_ws_bab9d32__expert_account_ids
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_general_audit_ws_cda3a68__expert_account_ids
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_mixin_expert__expert_account_ids
+msgid "Significant Accounts"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_expert
+#: model:general_audit_ws_bab9d32.factor,name:ssi_general_audit_worksheet_expert.general_audit_ws_bab9d32_factor_14_b52b1ff5
+msgid ""
+"Specify the technical performance standards or professional standards that "
+"the auditor's expert follows in performing their work."
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_expert
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_general_audit_ws_bab9d32__date_start
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_general_audit_ws_cda3a68__date_start
+msgid "Start Date"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_expert
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_expert.field_general_audit_ws_bab9d32__interim_date_start
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_expert.field_general_audit_ws_cda3a68__interim_date_start
+msgid "Start date for the interim period."
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_expert
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_expert.field_general_audit_ws_bab9d32__previous_date_start
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_expert.field_general_audit_ws_cda3a68__previous_date_start
+msgid "Start date of the previous period."
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_expert
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_expert.field_general_audit_ws_bab9d32__open_ok
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_expert.field_general_audit_ws_cda3a68__open_ok
+msgid ""
+"Start policy\n"
+"\n"
+"* If active user can see and execute 'Start' button"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_expert
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_general_audit_ws_bab9d32__state
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_general_audit_ws_cda3a68__state
+msgid "State"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_expert
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_expert.field_general_audit_ws_bab9d32__activity_state
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_expert.field_general_audit_ws_bab9d32_category__activity_state
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_expert.field_general_audit_ws_bab9d32_factor__activity_state
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_expert.field_general_audit_ws_cda3a68__activity_state
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_expert.field_general_audit_ws_cda3a68_category__activity_state
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_expert.field_general_audit_ws_cda3a68_factor__activity_state
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_expert.field_mixin_expert_category__activity_state
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_expert.field_mixin_expert_factor__activity_state
+msgid ""
+"Status based on activities\n"
+"Overdue: Due date is already passed\n"
+"Today: Activity date is today\n"
+"Planned: Future activities."
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_expert
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_general_audit_ws_bab9d32__title
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_general_audit_ws_cda3a68__title
+msgid "Title"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_expert
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_expert.field_general_audit_ws_bab9d32__title
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_expert.field_general_audit_ws_cda3a68__title
+msgid "Title of the General Audit engagement."
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_expert
+#: model:general_audit_ws_bab9d32.factor,name:ssi_general_audit_worksheet_expert.general_audit_ws_bab9d32_factor_2_b4572903
+msgid ""
+"To what extent does the auditor's expert possess appropriate competence and "
+"capabilities?"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_expert
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_expert.field_general_audit_ws_bab9d32__name
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_expert.field_general_audit_ws_cda3a68__name
+msgid ""
+"Transaction/document number\n"
+"\n"
+"* Unique indentifer of transaction\n"
+"* Leave '/' to automatically generate number\n"
+"* Change '/' into any number/identifier to manually assign number.\n"
+"  Manual number assignment can be done in 'Draft' state\n"
+"  Only user with 'Can Manualy Assign Number' policy can manually assign number.\n"
+"* Transaction with number other than '/' can not be deleted."
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_expert
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_general_audit_ws_bab9d32__type_id
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_general_audit_ws_cda3a68__type_id
+msgid "Type"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_expert
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_expert.field_general_audit_ws_bab9d32__activity_exception_decoration
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_expert.field_general_audit_ws_bab9d32_category__activity_exception_decoration
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_expert.field_general_audit_ws_bab9d32_factor__activity_exception_decoration
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_expert.field_general_audit_ws_cda3a68__activity_exception_decoration
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_expert.field_general_audit_ws_cda3a68_category__activity_exception_decoration
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_expert.field_general_audit_ws_cda3a68_factor__activity_exception_decoration
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_expert.field_mixin_expert_category__activity_exception_decoration
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_expert.field_mixin_expert_factor__activity_exception_decoration
+msgid "Type of the exception activity on record."
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_expert
+#: model:general_audit_ws_bab9d32.category,name:ssi_general_audit_worksheet_expert.general_audit_ws_bab9d32_category_3_65fae803
+msgid ""
+"Understanding of the Field of Expertise and Agreements with the Auditor's "
+"Expert"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_expert
+#: model:general_audit_ws_cda3a68.category,name:ssi_general_audit_worksheet_expert.general_audit_ws_cda3a68_category_3_6f83cf9f
+msgid ""
+"Understanding of the Field of Expertise and the Engagement Agreement with "
+"the Management Expert"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_expert
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_expert.field_mixin_expert_category__code
+msgid "Unique code for the option set. Use '/' to auto-generate."
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_expert
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_general_audit_ws_bab9d32__message_unread
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_general_audit_ws_bab9d32_category__message_unread
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_general_audit_ws_bab9d32_factor__message_unread
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_general_audit_ws_cda3a68__message_unread
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_general_audit_ws_cda3a68_category__message_unread
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_general_audit_ws_cda3a68_factor__message_unread
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_mixin_expert_category__message_unread
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_mixin_expert_factor__message_unread
+msgid "Unread Messages"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_expert
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_general_audit_ws_bab9d32__message_unread_counter
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_general_audit_ws_bab9d32_category__message_unread_counter
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_general_audit_ws_bab9d32_factor__message_unread_counter
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_general_audit_ws_cda3a68__message_unread_counter
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_general_audit_ws_cda3a68_category__message_unread_counter
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_general_audit_ws_cda3a68_factor__message_unread_counter
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_mixin_expert_category__message_unread_counter
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_expert.field_mixin_expert_factor__message_unread_counter
+msgid "Unread Messages Counter"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_expert
+#: model:res.groups,name:ssi_general_audit_worksheet_expert.general_audit_ws_bab9d32_user_group
+#: model:res.groups,name:ssi_general_audit_worksheet_expert.general_audit_ws_cda3a68_user_group
+msgid "User"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_expert
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_expert.field_general_audit_ws_bab9d32__user_id
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_expert.field_general_audit_ws_cda3a68__user_id
+msgid ""
+"User that responsible for document\n"
+"\n"
+"* Create user can be different with responsible user\n"
+"* Automatically filled with user that initiate document creation.\n"
+"  Default responsible can be changed."
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_expert
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_expert.field_general_audit_ws_bab9d32__reviewer_id
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_expert.field_general_audit_ws_cda3a68__reviewer_id
+msgid ""
+"User that responsible to review document\n"
+"\n"
+"* Unless it configured to approve reviewer does not equal to approver"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_expert
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_expert.field_general_audit_ws_bab9d32__active_approver_user_ids
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_expert.field_general_audit_ws_cda3a68__active_approver_user_ids
+msgid "Users that can approve/reject document"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_expert
+#: model:res.groups,name:ssi_general_audit_worksheet_expert.general_audit_ws_bab9d32_validator_group
+#: model:res.groups,name:ssi_general_audit_worksheet_expert.general_audit_ws_cda3a68_validator_group
+msgid "Validator"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_expert
+#: model:res.groups,name:ssi_general_audit_worksheet_expert.general_audit_ws_bab9d32_viewer_group
+#: model:res.groups,name:ssi_general_audit_worksheet_expert.general_audit_ws_cda3a68_viewer_group
+msgid "Viewer"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_expert
+#: model:general_audit_ws_cda3a68.factor,name:ssi_general_audit_worksheet_expert.general_audit_ws_cda3a68_factor_14_6f185d1b
+msgid ""
+"What are the nature, scope, and objectives of the Management Expert's work?"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_expert
+#: model:general_audit_ws_cda3a68.factor,name:ssi_general_audit_worksheet_expert.general_audit_ws_cda3a68_factor_22_599d4716
+msgid ""
+"What are the nature, timing, and extent of communications between the "
+"auditor and the Management Expert, including the form of the report to be "
+"provided by the Management Expert?"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_expert
+#: model:general_audit_ws_cda3a68.factor,name:ssi_general_audit_worksheet_expert.general_audit_ws_cda3a68_factor_17_2603a9bd
+msgid ""
+"What are the respective roles and responsibilities of the auditor and the "
+"Management Expert?"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_expert
+#: model:general_audit_ws_cda3a68.factor,name:ssi_general_audit_worksheet_expert.general_audit_ws_cda3a68_factor_3_babb20c1
+msgid ""
+"What are the risks of material misstatement and the significance of the "
+"matter for which the expertise of a Management Expert is being considered?"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_expert
+#: model:general_audit_ws_bab9d32.factor,name:ssi_general_audit_worksheet_expert.general_audit_ws_bab9d32_factor_3_7c338997
+msgid ""
+"What is the risk of material misstatement in matters related to the work of "
+"the auditor's expert?"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_expert
+#: model:general_audit_ws_bab9d32.factor,name:ssi_general_audit_worksheet_expert.general_audit_ws_bab9d32_factor_4_729b944c
+msgid ""
+"What is the significance of the auditor's expert's work in the context of "
+"the audit?"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_expert
+#: model:general_audit_ws_bab9d32.factor,name:ssi_general_audit_worksheet_expert.general_audit_ws_bab9d32_factor_1_a66f9189
+msgid ""
+"What prior knowledge or experience does the auditor have regarding the "
+"matter for which the use of an auditor's expert is being considered?"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_expert
+#: model:general_audit_ws_cda3a68.factor,name:ssi_general_audit_worksheet_expert.general_audit_ws_cda3a68_factor_15_1c5082d9
+msgid ""
+"What technical performance standards or professional standards are followed "
+"by the Management Expert in performing their work?"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_expert
+#: model:general_audit_ws_cda3a68.factor,name:ssi_general_audit_worksheet_expert.general_audit_ws_cda3a68_factor_18_40f9463c
+msgid ""
+"Will the auditor or the Management Expert perform detailed testing of the "
+"source data?"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_expert
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_expert.field_general_audit_ws_bab9d32__parent_type_id
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_expert.field_general_audit_ws_cda3a68__parent_type_id
+msgid "Worksheet type category/group for this specific worksheet."
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_expert
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_expert.field_general_audit_ws_bab9d32__type_id
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_expert.field_general_audit_ws_cda3a68__type_id
+msgid "Worksheet type that determines behavior, items, and conclusions."
+msgstr ""
