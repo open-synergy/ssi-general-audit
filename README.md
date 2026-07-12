@@ -143,17 +143,46 @@ Available addons
 ----------------
 addon | version | maintainers | summary
 --- | --- | --- | ---
-[ssi_general_audit](ssi_general_audit/) | 14.0.3.1.0 |  | General Audit
-[ssi_general_audit_worksheet_audit_working_plan](ssi_general_audit_worksheet_audit_working_plan/) | 14.0.1.2.0 |  | General Audit Worksheet - Audit Working Plan
-[ssi_general_audit_worksheet_control_risk](ssi_general_audit_worksheet_control_risk/) | 14.0.2.2.0 |  | General Audit Worksheet - Control Risk
-[ssi_general_audit_worksheet_engagement_letter_checklist](ssi_general_audit_worksheet_engagement_letter_checklist/) | 14.0.1.0.0 |  | General Audit Worksheet - Engagement Letter Checklist
-[ssi_general_audit_worksheet_inherent_risk](ssi_general_audit_worksheet_inherent_risk/) | 14.0.2.1.0 |  | General Audit Worksheet - Inherent Risk
+[ssi_general_audit](ssi_general_audit/) | 14.0.4.0.0 |  | General Audit
+[ssi_general_audit_core](ssi_general_audit_core/) | 14.0.1.0.0 |  | General Audit - Core
+[ssi_general_audit_worksheet_acceptance_continuance](ssi_general_audit_worksheet_acceptance_continuance/) | 14.0.1.0.0 |  | General Audit Worksheet - Acceptance and Continuance
+[ssi_general_audit_worksheet_analytic_cycle](ssi_general_audit_worksheet_analytic_cycle/) | 14.0.1.0.0 |  | General Audit Worksheet - Analytical Procedures – Cycle
+[ssi_general_audit_worksheet_assignment_letter](ssi_general_audit_worksheet_assignment_letter/) | 14.0.1.0.0 |  | General Audit Worksheet - Assignment Letter
+[ssi_general_audit_worksheet_audit_procedure_analytic](ssi_general_audit_worksheet_audit_procedure_analytic/) | 14.0.1.0.0 |  | General Audit Worksheet - Observation Audit Procedure
+[ssi_general_audit_worksheet_audit_procedure_confirmation](ssi_general_audit_worksheet_audit_procedure_confirmation/) | 14.0.1.0.0 |  | General Audit Worksheet - Reperformance Audit Procedure
+[ssi_general_audit_worksheet_audit_procedure_inquiry](ssi_general_audit_worksheet_audit_procedure_inquiry/) | 14.0.1.0.0 |  | General Audit Worksheet - Inquiry Audit Procedure
+[ssi_general_audit_worksheet_audit_procedure_observation](ssi_general_audit_worksheet_audit_procedure_observation/) | 14.0.1.0.0 |  | General Audit Worksheet - Observation Audit Procedure
+[ssi_general_audit_worksheet_audit_procedure_recompute](ssi_general_audit_worksheet_audit_procedure_recompute/) | 14.0.1.0.0 |  | General Audit Worksheet - Recompute Audit Procedure
+[ssi_general_audit_worksheet_audit_procedure_reperformance](ssi_general_audit_worksheet_audit_procedure_reperformance/) | 14.0.1.0.0 |  | General Audit Worksheet - Reperformance Audit Procedure
+[ssi_general_audit_worksheet_audit_procedure_vouching](ssi_general_audit_worksheet_audit_procedure_vouching/) | 14.0.1.0.0 |  | General Audit Worksheet - Vouching Audit Procedure
+[ssi_general_audit_worksheet_audit_result](ssi_general_audit_worksheet_audit_result/) | 14.0.1.0.0 |  | General Audit Worksheet - Audit Result
+[ssi_general_audit_worksheet_audit_working_plan](ssi_general_audit_worksheet_audit_working_plan/) | 14.0.1.3.0 |  | General Audit Worksheet - Audit Working Plan
+[ssi_general_audit_worksheet_client_package](ssi_general_audit_worksheet_client_package/) | 14.0.1.0.0 |  | General Audit Worksheet - Client Assistance Package
+[ssi_general_audit_worksheet_control_risk](ssi_general_audit_worksheet_control_risk/) | 14.0.2.3.0 |  | General Audit Worksheet - Control Risk
+[ssi_general_audit_worksheet_draft_reporting](ssi_general_audit_worksheet_draft_reporting/) | 14.0.1.0.0 |  | General Audit Worksheet - Draft Reporting
+[ssi_general_audit_worksheet_engagement_letter_checklist](ssi_general_audit_worksheet_engagement_letter_checklist/) | 14.0.1.1.0 |  | General Audit Worksheet - Engagement Letter Checklist
+[ssi_general_audit_worksheet_expert](ssi_general_audit_worksheet_expert/) | 14.0.1.0.0 |  | General Audit Worksheet - Expert
+[ssi_general_audit_worksheet_external_communication](ssi_general_audit_worksheet_external_communication/) | 14.0.1.0.0 |  | General Audit Worksheet - External Communication
+[ssi_general_audit_worksheet_final_materiality](ssi_general_audit_worksheet_final_materiality/) | 14.0.1.0.0 |  | General Audit Worksheet - Final Materiality & Analytical Procedures
+[ssi_general_audit_worksheet_final_report](ssi_general_audit_worksheet_final_report/) | 14.0.1.0.0 |  | General Audit Worksheet - Final Report
+[ssi_general_audit_worksheet_independence_statement](ssi_general_audit_worksheet_independence_statement/) | 14.0.1.0.0 |  | General Audit Worksheet - Independence Statement
+[ssi_general_audit_worksheet_inherent_risk](ssi_general_audit_worksheet_inherent_risk/) | 14.0.2.2.0 |  | General Audit Worksheet - Inherent Risk
+[ssi_general_audit_worksheet_lead_schedule](ssi_general_audit_worksheet_lead_schedule/) | 14.0.1.0.0 |  | General Audit Worksheet - Lead Schedule
+[ssi_general_audit_worksheet_physical_check](ssi_general_audit_worksheet_physical_check/) | 14.0.1.0.0 |  | General Audit Worksheet - Inspection
 [ssi_general_audit_worksheet_planning_memorandum](ssi_general_audit_worksheet_planning_memorandum/) | 14.0.1.2.0 |  | General Audit Worksheet - Planning Memorandum
+[ssi_general_audit_worksheet_population](ssi_general_audit_worksheet_population/) | 14.0.1.0.0 |  | General Audit Worksheet - Population
 [ssi_general_audit_worksheet_preliminary_analytic_procedure](ssi_general_audit_worksheet_preliminary_analytic_procedure/) | 14.0.1.0.0 |  | General Audit Worksheet - Preliminary Analytic Procedure
-[ssi_general_audit_worksheet_preliminary_materiality](ssi_general_audit_worksheet_preliminary_materiality/) | 14.0.1.0.0 |  | General Audit Worksheet - Preliminary Materiality
-[ssi_general_audit_worksheet_romm](ssi_general_audit_worksheet_romm/) | 14.0.1.1.0 |  | General Audit Worksheet - ROMM
+[ssi_general_audit_worksheet_preliminary_materiality](ssi_general_audit_worksheet_preliminary_materiality/) | 14.0.1.1.0 |  | General Audit Worksheet - Preliminary Materiality
+[ssi_general_audit_worksheet_review](ssi_general_audit_worksheet_review/) | 14.0.1.0.0 |  | General Audit Worksheet - Review
+[ssi_general_audit_worksheet_romm](ssi_general_audit_worksheet_romm/) | 14.0.1.2.0 |  | General Audit Worksheet - ROMM
+[ssi_general_audit_worksheet_sample_determination](ssi_general_audit_worksheet_sample_determination/) | 14.0.1.0.0 |  | General Audit Worksheet - Sample Determination
+[ssi_general_audit_worksheet_specific_procedure](ssi_general_audit_worksheet_specific_procedure/) | 14.0.1.0.0 |  | General Audit Worksheet - Specific Procedures
+[ssi_general_audit_worksheet_team_communication](ssi_general_audit_worksheet_team_communication/) | 14.0.1.0.0 |  | General Audit Worksheet - Team Communication
 [ssi_general_audit_worksheet_test_of_control](ssi_general_audit_worksheet_test_of_control/) | 14.0.1.0.0 |  | General Audit Worksheet - Test of Control
-[ssi_general_audit_worksheet_understanding_entity](ssi_general_audit_worksheet_understanding_entity/) | 14.0.1.10.0 |  | General Audit Worksheet - Understanding Entity and It's Environment
+[ssi_general_audit_worksheet_test_of_detail](ssi_general_audit_worksheet_test_of_detail/) | 14.0.1.1.0 |  | General Audit Worksheet - Test of Detail
+[ssi_general_audit_worksheet_test_planning](ssi_general_audit_worksheet_test_planning/) | 14.0.1.0.0 |  | General Audit Worksheet - Test Planning
+[ssi_general_audit_worksheet_trial_balance](ssi_general_audit_worksheet_trial_balance/) | 14.0.1.0.0 |  | General Audit Worksheet - Trial Balance
+[ssi_general_audit_worksheet_understanding_entity](ssi_general_audit_worksheet_understanding_entity/) | 14.0.1.11.0 |  | General Audit Worksheet - Understanding Entity and It's Environment
 
 [//]: # (end addons)
 
