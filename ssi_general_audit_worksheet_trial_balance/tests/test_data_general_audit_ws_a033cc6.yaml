@@ -1,0 +1,893 @@
+scenarios:
+  # ------------------------------------------------------------------
+  # general_audit_ws_a033cc6.item - Master CRUD
+  # ------------------------------------------------------------------
+  - name: "Item master - Create"
+    steps:
+      - step: "Create item master"
+        action: "create"
+        model: "general_audit_ws_a033cc6.item"
+        save_as: "item"
+        values:
+          name: "TB Check Footing"
+          code: "TB-90"
+          sequence: 10
+          option_set_id: "REF: ssi_general_audit.checklist_option_set_2"
+      - step: "Assert item created"
+        action: "assert"
+        target: "item"
+        asserts:
+          id:
+            type: "value"
+            operator: "is_truthy"
+          name:
+            type: "value"
+            expected: "TB Check Footing"
+          code:
+            type: "value"
+            expected: "TB-90"
+
+  - name: "Item master - Default code is /"
+    steps:
+      - step: "Create item master without code"
+        action: "create"
+        model: "general_audit_ws_a033cc6.item"
+        save_as: "item"
+        values:
+          name: "TB Check No Code"
+          option_set_id: "REF: ssi_general_audit.checklist_option_set_2"
+      - step: "Assert code defaults to /"
+        action: "assert"
+        target: "item"
+        asserts:
+          code:
+            type: "value"
+            expected: "/"
+
+  - name: "Item master - Edit"
+    steps:
+      - step: "Create item master"
+        action: "create"
+        model: "general_audit_ws_a033cc6.item"
+        save_as: "item"
+        values:
+          name: "TB Check Footing"
+          code: "TB-91"
+          option_set_id: "REF: ssi_general_audit.checklist_option_set_2"
+      - step: "Write new name"
+        action: "write"
+        target: "item"
+        values:
+          name: "TB Check Footing (rev)"
+      - step: "Assert name updated"
+        action: "assert"
+        target: "item"
+        asserts:
+          name:
+            type: "value"
+            expected: "TB Check Footing (rev)"
+
+  - name: "Item master - Delete"
+    steps:
+      - step: "Create item master"
+        action: "create"
+        model: "general_audit_ws_a033cc6.item"
+        save_as: "item"
+        values:
+          name: "TB Check To Delete"
+          code: "TB-92"
+          option_set_id: "REF: ssi_general_audit.checklist_option_set_2"
+      - step: "Delete item master"
+        action: "unlink"
+        target: "item"
+      - step: "Verify item deleted"
+        action: "search"
+        model: "general_audit_ws_a033cc6.item"
+        domain: [["code", "=", "TB-92"]]
+        save_as: "result"
+        expect_count: 0
+
+  # ------------------------------------------------------------------
+  # general_audit_ws_a033cc6 - Create in draft
+  # ------------------------------------------------------------------
+  - name: "Worksheet a033cc6 - Create in draft"
+    steps:
+      - step: "Get config parameter model"
+        action: "search"
+        model: "ir.config_parameter"
+        domain: []
+        save_as: "config_parameter"
+        limit: 1
+
+      - step: "Allow enough CPA licenses for this scenario"
+        action: "call"
+        target: "config_parameter"
+        method: "set_param"
+        args:
+          - "ssi_general_audit.max_number_of_cpa_license"
+          - "100"
+
+      - step: "Create client partner"
+        action: "create"
+        model: "res.partner"
+        save_as: "client"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Audit Client"
+          is_company: true
+
+      - step: "Create accountant partner"
+        action: "create"
+        model: "res.partner"
+        save_as: "accountant"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Audit Accountant"
+
+      - step: "Get CPA license id category"
+        action: "ref"
+        xml_id: "ssi_partner_identification_cpa_license.partner_identification_accountant_cpa_license"
+        save_as: "cpa_category"
+
+      - step: "Grant accountant a CPA license"
+        action: "create"
+        model: "res.partner.id_number"
+        save_as: "cpa_license"
+        as_user: "base.user_admin"
+        values:
+          partner_id: "EVAL: registry['accountant'].id"
+          category_id: "EVAL: registry['cpa_category'].id"
+          name: "CPA-TB-0001"
+
+      - step: "Create account type set"
+        action: "create"
+        model: "client_account_type_set"
+        save_as: "account_type_set"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Account Type Set"
+          code: "/"
+
+      - step: "Create financial accounting standard"
+        action: "create"
+        model: "accountant.financial_accounting_standard"
+        save_as: "standard"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Financial Accounting Standard"
+          code: "/"
+
+      - step: "Create general audit"
+        action: "create"
+        model: "general_audit"
+        save_as: "audit"
+        as_user: "base.user_admin"
+        values:
+          title: "Test General Audit - TB Create"
+          partner_id: "EVAL: registry['client'].id"
+          accountant_id: "EVAL: registry['accountant'].id"
+          account_type_set_id: "EVAL: registry['account_type_set'].id"
+          financial_accounting_standard_id: "EVAL: registry['standard'].id"
+          date_start: 2026-01-01
+          date_end: 2026-12-31
+          need_interim: false
+          need_previous: false
+          num_of_consecutive_audit_firm: 1
+          num_of_consecutive_audit_accountant: 1
+
+      - step: "Open general audit"
+        action: "call"
+        target: "audit"
+        method: "action_open"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after opening general audit"
+        action: "call"
+        target: "audit"
+        method: "invalidate_cache"
+
+      - step: "Assert general audit open"
+        action: "assert"
+        target: "audit"
+        asserts:
+          state:
+            type: "value"
+            expected: "open"
+
+      - step: "Create worksheet a033cc6"
+        action: "create"
+        model: "general_audit_ws_a033cc6"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id:
+            "REF: ssi_general_audit_worksheet_trial_balance.worksheet_type_a033cc6"
+
+      - step: "Assert worksheet created in draft"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          id:
+            type: "value"
+            operator: "is_truthy"
+          state:
+            type: "value"
+            expected: "draft"
+          general_audit_id:
+            type: "m2o"
+            expected: "REC: audit"
+
+  # ------------------------------------------------------------------
+  # general_audit_ws_a033cc6 - Populate checklist (+ idempotency)
+  # ------------------------------------------------------------------
+  - name: "Worksheet a033cc6 - Populate checklist and idempotency"
+    steps:
+      - step: "Get config parameter model"
+        action: "search"
+        model: "ir.config_parameter"
+        domain: []
+        save_as: "config_parameter"
+        limit: 1
+
+      - step: "Allow enough CPA licenses for this scenario"
+        action: "call"
+        target: "config_parameter"
+        method: "set_param"
+        args:
+          - "ssi_general_audit.max_number_of_cpa_license"
+          - "100"
+
+      - step: "Create client partner"
+        action: "create"
+        model: "res.partner"
+        save_as: "client"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Audit Client"
+          is_company: true
+
+      - step: "Create accountant partner"
+        action: "create"
+        model: "res.partner"
+        save_as: "accountant"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Audit Accountant"
+
+      - step: "Get CPA license id category"
+        action: "ref"
+        xml_id: "ssi_partner_identification_cpa_license.partner_identification_accountant_cpa_license"
+        save_as: "cpa_category"
+
+      - step: "Grant accountant a CPA license"
+        action: "create"
+        model: "res.partner.id_number"
+        save_as: "cpa_license"
+        as_user: "base.user_admin"
+        values:
+          partner_id: "EVAL: registry['accountant'].id"
+          category_id: "EVAL: registry['cpa_category'].id"
+          name: "CPA-TB-0002"
+
+      - step: "Create account type set"
+        action: "create"
+        model: "client_account_type_set"
+        save_as: "account_type_set"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Account Type Set"
+          code: "/"
+
+      - step: "Create financial accounting standard"
+        action: "create"
+        model: "accountant.financial_accounting_standard"
+        save_as: "standard"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Financial Accounting Standard"
+          code: "/"
+
+      - step: "Create general audit"
+        action: "create"
+        model: "general_audit"
+        save_as: "audit"
+        as_user: "base.user_admin"
+        values:
+          title: "Test General Audit - TB Populate"
+          partner_id: "EVAL: registry['client'].id"
+          accountant_id: "EVAL: registry['accountant'].id"
+          account_type_set_id: "EVAL: registry['account_type_set'].id"
+          financial_accounting_standard_id: "EVAL: registry['standard'].id"
+          date_start: 2026-01-01
+          date_end: 2026-12-31
+          need_interim: false
+          need_previous: false
+          num_of_consecutive_audit_firm: 1
+          num_of_consecutive_audit_accountant: 1
+
+      - step: "Open general audit"
+        action: "call"
+        target: "audit"
+        method: "action_open"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after opening general audit"
+        action: "call"
+        target: "audit"
+        method: "invalidate_cache"
+
+      - step: "Create worksheet a033cc6"
+        action: "create"
+        model: "general_audit_ws_a033cc6"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id:
+            "REF: ssi_general_audit_worksheet_trial_balance.worksheet_type_a033cc6"
+
+      - step: "Create new item master TB-90"
+        action: "create"
+        model: "general_audit_ws_a033cc6.item"
+        save_as: "item_90"
+        values:
+          name: "Populate Check TB-90"
+          code: "POP-TB-90"
+          option_set_id: "REF: ssi_general_audit.checklist_option_set_2"
+
+      - step: "Create new item master TB-91"
+        action: "create"
+        model: "general_audit_ws_a033cc6.item"
+        save_as: "item_91"
+        values:
+          name: "Populate Check TB-91"
+          code: "POP-TB-91"
+          option_set_id: "REF: ssi_general_audit.checklist_option_set_2"
+
+      - step: "Assert no checklist row for TB-90 before populate"
+        action: "search"
+        model: "general_audit_ws_a033cc6.checklist"
+        domain:
+          - ["worksheet_id", "=", "REC: worksheet.id"]
+          - ["item_id", "=", "REC: item_90.id"]
+        save_as: "checklist_90_before"
+        expect_count: 0
+
+      - step: "Populate checklist"
+        action: "call"
+        target: "worksheet"
+        method: "action_populate_checklist"
+
+      - step: "Assert checklist row created for TB-90"
+        action: "search"
+        model: "general_audit_ws_a033cc6.checklist"
+        domain:
+          - ["worksheet_id", "=", "REC: worksheet.id"]
+          - ["item_id", "=", "REC: item_90.id"]
+        save_as: "checklist_90_after"
+        expect_count: 1
+
+      - step: "Assert checklist row created for TB-91"
+        action: "search"
+        model: "general_audit_ws_a033cc6.checklist"
+        domain:
+          - ["worksheet_id", "=", "REC: worksheet.id"]
+          - ["item_id", "=", "REC: item_91.id"]
+        save_as: "checklist_91_after"
+        expect_count: 1
+
+      - step: "Populate checklist a second time"
+        action: "call"
+        target: "worksheet"
+        method: "action_populate_checklist"
+
+      - step: "Assert no duplicate checklist row for TB-90"
+        action: "search"
+        model: "general_audit_ws_a033cc6.checklist"
+        domain:
+          - ["worksheet_id", "=", "REC: worksheet.id"]
+          - ["item_id", "=", "REC: item_90.id"]
+        save_as: "checklist_90_idempotent"
+        expect_count: 1
+
+  # ------------------------------------------------------------------
+  # general_audit_ws_a033cc6.checklist - Value write + cascade delete
+  # ------------------------------------------------------------------
+  - name: "Worksheet a033cc6 - Checklist value write and cascade delete"
+    steps:
+      - step: "Get config parameter model"
+        action: "search"
+        model: "ir.config_parameter"
+        domain: []
+        save_as: "config_parameter"
+        limit: 1
+
+      - step: "Allow enough CPA licenses for this scenario"
+        action: "call"
+        target: "config_parameter"
+        method: "set_param"
+        args:
+          - "ssi_general_audit.max_number_of_cpa_license"
+          - "100"
+
+      - step: "Create client partner"
+        action: "create"
+        model: "res.partner"
+        save_as: "client"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Audit Client"
+          is_company: true
+
+      - step: "Create accountant partner"
+        action: "create"
+        model: "res.partner"
+        save_as: "accountant"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Audit Accountant"
+
+      - step: "Get CPA license id category"
+        action: "ref"
+        xml_id: "ssi_partner_identification_cpa_license.partner_identification_accountant_cpa_license"
+        save_as: "cpa_category"
+
+      - step: "Grant accountant a CPA license"
+        action: "create"
+        model: "res.partner.id_number"
+        save_as: "cpa_license"
+        as_user: "base.user_admin"
+        values:
+          partner_id: "EVAL: registry['accountant'].id"
+          category_id: "EVAL: registry['cpa_category'].id"
+          name: "CPA-TB-0003"
+
+      - step: "Create account type set"
+        action: "create"
+        model: "client_account_type_set"
+        save_as: "account_type_set"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Account Type Set"
+          code: "/"
+
+      - step: "Create financial accounting standard"
+        action: "create"
+        model: "accountant.financial_accounting_standard"
+        save_as: "standard"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Financial Accounting Standard"
+          code: "/"
+
+      - step: "Create general audit"
+        action: "create"
+        model: "general_audit"
+        save_as: "audit"
+        as_user: "base.user_admin"
+        values:
+          title: "Test General Audit - TB Cascade"
+          partner_id: "EVAL: registry['client'].id"
+          accountant_id: "EVAL: registry['accountant'].id"
+          account_type_set_id: "EVAL: registry['account_type_set'].id"
+          financial_accounting_standard_id: "EVAL: registry['standard'].id"
+          date_start: 2026-01-01
+          date_end: 2026-12-31
+          need_interim: false
+          need_previous: false
+          num_of_consecutive_audit_firm: 1
+          num_of_consecutive_audit_accountant: 1
+
+      - step: "Open general audit"
+        action: "call"
+        target: "audit"
+        method: "action_open"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after opening general audit"
+        action: "call"
+        target: "audit"
+        method: "invalidate_cache"
+
+      - step: "Create worksheet a033cc6"
+        action: "create"
+        model: "general_audit_ws_a033cc6"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id:
+            "REF: ssi_general_audit_worksheet_trial_balance.worksheet_type_a033cc6"
+
+      - step: "Create new item master for cascade test"
+        action: "create"
+        model: "general_audit_ws_a033cc6.item"
+        save_as: "item_cascade"
+        values:
+          name: "Cascade Check"
+          code: "CASCADE-TB-1"
+          option_set_id: "REF: ssi_general_audit.checklist_option_set_2"
+
+      - step: "Populate checklist"
+        action: "call"
+        target: "worksheet"
+        method: "action_populate_checklist"
+
+      - step: "Get the created checklist row"
+        action: "search"
+        model: "general_audit_ws_a033cc6.checklist"
+        domain:
+          - ["worksheet_id", "=", "REC: worksheet.id"]
+          - ["item_id", "=", "REC: item_cascade.id"]
+        save_as: "checklist_row"
+        limit: 1
+        expect_count: 1
+
+      - step: "Write checklist_ok on the checklist row"
+        action: "write"
+        target: "checklist_row"
+        values:
+          checklist_ok: false
+
+      - step: "Assert checklist_ok value saved"
+        action: "assert"
+        target: "checklist_row"
+        asserts:
+          checklist_ok:
+            type: "value"
+            expected: false
+
+      - step: "Delete the worksheet (still draft)"
+        action: "unlink"
+        target: "worksheet"
+
+      - step: "Assert checklist row cascaded away"
+        action: "search"
+        model: "general_audit_ws_a033cc6.checklist"
+        domain:
+          - ["worksheet_id", "=", "REC: worksheet.id"]
+        save_as: "checklist_after_delete"
+        expect_count: 0
+
+  # ------------------------------------------------------------------
+  # general_audit_ws_a033cc6 - Workflow draft to done
+  # ------------------------------------------------------------------
+  - name: "Worksheet a033cc6 - Workflow draft to done"
+    steps:
+      - step: "Get config parameter model"
+        action: "search"
+        model: "ir.config_parameter"
+        domain: []
+        save_as: "config_parameter"
+        limit: 1
+
+      - step: "Allow enough CPA licenses for this scenario"
+        action: "call"
+        target: "config_parameter"
+        method: "set_param"
+        args:
+          - "ssi_general_audit.max_number_of_cpa_license"
+          - "100"
+
+      - step: "Create client partner"
+        action: "create"
+        model: "res.partner"
+        save_as: "client"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Audit Client"
+          is_company: true
+
+      - step: "Create accountant partner"
+        action: "create"
+        model: "res.partner"
+        save_as: "accountant"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Audit Accountant"
+
+      - step: "Get CPA license id category"
+        action: "ref"
+        xml_id: "ssi_partner_identification_cpa_license.partner_identification_accountant_cpa_license"
+        save_as: "cpa_category"
+
+      - step: "Grant accountant a CPA license"
+        action: "create"
+        model: "res.partner.id_number"
+        save_as: "cpa_license"
+        as_user: "base.user_admin"
+        values:
+          partner_id: "EVAL: registry['accountant'].id"
+          category_id: "EVAL: registry['cpa_category'].id"
+          name: "CPA-TB-0004"
+
+      - step: "Create account type set"
+        action: "create"
+        model: "client_account_type_set"
+        save_as: "account_type_set"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Account Type Set"
+          code: "/"
+
+      - step: "Create financial accounting standard"
+        action: "create"
+        model: "accountant.financial_accounting_standard"
+        save_as: "standard"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Financial Accounting Standard"
+          code: "/"
+
+      - step: "Create general audit"
+        action: "create"
+        model: "general_audit"
+        save_as: "audit"
+        as_user: "base.user_admin"
+        values:
+          title: "Test General Audit - TB Workflow"
+          partner_id: "EVAL: registry['client'].id"
+          accountant_id: "EVAL: registry['accountant'].id"
+          account_type_set_id: "EVAL: registry['account_type_set'].id"
+          financial_accounting_standard_id: "EVAL: registry['standard'].id"
+          date_start: 2026-01-01
+          date_end: 2026-12-31
+          need_interim: false
+          need_previous: false
+          num_of_consecutive_audit_firm: 1
+          num_of_consecutive_audit_accountant: 1
+
+      - step: "Open general audit"
+        action: "call"
+        target: "audit"
+        method: "action_open"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after opening general audit"
+        action: "call"
+        target: "audit"
+        method: "invalidate_cache"
+
+      - step: "Create worksheet a033cc6"
+        action: "create"
+        model: "general_audit_ws_a033cc6"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id:
+            "REF: ssi_general_audit_worksheet_trial_balance.worksheet_type_a033cc6"
+
+      - step: "Open worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_open"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after opening worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Assert worksheet open"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          state:
+            type: "value"
+            expected: "open"
+
+      - step: "Fill required conclusion fields before confirm"
+        action: "write"
+        target: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          conclusion_id:
+            "REF:
+            ssi_general_audit_worksheet_trial_balance.general_audit_worksheet_conclusion_33_375a10ad"
+          conclusion: "Trial balance is fully entered and in balance."
+
+      - step: "Confirm worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_confirm"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after confirming worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Assert worksheet confirmed"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          state:
+            type: "value"
+            expected: "confirm"
+
+      - step: "Approve worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_approve_approval"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after approving worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Assert worksheet done"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          state:
+            type: "value"
+            expected: "done"
+
+  # ------------------------------------------------------------------
+  # general_audit_ws_a033cc6 - Cancel & restart (from open)
+  # ------------------------------------------------------------------
+  - name: "Worksheet a033cc6 - Cancel and restart"
+    steps:
+      - step: "Get config parameter model"
+        action: "search"
+        model: "ir.config_parameter"
+        domain: []
+        save_as: "config_parameter"
+        limit: 1
+
+      - step: "Allow enough CPA licenses for this scenario"
+        action: "call"
+        target: "config_parameter"
+        method: "set_param"
+        args:
+          - "ssi_general_audit.max_number_of_cpa_license"
+          - "100"
+
+      - step: "Create client partner"
+        action: "create"
+        model: "res.partner"
+        save_as: "client"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Audit Client"
+          is_company: true
+
+      - step: "Create accountant partner"
+        action: "create"
+        model: "res.partner"
+        save_as: "accountant"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Audit Accountant"
+
+      - step: "Get CPA license id category"
+        action: "ref"
+        xml_id: "ssi_partner_identification_cpa_license.partner_identification_accountant_cpa_license"
+        save_as: "cpa_category"
+
+      - step: "Grant accountant a CPA license"
+        action: "create"
+        model: "res.partner.id_number"
+        save_as: "cpa_license"
+        as_user: "base.user_admin"
+        values:
+          partner_id: "EVAL: registry['accountant'].id"
+          category_id: "EVAL: registry['cpa_category'].id"
+          name: "CPA-TB-0005"
+
+      - step: "Create account type set"
+        action: "create"
+        model: "client_account_type_set"
+        save_as: "account_type_set"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Account Type Set"
+          code: "/"
+
+      - step: "Create financial accounting standard"
+        action: "create"
+        model: "accountant.financial_accounting_standard"
+        save_as: "standard"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Financial Accounting Standard"
+          code: "/"
+
+      - step: "Create general audit"
+        action: "create"
+        model: "general_audit"
+        save_as: "audit"
+        as_user: "base.user_admin"
+        values:
+          title: "Test General Audit - TB Cancel"
+          partner_id: "EVAL: registry['client'].id"
+          accountant_id: "EVAL: registry['accountant'].id"
+          account_type_set_id: "EVAL: registry['account_type_set'].id"
+          financial_accounting_standard_id: "EVAL: registry['standard'].id"
+          date_start: 2026-01-01
+          date_end: 2026-12-31
+          need_interim: false
+          need_previous: false
+          num_of_consecutive_audit_firm: 1
+          num_of_consecutive_audit_accountant: 1
+
+      - step: "Open general audit"
+        action: "call"
+        target: "audit"
+        method: "action_open"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after opening general audit"
+        action: "call"
+        target: "audit"
+        method: "invalidate_cache"
+
+      - step: "Create worksheet a033cc6"
+        action: "create"
+        model: "general_audit_ws_a033cc6"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id:
+            "REF: ssi_general_audit_worksheet_trial_balance.worksheet_type_a033cc6"
+
+      - step: "Open worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_open"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after opening worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Assert worksheet open"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          state:
+            type: "value"
+            expected: "open"
+
+      - step: "Cancel worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_cancel"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after cancelling worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Assert worksheet cancelled"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          state:
+            type: "value"
+            expected: "cancel"
+
+      - step: "Restart worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_restart"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after restarting worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Assert worksheet back to draft"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          state:
+            type: "value"
+            expected: "draft"
