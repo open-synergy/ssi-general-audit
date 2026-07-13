@@ -131,16 +131,30 @@ entirely. If a worksheet test genuinely needs the parent audit in state `done`, 
 `ssi_general_audit/tests/test_data_general_audit.yaml` for the full home trial balance
 fixture (create → open → confirm → approve).
 
-## `general_audit_worksheet_mixin` is abstract
+## `general_audit_worksheet_mixin` is abstract — test it from a worksheet module, not here
 
 `general_audit_worksheet_mixin` (`models/worksheet/general_audit_worksheet_mixin.py`) is
-a `models.AbstractModel` — it has no table of its own. Concrete worksheet modules
-provide their own `models.Model` that does
-`_inherit = ["general_audit_worksheet_mixin", ...]` plus a `_type_xml_id` (see
+a `models.AbstractModel` — it has no table of its own, so `ssi_general_audit` cannot
+create a record of it directly. Concrete worksheet modules provide their own
+`models.Model` that does `_inherit = ["general_audit_worksheet_mixin", ...]` plus a
+`_type_xml_id` (see
 `ssi_general_audit_worksheet_trial_balance/models/general_audit_ws_a033cc6.py` for the
-pattern). Since that concrete model is real production code shipped by the worksheet
-module, its own tests do **not** need the `odoo_test_helper.FakeModelLoader` trick used
-in this module's `test_general_audit.py` — that trick only exists here because
-`ssi_general_audit` itself has no concrete worksheet model to test the mixin's
-`standard_item_ids` / `allowed_conclusion_ids` compute and `onchange_parent_type_id`
-against.
+pattern).
+
+An earlier version of this fixture registered a test-only concrete model at runtime via
+`odoo_test_helper.FakeModelLoader` to exercise the mixin's `standard_item_ids` /
+`allowed_conclusion_ids` compute and `onchange_parent_type_id` from within
+`ssi_general_audit` itself. **This does not work in this repo's CI**:
+`FakeModelLoader.update_registry()` calls `registry.setup_models()`, which rebuilds the
+field-dependency graph for the _entire_ registry — not just the fake model. Because CI
+installs and tests all ~40 modules of this repo together in one process, that rebuild
+raced against related fields defined by worksheet modules not yet visible in a way real,
+one-time module installation is not, and crashed with `KeyError` on an unrelated related
+field, corrupting the shared registry and cascading failures into unrelated worksheet
+modules' tests for the rest of the run. It was removed.
+
+**Consequence:** test `standard_item_ids`, `allowed_conclusion_ids`, and
+`onchange_parent_type_id` from within a worksheet module's own unit test suite (e.g.
+BL-0137 for `ssi_general_audit_worksheet_trial_balance`), using its real concrete model
+(`general_audit_ws_a033cc6` there) — no `FakeModelLoader` needed, since the concrete
+model is real production code already shipped by that module.
