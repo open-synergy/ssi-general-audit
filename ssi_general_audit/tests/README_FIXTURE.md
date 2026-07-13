@@ -102,6 +102,15 @@ and "Approve" steps too if your scenario specifically needs `general_audit` in s
   target: "audit"
   method: "action_open"
   as_user: "base.user_admin"
+
+- step: "Invalidate cache after opening general audit"
+  action: "call"
+  target: "audit"
+  method: "invalidate_cache"
+
+- step: "Assert general audit open"
+  action: "assert"
+  target: "audit"
   asserts:
     state:
       type: "value"
@@ -146,6 +155,37 @@ behind `confirm_ok` / `approve_ok` — evaluates to `False` for OdooBot. `Admini
 `ssi_general_audit.trial_balance_validator_group` (`security/res_group_data.xml`), so
 running every `general_audit` / `client_trial_balance` step as `base.user_admin` lets
 `action_open`, `action_confirm`, and `action_approve_approval` all succeed.
+
+## Why an `invalidate_cache` step follows every workflow transition
+
+`general_audit` and `client_trial_balance` gate every workflow button (`open_ok`,
+`confirm_ok`, `restart_ok`, …) behind a `policy.template`
+(`policy_template/general_audit.xml`, `policy_template/client_trial_balance.xml`) whose
+`additional_python_code` allows the record's own creator (`document.user_id`), reviewer,
+or the relevant validator group — `base.user_admin` satisfies this (it is both the
+creator, via `as_user`, and a validator group member).
+
+The catch is _when_ those booleans get computed: `mixin.policy._compute_policy`
+(`ssi_policy_mixin/models/mixin_policy.py`) is declared
+`@api.depends ("policy_template_id")` only — **not** `state`. `policy_template_id` is
+set once inside `create()`, so every policy field is computed a single time while the
+record is still `draft`, and Odoo never automatically invalidates that cache when
+`state` changes later (`_check_confirm_policy` / `_check_restart_policy` then read the
+_stale_ value). Whether a given policy field happens to look correct depends entirely on
+whether its `policy.template_detail.state_ids` includes `draft`:
+
+- `open_ok` requires `draft`, `cancel_ok` allows `draft` — both happen to be correct
+  even without a refresh, since that is the state at the moment they were first cached.
+- `confirm_ok` requires `open`, `restart_ok` requires `cancel`/`reject` — both are
+  **never** true at `create()` time, so they stay wrongly cached `False` forever unless
+  something forces a recompute.
+
+An explicit `action: "call"` step targeting `invalidate_cache` after every transition
+(before the next step that reads a policy field) forces that recompute — this is the
+same pattern `ssi_fixed_asset`'s tests already use in this environment. Don't rely on
+`auto_refresh`/the framework's automatic pre-assert cache refresh here: that only runs
+before reading `asserts:` fields, not before the _next_ `action: "call"`'s internal
+`_check_*_policy()` read, which is exactly where this bites.
 
 ## Why you (usually) don't need a trial balance
 

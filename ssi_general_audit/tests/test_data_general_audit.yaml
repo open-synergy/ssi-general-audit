@@ -103,6 +103,15 @@ scenarios:
 
   # ------------------------------------------------------------------
   # general_audit - full workflow draft -> open -> confirm -> done
+  #
+  # Policy fields (open_ok, confirm_ok, ...) are computed once at create()
+  # time and only recompute when `policy_template_id` changes -- NOT when
+  # `state` changes (mixin.policy._compute_policy is `@api.depends
+  # ("policy_template_id")` only). A step that reads a policy field via an
+  # internal `_check_*_policy()` call (inside action_confirm/action_restart)
+  # would otherwise see the value cached back when the record was still
+  # draft. An explicit "Invalidate cache" step after every transition
+  # forces a fresh read, exactly like ssi_fixed_asset's tests do.
   # ------------------------------------------------------------------
   - name: "general_audit - Workflow draft to done"
     steps:
@@ -194,6 +203,15 @@ scenarios:
         target: "audit"
         method: "action_open"
         as_user: "base.user_admin"
+
+      - step: "Invalidate cache after opening general audit"
+        action: "call"
+        target: "audit"
+        method: "invalidate_cache"
+
+      - step: "Assert general audit open"
+        action: "assert"
+        target: "audit"
         asserts:
           state:
             type: "value"
@@ -213,6 +231,15 @@ scenarios:
         target: "trial_balance"
         method: "action_open"
         as_user: "base.user_admin"
+
+      - step: "Invalidate cache after opening trial balance"
+        action: "call"
+        target: "trial_balance"
+        method: "invalidate_cache"
+
+      - step: "Assert trial balance open"
+        action: "assert"
+        target: "trial_balance"
         asserts:
           state:
             type: "value"
@@ -223,6 +250,15 @@ scenarios:
         target: "trial_balance"
         method: "action_confirm"
         as_user: "base.user_admin"
+
+      - step: "Invalidate cache after confirming trial balance"
+        action: "call"
+        target: "trial_balance"
+        method: "invalidate_cache"
+
+      - step: "Assert trial balance confirmed"
+        action: "assert"
+        target: "trial_balance"
         asserts:
           state:
             type: "value"
@@ -233,6 +269,15 @@ scenarios:
         target: "trial_balance"
         method: "action_approve_approval"
         as_user: "base.user_admin"
+
+      - step: "Invalidate cache after approving trial balance"
+        action: "call"
+        target: "trial_balance"
+        method: "invalidate_cache"
+
+      - step: "Assert trial balance done"
+        action: "assert"
+        target: "trial_balance"
         asserts:
           state:
             type: "value"
@@ -243,6 +288,15 @@ scenarios:
         target: "audit"
         method: "action_confirm"
         as_user: "base.user_admin"
+
+      - step: "Invalidate cache after confirming general audit"
+        action: "call"
+        target: "audit"
+        method: "invalidate_cache"
+
+      - step: "Assert general audit confirmed"
+        action: "assert"
+        target: "audit"
         asserts:
           state:
             type: "value"
@@ -253,6 +307,15 @@ scenarios:
         target: "audit"
         method: "action_approve_approval"
         as_user: "base.user_admin"
+
+      - step: "Invalidate cache after approving general audit"
+        action: "call"
+        target: "audit"
+        method: "invalidate_cache"
+
+      - step: "Assert general audit done"
+        action: "assert"
+        target: "audit"
         asserts:
           state:
             type: "value"
@@ -351,6 +414,15 @@ scenarios:
         target: "audit"
         method: "action_open"
         as_user: "base.user_admin"
+
+      - step: "Invalidate cache after opening general audit"
+        action: "call"
+        target: "audit"
+        method: "invalidate_cache"
+
+      - step: "Assert general audit open"
+        action: "assert"
+        target: "audit"
         asserts:
           state:
             type: "value"
@@ -361,6 +433,15 @@ scenarios:
         target: "audit"
         method: "action_cancel"
         as_user: "base.user_admin"
+
+      - step: "Invalidate cache after cancelling general audit"
+        action: "call"
+        target: "audit"
+        method: "invalidate_cache"
+
+      - step: "Assert general audit cancelled"
+        action: "assert"
+        target: "audit"
         asserts:
           state:
             type: "value"
@@ -371,6 +452,15 @@ scenarios:
         target: "audit"
         method: "action_restart"
         as_user: "base.user_admin"
+
+      - step: "Invalidate cache after restarting general audit"
+        action: "call"
+        target: "audit"
+        method: "invalidate_cache"
+
+      - step: "Assert general audit back to draft"
+        action: "assert"
+        target: "audit"
         asserts:
           state:
             type: "value"
