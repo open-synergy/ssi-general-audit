@@ -1,0 +1,620 @@
+setup:
+  steps:
+    - step: "Get config parameter model"
+      action: "search"
+      model: "ir.config_parameter"
+      domain: []
+      save_as: "config_parameter"
+      limit: 1
+
+    - step: "Allow enough CPA licenses for this scenario"
+      action: "call"
+      target: "config_parameter"
+      method: "set_param"
+      args:
+        - "ssi_general_audit.max_number_of_cpa_license"
+        - "100"
+
+    - step: "Create client partner"
+      action: "create"
+      model: "res.partner"
+      save_as: "client"
+      as_user: "base.user_admin"
+      values:
+        name: "Test Audit Client"
+        is_company: true
+
+    - step: "Create accountant partner"
+      action: "create"
+      model: "res.partner"
+      save_as: "accountant"
+      as_user: "base.user_admin"
+      values:
+        name: "Test Audit Accountant"
+
+    - step: "Get CPA license id category"
+      action: "ref"
+      xml_id: "ssi_partner_identification_cpa_license.partner_identification_accountant_cpa_license"
+      save_as: "cpa_category"
+
+    - step: "Grant accountant a CPA license"
+      action: "create"
+      model: "res.partner.id_number"
+      save_as: "cpa_license"
+      as_user: "base.user_admin"
+      values:
+        partner_id: "REC: accountant.id"
+        category_id: "REC: cpa_category.id"
+        name: "CPA-F5E7049-0001"
+
+    - step: "Create account type set"
+      action: "create"
+      model: "client_account_type_set"
+      save_as: "account_type_set"
+      as_user: "base.user_admin"
+      values:
+        name: "Test Account Type Set"
+        code: "/"
+
+    - step: "Create financial accounting standard"
+      action: "create"
+      model: "accountant.financial_accounting_standard"
+      save_as: "standard"
+      as_user: "base.user_admin"
+      values:
+        name: "Test Financial Accounting Standard"
+        code: "/"
+
+    - step: "Create general audit"
+      action: "create"
+      model: "general_audit"
+      save_as: "audit"
+      as_user: "base.user_admin"
+      values:
+        title: "Test General Audit - WS f5e7049"
+        partner_id: "REC: client.id"
+        accountant_id: "REC: accountant.id"
+        account_type_set_id: "REC: account_type_set.id"
+        financial_accounting_standard_id: "REC: standard.id"
+        date_start: 2026-01-01
+        date_end: 2026-12-31
+        need_interim: false
+        need_previous: false
+        num_of_consecutive_audit_firm: 1
+        num_of_consecutive_audit_accountant: 1
+
+    - step: "Open general audit"
+      action: "call"
+      target: "audit"
+      method: "action_open"
+      as_user: "base.user_admin"
+
+    - step: "Invalidate cache after opening general audit"
+      action: "call"
+      target: "audit"
+      method: "invalidate_cache"
+
+    - step: "Get worksheet type f5e7049"
+      action: "ref"
+      xml_id: "ssi_general_audit_worksheet_acceptance_continuance.worksheet_type_f5e7049"
+      save_as: "ws_type"
+
+    - step: "Get worksheet type 842f0d6"
+      action: "ref"
+      xml_id: "ssi_general_audit_worksheet_acceptance_continuance.worksheet_type_842f0d6"
+      save_as: "ws_type_842f0d6"
+
+scenarios:
+  # ------------------------------------------------------------------
+  # general_audit_ws_f5e7049 - Create in draft
+  # ------------------------------------------------------------------
+  - name: "Worksheet f5e7049 - Create in draft"
+    steps:
+      - step: "Create worksheet f5e7049"
+        action: "create"
+        model: "general_audit_ws_f5e7049"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+
+      - step: "Assert worksheet created in draft"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          id:
+            type: "value"
+            operator: "is_truthy"
+          state:
+            type: "value"
+            expected: "draft"
+          general_audit_id:
+            type: "m2o"
+            expected: "REC: audit"
+
+  # ------------------------------------------------------------------
+  # risk - plain Selection field
+  # ------------------------------------------------------------------
+  - name: "Worksheet f5e7049 - Write risk selection"
+    steps:
+      - step: "Create worksheet f5e7049"
+        action: "create"
+        model: "general_audit_ws_f5e7049"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+
+      - step: "Write risk to medium"
+        action: "write"
+        target: "worksheet"
+        values:
+          risk: "medium"
+
+      - step: "Assert risk saved"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          risk:
+            type: "value"
+            expected: "medium"
+
+  # ------------------------------------------------------------------
+  # link_1 - _compute_link_1
+  # ------------------------------------------------------------------
+  - name: "Worksheet f5e7049 - Compute link_1 (normal)"
+    steps:
+      - step: "Create sibling worksheet 842f0d6"
+        action: "create"
+        model: "general_audit_ws_842f0d6"
+        save_as: "ws_842f0d6"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_842f0d6.id"
+
+      - step: "Create worksheet f5e7049 (link_1 computed at create time)"
+        action: "create"
+        model: "general_audit_ws_f5e7049"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+
+      - step: "Assert link_1 points to the sibling worksheet"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          link_1:
+            type: "m2o"
+            expected: "REC: ws_842f0d6"
+
+  - name: "Worksheet f5e7049 - Compute link_1 kosong (no sibling)"
+    steps:
+      - step: "Create worksheet f5e7049 without any 842f0d6 sibling"
+        action: "create"
+        model: "general_audit_ws_f5e7049"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+
+      - step: "Assert link_1 empty"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          link_1:
+            type: "value"
+            operator: "is_falsy"
+
+  # ------------------------------------------------------------------
+  # action_reload_links
+  # ------------------------------------------------------------------
+  - name: "Worksheet f5e7049 - action_reload_links refreshes link_1"
+    steps:
+      - step: "Create worksheet f5e7049 without sibling yet"
+        action: "create"
+        model: "general_audit_ws_f5e7049"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+
+      - step: "Assert link_1 empty before sibling exists"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          link_1:
+            type: "value"
+            operator: "is_falsy"
+
+      - step: "Now create the sibling worksheet 842f0d6"
+        action: "create"
+        model: "general_audit_ws_842f0d6"
+        save_as: "ws_842f0d6"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_842f0d6.id"
+
+      - step: "Reload links"
+        action: "call"
+        target: "worksheet"
+        method: "action_reload_links"
+
+      - step: "Assert link_1 now points to the sibling worksheet"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          link_1:
+            type: "m2o"
+            expected: "REC: ws_842f0d6"
+
+  # ------------------------------------------------------------------
+  # general_audit_ws_f5e7049 - Workflow open to done (needs link_1)
+  # ------------------------------------------------------------------
+  - name: "Worksheet f5e7049 - Workflow open to done"
+    steps:
+      - step: "Create sibling worksheet 842f0d6 first so link_1 resolves"
+        action: "create"
+        model: "general_audit_ws_842f0d6"
+        save_as: "ws_842f0d6"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_842f0d6.id"
+
+      - step: "Create worksheet f5e7049"
+        action: "create"
+        model: "general_audit_ws_f5e7049"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+
+      - step: "Open worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_open"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after opening worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Assert worksheet open"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          state:
+            type: "value"
+            expected: "open"
+
+      - step: "Create conclusion for this worksheet type"
+        action: "create"
+        model: "general_audit_worksheet_conclusion"
+        save_as: "conclusion"
+        as_user: "base.user_admin"
+        values:
+          name: "No integrity red flags noted"
+          code: "/"
+          type_id: "REC: ws_type.id"
+
+      - step: "Fill required conclusion fields before confirm"
+        action: "write"
+        target: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          conclusion_id: "REC: conclusion.id"
+          conclusion: "Management integrity assessment completed, no exception noted."
+          risk: "low"
+
+      - step: "Confirm worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_confirm"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after confirming worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Assert worksheet confirmed"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          state:
+            type: "value"
+            expected: "confirm"
+
+      - step: "Approve worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_approve_approval"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after approving worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Assert worksheet done"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          state:
+            type: "value"
+            expected: "done"
+
+  # ------------------------------------------------------------------
+  # general_audit_ws_f5e7049 - Cancel and restart
+  # ------------------------------------------------------------------
+  - name: "Worksheet f5e7049 - Cancel and restart"
+    steps:
+      - step: "Create worksheet f5e7049"
+        action: "create"
+        model: "general_audit_ws_f5e7049"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+
+      - step: "Open worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_open"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after opening worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Cancel worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_cancel"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after cancelling worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Assert worksheet cancelled"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          state:
+            type: "value"
+            expected: "cancel"
+
+      - step: "Restart worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_restart"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after restarting worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Assert worksheet back to draft"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          state:
+            type: "value"
+            expected: "draft"
+
+  # ------------------------------------------------------------------
+  # general_audit_ws_f5e7049.item - Master CRUD
+  # ------------------------------------------------------------------
+  - name: "Item f5e7049 master - Create"
+    steps:
+      - step: "Create item master"
+        action: "create"
+        model: "general_audit_ws_f5e7049.item"
+        save_as: "item"
+        values:
+          name: "History of fraud allegations"
+          code: "F5E7049-01"
+          sequence: 10
+          option_set_id: "REF: ssi_general_audit.checklist_option_set_2"
+      - step: "Assert item created"
+        action: "assert"
+        target: "item"
+        asserts:
+          id:
+            type: "value"
+            operator: "is_truthy"
+          code:
+            type: "value"
+            expected: "F5E7049-01"
+
+  - name: "Item f5e7049 master - Default code is /"
+    steps:
+      - step: "Create item master without code"
+        action: "create"
+        model: "general_audit_ws_f5e7049.item"
+        save_as: "item"
+        values:
+          name: "No code item"
+          option_set_id: "REF: ssi_general_audit.checklist_option_set_2"
+      - step: "Assert code defaults to /"
+        action: "assert"
+        target: "item"
+        asserts:
+          code:
+            type: "value"
+            expected: "/"
+
+  - name: "Item f5e7049 master - Edit"
+    steps:
+      - step: "Create item master"
+        action: "create"
+        model: "general_audit_ws_f5e7049.item"
+        save_as: "item"
+        values:
+          name: "History of fraud allegations"
+          code: "F5E7049-02"
+          option_set_id: "REF: ssi_general_audit.checklist_option_set_2"
+      - step: "Write new name"
+        action: "write"
+        target: "item"
+        values:
+          name: "History of fraud allegations (rev)"
+      - step: "Assert name updated"
+        action: "assert"
+        target: "item"
+        asserts:
+          name:
+            type: "value"
+            expected: "History of fraud allegations (rev)"
+
+  - name: "Item f5e7049 master - Delete"
+    steps:
+      - step: "Create item master"
+        action: "create"
+        model: "general_audit_ws_f5e7049.item"
+        save_as: "item"
+        values:
+          name: "To be deleted"
+          code: "F5E7049-03"
+          option_set_id: "REF: ssi_general_audit.checklist_option_set_2"
+      - step: "Delete item master"
+        action: "unlink"
+        target: "item"
+      - step: "Verify item deleted"
+        action: "search"
+        model: "general_audit_ws_f5e7049.item"
+        domain: [["code", "=", "F5E7049-03"]]
+        save_as: "result"
+        expect_count: 0
+
+  # ------------------------------------------------------------------
+  # general_audit_ws_f5e7049 - Populate checklist (+idempotency)
+  # ------------------------------------------------------------------
+  - name: "Worksheet f5e7049 - Populate checklist and idempotency"
+    steps:
+      - step: "Create worksheet f5e7049"
+        action: "create"
+        model: "general_audit_ws_f5e7049"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+
+      - step: "Create item master for populate"
+        action: "create"
+        model: "general_audit_ws_f5e7049.item"
+        save_as: "item_pop"
+        values:
+          name: "Populate Check f5e7049"
+          code: "POP-F5E7049-01"
+          option_set_id: "REF: ssi_general_audit.checklist_option_set_2"
+
+      - step: "Assert no checklist row before populate"
+        action: "search"
+        model: "general_audit_ws_f5e7049.checklist"
+        domain:
+          - ["worksheet_id", "=", "REC: worksheet.id"]
+          - ["item_id", "=", "REC: item_pop.id"]
+        save_as: "checklist_before"
+        expect_count: 0
+
+      - step: "Populate checklist"
+        action: "call"
+        target: "worksheet"
+        method: "action_populate_checklist"
+
+      - step: "Assert checklist row created"
+        action: "search"
+        model: "general_audit_ws_f5e7049.checklist"
+        domain:
+          - ["worksheet_id", "=", "REC: worksheet.id"]
+          - ["item_id", "=", "REC: item_pop.id"]
+        save_as: "checklist_after"
+        expect_count: 1
+
+      - step: "Populate checklist a second time"
+        action: "call"
+        target: "worksheet"
+        method: "action_populate_checklist"
+
+      - step: "Assert no duplicate checklist row"
+        action: "search"
+        model: "general_audit_ws_f5e7049.checklist"
+        domain:
+          - ["worksheet_id", "=", "REC: worksheet.id"]
+          - ["item_id", "=", "REC: item_pop.id"]
+        save_as: "checklist_idempotent"
+        expect_count: 1
+
+  # ------------------------------------------------------------------
+  # general_audit_ws_f5e7049.checklist - write + cascade delete
+  # ------------------------------------------------------------------
+  - name: "Worksheet f5e7049 - Checklist write and cascade delete"
+    steps:
+      - step: "Create worksheet f5e7049"
+        action: "create"
+        model: "general_audit_ws_f5e7049"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+
+      - step: "Create item master"
+        action: "create"
+        model: "general_audit_ws_f5e7049.item"
+        save_as: "item_cascade"
+        values:
+          name: "Cascade Check f5e7049"
+          code: "CASCADE-F5E7049-01"
+          option_set_id: "REF: ssi_general_audit.checklist_option_set_2"
+
+      - step: "Create checklist row"
+        action: "create"
+        model: "general_audit_ws_f5e7049.checklist"
+        save_as: "checklist_row"
+        values:
+          worksheet_id: "REC: worksheet.id"
+          item_id: "REC: item_cascade.id"
+
+      - step: "Write checklist_ok on the checklist row"
+        action: "write"
+        target: "checklist_row"
+        values:
+          checklist_ok: false
+
+      - step: "Assert checklist_ok value saved"
+        action: "assert"
+        target: "checklist_row"
+        asserts:
+          checklist_ok:
+            type: "value"
+            expected: false
+
+      - step: "Delete the worksheet (still draft)"
+        action: "unlink"
+        target: "worksheet"
+
+      - step: "Assert checklist row cascaded away"
+        action: "search"
+        model: "general_audit_ws_f5e7049.checklist"
+        domain:
+          - ["worksheet_id", "=", "REC: worksheet.id"]
+        save_as: "checklist_after_delete"
+        expect_count: 0

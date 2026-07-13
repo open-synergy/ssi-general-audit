@@ -1,0 +1,763 @@
+setup:
+  steps:
+    - step: "Get config parameter model"
+      action: "search"
+      model: "ir.config_parameter"
+      domain: []
+      save_as: "config_parameter"
+      limit: 1
+
+    - step: "Allow enough CPA licenses for this scenario"
+      action: "call"
+      target: "config_parameter"
+      method: "set_param"
+      args:
+        - "ssi_general_audit.max_number_of_cpa_license"
+        - "100"
+
+    - step: "Create client partner"
+      action: "create"
+      model: "res.partner"
+      save_as: "client"
+      as_user: "base.user_admin"
+      values:
+        name: "Test Audit Client"
+        is_company: true
+
+    - step: "Create accountant partner"
+      action: "create"
+      model: "res.partner"
+      save_as: "accountant"
+      as_user: "base.user_admin"
+      values:
+        name: "Test Audit Accountant"
+
+    - step: "Get CPA license id category"
+      action: "ref"
+      xml_id: "ssi_partner_identification_cpa_license.partner_identification_accountant_cpa_license"
+      save_as: "cpa_category"
+
+    - step: "Grant accountant a CPA license"
+      action: "create"
+      model: "res.partner.id_number"
+      save_as: "cpa_license"
+      as_user: "base.user_admin"
+      values:
+        partner_id: "REC: accountant.id"
+        category_id: "REC: cpa_category.id"
+        name: "CPA-B9D8A5C-0001"
+
+    - step: "Create account type set"
+      action: "create"
+      model: "client_account_type_set"
+      save_as: "account_type_set"
+      as_user: "base.user_admin"
+      values:
+        name: "Test Account Type Set"
+        code: "/"
+
+    - step: "Create financial accounting standard"
+      action: "create"
+      model: "accountant.financial_accounting_standard"
+      save_as: "standard"
+      as_user: "base.user_admin"
+      values:
+        name: "Test Financial Accounting Standard"
+        code: "/"
+
+    - step: "Create general audit"
+      action: "create"
+      model: "general_audit"
+      save_as: "audit"
+      as_user: "base.user_admin"
+      values:
+        title: "Test General Audit - WS b9d8a5c"
+        partner_id: "REC: client.id"
+        accountant_id: "REC: accountant.id"
+        account_type_set_id: "REC: account_type_set.id"
+        financial_accounting_standard_id: "REC: standard.id"
+        date_start: 2026-01-01
+        date_end: 2026-12-31
+        need_interim: false
+        need_previous: false
+        num_of_consecutive_audit_firm: 1
+        num_of_consecutive_audit_accountant: 1
+
+    - step: "Open general audit"
+      action: "call"
+      target: "audit"
+      method: "action_open"
+      as_user: "base.user_admin"
+
+    - step: "Invalidate cache after opening general audit"
+      action: "call"
+      target: "audit"
+      method: "invalidate_cache"
+
+    - step: "Get worksheet type b9d8a5c"
+      action: "ref"
+      xml_id: "ssi_general_audit_worksheet_acceptance_continuance.worksheet_type_b9d8a5c"
+      save_as: "ws_type"
+
+    - step: "Create job for audit team members"
+      action: "create"
+      model: "hr.job"
+      save_as: "job"
+      values:
+        name: "Audit Senior"
+
+scenarios:
+  # ------------------------------------------------------------------
+  # general_audit_ws_b9d8a5c - Create in draft
+  # ------------------------------------------------------------------
+  - name: "Worksheet b9d8a5c - Create in draft"
+    steps:
+      - step: "Create worksheet b9d8a5c"
+        action: "create"
+        model: "general_audit_ws_b9d8a5c"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+
+      - step: "Assert worksheet created in draft"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          id:
+            type: "value"
+            operator: "is_truthy"
+          state:
+            type: "value"
+            expected: "draft"
+          general_audit_id:
+            type: "m2o"
+            expected: "REC: audit"
+
+  # ------------------------------------------------------------------
+  # action_populate_personnel (+idempotency +removal on master change)
+  # ------------------------------------------------------------------
+  - name: "Worksheet b9d8a5c - action_populate_personnel populates and stays idempotent"
+    steps:
+      - step: "Create worksheet b9d8a5c"
+        action: "create"
+        model: "general_audit_ws_b9d8a5c"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+
+      - step: "Create candidate employee eligible for audit"
+        action: "create"
+        model: "hr.employee"
+        save_as: "employee"
+        values:
+          name: "Test Auditor One"
+          job_id: "REC: job.id"
+          audit_ok: true
+
+      - step: "Assert personnel_ids empty before populate"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          personnel_ids:
+            type: "o2m"
+            check: "count"
+            expected_count: 0
+
+      - step: "Populate personnel"
+        action: "call"
+        target: "worksheet"
+        method: "action_populate_personnel"
+
+      - step: "Assert personnel_ids contains the employee"
+        action: "assert"
+        target: "worksheet"
+        refresh: true
+        asserts:
+          personnel_ids:
+            type: "o2m"
+            check: "count"
+            expected_count: 1
+
+      - step: "Get the created personnel line"
+        action: "search"
+        model: "general_audit_ws_b9d8a5c.personnel"
+        domain:
+          - ["worksheet_id", "=", "REC: worksheet.id"]
+          - ["employee_id", "=", "REC: employee.id"]
+        save_as: "personnel_line"
+        limit: 1
+        expect_count: 1
+
+      - step: "Assert job_id copied from the employee"
+        action: "assert"
+        target: "personnel_line"
+        asserts:
+          job_id:
+            type: "m2o"
+            expected: "REC: job"
+
+      - step: "Populate personnel a second time (idempotent)"
+        action: "call"
+        target: "worksheet"
+        method: "action_populate_personnel"
+
+      - step: "Assert personnel_ids still has a single row"
+        action: "assert"
+        target: "worksheet"
+        refresh: true
+        asserts:
+          personnel_ids:
+            type: "o2m"
+            check: "count"
+            expected_count: 1
+
+      - step: "Employee no longer eligible for audit"
+        action: "write"
+        target: "employee"
+        values:
+          audit_ok: false
+
+      - step: "Populate personnel a third time"
+        action: "call"
+        target: "worksheet"
+        method: "action_populate_personnel"
+
+      - step: "Assert personnel_ids no longer contains the employee"
+        action: "assert"
+        target: "worksheet"
+        refresh: true
+        asserts:
+          personnel_ids:
+            type: "o2m"
+            check: "count"
+            expected_count: 0
+
+  # ------------------------------------------------------------------
+  # onchange_job_id (general_audit_ws_b9d8a5c.personnel)
+  # ------------------------------------------------------------------
+  - name: "Personnel b9d8a5c - Onchange employee_id sets job_id"
+    steps:
+      - step: "Create worksheet b9d8a5c"
+        action: "create"
+        model: "general_audit_ws_b9d8a5c"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+
+      - step: "Create candidate employee with a job"
+        action: "create"
+        model: "hr.employee"
+        save_as: "employee"
+        values:
+          name: "Test Auditor Two"
+          job_id: "REC: job.id"
+          audit_ok: true
+
+      - step: "Open form and set employee_id"
+        action: "form"
+        model: "general_audit_ws_b9d8a5c.personnel"
+        save_as: "personnel_line"
+        values:
+          worksheet_id: "REC: worksheet"
+          employee_id: "REC: employee"
+        save: true
+
+      - step: "Assert job_id copied from employee via onchange"
+        action: "assert"
+        target: "personnel_line"
+        asserts:
+          job_id:
+            type: "m2o"
+            expected: "REC: job"
+
+  # ------------------------------------------------------------------
+  # action_create_summary (+idempotency +removal)
+  # ------------------------------------------------------------------
+  - name: "Worksheet b9d8a5c - action_create_summary builds analysis and summary"
+    steps:
+      - step: "Create worksheet b9d8a5c"
+        action: "create"
+        model: "general_audit_ws_b9d8a5c"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+
+      - step: "Create candidate employee"
+        action: "create"
+        model: "hr.employee"
+        save_as: "employee"
+        values:
+          name: "Test Auditor Three"
+          job_id: "REC: job.id"
+          audit_ok: true
+
+      - step: "Create personnel line proposed as team"
+        action: "create"
+        model: "general_audit_ws_b9d8a5c.personnel"
+        save_as: "personnel_line"
+        values:
+          worksheet_id: "REC: worksheet.id"
+          employee_id: "REC: employee.id"
+          job_id: "REC: job.id"
+          proposed: "yes"
+
+      - step: "Assert analysis and summary are empty before creating"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          competency_analysis_ids:
+            type: "o2m"
+            check: "count"
+            expected_count: 0
+          availability_analysis_ids:
+            type: "o2m"
+            check: "count"
+            expected_count: 0
+          independency_analysis_ids:
+            type: "o2m"
+            check: "count"
+            expected_count: 0
+          summary_ids:
+            type: "o2m"
+            check: "count"
+            expected_count: 0
+
+      - step: "Create summary"
+        action: "call"
+        target: "worksheet"
+        method: "action_create_summary"
+
+      - step: "Assert analysis and summary now contain the proposed employee"
+        action: "assert"
+        target: "worksheet"
+        refresh: true
+        asserts:
+          competency_analysis_ids:
+            type: "o2m"
+            check: "count"
+            expected_count: 1
+          availability_analysis_ids:
+            type: "o2m"
+            check: "count"
+            expected_count: 1
+          independency_analysis_ids:
+            type: "o2m"
+            check: "count"
+            expected_count: 1
+          summary_ids:
+            type: "o2m"
+            check: "count"
+            expected_count: 1
+
+      - step: "Create summary a second time (idempotent)"
+        action: "call"
+        target: "worksheet"
+        method: "action_create_summary"
+
+      - step: "Assert still a single row per analysis"
+        action: "assert"
+        target: "worksheet"
+        refresh: true
+        asserts:
+          competency_analysis_ids:
+            type: "o2m"
+            check: "count"
+            expected_count: 1
+          summary_ids:
+            type: "o2m"
+            check: "count"
+            expected_count: 1
+
+      - step: "Un-propose the employee from the team"
+        action: "write"
+        target: "personnel_line"
+        values:
+          proposed: "no"
+
+      - step: "Create summary again after un-proposing"
+        action: "call"
+        target: "worksheet"
+        method: "action_create_summary"
+
+      - step: "Assert analysis and summary rows removed"
+        action: "assert"
+        target: "worksheet"
+        refresh: true
+        asserts:
+          competency_analysis_ids:
+            type: "o2m"
+            check: "count"
+            expected_count: 0
+          availability_analysis_ids:
+            type: "o2m"
+            check: "count"
+            expected_count: 0
+          independency_analysis_ids:
+            type: "o2m"
+            check: "count"
+            expected_count: 0
+          summary_ids:
+            type: "o2m"
+            check: "count"
+            expected_count: 0
+
+  # ------------------------------------------------------------------
+  # year_experience - general_audit_ws_b9d8a5c.competency compute
+  # ------------------------------------------------------------------
+  - name: "Competency b9d8a5c - Compute year_experience (normal)"
+    steps:
+      - step: "Create worksheet b9d8a5c"
+        action: "create"
+        model: "general_audit_ws_b9d8a5c"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+
+      - step: "Create candidate employee"
+        action: "create"
+        model: "hr.employee"
+        save_as: "employee"
+        values:
+          name: "Test Auditor Four"
+          job_id: "REC: job.id"
+          audit_ok: true
+
+      - step: "Create personnel line with 5 years experience"
+        action: "create"
+        model: "general_audit_ws_b9d8a5c.personnel"
+        save_as: "personnel_line"
+        values:
+          worksheet_id: "REC: worksheet.id"
+          employee_id: "REC: employee.id"
+          job_id: "REC: job.id"
+          year_experience: 5
+          proposed: "yes"
+
+      - step: "Create competency analysis line for the same employee"
+        action: "create"
+        model: "general_audit_ws_b9d8a5c.competency"
+        save_as: "competency"
+        values:
+          worksheet_id: "REC: worksheet.id"
+          employee_id: "REC: employee.id"
+
+      - step: "Assert year_experience copied from the personnel line"
+        action: "assert"
+        target: "competency"
+        asserts:
+          year_experience:
+            type: "value"
+            expected: 5
+
+  - name: "Competency b9d8a5c - Compute year_experience kosong (no personnel line)"
+    steps:
+      - step: "Create worksheet b9d8a5c"
+        action: "create"
+        model: "general_audit_ws_b9d8a5c"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+
+      - step: "Create employee without a personnel line"
+        action: "create"
+        model: "hr.employee"
+        save_as: "employee"
+        values:
+          name: "Test Auditor Five"
+          job_id: "REC: job.id"
+          audit_ok: true
+
+      - step: "Create competency analysis line without matching personnel"
+        action: "create"
+        model: "general_audit_ws_b9d8a5c.competency"
+        save_as: "competency"
+        values:
+          worksheet_id: "REC: worksheet.id"
+          employee_id: "REC: employee.id"
+
+      - step: "Assert year_experience is zero"
+        action: "assert"
+        target: "competency"
+        asserts:
+          year_experience:
+            type: "value"
+            expected: 0
+
+  # ------------------------------------------------------------------
+  # *_result - general_audit_ws_b9d8a5c.summary compute
+  # ------------------------------------------------------------------
+  - name: "Summary b9d8a5c - Compute *_result (normal)"
+    steps:
+      - step: "Create worksheet b9d8a5c"
+        action: "create"
+        model: "general_audit_ws_b9d8a5c"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+
+      - step: "Create candidate employee"
+        action: "create"
+        model: "hr.employee"
+        save_as: "employee"
+        values:
+          name: "Test Auditor Six"
+          job_id: "REC: job.id"
+          audit_ok: true
+
+      - step: "Create competency analysis result sufficient"
+        action: "create"
+        model: "general_audit_ws_b9d8a5c.competency"
+        save_as: "competency"
+        values:
+          worksheet_id: "REC: worksheet.id"
+          employee_id: "REC: employee.id"
+          result: "sufficient"
+
+      - step: "Create availability analysis result sufficient"
+        action: "create"
+        model: "general_audit_ws_b9d8a5c.availability"
+        save_as: "availability"
+        values:
+          worksheet_id: "REC: worksheet.id"
+          employee_id: "REC: employee.id"
+          result: "sufficient"
+
+      - step: "Create independency analysis result sufficient"
+        action: "create"
+        model: "general_audit_ws_b9d8a5c.independency"
+        save_as: "independency"
+        values:
+          worksheet_id: "REC: worksheet.id"
+          employee_id: "REC: employee.id"
+          result: "sufficient"
+
+      - step: "Create summary line for the same employee"
+        action: "create"
+        model: "general_audit_ws_b9d8a5c.summary"
+        save_as: "summary"
+        values:
+          worksheet_id: "REC: worksheet.id"
+          employee_id: "REC: employee.id"
+
+      - step: "Assert result labels copied from the analysis lines"
+        action: "assert"
+        target: "summary"
+        asserts:
+          compentency_result:
+            type: "value"
+            expected: "Sufficient"
+          availability_result:
+            type: "value"
+            expected: "Sufficient"
+          independency_result:
+            type: "value"
+            expected: "Sufficient"
+
+  - name: "Summary b9d8a5c - Compute *_result kosong (no analysis lines)"
+    steps:
+      - step: "Create worksheet b9d8a5c"
+        action: "create"
+        model: "general_audit_ws_b9d8a5c"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+
+      - step: "Create employee without any analysis lines"
+        action: "create"
+        model: "hr.employee"
+        save_as: "employee"
+        values:
+          name: "Test Auditor Seven"
+          job_id: "REC: job.id"
+          audit_ok: true
+
+      - step: "Create summary line without matching analysis"
+        action: "create"
+        model: "general_audit_ws_b9d8a5c.summary"
+        save_as: "summary"
+        values:
+          worksheet_id: "REC: worksheet.id"
+          employee_id: "REC: employee.id"
+
+      - step: "Assert result labels are empty"
+        action: "assert"
+        target: "summary"
+        asserts:
+          compentency_result:
+            type: "value"
+            expected: ""
+          availability_result:
+            type: "value"
+            expected: ""
+          independency_result:
+            type: "value"
+            expected: ""
+
+  # ------------------------------------------------------------------
+  # general_audit_ws_b9d8a5c - Workflow open to done
+  # ------------------------------------------------------------------
+  - name: "Worksheet b9d8a5c - Workflow open to done"
+    steps:
+      - step: "Create worksheet b9d8a5c"
+        action: "create"
+        model: "general_audit_ws_b9d8a5c"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+
+      - step: "Open worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_open"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after opening worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Assert worksheet open"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          state:
+            type: "value"
+            expected: "open"
+
+      - step: "Create conclusion for this worksheet type"
+        action: "create"
+        model: "general_audit_worksheet_conclusion"
+        save_as: "conclusion"
+        as_user: "base.user_admin"
+        values:
+          name: "Team is competent, available and independent"
+          code: "/"
+          type_id: "REC: ws_type.id"
+
+      - step: "Fill required conclusion fields before confirm"
+        action: "write"
+        target: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          conclusion_id: "REC: conclusion.id"
+          conclusion: "Assignment team assessed, no exception noted."
+          risk: "low"
+
+      - step: "Confirm worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_confirm"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after confirming worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Assert worksheet confirmed"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          state:
+            type: "value"
+            expected: "confirm"
+
+      - step: "Approve worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_approve_approval"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after approving worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Assert worksheet done"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          state:
+            type: "value"
+            expected: "done"
+
+  # ------------------------------------------------------------------
+  # general_audit_ws_b9d8a5c - Cancel and restart
+  # ------------------------------------------------------------------
+  - name: "Worksheet b9d8a5c - Cancel and restart"
+    steps:
+      - step: "Create worksheet b9d8a5c"
+        action: "create"
+        model: "general_audit_ws_b9d8a5c"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+
+      - step: "Open worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_open"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after opening worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Cancel worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_cancel"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after cancelling worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Assert worksheet cancelled"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          state:
+            type: "value"
+            expected: "cancel"
+
+      - step: "Restart worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_restart"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after restarting worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Assert worksheet back to draft"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          state:
+            type: "value"
+            expected: "draft"

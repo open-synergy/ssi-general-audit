@@ -1,0 +1,559 @@
+setup:
+  steps:
+    - step: "Get config parameter model"
+      action: "search"
+      model: "ir.config_parameter"
+      domain: []
+      save_as: "config_parameter"
+      limit: 1
+
+    - step: "Allow enough CPA licenses for this scenario"
+      action: "call"
+      target: "config_parameter"
+      method: "set_param"
+      args:
+        - "ssi_general_audit.max_number_of_cpa_license"
+        - "100"
+
+    - step: "Create client partner"
+      action: "create"
+      model: "res.partner"
+      save_as: "client"
+      as_user: "base.user_admin"
+      values:
+        name: "Test Audit Client"
+        is_company: true
+
+    - step: "Create accountant partner"
+      action: "create"
+      model: "res.partner"
+      save_as: "accountant"
+      as_user: "base.user_admin"
+      values:
+        name: "Test Audit Accountant"
+
+    - step: "Get CPA license id category"
+      action: "ref"
+      xml_id: "ssi_partner_identification_cpa_license.partner_identification_accountant_cpa_license"
+      save_as: "cpa_category"
+
+    - step: "Grant accountant a CPA license"
+      action: "create"
+      model: "res.partner.id_number"
+      save_as: "cpa_license"
+      as_user: "base.user_admin"
+      values:
+        partner_id: "REC: accountant.id"
+        category_id: "REC: cpa_category.id"
+        name: "CPA-805D4D5-0001"
+
+    - step: "Create account type set"
+      action: "create"
+      model: "client_account_type_set"
+      save_as: "account_type_set"
+      as_user: "base.user_admin"
+      values:
+        name: "Test Account Type Set"
+        code: "/"
+
+    - step: "Create financial accounting standard"
+      action: "create"
+      model: "accountant.financial_accounting_standard"
+      save_as: "standard"
+      as_user: "base.user_admin"
+      values:
+        name: "Test Financial Accounting Standard"
+        code: "/"
+
+    - step: "Create general audit"
+      action: "create"
+      model: "general_audit"
+      save_as: "audit"
+      as_user: "base.user_admin"
+      values:
+        title: "Test General Audit - WS 805d4d5"
+        partner_id: "REC: client.id"
+        accountant_id: "REC: accountant.id"
+        account_type_set_id: "REC: account_type_set.id"
+        financial_accounting_standard_id: "REC: standard.id"
+        date_start: 2026-01-01
+        date_end: 2026-12-31
+        need_interim: false
+        need_previous: false
+        num_of_consecutive_audit_firm: 1
+        num_of_consecutive_audit_accountant: 1
+
+    - step: "Open general audit"
+      action: "call"
+      target: "audit"
+      method: "action_open"
+      as_user: "base.user_admin"
+
+    - step: "Invalidate cache after opening general audit"
+      action: "call"
+      target: "audit"
+      method: "invalidate_cache"
+
+    - step: "Get worksheet type 805d4d5"
+      action: "ref"
+      xml_id: "ssi_general_audit_worksheet_acceptance_continuance.worksheet_type_805d4d5"
+      save_as: "ws_type"
+
+    - step: "Get worksheet type 842f0d6"
+      action: "ref"
+      xml_id: "ssi_general_audit_worksheet_acceptance_continuance.worksheet_type_842f0d6"
+      save_as: "ws_type_842f0d6"
+
+scenarios:
+  # ------------------------------------------------------------------
+  # general_audit_ws_805d4d5 - Create in draft
+  # ------------------------------------------------------------------
+  - name: "Worksheet 805d4d5 - Create in draft"
+    steps:
+      - step: "Create worksheet 805d4d5"
+        action: "create"
+        model: "general_audit_ws_805d4d5"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+
+      - step: "Assert worksheet created in draft"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          id:
+            type: "value"
+            operator: "is_truthy"
+          state:
+            type: "value"
+            expected: "draft"
+          general_audit_id:
+            type: "m2o"
+            expected: "REC: audit"
+
+  # ------------------------------------------------------------------
+  # link_1 / link_1_pmpj / pmpj_simplified / pmpj_intermediate / pmpj_enhanced
+  # ------------------------------------------------------------------
+  - name: "Worksheet 805d4d5 - Compute pmpj simplified (normal)"
+    steps:
+      - step: "Create sibling worksheet 842f0d6 with pmpj simplified"
+        action: "create"
+        model: "general_audit_ws_842f0d6"
+        save_as: "ws_842f0d6"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_842f0d6.id"
+          pmpj: "simplified"
+
+      - step: "Create worksheet 805d4d5 (link_1 computed at create time)"
+        action: "create"
+        model: "general_audit_ws_805d4d5"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+
+      - step: "Assert link_1 points to the sibling worksheet"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          link_1:
+            type: "m2o"
+            expected: "REC: ws_842f0d6"
+          link_1_pmpj:
+            type: "value"
+            expected: "simplified"
+          pmpj_simplified:
+            type: "value"
+            expected: true
+          pmpj_intermediate:
+            type: "value"
+            expected: false
+          pmpj_enhanced:
+            type: "value"
+            expected: false
+
+  - name: "Worksheet 805d4d5 - Compute pmpj kosong (no sibling)"
+    steps:
+      - step: "Create worksheet 805d4d5 without any 842f0d6 sibling"
+        action: "create"
+        model: "general_audit_ws_805d4d5"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+
+      - step: "Assert link_1 empty and pmpj falls back to fully-enhanced flags"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          link_1:
+            type: "value"
+            operator: "is_falsy"
+          link_1_pmpj:
+            type: "value"
+            operator: "is_falsy"
+          pmpj_simplified:
+            type: "value"
+            expected: true
+          pmpj_intermediate:
+            type: "value"
+            expected: true
+          pmpj_enhanced:
+            type: "value"
+            expected: true
+
+  # ------------------------------------------------------------------
+  # action_reload_links
+  # ------------------------------------------------------------------
+  - name: "Worksheet 805d4d5 - action_reload_links refreshes link_1"
+    steps:
+      - step: "Create worksheet 805d4d5 without sibling yet"
+        action: "create"
+        model: "general_audit_ws_805d4d5"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+
+      - step: "Assert link_1 empty before sibling exists"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          link_1:
+            type: "value"
+            operator: "is_falsy"
+
+      - step: "Now create the sibling worksheet 842f0d6"
+        action: "create"
+        model: "general_audit_ws_842f0d6"
+        save_as: "ws_842f0d6"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_842f0d6.id"
+          pmpj: "enhanced"
+
+      - step: "Reload links"
+        action: "call"
+        target: "worksheet"
+        method: "action_reload_links"
+
+      - step: "Assert link_1 now points to the sibling worksheet"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          link_1:
+            type: "m2o"
+            expected: "REC: ws_842f0d6"
+
+  # ------------------------------------------------------------------
+  # management_ids - O2M CRUD
+  # ------------------------------------------------------------------
+  - name: "Worksheet 805d4d5 - Management line CRUD"
+    steps:
+      - step: "Create worksheet 805d4d5"
+        action: "create"
+        model: "general_audit_ws_805d4d5"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+
+      - step: "Create management line"
+        action: "create"
+        model: "general_audit_ws_805d4d5.management"
+        save_as: "management"
+        values:
+          worksheet_id: "REC: worksheet.id"
+          name: "Jane Director"
+          position: "Direktur Utama"
+          identity_no: "3175012345670001"
+          identity_type: "ktp"
+
+      - step: "Assert management line saved"
+        action: "assert"
+        target: "management"
+        asserts:
+          id:
+            type: "value"
+            operator: "is_truthy"
+          name:
+            type: "value"
+            expected: "Jane Director"
+
+      - step: "Write position"
+        action: "write"
+        target: "management"
+        values:
+          position: "Direktur"
+
+      - step: "Assert position updated"
+        action: "assert"
+        target: "management"
+        asserts:
+          position:
+            type: "value"
+            expected: "Direktur"
+
+      - step: "Delete management line"
+        action: "unlink"
+        target: "management"
+
+      - step: "Verify management line deleted"
+        action: "search"
+        model: "general_audit_ws_805d4d5.management"
+        domain:
+          - ["worksheet_id", "=", "REC: worksheet.id"]
+        save_as: "result"
+        expect_count: 0
+
+  # ------------------------------------------------------------------
+  # onchange_entity_type_id / onchange_npwp / onchange_phone /
+  # onchange_legal_address / onchange_location_address (all keyed on partner_id)
+  # ------------------------------------------------------------------
+  - name: "Worksheet 805d4d5 - Onchange partner_id populates KYC fields"
+    steps:
+      - step: "Create company entity type master"
+        action: "create"
+        model: "company_entity_type"
+        save_as: "entity_type"
+        values:
+          name: "Perseroan Terbatas"
+          code: "/"
+
+      - step: "Create client partner with KYC source data"
+        action: "create"
+        model: "res.partner"
+        save_as: "client_kyc"
+        as_user: "base.user_admin"
+        values:
+          name: "Test KYC Client"
+          is_company: true
+          vat: "01.234.567.8-901.000"
+          phone: "0211234567"
+          street: "Jl. Testing No. 1"
+          entity_type_id: "REC: entity_type.id"
+
+      - step: "Create general audit for the KYC client"
+        action: "create"
+        model: "general_audit"
+        save_as: "audit_kyc"
+        as_user: "base.user_admin"
+        values:
+          title: "Test General Audit - 805d4d5 Onchange"
+          partner_id: "REC: client_kyc.id"
+          accountant_id: "REC: accountant.id"
+          account_type_set_id: "REC: account_type_set.id"
+          financial_accounting_standard_id: "REC: standard.id"
+          date_start: 2026-01-01
+          date_end: 2026-12-31
+          need_interim: false
+          need_previous: false
+          num_of_consecutive_audit_firm: 1
+          num_of_consecutive_audit_accountant: 1
+
+      - step: "Open general audit"
+        action: "call"
+        target: "audit_kyc"
+        method: "action_open"
+        as_user: "base.user_admin"
+
+      - step: "Open new worksheet form on the KYC audit"
+        action: "form"
+        model: "general_audit_ws_805d4d5"
+        save_as: "onchange_worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit_kyc"
+          type_id: "REC: ws_type"
+        save: true
+
+      - step: "Assert onchange fields copied from the client partner"
+        action: "assert"
+        target: "onchange_worksheet"
+        asserts:
+          entity_type_id:
+            type: "m2o"
+            expected: "REC: entity_type"
+          npwp:
+            type: "value"
+            expected: "REC: client_kyc.vat"
+          phone:
+            type: "value"
+            expected: "REC: client_kyc.phone"
+          legal_address:
+            type: "value"
+            expected: "REC: client_kyc.contact_address"
+          location_address:
+            type: "value"
+            expected: "REC: client_kyc.contact_address"
+
+  # ------------------------------------------------------------------
+  # general_audit_ws_805d4d5 - Workflow open to done (needs link_1)
+  # ------------------------------------------------------------------
+  - name: "Worksheet 805d4d5 - Workflow open to done"
+    steps:
+      - step: "Create sibling worksheet 842f0d6 first so link_1 resolves"
+        action: "create"
+        model: "general_audit_ws_842f0d6"
+        save_as: "ws_842f0d6"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_842f0d6.id"
+          pmpj: "simplified"
+
+      - step: "Create worksheet 805d4d5"
+        action: "create"
+        model: "general_audit_ws_805d4d5"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+
+      - step: "Open worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_open"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after opening worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Assert worksheet open"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          state:
+            type: "value"
+            expected: "open"
+
+      - step: "Create conclusion for this worksheet type"
+        action: "create"
+        model: "general_audit_worksheet_conclusion"
+        save_as: "conclusion"
+        as_user: "base.user_admin"
+        values:
+          name: "KYC procedures completed"
+          code: "/"
+          type_id: "REC: ws_type.id"
+
+      - step: "Fill required conclusion fields before confirm"
+        action: "write"
+        target: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          conclusion_id: "REC: conclusion.id"
+          conclusion: "KYC / PMPJ procedures completed, no exception noted."
+
+      - step: "Confirm worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_confirm"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after confirming worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Assert worksheet confirmed"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          state:
+            type: "value"
+            expected: "confirm"
+
+      - step: "Approve worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_approve_approval"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after approving worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Assert worksheet done"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          state:
+            type: "value"
+            expected: "done"
+
+  # ------------------------------------------------------------------
+  # general_audit_ws_805d4d5 - Cancel and restart
+  # ------------------------------------------------------------------
+  - name: "Worksheet 805d4d5 - Cancel and restart"
+    steps:
+      - step: "Create worksheet 805d4d5"
+        action: "create"
+        model: "general_audit_ws_805d4d5"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+
+      - step: "Open worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_open"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after opening worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Cancel worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_cancel"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after cancelling worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Assert worksheet cancelled"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          state:
+            type: "value"
+            expected: "cancel"
+
+      - step: "Restart worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_restart"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after restarting worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Assert worksheet back to draft"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          state:
+            type: "value"
+            expected: "draft"
