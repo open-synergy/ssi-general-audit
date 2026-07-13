@@ -1,0 +1,1065 @@
+scenarios:
+  # ------------------------------------------------------------------
+  # client_account_group
+  # ------------------------------------------------------------------
+  - name: "client_account_group - Create"
+    steps:
+      - step: "Create group"
+        action: "create"
+        model: "client_account_group"
+        save_as: "group"
+        values:
+          name: "Test Account Group"
+          code: "/"
+      - step: "Assert created"
+        action: "assert"
+        target: "group"
+        asserts:
+          id:
+            type: "value"
+            operator: "is_truthy"
+          name:
+            type: "value"
+            expected: "Test Account Group"
+
+  - name: "client_account_group - Edit"
+    steps:
+      - step: "Create group"
+        action: "create"
+        model: "client_account_group"
+        save_as: "group"
+        values:
+          name: "Test Account Group"
+          code: "/"
+      - step: "Write new name"
+        action: "write"
+        target: "group"
+        values:
+          name: "Updated Account Group"
+      - step: "Assert name updated"
+        action: "assert"
+        target: "group"
+        asserts:
+          name:
+            type: "value"
+            expected: "Updated Account Group"
+
+  - name: "client_account_group - Delete"
+    steps:
+      - step: "Create group"
+        action: "create"
+        model: "client_account_group"
+        save_as: "group"
+        values:
+          name: "Test Account Group To Delete"
+          code: "/"
+      - step: "Delete group"
+        action: "call"
+        target: "group"
+        method: "unlink"
+      - step: "Verify deleted"
+        action: "search"
+        model: "client_account_group"
+        domain: [["name", "=", "Test Account Group To Delete"]]
+        save_as: "result"
+        expect_count: 0
+
+  # ------------------------------------------------------------------
+  # client_account_type
+  # ------------------------------------------------------------------
+  - name: "client_account_type - Create"
+    steps:
+      - step: "Create group"
+        action: "create"
+        model: "client_account_group"
+        save_as: "group"
+        values:
+          name: "Test Account Group"
+          code: "/"
+      - step: "Create type"
+        action: "create"
+        model: "client_account_type"
+        save_as: "type"
+        values:
+          name: "Test Account Type"
+          code: "/"
+          group_id: "EVAL: registry['group'].id"
+      - step: "Assert created"
+        action: "assert"
+        target: "type"
+        asserts:
+          id:
+            type: "value"
+            operator: "is_truthy"
+          name:
+            type: "value"
+            expected: "Test Account Type"
+
+  - name: "client_account_type - Edit"
+    steps:
+      - step: "Create group"
+        action: "create"
+        model: "client_account_group"
+        save_as: "group"
+        values:
+          name: "Test Account Group"
+          code: "/"
+      - step: "Create type"
+        action: "create"
+        model: "client_account_type"
+        save_as: "type"
+        values:
+          name: "Test Account Type"
+          code: "/"
+          group_id: "EVAL: registry['group'].id"
+      - step: "Write new name"
+        action: "write"
+        target: "type"
+        values:
+          name: "Updated Account Type"
+      - step: "Assert name updated"
+        action: "assert"
+        target: "type"
+        asserts:
+          name:
+            type: "value"
+            expected: "Updated Account Type"
+
+  - name: "client_account_type - Delete"
+    steps:
+      - step: "Create group"
+        action: "create"
+        model: "client_account_group"
+        save_as: "group"
+        values:
+          name: "Test Account Group"
+          code: "/"
+      - step: "Create type"
+        action: "create"
+        model: "client_account_type"
+        save_as: "type"
+        values:
+          name: "Test Account Type To Delete"
+          code: "/"
+          group_id: "EVAL: registry['group'].id"
+      - step: "Delete type"
+        action: "call"
+        target: "type"
+        method: "unlink"
+      - step: "Verify deleted"
+        action: "search"
+        model: "client_account_type"
+        domain: [["name", "=", "Test Account Type To Delete"]]
+        save_as: "result"
+        expect_count: 0
+
+  # ------------------------------------------------------------------
+  # client_account_type_set
+  # ------------------------------------------------------------------
+  - name: "client_account_type_set - Create"
+    steps:
+      - step: "Create set"
+        action: "create"
+        model: "client_account_type_set"
+        save_as: "set"
+        values:
+          name: "Test Account Type Set"
+          code: "/"
+      - step: "Assert created"
+        action: "assert"
+        target: "set"
+        asserts:
+          id:
+            type: "value"
+            operator: "is_truthy"
+          name:
+            type: "value"
+            expected: "Test Account Type Set"
+
+  - name: "client_account_type_set - Edit"
+    steps:
+      - step: "Create set"
+        action: "create"
+        model: "client_account_type_set"
+        save_as: "set"
+        values:
+          name: "Test Account Type Set"
+          code: "/"
+      - step: "Write new name"
+        action: "write"
+        target: "set"
+        values:
+          name: "Updated Account Type Set"
+      - step: "Assert name updated"
+        action: "assert"
+        target: "set"
+        asserts:
+          name:
+            type: "value"
+            expected: "Updated Account Type Set"
+
+  - name: "client_account_type_set - Delete"
+    steps:
+      - step: "Create set"
+        action: "create"
+        model: "client_account_type_set"
+        save_as: "set"
+        values:
+          name: "Test Account Type Set To Delete"
+          code: "/"
+      - step: "Delete set"
+        action: "call"
+        target: "set"
+        method: "unlink"
+      - step: "Verify deleted"
+        action: "search"
+        model: "client_account_type_set"
+        domain: [["name", "=", "Test Account Type Set To Delete"]]
+        save_as: "result"
+        expect_count: 0
+
+  # ------------------------------------------------------------------
+  # client_account
+  # ------------------------------------------------------------------
+  - name: "client_account - Create"
+    steps:
+      - step: "Create client company"
+        action: "create"
+        model: "res.partner"
+        save_as: "client"
+        values:
+          name: "Test Client Company"
+          is_company: true
+      - step: "Create account"
+        action: "create"
+        model: "client_account"
+        save_as: "account"
+        values:
+          name: "Test Client Account"
+          code: "/"
+          partner_id: "EVAL: registry['client'].id"
+      - step: "Assert created"
+        action: "assert"
+        target: "account"
+        asserts:
+          id:
+            type: "value"
+            operator: "is_truthy"
+          name:
+            type: "value"
+            expected: "Test Client Account"
+
+  - name: "client_account - Edit"
+    steps:
+      - step: "Create client company"
+        action: "create"
+        model: "res.partner"
+        save_as: "client"
+        values:
+          name: "Test Client Company"
+          is_company: true
+      - step: "Create account"
+        action: "create"
+        model: "client_account"
+        save_as: "account"
+        values:
+          name: "Test Client Account"
+          code: "/"
+          partner_id: "EVAL: registry['client'].id"
+      - step: "Write new name"
+        action: "write"
+        target: "account"
+        values:
+          name: "Updated Client Account"
+      - step: "Assert name updated"
+        action: "assert"
+        target: "account"
+        asserts:
+          name:
+            type: "value"
+            expected: "Updated Client Account"
+
+  - name: "client_account - Delete"
+    steps:
+      - step: "Create client company"
+        action: "create"
+        model: "res.partner"
+        save_as: "client"
+        values:
+          name: "Test Client Company"
+          is_company: true
+      - step: "Create account"
+        action: "create"
+        model: "client_account"
+        save_as: "account"
+        values:
+          name: "Test Client Account To Delete"
+          code: "/"
+          partner_id: "EVAL: registry['client'].id"
+      - step: "Delete account"
+        action: "call"
+        target: "account"
+        method: "unlink"
+      - step: "Verify deleted"
+        action: "search"
+        model: "client_account"
+        domain: [["name", "=", "Test Client Account To Delete"]]
+        save_as: "result"
+        expect_count: 0
+
+  # ------------------------------------------------------------------
+  # client_relevant_account_type
+  # ------------------------------------------------------------------
+  - name: "client_relevant_account_type - Create"
+    steps:
+      - step: "Create record"
+        action: "create"
+        model: "client_relevant_account_type"
+        save_as: "record"
+        values:
+          name: "Test Relevant Account Type"
+          code: "/"
+      - step: "Assert created"
+        action: "assert"
+        target: "record"
+        asserts:
+          id:
+            type: "value"
+            operator: "is_truthy"
+          name:
+            type: "value"
+            expected: "Test Relevant Account Type"
+
+  - name: "client_relevant_account_type - Edit"
+    steps:
+      - step: "Create record"
+        action: "create"
+        model: "client_relevant_account_type"
+        save_as: "record"
+        values:
+          name: "Test Relevant Account Type"
+          code: "/"
+      - step: "Write new name"
+        action: "write"
+        target: "record"
+        values:
+          name: "Updated Relevant Account Type"
+      - step: "Assert name updated"
+        action: "assert"
+        target: "record"
+        asserts:
+          name:
+            type: "value"
+            expected: "Updated Relevant Account Type"
+
+  - name: "client_relevant_account_type - Delete"
+    steps:
+      - step: "Create record"
+        action: "create"
+        model: "client_relevant_account_type"
+        save_as: "record"
+        values:
+          name: "Test Relevant Account Type To Delete"
+          code: "/"
+      - step: "Delete record"
+        action: "call"
+        target: "record"
+        method: "unlink"
+      - step: "Verify deleted"
+        action: "search"
+        model: "client_relevant_account_type"
+        domain: [["name", "=", "Test Relevant Account Type To Delete"]]
+        save_as: "result"
+        expect_count: 0
+
+  # ------------------------------------------------------------------
+  # client_business_process
+  # ------------------------------------------------------------------
+  - name: "client_business_process - Create"
+    steps:
+      - step: "Create record"
+        action: "create"
+        model: "client_business_process"
+        save_as: "record"
+        values:
+          name: "Test Business Process"
+          code: "/"
+      - step: "Assert created"
+        action: "assert"
+        target: "record"
+        asserts:
+          id:
+            type: "value"
+            operator: "is_truthy"
+          name:
+            type: "value"
+            expected: "Test Business Process"
+
+  - name: "client_business_process - Edit"
+    steps:
+      - step: "Create record"
+        action: "create"
+        model: "client_business_process"
+        save_as: "record"
+        values:
+          name: "Test Business Process"
+          code: "/"
+      - step: "Write new name"
+        action: "write"
+        target: "record"
+        values:
+          name: "Updated Business Process"
+      - step: "Assert name updated"
+        action: "assert"
+        target: "record"
+        asserts:
+          name:
+            type: "value"
+            expected: "Updated Business Process"
+
+  - name: "client_business_process - Delete"
+    steps:
+      - step: "Create record"
+        action: "create"
+        model: "client_business_process"
+        save_as: "record"
+        values:
+          name: "Test Business Process To Delete"
+          code: "/"
+      - step: "Delete record"
+        action: "call"
+        target: "record"
+        method: "unlink"
+      - step: "Verify deleted"
+        action: "search"
+        model: "client_business_process"
+        domain: [["name", "=", "Test Business Process To Delete"]]
+        save_as: "result"
+        expect_count: 0
+
+  # ------------------------------------------------------------------
+  # client_financial_ratio
+  # ------------------------------------------------------------------
+  - name: "client_financial_ratio - Create"
+    steps:
+      - step: "Create record"
+        action: "create"
+        model: "client_financial_ratio"
+        save_as: "record"
+        values:
+          name: "Test Financial Ratio"
+          code: "/"
+      - step: "Assert created"
+        action: "assert"
+        target: "record"
+        asserts:
+          id:
+            type: "value"
+            operator: "is_truthy"
+          name:
+            type: "value"
+            expected: "Test Financial Ratio"
+
+  - name: "client_financial_ratio - Edit"
+    steps:
+      - step: "Create record"
+        action: "create"
+        model: "client_financial_ratio"
+        save_as: "record"
+        values:
+          name: "Test Financial Ratio"
+          code: "/"
+      - step: "Write new name"
+        action: "write"
+        target: "record"
+        values:
+          name: "Updated Financial Ratio"
+      - step: "Assert name updated"
+        action: "assert"
+        target: "record"
+        asserts:
+          name:
+            type: "value"
+            expected: "Updated Financial Ratio"
+
+  - name: "client_financial_ratio - Delete"
+    steps:
+      - step: "Create record"
+        action: "create"
+        model: "client_financial_ratio"
+        save_as: "record"
+        values:
+          name: "Test Financial Ratio To Delete"
+          code: "/"
+      - step: "Delete record"
+        action: "call"
+        target: "record"
+        method: "unlink"
+      - step: "Verify deleted"
+        action: "search"
+        model: "client_financial_ratio"
+        domain: [["name", "=", "Test Financial Ratio To Delete"]]
+        save_as: "result"
+        expect_count: 0
+
+  # ------------------------------------------------------------------
+  # team_role
+  # ------------------------------------------------------------------
+  - name: "team_role - Create"
+    steps:
+      - step: "Create record"
+        action: "create"
+        model: "team_role"
+        save_as: "record"
+        values:
+          name: "Test Team Role"
+          code: "/"
+      - step: "Assert created"
+        action: "assert"
+        target: "record"
+        asserts:
+          id:
+            type: "value"
+            operator: "is_truthy"
+          name:
+            type: "value"
+            expected: "Test Team Role"
+
+  - name: "team_role - Edit"
+    steps:
+      - step: "Create record"
+        action: "create"
+        model: "team_role"
+        save_as: "record"
+        values:
+          name: "Test Team Role"
+          code: "/"
+      - step: "Write new name"
+        action: "write"
+        target: "record"
+        values:
+          name: "Updated Team Role"
+      - step: "Assert name updated"
+        action: "assert"
+        target: "record"
+        asserts:
+          name:
+            type: "value"
+            expected: "Updated Team Role"
+
+  - name: "team_role - Delete"
+    steps:
+      - step: "Create record"
+        action: "create"
+        model: "team_role"
+        save_as: "record"
+        values:
+          name: "Test Team Role To Delete"
+          code: "/"
+      - step: "Delete record"
+        action: "call"
+        target: "record"
+        method: "unlink"
+      - step: "Verify deleted"
+        action: "search"
+        model: "team_role"
+        domain: [["name", "=", "Test Team Role To Delete"]]
+        save_as: "result"
+        expect_count: 0
+
+  # ------------------------------------------------------------------
+  # trial_balance_computation_item
+  # ------------------------------------------------------------------
+  - name: "trial_balance_computation_item - Create"
+    steps:
+      - step: "Create record"
+        action: "create"
+        model: "trial_balance_computation_item"
+        save_as: "record"
+        values:
+          name: "Test Computation Item"
+          code: "/"
+      - step: "Assert created"
+        action: "assert"
+        target: "record"
+        asserts:
+          id:
+            type: "value"
+            operator: "is_truthy"
+          name:
+            type: "value"
+            expected: "Test Computation Item"
+
+  - name: "trial_balance_computation_item - Edit"
+    steps:
+      - step: "Create record"
+        action: "create"
+        model: "trial_balance_computation_item"
+        save_as: "record"
+        values:
+          name: "Test Computation Item"
+          code: "/"
+      - step: "Write new name"
+        action: "write"
+        target: "record"
+        values:
+          name: "Updated Computation Item"
+      - step: "Assert name updated"
+        action: "assert"
+        target: "record"
+        asserts:
+          name:
+            type: "value"
+            expected: "Updated Computation Item"
+
+  - name: "trial_balance_computation_item - Delete"
+    steps:
+      - step: "Create record"
+        action: "create"
+        model: "trial_balance_computation_item"
+        save_as: "record"
+        values:
+          name: "Test Computation Item To Delete"
+          code: "/"
+      - step: "Delete record"
+        action: "call"
+        target: "record"
+        method: "unlink"
+      - step: "Verify deleted"
+        action: "search"
+        model: "trial_balance_computation_item"
+        domain: [["name", "=", "Test Computation Item To Delete"]]
+        save_as: "result"
+        expect_count: 0
+
+  # ------------------------------------------------------------------
+  # general_audit_worksheet_type
+  # ------------------------------------------------------------------
+  - name: "general_audit_worksheet_type - Create"
+    steps:
+      - step: "Create record"
+        action: "create"
+        model: "general_audit_worksheet_type"
+        save_as: "record"
+        values:
+          name: "Test Worksheet Type"
+          code: "/"
+          model_name: "general_audit_worksheet_tester"
+      - step: "Assert created"
+        action: "assert"
+        target: "record"
+        asserts:
+          id:
+            type: "value"
+            operator: "is_truthy"
+          name:
+            type: "value"
+            expected: "Test Worksheet Type"
+
+  - name: "general_audit_worksheet_type - Edit"
+    steps:
+      - step: "Create record"
+        action: "create"
+        model: "general_audit_worksheet_type"
+        save_as: "record"
+        values:
+          name: "Test Worksheet Type"
+          code: "/"
+          model_name: "general_audit_worksheet_tester"
+      - step: "Write new name"
+        action: "write"
+        target: "record"
+        values:
+          name: "Updated Worksheet Type"
+      - step: "Assert name updated"
+        action: "assert"
+        target: "record"
+        asserts:
+          name:
+            type: "value"
+            expected: "Updated Worksheet Type"
+
+  - name: "general_audit_worksheet_type - Delete"
+    steps:
+      - step: "Create record"
+        action: "create"
+        model: "general_audit_worksheet_type"
+        save_as: "record"
+        values:
+          name: "Test Worksheet Type To Delete"
+          code: "/"
+          model_name: "general_audit_worksheet_tester"
+      - step: "Delete record"
+        action: "call"
+        target: "record"
+        method: "unlink"
+      - step: "Verify deleted"
+        action: "search"
+        model: "general_audit_worksheet_type"
+        domain: [["name", "=", "Test Worksheet Type To Delete"]]
+        save_as: "result"
+        expect_count: 0
+
+  # ------------------------------------------------------------------
+  # general_audit_worksheet_type_category
+  # ------------------------------------------------------------------
+  - name: "general_audit_worksheet_type_category - Create"
+    steps:
+      - step: "Create record"
+        action: "create"
+        model: "general_audit_worksheet_type_category"
+        save_as: "record"
+        values:
+          name: "Test Worksheet Type Category"
+          code: "/"
+      - step: "Assert created"
+        action: "assert"
+        target: "record"
+        asserts:
+          id:
+            type: "value"
+            operator: "is_truthy"
+          name:
+            type: "value"
+            expected: "Test Worksheet Type Category"
+
+  - name: "general_audit_worksheet_type_category - Edit"
+    steps:
+      - step: "Create record"
+        action: "create"
+        model: "general_audit_worksheet_type_category"
+        save_as: "record"
+        values:
+          name: "Test Worksheet Type Category"
+          code: "/"
+      - step: "Write new name"
+        action: "write"
+        target: "record"
+        values:
+          name: "Updated Worksheet Type Category"
+      - step: "Assert name updated"
+        action: "assert"
+        target: "record"
+        asserts:
+          name:
+            type: "value"
+            expected: "Updated Worksheet Type Category"
+
+  - name: "general_audit_worksheet_type_category - Delete"
+    steps:
+      - step: "Create record"
+        action: "create"
+        model: "general_audit_worksheet_type_category"
+        save_as: "record"
+        values:
+          name: "Test Worksheet Type Category To Delete"
+          code: "/"
+      - step: "Delete record"
+        action: "call"
+        target: "record"
+        method: "unlink"
+      - step: "Verify deleted"
+        action: "search"
+        model: "general_audit_worksheet_type_category"
+        domain: [["name", "=", "Test Worksheet Type Category To Delete"]]
+        save_as: "result"
+        expect_count: 0
+
+  # ------------------------------------------------------------------
+  # general_audit_worksheet_conclusion
+  # ------------------------------------------------------------------
+  - name: "general_audit_worksheet_conclusion - Create"
+    steps:
+      - step: "Create worksheet type"
+        action: "create"
+        model: "general_audit_worksheet_type"
+        save_as: "type"
+        values:
+          name: "Test Worksheet Type"
+          code: "/"
+          model_name: "general_audit_worksheet_tester"
+      - step: "Create conclusion"
+        action: "create"
+        model: "general_audit_worksheet_conclusion"
+        save_as: "record"
+        values:
+          name: "Test Conclusion"
+          code: "/"
+          type_id: "EVAL: registry['type'].id"
+      - step: "Assert created"
+        action: "assert"
+        target: "record"
+        asserts:
+          id:
+            type: "value"
+            operator: "is_truthy"
+          name:
+            type: "value"
+            expected: "Test Conclusion"
+
+  - name: "general_audit_worksheet_conclusion - Edit"
+    steps:
+      - step: "Create worksheet type"
+        action: "create"
+        model: "general_audit_worksheet_type"
+        save_as: "type"
+        values:
+          name: "Test Worksheet Type"
+          code: "/"
+          model_name: "general_audit_worksheet_tester"
+      - step: "Create conclusion"
+        action: "create"
+        model: "general_audit_worksheet_conclusion"
+        save_as: "record"
+        values:
+          name: "Test Conclusion"
+          code: "/"
+          type_id: "EVAL: registry['type'].id"
+      - step: "Write new name"
+        action: "write"
+        target: "record"
+        values:
+          name: "Updated Conclusion"
+      - step: "Assert name updated"
+        action: "assert"
+        target: "record"
+        asserts:
+          name:
+            type: "value"
+            expected: "Updated Conclusion"
+
+  - name: "general_audit_worksheet_conclusion - Delete"
+    steps:
+      - step: "Create worksheet type"
+        action: "create"
+        model: "general_audit_worksheet_type"
+        save_as: "type"
+        values:
+          name: "Test Worksheet Type"
+          code: "/"
+          model_name: "general_audit_worksheet_tester"
+      - step: "Create conclusion"
+        action: "create"
+        model: "general_audit_worksheet_conclusion"
+        save_as: "record"
+        values:
+          name: "Test Conclusion To Delete"
+          code: "/"
+          type_id: "EVAL: registry['type'].id"
+      - step: "Delete conclusion"
+        action: "call"
+        target: "record"
+        method: "unlink"
+      - step: "Verify deleted"
+        action: "search"
+        model: "general_audit_worksheet_conclusion"
+        domain: [["name", "=", "Test Conclusion To Delete"]]
+        save_as: "result"
+        expect_count: 0
+
+  # ------------------------------------------------------------------
+  # general_audit_standard_audit
+  # ------------------------------------------------------------------
+  - name: "general_audit_standard_audit - Create"
+    steps:
+      - step: "Create record"
+        action: "create"
+        model: "general_audit_standard_audit"
+        save_as: "record"
+        values:
+          name: "Test Standard Audit Item"
+          code: "/"
+      - step: "Assert created"
+        action: "assert"
+        target: "record"
+        asserts:
+          id:
+            type: "value"
+            operator: "is_truthy"
+          name:
+            type: "value"
+            expected: "Test Standard Audit Item"
+
+  - name: "general_audit_standard_audit - Edit"
+    steps:
+      - step: "Create record"
+        action: "create"
+        model: "general_audit_standard_audit"
+        save_as: "record"
+        values:
+          name: "Test Standard Audit Item"
+          code: "/"
+      - step: "Write new name"
+        action: "write"
+        target: "record"
+        values:
+          name: "Updated Standard Audit Item"
+      - step: "Assert name updated"
+        action: "assert"
+        target: "record"
+        asserts:
+          name:
+            type: "value"
+            expected: "Updated Standard Audit Item"
+
+  - name: "general_audit_standard_audit - Delete"
+    steps:
+      - step: "Create record"
+        action: "create"
+        model: "general_audit_standard_audit"
+        save_as: "record"
+        values:
+          name: "Test Standard Audit Item To Delete"
+          code: "/"
+      - step: "Delete record"
+        action: "call"
+        target: "record"
+        method: "unlink"
+      - step: "Verify deleted"
+        action: "search"
+        model: "general_audit_standard_audit"
+        domain: [["name", "=", "Test Standard Audit Item To Delete"]]
+        save_as: "result"
+        expect_count: 0
+
+  # ------------------------------------------------------------------
+  # checklist.option
+  # ------------------------------------------------------------------
+  - name: "checklist.option - Create"
+    steps:
+      - step: "Create record"
+        action: "create"
+        model: "checklist.option"
+        save_as: "record"
+        values:
+          name: "Test Checklist Option"
+          code: "/"
+      - step: "Assert created"
+        action: "assert"
+        target: "record"
+        asserts:
+          id:
+            type: "value"
+            operator: "is_truthy"
+          name:
+            type: "value"
+            expected: "Test Checklist Option"
+
+  - name: "checklist.option - Edit"
+    steps:
+      - step: "Create record"
+        action: "create"
+        model: "checklist.option"
+        save_as: "record"
+        values:
+          name: "Test Checklist Option"
+          code: "/"
+      - step: "Write new name"
+        action: "write"
+        target: "record"
+        values:
+          name: "Updated Checklist Option"
+      - step: "Assert name updated"
+        action: "assert"
+        target: "record"
+        asserts:
+          name:
+            type: "value"
+            expected: "Updated Checklist Option"
+
+  - name: "checklist.option - Delete"
+    steps:
+      - step: "Create record"
+        action: "create"
+        model: "checklist.option"
+        save_as: "record"
+        values:
+          name: "Test Checklist Option To Delete"
+          code: "/"
+      - step: "Delete record"
+        action: "call"
+        target: "record"
+        method: "unlink"
+      - step: "Verify deleted"
+        action: "search"
+        model: "checklist.option"
+        domain: [["name", "=", "Test Checklist Option To Delete"]]
+        save_as: "result"
+        expect_count: 0
+
+  # ------------------------------------------------------------------
+  # checklist.option_set
+  # ------------------------------------------------------------------
+  - name: "checklist.option_set - Create"
+    steps:
+      - step: "Create option"
+        action: "create"
+        model: "checklist.option"
+        save_as: "option"
+        values:
+          name: "Test Checklist Option"
+          code: "/"
+      - step: "Create option set"
+        action: "create"
+        model: "checklist.option_set"
+        save_as: "record"
+        values:
+          name: "Test Checklist Option Set"
+          code: "/"
+          option_ids: "EVAL: [(6, 0, [registry['option'].id])]"
+      - step: "Assert created"
+        action: "assert"
+        target: "record"
+        asserts:
+          id:
+            type: "value"
+            operator: "is_truthy"
+          name:
+            type: "value"
+            expected: "Test Checklist Option Set"
+          option_ids:
+            type: "m2m"
+            check: "count"
+            expected_count: 1
+
+  - name: "checklist.option_set - Edit"
+    steps:
+      - step: "Create option set"
+        action: "create"
+        model: "checklist.option_set"
+        save_as: "record"
+        values:
+          name: "Test Checklist Option Set"
+          code: "/"
+      - step: "Write new name"
+        action: "write"
+        target: "record"
+        values:
+          name: "Updated Checklist Option Set"
+      - step: "Assert name updated"
+        action: "assert"
+        target: "record"
+        asserts:
+          name:
+            type: "value"
+            expected: "Updated Checklist Option Set"
+
+  - name: "checklist.option_set - Delete"
+    steps:
+      - step: "Create option set"
+        action: "create"
+        model: "checklist.option_set"
+        save_as: "record"
+        values:
+          name: "Test Checklist Option Set To Delete"
+          code: "/"
+      - step: "Delete option set"
+        action: "call"
+        target: "record"
+        method: "unlink"
+      - step: "Verify deleted"
+        action: "search"
+        model: "checklist.option_set"
+        domain: [["name", "=", "Test Checklist Option Set To Delete"]]
+        save_as: "result"
+        expect_count: 0
