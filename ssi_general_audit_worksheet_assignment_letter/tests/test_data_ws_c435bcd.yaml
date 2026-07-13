@@ -794,13 +794,22 @@ scenarios:
       # ssi_general_audit/views/worksheet/general_audit_worksheet_mixin_views.xml),
       # so it can only ever take its default value on a new record -- it is
       # never user-editable. The onchange therefore only fires once, from
-      # that default, which this asserts.
-      - step:
-          "Open new worksheet form and check default type_id propagates via onchange"
+      # that default. Asserting directly on the live Form object trips a
+      # library/Form interaction bug (`hasattr(form, "__len__")` raises
+      # AssertionError instead of returning False), so save the form first
+      # and assert on the resulting record instead.
+      - step: "Open new worksheet form with default type_id"
         action: "form"
         model: "general_audit_ws_c435bcd"
+        save_as: "onchange_worksheet"
         as_user: "base.user_admin"
-        save: false
+        values:
+          general_audit_id: "REC: audit"
+        save: true
+
+      - step: "Assert default type_id propagated to parent_type_id via onchange"
+        action: "assert"
+        target: "onchange_worksheet"
         asserts:
           type_id:
             type: "m2o"
