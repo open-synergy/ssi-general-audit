@@ -14,6 +14,21 @@ and "Approve" steps too if your scenario specifically needs `general_audit` in s
 `done`.
 
 ```yaml
+- step: "Get config parameter model"
+  action: "search"
+  model: "ir.config_parameter"
+  domain: []
+  save_as: "config_parameter"
+  limit: 1
+
+- step: "Allow enough CPA licenses for this scenario"
+  action: "call"
+  target: "config_parameter"
+  method: "set_param"
+  args:
+    - "ssi_general_audit.max_number_of_cpa_license"
+    - "100"
+
 - step: "Create client partner"
   action: "create"
   model: "res.partner"
@@ -106,6 +121,19 @@ create your worksheet against it, e.g.:
     general_audit_id: "EVAL: registry['audit'].id"
     type_id: "REF: <your_module>.<worksheet_type_xml_id>"
 ```
+
+## Why the `max_number_of_cpa_license` config parameter step is required
+
+`ssi_general_audit_core` adds `@api.constrains("accountant_id")` on `general_audit`
+(`ssi_general_audit_core/models/general_audit.py`, method `_check_num_of_cpa`) that
+counts _distinct_ `accountant_id` values across **all** `general_audit` records in the
+database and rejects the create/write once that count exceeds `ir.config_parameter`
+`ssi_general_audit.max_number_of_cpa_license` (default `"0"`, i.e. no CPA-licensed
+accountant allowed at all). Since this repo's CI installs and tests all of its modules
+together in one process/database, every scenario across every module that creates a
+`general_audit` with a real `accountant_id` shares the same running count — raise the
+limit once per scenario (idempotent — `set_param` upserts) rather than assume some
+earlier test already raised it.
 
 ## Why `as_user: "base.user_admin"` everywhere
 
