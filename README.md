@@ -181,7 +181,7 @@ addon | version | maintainers | summary
 [ssi_general_audit_worksheet_test_of_control](ssi_general_audit_worksheet_test_of_control/) | 14.0.1.0.1 |  | General Audit Worksheet - Test of Control
 [ssi_general_audit_worksheet_test_of_detail](ssi_general_audit_worksheet_test_of_detail/) | 14.0.1.1.1 |  | General Audit Worksheet - Test of Detail
 [ssi_general_audit_worksheet_test_planning](ssi_general_audit_worksheet_test_planning/) | 14.0.1.0.1 |  | General Audit Worksheet - Test Planning
-[ssi_general_audit_worksheet_trial_balance](ssi_general_audit_worksheet_trial_balance/) | 14.0.1.0.1 |  | General Audit Worksheet - Trial Balance
+[ssi_general_audit_worksheet_trial_balance](ssi_general_audit_worksheet_trial_balance/) | 14.0.1.0.2 |  | General Audit Worksheet - Trial Balance
 [ssi_general_audit_worksheet_understanding_entity](ssi_general_audit_worksheet_understanding_entity/) | 14.0.1.11.1 |  | General Audit Worksheet - Understanding Entity and It's Environment
 
 [//]: # (end addons)
