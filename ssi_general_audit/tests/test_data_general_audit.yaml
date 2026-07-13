@@ -1,0 +1,467 @@
+scenarios:
+  # ------------------------------------------------------------------
+  # general_audit - Create (draft)
+  # ------------------------------------------------------------------
+  - name: "general_audit - Create in draft"
+    steps:
+      - step: "Get config parameter model"
+        action: "search"
+        model: "ir.config_parameter"
+        domain: []
+        save_as: "config_parameter"
+        limit: 1
+
+      - step: "Allow enough CPA licenses for this scenario"
+        action: "call"
+        target: "config_parameter"
+        method: "set_param"
+        args:
+          - "ssi_general_audit.max_number_of_cpa_license"
+          - "100"
+
+      - step: "Create client partner"
+        action: "create"
+        model: "res.partner"
+        save_as: "client"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Audit Client"
+          is_company: true
+
+      - step: "Create accountant partner"
+        action: "create"
+        model: "res.partner"
+        save_as: "accountant"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Audit Accountant"
+
+      - step: "Get CPA license id category"
+        action: "ref"
+        xml_id: "ssi_partner_identification_cpa_license.partner_identification_accountant_cpa_license"
+        save_as: "cpa_category"
+
+      - step: "Grant accountant a CPA license"
+        action: "create"
+        model: "res.partner.id_number"
+        save_as: "cpa_license"
+        as_user: "base.user_admin"
+        values:
+          partner_id: "EVAL: registry['accountant'].id"
+          category_id: "EVAL: registry['cpa_category'].id"
+          name: "CPA-DRAFT-0001"
+
+      - step: "Create account type set"
+        action: "create"
+        model: "client_account_type_set"
+        save_as: "account_type_set"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Account Type Set"
+          code: "/"
+
+      - step: "Create financial accounting standard"
+        action: "create"
+        model: "accountant.financial_accounting_standard"
+        save_as: "standard"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Financial Accounting Standard"
+          code: "/"
+
+      - step: "Create general audit"
+        action: "create"
+        model: "general_audit"
+        save_as: "audit"
+        as_user: "base.user_admin"
+        values:
+          title: "Test General Audit"
+          partner_id: "EVAL: registry['client'].id"
+          accountant_id: "EVAL: registry['accountant'].id"
+          account_type_set_id: "EVAL: registry['account_type_set'].id"
+          financial_accounting_standard_id: "EVAL: registry['standard'].id"
+          date_start: 2026-01-01
+          date_end: 2026-12-31
+          need_interim: false
+          need_previous: false
+          num_of_consecutive_audit_firm: 1
+          num_of_consecutive_audit_accountant: 1
+
+      - step: "Assert audit created in draft"
+        action: "assert"
+        target: "audit"
+        asserts:
+          id:
+            type: "value"
+            operator: "is_truthy"
+          state:
+            type: "value"
+            expected: "draft"
+          title:
+            type: "value"
+            expected: "Test General Audit"
+
+  # ------------------------------------------------------------------
+  # general_audit - full workflow draft -> open -> confirm -> done
+  #
+  # Policy fields (open_ok, confirm_ok, ...) are computed once at create()
+  # time and only recompute when `policy_template_id` changes -- NOT when
+  # `state` changes (mixin.policy._compute_policy is `@api.depends
+  # ("policy_template_id")` only). A step that reads a policy field via an
+  # internal `_check_*_policy()` call (inside action_confirm/action_restart)
+  # would otherwise see the value cached back when the record was still
+  # draft. An explicit "Invalidate cache" step after every transition
+  # forces a fresh read, exactly like ssi_fixed_asset's tests do.
+  # ------------------------------------------------------------------
+  - name: "general_audit - Workflow draft to done"
+    steps:
+      - step: "Get config parameter model"
+        action: "search"
+        model: "ir.config_parameter"
+        domain: []
+        save_as: "config_parameter"
+        limit: 1
+
+      - step: "Allow enough CPA licenses for this scenario"
+        action: "call"
+        target: "config_parameter"
+        method: "set_param"
+        args:
+          - "ssi_general_audit.max_number_of_cpa_license"
+          - "100"
+
+      - step: "Create client partner"
+        action: "create"
+        model: "res.partner"
+        save_as: "client"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Audit Client"
+          is_company: true
+
+      - step: "Create accountant partner"
+        action: "create"
+        model: "res.partner"
+        save_as: "accountant"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Audit Accountant"
+
+      - step: "Get CPA license id category"
+        action: "ref"
+        xml_id: "ssi_partner_identification_cpa_license.partner_identification_accountant_cpa_license"
+        save_as: "cpa_category"
+
+      - step: "Grant accountant a CPA license"
+        action: "create"
+        model: "res.partner.id_number"
+        save_as: "cpa_license"
+        as_user: "base.user_admin"
+        values:
+          partner_id: "EVAL: registry['accountant'].id"
+          category_id: "EVAL: registry['cpa_category'].id"
+          name: "CPA-WORKFLOW-0001"
+
+      - step: "Create account type set"
+        action: "create"
+        model: "client_account_type_set"
+        save_as: "account_type_set"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Account Type Set"
+          code: "/"
+
+      - step: "Create financial accounting standard"
+        action: "create"
+        model: "accountant.financial_accounting_standard"
+        save_as: "standard"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Financial Accounting Standard"
+          code: "/"
+
+      - step: "Create general audit"
+        action: "create"
+        model: "general_audit"
+        save_as: "audit"
+        as_user: "base.user_admin"
+        values:
+          title: "Test General Audit Workflow"
+          partner_id: "EVAL: registry['client'].id"
+          accountant_id: "EVAL: registry['accountant'].id"
+          account_type_set_id: "EVAL: registry['account_type_set'].id"
+          financial_accounting_standard_id: "EVAL: registry['standard'].id"
+          date_start: 2026-01-01
+          date_end: 2026-12-31
+          need_interim: false
+          need_previous: false
+          num_of_consecutive_audit_firm: 1
+          num_of_consecutive_audit_accountant: 1
+
+      - step: "Open general audit"
+        action: "call"
+        target: "audit"
+        method: "action_open"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after opening general audit"
+        action: "call"
+        target: "audit"
+        method: "invalidate_cache"
+
+      - step: "Assert general audit open"
+        action: "assert"
+        target: "audit"
+        asserts:
+          state:
+            type: "value"
+            expected: "open"
+
+      - step: "Create home trial balance"
+        action: "create"
+        model: "client_trial_balance"
+        save_as: "trial_balance"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "EVAL: registry['audit'].id"
+          trial_balance_type: "home"
+
+      - step: "Open trial balance"
+        action: "call"
+        target: "trial_balance"
+        method: "action_open"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after opening trial balance"
+        action: "call"
+        target: "trial_balance"
+        method: "invalidate_cache"
+
+      - step: "Assert trial balance open"
+        action: "assert"
+        target: "trial_balance"
+        asserts:
+          state:
+            type: "value"
+            expected: "open"
+
+      - step: "Confirm trial balance"
+        action: "call"
+        target: "trial_balance"
+        method: "action_confirm"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after confirming trial balance"
+        action: "call"
+        target: "trial_balance"
+        method: "invalidate_cache"
+
+      - step: "Assert trial balance confirmed"
+        action: "assert"
+        target: "trial_balance"
+        asserts:
+          state:
+            type: "value"
+            expected: "confirm"
+
+      - step: "Approve trial balance"
+        action: "call"
+        target: "trial_balance"
+        method: "action_approve_approval"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after approving trial balance"
+        action: "call"
+        target: "trial_balance"
+        method: "invalidate_cache"
+
+      - step: "Assert trial balance done"
+        action: "assert"
+        target: "trial_balance"
+        asserts:
+          state:
+            type: "value"
+            expected: "done"
+
+      - step: "Confirm general audit"
+        action: "call"
+        target: "audit"
+        method: "action_confirm"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after confirming general audit"
+        action: "call"
+        target: "audit"
+        method: "invalidate_cache"
+
+      - step: "Assert general audit confirmed"
+        action: "assert"
+        target: "audit"
+        asserts:
+          state:
+            type: "value"
+            expected: "confirm"
+
+      - step: "Approve general audit"
+        action: "call"
+        target: "audit"
+        method: "action_approve_approval"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after approving general audit"
+        action: "call"
+        target: "audit"
+        method: "invalidate_cache"
+
+      - step: "Assert general audit done"
+        action: "assert"
+        target: "audit"
+        asserts:
+          state:
+            type: "value"
+            expected: "done"
+
+  # ------------------------------------------------------------------
+  # general_audit - Cancel & Restart (from open, no trial balance needed)
+  # ------------------------------------------------------------------
+  - name: "general_audit - Cancel and restart"
+    steps:
+      - step: "Get config parameter model"
+        action: "search"
+        model: "ir.config_parameter"
+        domain: []
+        save_as: "config_parameter"
+        limit: 1
+
+      - step: "Allow enough CPA licenses for this scenario"
+        action: "call"
+        target: "config_parameter"
+        method: "set_param"
+        args:
+          - "ssi_general_audit.max_number_of_cpa_license"
+          - "100"
+
+      - step: "Create client partner"
+        action: "create"
+        model: "res.partner"
+        save_as: "client"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Audit Client"
+          is_company: true
+
+      - step: "Create accountant partner"
+        action: "create"
+        model: "res.partner"
+        save_as: "accountant"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Audit Accountant"
+
+      - step: "Get CPA license id category"
+        action: "ref"
+        xml_id: "ssi_partner_identification_cpa_license.partner_identification_accountant_cpa_license"
+        save_as: "cpa_category"
+
+      - step: "Grant accountant a CPA license"
+        action: "create"
+        model: "res.partner.id_number"
+        save_as: "cpa_license"
+        as_user: "base.user_admin"
+        values:
+          partner_id: "EVAL: registry['accountant'].id"
+          category_id: "EVAL: registry['cpa_category'].id"
+          name: "CPA-CANCEL-0001"
+
+      - step: "Create account type set"
+        action: "create"
+        model: "client_account_type_set"
+        save_as: "account_type_set"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Account Type Set"
+          code: "/"
+
+      - step: "Create financial accounting standard"
+        action: "create"
+        model: "accountant.financial_accounting_standard"
+        save_as: "standard"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Financial Accounting Standard"
+          code: "/"
+
+      - step: "Create general audit"
+        action: "create"
+        model: "general_audit"
+        save_as: "audit"
+        as_user: "base.user_admin"
+        values:
+          title: "Test General Audit Cancel"
+          partner_id: "EVAL: registry['client'].id"
+          accountant_id: "EVAL: registry['accountant'].id"
+          account_type_set_id: "EVAL: registry['account_type_set'].id"
+          financial_accounting_standard_id: "EVAL: registry['standard'].id"
+          date_start: 2026-01-01
+          date_end: 2026-12-31
+          need_interim: false
+          need_previous: false
+          num_of_consecutive_audit_firm: 1
+          num_of_consecutive_audit_accountant: 1
+
+      - step: "Open general audit"
+        action: "call"
+        target: "audit"
+        method: "action_open"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after opening general audit"
+        action: "call"
+        target: "audit"
+        method: "invalidate_cache"
+
+      - step: "Assert general audit open"
+        action: "assert"
+        target: "audit"
+        asserts:
+          state:
+            type: "value"
+            expected: "open"
+
+      - step: "Cancel general audit"
+        action: "call"
+        target: "audit"
+        method: "action_cancel"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after cancelling general audit"
+        action: "call"
+        target: "audit"
+        method: "invalidate_cache"
+
+      - step: "Assert general audit cancelled"
+        action: "assert"
+        target: "audit"
+        asserts:
+          state:
+            type: "value"
+            expected: "cancel"
+
+      - step: "Restart general audit"
+        action: "call"
+        target: "audit"
+        method: "action_restart"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after restarting general audit"
+        action: "call"
+        target: "audit"
+        method: "invalidate_cache"
+
+      - step: "Assert general audit back to draft"
+        action: "assert"
+        target: "audit"
+        asserts:
+          state:
+            type: "value"
+            expected: "draft"

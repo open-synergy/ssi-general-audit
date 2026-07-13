@@ -1,0 +1,228 @@
+# Shared fixture recipe — `general_audit` in state `open`
+
+Every worksheet module (`ssi_general_audit_worksheet_*`) inherits
+`general_audit_worksheet_mixin`, which requires a `general_audit_id`. Its unit tests
+need a `general_audit` record to attach worksheets to — usually in state `open`
+(worksheets are normally created while the audit is in progress). Copy the block below
+into a new scenario's `steps:` list and adjust `save_as` aliases if they collide with
+your own fixture data.
+
+This recipe deliberately sets `need_interim: false` and `need_previous: false` so
+`action_confirm` on the audit does not require extra interim / previous trial balances —
+worksheet tests should not need to go past `open` state at all; only copy the "Confirm"
+and "Approve" steps too if your scenario specifically needs `general_audit` in state
+`done`.
+
+```yaml
+- step: "Get config parameter model"
+  action: "search"
+  model: "ir.config_parameter"
+  domain: []
+  save_as: "config_parameter"
+  limit: 1
+
+- step: "Allow enough CPA licenses for this scenario"
+  action: "call"
+  target: "config_parameter"
+  method: "set_param"
+  args:
+    - "ssi_general_audit.max_number_of_cpa_license"
+    - "100"
+
+- step: "Create client partner"
+  action: "create"
+  model: "res.partner"
+  save_as: "client"
+  as_user: "base.user_admin"
+  values:
+    name: "Test Audit Client"
+    is_company: true
+
+- step: "Create accountant partner"
+  action: "create"
+  model: "res.partner"
+  save_as: "accountant"
+  as_user: "base.user_admin"
+  values:
+    name: "Test Audit Accountant"
+
+- step: "Get CPA license id category"
+  action: "ref"
+  xml_id: "ssi_partner_identification_cpa_license.partner_identification_accountant_cpa_license"
+  save_as: "cpa_category"
+
+- step: "Grant accountant a CPA license"
+  action: "create"
+  model: "res.partner.id_number"
+  save_as: "cpa_license"
+  as_user: "base.user_admin"
+  values:
+    partner_id: "EVAL: registry['accountant'].id"
+    category_id: "EVAL: registry['cpa_category'].id"
+    name: "CPA-<UNIQUE-SUFFIX>"
+
+- step: "Create account type set"
+  action: "create"
+  model: "client_account_type_set"
+  save_as: "account_type_set"
+  as_user: "base.user_admin"
+  values:
+    name: "Test Account Type Set"
+    code: "/"
+
+- step: "Create financial accounting standard"
+  action: "create"
+  model: "accountant.financial_accounting_standard"
+  save_as: "standard"
+  as_user: "base.user_admin"
+  values:
+    name: "Test Financial Accounting Standard"
+    code: "/"
+
+- step: "Create general audit"
+  action: "create"
+  model: "general_audit"
+  save_as: "audit"
+  as_user: "base.user_admin"
+  values:
+    title: "Test General Audit"
+    partner_id: "EVAL: registry['client'].id"
+    accountant_id: "EVAL: registry['accountant'].id"
+    account_type_set_id: "EVAL: registry['account_type_set'].id"
+    financial_accounting_standard_id: "EVAL: registry['standard'].id"
+    date_start: 2026-01-01
+    date_end: 2026-12-31
+    need_interim: false
+    need_previous: false
+    num_of_consecutive_audit_firm: 1
+    num_of_consecutive_audit_accountant: 1
+
+- step: "Open general audit"
+  action: "call"
+  target: "audit"
+  method: "action_open"
+  as_user: "base.user_admin"
+
+- step: "Invalidate cache after opening general audit"
+  action: "call"
+  target: "audit"
+  method: "invalidate_cache"
+
+- step: "Assert general audit open"
+  action: "assert"
+  target: "audit"
+  asserts:
+    state:
+      type: "value"
+      expected: "open"
+```
+
+After this block, `registry['audit']` is a `general_audit` record in state `open` —
+create your worksheet against it, e.g.:
+
+```yaml
+- step: "Create worksheet"
+  action: "create"
+  model: "<your_worksheet_model>"
+  save_as: "worksheet"
+  as_user: "base.user_admin"
+  values:
+    general_audit_id: "EVAL: registry['audit'].id"
+    type_id: "REF: <your_module>.<worksheet_type_xml_id>"
+```
+
+## Why the `max_number_of_cpa_license` config parameter step is required
+
+`ssi_general_audit_core` adds `@api.constrains("accountant_id")` on `general_audit`
+(`ssi_general_audit_core/models/general_audit.py`, method `_check_num_of_cpa`) that
+counts _distinct_ `accountant_id` values across **all** `general_audit` records in the
+database and rejects the create/write once that count exceeds `ir.config_parameter`
+`ssi_general_audit.max_number_of_cpa_license` (default `"0"`, i.e. no CPA-licensed
+accountant allowed at all). Since this repo's CI installs and tests all of its modules
+together in one process/database, every scenario across every module that creates a
+`general_audit` with a real `accountant_id` shares the same running count — raise the
+limit once per scenario (idempotent — `set_param` upserts) rather than assume some
+earlier test already raised it.
+
+## Why `as_user: "base.user_admin"` everywhere
+
+YAML scenarios run as **OdooBot** (`uid=1`) by default. OdooBot is _not_ a member of any
+`res.groups` (even though it is superuser), so any policy field derived from group
+membership — including `ssi_multiple_approval_mixin`'s `active_approver_user_ids` check
+behind `confirm_ok` / `approve_ok` — evaluates to `False` for OdooBot. `Administrator`
+(`base.user_admin`) is explicitly added to
+`ssi_general_audit.general_audit_validator_group` and
+`ssi_general_audit.trial_balance_validator_group` (`security/res_group_data.xml`), so
+running every `general_audit` / `client_trial_balance` step as `base.user_admin` lets
+`action_open`, `action_confirm`, and `action_approve_approval` all succeed.
+
+## Why an `invalidate_cache` step follows every workflow transition
+
+`general_audit` and `client_trial_balance` gate every workflow button (`open_ok`,
+`confirm_ok`, `restart_ok`, …) behind a `policy.template`
+(`policy_template/general_audit.xml`, `policy_template/client_trial_balance.xml`) whose
+`additional_python_code` allows the record's own creator (`document.user_id`), reviewer,
+or the relevant validator group — `base.user_admin` satisfies this (it is both the
+creator, via `as_user`, and a validator group member).
+
+The catch is _when_ those booleans get computed: `mixin.policy._compute_policy`
+(`ssi_policy_mixin/models/mixin_policy.py`) is declared
+`@api.depends ("policy_template_id")` only — **not** `state`. `policy_template_id` is
+set once inside `create()`, so every policy field is computed a single time while the
+record is still `draft`, and Odoo never automatically invalidates that cache when
+`state` changes later (`_check_confirm_policy` / `_check_restart_policy` then read the
+_stale_ value). Whether a given policy field happens to look correct depends entirely on
+whether its `policy.template_detail.state_ids` includes `draft`:
+
+- `open_ok` requires `draft`, `cancel_ok` allows `draft` — both happen to be correct
+  even without a refresh, since that is the state at the moment they were first cached.
+- `confirm_ok` requires `open`, `restart_ok` requires `cancel`/`reject` — both are
+  **never** true at `create()` time, so they stay wrongly cached `False` forever unless
+  something forces a recompute.
+
+An explicit `action: "call"` step targeting `invalidate_cache` after every transition
+(before the next step that reads a policy field) forces that recompute — this is the
+same pattern `ssi_fixed_asset`'s tests already use in this environment. Don't rely on
+`auto_refresh`/the framework's automatic pre-assert cache refresh here: that only runs
+before reading `asserts:` fields, not before the _next_ `action: "call"`'s internal
+`_check_*_policy()` read, which is exactly where this bites.
+
+## Why you (usually) don't need a trial balance
+
+`general_audit._constrains_state_confirm` requires a **home** trial balance in state
+`done` before `action_confirm` succeeds — see `_check_home_tb_exist` /
+`_check_home_tb_done` in `models/general_audit/general_audit.py`. That only fires when
+the audit itself transitions to `confirm`. Worksheet tests normally only need the audit
+in state `open` (as this recipe produces), so they can skip the trial balance fixture
+entirely. If a worksheet test genuinely needs the parent audit in state `done`, see the
+"Workflow draft to done" scenario in
+`ssi_general_audit/tests/test_data_general_audit.yaml` for the full home trial balance
+fixture (create → open → confirm → approve).
+
+## `general_audit_worksheet_mixin` is abstract — test it from a worksheet module, not here
+
+`general_audit_worksheet_mixin` (`models/worksheet/general_audit_worksheet_mixin.py`) is
+a `models.AbstractModel` — it has no table of its own, so `ssi_general_audit` cannot
+create a record of it directly. Concrete worksheet modules provide their own
+`models.Model` that does `_inherit = ["general_audit_worksheet_mixin", ...]` plus a
+`_type_xml_id` (see
+`ssi_general_audit_worksheet_trial_balance/models/general_audit_ws_a033cc6.py` for the
+pattern).
+
+An earlier version of this fixture registered a test-only concrete model at runtime via
+`odoo_test_helper.FakeModelLoader` to exercise the mixin's `standard_item_ids` /
+`allowed_conclusion_ids` compute and `onchange_parent_type_id` from within
+`ssi_general_audit` itself. **This does not work in this repo's CI**:
+`FakeModelLoader.update_registry()` calls `registry.setup_models()`, which rebuilds the
+field-dependency graph for the _entire_ registry — not just the fake model. Because CI
+installs and tests all ~40 modules of this repo together in one process, that rebuild
+raced against related fields defined by worksheet modules not yet visible in a way real,
+one-time module installation is not, and crashed with `KeyError` on an unrelated related
+field, corrupting the shared registry and cascading failures into unrelated worksheet
+modules' tests for the rest of the run. It was removed.
+
+**Consequence:** test `standard_item_ids`, `allowed_conclusion_ids`, and
+`onchange_parent_type_id` from within a worksheet module's own unit test suite (e.g.
+BL-0137 for `ssi_general_audit_worksheet_trial_balance`), using its real concrete model
+(`general_audit_ws_a033cc6` there) — no `FakeModelLoader` needed, since the concrete
+model is real production code already shipped by that module.
