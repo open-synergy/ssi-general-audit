@@ -1,0 +1,558 @@
+scenarios:
+  # ------------------------------------------------------------------
+  # general_audit - _check_num_of_cpa constraint (ssi_general_audit_core)
+  #
+  # `_check_num_of_cpa` (ssi_general_audit_core/models/general_audit.py)
+  # counts DISTINCT accountant_id values across ALL general_audit records
+  # in the database (read_group with domain=[]), not just the ones this
+  # scenario creates. Assumption made explicit here: no other module in
+  # this repo ships general_audit records via data/demo XML, so a fresh
+  # test transaction starts with zero general_audit rows -- the initial
+  # search below asserts that assumption instead of silently relying on
+  # it. Every later step that changes the license limit sets it via an
+  # explicit, relative set_param (never the module's own default "0").
+  # ------------------------------------------------------------------
+  - name: "general_audit - _check_num_of_cpa accountant license limit"
+    steps:
+      - step: "Verify no general_audit exists yet in this transaction"
+        action: "search"
+        model: "general_audit"
+        domain: []
+        save_as: "existing_audits"
+        expect_count: 0
+
+      - step: "Get config parameter model"
+        action: "search"
+        model: "ir.config_parameter"
+        domain: []
+        save_as: "config_parameter"
+        limit: 1
+
+      - step: "Allow exactly 1 CPA-licensed accountant"
+        action: "call"
+        target: "config_parameter"
+        method: "set_param"
+        args:
+          - "ssi_general_audit.max_number_of_cpa_license"
+          - "1"
+
+      - step: "Create client partner"
+        action: "create"
+        model: "res.partner"
+        save_as: "client"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Audit Client"
+          is_company: true
+
+      - step: "Create accountant A partner"
+        action: "create"
+        model: "res.partner"
+        save_as: "accountant_a"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Audit Accountant A"
+
+      - step: "Get CPA license id category"
+        action: "ref"
+        xml_id: "ssi_partner_identification_cpa_license.partner_identification_accountant_cpa_license"
+        save_as: "cpa_category"
+
+      - step: "Grant accountant A a CPA license"
+        action: "create"
+        model: "res.partner.id_number"
+        save_as: "cpa_license_a"
+        as_user: "base.user_admin"
+        values:
+          partner_id: "REC: accountant_a.id"
+          category_id: "REC: cpa_category.id"
+          name: "CPA-CORE-CONSTRAINT-A"
+
+      - step: "Create account type set"
+        action: "create"
+        model: "client_account_type_set"
+        save_as: "account_type_set"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Account Type Set"
+          code: "/"
+
+      - step: "Create financial accounting standard"
+        action: "create"
+        model: "accountant.financial_accounting_standard"
+        save_as: "standard"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Financial Accounting Standard"
+          code: "/"
+
+      - step: "Create general audit #1 with accountant A (at the limit)"
+        action: "create"
+        model: "general_audit"
+        save_as: "audit_1"
+        as_user: "base.user_admin"
+        values:
+          title: "Test General Audit Core 1"
+          partner_id: "REC: client.id"
+          accountant_id: "REC: accountant_a.id"
+          account_type_set_id: "REC: account_type_set.id"
+          financial_accounting_standard_id: "REC: standard.id"
+          date_start: 2026-01-01
+          date_end: 2026-12-31
+          need_interim: false
+          need_previous: false
+          num_of_consecutive_audit_firm: 1
+          num_of_consecutive_audit_accountant: 1
+
+      - step: "Assert audit #1 created (1 distinct accountant <= limit 1)"
+        action: "assert"
+        target: "audit_1"
+        asserts:
+          id:
+            type: "value"
+            operator: "is_truthy"
+          state:
+            type: "value"
+            expected: "draft"
+
+      - step: "Create accountant B partner"
+        action: "create"
+        model: "res.partner"
+        save_as: "accountant_b"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Audit Accountant B"
+
+      - step: "Grant accountant B a CPA license"
+        action: "create"
+        model: "res.partner.id_number"
+        save_as: "cpa_license_b"
+        as_user: "base.user_admin"
+        values:
+          partner_id: "REC: accountant_b.id"
+          category_id: "REC: cpa_category.id"
+          name: "CPA-CORE-CONSTRAINT-B"
+
+      - step: "2nd distinct accountant exceeds limit 1 -> ValidationError"
+        action: "create"
+        model: "general_audit"
+        as_user: "base.user_admin"
+        expect_error:
+          type: "ValidationError"
+          message_contains: "Max number of CPA License exceeded"
+        values:
+          title: "Test General Audit Core 2"
+          partner_id: "REC: client.id"
+          accountant_id: "REC: accountant_b.id"
+          account_type_set_id: "REC: account_type_set.id"
+          financial_accounting_standard_id: "REC: standard.id"
+          date_start: 2026-01-01
+          date_end: 2026-12-31
+          need_interim: false
+          need_previous: false
+          num_of_consecutive_audit_firm: 1
+          num_of_consecutive_audit_accountant: 1
+
+      - step: "Raise the limit to allow a 2nd distinct accountant"
+        action: "call"
+        target: "config_parameter"
+        method: "set_param"
+        args:
+          - "ssi_general_audit.max_number_of_cpa_license"
+          - "9999"
+
+      - step: "Create general audit #2 with accountant B (limit now 9999)"
+        action: "create"
+        model: "general_audit"
+        save_as: "audit_2"
+        as_user: "base.user_admin"
+        values:
+          title: "Test General Audit Core 2"
+          partner_id: "REC: client.id"
+          accountant_id: "REC: accountant_b.id"
+          account_type_set_id: "REC: account_type_set.id"
+          financial_accounting_standard_id: "REC: standard.id"
+          date_start: 2026-01-01
+          date_end: 2026-12-31
+          need_interim: false
+          need_previous: false
+          num_of_consecutive_audit_firm: 1
+          num_of_consecutive_audit_accountant: 1
+
+      - step: "Assert audit #2 created"
+        action: "assert"
+        target: "audit_2"
+        asserts:
+          id:
+            type: "value"
+            operator: "is_truthy"
+
+      - step: "Lower the limit to 0 (no CPA-licensed accountant allowed)"
+        action: "call"
+        target: "config_parameter"
+        method: "set_param"
+        args:
+          - "ssi_general_audit.max_number_of_cpa_license"
+          - "0"
+
+      - step: "Re-writing accountant_id under limit 0 -> ValidationError"
+        action: "write"
+        target: "audit_1"
+        as_user: "base.user_admin"
+        expect_error:
+          type: "ValidationError"
+          message_contains: "Max number of CPA License exceeded"
+        values:
+          accountant_id: "REC: accountant_b.id"
+
+  # ------------------------------------------------------------------
+  # general_audit - smoke workflow draft -> open -> confirm -> done with
+  # ssi_general_audit_core installed (full detailed workflow coverage is
+  # already in ssi_general_audit's own test suite, BL-0135; this only
+  # proves the core module's constraint does not break the document).
+  # ------------------------------------------------------------------
+  - name: "general_audit - Smoke workflow with core installed"
+    steps:
+      - step: "Get config parameter model"
+        action: "search"
+        model: "ir.config_parameter"
+        domain: []
+        save_as: "config_parameter"
+        limit: 1
+
+      - step: "Allow enough CPA licenses for this scenario"
+        action: "call"
+        target: "config_parameter"
+        method: "set_param"
+        args:
+          - "ssi_general_audit.max_number_of_cpa_license"
+          - "100"
+
+      - step: "Create client partner"
+        action: "create"
+        model: "res.partner"
+        save_as: "client"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Audit Client"
+          is_company: true
+
+      - step: "Create accountant partner"
+        action: "create"
+        model: "res.partner"
+        save_as: "accountant"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Audit Accountant"
+
+      - step: "Get CPA license id category"
+        action: "ref"
+        xml_id: "ssi_partner_identification_cpa_license.partner_identification_accountant_cpa_license"
+        save_as: "cpa_category"
+
+      - step: "Grant accountant a CPA license"
+        action: "create"
+        model: "res.partner.id_number"
+        save_as: "cpa_license"
+        as_user: "base.user_admin"
+        values:
+          partner_id: "REC: accountant.id"
+          category_id: "REC: cpa_category.id"
+          name: "CPA-CORE-WORKFLOW"
+
+      - step: "Create account type set"
+        action: "create"
+        model: "client_account_type_set"
+        save_as: "account_type_set"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Account Type Set"
+          code: "/"
+
+      - step: "Create financial accounting standard"
+        action: "create"
+        model: "accountant.financial_accounting_standard"
+        save_as: "standard"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Financial Accounting Standard"
+          code: "/"
+
+      - step: "Create general audit"
+        action: "create"
+        model: "general_audit"
+        save_as: "audit"
+        as_user: "base.user_admin"
+        values:
+          title: "Test General Audit Core Workflow"
+          partner_id: "REC: client.id"
+          accountant_id: "REC: accountant.id"
+          account_type_set_id: "REC: account_type_set.id"
+          financial_accounting_standard_id: "REC: standard.id"
+          date_start: 2026-01-01
+          date_end: 2026-12-31
+          need_interim: false
+          need_previous: false
+          num_of_consecutive_audit_firm: 1
+          num_of_consecutive_audit_accountant: 1
+
+      - step: "Assert audit created in draft"
+        action: "assert"
+        target: "audit"
+        asserts:
+          state:
+            type: "value"
+            expected: "draft"
+
+      - step: "Open general audit"
+        action: "call"
+        target: "audit"
+        method: "action_open"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after opening general audit"
+        action: "call"
+        target: "audit"
+        method: "invalidate_cache"
+
+      - step: "Assert general audit open"
+        action: "assert"
+        target: "audit"
+        asserts:
+          state:
+            type: "value"
+            expected: "open"
+
+      - step: "Create home trial balance"
+        action: "create"
+        model: "client_trial_balance"
+        save_as: "trial_balance"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          trial_balance_type: "home"
+
+      - step: "Open trial balance"
+        action: "call"
+        target: "trial_balance"
+        method: "action_open"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after opening trial balance"
+        action: "call"
+        target: "trial_balance"
+        method: "invalidate_cache"
+
+      - step: "Confirm trial balance"
+        action: "call"
+        target: "trial_balance"
+        method: "action_confirm"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after confirming trial balance"
+        action: "call"
+        target: "trial_balance"
+        method: "invalidate_cache"
+
+      - step: "Approve trial balance"
+        action: "call"
+        target: "trial_balance"
+        method: "action_approve_approval"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after approving trial balance"
+        action: "call"
+        target: "trial_balance"
+        method: "invalidate_cache"
+
+      - step: "Assert trial balance done"
+        action: "assert"
+        target: "trial_balance"
+        asserts:
+          state:
+            type: "value"
+            expected: "done"
+
+      - step: "Confirm general audit"
+        action: "call"
+        target: "audit"
+        method: "action_confirm"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after confirming general audit"
+        action: "call"
+        target: "audit"
+        method: "invalidate_cache"
+
+      - step: "Assert general audit confirmed"
+        action: "assert"
+        target: "audit"
+        asserts:
+          state:
+            type: "value"
+            expected: "confirm"
+
+      - step: "Approve general audit"
+        action: "call"
+        target: "audit"
+        method: "action_approve_approval"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after approving general audit"
+        action: "call"
+        target: "audit"
+        method: "invalidate_cache"
+
+      - step: "Assert general audit done"
+        action: "assert"
+        target: "audit"
+        asserts:
+          state:
+            type: "value"
+            expected: "done"
+
+  # ------------------------------------------------------------------
+  # general_audit - Cancel & restart with ssi_general_audit_core
+  # installed (from open, no trial balance needed).
+  # ------------------------------------------------------------------
+  - name: "general_audit - Cancel and restart with core installed"
+    steps:
+      - step: "Get config parameter model"
+        action: "search"
+        model: "ir.config_parameter"
+        domain: []
+        save_as: "config_parameter"
+        limit: 1
+
+      - step: "Allow enough CPA licenses for this scenario"
+        action: "call"
+        target: "config_parameter"
+        method: "set_param"
+        args:
+          - "ssi_general_audit.max_number_of_cpa_license"
+          - "100"
+
+      - step: "Create client partner"
+        action: "create"
+        model: "res.partner"
+        save_as: "client"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Audit Client"
+          is_company: true
+
+      - step: "Create accountant partner"
+        action: "create"
+        model: "res.partner"
+        save_as: "accountant"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Audit Accountant"
+
+      - step: "Get CPA license id category"
+        action: "ref"
+        xml_id: "ssi_partner_identification_cpa_license.partner_identification_accountant_cpa_license"
+        save_as: "cpa_category"
+
+      - step: "Grant accountant a CPA license"
+        action: "create"
+        model: "res.partner.id_number"
+        save_as: "cpa_license"
+        as_user: "base.user_admin"
+        values:
+          partner_id: "REC: accountant.id"
+          category_id: "REC: cpa_category.id"
+          name: "CPA-CORE-CANCEL"
+
+      - step: "Create account type set"
+        action: "create"
+        model: "client_account_type_set"
+        save_as: "account_type_set"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Account Type Set"
+          code: "/"
+
+      - step: "Create financial accounting standard"
+        action: "create"
+        model: "accountant.financial_accounting_standard"
+        save_as: "standard"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Financial Accounting Standard"
+          code: "/"
+
+      - step: "Create general audit"
+        action: "create"
+        model: "general_audit"
+        save_as: "audit"
+        as_user: "base.user_admin"
+        values:
+          title: "Test General Audit Core Cancel"
+          partner_id: "REC: client.id"
+          accountant_id: "REC: accountant.id"
+          account_type_set_id: "REC: account_type_set.id"
+          financial_accounting_standard_id: "REC: standard.id"
+          date_start: 2026-01-01
+          date_end: 2026-12-31
+          need_interim: false
+          need_previous: false
+          num_of_consecutive_audit_firm: 1
+          num_of_consecutive_audit_accountant: 1
+
+      - step: "Open general audit"
+        action: "call"
+        target: "audit"
+        method: "action_open"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after opening general audit"
+        action: "call"
+        target: "audit"
+        method: "invalidate_cache"
+
+      - step: "Assert general audit open"
+        action: "assert"
+        target: "audit"
+        asserts:
+          state:
+            type: "value"
+            expected: "open"
+
+      - step: "Cancel general audit"
+        action: "call"
+        target: "audit"
+        method: "action_cancel"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after cancelling general audit"
+        action: "call"
+        target: "audit"
+        method: "invalidate_cache"
+
+      - step: "Assert general audit cancelled"
+        action: "assert"
+        target: "audit"
+        asserts:
+          state:
+            type: "value"
+            expected: "cancel"
+
+      - step: "Restart general audit"
+        action: "call"
+        target: "audit"
+        method: "action_restart"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after restarting general audit"
+        action: "call"
+        target: "audit"
+        method: "invalidate_cache"
+
+      - step: "Assert general audit back to draft"
+        action: "assert"
+        target: "audit"
+        asserts:
+          state:
+            type: "value"
+            expected: "draft"
