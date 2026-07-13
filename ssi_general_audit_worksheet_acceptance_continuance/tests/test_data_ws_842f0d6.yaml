@@ -1,0 +1,789 @@
+setup:
+  steps:
+    - step: "Get config parameter model"
+      action: "search"
+      model: "ir.config_parameter"
+      domain: []
+      save_as: "config_parameter"
+      limit: 1
+
+    - step: "Allow enough CPA licenses for this scenario"
+      action: "call"
+      target: "config_parameter"
+      method: "set_param"
+      args:
+        - "ssi_general_audit.max_number_of_cpa_license"
+        - "100"
+
+    - step: "Create client partner"
+      action: "create"
+      model: "res.partner"
+      save_as: "client"
+      as_user: "base.user_admin"
+      values:
+        name: "Test Audit Client"
+        is_company: true
+
+    - step: "Create accountant partner"
+      action: "create"
+      model: "res.partner"
+      save_as: "accountant"
+      as_user: "base.user_admin"
+      values:
+        name: "Test Audit Accountant"
+
+    - step: "Get CPA license id category"
+      action: "ref"
+      xml_id: "ssi_partner_identification_cpa_license.partner_identification_accountant_cpa_license"
+      save_as: "cpa_category"
+
+    - step: "Grant accountant a CPA license"
+      action: "create"
+      model: "res.partner.id_number"
+      save_as: "cpa_license"
+      as_user: "base.user_admin"
+      values:
+        partner_id: "REC: accountant.id"
+        category_id: "REC: cpa_category.id"
+        name: "CPA-842F0D6-0001"
+
+    - step: "Create account type set"
+      action: "create"
+      model: "client_account_type_set"
+      save_as: "account_type_set"
+      as_user: "base.user_admin"
+      values:
+        name: "Test Account Type Set"
+        code: "/"
+
+    - step: "Create financial accounting standard"
+      action: "create"
+      model: "accountant.financial_accounting_standard"
+      save_as: "standard"
+      as_user: "base.user_admin"
+      values:
+        name: "Test Financial Accounting Standard"
+        code: "/"
+
+    - step: "Create general audit"
+      action: "create"
+      model: "general_audit"
+      save_as: "audit"
+      as_user: "base.user_admin"
+      values:
+        title: "Test General Audit - WS 842f0d6"
+        partner_id: "REC: client.id"
+        accountant_id: "REC: accountant.id"
+        account_type_set_id: "REC: account_type_set.id"
+        financial_accounting_standard_id: "REC: standard.id"
+        date_start: 2026-01-01
+        date_end: 2026-12-31
+        need_interim: false
+        need_previous: false
+        num_of_consecutive_audit_firm: 1
+        num_of_consecutive_audit_accountant: 1
+
+    - step: "Open general audit"
+      action: "call"
+      target: "audit"
+      method: "action_open"
+      as_user: "base.user_admin"
+
+    - step: "Invalidate cache after opening general audit"
+      action: "call"
+      target: "audit"
+      method: "invalidate_cache"
+
+    - step: "Get worksheet type 842f0d6"
+      action: "ref"
+      xml_id: "ssi_general_audit_worksheet_acceptance_continuance.worksheet_type_842f0d6"
+      save_as: "ws_type"
+
+    - step: "Get worksheet type 805d4d5"
+      action: "ref"
+      xml_id: "ssi_general_audit_worksheet_acceptance_continuance.worksheet_type_805d4d5"
+      save_as: "ws_type_805d4d5"
+
+scenarios:
+  # ------------------------------------------------------------------
+  # general_audit_ws_842f0d6 - Create in draft
+  # ------------------------------------------------------------------
+  - name: "Worksheet 842f0d6 - Create in draft"
+    steps:
+      - step: "Create worksheet 842f0d6"
+        action: "create"
+        model: "general_audit_ws_842f0d6"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+
+      - step: "Assert worksheet created in draft"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          id:
+            type: "value"
+            operator: "is_truthy"
+          state:
+            type: "value"
+            expected: "draft"
+          general_audit_id:
+            type: "m2o"
+            expected: "REC: audit"
+
+  # ------------------------------------------------------------------
+  # pmpj - plain Selection field
+  # ------------------------------------------------------------------
+  - name: "Worksheet 842f0d6 - Write pmpj selection"
+    steps:
+      - step: "Create worksheet 842f0d6"
+        action: "create"
+        model: "general_audit_ws_842f0d6"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+
+      - step: "Write pmpj to enhanced"
+        action: "write"
+        target: "worksheet"
+        values:
+          pmpj: "enhanced"
+
+      - step: "Assert pmpj saved"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          pmpj:
+            type: "value"
+            expected: "enhanced"
+
+  # ------------------------------------------------------------------
+  # link_1 - _compute_link_1
+  # ------------------------------------------------------------------
+  - name: "Worksheet 842f0d6 - Compute link_1 (normal)"
+    steps:
+      - step: "Create sibling worksheet 805d4d5"
+        action: "create"
+        model: "general_audit_ws_805d4d5"
+        save_as: "ws_805d4d5"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_805d4d5.id"
+
+      - step: "Create worksheet 842f0d6 (link_1 computed at create time)"
+        action: "create"
+        model: "general_audit_ws_842f0d6"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+
+      - step: "Assert link_1 points to the sibling worksheet"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          link_1:
+            type: "m2o"
+            expected: "REC: ws_805d4d5"
+
+  - name: "Worksheet 842f0d6 - Compute link_1 kosong (no sibling)"
+    steps:
+      - step: "Create worksheet 842f0d6 without any 805d4d5 sibling"
+        action: "create"
+        model: "general_audit_ws_842f0d6"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+
+      - step: "Assert link_1 empty"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          link_1:
+            type: "value"
+            operator: "is_falsy"
+
+  # ------------------------------------------------------------------
+  # action_reload_links
+  # ------------------------------------------------------------------
+  - name: "Worksheet 842f0d6 - action_reload_links refreshes link_1"
+    steps:
+      - step: "Create worksheet 842f0d6 without sibling yet"
+        action: "create"
+        model: "general_audit_ws_842f0d6"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+
+      - step: "Assert link_1 empty before sibling exists"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          link_1:
+            type: "value"
+            operator: "is_falsy"
+
+      - step: "Now create the sibling worksheet 805d4d5"
+        action: "create"
+        model: "general_audit_ws_805d4d5"
+        save_as: "ws_805d4d5"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_805d4d5.id"
+
+      - step: "Reload links"
+        action: "call"
+        target: "worksheet"
+        method: "action_reload_links"
+
+      - step: "Assert link_1 now points to the sibling worksheet"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          link_1:
+            type: "m2o"
+            expected: "REC: ws_805d4d5"
+
+  # ------------------------------------------------------------------
+  # general_audit_ws_842f0d6 - Workflow open to done (needs link_1)
+  # ------------------------------------------------------------------
+  - name: "Worksheet 842f0d6 - Workflow open to done"
+    steps:
+      - step: "Create sibling worksheet 805d4d5 first so link_1 resolves"
+        action: "create"
+        model: "general_audit_ws_805d4d5"
+        save_as: "ws_805d4d5"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_805d4d5.id"
+
+      - step: "Create worksheet 842f0d6"
+        action: "create"
+        model: "general_audit_ws_842f0d6"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+
+      - step: "Open worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_open"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after opening worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Assert worksheet open"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          state:
+            type: "value"
+            expected: "open"
+
+      - step: "Create conclusion for this worksheet type"
+        action: "create"
+        model: "general_audit_worksheet_conclusion"
+        save_as: "conclusion"
+        as_user: "base.user_admin"
+        values:
+          name: "Money laundering risk assessed"
+          code: "/"
+          type_id: "REC: ws_type.id"
+
+      - step: "Fill required conclusion fields before confirm"
+        action: "write"
+        target: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          conclusion_id: "REC: conclusion.id"
+          conclusion: "Money laundering risk assessment completed, no exception noted."
+          pmpj: "simplified"
+
+      - step: "Confirm worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_confirm"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after confirming worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Assert worksheet confirmed"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          state:
+            type: "value"
+            expected: "confirm"
+
+      - step: "Approve worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_approve_approval"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after approving worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Assert worksheet done"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          state:
+            type: "value"
+            expected: "done"
+
+  # ------------------------------------------------------------------
+  # general_audit_ws_842f0d6 - Cancel and restart
+  # ------------------------------------------------------------------
+  - name: "Worksheet 842f0d6 - Cancel and restart"
+    steps:
+      - step: "Create worksheet 842f0d6"
+        action: "create"
+        model: "general_audit_ws_842f0d6"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+
+      - step: "Open worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_open"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after opening worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Cancel worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_cancel"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after cancelling worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Assert worksheet cancelled"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          state:
+            type: "value"
+            expected: "cancel"
+
+      - step: "Restart worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_restart"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after restarting worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Assert worksheet back to draft"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          state:
+            type: "value"
+            expected: "draft"
+
+  # ------------------------------------------------------------------
+  # general_audit_ws_842f0d6.item / item_categ - Master CRUD
+  # ------------------------------------------------------------------
+  - name: "Item 842f0d6 master - Create with category"
+    steps:
+      - step: "Create item master"
+        action: "create"
+        model: "general_audit_ws_842f0d6.item"
+        save_as: "item"
+        values:
+          name: "Cash-intensive business"
+          code: "842F0D6-01"
+          categ: "business"
+          option_set_id: "REF: ssi_general_audit.checklist_option_set_2"
+      - step: "Assert item created"
+        action: "assert"
+        target: "item"
+        asserts:
+          id:
+            type: "value"
+            operator: "is_truthy"
+          categ:
+            type: "value"
+            expected: "business"
+
+  - name: "Item 842f0d6 master - Default code is /"
+    steps:
+      - step: "Create item master without code"
+        action: "create"
+        model: "general_audit_ws_842f0d6.item"
+        save_as: "item"
+        values:
+          name: "No code item"
+          categ: "profile"
+          option_set_id: "REF: ssi_general_audit.checklist_option_set_2"
+      - step: "Assert code defaults to /"
+        action: "assert"
+        target: "item"
+        asserts:
+          code:
+            type: "value"
+            expected: "/"
+
+  - name: "Item 842f0d6 master - Edit"
+    steps:
+      - step: "Create item master"
+        action: "create"
+        model: "general_audit_ws_842f0d6.item"
+        save_as: "item"
+        values:
+          name: "Cash-intensive business"
+          code: "842F0D6-02"
+          categ: "business"
+          option_set_id: "REF: ssi_general_audit.checklist_option_set_2"
+      - step: "Write new name"
+        action: "write"
+        target: "item"
+        values:
+          name: "Cash-intensive business (rev)"
+      - step: "Assert name updated"
+        action: "assert"
+        target: "item"
+        asserts:
+          name:
+            type: "value"
+            expected: "Cash-intensive business (rev)"
+
+  - name: "Item 842f0d6 master - Delete"
+    steps:
+      - step: "Create item master"
+        action: "create"
+        model: "general_audit_ws_842f0d6.item"
+        save_as: "item"
+        values:
+          name: "To be deleted"
+          code: "842F0D6-03"
+          categ: "country"
+          option_set_id: "REF: ssi_general_audit.checklist_option_set_2"
+      - step: "Delete item master"
+        action: "unlink"
+        target: "item"
+      - step: "Verify item deleted"
+        action: "search"
+        model: "general_audit_ws_842f0d6.item"
+        domain: [["code", "=", "842F0D6-03"]]
+        save_as: "result"
+        expect_count: 0
+
+  - name: "Item categ 842f0d6 master - Create/Edit/Delete"
+    steps:
+      - step: "Create item categ"
+        action: "create"
+        model: "general_audit_ws_842f0d6.item_categ"
+        save_as: "item_categ"
+        values:
+          name: "High cash turnover"
+          code: "842F0D6-CATEG-01"
+          categ: "business"
+      - step: "Assert item categ created"
+        action: "assert"
+        target: "item_categ"
+        asserts:
+          id:
+            type: "value"
+            operator: "is_truthy"
+      - step: "Write new name"
+        action: "write"
+        target: "item_categ"
+        values:
+          name: "High cash turnover (rev)"
+      - step: "Assert name updated"
+        action: "assert"
+        target: "item_categ"
+        asserts:
+          name:
+            type: "value"
+            expected: "High cash turnover (rev)"
+      - step: "Delete item categ"
+        action: "unlink"
+        target: "item_categ"
+      - step: "Verify item categ deleted"
+        action: "search"
+        model: "general_audit_ws_842f0d6.item_categ"
+        domain: [["code", "=", "842F0D6-CATEG-01"]]
+        save_as: "result"
+        expect_count: 0
+
+  # ------------------------------------------------------------------
+  # general_audit_ws_842f0d6.checklist - allowed_item_ids compute
+  # ------------------------------------------------------------------
+  - name: "Checklist 842f0d6 - Compute allowed_item_ids (normal)"
+    steps:
+      - step: "Create worksheet 842f0d6"
+        action: "create"
+        model: "general_audit_ws_842f0d6"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+
+      - step: "Create item master with category business"
+        action: "create"
+        model: "general_audit_ws_842f0d6.item"
+        save_as: "item"
+        values:
+          name: "Cash-intensive business"
+          code: "842F0D6-ALLOW-01"
+          categ: "business"
+          option_set_id: "REF: ssi_general_audit.checklist_option_set_2"
+
+      - step: "Create matching item categ (same category)"
+        action: "create"
+        model: "general_audit_ws_842f0d6.item_categ"
+        save_as: "item_categ_match"
+        values:
+          name: "High cash turnover"
+          code: "842F0D6-ALLOW-CATEG-01"
+          categ: "business"
+
+      - step: "Create non-matching item categ (different category)"
+        action: "create"
+        model: "general_audit_ws_842f0d6.item_categ"
+        save_as: "item_categ_no_match"
+        values:
+          name: "Sanctioned country"
+          code: "842F0D6-ALLOW-CATEG-02"
+          categ: "country"
+
+      - step: "Create checklist row referencing the business item"
+        action: "create"
+        model: "general_audit_ws_842f0d6.checklist"
+        save_as: "checklist_row"
+        values:
+          worksheet_id: "REC: worksheet.id"
+          item_id: "REC: item.id"
+
+      - step: "Assert allowed_item_ids contains the matching category item"
+        action: "assert"
+        target: "checklist_row"
+        asserts:
+          allowed_item_ids:
+            type: "m2m"
+            check: "contains"
+            expected_records:
+              - "REC: item_categ_match"
+
+  - name:
+      "Checklist 842f0d6 - Compute allowed_item_ids kosong (excludes other category)"
+    steps:
+      - step: "Create worksheet 842f0d6"
+        action: "create"
+        model: "general_audit_ws_842f0d6"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+
+      - step: "Create item master with category product"
+        action: "create"
+        model: "general_audit_ws_842f0d6.item"
+        save_as: "item"
+        values:
+          name: "High-risk product"
+          code: "842F0D6-ALLOW-02"
+          categ: "product"
+          option_set_id: "REF: ssi_general_audit.checklist_option_set_2"
+
+      - step: "Create an item categ of a different category"
+        action: "create"
+        model: "general_audit_ws_842f0d6.item_categ"
+        save_as: "item_categ_other"
+        values:
+          name: "Sanctioned country"
+          code: "842F0D6-ALLOW-CATEG-03"
+          categ: "country"
+
+      - step: "Create checklist row referencing the product item"
+        action: "create"
+        model: "general_audit_ws_842f0d6.checklist"
+        save_as: "checklist_row"
+        values:
+          worksheet_id: "REC: worksheet.id"
+          item_id: "REC: item.id"
+
+      - step: "Assert the differently-categorised item categ did not leak in"
+        action: "search"
+        model: "general_audit_ws_842f0d6.item_categ"
+        domain:
+          - ["id", "=", "REC: item_categ_other.id"]
+          - ["id", "in", "REC: checklist_row.allowed_item_ids.ids"]
+        save_as: "leak_check"
+        expect_count: 0
+
+  # ------------------------------------------------------------------
+  # general_audit_ws_842f0d6.checklist - onchange_item_ids (none_below)
+  # ------------------------------------------------------------------
+  - name: "Checklist 842f0d6 - Onchange none_below clears item_ids"
+    steps:
+      - step: "Create worksheet 842f0d6"
+        action: "create"
+        model: "general_audit_ws_842f0d6"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+
+      - step: "Create item master with category profile"
+        action: "create"
+        model: "general_audit_ws_842f0d6.item"
+        save_as: "item"
+        values:
+          name: "Complex ownership structure"
+          code: "842F0D6-NONEBELOW-01"
+          categ: "profile"
+          option_set_id: "REF: ssi_general_audit.checklist_option_set_2"
+
+      - step: "Create matching item categ"
+        action: "create"
+        model: "general_audit_ws_842f0d6.item_categ"
+        save_as: "item_categ_match"
+        values:
+          name: "Nominee shareholder"
+          code: "842F0D6-NONEBELOW-CATEG-01"
+          categ: "profile"
+
+      - step: "Create checklist row with item_ids pre-filled"
+        action: "create"
+        model: "general_audit_ws_842f0d6.checklist"
+        save_as: "checklist_row"
+        values:
+          worksheet_id: "REC: worksheet.id"
+          item_id: "REC: item.id"
+          item_ids:
+            - - 6
+              - 0
+              - - "REC: item_categ_match.id"
+          none_below: false
+
+      - step: "Assert item_ids pre-filled before onchange"
+        action: "assert"
+        target: "checklist_row"
+        asserts:
+          item_ids:
+            type: "m2m"
+            check: "count"
+            expected_count: 1
+
+      - step: "Toggle none_below via Form to trigger onchange_item_ids"
+        action: "form"
+        target: "checklist_row"
+        save_as: "checklist_row"
+        values:
+          none_below: true
+        save: true
+
+      - step: "Assert item_ids cleared by onchange"
+        action: "assert"
+        target: "checklist_row"
+        asserts:
+          none_below:
+            type: "value"
+            expected: true
+          item_ids:
+            type: "m2m"
+            check: "count"
+            expected_count: 0
+
+  # ------------------------------------------------------------------
+  # general_audit_ws_842f0d6 - Populate checklist (+idempotency)
+  # ------------------------------------------------------------------
+  - name: "Worksheet 842f0d6 - Populate checklist and idempotency"
+    steps:
+      - step: "Create worksheet 842f0d6"
+        action: "create"
+        model: "general_audit_ws_842f0d6"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+
+      - step: "Create item master for populate"
+        action: "create"
+        model: "general_audit_ws_842f0d6.item"
+        save_as: "item_pop"
+        values:
+          name: "Populate Check 842f0d6"
+          code: "POP-842F0D6-01"
+          categ: "profile"
+          option_set_id: "REF: ssi_general_audit.checklist_option_set_2"
+
+      - step: "Assert no checklist row before populate"
+        action: "search"
+        model: "general_audit_ws_842f0d6.checklist"
+        domain:
+          - ["worksheet_id", "=", "REC: worksheet.id"]
+          - ["item_id", "=", "REC: item_pop.id"]
+        save_as: "checklist_before"
+        expect_count: 0
+
+      - step: "Populate checklist"
+        action: "call"
+        target: "worksheet"
+        method: "action_populate_checklist"
+
+      - step: "Assert checklist row created"
+        action: "search"
+        model: "general_audit_ws_842f0d6.checklist"
+        domain:
+          - ["worksheet_id", "=", "REC: worksheet.id"]
+          - ["item_id", "=", "REC: item_pop.id"]
+        save_as: "checklist_after"
+        expect_count: 1
+
+      - step: "Populate checklist a second time"
+        action: "call"
+        target: "worksheet"
+        method: "action_populate_checklist"
+
+      - step: "Assert no duplicate checklist row"
+        action: "search"
+        model: "general_audit_ws_842f0d6.checklist"
+        domain:
+          - ["worksheet_id", "=", "REC: worksheet.id"]
+          - ["item_id", "=", "REC: item_pop.id"]
+        save_as: "checklist_idempotent"
+        expect_count: 1

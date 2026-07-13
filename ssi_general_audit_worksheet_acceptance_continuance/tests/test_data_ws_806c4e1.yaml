@@ -1,0 +1,950 @@
+setup:
+  steps:
+    - step: "Get config parameter model"
+      action: "search"
+      model: "ir.config_parameter"
+      domain: []
+      save_as: "config_parameter"
+      limit: 1
+
+    - step: "Allow enough CPA licenses for this scenario"
+      action: "call"
+      target: "config_parameter"
+      method: "set_param"
+      args:
+        - "ssi_general_audit.max_number_of_cpa_license"
+        - "100"
+
+    - step: "Create client partner"
+      action: "create"
+      model: "res.partner"
+      save_as: "client"
+      as_user: "base.user_admin"
+      values:
+        name: "Test Audit Client"
+        is_company: true
+
+    - step: "Create accountant partner"
+      action: "create"
+      model: "res.partner"
+      save_as: "accountant"
+      as_user: "base.user_admin"
+      values:
+        name: "Test Audit Accountant"
+
+    - step: "Get CPA license id category"
+      action: "ref"
+      xml_id: "ssi_partner_identification_cpa_license.partner_identification_accountant_cpa_license"
+      save_as: "cpa_category"
+
+    - step: "Grant accountant a CPA license"
+      action: "create"
+      model: "res.partner.id_number"
+      save_as: "cpa_license"
+      as_user: "base.user_admin"
+      values:
+        partner_id: "REC: accountant.id"
+        category_id: "REC: cpa_category.id"
+        name: "CPA-806C4E1-0001"
+
+    - step: "Create account type set"
+      action: "create"
+      model: "client_account_type_set"
+      save_as: "account_type_set"
+      as_user: "base.user_admin"
+      values:
+        name: "Test Account Type Set"
+        code: "/"
+
+    - step: "Create financial accounting standard"
+      action: "create"
+      model: "accountant.financial_accounting_standard"
+      save_as: "standard"
+      as_user: "base.user_admin"
+      values:
+        name: "Test Financial Accounting Standard"
+        code: "/"
+
+    - step: "Create general audit"
+      action: "create"
+      model: "general_audit"
+      save_as: "audit"
+      as_user: "base.user_admin"
+      values:
+        title: "Test General Audit - WS 806c4e1"
+        partner_id: "REC: client.id"
+        accountant_id: "REC: accountant.id"
+        account_type_set_id: "REC: account_type_set.id"
+        financial_accounting_standard_id: "REC: standard.id"
+        date_start: 2026-01-01
+        date_end: 2026-12-31
+        need_interim: false
+        need_previous: false
+        num_of_consecutive_audit_firm: 1
+        num_of_consecutive_audit_accountant: 1
+
+    - step: "Open general audit"
+      action: "call"
+      target: "audit"
+      method: "action_open"
+      as_user: "base.user_admin"
+
+    - step: "Invalidate cache after opening general audit"
+      action: "call"
+      target: "audit"
+      method: "invalidate_cache"
+
+    - step: "Get worksheet type 806c4e1"
+      action: "ref"
+      xml_id: "ssi_general_audit_worksheet_acceptance_continuance.worksheet_type_806c4e1"
+      save_as: "ws_type"
+
+    - step: "Get worksheet type 369c5a5"
+      action: "ref"
+      xml_id: "ssi_general_audit_worksheet_acceptance_continuance.worksheet_type_369c5a5"
+      save_as: "ws_type_369c5a5"
+
+    - step: "Get worksheet type f5e7049"
+      action: "ref"
+      xml_id: "ssi_general_audit_worksheet_acceptance_continuance.worksheet_type_f5e7049"
+      save_as: "ws_type_f5e7049"
+
+    - step: "Get worksheet type b9d8a5c"
+      action: "ref"
+      xml_id: "ssi_general_audit_worksheet_acceptance_continuance.worksheet_type_b9d8a5c"
+      save_as: "ws_type_b9d8a5c"
+
+    - step: "Get worksheet type 0427d28"
+      action: "ref"
+      xml_id: "ssi_general_audit_worksheet_acceptance_continuance.worksheet_type_0427d28"
+      save_as: "ws_type_0427d28"
+
+scenarios:
+  # ------------------------------------------------------------------
+  # general_audit_ws_806c4e1 - Create in draft
+  # ------------------------------------------------------------------
+  - name: "Worksheet 806c4e1 - Create in draft"
+    steps:
+      - step: "Create worksheet 806c4e1"
+        action: "create"
+        model: "general_audit_ws_806c4e1"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+
+      - step: "Assert worksheet created in draft"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          id:
+            type: "value"
+            operator: "is_truthy"
+          state:
+            type: "value"
+            expected: "draft"
+          general_audit_id:
+            type: "m2o"
+            expected: "REC: audit"
+
+  # ------------------------------------------------------------------
+  # public_offering - _compute_public_offering
+  # ------------------------------------------------------------------
+  - name: "Worksheet 806c4e1 - Compute public_offering (normal)"
+    steps:
+      - step: "Create a go-public offering type"
+        action: "create"
+        model: "company_public_offering_type"
+        save_as: "offering"
+        values:
+          name: "Go Public"
+          code: "/"
+          p2pk_go_public: true
+
+      - step: "Create general audit with public offering"
+        action: "create"
+        model: "general_audit"
+        save_as: "audit_pub"
+        as_user: "base.user_admin"
+        values:
+          title: "Test General Audit - 806c4e1 Public Offering"
+          partner_id: "REC: client.id"
+          accountant_id: "REC: accountant.id"
+          account_type_set_id: "REC: account_type_set.id"
+          financial_accounting_standard_id: "REC: standard.id"
+          date_start: 2026-01-01
+          date_end: 2026-12-31
+          need_interim: false
+          need_previous: false
+          num_of_consecutive_audit_firm: 1
+          num_of_consecutive_audit_accountant: 1
+          public_offering_ids:
+            - - 6
+              - 0
+              - - "REC: offering.id"
+
+      - step: "Open general audit"
+        action: "call"
+        target: "audit_pub"
+        method: "action_open"
+        as_user: "base.user_admin"
+
+      - step: "Create worksheet 806c4e1 on the public-offering audit"
+        action: "create"
+        model: "general_audit_ws_806c4e1"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit_pub.id"
+          type_id: "REC: ws_type.id"
+
+      - step: "Assert public_offering is Public Offering"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          public_offering:
+            type: "value"
+            expected: "Public Offering"
+
+  - name: "Worksheet 806c4e1 - Compute public_offering kosong (no offering)"
+    steps:
+      - step: "Create worksheet 806c4e1 on the default audit without offering"
+        action: "create"
+        model: "general_audit_ws_806c4e1"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+
+      - step: "Assert public_offering is No Public Offering"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          public_offering:
+            type: "value"
+            expected: "No Public Offering"
+
+  # ------------------------------------------------------------------
+  # engagemet - _compute_engagemet
+  # ------------------------------------------------------------------
+  - name: "Worksheet 806c4e1 - Compute engagemet recurring (normal)"
+    steps:
+      - step: "Create general audit with 3 consecutive years"
+        action: "create"
+        model: "general_audit"
+        save_as: "audit_recurring"
+        as_user: "base.user_admin"
+        values:
+          title: "Test General Audit - 806c4e1 Recurring"
+          partner_id: "REC: client.id"
+          accountant_id: "REC: accountant.id"
+          account_type_set_id: "REC: account_type_set.id"
+          financial_accounting_standard_id: "REC: standard.id"
+          date_start: 2026-01-01
+          date_end: 2026-12-31
+          need_interim: false
+          need_previous: false
+          num_of_consecutive_audit_firm: 3
+          num_of_consecutive_audit_accountant: 3
+
+      - step: "Open general audit"
+        action: "call"
+        target: "audit_recurring"
+        method: "action_open"
+        as_user: "base.user_admin"
+
+      - step: "Create worksheet 806c4e1 on the recurring audit"
+        action: "create"
+        model: "general_audit_ws_806c4e1"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit_recurring.id"
+          type_id: "REC: ws_type.id"
+
+      - step: "Assert engagemet is Recurring Engagement"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          engagemet:
+            type: "value"
+            expected: "Recurring Engagement"
+
+  - name: "Worksheet 806c4e1 - Compute engagemet initial (kosong/nol)"
+    steps:
+      - step: "Create general audit with 0 consecutive years"
+        action: "create"
+        model: "general_audit"
+        save_as: "audit_initial"
+        as_user: "base.user_admin"
+        values:
+          title: "Test General Audit - 806c4e1 Initial"
+          partner_id: "REC: client.id"
+          accountant_id: "REC: accountant.id"
+          account_type_set_id: "REC: account_type_set.id"
+          financial_accounting_standard_id: "REC: standard.id"
+          date_start: 2026-01-01
+          date_end: 2026-12-31
+          need_interim: false
+          need_previous: false
+          num_of_consecutive_audit_firm: 0
+          num_of_consecutive_audit_accountant: 0
+
+      - step: "Open general audit"
+        action: "call"
+        target: "audit_initial"
+        method: "action_open"
+        as_user: "base.user_admin"
+
+      - step: "Create worksheet 806c4e1 on the initial audit"
+        action: "create"
+        model: "general_audit_ws_806c4e1"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit_initial.id"
+          type_id: "REC: ws_type.id"
+
+      - step: "Assert engagemet is Initial Engagement"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          engagemet:
+            type: "value"
+            expected: "Initial Engagement"
+
+  # ------------------------------------------------------------------
+  # link_1..link_4 + link_*_risk - normal
+  # ------------------------------------------------------------------
+  - name: "Worksheet 806c4e1 - Compute link_1..link_4 (normal)"
+    steps:
+      - step: "Create sibling worksheet 369c5a5 with risk low"
+        action: "create"
+        model: "general_audit_ws_369c5a5"
+        save_as: "ws_369c5a5"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_369c5a5.id"
+          risk: "low"
+
+      - step: "Create sibling worksheet f5e7049 with risk medium"
+        action: "create"
+        model: "general_audit_ws_f5e7049"
+        save_as: "ws_f5e7049"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_f5e7049.id"
+          risk: "medium"
+
+      - step: "Create sibling worksheet b9d8a5c with risk high"
+        action: "create"
+        model: "general_audit_ws_b9d8a5c"
+        save_as: "ws_b9d8a5c"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_b9d8a5c.id"
+          risk: "high"
+
+      - step: "Create sibling worksheet 0427d28 with risk low"
+        action: "create"
+        model: "general_audit_ws_0427d28"
+        save_as: "ws_0427d28"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_0427d28.id"
+          risk: "low"
+
+      - step: "Create worksheet 806c4e1 (links computed at create time)"
+        action: "create"
+        model: "general_audit_ws_806c4e1"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+
+      - step: "Assert all four links and their risks"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          link_1:
+            type: "m2o"
+            expected: "REC: ws_369c5a5"
+          link_1_risk:
+            type: "value"
+            expected: "low"
+          link_2:
+            type: "m2o"
+            expected: "REC: ws_f5e7049"
+          link_2_risk:
+            type: "value"
+            expected: "medium"
+          link_3:
+            type: "m2o"
+            expected: "REC: ws_b9d8a5c"
+          link_3_risk:
+            type: "value"
+            expected: "high"
+          link_4:
+            type: "m2o"
+            expected: "REC: ws_0427d28"
+          link_4_risk:
+            type: "value"
+            expected: "low"
+
+  - name: "Worksheet 806c4e1 - Compute link_1..link_4 kosong (no siblings)"
+    steps:
+      - step: "Create worksheet 806c4e1 without any sibling"
+        action: "create"
+        model: "general_audit_ws_806c4e1"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+
+      - step: "Assert all four links and their risks are empty"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          link_1:
+            type: "value"
+            operator: "is_falsy"
+          link_1_risk:
+            type: "value"
+            operator: "is_falsy"
+          link_2:
+            type: "value"
+            operator: "is_falsy"
+          link_2_risk:
+            type: "value"
+            operator: "is_falsy"
+          link_3:
+            type: "value"
+            operator: "is_falsy"
+          link_3_risk:
+            type: "value"
+            operator: "is_falsy"
+          link_4:
+            type: "value"
+            operator: "is_falsy"
+          link_4_risk:
+            type: "value"
+            operator: "is_falsy"
+
+  # ------------------------------------------------------------------
+  # action_reload_links
+  # ------------------------------------------------------------------
+  - name: "Worksheet 806c4e1 - action_reload_links refreshes all links"
+    steps:
+      - step: "Create worksheet 806c4e1 without siblings yet"
+        action: "create"
+        model: "general_audit_ws_806c4e1"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+
+      - step: "Assert link_1 empty before siblings exist"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          link_1:
+            type: "value"
+            operator: "is_falsy"
+
+      - step: "Now create all four sibling worksheets"
+        action: "create"
+        model: "general_audit_ws_369c5a5"
+        save_as: "ws_369c5a5"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_369c5a5.id"
+
+      - step: "Create sibling worksheet f5e7049"
+        action: "create"
+        model: "general_audit_ws_f5e7049"
+        save_as: "ws_f5e7049"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_f5e7049.id"
+
+      - step: "Create sibling worksheet b9d8a5c"
+        action: "create"
+        model: "general_audit_ws_b9d8a5c"
+        save_as: "ws_b9d8a5c"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_b9d8a5c.id"
+
+      - step: "Create sibling worksheet 0427d28"
+        action: "create"
+        model: "general_audit_ws_0427d28"
+        save_as: "ws_0427d28"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_0427d28.id"
+
+      - step: "Reload links"
+        action: "call"
+        target: "worksheet"
+        method: "action_reload_links"
+
+      - step: "Assert all four links now resolved"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          link_1:
+            type: "m2o"
+            expected: "REC: ws_369c5a5"
+          link_2:
+            type: "m2o"
+            expected: "REC: ws_f5e7049"
+          link_3:
+            type: "m2o"
+            expected: "REC: ws_b9d8a5c"
+          link_4:
+            type: "m2o"
+            expected: "REC: ws_0427d28"
+
+  # ------------------------------------------------------------------
+  # risk / client_relationship / establishment_state / financial_statement
+  # ------------------------------------------------------------------
+  - name: "Worksheet 806c4e1 - Write selection fields"
+    steps:
+      - step: "Create worksheet 806c4e1"
+        action: "create"
+        model: "general_audit_ws_806c4e1"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+
+      - step: "Open worksheet so selection fields become editable"
+        action: "call"
+        target: "worksheet"
+        method: "action_open"
+        as_user: "base.user_admin"
+
+      - step: "Write selection fields"
+        action: "write"
+        target: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          risk: "medium"
+          client_relationship: "yes"
+          establishment_state: "previous"
+          financial_statement: "available_audit"
+
+      - step: "Assert selection fields saved"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          risk:
+            type: "value"
+            expected: "medium"
+          client_relationship:
+            type: "value"
+            expected: "yes"
+          establishment_state:
+            type: "value"
+            expected: "previous"
+          financial_statement:
+            type: "value"
+            expected: "available_audit"
+
+  # ------------------------------------------------------------------
+  # general_audit_ws_806c4e1 - Workflow open to done (needs link_1..link_3)
+  # ------------------------------------------------------------------
+  - name: "Worksheet 806c4e1 - Workflow open to done"
+    steps:
+      - step: "Create sibling worksheet 369c5a5"
+        action: "create"
+        model: "general_audit_ws_369c5a5"
+        save_as: "ws_369c5a5"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_369c5a5.id"
+
+      - step: "Create sibling worksheet f5e7049"
+        action: "create"
+        model: "general_audit_ws_f5e7049"
+        save_as: "ws_f5e7049"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_f5e7049.id"
+
+      - step: "Create sibling worksheet b9d8a5c"
+        action: "create"
+        model: "general_audit_ws_b9d8a5c"
+        save_as: "ws_b9d8a5c"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_b9d8a5c.id"
+
+      - step: "Create worksheet 806c4e1 (link_1..link_3 resolved at create time)"
+        action: "create"
+        model: "general_audit_ws_806c4e1"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+
+      - step: "Open worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_open"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after opening worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Assert worksheet open"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          state:
+            type: "value"
+            expected: "open"
+
+      - step: "Create conclusion for this worksheet type"
+        action: "create"
+        model: "general_audit_worksheet_conclusion"
+        save_as: "conclusion"
+        as_user: "base.user_admin"
+        values:
+          name: "Client relationship may continue"
+          code: "/"
+          type_id: "REC: ws_type.id"
+
+      - step: "Fill required conclusion fields before confirm"
+        action: "write"
+        target: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          conclusion_id: "REC: conclusion.id"
+          conclusion:
+            "Acceptance and continuance analysis completed, no exception noted."
+          risk: "low"
+          client_relationship: "yes"
+
+      - step: "Confirm worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_confirm"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after confirming worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Assert worksheet confirmed"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          state:
+            type: "value"
+            expected: "confirm"
+
+      - step: "Approve worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_approve_approval"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after approving worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Assert worksheet done"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          state:
+            type: "value"
+            expected: "done"
+
+  # ------------------------------------------------------------------
+  # general_audit_ws_806c4e1 - Cancel and restart
+  # ------------------------------------------------------------------
+  - name: "Worksheet 806c4e1 - Cancel and restart"
+    steps:
+      - step: "Create worksheet 806c4e1"
+        action: "create"
+        model: "general_audit_ws_806c4e1"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+
+      - step: "Open worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_open"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after opening worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Cancel worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_cancel"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after cancelling worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Assert worksheet cancelled"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          state:
+            type: "value"
+            expected: "cancel"
+
+      - step: "Restart worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_restart"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after restarting worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Assert worksheet back to draft"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          state:
+            type: "value"
+            expected: "draft"
+
+  # ------------------------------------------------------------------
+  # general_audit_ws_806c4e1.item - Master CRUD
+  # ------------------------------------------------------------------
+  - name: "Item 806c4e1 master - Create"
+    steps:
+      - step: "Create item master"
+        action: "create"
+        model: "general_audit_ws_806c4e1.item"
+        save_as: "item"
+        values:
+          name: "No unusual fee arrangements"
+          code: "806C4E1-01"
+          sequence: 10
+          option_set_id: "REF: ssi_general_audit.checklist_option_set_2"
+      - step: "Assert item created"
+        action: "assert"
+        target: "item"
+        asserts:
+          id:
+            type: "value"
+            operator: "is_truthy"
+          code:
+            type: "value"
+            expected: "806C4E1-01"
+
+  - name: "Item 806c4e1 master - Default code is /"
+    steps:
+      - step: "Create item master without code"
+        action: "create"
+        model: "general_audit_ws_806c4e1.item"
+        save_as: "item"
+        values:
+          name: "No code item"
+          option_set_id: "REF: ssi_general_audit.checklist_option_set_2"
+      - step: "Assert code defaults to /"
+        action: "assert"
+        target: "item"
+        asserts:
+          code:
+            type: "value"
+            expected: "/"
+
+  - name: "Item 806c4e1 master - Edit"
+    steps:
+      - step: "Create item master"
+        action: "create"
+        model: "general_audit_ws_806c4e1.item"
+        save_as: "item"
+        values:
+          name: "No unusual fee arrangements"
+          code: "806C4E1-02"
+          option_set_id: "REF: ssi_general_audit.checklist_option_set_2"
+      - step: "Write new name"
+        action: "write"
+        target: "item"
+        values:
+          name: "No unusual fee arrangements (rev)"
+      - step: "Assert name updated"
+        action: "assert"
+        target: "item"
+        asserts:
+          name:
+            type: "value"
+            expected: "No unusual fee arrangements (rev)"
+
+  - name: "Item 806c4e1 master - Delete"
+    steps:
+      - step: "Create item master"
+        action: "create"
+        model: "general_audit_ws_806c4e1.item"
+        save_as: "item"
+        values:
+          name: "To be deleted"
+          code: "806C4E1-03"
+          option_set_id: "REF: ssi_general_audit.checklist_option_set_2"
+      - step: "Delete item master"
+        action: "unlink"
+        target: "item"
+      - step: "Verify item deleted"
+        action: "search"
+        model: "general_audit_ws_806c4e1.item"
+        domain: [["code", "=", "806C4E1-03"]]
+        save_as: "result"
+        expect_count: 0
+
+  # ------------------------------------------------------------------
+  # general_audit_ws_806c4e1 - Populate checklist (+idempotency)
+  # ------------------------------------------------------------------
+  - name: "Worksheet 806c4e1 - Populate checklist and idempotency"
+    steps:
+      - step: "Create worksheet 806c4e1"
+        action: "create"
+        model: "general_audit_ws_806c4e1"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+
+      - step: "Create item master for populate"
+        action: "create"
+        model: "general_audit_ws_806c4e1.item"
+        save_as: "item_pop"
+        values:
+          name: "Populate Check 806c4e1"
+          code: "POP-806C4E1-01"
+          option_set_id: "REF: ssi_general_audit.checklist_option_set_2"
+
+      - step: "Assert no checklist row before populate"
+        action: "search"
+        model: "general_audit_ws_806c4e1.checklist"
+        domain:
+          - ["worksheet_id", "=", "REC: worksheet.id"]
+          - ["item_id", "=", "REC: item_pop.id"]
+        save_as: "checklist_before"
+        expect_count: 0
+
+      - step: "Populate checklist"
+        action: "call"
+        target: "worksheet"
+        method: "action_populate_checklist"
+
+      - step: "Assert checklist row created"
+        action: "search"
+        model: "general_audit_ws_806c4e1.checklist"
+        domain:
+          - ["worksheet_id", "=", "REC: worksheet.id"]
+          - ["item_id", "=", "REC: item_pop.id"]
+        save_as: "checklist_after"
+        expect_count: 1
+
+      - step: "Populate checklist a second time"
+        action: "call"
+        target: "worksheet"
+        method: "action_populate_checklist"
+
+      - step: "Assert no duplicate checklist row"
+        action: "search"
+        model: "general_audit_ws_806c4e1.checklist"
+        domain:
+          - ["worksheet_id", "=", "REC: worksheet.id"]
+          - ["item_id", "=", "REC: item_pop.id"]
+        save_as: "checklist_idempotent"
+        expect_count: 1
+
+  # ------------------------------------------------------------------
+  # general_audit_ws_806c4e1.checklist - write + cascade delete
+  # ------------------------------------------------------------------
+  - name: "Worksheet 806c4e1 - Checklist write and cascade delete"
+    steps:
+      - step: "Create worksheet 806c4e1"
+        action: "create"
+        model: "general_audit_ws_806c4e1"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+
+      - step: "Create item master"
+        action: "create"
+        model: "general_audit_ws_806c4e1.item"
+        save_as: "item_cascade"
+        values:
+          name: "Cascade Check 806c4e1"
+          code: "CASCADE-806C4E1-01"
+          option_set_id: "REF: ssi_general_audit.checklist_option_set_2"
+
+      - step: "Create checklist row"
+        action: "create"
+        model: "general_audit_ws_806c4e1.checklist"
+        save_as: "checklist_row"
+        values:
+          worksheet_id: "REC: worksheet.id"
+          item_id: "REC: item_cascade.id"
+
+      - step: "Write checklist_ok on the checklist row"
+        action: "write"
+        target: "checklist_row"
+        values:
+          checklist_ok: false
+
+      - step: "Assert checklist_ok value saved"
+        action: "assert"
+        target: "checklist_row"
+        asserts:
+          checklist_ok:
+            type: "value"
+            expected: false
+
+      - step: "Delete the worksheet (still draft)"
+        action: "unlink"
+        target: "worksheet"
+
+      - step: "Assert checklist row cascaded away"
+        action: "search"
+        model: "general_audit_ws_806c4e1.checklist"
+        domain:
+          - ["worksheet_id", "=", "REC: worksheet.id"]
+        save_as: "checklist_after_delete"
+        expect_count: 0
