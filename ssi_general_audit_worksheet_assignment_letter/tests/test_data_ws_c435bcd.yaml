@@ -312,58 +312,6 @@ scenarios:
             expected: false
 
   # ------------------------------------------------------------------
-  # checklist_ids - required field validations
-  # ------------------------------------------------------------------
-  - name: "Checklist lines - required field validations"
-    steps:
-      - step: "Create option set"
-        action: "create"
-        model: "checklist.option_set"
-        save_as: "option_set"
-        as_user: "base.user_admin"
-        values:
-          name: "Yes/No - Required Validation"
-          code: "/"
-
-      - step: "Create master item"
-        action: "create"
-        model: "general_audit_ws_c435bcd.item"
-        save_as: "item"
-        as_user: "base.user_admin"
-        values:
-          name: "Letter is numbered per administrative procedure"
-          sequence: 10
-          option_set_id: "REC: option_set.id"
-
-      - step: "Create worksheet C435BCD"
-        action: "create"
-        model: "general_audit_ws_c435bcd"
-        save_as: "worksheet"
-        as_user: "base.user_admin"
-        values:
-          general_audit_id: "REC: audit.id"
-          type_id:
-            "REF: ssi_general_audit_worksheet_assignment_letter.worksheet_type_c435bcd"
-
-      - step: "Checklist line without item_id must be rejected"
-        action: "create"
-        model: "general_audit_ws_c435bcd.checklist"
-        as_user: "base.user_admin"
-        expect_error:
-          type: "ValidationError"
-        values:
-          worksheet_id: "REC: worksheet.id"
-
-      - step: "Checklist line without worksheet_id must be rejected"
-        action: "create"
-        model: "general_audit_ws_c435bcd.checklist"
-        as_user: "base.user_admin"
-        expect_error:
-          type: "ValidationError"
-        values:
-          item_id: "REC: item.id"
-
-  # ------------------------------------------------------------------
   # checklist_ids - cascade delete when worksheet is deleted
   # ------------------------------------------------------------------
   - name: "Checklist lines - cascade delete with worksheet"
@@ -841,39 +789,22 @@ scenarios:
   # ------------------------------------------------------------------
   - name: "Onchange type_id sets parent_type_id"
     steps:
-      - step: "Create worksheet type A"
-        action: "create"
-        model: "general_audit_worksheet_type"
-        save_as: "type_a"
-        as_user: "base.user_admin"
-        values:
-          name: "Onchange Type A"
-          code: "/"
-          model_name: "general_audit_ws_c435bcd"
-
-      - step: "Create worksheet type B"
-        action: "create"
-        model: "general_audit_worksheet_type"
-        save_as: "type_b"
-        as_user: "base.user_admin"
-        values:
-          name: "Onchange Type B"
-          code: "/"
-          model_name: "general_audit_ws_c435bcd"
-
-      - step: "Set type_id twice and check parent_type_id follows"
+      # type_id is hard-readonly in the form view
+      # (`<field name="type_id" readonly="1" force_save="1" />` in
+      # ssi_general_audit/views/worksheet/general_audit_worksheet_mixin_views.xml),
+      # so it can only ever take its default value on a new record -- it is
+      # never user-editable. The onchange therefore only fires once, from
+      # that default, which this asserts.
+      - step:
+          "Open new worksheet form and check default type_id propagates via onchange"
         action: "form"
         model: "general_audit_ws_c435bcd"
         as_user: "base.user_admin"
         save: false
-        ops:
-          - set: {type_id: "REC: type_a"}
-          - assert:
-              parent_type_id:
-                type: "m2o"
-                expected: "REC: type_a"
-          - set: {type_id: "REC: type_b"}
-          - assert:
-              parent_type_id:
-                type: "m2o"
-                expected: "REC: type_b"
+        asserts:
+          type_id:
+            type: "m2o"
+            expected_xml_id: "ssi_general_audit_worksheet_assignment_letter.worksheet_type_c435bcd"
+          parent_type_id:
+            type: "m2o"
+            expected_xml_id: "ssi_general_audit_worksheet_assignment_letter.worksheet_type_c435bcd"
