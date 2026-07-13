@@ -1,0 +1,879 @@
+setup:
+  steps:
+    - step: "Get config parameter model"
+      action: "search"
+      model: "ir.config_parameter"
+      domain: []
+      save_as: "config_parameter"
+      limit: 1
+
+    - step: "Allow enough CPA licenses for this scenario"
+      action: "call"
+      target: "config_parameter"
+      method: "set_param"
+      args:
+        - "ssi_general_audit.max_number_of_cpa_license"
+        - "100"
+
+    - step: "Create client partner"
+      action: "create"
+      model: "res.partner"
+      save_as: "client"
+      as_user: "base.user_admin"
+      values:
+        name: "Test Audit Client - C435BCD"
+        is_company: true
+
+    - step: "Create accountant partner"
+      action: "create"
+      model: "res.partner"
+      save_as: "accountant"
+      as_user: "base.user_admin"
+      values:
+        name: "Test Audit Accountant - C435BCD"
+
+    - step: "Get CPA license id category"
+      action: "ref"
+      xml_id: "ssi_partner_identification_cpa_license.partner_identification_accountant_cpa_license"
+      save_as: "cpa_category"
+
+    - step: "Grant accountant a CPA license"
+      action: "create"
+      model: "res.partner.id_number"
+      save_as: "cpa_license"
+      as_user: "base.user_admin"
+      values:
+        partner_id: "REC: accountant.id"
+        category_id: "REC: cpa_category.id"
+        name: "CPA-C435BCD-0001"
+
+    - step: "Create account type set"
+      action: "create"
+      model: "client_account_type_set"
+      save_as: "account_type_set"
+      as_user: "base.user_admin"
+      values:
+        name: "Test Account Type Set - C435BCD"
+        code: "/"
+
+    - step: "Create financial accounting standard"
+      action: "create"
+      model: "accountant.financial_accounting_standard"
+      save_as: "standard"
+      as_user: "base.user_admin"
+      values:
+        name: "Test Financial Accounting Standard - C435BCD"
+        code: "/"
+
+    - step: "Create general audit"
+      action: "create"
+      model: "general_audit"
+      save_as: "audit"
+      as_user: "base.user_admin"
+      values:
+        title: "Test General Audit - C435BCD"
+        partner_id: "REC: client.id"
+        accountant_id: "REC: accountant.id"
+        account_type_set_id: "REC: account_type_set.id"
+        financial_accounting_standard_id: "REC: standard.id"
+        date_start: 2026-01-01
+        date_end: 2026-12-31
+        need_interim: false
+        need_previous: false
+        num_of_consecutive_audit_firm: 1
+        num_of_consecutive_audit_accountant: 1
+
+    - step: "Open general audit"
+      action: "call"
+      target: "audit"
+      method: "action_open"
+      as_user: "base.user_admin"
+
+    - step: "Invalidate cache after opening general audit"
+      action: "call"
+      target: "audit"
+      method: "invalidate_cache"
+
+    - step: "Assert general audit open"
+      action: "assert"
+      target: "audit"
+      asserts:
+        state:
+          type: "value"
+          expected: "open"
+
+scenarios:
+  # ------------------------------------------------------------------
+  # general_audit_ws_c435bcd.item - master CRUD
+  # ------------------------------------------------------------------
+  - name: "Master item - create, edit and delete"
+    steps:
+      - step: "Create option set"
+        action: "create"
+        model: "checklist.option_set"
+        save_as: "option_set"
+        as_user: "base.user_admin"
+        values:
+          name: "Yes/No - Master CRUD"
+          code: "/"
+
+      - step: "Create master item"
+        action: "create"
+        model: "general_audit_ws_c435bcd.item"
+        save_as: "item"
+        as_user: "base.user_admin"
+        values:
+          name: "Client name is presented correctly"
+          sequence: 10
+          option_set_id: "REC: option_set.id"
+
+      - step: "Assert master item created"
+        action: "assert"
+        target: "item"
+        asserts:
+          id:
+            type: "value"
+            operator: "is_truthy"
+          name:
+            type: "value"
+            expected: "Client name is presented correctly"
+          code:
+            type: "value"
+            expected: "/"
+          sequence:
+            type: "value"
+            expected: 10
+
+      - step: "Edit master item name"
+        action: "write"
+        target: "item"
+        values:
+          name: "Letter is dated per agreement date"
+
+      - step: "Assert master item name updated"
+        action: "assert"
+        target: "item"
+        asserts:
+          name:
+            type: "value"
+            expected: "Letter is dated per agreement date"
+
+      - step: "Delete master item"
+        action: "unlink"
+        target: "item"
+
+      - step: "Verify master item deleted"
+        action: "search"
+        model: "general_audit_ws_c435bcd.item"
+        domain: [["name", "=", "Letter is dated per agreement date"]]
+        save_as: "deleted_item_result"
+        expect_count: 0
+
+  # ------------------------------------------------------------------
+  # general_audit_ws_c435bcd - create in draft
+  # ------------------------------------------------------------------
+  - name: "Worksheet C435BCD - create in draft"
+    steps:
+      - step: "Create worksheet C435BCD"
+        action: "create"
+        model: "general_audit_ws_c435bcd"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id:
+            "REF: ssi_general_audit_worksheet_assignment_letter.worksheet_type_c435bcd"
+
+      - step: "Assert worksheet created in draft"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          id:
+            type: "value"
+            operator: "is_truthy"
+          state:
+            type: "value"
+            expected: "draft"
+          general_audit_id:
+            type: "m2o"
+            expected: "REC: audit"
+
+  # ------------------------------------------------------------------
+  # checklist_ids - create and edit
+  # ------------------------------------------------------------------
+  - name: "Checklist lines - create and edit"
+    steps:
+      - step: "Create option set"
+        action: "create"
+        model: "checklist.option_set"
+        save_as: "option_set"
+        as_user: "base.user_admin"
+        values:
+          name: "Yes/No - Checklist Lines"
+          code: "/"
+
+      - step: "Create option Yes"
+        action: "create"
+        model: "checklist.option"
+        save_as: "option_yes"
+        as_user: "base.user_admin"
+        values:
+          name: "Yes"
+          code: "/"
+
+      - step: "Create option No"
+        action: "create"
+        model: "checklist.option"
+        save_as: "option_no"
+        as_user: "base.user_admin"
+        values:
+          name: "No"
+          code: "/"
+
+      - step: "Attach options to option set"
+        action: "write"
+        target: "option_set"
+        values:
+          option_ids: [[6, 0, ["REC: option_yes.id", "REC: option_no.id"]]]
+
+      - step: "Create master item"
+        action: "create"
+        model: "general_audit_ws_c435bcd.item"
+        save_as: "item"
+        as_user: "base.user_admin"
+        values:
+          name: "Engagement period matches planned schedule"
+          sequence: 10
+          option_set_id: "REC: option_set.id"
+
+      - step: "Create worksheet C435BCD"
+        action: "create"
+        model: "general_audit_ws_c435bcd"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id:
+            "REF: ssi_general_audit_worksheet_assignment_letter.worksheet_type_c435bcd"
+
+      - step: "Create checklist line"
+        action: "create"
+        model: "general_audit_ws_c435bcd.checklist"
+        save_as: "checklist_line"
+        as_user: "base.user_admin"
+        values:
+          worksheet_id: "REC: worksheet.id"
+          item_id: "REC: item.id"
+          option_id: "REC: option_yes.id"
+
+      - step: "Assert checklist line created"
+        action: "assert"
+        target: "checklist_line"
+        asserts:
+          id:
+            type: "value"
+            operator: "is_truthy"
+          item_name:
+            type: "value"
+            expected: "Engagement period matches planned schedule"
+          option_id:
+            type: "m2o"
+            expected: "REC: option_yes"
+          checklist_ok:
+            type: "value"
+            expected: true
+
+      - step: "Assert checklist line appears on worksheet"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          checklist_ids:
+            type: "o2m"
+            check: "contains"
+            expected_records:
+              - "REC: checklist_line"
+
+      - step: "Edit checklist line option and result"
+        action: "write"
+        target: "checklist_line"
+        values:
+          option_id: "REC: option_no.id"
+          checklist_ok: false
+
+      - step: "Assert checklist line updated"
+        action: "assert"
+        target: "checklist_line"
+        asserts:
+          option_id:
+            type: "m2o"
+            expected: "REC: option_no"
+          checklist_ok:
+            type: "value"
+            expected: false
+
+  # ------------------------------------------------------------------
+  # checklist_ids - required field validations
+  # ------------------------------------------------------------------
+  - name: "Checklist lines - required field validations"
+    steps:
+      - step: "Create option set"
+        action: "create"
+        model: "checklist.option_set"
+        save_as: "option_set"
+        as_user: "base.user_admin"
+        values:
+          name: "Yes/No - Required Validation"
+          code: "/"
+
+      - step: "Create master item"
+        action: "create"
+        model: "general_audit_ws_c435bcd.item"
+        save_as: "item"
+        as_user: "base.user_admin"
+        values:
+          name: "Letter is numbered per administrative procedure"
+          sequence: 10
+          option_set_id: "REC: option_set.id"
+
+      - step: "Create worksheet C435BCD"
+        action: "create"
+        model: "general_audit_ws_c435bcd"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id:
+            "REF: ssi_general_audit_worksheet_assignment_letter.worksheet_type_c435bcd"
+
+      - step: "Checklist line without item_id must be rejected"
+        action: "create"
+        model: "general_audit_ws_c435bcd.checklist"
+        as_user: "base.user_admin"
+        expect_error:
+          type: "ValidationError"
+        values:
+          worksheet_id: "REC: worksheet.id"
+
+      - step: "Checklist line without worksheet_id must be rejected"
+        action: "create"
+        model: "general_audit_ws_c435bcd.checklist"
+        as_user: "base.user_admin"
+        expect_error:
+          type: "ValidationError"
+        values:
+          item_id: "REC: item.id"
+
+  # ------------------------------------------------------------------
+  # checklist_ids - cascade delete when worksheet is deleted
+  # ------------------------------------------------------------------
+  - name: "Checklist lines - cascade delete with worksheet"
+    steps:
+      - step: "Create option set"
+        action: "create"
+        model: "checklist.option_set"
+        save_as: "option_set"
+        as_user: "base.user_admin"
+        values:
+          name: "Yes/No - Cascade Delete"
+          code: "/"
+
+      - step: "Create option Yes"
+        action: "create"
+        model: "checklist.option"
+        save_as: "option_yes"
+        as_user: "base.user_admin"
+        values:
+          name: "Yes"
+          code: "/"
+
+      - step: "Create master item"
+        action: "create"
+        model: "general_audit_ws_c435bcd.item"
+        save_as: "item"
+        as_user: "base.user_admin"
+        values:
+          name: "Team member names match selected audit personnel"
+          sequence: 10
+          option_set_id: "REC: option_set.id"
+
+      - step: "Create worksheet C435BCD"
+        action: "create"
+        model: "general_audit_ws_c435bcd"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id:
+            "REF: ssi_general_audit_worksheet_assignment_letter.worksheet_type_c435bcd"
+
+      - step: "Create checklist line"
+        action: "create"
+        model: "general_audit_ws_c435bcd.checklist"
+        save_as: "checklist_line"
+        as_user: "base.user_admin"
+        values:
+          worksheet_id: "REC: worksheet.id"
+          item_id: "REC: item.id"
+          option_id: "REC: option_yes.id"
+
+      - step: "Delete worksheet while still draft"
+        action: "unlink"
+        target: "worksheet"
+        as_user: "base.user_admin"
+
+      - step: "Verify checklist line was cascade deleted"
+        action: "search"
+        model: "general_audit_ws_c435bcd.checklist"
+        domain: [["item_id", "=", "REC: item.id"]]
+        save_as: "orphan_checklist_result"
+        expect_count: 0
+
+  # ------------------------------------------------------------------
+  # action_populate_checklist (inherited from mixin.checklist)
+  # ------------------------------------------------------------------
+  - name: "Action populate checklist from master items"
+    steps:
+      - step: "Create option set"
+        action: "create"
+        model: "checklist.option_set"
+        save_as: "option_set"
+        as_user: "base.user_admin"
+        values:
+          name: "Yes/No - Populate Checklist"
+          code: "/"
+
+      - step: "Create master item"
+        action: "create"
+        model: "general_audit_ws_c435bcd.item"
+        save_as: "item"
+        as_user: "base.user_admin"
+        values:
+          name: "Populate checklist master item"
+          sequence: 10
+          option_set_id: "REC: option_set.id"
+
+      - step: "Create worksheet C435BCD"
+        action: "create"
+        model: "general_audit_ws_c435bcd"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id:
+            "REF: ssi_general_audit_worksheet_assignment_letter.worksheet_type_c435bcd"
+
+      - step: "Open worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_open"
+        as_user: "base.user_admin"
+
+      - step: "Assert checklist is empty before populate"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          checklist_ids:
+            type: "o2m"
+            check: "count"
+            expected_count: 0
+
+      - step: "Call action_populate_checklist"
+        action: "call"
+        target: "worksheet"
+        method: "action_populate_checklist"
+        as_user: "base.user_admin"
+
+      - step: "Search populated checklist line for the item"
+        action: "search"
+        model: "general_audit_ws_c435bcd.checklist"
+        domain:
+          [["worksheet_id", "=", "REC: worksheet.id"], ["item_id", "=", "REC: item.id"]]
+        save_as: "populated_line"
+        expect_count: 1
+
+      - step: "Assert populated checklist line appears on worksheet"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          checklist_ids:
+            type: "o2m"
+            check: "contains"
+            expected_records:
+              - "REC: populated_line"
+
+      - step: "Call action_populate_checklist again (idempotent)"
+        action: "call"
+        target: "worksheet"
+        method: "action_populate_checklist"
+        as_user: "base.user_admin"
+
+      - step: "Search populated checklist line still unique after second populate"
+        action: "search"
+        model: "general_audit_ws_c435bcd.checklist"
+        domain:
+          [["worksheet_id", "=", "REC: worksheet.id"], ["item_id", "=", "REC: item.id"]]
+        save_as: "populated_line_result_again"
+        expect_count: 1
+
+  # ------------------------------------------------------------------
+  # Workflow - draft -> open -> confirm -> done
+  # ------------------------------------------------------------------
+  - name: "Workflow - open, confirm and approve to done"
+    steps:
+      - step: "Create worksheet C435BCD"
+        action: "create"
+        model: "general_audit_ws_c435bcd"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id:
+            "REF: ssi_general_audit_worksheet_assignment_letter.worksheet_type_c435bcd"
+
+      - step: "Assert initial state is draft"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          state:
+            type: "value"
+            expected: "draft"
+
+      - step: "Open worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_open"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after opening worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Assert worksheet open"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          state:
+            type: "value"
+            expected: "open"
+
+      - step: "Fill conclusion fields required before confirm"
+        action: "write"
+        target: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          conclusion_id:
+            "REF:
+            ssi_general_audit_worksheet_assignment_letter.general_audit_worksheet_conclusion_20_305ae00d"
+          conclusion: "All five formal criteria are met."
+
+      - step: "Confirm worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_confirm"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after confirming worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Assert worksheet confirmed"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          state:
+            type: "value"
+            expected: "confirm"
+
+      - step: "Approve worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_approve_approval"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after approving worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Assert worksheet done"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          state:
+            type: "value"
+            expected: "done"
+          conclusion_id:
+            type: "m2o"
+            expected_xml_id: "ssi_general_audit_worksheet_assignment_letter.general_audit_worksheet_conclusion_20_305ae00d"
+
+  # ------------------------------------------------------------------
+  # Cancel and restart
+  # ------------------------------------------------------------------
+  - name: "Cancel and restart worksheet"
+    steps:
+      - step: "Create worksheet C435BCD"
+        action: "create"
+        model: "general_audit_ws_c435bcd"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id:
+            "REF: ssi_general_audit_worksheet_assignment_letter.worksheet_type_c435bcd"
+
+      - step: "Open worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_open"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after opening worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Assert worksheet open"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          state:
+            type: "value"
+            expected: "open"
+
+      - step: "Cancel worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_cancel"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after cancelling worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Assert worksheet cancelled"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          state:
+            type: "value"
+            expected: "cancel"
+
+      - step: "Restart worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_restart"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after restarting worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Assert worksheet back to draft"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          state:
+            type: "value"
+            expected: "draft"
+
+  # ------------------------------------------------------------------
+  # Negative path - duplicate worksheet type per audit
+  # ------------------------------------------------------------------
+  - name: "Duplicate worksheet type for the same audit is rejected"
+    steps:
+      - step: "Create first worksheet C435BCD"
+        action: "create"
+        model: "general_audit_ws_c435bcd"
+        save_as: "worksheet_1"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id:
+            "REF: ssi_general_audit_worksheet_assignment_letter.worksheet_type_c435bcd"
+
+      - step: "Second worksheet with same audit and type must be rejected"
+        action: "create"
+        model: "general_audit_ws_c435bcd"
+        as_user: "base.user_admin"
+        expect_error:
+          type: "ValidationError"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id:
+            "REF: ssi_general_audit_worksheet_assignment_letter.worksheet_type_c435bcd"
+
+  # ------------------------------------------------------------------
+  # Negative path - confirm without required conclusion fields
+  # ------------------------------------------------------------------
+  - name: "Confirm without conclusion fields is rejected"
+    steps:
+      - step: "Create worksheet C435BCD"
+        action: "create"
+        model: "general_audit_ws_c435bcd"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id:
+            "REF: ssi_general_audit_worksheet_assignment_letter.worksheet_type_c435bcd"
+
+      - step: "Open worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_open"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after opening worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Confirm without conclusion_id/conclusion must be rejected"
+        action: "call"
+        target: "worksheet"
+        method: "action_confirm"
+        as_user: "base.user_admin"
+        expect_error:
+          type: "ValidationError"
+
+  # ------------------------------------------------------------------
+  # Compute standard_item_ids / allowed_conclusion_ids - normal
+  # ------------------------------------------------------------------
+  - name: "Compute standard_item_ids and allowed_conclusion_ids - normal"
+    steps:
+      - step: "Create audit standard item"
+        action: "create"
+        model: "general_audit_standard_audit"
+        save_as: "standard_item"
+        as_user: "base.user_admin"
+        values:
+          name: "SA 300 - Planning an Audit"
+          code: "/"
+
+      - step: "Create worksheet type with standard item"
+        action: "create"
+        model: "general_audit_worksheet_type"
+        save_as: "custom_type"
+        as_user: "base.user_admin"
+        values:
+          name: "Assignment Letter - Custom Type Normal"
+          code: "/"
+          model_name: "general_audit_ws_c435bcd"
+          standard_item_ids: [[6, 0, ["REC: standard_item.id"]]]
+
+      - step: "Create conclusion for custom type"
+        action: "create"
+        model: "general_audit_worksheet_conclusion"
+        save_as: "custom_conclusion"
+        as_user: "base.user_admin"
+        values:
+          name: "Custom conclusion - normal"
+          code: "/"
+          type_id: "REC: custom_type.id"
+
+      - step: "Create worksheet using custom type"
+        action: "create"
+        model: "general_audit_ws_c435bcd"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: custom_type.id"
+
+      - step: "Assert standard_item_ids and allowed_conclusion_ids computed"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          standard_item_ids:
+            type: "m2m"
+            check: "exact"
+            expected_records:
+              - "REC: standard_item"
+          allowed_conclusion_ids:
+            type: "m2m"
+            check: "exact"
+            expected_records:
+              - "REC: custom_conclusion"
+
+  # ------------------------------------------------------------------
+  # Compute standard_item_ids / allowed_conclusion_ids - empty
+  # ------------------------------------------------------------------
+  - name: "Compute standard_item_ids and allowed_conclusion_ids - empty"
+    steps:
+      - step: "Create worksheet type without standard item or conclusion"
+        action: "create"
+        model: "general_audit_worksheet_type"
+        save_as: "empty_type"
+        as_user: "base.user_admin"
+        values:
+          name: "Assignment Letter - Custom Type Empty"
+          code: "/"
+          model_name: "general_audit_ws_c435bcd"
+
+      - step: "Create worksheet using empty type"
+        action: "create"
+        model: "general_audit_ws_c435bcd"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: empty_type.id"
+
+      - step: "Assert standard_item_ids and allowed_conclusion_ids are empty"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          standard_item_ids:
+            type: "m2m"
+            check: "count"
+            expected_count: 0
+          allowed_conclusion_ids:
+            type: "m2m"
+            check: "count"
+            expected_count: 0
+
+  # ------------------------------------------------------------------
+  # Onchange type_id -> parent_type_id (general_audit_worksheet_mixin)
+  # ------------------------------------------------------------------
+  - name: "Onchange type_id sets parent_type_id"
+    steps:
+      - step: "Create worksheet type A"
+        action: "create"
+        model: "general_audit_worksheet_type"
+        save_as: "type_a"
+        as_user: "base.user_admin"
+        values:
+          name: "Onchange Type A"
+          code: "/"
+          model_name: "general_audit_ws_c435bcd"
+
+      - step: "Create worksheet type B"
+        action: "create"
+        model: "general_audit_worksheet_type"
+        save_as: "type_b"
+        as_user: "base.user_admin"
+        values:
+          name: "Onchange Type B"
+          code: "/"
+          model_name: "general_audit_ws_c435bcd"
+
+      - step: "Set type_id twice and check parent_type_id follows"
+        action: "form"
+        model: "general_audit_ws_c435bcd"
+        as_user: "base.user_admin"
+        save: false
+        ops:
+          - set: {type_id: "REC: type_a"}
+          - assert:
+              parent_type_id:
+                type: "m2o"
+                expected: "REC: type_a"
+          - set: {type_id: "REC: type_b"}
+          - assert:
+              parent_type_id:
+                type: "m2o"
+                expected: "REC: type_b"
