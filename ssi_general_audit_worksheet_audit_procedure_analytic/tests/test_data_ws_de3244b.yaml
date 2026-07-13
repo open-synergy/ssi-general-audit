@@ -1,0 +1,699 @@
+setup:
+  steps:
+    - step: "Get config parameter model"
+      action: "search"
+      model: "ir.config_parameter"
+      domain: []
+      save_as: "config_parameter"
+      limit: 1
+
+    - step: "Allow enough CPA licenses for this scenario"
+      action: "call"
+      target: "config_parameter"
+      method: "set_param"
+      args:
+        - "ssi_general_audit.max_number_of_cpa_license"
+        - "100"
+
+    - step: "Create client partner"
+      action: "create"
+      model: "res.partner"
+      save_as: "client"
+      as_user: "base.user_admin"
+      values:
+        name: "Test Audit Client DE3244B"
+        is_company: true
+
+    - step: "Create accountant partner"
+      action: "create"
+      model: "res.partner"
+      save_as: "accountant"
+      as_user: "base.user_admin"
+      values:
+        name: "Test Audit Accountant DE3244B"
+
+    - step: "Get CPA license id category"
+      action: "ref"
+      xml_id: "ssi_partner_identification_cpa_license.partner_identification_accountant_cpa_license"
+      save_as: "cpa_category"
+
+    - step: "Grant accountant a CPA license"
+      action: "create"
+      model: "res.partner.id_number"
+      save_as: "cpa_license"
+      as_user: "base.user_admin"
+      values:
+        partner_id: "REC: accountant.id"
+        category_id: "REC: cpa_category.id"
+        name: "CPA-DE3244B-0001"
+
+    - step: "Create account type set"
+      action: "create"
+      model: "client_account_type_set"
+      save_as: "account_type_set"
+      as_user: "base.user_admin"
+      values:
+        name: "Test Account Type Set DE3244B"
+        code: "/"
+
+    - step: "Create financial accounting standard"
+      action: "create"
+      model: "accountant.financial_accounting_standard"
+      save_as: "standard"
+      as_user: "base.user_admin"
+      values:
+        name: "Test Financial Accounting Standard DE3244B"
+        code: "/"
+
+    - step: "Create general audit"
+      action: "create"
+      model: "general_audit"
+      save_as: "audit"
+      as_user: "base.user_admin"
+      values:
+        title: "Test General Audit - DE3244B"
+        partner_id: "REC: client.id"
+        accountant_id: "REC: accountant.id"
+        account_type_set_id: "REC: account_type_set.id"
+        financial_accounting_standard_id: "REC: standard.id"
+        date_start: 2026-01-01
+        date_end: 2026-12-31
+        need_interim: false
+        need_previous: false
+        num_of_consecutive_audit_firm: 1
+        num_of_consecutive_audit_accountant: 1
+
+    - step: "Open general audit"
+      action: "call"
+      target: "audit"
+      method: "action_open"
+      as_user: "base.user_admin"
+
+    - step: "Invalidate cache after opening general audit"
+      action: "call"
+      target: "audit"
+      method: "invalidate_cache"
+
+    - step: "Assert general audit open"
+      action: "assert"
+      target: "audit"
+      asserts:
+        state:
+          type: "value"
+          expected: "open"
+
+    - step:
+        "Create second general audit (used only to trigger onchange general_audit_id)"
+      action: "create"
+      model: "general_audit"
+      save_as: "audit2"
+      as_user: "base.user_admin"
+      values:
+        title: "Test General Audit - DE3244B (Second)"
+        partner_id: "REC: client.id"
+        accountant_id: "REC: accountant.id"
+        account_type_set_id: "REC: account_type_set.id"
+        financial_accounting_standard_id: "REC: standard.id"
+        date_start: 2026-01-01
+        date_end: 2026-12-31
+        need_interim: false
+        need_previous: false
+        num_of_consecutive_audit_firm: 1
+        num_of_consecutive_audit_accountant: 1
+
+    - step: "Create client account group"
+      action: "create"
+      model: "client_account_group"
+      save_as: "account_group"
+      values:
+        name: "Test Account Group DE3244B"
+        code: "/"
+
+    - step: "Create client account type"
+      action: "create"
+      model: "client_account_type"
+      save_as: "account_type"
+      values:
+        name: "Test Account Type DE3244B"
+        code: "/"
+        group_id: "REC: account_group.id"
+        # NOTE: overriding the default python_code ("result = document.balance")
+        # on purpose. `client_account_type.python_code` is evaluated by
+        # `general_audit.standard_detail._compute_extrapolation_balance` with
+        # `document` bound to the *general_audit.standard_detail* record
+        # itself -- which has no `balance` field (only
+        # `client_trial_balance.standard_detail`, a different model, does).
+        # The default code would therefore raise AttributeError -> caught and
+        # re-raised as ValidationError on every `general_audit.standard_detail`
+        # created against this type. This looks like a genuine production bug
+        # in ssi_general_audit (out of scope for this module) -- worked around
+        # here for the fixture rather than fixed silently.
+        python_code: "result = 0.0"
+
+    - step: "Create assertion type"
+      action: "create"
+      model: "general_audit_assersion_type"
+      save_as: "assertion_type"
+      values:
+        name: "Test Assertion Type DE3244B"
+        code: "/"
+
+    - step: "Create audit procedure category - performed"
+      action: "create"
+      model: "general_audit_audit_procedure_category"
+      save_as: "category_performed"
+      values:
+        name: "Test Category Performed DE3244B"
+        code: "/"
+        account_type_id: "REC: account_type.id"
+        assertion_type_ids: "EVAL: [(6, 0, [registry['assertion_type'].id])]"
+
+    - step: "Create audit procedure category - not performed"
+      action: "create"
+      model: "general_audit_audit_procedure_category"
+      save_as: "category_not_performed"
+      values:
+        name: "Test Category Not Performed DE3244B"
+        code: "/"
+        account_type_id: "REC: account_type.id"
+        assertion_type_ids: "EVAL: [(6, 0, [registry['assertion_type'].id])]"
+
+    - step: "Create WS-E51BB1C (Key Audit Procedures) prerequisite worksheet"
+      action: "create"
+      model: "general_audit_ws_e51bb1c"
+      save_as: "ws_e51bb1c"
+      as_user: "base.user_admin"
+      values:
+        general_audit_id: "REC: audit.id"
+        type_id: "REF: ssi_general_audit_worksheet_lead_schedule.worksheet_type_e51bb1c"
+
+    - step: "Create WS-E51BB1C detail - performed status"
+      action: "create"
+      model: "general_audit_ws_e51bb1c.detail"
+      save_as: "detail_performed"
+      as_user: "base.user_admin"
+      values:
+        worksheet_id: "REC: ws_e51bb1c.id"
+        audit_procedure_category_id: "REC: category_performed.id"
+        status: "performed"
+        assertion_type_ids: "EVAL: [(6, 0, [registry['assertion_type'].id])]"
+
+    - step: "Create WS-E51BB1C detail - not performed status (proves the status filter)"
+      action: "create"
+      model: "general_audit_ws_e51bb1c.detail"
+      save_as: "detail_not_performed"
+      as_user: "base.user_admin"
+      values:
+        worksheet_id: "REC: ws_e51bb1c.id"
+        audit_procedure_category_id: "REC: category_not_performed.id"
+        status: "not_performed"
+        assertion_type_ids: "EVAL: [(6, 0, [registry['assertion_type'].id])]"
+
+    - step: "Get worksheet type de3244b"
+      action: "ref"
+      xml_id: "ssi_general_audit_worksheet_audit_procedure_analytic.worksheet_type_de3244b"
+      save_as: "ws_type"
+
+scenarios:
+  # ------------------------------------------------------------------
+  # Create
+  # ------------------------------------------------------------------
+  - name: "WS-DE3244B - Create in draft"
+    steps:
+      - step: "Create worksheet de3244b"
+        action: "create"
+        model: "general_audit_ws_de3244b"
+        save_as: "ws"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+
+      - step: "Assert worksheet created in draft"
+        action: "assert"
+        target: "ws"
+        asserts:
+          id:
+            type: "value"
+            operator: "is_truthy"
+          state:
+            type: "value"
+            expected: "draft"
+          general_audit_id:
+            type: "m2o"
+            expected: "REC: audit"
+          type_id:
+            type: "m2o"
+            expected: "REC: ws_type"
+
+  # ------------------------------------------------------------------
+  # Compute allowed_key_audit_procedure_ids / detail_ws_e51bb1c_id
+  # ------------------------------------------------------------------
+  - name:
+      "WS-DE3244B - Compute allowed_key_audit_procedure_ids dan detail_ws_e51bb1c_id"
+    steps:
+      - step: "Create worksheet de3244b"
+        action: "create"
+        model: "general_audit_ws_de3244b"
+        save_as: "ws"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+
+      - step:
+          "Kosong - allowed_key_audit_procedure_ids dan detail_ws_e51bb1c_id sebelum
+          ws_e51bb1c_id diisi"
+        action: "assert"
+        target: "ws"
+        asserts:
+          allowed_key_audit_procedure_ids:
+            type: "m2m"
+            check: "count"
+            expected_count: 0
+          detail_ws_e51bb1c_id:
+            type: "value"
+            operator: "is_falsy"
+
+      - step: "Set ws_e51bb1c_id"
+        action: "write"
+        target: "ws"
+        as_user: "base.user_admin"
+        values:
+          ws_e51bb1c_id: "REC: ws_e51bb1c.id"
+
+      - step:
+          "Normal - allowed_key_audit_procedure_ids hanya berisi kategori berstatus
+          performed"
+        action: "assert"
+        target: "ws"
+        asserts:
+          allowed_key_audit_procedure_ids:
+            type: "m2m"
+            check: "exact"
+            expected_records:
+              - "REC: category_performed"
+
+      - step: "Set key_audit_procedure_id ke kategori performed"
+        action: "write"
+        target: "ws"
+        as_user: "base.user_admin"
+        values:
+          key_audit_procedure_id: "REC: category_performed.id"
+
+      - step: "Normal - detail_ws_e51bb1c_id menunjuk detail yang cocok"
+        action: "assert"
+        target: "ws"
+        asserts:
+          detail_ws_e51bb1c_id:
+            type: "m2o"
+            expected: "REC: detail_performed"
+
+      - step: "Kosongkan key_audit_procedure_id"
+        action: "write"
+        target: "ws"
+        as_user: "base.user_admin"
+        values:
+          key_audit_procedure_id: false
+
+      - step:
+          "Kosong - detail_ws_e51bb1c_id kosong ketika key_audit_procedure_id kosong"
+        action: "assert"
+        target: "ws"
+        asserts:
+          detail_ws_e51bb1c_id:
+            type: "value"
+            operator: "is_falsy"
+
+      - step: "Kosongkan ws_e51bb1c_id"
+        action: "write"
+        target: "ws"
+        as_user: "base.user_admin"
+        values:
+          ws_e51bb1c_id: false
+
+      - step:
+          "Kosong - allowed_key_audit_procedure_ids kosong ketika ws_e51bb1c_id kosong"
+        action: "assert"
+        target: "ws"
+        asserts:
+          allowed_key_audit_procedure_ids:
+            type: "m2m"
+            check: "count"
+            expected_count: 0
+
+  # ------------------------------------------------------------------
+  # Related allowed_account_type_ids / allowed_assertion_type_ids
+  # ------------------------------------------------------------------
+  - name: "WS-DE3244B - Related allowed_account_type_ids dan allowed_assertion_type_ids"
+    steps:
+      - step: "Create worksheet de3244b"
+        action: "create"
+        model: "general_audit_ws_de3244b"
+        save_as: "ws"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+
+      - step: "Kosong - allowed_account_type_ids sebelum standard_detail dibuat"
+        action: "assert"
+        target: "ws"
+        asserts:
+          allowed_account_type_ids:
+            type: "m2m"
+            check: "count"
+            expected_count: 0
+
+      - step:
+          "Tambahkan standard_detail pada general_audit agar account_type_ids terisi"
+        action: "create"
+        model: "general_audit.standard_detail"
+        save_as: "standard_detail"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: account_type.id"
+
+      - step:
+          "Normal - allowed_account_type_ids mengikuti general_audit_id.account_type_ids"
+        action: "assert"
+        target: "ws"
+        asserts:
+          allowed_account_type_ids:
+            type: "m2m"
+            check: "exact"
+            expected_records:
+              - "REC: account_type"
+
+      - step: "Kosong - allowed_assertion_type_ids sebelum detail_ws_e51bb1c_id terisi"
+        action: "assert"
+        target: "ws"
+        asserts:
+          allowed_assertion_type_ids:
+            type: "m2m"
+            check: "count"
+            expected_count: 0
+
+      - step:
+          "Isi ws_e51bb1c_id dan key_audit_procedure_id agar detail_ws_e51bb1c_id terisi"
+        action: "write"
+        target: "ws"
+        as_user: "base.user_admin"
+        values:
+          ws_e51bb1c_id: "REC: ws_e51bb1c.id"
+          key_audit_procedure_id: "REC: category_performed.id"
+
+      - step:
+          "Normal - allowed_assertion_type_ids mengikuti
+          detail_ws_e51bb1c_id.assertion_type_ids"
+        action: "assert"
+        target: "ws"
+        asserts:
+          allowed_assertion_type_ids:
+            type: "m2m"
+            check: "exact"
+            expected_records:
+              - "REC: assertion_type"
+
+  # ------------------------------------------------------------------
+  # Write plain fields
+  # ------------------------------------------------------------------
+  - name: "WS-DE3244B - Write account_type_id, assertion_type_ids, worksheet_result"
+    steps:
+      - step: "Create worksheet de3244b"
+        action: "create"
+        model: "general_audit_ws_de3244b"
+        save_as: "ws"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+
+      - step: "Write account_type_id, assertion_type_ids, worksheet_result"
+        action: "write"
+        target: "ws"
+        as_user: "base.user_admin"
+        values:
+          account_type_id: "REC: account_type.id"
+          assertion_type_ids: "EVAL: [(6, 0, [registry['assertion_type'].id])]"
+          worksheet_result: "Comparative analysis shows no material deviation."
+
+      - step: "Assert values saved"
+        action: "assert"
+        target: "ws"
+        asserts:
+          account_type_id:
+            type: "m2o"
+            expected: "REC: account_type"
+          assertion_type_ids:
+            type: "m2m"
+            check: "exact"
+            expected_records:
+              - "REC: assertion_type"
+          worksheet_result:
+            type: "value"
+            expected: "Comparative analysis shows no material deviation."
+
+  # ------------------------------------------------------------------
+  # Workflow draft -> open -> confirm -> done
+  # ------------------------------------------------------------------
+  - name: "WS-DE3244B - Workflow draft to done"
+    steps:
+      - step: "Create worksheet de3244b"
+        action: "create"
+        model: "general_audit_ws_de3244b"
+        save_as: "ws"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+
+      - step: "Open worksheet"
+        action: "call"
+        target: "ws"
+        method: "action_open"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after opening worksheet"
+        action: "call"
+        target: "ws"
+        method: "invalidate_cache"
+
+      - step: "Assert worksheet open"
+        action: "assert"
+        target: "ws"
+        asserts:
+          state:
+            type: "value"
+            expected: "open"
+
+      - step: "Create conclusion for this worksheet type"
+        action: "create"
+        model: "general_audit_worksheet_conclusion"
+        save_as: "conclusion"
+        as_user: "base.user_admin"
+        values:
+          name: "No exception noted"
+          code: "/"
+          type_id: "REC: ws_type.id"
+
+      - step: "Fill required conclusion fields before confirm"
+        action: "write"
+        target: "ws"
+        as_user: "base.user_admin"
+        values:
+          conclusion_id: "REC: conclusion.id"
+          conclusion: "Comparative analysis raised no exception."
+
+      - step: "Confirm worksheet"
+        action: "call"
+        target: "ws"
+        method: "action_confirm"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after confirming worksheet"
+        action: "call"
+        target: "ws"
+        method: "invalidate_cache"
+
+      - step: "Assert worksheet confirmed"
+        action: "assert"
+        target: "ws"
+        asserts:
+          state:
+            type: "value"
+            expected: "confirm"
+
+      - step: "Approve worksheet"
+        action: "call"
+        target: "ws"
+        method: "action_approve_approval"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after approving worksheet"
+        action: "call"
+        target: "ws"
+        method: "invalidate_cache"
+
+      - step: "Assert worksheet done"
+        action: "assert"
+        target: "ws"
+        asserts:
+          state:
+            type: "value"
+            expected: "done"
+
+  # ------------------------------------------------------------------
+  # Cancel & restart
+  # ------------------------------------------------------------------
+  - name: "WS-DE3244B - Cancel and restart"
+    steps:
+      - step: "Create worksheet de3244b"
+        action: "create"
+        model: "general_audit_ws_de3244b"
+        save_as: "ws"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+
+      - step: "Open worksheet"
+        action: "call"
+        target: "ws"
+        method: "action_open"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after opening worksheet"
+        action: "call"
+        target: "ws"
+        method: "invalidate_cache"
+
+      - step: "Assert worksheet open"
+        action: "assert"
+        target: "ws"
+        asserts:
+          state:
+            type: "value"
+            expected: "open"
+
+      - step: "Cancel worksheet"
+        action: "call"
+        target: "ws"
+        method: "action_cancel"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after cancelling worksheet"
+        action: "call"
+        target: "ws"
+        method: "invalidate_cache"
+
+      - step: "Assert worksheet cancelled"
+        action: "assert"
+        target: "ws"
+        asserts:
+          state:
+            type: "value"
+            expected: "cancel"
+
+      - step: "Restart worksheet"
+        action: "call"
+        target: "ws"
+        method: "action_restart"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after restarting worksheet"
+        action: "call"
+        target: "ws"
+        method: "invalidate_cache"
+
+      - step: "Assert worksheet back to draft"
+        action: "assert"
+        target: "ws"
+        asserts:
+          state:
+            type: "value"
+            expected: "draft"
+
+  # ------------------------------------------------------------------
+  # Delete
+  # ------------------------------------------------------------------
+  - name: "WS-DE3244B - Delete in draft"
+    steps:
+      - step: "Create worksheet de3244b"
+        action: "create"
+        model: "general_audit_ws_de3244b"
+        save_as: "ws"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+
+      - step: "Delete the worksheet"
+        action: "unlink"
+        target: "ws"
+
+      - step: "Verify worksheet deleted"
+        action: "search"
+        model: "general_audit_ws_de3244b"
+        domain:
+          - ["id", "=", "REC: ws.id"]
+        save_as: "result"
+        expect_count: 0
+
+  # ------------------------------------------------------------------
+  # Onchange general_audit_id clears account_type_id / ws_e51bb1c_id
+  # ------------------------------------------------------------------
+  - name:
+      "WS-DE3244B - Onchange general_audit_id mengosongkan account_type_id dan
+      ws_e51bb1c_id"
+    steps:
+      - step: >-
+          Create worksheet with account_type_id and ws_e51bb1c_id already filled -- via
+          direct ORM create(), NOT via Form. Both fields are `readonly=True,
+          states={"open": [("readonly", False)]}`, while `general_audit_id` is
+          `readonly=True, states={"draft": [(...)]}` -- i.e.
+          account_type_id/ws_e51bb1c_id are only Form-editable in state "open",
+          general_audit_id only in state "draft". Those two windows never overlap, so a
+          NEW Form can never legitimately hold a non-empty account_type_id/ws_e51bb1c_id
+          AND an editable general_audit_id at the same time. Seeding the values via
+          create() first (which bypasses the view's readonly gate entirely -- that gate
+          only applies to Form's own field assignment) and then editing an EXISTING
+          record is the only way to exercise this onchange.
+        action: "create"
+        model: "general_audit_ws_de3244b"
+        save_as: "ws_onchange"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+          account_type_id: "REC: account_type.id"
+          ws_e51bb1c_id: "REC: ws_e51bb1c.id"
+
+      - step: "Sanity check - both fields are non-empty before the onchange fires"
+        action: "assert"
+        target: "ws_onchange"
+        asserts:
+          account_type_id:
+            type: "m2o"
+            expected: "REC: account_type"
+          ws_e51bb1c_id:
+            type: "m2o"
+            expected: "REC: ws_e51bb1c"
+
+      - step:
+          "Edit via Form and change general_audit_id (still draft, so it is editable
+          there)"
+        action: "form"
+        target: "ws_onchange"
+        as_user: "base.user_admin"
+        save: false
+        ops:
+          - set: {general_audit_id: "REC: audit2"}
+          - assert:
+              account_type_id:
+                type: "value"
+                operator: "is_falsy"
+              ws_e51bb1c_id:
+                type: "value"
+                operator: "is_falsy"

@@ -1,0 +1,1316 @@
+setup:
+  steps:
+    - step: "Get config parameter model"
+      action: "search"
+      model: "ir.config_parameter"
+      domain: []
+      save_as: "config_parameter"
+      limit: 1
+
+    - step: "Allow enough CPA licenses for this scenario"
+      action: "call"
+      target: "config_parameter"
+      method: "set_param"
+      args:
+        - "ssi_general_audit.max_number_of_cpa_license"
+        - "100"
+
+    - step: "Create client partner"
+      action: "create"
+      model: "res.partner"
+      save_as: "client"
+      as_user: "base.user_admin"
+      values:
+        name: "Test Audit Client AA899BAF"
+        is_company: true
+
+    - step: "Create accountant partner"
+      action: "create"
+      model: "res.partner"
+      save_as: "accountant"
+      as_user: "base.user_admin"
+      values:
+        name: "Test Audit Accountant AA899BAF"
+
+    - step: "Get CPA license id category"
+      action: "ref"
+      xml_id: "ssi_partner_identification_cpa_license.partner_identification_accountant_cpa_license"
+      save_as: "cpa_category"
+
+    - step: "Grant accountant a CPA license"
+      action: "create"
+      model: "res.partner.id_number"
+      save_as: "cpa_license"
+      as_user: "base.user_admin"
+      values:
+        partner_id: "REC: accountant.id"
+        category_id: "REC: cpa_category.id"
+        name: "CPA-AA899BAF-0001"
+
+    - step: "Create account type set"
+      action: "create"
+      model: "client_account_type_set"
+      save_as: "account_type_set"
+      as_user: "base.user_admin"
+      values:
+        name: "Test Account Type Set AA899BAF"
+        code: "/"
+
+    - step: "Create financial accounting standard"
+      action: "create"
+      model: "accountant.financial_accounting_standard"
+      save_as: "standard"
+      as_user: "base.user_admin"
+      values:
+        name: "Test Financial Accounting Standard AA899BAF"
+        code: "/"
+
+    - step: "Create general audit"
+      action: "create"
+      model: "general_audit"
+      save_as: "audit"
+      as_user: "base.user_admin"
+      values:
+        title: "Test General Audit - AA899BAF"
+        partner_id: "REC: client.id"
+        accountant_id: "REC: accountant.id"
+        account_type_set_id: "REC: account_type_set.id"
+        financial_accounting_standard_id: "REC: standard.id"
+        date_start: 2026-01-01
+        date_end: 2026-12-31
+        need_interim: false
+        need_previous: false
+        num_of_consecutive_audit_firm: 1
+        num_of_consecutive_audit_accountant: 1
+
+    - step: "Open general audit"
+      action: "call"
+      target: "audit"
+      method: "action_open"
+      as_user: "base.user_admin"
+
+    - step: "Invalidate cache after opening general audit"
+      action: "call"
+      target: "audit"
+      method: "invalidate_cache"
+
+    - step: "Assert general audit open"
+      action: "assert"
+      target: "audit"
+      asserts:
+        state:
+          type: "value"
+          expected: "open"
+
+    - step:
+        "Create second general audit (used only to trigger onchange general_audit_id)"
+      action: "create"
+      model: "general_audit"
+      save_as: "audit2"
+      as_user: "base.user_admin"
+      values:
+        title: "Test General Audit - AA899BAF (Second)"
+        partner_id: "REC: client.id"
+        accountant_id: "REC: accountant.id"
+        account_type_set_id: "REC: account_type_set.id"
+        financial_accounting_standard_id: "REC: standard.id"
+        date_start: 2026-01-01
+        date_end: 2026-12-31
+        need_interim: false
+        need_previous: false
+        num_of_consecutive_audit_firm: 1
+        num_of_consecutive_audit_accountant: 1
+
+    - step: "Create client account group"
+      action: "create"
+      model: "client_account_group"
+      save_as: "account_group"
+      values:
+        name: "Test Account Group AA899BAF"
+        code: "/"
+
+    - step: "Create client account type"
+      action: "create"
+      model: "client_account_type"
+      save_as: "account_type"
+      values:
+        name: "Test Account Type AA899BAF"
+        code: "/"
+        group_id: "REC: account_group.id"
+        # NOTE: see the identical note in test_data_ws_de3244b.yaml -- the
+        # default python_code ("result = document.balance") crashes
+        # general_audit.standard_detail._compute_extrapolation_balance
+        # because that model has no `balance` field. Worked around here for
+        # the fixture, not fixed in production code.
+        python_code: "result = 0.0"
+
+    - step: "Create assertion type"
+      action: "create"
+      model: "general_audit_assersion_type"
+      save_as: "assertion_type"
+      values:
+        name: "Test Assertion Type AA899BAF"
+        code: "/"
+
+    - step: "Create audit procedure category - performed"
+      action: "create"
+      model: "general_audit_audit_procedure_category"
+      save_as: "category_performed"
+      values:
+        name: "Test Category Performed AA899BAF"
+        code: "/"
+        account_type_id: "REC: account_type.id"
+        assertion_type_ids: "EVAL: [(6, 0, [registry['assertion_type'].id])]"
+
+    - step: "Create audit procedure category - not performed"
+      action: "create"
+      model: "general_audit_audit_procedure_category"
+      save_as: "category_not_performed"
+      values:
+        name: "Test Category Not Performed AA899BAF"
+        code: "/"
+        account_type_id: "REC: account_type.id"
+        assertion_type_ids: "EVAL: [(6, 0, [registry['assertion_type'].id])]"
+
+    - step: "Create WS-E51BB1C (Key Audit Procedures) prerequisite worksheet"
+      action: "create"
+      model: "general_audit_ws_e51bb1c"
+      save_as: "ws_e51bb1c"
+      as_user: "base.user_admin"
+      values:
+        general_audit_id: "REC: audit.id"
+        type_id: "REF: ssi_general_audit_worksheet_lead_schedule.worksheet_type_e51bb1c"
+
+    - step: "Create WS-E51BB1C detail - performed status"
+      action: "create"
+      model: "general_audit_ws_e51bb1c.detail"
+      save_as: "detail_performed"
+      as_user: "base.user_admin"
+      values:
+        worksheet_id: "REC: ws_e51bb1c.id"
+        audit_procedure_category_id: "REC: category_performed.id"
+        status: "performed"
+        assertion_type_ids: "EVAL: [(6, 0, [registry['assertion_type'].id])]"
+
+    - step: "Create WS-E51BB1C detail - not performed status (proves the status filter)"
+      action: "create"
+      model: "general_audit_ws_e51bb1c.detail"
+      save_as: "detail_not_performed"
+      as_user: "base.user_admin"
+      values:
+        worksheet_id: "REC: ws_e51bb1c.id"
+        audit_procedure_category_id: "REC: category_not_performed.id"
+        status: "not_performed"
+        assertion_type_ids: "EVAL: [(6, 0, [registry['assertion_type'].id])]"
+
+    - step: "Get worksheet type aa899baf"
+      action: "ref"
+      xml_id: "ssi_general_audit_worksheet_audit_procedure_analytic.worksheet_type_aa899baf"
+      save_as: "ws_type"
+
+scenarios:
+  # ------------------------------------------------------------------
+  # Create
+  # ------------------------------------------------------------------
+  - name: "WS-AA899BAF - Create in draft"
+    steps:
+      - step: "Create worksheet aa899baf"
+        action: "create"
+        model: "general_audit_ws_aa899baf"
+        save_as: "ws"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+
+      - step: "Assert worksheet created in draft"
+        action: "assert"
+        target: "ws"
+        asserts:
+          id:
+            type: "value"
+            operator: "is_truthy"
+          state:
+            type: "value"
+            expected: "draft"
+          general_audit_id:
+            type: "m2o"
+            expected: "REC: audit"
+          type_id:
+            type: "m2o"
+            expected: "REC: ws_type"
+
+  # ------------------------------------------------------------------
+  # Compute allowed_key_audit_procedure_ids / detail_ws_e51bb1c_id
+  # ------------------------------------------------------------------
+  - name:
+      "WS-AA899BAF - Compute allowed_key_audit_procedure_ids dan detail_ws_e51bb1c_id"
+    steps:
+      - step: "Create worksheet aa899baf"
+        action: "create"
+        model: "general_audit_ws_aa899baf"
+        save_as: "ws"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+
+      - step:
+          "Kosong - allowed_key_audit_procedure_ids dan detail_ws_e51bb1c_id sebelum
+          ws_e51bb1c_id diisi"
+        action: "assert"
+        target: "ws"
+        asserts:
+          allowed_key_audit_procedure_ids:
+            type: "m2m"
+            check: "count"
+            expected_count: 0
+          detail_ws_e51bb1c_id:
+            type: "value"
+            operator: "is_falsy"
+
+      - step: "Set ws_e51bb1c_id"
+        action: "write"
+        target: "ws"
+        as_user: "base.user_admin"
+        values:
+          ws_e51bb1c_id: "REC: ws_e51bb1c.id"
+
+      - step:
+          "Normal - allowed_key_audit_procedure_ids hanya berisi kategori berstatus
+          performed"
+        action: "assert"
+        target: "ws"
+        asserts:
+          allowed_key_audit_procedure_ids:
+            type: "m2m"
+            check: "exact"
+            expected_records:
+              - "REC: category_performed"
+
+      - step: "Set key_audit_procedure_id ke kategori performed"
+        action: "write"
+        target: "ws"
+        as_user: "base.user_admin"
+        values:
+          key_audit_procedure_id: "REC: category_performed.id"
+
+      - step: "Normal - detail_ws_e51bb1c_id menunjuk detail yang cocok"
+        action: "assert"
+        target: "ws"
+        asserts:
+          detail_ws_e51bb1c_id:
+            type: "m2o"
+            expected: "REC: detail_performed"
+
+      - step: "Kosongkan key_audit_procedure_id"
+        action: "write"
+        target: "ws"
+        as_user: "base.user_admin"
+        values:
+          key_audit_procedure_id: false
+
+      - step:
+          "Kosong - detail_ws_e51bb1c_id kosong ketika key_audit_procedure_id kosong"
+        action: "assert"
+        target: "ws"
+        asserts:
+          detail_ws_e51bb1c_id:
+            type: "value"
+            operator: "is_falsy"
+
+      - step: "Kosongkan ws_e51bb1c_id"
+        action: "write"
+        target: "ws"
+        as_user: "base.user_admin"
+        values:
+          ws_e51bb1c_id: false
+
+      - step:
+          "Kosong - allowed_key_audit_procedure_ids kosong ketika ws_e51bb1c_id kosong"
+        action: "assert"
+        target: "ws"
+        asserts:
+          allowed_key_audit_procedure_ids:
+            type: "m2m"
+            check: "count"
+            expected_count: 0
+
+  # ------------------------------------------------------------------
+  # Related allowed_account_type_ids / allowed_assertion_type_ids
+  # ------------------------------------------------------------------
+  - name:
+      "WS-AA899BAF - Related allowed_account_type_ids dan allowed_assertion_type_ids"
+    steps:
+      - step: "Create worksheet aa899baf"
+        action: "create"
+        model: "general_audit_ws_aa899baf"
+        save_as: "ws"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+
+      - step: "Kosong - allowed_account_type_ids sebelum standard_detail dibuat"
+        action: "assert"
+        target: "ws"
+        asserts:
+          allowed_account_type_ids:
+            type: "m2m"
+            check: "count"
+            expected_count: 0
+
+      - step:
+          "Tambahkan standard_detail pada general_audit agar account_type_ids terisi"
+        action: "create"
+        model: "general_audit.standard_detail"
+        save_as: "standard_detail"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: account_type.id"
+
+      - step:
+          "Normal - allowed_account_type_ids mengikuti general_audit_id.account_type_ids"
+        action: "assert"
+        target: "ws"
+        asserts:
+          allowed_account_type_ids:
+            type: "m2m"
+            check: "exact"
+            expected_records:
+              - "REC: account_type"
+
+      - step: "Kosong - allowed_assertion_type_ids sebelum detail_ws_e51bb1c_id terisi"
+        action: "assert"
+        target: "ws"
+        asserts:
+          allowed_assertion_type_ids:
+            type: "m2m"
+            check: "count"
+            expected_count: 0
+
+      - step:
+          "Isi ws_e51bb1c_id dan key_audit_procedure_id agar detail_ws_e51bb1c_id terisi"
+        action: "write"
+        target: "ws"
+        as_user: "base.user_admin"
+        values:
+          ws_e51bb1c_id: "REC: ws_e51bb1c.id"
+          key_audit_procedure_id: "REC: category_performed.id"
+
+      - step:
+          "Normal - allowed_assertion_type_ids mengikuti
+          detail_ws_e51bb1c_id.assertion_type_ids"
+        action: "assert"
+        target: "ws"
+        asserts:
+          allowed_assertion_type_ids:
+            type: "m2m"
+            check: "exact"
+            expected_records:
+              - "REC: assertion_type"
+
+  # ------------------------------------------------------------------
+  # Write plain fields
+  # ------------------------------------------------------------------
+  - name: "WS-AA899BAF - Write account_type_id, assertion_type_ids, worksheet_result"
+    steps:
+      - step: "Create worksheet aa899baf"
+        action: "create"
+        model: "general_audit_ws_aa899baf"
+        save_as: "ws"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+
+      - step: "Write account_type_id, assertion_type_ids, worksheet_result"
+        action: "write"
+        target: "ws"
+        as_user: "base.user_admin"
+        values:
+          account_type_id: "REC: account_type.id"
+          assertion_type_ids: "EVAL: [(6, 0, [registry['assertion_type'].id])]"
+          worksheet_result:
+            "Plausible relationship analysis shows no material deviation."
+
+      - step: "Assert values saved"
+        action: "assert"
+        target: "ws"
+        asserts:
+          account_type_id:
+            type: "m2o"
+            expected: "REC: account_type"
+          assertion_type_ids:
+            type: "m2m"
+            check: "exact"
+            expected_records:
+              - "REC: assertion_type"
+          worksheet_result:
+            type: "value"
+            expected: "Plausible relationship analysis shows no material deviation."
+
+  # ------------------------------------------------------------------
+  # variable - create with all required fields
+  # ------------------------------------------------------------------
+  - name: "WS-AA899BAF.variable - Create dengan seluruh field required"
+    steps:
+      - step: "Create worksheet aa899baf"
+        action: "create"
+        model: "general_audit_ws_aa899baf"
+        save_as: "ws"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+
+      - step: "Create variable with all required fields"
+        action: "create"
+        model: "general_audit_ws_aa899baf.variable"
+        save_as: "variable"
+        values:
+          worksheet_id: "REC: ws.id"
+          name: "Sales"
+          data_mode: "gl"
+          value_col_number: 2
+          thousand_separator: "."
+          decimal_separator: ","
+
+      - step: "Assert variable saved"
+        action: "assert"
+        target: "variable"
+        asserts:
+          id:
+            type: "value"
+            operator: "is_truthy"
+          name:
+            type: "value"
+            expected: "Sales"
+          data_mode:
+            type: "value"
+            expected: "gl"
+          value_col_number:
+            type: "value"
+            expected: 2
+          thousand_separator:
+            type: "value"
+            expected: "."
+          decimal_separator:
+            type: "value"
+            expected: ","
+
+      - step: "Assert variable appears in worksheet.variable_ids"
+        action: "assert"
+        target: "ws"
+        asserts:
+          variable_ids:
+            type: "o2m"
+            check: "contains"
+            expected_records:
+              - "REC: variable"
+
+  # ------------------------------------------------------------------
+  # variable - data_title / allowed_general_ledger_ids / allowed_subledger_ids
+  # ------------------------------------------------------------------
+  - name:
+      "WS-AA899BAF.variable - Compute data_title, allowed_general_ledger_ids,
+      allowed_subledger_ids"
+    steps:
+      - step: "Create worksheet aa899baf"
+        action: "create"
+        model: "general_audit_ws_aa899baf"
+        save_as: "ws"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+
+      - step: "Create variable without a data source yet"
+        action: "create"
+        model: "general_audit_ws_aa899baf.variable"
+        save_as: "variable"
+        values:
+          worksheet_id: "REC: ws.id"
+          name: "Sales"
+          data_mode: "gl"
+          value_col_number: 1
+          thousand_separator: ","
+          decimal_separator: "."
+
+      - step:
+          "Kosong - data_title, allowed_general_ledger_ids, allowed_subledger_ids
+          sebelum GL/Subledger dibuat"
+        action: "assert"
+        target: "variable"
+        asserts:
+          data_title:
+            type: "value"
+            operator: "is_falsy"
+          allowed_general_ledger_ids:
+            type: "m2m"
+            check: "count"
+            expected_count: 0
+          allowed_subledger_ids:
+            type: "m2m"
+            check: "count"
+            expected_count: 0
+
+      - step: "Create general ledger d209914 for this audit"
+        action: "create"
+        model: "general_audit_ws_d209914"
+        save_as: "gl"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id:
+            "REF: ssi_general_audit_worksheet_client_package.worksheet_type_d209914"
+          title: "General Ledger - Sales"
+
+      - step: "Create subledger b5e3d9f for this audit"
+        action: "create"
+        model: "general_audit_ws_b5e3d9f"
+        save_as: "sl"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id:
+            "REF: ssi_general_audit_worksheet_client_package.worksheet_type_b5e3d9f"
+          title: "Subledger - Sales"
+
+      - step:
+          "Normal - allowed_general_ledger_ids dan allowed_subledger_ids berisi record
+          milik audit yang sama"
+        action: "assert"
+        target: "variable"
+        asserts:
+          allowed_general_ledger_ids:
+            type: "m2m"
+            check: "exact"
+            expected_records:
+              - "REC: gl"
+          allowed_subledger_ids:
+            type: "m2m"
+            check: "exact"
+            expected_records:
+              - "REC: sl"
+
+      - step: "Set general_ledger_id"
+        action: "write"
+        target: "variable"
+        values:
+          general_ledger_id: "REC: gl.id"
+
+      - step: "Normal - data_title mengikuti general_ledger_id.title"
+        action: "assert"
+        target: "variable"
+        asserts:
+          data_title:
+            type: "value"
+            expected: "General Ledger - Sales"
+
+  # ------------------------------------------------------------------
+  # variable - _compute_value normal
+  # ------------------------------------------------------------------
+  - name: "WS-AA899BAF.variable - Compute value (normal, thousand=titik decimal=koma)"
+    steps:
+      - step: "Create worksheet aa899baf"
+        action: "create"
+        model: "general_audit_ws_aa899baf"
+        save_as: "ws"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+
+      - step: "Create general ledger with CSV raw data"
+        action: "create"
+        model: "general_audit_ws_d209914"
+        save_as: "gl"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id:
+            "REF: ssi_general_audit_worksheet_client_package.worksheet_type_d209914"
+          title: "General Ledger - Value Normal"
+          raw_data: |
+            Label,Amount
+            Row1,"1.234,56"
+            Row2,"765,44"
+
+      - step: "Create variable pointing to that GL, column 2"
+        action: "create"
+        model: "general_audit_ws_aa899baf.variable"
+        save_as: "variable"
+        values:
+          worksheet_id: "REC: ws.id"
+          name: "Sales Value Normal"
+          data_mode: "gl"
+          general_ledger_id: "REC: gl.id"
+          value_col_number: 2
+          thousand_separator: "."
+          decimal_separator: ","
+
+      - step: "Assert value parsed and summed correctly"
+        action: "assert"
+        target: "variable"
+        asserts:
+          value:
+            type: "value"
+            expected: 2000.0
+
+  # ------------------------------------------------------------------
+  # variable - _compute_value alternate separators
+  # ------------------------------------------------------------------
+  - name:
+      "WS-AA899BAF.variable - Compute value (separator alternatif thousand=koma
+      decimal=titik)"
+    steps:
+      - step: "Create worksheet aa899baf"
+        action: "create"
+        model: "general_audit_ws_aa899baf"
+        save_as: "ws"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+
+      - step: "Create general ledger with US-style CSV raw data"
+        action: "create"
+        model: "general_audit_ws_d209914"
+        save_as: "gl"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id:
+            "REF: ssi_general_audit_worksheet_client_package.worksheet_type_d209914"
+          title: "General Ledger - Value Alt Separator"
+          raw_data: |
+            Label,Amount
+            Row1,"1,000.00"
+            Row2,"500.75"
+
+      - step: "Create variable with thousand=comma decimal=dot"
+        action: "create"
+        model: "general_audit_ws_aa899baf.variable"
+        save_as: "variable"
+        values:
+          worksheet_id: "REC: ws.id"
+          name: "Sales Value Alt"
+          data_mode: "gl"
+          general_ledger_id: "REC: gl.id"
+          value_col_number: 2
+          thousand_separator: ","
+          decimal_separator: "."
+
+      - step: "Assert value parsed correctly with alternate separators"
+        action: "assert"
+        target: "variable"
+        asserts:
+          value:
+            type: "value"
+            expected: 1500.75
+
+  # ------------------------------------------------------------------
+  # variable - _compute_value with filter_where_clause
+  # ------------------------------------------------------------------
+  - name: "WS-AA899BAF.variable - Compute value dengan filter_where_clause"
+    steps:
+      - step: "Create worksheet aa899baf"
+        action: "create"
+        model: "general_audit_ws_aa899baf"
+        save_as: "ws"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+
+      - step: "Create general ledger with a Category column to filter on"
+        action: "create"
+        model: "general_audit_ws_d209914"
+        save_as: "gl"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id:
+            "REF: ssi_general_audit_worksheet_client_package.worksheet_type_d209914"
+          title: "General Ledger - Value Filtered"
+          raw_data: |
+            Label,Amount,Category
+            Row1,"1.000,00",A
+            Row2,"500,00",B
+            Row3,"250,00",A
+
+      - step: "Create variable filtered to Category = A"
+        action: "create"
+        model: "general_audit_ws_aa899baf.variable"
+        save_as: "variable"
+        values:
+          worksheet_id: "REC: ws.id"
+          name: "Sales Value Filtered"
+          data_mode: "gl"
+          general_ledger_id: "REC: gl.id"
+          value_col_number: 2
+          thousand_separator: "."
+          decimal_separator: ","
+          filter_where_clause: "Category = 'A'"
+
+      - step: "Assert value only sums rows matching the WHERE clause"
+        action: "assert"
+        target: "variable"
+        asserts:
+          value:
+            type: "value"
+            expected: 1250.0
+
+  # ------------------------------------------------------------------
+  # variable - _compute_value empty
+  # ------------------------------------------------------------------
+  - name: "WS-AA899BAF.variable - Compute value kosong (tanpa data source)"
+    steps:
+      - step: "Create worksheet aa899baf"
+        action: "create"
+        model: "general_audit_ws_aa899baf"
+        save_as: "ws"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+
+      - step: "Create variable without any general_ledger_id/subledger_id"
+        action: "create"
+        model: "general_audit_ws_aa899baf.variable"
+        save_as: "variable"
+        values:
+          worksheet_id: "REC: ws.id"
+          name: "Sales Value Empty"
+          data_mode: "gl"
+          value_col_number: 2
+          thousand_separator: "."
+          decimal_separator: ","
+
+      - step: "Assert raw_data and value are empty/zero"
+        action: "assert"
+        target: "variable"
+        asserts:
+          raw_data:
+            type: "value"
+            operator: "is_falsy"
+          value:
+            type: "value"
+            expected: 0.0
+
+  # ------------------------------------------------------------------
+  # relation - create + compute realization / div (normal), hypothesis reactive
+  # ------------------------------------------------------------------
+  - name: "WS-AA899BAF.relation - Create dan compute realization/div (normal)"
+    steps:
+      - step: "Create worksheet aa899baf"
+        action: "create"
+        model: "general_audit_ws_aa899baf"
+        save_as: "ws"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+
+      - step: "Create GL source for variable 1 (value 200)"
+        action: "create"
+        model: "general_audit_ws_d209914"
+        save_as: "gl1"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id:
+            "REF: ssi_general_audit_worksheet_client_package.worksheet_type_d209914"
+          title: "GL - Variable 1"
+          raw_data: |
+            Label,Amount
+            Row1,200
+
+      - step: "Create GL source for variable 2 (value 100)"
+        action: "create"
+        model: "general_audit_ws_d209914"
+        save_as: "gl2"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id:
+            "REF: ssi_general_audit_worksheet_client_package.worksheet_type_d209914"
+          title: "GL - Variable 2"
+          raw_data: |
+            Label,Amount
+            Row1,100
+
+      - step: "Create variable 1 (value 200.0)"
+        action: "create"
+        model: "general_audit_ws_aa899baf.variable"
+        save_as: "variable1"
+        values:
+          worksheet_id: "REC: ws.id"
+          name: "Variable 1"
+          data_mode: "gl"
+          general_ledger_id: "REC: gl1.id"
+          value_col_number: 2
+          thousand_separator: ","
+          decimal_separator: "."
+
+      - step: "Create variable 2 (value 100.0)"
+        action: "create"
+        model: "general_audit_ws_aa899baf.variable"
+        save_as: "variable2"
+        values:
+          worksheet_id: "REC: ws.id"
+          name: "Variable 2"
+          data_mode: "gl"
+          general_ledger_id: "REC: gl2.id"
+          value_col_number: 2
+          thousand_separator: ","
+          decimal_separator: "."
+
+      - step: "Sanity check variable 1 value"
+        action: "assert"
+        target: "variable1"
+        asserts:
+          value:
+            type: "value"
+            expected: 200.0
+
+      - step: "Sanity check variable 2 value"
+        action: "assert"
+        target: "variable2"
+        asserts:
+          value:
+            type: "value"
+            expected: 100.0
+
+      - step: "Create relation between variable1 and variable2"
+        action: "create"
+        model: "general_audit_ws_aa899baf.relation"
+        save_as: "relation"
+        values:
+          worksheet_id: "REC: ws.id"
+          variable1_id: "REC: variable1.id"
+          variable2_id: "REC: variable2.id"
+          hypothesis: 1.5
+
+      - step: "Assert amount1, amount2, realization, div computed correctly"
+        action: "assert"
+        target: "relation"
+        asserts:
+          amount1:
+            type: "value"
+            expected: 200.0
+          amount2:
+            type: "value"
+            expected: 100.0
+          realization:
+            type: "value"
+            expected: 2.0
+          div:
+            type: "value"
+            expected: 0.5
+
+      - step: "Assert relation appears in worksheet.relation_ids"
+        action: "assert"
+        target: "ws"
+        asserts:
+          relation_ids:
+            type: "o2m"
+            check: "contains"
+            expected_records:
+              - "REC: relation"
+
+      - step: "Write hypothesis"
+        action: "write"
+        target: "relation"
+        values:
+          hypothesis: 3.0
+
+      - step: "Assert div reacts to the new hypothesis"
+        action: "assert"
+        target: "relation"
+        asserts:
+          div:
+            type: "value"
+            expected: -1.0
+
+  # ------------------------------------------------------------------
+  # relation - realization divide-by-zero guard
+  # ------------------------------------------------------------------
+  - name: "WS-AA899BAF.relation - Compute realization pembagi nol (guard)"
+    steps:
+      - step: "Create worksheet aa899baf"
+        action: "create"
+        model: "general_audit_ws_aa899baf"
+        save_as: "ws"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+
+      - step: "Create GL source for variable 1 (value 200)"
+        action: "create"
+        model: "general_audit_ws_d209914"
+        save_as: "gl1"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id:
+            "REF: ssi_general_audit_worksheet_client_package.worksheet_type_d209914"
+          title: "GL - Variable 1 (Zero Divisor)"
+          raw_data: |
+            Label,Amount
+            Row1,200
+
+      - step: "Create variable 1 (value 200.0)"
+        action: "create"
+        model: "general_audit_ws_aa899baf.variable"
+        save_as: "variable1"
+        values:
+          worksheet_id: "REC: ws.id"
+          name: "Variable 1"
+          data_mode: "gl"
+          general_ledger_id: "REC: gl1.id"
+          value_col_number: 2
+          thousand_separator: ","
+          decimal_separator: "."
+
+      - step: "Create variable 2 without a data source (value 0.0)"
+        action: "create"
+        model: "general_audit_ws_aa899baf.variable"
+        save_as: "variable2"
+        values:
+          worksheet_id: "REC: ws.id"
+          name: "Variable 2 (Zero)"
+          data_mode: "gl"
+          value_col_number: 2
+          thousand_separator: ","
+          decimal_separator: "."
+
+      - step: "Create relation with variable2.value == 0.0"
+        action: "create"
+        model: "general_audit_ws_aa899baf.relation"
+        save_as: "relation"
+        values:
+          worksheet_id: "REC: ws.id"
+          variable1_id: "REC: variable1.id"
+          variable2_id: "REC: variable2.id"
+          hypothesis: 1.5
+
+      - step: "Assert realization is guarded to 0.0 and div follows"
+        action: "assert"
+        target: "relation"
+        asserts:
+          amount2:
+            type: "value"
+            expected: 0.0
+          realization:
+            type: "value"
+            expected: 0.0
+          div:
+            type: "value"
+            expected: -1.5
+
+  # ------------------------------------------------------------------
+  # Workflow draft -> open -> confirm -> done
+  # ------------------------------------------------------------------
+  - name: "WS-AA899BAF - Workflow draft to done"
+    steps:
+      - step: "Create worksheet aa899baf"
+        action: "create"
+        model: "general_audit_ws_aa899baf"
+        save_as: "ws"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+
+      - step: "Open worksheet"
+        action: "call"
+        target: "ws"
+        method: "action_open"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after opening worksheet"
+        action: "call"
+        target: "ws"
+        method: "invalidate_cache"
+
+      - step: "Assert worksheet open"
+        action: "assert"
+        target: "ws"
+        asserts:
+          state:
+            type: "value"
+            expected: "open"
+
+      - step: "Create conclusion for this worksheet type"
+        action: "create"
+        model: "general_audit_worksheet_conclusion"
+        save_as: "conclusion"
+        as_user: "base.user_admin"
+        values:
+          name: "No exception noted"
+          code: "/"
+          type_id: "REC: ws_type.id"
+
+      - step: "Fill required conclusion fields before confirm"
+        action: "write"
+        target: "ws"
+        as_user: "base.user_admin"
+        values:
+          conclusion_id: "REC: conclusion.id"
+          conclusion: "Plausible relationship analysis raised no exception."
+
+      - step: "Confirm worksheet"
+        action: "call"
+        target: "ws"
+        method: "action_confirm"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after confirming worksheet"
+        action: "call"
+        target: "ws"
+        method: "invalidate_cache"
+
+      - step: "Assert worksheet confirmed"
+        action: "assert"
+        target: "ws"
+        asserts:
+          state:
+            type: "value"
+            expected: "confirm"
+
+      - step: "Approve worksheet"
+        action: "call"
+        target: "ws"
+        method: "action_approve_approval"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after approving worksheet"
+        action: "call"
+        target: "ws"
+        method: "invalidate_cache"
+
+      - step: "Assert worksheet done"
+        action: "assert"
+        target: "ws"
+        asserts:
+          state:
+            type: "value"
+            expected: "done"
+
+  # ------------------------------------------------------------------
+  # Cancel & restart
+  # ------------------------------------------------------------------
+  - name: "WS-AA899BAF - Cancel and restart"
+    steps:
+      - step: "Create worksheet aa899baf"
+        action: "create"
+        model: "general_audit_ws_aa899baf"
+        save_as: "ws"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+
+      - step: "Open worksheet"
+        action: "call"
+        target: "ws"
+        method: "action_open"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after opening worksheet"
+        action: "call"
+        target: "ws"
+        method: "invalidate_cache"
+
+      - step: "Assert worksheet open"
+        action: "assert"
+        target: "ws"
+        asserts:
+          state:
+            type: "value"
+            expected: "open"
+
+      - step: "Cancel worksheet"
+        action: "call"
+        target: "ws"
+        method: "action_cancel"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after cancelling worksheet"
+        action: "call"
+        target: "ws"
+        method: "invalidate_cache"
+
+      - step: "Assert worksheet cancelled"
+        action: "assert"
+        target: "ws"
+        asserts:
+          state:
+            type: "value"
+            expected: "cancel"
+
+      - step: "Restart worksheet"
+        action: "call"
+        target: "ws"
+        method: "action_restart"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after restarting worksheet"
+        action: "call"
+        target: "ws"
+        method: "invalidate_cache"
+
+      - step: "Assert worksheet back to draft"
+        action: "assert"
+        target: "ws"
+        asserts:
+          state:
+            type: "value"
+            expected: "draft"
+
+  # ------------------------------------------------------------------
+  # Delete
+  # ------------------------------------------------------------------
+  - name: "WS-AA899BAF - Delete in draft"
+    steps:
+      - step: "Create worksheet aa899baf"
+        action: "create"
+        model: "general_audit_ws_aa899baf"
+        save_as: "ws"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+
+      - step: "Delete the worksheet"
+        action: "unlink"
+        target: "ws"
+
+      - step: "Verify worksheet deleted"
+        action: "search"
+        model: "general_audit_ws_aa899baf"
+        domain:
+          - ["id", "=", "REC: ws.id"]
+        save_as: "result"
+        expect_count: 0
+
+  # ------------------------------------------------------------------
+  # Onchange general_audit_id clears account_type_id / ws_e51bb1c_id
+  # ------------------------------------------------------------------
+  - name:
+      "WS-AA899BAF - Onchange general_audit_id mengosongkan account_type_id dan
+      ws_e51bb1c_id"
+    steps:
+      - step: >-
+          Create worksheet with account_type_id and ws_e51bb1c_id already filled -- via
+          direct ORM create(), NOT via Form. See the identical note in
+          test_data_ws_de3244b.yaml: account_type_id/ws_e51bb1c_id are only
+          Form-editable in state "open", general_audit_id only in state "draft" -- those
+          windows never overlap, so seeding via create() first and editing an EXISTING
+          record afterwards is the only way to exercise this onchange.
+        action: "create"
+        model: "general_audit_ws_aa899baf"
+        save_as: "ws_onchange"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+          account_type_id: "REC: account_type.id"
+          ws_e51bb1c_id: "REC: ws_e51bb1c.id"
+
+      - step: "Sanity check - both fields are non-empty before the onchange fires"
+        action: "assert"
+        target: "ws_onchange"
+        asserts:
+          account_type_id:
+            type: "m2o"
+            expected: "REC: account_type"
+          ws_e51bb1c_id:
+            type: "m2o"
+            expected: "REC: ws_e51bb1c"
+
+      - step:
+          "Edit via Form and change general_audit_id (still draft, so it is editable
+          there)"
+        action: "form"
+        target: "ws_onchange"
+        as_user: "base.user_admin"
+        save: false
+        ops:
+          - set: {general_audit_id: "REC: audit2"}
+          - assert:
+              account_type_id:
+                type: "value"
+                operator: "is_falsy"
+              ws_e51bb1c_id:
+                type: "value"
+                operator: "is_falsy"
+
+  # ------------------------------------------------------------------
+  # variable - Onchange data_mode clears general_ledger_id / subledger_id
+  # ------------------------------------------------------------------
+  - name:
+      "WS-AA899BAF.variable - Onchange data_mode mengosongkan general_ledger_id dan
+      subledger_id"
+    steps:
+      - step: "Create worksheet aa899baf for the variable onchange"
+        action: "create"
+        model: "general_audit_ws_aa899baf"
+        save_as: "ws"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+
+      - step: "Create general ledger data source"
+        action: "create"
+        model: "general_audit_ws_d209914"
+        save_as: "gl"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id:
+            "REF: ssi_general_audit_worksheet_client_package.worksheet_type_d209914"
+          title: "GL - Onchange"
+
+      - step: "Create subledger data source"
+        action: "create"
+        model: "general_audit_ws_b5e3d9f"
+        save_as: "sl"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id:
+            "REF: ssi_general_audit_worksheet_client_package.worksheet_type_b5e3d9f"
+          title: "SL - Onchange"
+
+      - step:
+          "Open a new variable form, set both sources, then flip data_mode to trigger
+          the onchange"
+        action: "form"
+        model: "general_audit_ws_aa899baf.variable"
+        save: false
+        ops:
+          - set: {worksheet_id: "REC: ws"}
+          - set: {data_mode: "gl"}
+          - set: {general_ledger_id: "REC: gl"}
+          - set: {subledger_id: "REC: sl"}
+          - assert:
+              general_ledger_id:
+                type: "value"
+                operator: "is_truthy"
+              subledger_id:
+                type: "value"
+                operator: "is_truthy"
+          - set: {data_mode: "subledger"}
+          - assert:
+              general_ledger_id:
+                type: "value"
+                operator: "is_falsy"
+              subledger_id:
+                type: "value"
+                operator: "is_falsy"
