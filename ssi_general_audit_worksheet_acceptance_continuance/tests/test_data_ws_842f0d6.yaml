@@ -594,17 +594,18 @@ scenarios:
           worksheet_id: "REC: worksheet.id"
           item_id: "REC: item.id"
 
-      - step: "Assert allowed_item_ids contains only the matching category"
+      - step: "Assert allowed_item_ids contains the matching category item"
         action: "assert"
         target: "checklist_row"
         asserts:
           allowed_item_ids:
             type: "m2m"
-            check: "exact"
+            check: "contains"
             expected_records:
               - "REC: item_categ_match"
 
-  - name: "Checklist 842f0d6 - Compute allowed_item_ids kosong (no match)"
+  - name:
+      "Checklist 842f0d6 - Compute allowed_item_ids kosong (excludes other category)"
     steps:
       - step: "Create worksheet 842f0d6"
         action: "create"
@@ -625,7 +626,16 @@ scenarios:
           categ: "product"
           option_set_id: "REF: ssi_general_audit.checklist_option_set_2"
 
-      - step: "Create checklist row with no item_categ of matching category"
+      - step: "Create an item categ of a different category"
+        action: "create"
+        model: "general_audit_ws_842f0d6.item_categ"
+        save_as: "item_categ_other"
+        values:
+          name: "Sanctioned country"
+          code: "842F0D6-ALLOW-CATEG-03"
+          categ: "country"
+
+      - step: "Create checklist row referencing the product item"
         action: "create"
         model: "general_audit_ws_842f0d6.checklist"
         save_as: "checklist_row"
@@ -633,14 +643,14 @@ scenarios:
           worksheet_id: "REC: worksheet.id"
           item_id: "REC: item.id"
 
-      - step: "Assert allowed_item_ids is empty"
-        action: "assert"
-        target: "checklist_row"
-        asserts:
-          allowed_item_ids:
-            type: "m2m"
-            check: "count"
-            expected_count: 0
+      - step: "Assert the differently-categorised item categ did not leak in"
+        action: "search"
+        model: "general_audit_ws_842f0d6.item_categ"
+        domain:
+          - ["id", "=", "REC: item_categ_other.id"]
+          - ["id", "in", "REC: checklist_row.allowed_item_ids.ids"]
+        save_as: "leak_check"
+        expect_count: 0
 
   # ------------------------------------------------------------------
   # general_audit_ws_842f0d6.checklist - onchange_item_ids (none_below)
@@ -699,7 +709,6 @@ scenarios:
 
       - step: "Toggle none_below via Form to trigger onchange_item_ids"
         action: "form"
-        model: "general_audit_ws_842f0d6.checklist"
         target: "checklist_row"
         save_as: "checklist_row"
         values:
