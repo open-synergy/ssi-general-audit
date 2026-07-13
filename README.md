@@ -168,7 +168,7 @@ addon | version | maintainers | summary
 [ssi_general_audit_worksheet_independence_statement](ssi_general_audit_worksheet_independence_statement/) | 14.0.1.0.1 |  | General Audit Worksheet - Independence Statement
 [ssi_general_audit_worksheet_inherent_risk](ssi_general_audit_worksheet_inherent_risk/) | 14.0.2.2.1 |  | General Audit Worksheet - Inherent Risk
 [ssi_general_audit_worksheet_lead_schedule](ssi_general_audit_worksheet_lead_schedule/) | 14.0.1.0.1 |  | General Audit Worksheet - Lead Schedule
-[ssi_general_audit_worksheet_physical_check](ssi_general_audit_worksheet_physical_check/) | 14.0.1.0.1 |  | General Audit Worksheet - Inspection
+[ssi_general_audit_worksheet_physical_check](ssi_general_audit_worksheet_physical_check/) | 14.0.1.0.2 |  | General Audit Worksheet - Inspection
 [ssi_general_audit_worksheet_planning_memorandum](ssi_general_audit_worksheet_planning_memorandum/) | 14.0.1.2.2 |  | General Audit Worksheet - Planning Memorandum
 [ssi_general_audit_worksheet_population](ssi_general_audit_worksheet_population/) | 14.0.1.0.1 |  | General Audit Worksheet - Population
 [ssi_general_audit_worksheet_preliminary_analytic_procedure](ssi_general_audit_worksheet_preliminary_analytic_procedure/) | 14.0.1.0.1 |  | General Audit Worksheet - Preliminary Analytic Procedure
