@@ -1,0 +1,389 @@
+setup:
+  steps:
+    - step: "Get config parameter model"
+      action: "search"
+      model: "ir.config_parameter"
+      domain: []
+      save_as: "config_parameter"
+      limit: 1
+
+    - step: "Allow enough CPA licenses for this scenario"
+      action: "call"
+      target: "config_parameter"
+      method: "set_param"
+      args:
+        - "ssi_general_audit.max_number_of_cpa_license"
+        - "100"
+
+    - step: "Create client partner"
+      action: "create"
+      model: "res.partner"
+      save_as: "client"
+      as_user: "base.user_admin"
+      values:
+        name: "Test Audit Client - D33420F"
+        is_company: true
+
+    - step: "Create accountant partner"
+      action: "create"
+      model: "res.partner"
+      save_as: "accountant"
+      as_user: "base.user_admin"
+      values:
+        name: "Test Audit Accountant - D33420F"
+
+    - step: "Get CPA license id category"
+      action: "ref"
+      xml_id: "ssi_partner_identification_cpa_license.partner_identification_accountant_cpa_license"
+      save_as: "cpa_category"
+
+    - step: "Grant accountant a CPA license"
+      action: "create"
+      model: "res.partner.id_number"
+      save_as: "cpa_license"
+      as_user: "base.user_admin"
+      values:
+        partner_id: "REC: accountant.id"
+        category_id: "REC: cpa_category.id"
+        name: "CPA-D33420F-0001"
+
+    - step: "Create account type set"
+      action: "create"
+      model: "client_account_type_set"
+      save_as: "account_type_set"
+      as_user: "base.user_admin"
+      values:
+        name: "Test Account Type Set - D33420F"
+        code: "/"
+
+    - step: "Create financial accounting standard"
+      action: "create"
+      model: "accountant.financial_accounting_standard"
+      save_as: "standard"
+      as_user: "base.user_admin"
+      values:
+        name: "Test Financial Accounting Standard - D33420F"
+        code: "/"
+
+    - step: "Create general audit"
+      action: "create"
+      model: "general_audit"
+      save_as: "audit"
+      as_user: "base.user_admin"
+      values:
+        title: "Test General Audit - D33420F"
+        partner_id: "REC: client.id"
+        accountant_id: "REC: accountant.id"
+        account_type_set_id: "REC: account_type_set.id"
+        financial_accounting_standard_id: "REC: standard.id"
+        date_start: 2026-01-01
+        date_end: 2026-12-31
+        need_interim: false
+        need_previous: false
+        num_of_consecutive_audit_firm: 1
+        num_of_consecutive_audit_accountant: 1
+
+    - step: "Open general audit"
+      action: "call"
+      target: "audit"
+      method: "action_open"
+      as_user: "base.user_admin"
+
+    - step: "Invalidate cache after opening general audit"
+      action: "call"
+      target: "audit"
+      method: "invalidate_cache"
+
+    - step: "Get worksheet type d33420f"
+      action: "ref"
+      xml_id: "ssi_general_audit_worksheet_audit_result.worksheet_type_d33420f"
+      save_as: "ws_type"
+
+    - step: "Create conclusion for d33420f worksheet type"
+      action: "create"
+      model: "general_audit_worksheet_conclusion"
+      save_as: "conclusion"
+      as_user: "base.user_admin"
+      values:
+        name: "No exception noted"
+        code: "/"
+        type_id: "REC: ws_type.id"
+
+scenarios:
+  # ------------------------------------------------------------------
+  # Create in draft with inline details
+  # ------------------------------------------------------------------
+  - name: "Worksheet d33420f - Create in draft with inline details"
+    steps:
+      - step: "Create worksheet d33420f with two inline details"
+        action: "create"
+        model: "general_audit_ws_d33420f"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+          detail_ids:
+            - - 0
+              - 0
+              - sequence: 10
+                risk: "major"
+                condition: "Otorisasi pembayaran tidak berjenjang."
+                criteria:
+                  "Setiap pembayaran di atas nilai tertentu wajib disetujui atasan."
+                cause: "Tidak ada matriks otorisasi yang diterapkan."
+                effect: "Risiko pembayaran tidak sah."
+                proposed_adjustment: "Menerapkan matriks otorisasi berjenjang."
+            - - 0
+              - 0
+              - sequence: 20
+                risk: "minor"
+                condition: "Pemisahan tugas kasir dan pembukuan belum optimal."
+                criteria: "Kasir dan pembukuan harus dijalankan oleh orang berbeda."
+                cause: "Keterbatasan jumlah staf."
+                effect: "Risiko kesalahan pencatatan tidak terdeteksi."
+                proposed_adjustment: "Menambah staf atau kontrol kompensasi."
+
+      - step: "Assert worksheet created in draft with two details"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          id:
+            type: "value"
+            operator: "is_truthy"
+          state:
+            type: "value"
+            expected: "draft"
+          general_audit_id:
+            type: "m2o"
+            expected: "REC: audit"
+          type_id:
+            type: "m2o"
+            expected: "REC: ws_type"
+          detail_ids:
+            type: "o2m"
+            check: "count"
+            expected_count: 2
+
+  # ------------------------------------------------------------------
+  # Workflow draft -> open -> confirm -> done
+  # ------------------------------------------------------------------
+  - name: "Worksheet d33420f - Workflow confirm to done"
+    steps:
+      - step: "Create worksheet d33420f"
+        action: "create"
+        model: "general_audit_ws_d33420f"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+
+      - step: "Open worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_open"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after opening worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Assert worksheet open"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          state:
+            type: "value"
+            expected: "open"
+
+      - step: "Fill required conclusion fields before confirm"
+        action: "write"
+        target: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          conclusion_id: "REC: conclusion.id"
+          conclusion: "The control deficiencies have been evaluated."
+
+      - step: "Confirm worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_confirm"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after confirming worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Assert worksheet confirmed"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          state:
+            type: "value"
+            expected: "confirm"
+
+      - step: "Approve worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_approve_approval"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after approving worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Assert worksheet done"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          state:
+            type: "value"
+            expected: "done"
+
+  # ------------------------------------------------------------------
+  # Cancel and restart
+  # ------------------------------------------------------------------
+  - name: "Worksheet d33420f - Cancel and restart"
+    steps:
+      - step: "Create worksheet d33420f"
+        action: "create"
+        model: "general_audit_ws_d33420f"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+
+      - step: "Open worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_open"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after opening worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Assert worksheet open"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          state:
+            type: "value"
+            expected: "open"
+
+      - step: "Cancel worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_cancel"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after cancelling worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Assert worksheet cancelled"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          state:
+            type: "value"
+            expected: "cancel"
+
+      - step: "Restart worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_restart"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after restarting worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Assert worksheet back to draft"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          state:
+            type: "value"
+            expected: "draft"
+
+  # ------------------------------------------------------------------
+  # Detail model - create, write, delete
+  # ------------------------------------------------------------------
+  - name: "Detail d33420f - Create, write, delete"
+    steps:
+      - step: "Create worksheet d33420f"
+        action: "create"
+        model: "general_audit_ws_d33420f"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+
+      - step: "Create detail directly with required worksheet_id"
+        action: "create"
+        model: "general_audit_ws_d33420f.detail"
+        save_as: "detail"
+        as_user: "base.user_admin"
+        values:
+          worksheet_id: "REC: worksheet.id"
+          sequence: 30
+          risk: "major"
+          condition: "Akses sistem keuangan tidak dibatasi berdasarkan peran."
+
+      - step: "Assert detail created"
+        action: "assert"
+        target: "detail"
+        asserts:
+          id:
+            type: "value"
+            operator: "is_truthy"
+          worksheet_id:
+            type: "m2o"
+            expected: "REC: worksheet"
+          risk:
+            type: "value"
+            expected: "major"
+          state:
+            type: "value"
+            expected: "draft"
+
+      - step: "Update detail risk and condition"
+        action: "write"
+        target: "detail"
+        as_user: "base.user_admin"
+        values:
+          risk: "minor"
+          condition: "Akses sistem keuangan telah dibatasi sebagian."
+
+      - step: "Assert detail updated"
+        action: "assert"
+        target: "detail"
+        asserts:
+          risk:
+            type: "value"
+            expected: "minor"
+          condition:
+            type: "value"
+            expected: "Akses sistem keuangan telah dibatasi sebagian."
+
+      - step: "Delete detail"
+        action: "unlink"
+        target: "detail"
+
+      - step: "Verify detail deleted"
+        action: "search"
+        model: "general_audit_ws_d33420f.detail"
+        domain:
+          - ["condition", "=", "Akses sistem keuangan telah dibatasi sebagian."]
+        save_as: "result"
+        expect_count: 0

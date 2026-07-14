@@ -1,0 +1,879 @@
+setup:
+  steps:
+    - step: "Get config parameter model"
+      action: "search"
+      model: "ir.config_parameter"
+      domain: []
+      save_as: "config_parameter"
+      limit: 1
+
+    - step: "Allow enough CPA licenses for this scenario"
+      action: "call"
+      target: "config_parameter"
+      method: "set_param"
+      args:
+        - "ssi_general_audit.max_number_of_cpa_license"
+        - "100"
+
+    - step: "Create client partner"
+      action: "create"
+      model: "res.partner"
+      save_as: "client"
+      as_user: "base.user_admin"
+      values:
+        name: "Test Audit Client - BC3E272"
+        is_company: true
+
+    - step: "Create accountant partner"
+      action: "create"
+      model: "res.partner"
+      save_as: "accountant"
+      as_user: "base.user_admin"
+      values:
+        name: "Test Audit Accountant - BC3E272"
+
+    - step: "Get CPA license id category"
+      action: "ref"
+      xml_id: "ssi_partner_identification_cpa_license.partner_identification_accountant_cpa_license"
+      save_as: "cpa_category"
+
+    - step: "Grant accountant a CPA license"
+      action: "create"
+      model: "res.partner.id_number"
+      save_as: "cpa_license"
+      as_user: "base.user_admin"
+      values:
+        partner_id: "REC: accountant.id"
+        category_id: "REC: cpa_category.id"
+        name: "CPA-BC3E272-0001"
+
+    - step: "Create account type set"
+      action: "create"
+      model: "client_account_type_set"
+      save_as: "account_type_set"
+      as_user: "base.user_admin"
+      values:
+        name: "Test Account Type Set - BC3E272"
+        code: "/"
+
+    - step: "Create financial accounting standard"
+      action: "create"
+      model: "accountant.financial_accounting_standard"
+      save_as: "standard"
+      as_user: "base.user_admin"
+      values:
+        name: "Test Financial Accounting Standard - BC3E272"
+        code: "/"
+
+    - step: "Create general audit"
+      action: "create"
+      model: "general_audit"
+      save_as: "audit"
+      as_user: "base.user_admin"
+      values:
+        title: "Test General Audit - BC3E272"
+        partner_id: "REC: client.id"
+        accountant_id: "REC: accountant.id"
+        account_type_set_id: "REC: account_type_set.id"
+        financial_accounting_standard_id: "REC: standard.id"
+        date_start: 2026-01-01
+        date_end: 2026-12-31
+        need_interim: false
+        need_previous: false
+        num_of_consecutive_audit_firm: 1
+        num_of_consecutive_audit_accountant: 1
+
+    - step: "Open general audit"
+      action: "call"
+      target: "audit"
+      method: "action_open"
+      as_user: "base.user_admin"
+
+    - step: "Invalidate cache after opening general audit"
+      action: "call"
+      target: "audit"
+      method: "invalidate_cache"
+
+    - step: "Get worksheet type a0319a2"
+      action: "ref"
+      xml_id: "ssi_general_audit_worksheet_audit_result.worksheet_type_a0319a2"
+      save_as: "ws_type_a0319a2"
+
+    - step: "Get worksheet type d33420f"
+      action: "ref"
+      xml_id: "ssi_general_audit_worksheet_audit_result.worksheet_type_d33420f"
+      save_as: "ws_type_d33420f"
+
+    - step: "Get worksheet type bc3e272"
+      action: "ref"
+      xml_id: "ssi_general_audit_worksheet_audit_result.worksheet_type_bc3e272"
+      save_as: "ws_type"
+
+    - step: "Create conclusion for bc3e272 worksheet type"
+      action: "create"
+      model: "general_audit_worksheet_conclusion"
+      save_as: "conclusion"
+      as_user: "base.user_admin"
+      values:
+        name: "The audit findings have been discussed"
+        code: "/"
+        type_id: "REC: ws_type.id"
+
+scenarios:
+  # ------------------------------------------------------------------
+  # action_populate - normal
+  # ------------------------------------------------------------------
+  - name: "Worksheet bc3e272 - Action populate (normal)"
+    steps:
+      - step: "Create a0319a2 worksheet with two details"
+        action: "create"
+        model: "general_audit_ws_a0319a2"
+        save_as: "a0319a2_ws"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_a0319a2.id"
+          detail_ids:
+            - - 0
+              - 0
+              - sequence: 10
+                risk: "major"
+                condition: "Finding 1"
+            - - 0
+              - 0
+              - sequence: 20
+                risk: "minor"
+                condition: "Finding 2"
+
+      - step: "Create d33420f worksheet with two details"
+        action: "create"
+        model: "general_audit_ws_d33420f"
+        save_as: "d33420f_ws"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_d33420f.id"
+          detail_ids:
+            - - 0
+              - 0
+              - sequence: 10
+                risk: "major"
+                condition: "Deficiency 1"
+            - - 0
+              - 0
+              - sequence: 20
+                risk: "minor"
+                condition: "Deficiency 2"
+
+      - step: "Create bc3e272 worksheet"
+        action: "create"
+        model: "general_audit_ws_bc3e272"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+
+      - step: "Call action_populate"
+        action: "call"
+        target: "worksheet"
+        method: "action_populate"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after populate"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Assert influence_ids and control_ids populated"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          influence_ids:
+            type: "o2m"
+            check: "count"
+            expected_count: 2
+          control_ids:
+            type: "o2m"
+            check: "count"
+            expected_count: 2
+
+  # ------------------------------------------------------------------
+  # action_populate - idempotent (called twice)
+  # ------------------------------------------------------------------
+  - name: "Worksheet bc3e272 - Action populate (idempotent)"
+    steps:
+      - step: "Create a0319a2 worksheet with two details"
+        action: "create"
+        model: "general_audit_ws_a0319a2"
+        save_as: "a0319a2_ws"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_a0319a2.id"
+          detail_ids:
+            - - 0
+              - 0
+              - sequence: 10
+                risk: "major"
+                condition: "Finding 1"
+            - - 0
+              - 0
+              - sequence: 20
+                risk: "minor"
+                condition: "Finding 2"
+
+      - step: "Create d33420f worksheet with two details"
+        action: "create"
+        model: "general_audit_ws_d33420f"
+        save_as: "d33420f_ws"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_d33420f.id"
+          detail_ids:
+            - - 0
+              - 0
+              - sequence: 10
+                risk: "major"
+                condition: "Deficiency 1"
+            - - 0
+              - 0
+              - sequence: 20
+                risk: "minor"
+                condition: "Deficiency 2"
+
+      - step: "Create bc3e272 worksheet"
+        action: "create"
+        model: "general_audit_ws_bc3e272"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+
+      - step: "Call action_populate (first time)"
+        action: "call"
+        target: "worksheet"
+        method: "action_populate"
+        as_user: "base.user_admin"
+
+      - step: "Call action_populate (second time)"
+        action: "call"
+        target: "worksheet"
+        method: "action_populate"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after populate"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Search influence lines - count must stay at 2"
+        action: "search"
+        model: "general_audit_ws_bc3e272.influence"
+        domain:
+          - ["worksheet_id", "=", "REC: worksheet.id"]
+        save_as: "influence_result"
+        expect_count: 2
+
+      - step: "Search control lines - count must stay at 2"
+        action: "search"
+        model: "general_audit_ws_bc3e272.control"
+        domain:
+          - ["worksheet_id", "=", "REC: worksheet.id"]
+        save_as: "control_result"
+        expect_count: 2
+
+  # ------------------------------------------------------------------
+  # action_populate - empty sources
+  # ------------------------------------------------------------------
+  - name: "Worksheet bc3e272 - Action populate (kosong)"
+    steps:
+      - step: "Create bc3e272 worksheet without any a0319a2/d33420f source"
+        action: "create"
+        model: "general_audit_ws_bc3e272"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+
+      - step: "Call action_populate"
+        action: "call"
+        target: "worksheet"
+        method: "action_populate"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after populate"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Assert influence_ids and control_ids are empty"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          influence_ids:
+            type: "o2m"
+            check: "count"
+            expected_count: 0
+          control_ids:
+            type: "o2m"
+            check: "count"
+            expected_count: 0
+
+  # ------------------------------------------------------------------
+  # action_populate - stale row removed when its source moves out
+  # of the general_audit (exercises the `unlink` branch of `_populate`)
+  # ------------------------------------------------------------------
+  - name: "Worksheet bc3e272 - Action populate removes stale row"
+    steps:
+      - step: "Create a0319a2 worksheet"
+        action: "create"
+        model: "general_audit_ws_a0319a2"
+        save_as: "a0319a2_ws"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_a0319a2.id"
+
+      - step: "Create one detail directly (so it can be re-pointed later)"
+        action: "create"
+        model: "general_audit_ws_a0319a2.detail"
+        save_as: "moved_detail"
+        as_user: "base.user_admin"
+        values:
+          worksheet_id: "REC: a0319a2_ws.id"
+          sequence: 10
+          risk: "major"
+          condition: "Finding to be moved out"
+
+      - step: "Create bc3e272 worksheet"
+        action: "create"
+        model: "general_audit_ws_bc3e272"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+
+      - step: "Call action_populate (picks up the detail)"
+        action: "call"
+        target: "worksheet"
+        method: "action_populate"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after populate"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Assert influence_ids has one row"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          influence_ids:
+            type: "o2m"
+            check: "count"
+            expected_count: 1
+
+      # Build a fully independent second general_audit to host a second
+      # a0319a2 worksheet. general_audit_worksheet_mixin only allows one
+      # worksheet per (general_audit_id, type_id), so the second a0319a2
+      # cannot be created on the same `audit` fixture (see
+      # `_check_unique_general_audit`).
+      - step: "Create second client partner"
+        action: "create"
+        model: "res.partner"
+        save_as: "client_2"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Audit Client 2 - BC3E272"
+          is_company: true
+
+      - step: "Create second accountant partner"
+        action: "create"
+        model: "res.partner"
+        save_as: "accountant_2"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Audit Accountant 2 - BC3E272"
+
+      - step: "Grant second accountant a CPA license"
+        action: "create"
+        model: "res.partner.id_number"
+        save_as: "cpa_license_2"
+        as_user: "base.user_admin"
+        values:
+          partner_id: "REC: accountant_2.id"
+          category_id: "REC: cpa_category.id"
+          name: "CPA-BC3E272-0002"
+
+      - step: "Create second account type set"
+        action: "create"
+        model: "client_account_type_set"
+        save_as: "account_type_set_2"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Account Type Set 2 - BC3E272"
+          code: "/"
+
+      - step: "Create second financial accounting standard"
+        action: "create"
+        model: "accountant.financial_accounting_standard"
+        save_as: "standard_2"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Financial Accounting Standard 2 - BC3E272"
+          code: "/"
+
+      - step: "Create second general audit"
+        action: "create"
+        model: "general_audit"
+        save_as: "audit_2"
+        as_user: "base.user_admin"
+        values:
+          title: "Test General Audit 2 - BC3E272"
+          partner_id: "REC: client_2.id"
+          accountant_id: "REC: accountant_2.id"
+          account_type_set_id: "REC: account_type_set_2.id"
+          financial_accounting_standard_id: "REC: standard_2.id"
+          date_start: 2026-01-01
+          date_end: 2026-12-31
+          need_interim: false
+          need_previous: false
+          num_of_consecutive_audit_firm: 1
+          num_of_consecutive_audit_accountant: 1
+
+      - step: "Open second general audit"
+        action: "call"
+        target: "audit_2"
+        method: "action_open"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after opening second general audit"
+        action: "call"
+        target: "audit_2"
+        method: "invalidate_cache"
+
+      - step: "Create a second a0319a2 worksheet on the second general audit"
+        action: "create"
+        model: "general_audit_ws_a0319a2"
+        save_as: "a0319a2_ws_2"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit_2.id"
+          type_id: "REC: ws_type_a0319a2.id"
+
+      - step: "Move the detail out to the second audit's a0319a2 worksheet"
+        action: "write"
+        target: "moved_detail"
+        as_user: "base.user_admin"
+        values:
+          worksheet_id: "REC: a0319a2_ws_2.id"
+
+      - step: "Call action_populate again (source has moved out)"
+        action: "call"
+        target: "worksheet"
+        method: "action_populate"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after second populate"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Assert the stale influence row has been unlinked"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          influence_ids:
+            type: "o2m"
+            check: "count"
+            expected_count: 0
+
+  # ------------------------------------------------------------------
+  # Workflow draft -> open -> confirm -> done
+  # (opening also exercises the post_open_action auto-populate hook)
+  # ------------------------------------------------------------------
+  - name: "Worksheet bc3e272 - Workflow confirm to done"
+    steps:
+      - step: "Create a0319a2 worksheet with one detail"
+        action: "create"
+        model: "general_audit_ws_a0319a2"
+        save_as: "a0319a2_ws"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_a0319a2.id"
+          detail_ids:
+            - - 0
+              - 0
+              - sequence: 10
+                risk: "major"
+                condition: "Finding 1"
+
+      - step: "Create d33420f worksheet with one detail"
+        action: "create"
+        model: "general_audit_ws_d33420f"
+        save_as: "d33420f_ws"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_d33420f.id"
+          detail_ids:
+            - - 0
+              - 0
+              - sequence: 10
+                risk: "major"
+                condition: "Deficiency 1"
+
+      - step: "Create bc3e272 worksheet"
+        action: "create"
+        model: "general_audit_ws_bc3e272"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+
+      - step: "Open worksheet (triggers auto-populate)"
+        action: "call"
+        target: "worksheet"
+        method: "action_open"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after opening worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Assert worksheet open and auto-populated"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          state:
+            type: "value"
+            expected: "open"
+          influence_ids:
+            type: "o2m"
+            check: "count"
+            expected_count: 1
+          control_ids:
+            type: "o2m"
+            check: "count"
+            expected_count: 1
+
+      - step: "Fill required conclusion fields before confirm"
+        action: "write"
+        target: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          conclusion_id: "REC: conclusion.id"
+          conclusion: "Audit findings have been discussed with management."
+
+      - step: "Confirm worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_confirm"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after confirming worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Assert worksheet confirmed"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          state:
+            type: "value"
+            expected: "confirm"
+
+      - step: "Approve worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_approve_approval"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after approving worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Assert worksheet done"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          state:
+            type: "value"
+            expected: "done"
+
+  # ------------------------------------------------------------------
+  # Cancel and restart
+  # ------------------------------------------------------------------
+  - name: "Worksheet bc3e272 - Cancel and restart"
+    steps:
+      - step: "Create bc3e272 worksheet"
+        action: "create"
+        model: "general_audit_ws_bc3e272"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+
+      - step: "Open worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_open"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after opening worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Assert worksheet open"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          state:
+            type: "value"
+            expected: "open"
+
+      - step: "Cancel worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_cancel"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after cancelling worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Assert worksheet cancelled"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          state:
+            type: "value"
+            expected: "cancel"
+
+      - step: "Restart worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_restart"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after restarting worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Assert worksheet back to draft"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          state:
+            type: "value"
+            expected: "draft"
+
+  # ------------------------------------------------------------------
+  # Influence line model - create, write, delete
+  # ------------------------------------------------------------------
+  - name: "Influence bc3e272 - Create, write, delete"
+    steps:
+      - step: "Create a0319a2 worksheet"
+        action: "create"
+        model: "general_audit_ws_a0319a2"
+        save_as: "a0319a2_ws"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_a0319a2.id"
+
+      - step: "Create a0319a2 detail directly"
+        action: "create"
+        model: "general_audit_ws_a0319a2.detail"
+        save_as: "detail"
+        as_user: "base.user_admin"
+        values:
+          worksheet_id: "REC: a0319a2_ws.id"
+          sequence: 10
+          risk: "major"
+          condition: "Finding linked to discussion"
+
+      - step: "Create bc3e272 worksheet"
+        action: "create"
+        model: "general_audit_ws_bc3e272"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+
+      - step: "Create influence line directly with required worksheet_id"
+        action: "create"
+        model: "general_audit_ws_bc3e272.influence"
+        save_as: "influence"
+        as_user: "base.user_admin"
+        values:
+          worksheet_id: "REC: worksheet.id"
+          detail_id: "REC: detail.id"
+          result: "resolved"
+
+      - step: "Assert influence line created and related fields pulled"
+        action: "assert"
+        target: "influence"
+        asserts:
+          id:
+            type: "value"
+            operator: "is_truthy"
+          worksheet_id:
+            type: "m2o"
+            expected: "REC: worksheet"
+          detail_id:
+            type: "m2o"
+            expected: "REC: detail"
+          condition:
+            type: "value"
+            expected: "Finding linked to discussion"
+          risk:
+            type: "value"
+            expected: "major"
+          result:
+            type: "value"
+            expected: "resolved"
+
+      - step: "Update influence result and follow_up"
+        action: "write"
+        target: "influence"
+        as_user: "base.user_admin"
+        values:
+          result: "escalated"
+          follow_up: "Escalated to management letter."
+
+      - step: "Assert influence line updated"
+        action: "assert"
+        target: "influence"
+        asserts:
+          result:
+            type: "value"
+            expected: "escalated"
+          follow_up:
+            type: "value"
+            expected: "Escalated to management letter."
+
+      - step: "Delete influence line"
+        action: "unlink"
+        target: "influence"
+
+      - step: "Verify influence line deleted"
+        action: "search"
+        model: "general_audit_ws_bc3e272.influence"
+        domain:
+          - ["follow_up", "=", "Escalated to management letter."]
+        save_as: "result"
+        expect_count: 0
+
+  # ------------------------------------------------------------------
+  # Control line model - create, write, delete
+  # ------------------------------------------------------------------
+  - name: "Control bc3e272 - Create, write, delete"
+    steps:
+      - step: "Create d33420f worksheet"
+        action: "create"
+        model: "general_audit_ws_d33420f"
+        save_as: "d33420f_ws"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_d33420f.id"
+
+      - step: "Create d33420f detail directly"
+        action: "create"
+        model: "general_audit_ws_d33420f.detail"
+        save_as: "detail"
+        as_user: "base.user_admin"
+        values:
+          worksheet_id: "REC: d33420f_ws.id"
+          sequence: 10
+          risk: "minor"
+          condition: "Deficiency linked to discussion"
+
+      - step: "Create bc3e272 worksheet"
+        action: "create"
+        model: "general_audit_ws_bc3e272"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+
+      - step: "Create control line directly with required worksheet_id"
+        action: "create"
+        model: "general_audit_ws_bc3e272.control"
+        save_as: "control"
+        as_user: "base.user_admin"
+        values:
+          worksheet_id: "REC: worksheet.id"
+          detail_id: "REC: detail.id"
+          result: "resolved"
+
+      - step: "Assert control line created and related fields pulled"
+        action: "assert"
+        target: "control"
+        asserts:
+          id:
+            type: "value"
+            operator: "is_truthy"
+          worksheet_id:
+            type: "m2o"
+            expected: "REC: worksheet"
+          detail_id:
+            type: "m2o"
+            expected: "REC: detail"
+          condition:
+            type: "value"
+            expected: "Deficiency linked to discussion"
+          risk:
+            type: "value"
+            expected: "minor"
+          result:
+            type: "value"
+            expected: "resolved"
+
+      - step: "Update control result and follow_up"
+        action: "write"
+        target: "control"
+        as_user: "base.user_admin"
+        values:
+          result: "escalated"
+          follow_up: "Escalated to management letter."
+
+      - step: "Assert control line updated"
+        action: "assert"
+        target: "control"
+        asserts:
+          result:
+            type: "value"
+            expected: "escalated"
+          follow_up:
+            type: "value"
+            expected: "Escalated to management letter."
+
+      - step: "Delete control line"
+        action: "unlink"
+        target: "control"
+
+      - step: "Verify control line deleted"
+        action: "search"
+        model: "general_audit_ws_bc3e272.control"
+        domain:
+          - ["follow_up", "=", "Escalated to management letter."]
+        save_as: "result"
+        expect_count: 0
