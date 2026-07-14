@@ -43,9 +43,14 @@ class TestGeneralAuditWSd9d2b44(YamlTransactionCase):
         self.assertEqual(form.parent_type_id, ws_type)
         # standard_item_ids / allowed_conclusion_ids
         # (general_audit_worksheet_mixin, store=False) also refresh from the
-        # same onchange for the defaulted type_id.
+        # same onchange for the defaulted type_id. form.standard_item_ids is
+        # an M2MProxy (the form is never saved -- general_audit_id is
+        # required and deliberately left unfilled, see docstring above), so
+        # it must be iterated directly rather than read via `.ids` (that
+        # attribute only exists on a real recordset).
         self.assertEqual(
-            set(form.standard_item_ids.ids), set(ws_type.standard_item_ids.ids)
+            {r.id for r in form.standard_item_ids},
+            set(ws_type.standard_item_ids.ids),
         )
         conclusion = self.env.ref(
             "ssi_general_audit_worksheet_preliminary_materiality."
