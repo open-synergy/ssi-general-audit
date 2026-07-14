@@ -1,0 +1,391 @@
+setup:
+  steps:
+    - step: "Get config parameter model"
+      action: "search"
+      model: "ir.config_parameter"
+      domain: []
+      save_as: "config_parameter"
+      limit: 1
+
+    - step: "Allow enough CPA licenses for this scenario"
+      action: "call"
+      target: "config_parameter"
+      method: "set_param"
+      args:
+        - "ssi_general_audit.max_number_of_cpa_license"
+        - "100"
+
+    - step: "Create client partner"
+      action: "create"
+      model: "res.partner"
+      save_as: "client"
+      as_user: "base.user_admin"
+      values:
+        name: "Test Audit Client - B4F7D9C Vouching"
+        is_company: true
+
+    - step: "Create accountant partner"
+      action: "create"
+      model: "res.partner"
+      save_as: "accountant"
+      as_user: "base.user_admin"
+      values:
+        name: "Test Audit Accountant - B4F7D9C Vouching"
+
+    - step: "Get CPA license id category"
+      action: "ref"
+      xml_id: "ssi_partner_identification_cpa_license.partner_identification_accountant_cpa_license"
+      save_as: "cpa_category"
+
+    - step: "Grant accountant a CPA license"
+      action: "create"
+      model: "res.partner.id_number"
+      save_as: "cpa_license"
+      as_user: "base.user_admin"
+      values:
+        partner_id: "REC: accountant.id"
+        category_id: "REC: cpa_category.id"
+        name: "CPA-B4F7D9C-VOUCHING-0001"
+
+    - step: "Create account type set"
+      action: "create"
+      model: "client_account_type_set"
+      save_as: "account_type_set"
+      as_user: "base.user_admin"
+      values:
+        name: "Test Account Type Set - B4F7D9C Vouching"
+        code: "/"
+
+    - step: "Create financial accounting standard"
+      action: "create"
+      model: "accountant.financial_accounting_standard"
+      save_as: "standard"
+      as_user: "base.user_admin"
+      values:
+        name: "Test Financial Accounting Standard - B4F7D9C Vouching"
+        code: "/"
+
+    - step: "Create general audit"
+      action: "create"
+      model: "general_audit"
+      save_as: "audit"
+      as_user: "base.user_admin"
+      values:
+        title: "Test General Audit - B4F7D9C Vouching"
+        partner_id: "REC: client.id"
+        accountant_id: "REC: accountant.id"
+        account_type_set_id: "REC: account_type_set.id"
+        financial_accounting_standard_id: "REC: standard.id"
+        date_start: 2026-01-01
+        date_end: 2026-12-31
+        need_interim: false
+        need_previous: false
+        num_of_consecutive_audit_firm: 1
+        num_of_consecutive_audit_accountant: 1
+
+    - step: "Open general audit"
+      action: "call"
+      target: "audit"
+      method: "action_open"
+      as_user: "base.user_admin"
+
+    - step: "Invalidate cache after opening general audit"
+      action: "call"
+      target: "audit"
+      method: "invalidate_cache"
+
+    - step: "Get worksheet type b4f7d9c"
+      action: "ref"
+      xml_id: "ssi_general_audit_worksheet_audit_procedure_vouching.worksheet_type_b4f7d9c"
+      save_as: "ws_type"
+
+    - step: "Get worksheet type d209914 (General Ledger)"
+      action: "ref"
+      xml_id: "ssi_general_audit_worksheet_client_package.worksheet_type_d209914"
+      save_as: "ws_type_d209914"
+
+    - step: "Get worksheet type a916660 (Test of Detail)"
+      action: "ref"
+      xml_id: "ssi_general_audit_worksheet_test_of_detail.worksheet_type_a916660"
+      save_as: "ws_type_a916660"
+
+    - step: "Create client account group"
+      action: "create"
+      model: "client_account_group"
+      save_as: "account_group"
+      as_user: "base.user_admin"
+      values:
+        name: "Test Account Group - B4F7D9C Vouching"
+        code: "/"
+
+    - step: "Create client account type"
+      action: "create"
+      model: "client_account_type"
+      save_as: "account_type"
+      as_user: "base.user_admin"
+      values:
+        name: "Test Account Type - B4F7D9C Vouching"
+        code: "/"
+        group_id: "REC: account_group.id"
+        # No general_audit.standard_detail is created against this account
+        # type anywhere in this file, so the crashing default
+        # ("result = document.balance") never actually gets evaluated here.
+        # Set explicitly anyway, per the repo-wide rule of never leaving
+        # client_account_type.python_code at its default.
+        python_code: "result = 0.0"
+
+    - step:
+        "Create worksheet b4f7d9c (parent for all data_comparison/vouching fixtures)"
+      action: "create"
+      model: "general_audit_ws_b4f7d9c"
+      save_as: "worksheet"
+      as_user: "base.user_admin"
+      values:
+        general_audit_id: "REC: audit.id"
+        type_id: "REC: ws_type.id"
+
+scenarios:
+  # ------------------------------------------------------------------
+  # data_comparison - Create + _compute_name
+  # ------------------------------------------------------------------
+  - name: "Data comparison b4f7d9c - Create and compute name from GL title"
+    steps:
+      - step: "Create General Ledger worksheet"
+        action: "create"
+        model: "general_audit_ws_d209914"
+        save_as: "gl"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_d209914.id"
+          account_mode: "standard_account"
+          account_type_id: "REC: account_type.id"
+          title: "GL Data Comparison Name"
+
+      - step: "Create data comparison referencing the GL"
+        action: "create"
+        model: "general_audit_ws_b4f7d9c.data_comparison"
+        save_as: "dc"
+        as_user: "base.user_admin"
+        values:
+          worksheet_id: "REC: worksheet.id"
+          data_mode: "gl"
+          general_ledger_id: "REC: gl.id"
+
+      - step: "Assert data comparison created and name computed from GL title"
+        action: "assert"
+        target: "dc"
+        asserts:
+          id:
+            type: "value"
+            operator: "is_truthy"
+          worksheet_id:
+            type: "m2o"
+            expected: "REC: worksheet"
+          name:
+            type: "value"
+            expected: "GL Data Comparison Name"
+
+  # ------------------------------------------------------------------
+  # vouching - Create + _compute_name
+  # ------------------------------------------------------------------
+  - name: "Vouching line b4f7d9c - Create and compute name from data_comparison"
+    steps:
+      - step: "Create General Ledger worksheet"
+        action: "create"
+        model: "general_audit_ws_d209914"
+        save_as: "gl"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_d209914.id"
+          account_mode: "standard_account"
+          account_type_id: "REC: account_type.id"
+          title: "GL Vouching Line Name"
+
+      - step: "Create data comparison referencing the GL"
+        action: "create"
+        model: "general_audit_ws_b4f7d9c.data_comparison"
+        save_as: "dc"
+        as_user: "base.user_admin"
+        values:
+          worksheet_id: "REC: worksheet.id"
+          data_mode: "gl"
+          general_ledger_id: "REC: gl.id"
+
+      - step: "Create vouching line referencing the data comparison"
+        action: "create"
+        model: "general_audit_ws_b4f7d9c.vouching"
+        save_as: "vouching"
+        as_user: "base.user_admin"
+        values:
+          worksheet_id: "REC: worksheet.id"
+          data_comparison_id: "REC: dc.id"
+          comparison_mode: "sum"
+
+      - step: "Assert vouching line created and name mirrors data comparison name"
+        action: "assert"
+        target: "vouching"
+        asserts:
+          id:
+            type: "value"
+            operator: "is_truthy"
+          data_comparison_id:
+            type: "m2o"
+            expected: "REC: dc"
+          name:
+            type: "value"
+            expected: "GL Vouching Line Name"
+
+  # ------------------------------------------------------------------
+  # action_compute_vouching_data - normal
+  # ------------------------------------------------------------------
+  - name: "Vouching line b4f7d9c - action_compute_vouching_data (normal)"
+    steps:
+      - step: "Create General Ledger worksheet holding the reference raw data"
+        action: "create"
+        model: "general_audit_ws_d209914"
+        save_as: "ref_gl"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_d209914.id"
+          account_mode: "standard_account"
+          account_type_id: "REC: account_type.id"
+          raw_data: "Ref,Amount\nREF1,1000\nREF2,2000\n"
+          title: "GL Vouching Reference"
+
+      - step: "Create Test of Detail worksheet with sampling data"
+        action: "create"
+        model: "general_audit_ws_a916660"
+        save_as: "tod"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_a916660.id"
+          sampling_data: "No,Ref\n1,REF1\n2,REF2\n"
+
+      - step: "Configure the parent worksheet's population/sampling"
+        action: "write"
+        target: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          data_mode: "gl"
+          general_ledger_id: "REC: ref_gl.id"
+          test_of_detail_id: "REC: tod.id"
+          reference_col_number: 1
+
+      - step: "Create General Ledger worksheet holding the comparison raw data"
+        action: "create"
+        model: "general_audit_ws_d209914"
+        save_as: "cmp_gl"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_d209914.id"
+          account_mode: "standard_account"
+          account_type_id: "REC: account_type.id"
+          raw_data: "Ref,Amount\nREF1,600\nREF1,400\nREF2,1500\n"
+          title: "GL Vouching Comparison"
+
+      - step: "Create data comparison referencing the comparison GL"
+        action: "create"
+        model: "general_audit_ws_b4f7d9c.data_comparison"
+        save_as: "dc"
+        as_user: "base.user_admin"
+        values:
+          worksheet_id: "REC: worksheet.id"
+          data_mode: "gl"
+          general_ledger_id: "REC: cmp_gl.id"
+          reference_col_number: 1
+
+      - step: "Create vouching line summing amount column 2 on both sides"
+        action: "create"
+        model: "general_audit_ws_b4f7d9c.vouching"
+        save_as: "vouching"
+        as_user: "base.user_admin"
+        values:
+          worksheet_id: "REC: worksheet.id"
+          data_comparison_id: "REC: dc.id"
+          comparison_mode: "sum"
+          reference_amount_col: 2
+          comparison_amount_col: 2
+
+      - step:
+          "Assert vouching_data is empty before calling action_compute_vouching_data"
+        action: "assert"
+        target: "vouching"
+        asserts:
+          vouching_data:
+            type: "value"
+            operator: "is_falsy"
+
+      - step: "Call action_compute_vouching_data"
+        action: "call"
+        target: "vouching"
+        method: "action_compute_vouching_data"
+        as_user: "base.user_admin"
+
+      - step: "Assert vouching_data has the expected header"
+        action: "assert"
+        target: "vouching"
+        asserts:
+          vouching_data:
+            type: "value"
+            operator: "contains"
+            expected: "Ref,Amount Reference,Amount Comparison,Diff,Result"
+
+      - step: "Assert REF1 matches exactly (1000 vs 600+400=1000, diff 0, True)"
+        action: "assert"
+        target: "vouching"
+        asserts:
+          vouching_data:
+            type: "value"
+            operator: "contains"
+            expected: "REF1,1000,1000,0,True"
+
+      - step: "Assert REF2 diverges (2000 vs 1500, diff 500, False)"
+        action: "assert"
+        target: "vouching"
+        asserts:
+          vouching_data:
+            type: "value"
+            operator: "contains"
+            expected: "REF2,2000,1500,500,False"
+
+  # ------------------------------------------------------------------
+  # action_compute_vouching_data - kosong
+  # ------------------------------------------------------------------
+  - name: "Vouching line b4f7d9c - action_compute_vouching_data (kosong)"
+    steps:
+      - step: "Create data comparison without any raw data source"
+        action: "create"
+        model: "general_audit_ws_b4f7d9c.data_comparison"
+        save_as: "dc"
+        as_user: "base.user_admin"
+        values:
+          worksheet_id: "REC: worksheet.id"
+
+      - step: "Create vouching line against the empty data comparison"
+        action: "create"
+        model: "general_audit_ws_b4f7d9c.vouching"
+        save_as: "vouching"
+        as_user: "base.user_admin"
+        values:
+          worksheet_id: "REC: worksheet.id"
+          data_comparison_id: "REC: dc.id"
+          comparison_mode: "sum"
+
+      - step: "Call action_compute_vouching_data"
+        action: "call"
+        target: "vouching"
+        method: "action_compute_vouching_data"
+        as_user: "base.user_admin"
+
+      - step: "Assert vouching_data stays empty"
+        action: "assert"
+        target: "vouching"
+        asserts:
+          vouching_data:
+            type: "value"
+            operator: "is_falsy"
