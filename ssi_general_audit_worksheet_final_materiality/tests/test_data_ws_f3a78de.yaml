@@ -118,14 +118,29 @@ setup:
       xml_id: "ssi_general_audit_worksheet_final_materiality.general_audit_worksheet_conclusion_145_d81ce841"
       save_as: "conclusion_f3a78de"
 
-    - step: "Create computation item RX with a real (non slash) code"
+    # NOTE: this "RX" computation item's code is deliberately left as "/"
+    # (not a real distinctive code like "RX") even though the create step's
+    # label still says RX for readability. trial_balance_computation_item
+    # inherits mixin.master_data, whose _check_duplicate_code constraint
+    # rejects any non-"/" code that already exists — and since `setup:` is
+    # replayed fresh (new records) before EVERY scenario in this file while
+    # the underlying DB rows persist across scenarios within the same test
+    # method (only one rollback per test method, not per scenario), giving
+    # this item a fixed real code such as "RX" would collide with the
+    # previous scenario's own "RX" row. Each scenario's general_audit only
+    # ever holds a single general_audit.computation row, so keying the
+    # additional_dict "computation" lookup by "/" (this item's code) is
+    # unambiguous within that scenario.
+    - step:
+        "Create computation item RX (code intentionally left as / to avoid
+        cross-scenario duplicate-code collisions)"
       action: "create"
       model: "trial_balance_computation_item"
       save_as: "comp_item_rx"
       as_user: "base.user_admin"
       values:
         name: "Test Computation Item - RX"
-        code: "RX"
+        code: "/"
 
     - step: "Create general audit computation for RX (audited = 250,000)"
       action: "create"
@@ -150,7 +165,7 @@ setup:
           result_extrapolation = result_interim = result_previous = result_end_period =
           result_audited = 0.0
 
-          result_audited = computation.get("RX", {}).get("audited", 0.0) * 2
+          result_audited = computation.get("/", {}).get("audited", 0.0) * 2
     - step: "Create client financial ratio RY (to be archived later)"
       action: "create"
       model: "client_financial_ratio"
@@ -164,7 +179,7 @@ setup:
           result_extrapolation = result_interim = result_previous = result_end_period =
           result_audited = 0.0
 
-          result_audited = computation.get("RX", {}).get("audited", 0.0)
+          result_audited = computation.get("/", {}).get("audited", 0.0)
 
     - step: "Create preliminary d4289e4 worksheet"
       action: "create"

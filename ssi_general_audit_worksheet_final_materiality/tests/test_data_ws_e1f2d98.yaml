@@ -289,10 +289,93 @@ scenarios:
             type: "value"
             expected: "Line 1 requires vertical attention"
 
-      - step: "Delete preliminary analysis line 2 (source line removed)"
-        action: "unlink"
+      # prelim_line_2 cannot be unlinked directly here: e1f2d98's own
+      # analysis line still references it via prelim_analysis_id
+      # (ondelete="restrict"), and _load_analysis() only ever unlinks its
+      # OWN child line (models/ga_e1f2d98/general_audit_ws_e1f2d98.py,
+      # _load_analysis) - it never touches the b32655a source row. To
+      # exercise the "source line no longer part of the worksheet" removal
+      # path the way _load_analysis actually detects it (a
+      # `all_details = search([("worksheet_id", "=", ws_b32655a_id)])`
+      # domain lookup), re-parent prelim_line_2 to a different b32655a
+      # worksheet instead of deleting it. worksheet_type_b32655a also has no
+      # allowed_audit override (one b32655a per general_audit), so the
+      # throwaway worksheet needs its own general_audit.
+      - step: "Create second client partner for the throwaway b32655a worksheet"
+        action: "create"
+        model: "res.partner"
+        save_as: "client_other"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Audit Client Other - E1F2D98 Load Analysis"
+          is_company: true
+
+      - step: "Create second accountant partner"
+        action: "create"
+        model: "res.partner"
+        save_as: "accountant_other"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Audit Accountant Other - E1F2D98 Load Analysis"
+
+      - step: "Grant second accountant a CPA license"
+        action: "create"
+        model: "res.partner.id_number"
+        save_as: "cpa_license_other"
+        as_user: "base.user_admin"
+        values:
+          partner_id: "REC: accountant_other.id"
+          category_id: "REC: cpa_category.id"
+          name: "CPA-E1F2D98-OTHER"
+
+      - step: "Create second general audit for the throwaway b32655a worksheet"
+        action: "create"
+        model: "general_audit"
+        save_as: "audit_other"
+        as_user: "base.user_admin"
+        values:
+          title: "Test General Audit Other - E1F2D98 Load Analysis"
+          partner_id: "REC: client_other.id"
+          accountant_id: "REC: accountant_other.id"
+          account_type_set_id: "REC: account_type_set.id"
+          financial_accounting_standard_id: "REC: standard.id"
+          date_start: 2026-01-01
+          date_end: 2026-12-31
+          need_interim: false
+          need_previous: false
+          num_of_consecutive_audit_firm: 1
+          num_of_consecutive_audit_accountant: 1
+
+      - step: "Open second general audit"
+        action: "call"
+        target: "audit_other"
+        method: "action_open"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after opening second general audit"
+        action: "call"
+        target: "audit_other"
+        method: "invalidate_cache"
+
+      - step:
+          "Create a throwaway b32655a worksheet (on the second audit) to re-parent
+          prelim_line_2 into"
+        action: "create"
+        model: "general_audit_ws_b32655a"
+        save_as: "ws_b32655a_other"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit_other.id"
+          type_id: "REC: ws_type_b32655a.id"
+
+      - step:
+          "Re-parent prelim_line_2 away from ws_b32655a (source line removed from
+          domain)"
+        action: "write"
         target: "prelim_line_2"
         as_user: "base.user_admin"
+        values:
+          worksheet_id: "REC: ws_b32655a_other.id"
 
       - step: "Call action_load_analysis again after source line removed"
         action: "call"
