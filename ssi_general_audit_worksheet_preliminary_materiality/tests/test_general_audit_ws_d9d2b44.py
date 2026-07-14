@@ -104,6 +104,8 @@ class TestGeneralAuditWSd9d2b44(YamlTransactionCase):
                 "num_of_consecutive_audit_accountant": 1,
             }
         )
+        audit.action_open()
+        audit.invalidate_cache()
 
         comp_item_allowed = self.env["trial_balance_computation_item"].create(
             {"name": "Allowed Computation Item", "code": "/"}

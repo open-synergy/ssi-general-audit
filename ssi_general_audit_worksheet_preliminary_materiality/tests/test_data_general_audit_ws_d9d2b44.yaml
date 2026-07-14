@@ -170,7 +170,35 @@ scenarios:
           name: "Test Computation Item - Base Amount"
           code: "/"
 
-      - step: "Create general audit computation with both amounts"
+      # home_amount is related="home_computation_id.amount" (compute=True,
+      # store=True). Setting it directly via `action: create`/`write` does
+      # NOT stick -- Odoo silently resets it back to whatever the real
+      # upstream chain computes (0.0, since there is no matching
+      # client_trial_balance.computation) the next time it is read after a
+      # cache invalidation. Feed a REAL home trial balance + a real
+      # client_trial_balance.computation line instead (its own "amount"
+      # field is genuinely compute=False, so it is safe to set directly),
+      # and let home_amount compute itself from that.
+      - step: "Create home trial balance"
+        action: "create"
+        model: "client_trial_balance"
+        save_as: "tb_home"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          trial_balance_type: "home"
+
+      - step: "Create trial balance computation line (real home amount source)"
+        action: "create"
+        model: "client_trial_balance.computation"
+        save_as: "tb_computation"
+        as_user: "base.user_admin"
+        values:
+          trial_balance_id: "REC: tb_home.id"
+          computation_item_id: "REC: comp_item.id"
+          amount: 800000.0
+
+      - step: "Create general audit computation"
         action: "create"
         model: "general_audit.computation"
         save_as: "computation"
@@ -179,7 +207,6 @@ scenarios:
           general_audit_id: "REC: audit.id"
           computation_item_id: "REC: comp_item.id"
           extrapolation_amount: 1000000.0
-          home_amount: 800000.0
 
       - step: "Create worksheet d9d2b44"
         action: "create"

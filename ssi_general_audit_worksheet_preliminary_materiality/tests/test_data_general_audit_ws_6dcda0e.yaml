@@ -544,7 +544,13 @@ scenarios:
           name: "Test Account Type - Material"
           code: "/"
           group_id: "REC: account_group.id"
-          python_code: "result = 0.0"
+          # adjusted_extrapolation_balance (compute=True, store=True) cannot
+          # be set directly via action: create/write -- Odoo silently resets
+          # it back to whatever python_code genuinely produces the next time
+          # it is read after a cache invalidation. Control the real input
+          # (python_code) instead and let the compute chain produce the
+          # balance itself.
+          python_code: "result = 30000.0"
 
       - step: "Create standard detail with balance above the PM threshold"
         action: "create"
@@ -554,7 +560,6 @@ scenarios:
         values:
           general_audit_id: "REC: audit.id"
           type_id: "REC: account_type.id"
-          adjusted_extrapolation_balance: 30000.0
 
       - step: "Create worksheet 6dcda0e (PM base = 25,000.0)"
         action: "create"
@@ -604,7 +609,7 @@ scenarios:
           name: "Test Account Type - Immaterial"
           code: "/"
           group_id: "REC: account_group.id"
-          python_code: "result = 0.0"
+          python_code: "result = 10000.0"
 
       - step: "Create standard detail with balance below the PM threshold"
         action: "create"
@@ -614,7 +619,6 @@ scenarios:
         values:
           general_audit_id: "REC: audit.id"
           type_id: "REC: account_type.id"
-          adjusted_extrapolation_balance: 10000.0
 
       - step: "Create worksheet 6dcda0e (PM base = 25,000.0)"
         action: "create"
@@ -664,7 +668,7 @@ scenarios:
           name: "Test Account Type - Boundary"
           code: "/"
           group_id: "REC: account_group.id"
-          python_code: "result = 0.0"
+          python_code: "result = 25000.0"
 
       - step: "Create standard detail with balance exactly at the PM threshold"
         action: "create"
@@ -674,7 +678,6 @@ scenarios:
         values:
           general_audit_id: "REC: audit.id"
           type_id: "REC: account_type.id"
-          adjusted_extrapolation_balance: 25000.0
 
       - step: "Create worksheet 6dcda0e (PM base = 25,000.0)"
         action: "create"
@@ -721,7 +724,7 @@ scenarios:
           name: "Test Account Type - Negative Balance"
           code: "/"
           group_id: "REC: account_group.id"
-          python_code: "result = 0.0"
+          python_code: "result = -30000.0"
 
       - step: "Create standard detail with a large negative balance"
         action: "create"
@@ -731,7 +734,6 @@ scenarios:
         values:
           general_audit_id: "REC: audit.id"
           type_id: "REC: account_type.id"
-          adjusted_extrapolation_balance: -30000.0
 
       - step: "Create worksheet 6dcda0e (PM base = 25,000.0)"
         action: "create"
@@ -788,7 +790,6 @@ scenarios:
         values:
           general_audit_id: "REC: audit.id"
           type_id: "REC: account_type.id"
-          adjusted_extrapolation_balance: 0.0
 
       - step: "Create worksheet 6dcda0e (PM base = 25,000.0)"
         action: "create"
@@ -835,7 +836,29 @@ scenarios:
           name: "Test Computation Item - End Period Helper"
           code: "/"
 
-      - step: "Create general audit computation with both amounts"
+      # home_amount cannot be set directly (see the comment on the shared
+      # helper computation above) -- feed a real home trial balance +
+      # client_trial_balance.computation instead.
+      - step: "Create home trial balance for the end_period helper"
+        action: "create"
+        model: "client_trial_balance"
+        save_as: "tb_home_end_period"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          trial_balance_type: "home"
+
+      - step: "Create trial balance computation line (real home amount source)"
+        action: "create"
+        model: "client_trial_balance.computation"
+        save_as: "tb_computation_end_period"
+        as_user: "base.user_admin"
+        values:
+          trial_balance_id: "REC: tb_home_end_period.id"
+          computation_item_id: "REC: comp_item_end_period.id"
+          amount: 1000000.0
+
+      - step: "Create general audit computation"
         action: "create"
         model: "general_audit.computation"
         save_as: "computation_end_period"
@@ -844,7 +867,6 @@ scenarios:
           general_audit_id: "REC: audit.id"
           computation_item_id: "REC: comp_item_end_period.id"
           extrapolation_amount: 2000000.0
-          home_amount: 1000000.0
 
       - step: "Create a second helper worksheet d9d2b44 sourced from end_period"
         action: "create"
@@ -898,7 +920,21 @@ scenarios:
           name: "Test Account Type - End Period"
           code: "/"
           group_id: "REC: account_group.id"
-          python_code: "result = 0.0"
+          # A large decoy extrapolation balance. home_statement_balance
+          # (related="home_standard_line_id.balance") cannot be forced to a
+          # specific value the same way python_code forces
+          # adjusted_extrapolation_balance -- it is only ever non-zero
+          # through a real client_trial_balance.standard_detail rollup of
+          # actual client_trial_balance.detail lines (see
+          # client_trial_balance_standard_detail.py._compute_balance), which
+          # this fixture does not build. Leaving it at its natural 0.0 (no
+          # home trial balance line for this account type) is still enough
+          # to prove the branch selection: if the mapping wrongly read
+          # adjusted_extrapolation_balance instead of home_statement_balance
+          # here, balance would show 99999.0 (Material); it must show 0.0
+          # (Immaterial) to prove it correctly followed
+          # base_amount_source == "end_period".
+          python_code: "result = 99999.0"
 
       - step:
           "Create standard detail with different extrapolation vs. end_period balances"
@@ -909,12 +945,6 @@ scenarios:
         values:
           general_audit_id: "REC: audit.id"
           type_id: "REC: account_type.id"
-          # Deliberately different from home_statement_balance below, to
-          # prove the mapping reads home_statement_balance (end_period),
-          # not adjusted_extrapolation_balance, when
-          # worksheet_d9d2b44.base_amount_source == "end_period".
-          adjusted_extrapolation_balance: 99999.0
-          home_statement_balance: 30000.0
 
       - step: "Create worksheet 6dcda0e using the end_period helper"
         action: "create"
@@ -937,16 +967,17 @@ scenarios:
           standard_detail_id: "REC: standard_detail.id"
 
       - step:
-          "Assert balance mirrors home_statement_balance, not the extrapolation figure"
+          "Assert balance mirrors home_statement_balance (0.0, no real home TB line),
+          not the extrapolation figure (99999.0)"
         action: "assert"
         target: "mapping"
         asserts:
           balance:
             type: "value"
-            expected: 30000.0
+            expected: 0.0
           materiality:
             type: "value"
-            expected: "m"
+            expected: "im"
 
   # ------------------------------------------------------------------
   # use_specific_materiality override
@@ -962,7 +993,7 @@ scenarios:
           name: "Test Account Type - Specific Materiality"
           code: "/"
           group_id: "REC: account_group.id"
-          python_code: "result = 0.0"
+          python_code: "result = 10000.0"
 
       - step: "Create standard detail with balance below the PM threshold"
         action: "create"
@@ -972,7 +1003,6 @@ scenarios:
         values:
           general_audit_id: "REC: audit.id"
           type_id: "REC: account_type.id"
-          adjusted_extrapolation_balance: 10000.0
 
       - step: "Create worksheet 6dcda0e (PM base = 25,000.0)"
         action: "create"
