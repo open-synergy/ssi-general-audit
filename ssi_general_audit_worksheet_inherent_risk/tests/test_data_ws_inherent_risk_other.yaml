@@ -1,0 +1,811 @@
+setup:
+  steps:
+    - step: "Get config parameter model"
+      action: "search"
+      model: "ir.config_parameter"
+      domain: []
+      save_as: "config_parameter"
+      limit: 1
+
+    - step: "Allow enough CPA licenses for this scenario"
+      action: "call"
+      target: "config_parameter"
+      method: "set_param"
+      args:
+        - "ssi_general_audit.max_number_of_cpa_license"
+        - "100"
+
+    - step: "Create client partner"
+      action: "create"
+      model: "res.partner"
+      save_as: "client"
+      as_user: "base.user_admin"
+      values:
+        name: "Test Audit Client - IR Other"
+        is_company: true
+
+    - step: "Create accountant partner"
+      action: "create"
+      model: "res.partner"
+      save_as: "accountant"
+      as_user: "base.user_admin"
+      values:
+        name: "Test Audit Accountant - IR Other"
+
+    - step: "Get CPA license id category"
+      action: "ref"
+      xml_id: "ssi_partner_identification_cpa_license.partner_identification_accountant_cpa_license"
+      save_as: "cpa_category"
+
+    - step: "Grant accountant a CPA license"
+      action: "create"
+      model: "res.partner.id_number"
+      save_as: "cpa_license"
+      as_user: "base.user_admin"
+      values:
+        partner_id: "REC: accountant.id"
+        category_id: "REC: cpa_category.id"
+        name: "CPA-IR-OTHER-0001"
+
+    - step: "Create account type set"
+      action: "create"
+      model: "client_account_type_set"
+      save_as: "account_type_set"
+      as_user: "base.user_admin"
+      values:
+        name: "Test Account Type Set - IR Other"
+        code: "/"
+
+    - step: "Create financial accounting standard"
+      action: "create"
+      model: "accountant.financial_accounting_standard"
+      save_as: "standard"
+      as_user: "base.user_admin"
+      values:
+        name: "Test Financial Accounting Standard - IR Other"
+        code: "/"
+
+    - step: "Create general audit"
+      action: "create"
+      model: "general_audit"
+      save_as: "audit"
+      as_user: "base.user_admin"
+      values:
+        title: "Test General Audit - IR Other"
+        partner_id: "REC: client.id"
+        accountant_id: "REC: accountant.id"
+        account_type_set_id: "REC: account_type_set.id"
+        financial_accounting_standard_id: "REC: standard.id"
+        date_start: 2024-01-01
+        date_end: 2024-12-31
+        need_interim: false
+        need_previous: false
+        num_of_consecutive_audit_firm: 1
+        num_of_consecutive_audit_accountant: 1
+
+    - step: "Open general audit"
+      action: "call"
+      target: "audit"
+      method: "action_open"
+      as_user: "base.user_admin"
+
+    - step: "Invalidate cache after opening general audit"
+      action: "call"
+      target: "audit"
+      method: "invalidate_cache"
+
+    - step: "Get checklist option set"
+      action: "ref"
+      xml_id: "ssi_general_audit.checklist_option_set_2"
+      save_as: "option_set"
+
+    - step: "Get worksheet type bfb6dae"
+      action: "ref"
+      xml_id: "ssi_general_audit_worksheet_inherent_risk.worksheet_type_bfb6dae"
+      save_as: "ws_type_bfb6dae"
+
+    - step: "Get worksheet type c16abd7"
+      action: "ref"
+      xml_id: "ssi_general_audit_worksheet_inherent_risk.worksheet_type_c16abd7"
+      save_as: "ws_type_c16abd7"
+
+    - step: "Get worksheet type c0e0eec"
+      action: "ref"
+      xml_id: "ssi_general_audit_worksheet_understanding_entity.worksheet_type_c0e0eec"
+      save_as: "ws_type_c0e0eec"
+
+    - step: "Get worksheet type f6a227"
+      action: "ref"
+      xml_id: "ssi_general_audit_worksheet_understanding_entity.worksheet_type_f6a227"
+      save_as: "ws_type_f6a227"
+
+    - step: "Get worksheet type c0d0898"
+      action: "ref"
+      xml_id: "ssi_general_audit_worksheet_understanding_entity.worksheet_type_c0d0898"
+      save_as: "ws_type_c0d0898"
+
+    - step: "Get worksheet type bdcdfc5"
+      action: "ref"
+      xml_id: "ssi_general_audit_worksheet_understanding_entity.worksheet_type_bdcdfc5"
+      save_as: "ws_type_bdcdfc5"
+
+    - step: "Create conclusion for bfb6dae worksheet type"
+      action: "create"
+      model: "general_audit_worksheet_conclusion"
+      save_as: "conclusion_bfb6dae"
+      as_user: "base.user_admin"
+      values:
+        name: "Inherent risk checklist is adequately answered"
+        code: "/"
+        type_id: "REC: ws_type_bfb6dae.id"
+
+    - step: "Create conclusion for c16abd7 worksheet type"
+      action: "create"
+      model: "general_audit_worksheet_conclusion"
+      save_as: "conclusion_c16abd7"
+      as_user: "base.user_admin"
+      values:
+        name: "Financial statement level inherent risk is adequately assessed"
+        code: "/"
+        type_id: "REC: ws_type_c16abd7.id"
+
+scenarios:
+  # ------------------------------------------------------------------
+  # general_audit_inherent_risk_factor - CRUD, default values
+  # ------------------------------------------------------------------
+  - name: "Inherent risk factor - Create default values, write, delete"
+    steps:
+      - step: "Create factor without specifying sequence/direct_impact"
+        action: "create"
+        model: "general_audit_inherent_risk_factor"
+        save_as: "factor"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Factor Default - IR Other"
+          code: "/"
+
+      - step: "Assert default sequence 10 and direct_impact False"
+        action: "assert"
+        target: "factor"
+        asserts:
+          sequence:
+            type: "value"
+            expected: 10
+          direct_impact:
+            type: "value"
+            expected: false
+
+      - step: "Write new name and sequence"
+        action: "write"
+        target: "factor"
+        as_user: "base.user_admin"
+        values:
+          name: "Updated Factor Default - IR Other"
+          sequence: 20
+
+      - step: "Assert name and sequence updated"
+        action: "assert"
+        target: "factor"
+        asserts:
+          name:
+            type: "value"
+            expected: "Updated Factor Default - IR Other"
+          sequence:
+            type: "value"
+            expected: 20
+
+      - step: "Delete factor"
+        action: "unlink"
+        target: "factor"
+        as_user: "base.user_admin"
+
+      - step: "Verify factor deleted"
+        action: "search"
+        model: "general_audit_inherent_risk_factor"
+        domain:
+          - ["id", "=", "REC: factor.id"]
+        save_as: "result"
+        expect_count: 0
+
+  # ------------------------------------------------------------------
+  # general_audit_inherent_risk_factor - CRUD, direct_impact True
+  # ------------------------------------------------------------------
+  - name: "Inherent risk factor - Create direct_impact True, write, delete"
+    steps:
+      - step: "Create factor with direct_impact True"
+        action: "create"
+        model: "general_audit_inherent_risk_factor"
+        save_as: "factor"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Factor Direct Impact - IR Other"
+          code: "/"
+          direct_impact: true
+          sequence: 15
+
+      - step: "Assert direct_impact True and sequence 15"
+        action: "assert"
+        target: "factor"
+        asserts:
+          direct_impact:
+            type: "value"
+            expected: true
+          sequence:
+            type: "value"
+            expected: 15
+
+      - step: "Write new name"
+        action: "write"
+        target: "factor"
+        as_user: "base.user_admin"
+        values:
+          name: "Updated Factor Direct Impact - IR Other"
+
+      - step: "Assert name updated"
+        action: "assert"
+        target: "factor"
+        asserts:
+          name:
+            type: "value"
+            expected: "Updated Factor Direct Impact - IR Other"
+
+      - step: "Delete factor"
+        action: "unlink"
+        target: "factor"
+        as_user: "base.user_admin"
+
+      - step: "Verify factor deleted"
+        action: "search"
+        model: "general_audit_inherent_risk_factor"
+        domain:
+          - ["id", "=", "REC: factor.id"]
+        save_as: "result"
+        expect_count: 0
+
+  # ------------------------------------------------------------------
+  # general_audit_ws_bfb6dae.item - CRUD, default code
+  # ------------------------------------------------------------------
+  - name: "Checklist item bfb6dae - Create default code, write, delete"
+    steps:
+      - step: "Create checklist item without specifying code"
+        action: "create"
+        model: "general_audit_ws_bfb6dae.item"
+        save_as: "item"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Checklist Item Default - IR Other"
+          option_set_id: "REC: option_set.id"
+
+      - step: "Assert default code and sequence"
+        action: "assert"
+        target: "item"
+        asserts:
+          code:
+            type: "value"
+            expected: "/"
+          sequence:
+            type: "value"
+            expected: 10
+
+      - step: "Write new name"
+        action: "write"
+        target: "item"
+        as_user: "base.user_admin"
+        values:
+          name: "Updated Checklist Item Default - IR Other"
+
+      - step: "Assert name updated"
+        action: "assert"
+        target: "item"
+        asserts:
+          name:
+            type: "value"
+            expected: "Updated Checklist Item Default - IR Other"
+
+      - step: "Delete checklist item"
+        action: "unlink"
+        target: "item"
+        as_user: "base.user_admin"
+
+      - step: "Verify checklist item deleted"
+        action: "search"
+        model: "general_audit_ws_bfb6dae.item"
+        domain:
+          - ["id", "=", "REC: item.id"]
+        save_as: "result"
+        expect_count: 0
+
+  # ------------------------------------------------------------------
+  # general_audit_ws_bfb6dae.item - CRUD, custom code
+  # ------------------------------------------------------------------
+  - name: "Checklist item bfb6dae - Create custom code, write, delete"
+    steps:
+      - step: "Create checklist item with custom code and sequence"
+        action: "create"
+        model: "general_audit_ws_bfb6dae.item"
+        save_as: "item"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Checklist Item Custom - IR Other"
+          code: "IR-OTHER-ITEM-01"
+          sequence: 25
+          option_set_id: "REC: option_set.id"
+
+      - step: "Assert custom code and sequence"
+        action: "assert"
+        target: "item"
+        asserts:
+          code:
+            type: "value"
+            expected: "IR-OTHER-ITEM-01"
+          sequence:
+            type: "value"
+            expected: 25
+
+      - step: "Write new sequence"
+        action: "write"
+        target: "item"
+        as_user: "base.user_admin"
+        values:
+          sequence: 35
+
+      - step: "Assert sequence updated"
+        action: "assert"
+        target: "item"
+        asserts:
+          sequence:
+            type: "value"
+            expected: 35
+
+      - step: "Delete checklist item"
+        action: "unlink"
+        target: "item"
+        as_user: "base.user_admin"
+
+      - step: "Verify checklist item deleted"
+        action: "search"
+        model: "general_audit_ws_bfb6dae.item"
+        domain:
+          - ["id", "=", "REC: item.id"]
+        save_as: "result"
+        expect_count: 0
+
+  # ------------------------------------------------------------------
+  # bfb6dae - Create and populate checklist from master items
+  # ------------------------------------------------------------------
+  - name: "Worksheet bfb6dae - Create and populate checklist"
+    steps:
+      - step: "Count master checklist items currently available"
+        action: "search"
+        model: "general_audit_ws_bfb6dae.item"
+        domain: []
+        save_as: "master_items"
+
+      - step: "Create worksheet bfb6dae"
+        action: "create"
+        model: "general_audit_ws_bfb6dae"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_bfb6dae.id"
+
+      - step: "Assert checklist_ids empty right after create"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          checklist_ids:
+            type: "o2m"
+            check: "count"
+            expected_count: 0
+
+      - step: "Populate checklist from master items"
+        action: "call"
+        target: "worksheet"
+        method: "action_populate_checklist"
+        as_user: "base.user_admin"
+
+      - step: "Assert checklist_ids count matches master item count"
+        action: "assert"
+        target: "worksheet"
+        refresh: true
+        asserts:
+          checklist_ids:
+            type: "o2m"
+            check: "count"
+            expected_count: "EVAL: len(registry['master_items'])"
+
+      - step: "Populate checklist a second time (idempotent)"
+        action: "call"
+        target: "worksheet"
+        method: "action_populate_checklist"
+        as_user: "base.user_admin"
+
+      - step: "Assert checklist_ids count is unchanged (no duplicates)"
+        action: "assert"
+        target: "worksheet"
+        refresh: true
+        asserts:
+          checklist_ids:
+            type: "o2m"
+            check: "count"
+            expected_count: "EVAL: len(registry['master_items'])"
+
+  # ------------------------------------------------------------------
+  # bfb6dae - Workflow draft to done
+  # ------------------------------------------------------------------
+  - name: "Worksheet bfb6dae - Workflow confirm to done"
+    steps:
+      - step: "Create worksheet bfb6dae"
+        action: "create"
+        model: "general_audit_ws_bfb6dae"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_bfb6dae.id"
+
+      - step: "Open worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_open"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after opening worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Assert worksheet open"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          state:
+            type: "value"
+            expected: "open"
+
+      - step: "Populate checklist"
+        action: "call"
+        target: "worksheet"
+        method: "action_populate_checklist"
+        as_user: "base.user_admin"
+
+      - step: "Fill required conclusion fields before confirm"
+        action: "write"
+        target: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          conclusion_id: "REC: conclusion_bfb6dae.id"
+          conclusion: "Inherent risk checklist reviewed and adequately answered."
+
+      - step: "Confirm worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_confirm"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after confirming worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Assert worksheet confirmed"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          state:
+            type: "value"
+            expected: "confirm"
+
+      - step: "Approve worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_approve_approval"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after approving worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Assert worksheet done"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          state:
+            type: "value"
+            expected: "done"
+
+  # ------------------------------------------------------------------
+  # bfb6dae - Cancel and restart
+  # ------------------------------------------------------------------
+  - name: "Worksheet bfb6dae - Cancel and restart"
+    steps:
+      - step: "Create worksheet bfb6dae"
+        action: "create"
+        model: "general_audit_ws_bfb6dae"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_bfb6dae.id"
+
+      - step: "Open worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_open"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after opening worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Assert worksheet open"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          state:
+            type: "value"
+            expected: "open"
+
+      - step: "Cancel worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_cancel"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after cancelling worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Assert worksheet cancelled"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          state:
+            type: "value"
+            expected: "cancel"
+
+      - step: "Restart worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_restart"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after restarting worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Assert worksheet back to draft"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          state:
+            type: "value"
+            expected: "draft"
+
+  # ------------------------------------------------------------------
+  # c16abd7 - Create and workflow draft to done
+  # ------------------------------------------------------------------
+  - name: "Worksheet c16abd7 - Create and workflow confirm to done"
+    steps:
+      - step: "Create source worksheet c0e0eec (Fraud Factor Analysis)"
+        action: "create"
+        model: "general_audit_ws_c0e0eec"
+        save_as: "ws_c0e0eec"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_c0e0eec.id"
+
+      - step: "Create source worksheet f6a227 (Preparation of Financial Statements)"
+        action: "create"
+        model: "general_audit_ws_f6a227"
+        save_as: "ws_f6a227"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_f6a227.id"
+
+      - step: "Create source worksheet c0d0898 (Going Concern Analysis)"
+        action: "create"
+        model: "general_audit_ws_c0d0898"
+        save_as: "ws_c0d0898"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_c0d0898.id"
+
+      - step: "Create source worksheet bdcdfc5 (Understanding the Business Environment)"
+        action: "create"
+        model: "general_audit_ws_bdcdfc5"
+        save_as: "ws_bdcdfc5"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_bdcdfc5.id"
+
+      - step: "Create worksheet c16abd7"
+        action: "create"
+        model: "general_audit_ws_c16abd7"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_c16abd7.id"
+
+      - step: "Assert worksheet created in draft"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          state:
+            type: "value"
+            expected: "draft"
+
+      - step: "Open worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_open"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after opening worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Assert worksheet open"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          state:
+            type: "value"
+            expected: "open"
+
+      - step: "Fill risk conclusion, auditor response and required links before confirm"
+        action: "write"
+        target: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          risk_material_missstatement: "high"
+          auditor_respons: "Increase substantive testing over significant accounts."
+          ws_c0e0eec_id: "REC: ws_c0e0eec.id"
+          ws_f6a227_id: "REC: ws_f6a227.id"
+          ws_c0d0898_id: "REC: ws_c0d0898.id"
+          ws_bdcdfc5_ids: [[6, 0, ["REC: ws_bdcdfc5.id"]]]
+          conclusion_id: "REC: conclusion_c16abd7.id"
+          conclusion:
+            "Financial statement level inherent risk reviewed and adequately assessed."
+
+      - step: "Assert risk fields saved"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          risk_material_missstatement:
+            type: "value"
+            expected: "high"
+          ws_c0e0eec_id:
+            type: "m2o"
+            expected: "REC: ws_c0e0eec"
+          ws_f6a227_id:
+            type: "m2o"
+            expected: "REC: ws_f6a227"
+          ws_c0d0898_id:
+            type: "m2o"
+            expected: "REC: ws_c0d0898"
+          ws_bdcdfc5_ids:
+            type: "m2m"
+            check: "exact"
+            expected_records:
+              - "REC: ws_bdcdfc5"
+
+      - step: "Confirm worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_confirm"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after confirming worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Assert worksheet confirmed"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          state:
+            type: "value"
+            expected: "confirm"
+
+      - step: "Approve worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_approve_approval"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after approving worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Assert worksheet done"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          state:
+            type: "value"
+            expected: "done"
+
+  # ------------------------------------------------------------------
+  # c16abd7 - Cancel and restart
+  # ------------------------------------------------------------------
+  - name: "Worksheet c16abd7 - Cancel and restart"
+    steps:
+      - step: "Create worksheet c16abd7"
+        action: "create"
+        model: "general_audit_ws_c16abd7"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_c16abd7.id"
+
+      - step: "Open worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_open"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after opening worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Assert worksheet open"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          state:
+            type: "value"
+            expected: "open"
+
+      - step: "Cancel worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_cancel"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after cancelling worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Assert worksheet cancelled"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          state:
+            type: "value"
+            expected: "cancel"
+
+      - step: "Restart worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_restart"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after restarting worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Assert worksheet back to draft"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          state:
+            type: "value"
+            expected: "draft"
