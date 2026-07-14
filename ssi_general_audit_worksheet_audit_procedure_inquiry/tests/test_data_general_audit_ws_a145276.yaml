@@ -1,0 +1,681 @@
+setup:
+  steps:
+    - step: "Get config parameter model"
+      action: "search"
+      model: "ir.config_parameter"
+      domain: []
+      save_as: "config_parameter"
+      limit: 1
+
+    - step: "Allow enough CPA licenses for this scenario"
+      action: "call"
+      target: "config_parameter"
+      method: "set_param"
+      args:
+        - "ssi_general_audit.max_number_of_cpa_license"
+        - "100"
+
+    - step: "Create client partner"
+      action: "create"
+      model: "res.partner"
+      save_as: "client"
+      as_user: "base.user_admin"
+      values:
+        name: "Test Audit Client - A145276"
+        is_company: true
+
+    - step: "Create accountant partner"
+      action: "create"
+      model: "res.partner"
+      save_as: "accountant"
+      as_user: "base.user_admin"
+      values:
+        name: "Test Audit Accountant - A145276"
+
+    - step: "Get CPA license id category"
+      action: "ref"
+      xml_id: "ssi_partner_identification_cpa_license.partner_identification_accountant_cpa_license"
+      save_as: "cpa_category"
+
+    - step: "Grant accountant a CPA license"
+      action: "create"
+      model: "res.partner.id_number"
+      save_as: "cpa_license"
+      as_user: "base.user_admin"
+      values:
+        partner_id: "REC: accountant.id"
+        category_id: "REC: cpa_category.id"
+        name: "CPA-A145276-0001"
+
+    - step: "Create account type set"
+      action: "create"
+      model: "client_account_type_set"
+      save_as: "account_type_set"
+      as_user: "base.user_admin"
+      values:
+        name: "Test Account Type Set - A145276"
+        code: "/"
+
+    - step: "Create financial accounting standard"
+      action: "create"
+      model: "accountant.financial_accounting_standard"
+      save_as: "standard"
+      as_user: "base.user_admin"
+      values:
+        name: "Test Financial Accounting Standard - A145276"
+        code: "/"
+
+    - step: "Create general audit"
+      action: "create"
+      model: "general_audit"
+      save_as: "audit"
+      as_user: "base.user_admin"
+      values:
+        title: "Test General Audit - A145276"
+        partner_id: "REC: client.id"
+        accountant_id: "REC: accountant.id"
+        account_type_set_id: "REC: account_type_set.id"
+        financial_accounting_standard_id: "REC: standard.id"
+        date_start: 2026-01-01
+        date_end: 2026-12-31
+        need_interim: false
+        need_previous: false
+        num_of_consecutive_audit_firm: 1
+        num_of_consecutive_audit_accountant: 1
+
+    - step: "Open general audit"
+      action: "call"
+      target: "audit"
+      method: "action_open"
+      as_user: "base.user_admin"
+
+    - step: "Invalidate cache after opening general audit"
+      action: "call"
+      target: "audit"
+      method: "invalidate_cache"
+
+    - step: "Get worksheet type a145276"
+      action: "ref"
+      xml_id: "ssi_general_audit_worksheet_audit_procedure_inquiry.worksheet_type_a145276"
+      save_as: "ws_type"
+
+    - step: "Get worksheet type e51bb1c"
+      action: "ref"
+      xml_id: "ssi_general_audit_worksheet_lead_schedule.worksheet_type_e51bb1c"
+      save_as: "ws_type_e51bb1c"
+
+    - step: "Create client account group"
+      action: "create"
+      model: "client_account_group"
+      save_as: "account_group"
+      as_user: "base.user_admin"
+      values:
+        name: "Test Account Group - A145276"
+        code: "/"
+
+    - step: "Create client account type"
+      action: "create"
+      model: "client_account_type"
+      save_as: "account_type"
+      as_user: "base.user_admin"
+      values:
+        name: "Test Account Type - A145276"
+        code: "/"
+        group_id: "REC: account_group.id"
+        # general_audit.standard_detail has no "balance" field, so a
+        # safe no-op avoids an unrelated crash in
+        # general_audit.standard_detail._compute_extrapolation_balance.
+        python_code: "result = 0.0"
+
+    - step: "Create assertion type"
+      action: "create"
+      model: "general_audit_assersion_type"
+      save_as: "assertion_type"
+      as_user: "base.user_admin"
+      values:
+        name: "Existence"
+        code: "/"
+
+    - step: "Create audit procedure category (performed)"
+      action: "create"
+      model: "general_audit_audit_procedure_category"
+      save_as: "category_performed"
+      as_user: "base.user_admin"
+      values:
+        name: "Inquiry - Performed Category"
+        code: "/"
+        account_type_id: "REC: account_type.id"
+        assertion_type_ids:
+          - - 6
+            - 0
+            - - "REC: assertion_type.id"
+
+    - step: "Create WS-E51BB1C worksheet (Key Audit Procedures)"
+      action: "create"
+      model: "general_audit_ws_e51bb1c"
+      save_as: "ws_e51bb1c"
+      as_user: "base.user_admin"
+      values:
+        general_audit_id: "REC: audit.id"
+        type_id: "REC: ws_type_e51bb1c.id"
+
+    - step: "Create WS-E51BB1C detail with status performed"
+      action: "create"
+      model: "general_audit_ws_e51bb1c.detail"
+      save_as: "detail_performed"
+      as_user: "base.user_admin"
+      values:
+        worksheet_id: "REC: ws_e51bb1c.id"
+        audit_procedure_category_id: "REC: category_performed.id"
+        assertion_type_ids:
+          - - 6
+            - 0
+            - - "REC: assertion_type.id"
+        status: "performed"
+
+    - step: "Create conclusion for a145276 worksheet type"
+      action: "create"
+      model: "general_audit_worksheet_conclusion"
+      save_as: "conclusion"
+      as_user: "base.user_admin"
+      values:
+        name: "No exception noted"
+        code: "/"
+        type_id: "REC: ws_type.id"
+
+scenarios:
+  # ------------------------------------------------------------------
+  # 1. Create WS-A145276
+  # ------------------------------------------------------------------
+  - name: "Worksheet a145276 - Create in draft"
+    steps:
+      - step: "Create worksheet a145276"
+        action: "create"
+        model: "general_audit_ws_a145276"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+          source_of_information: "Finance Manager"
+          source_of_information_position: "Manager"
+          background: "Inquiry performed as part of revenue cycle testing."
+          summary: "No exception noted during the inquiry session."
+          result: "low"
+
+      - step: "Assert worksheet created in draft"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          id:
+            type: "value"
+            operator: "is_truthy"
+          state:
+            type: "value"
+            expected: "draft"
+          result:
+            type: "value"
+            expected: "low"
+          general_audit_id:
+            type: "m2o"
+            expected: "REC: audit"
+          type_id:
+            type: "m2o"
+            expected: "REC: ws_type"
+
+  # ------------------------------------------------------------------
+  # 2. Workflow draft -> open -> confirm -> done
+  # ------------------------------------------------------------------
+  - name: "Worksheet a145276 - Workflow confirm to done"
+    steps:
+      - step: "Create worksheet a145276"
+        action: "create"
+        model: "general_audit_ws_a145276"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+
+      - step: "Open worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_open"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after opening worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Assert worksheet open"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          state:
+            type: "value"
+            expected: "open"
+
+      - step: "Fill required conclusion fields before confirm"
+        action: "write"
+        target: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          conclusion_id: "REC: conclusion.id"
+          conclusion: "Inquiry procedure raised no exception."
+
+      - step: "Confirm worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_confirm"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after confirming worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Assert worksheet confirmed"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          state:
+            type: "value"
+            expected: "confirm"
+
+      - step: "Approve worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_approve_approval"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after approving worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Assert worksheet done"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          state:
+            type: "value"
+            expected: "done"
+
+  # ------------------------------------------------------------------
+  # 2b. Cancel and restart
+  # ------------------------------------------------------------------
+  - name: "Worksheet a145276 - Cancel and restart"
+    steps:
+      - step: "Create worksheet a145276"
+        action: "create"
+        model: "general_audit_ws_a145276"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+
+      - step: "Open worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_open"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after opening worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Assert worksheet open"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          state:
+            type: "value"
+            expected: "open"
+
+      - step: "Cancel worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_cancel"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after cancelling worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Assert worksheet cancelled"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          state:
+            type: "value"
+            expected: "cancel"
+
+      - step: "Restart worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_restart"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after restarting worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Assert worksheet back to draft"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          state:
+            type: "value"
+            expected: "draft"
+
+  # ------------------------------------------------------------------
+  # 3. Edit worksheet - risk result
+  # ------------------------------------------------------------------
+  - name: "Worksheet a145276 - Edit risk result"
+    steps:
+      - step: "Create worksheet a145276 with low risk"
+        action: "create"
+        model: "general_audit_ws_a145276"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+          result: "low"
+          summary: "Initial summary."
+
+      - step: "Update result to high and summary"
+        action: "write"
+        target: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          result: "high"
+          summary: "Updated summary after further inquiry."
+
+      - step: "Assert result updated to high"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          result:
+            type: "value"
+            expected: "high"
+          summary:
+            type: "value"
+            expected: "Updated summary after further inquiry."
+
+  # ------------------------------------------------------------------
+  # 3b. result selection - medium
+  # ------------------------------------------------------------------
+  - name: "Worksheet a145276 - result selection medium"
+    steps:
+      - step: "Create worksheet a145276 with medium risk"
+        action: "create"
+        model: "general_audit_ws_a145276"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+          result: "medium"
+
+      - step: "Assert result is medium"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          result:
+            type: "value"
+            expected: "medium"
+
+  # ------------------------------------------------------------------
+  # 4. Create question (O2M inline)
+  # ------------------------------------------------------------------
+  - name: "Worksheet a145276 - Create with inline questions"
+    steps:
+      - step: "Create worksheet a145276 with two inline questions"
+        action: "create"
+        model: "general_audit_ws_a145276"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+          question_ids:
+            - - 0
+              - 0
+              - sequence: 10
+                question: "Apakah ada perubahan kebijakan akuntansi?"
+                answer: "Tidak ada"
+            - - 0
+              - 0
+              - sequence: 20
+                question: "Apakah ada transaksi pihak berelasi yang signifikan?"
+                answer: "Ada, sudah diungkapkan pada catatan atas laporan keuangan."
+
+      - step: "Assert two questions created"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          question_ids:
+            type: "o2m"
+            check: "count"
+            expected_count: 2
+
+  # ------------------------------------------------------------------
+  # 5, 6, 7. Create question directly, edit, delete
+  # ------------------------------------------------------------------
+  - name: "Question a145276 - Create, write, delete"
+    steps:
+      - step: "Create worksheet a145276"
+        action: "create"
+        model: "general_audit_ws_a145276"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+
+      - step: "Create question directly"
+        action: "create"
+        model: "general_audit_ws_a145276.question"
+        save_as: "question"
+        as_user: "base.user_admin"
+        values:
+          worksheet_id: "REC: worksheet.id"
+          sequence: 30
+          question: "Apakah ada litigasi yang sedang berjalan?"
+          answer: "Tidak ada litigasi yang material."
+
+      - step: "Assert question created"
+        action: "assert"
+        target: "question"
+        asserts:
+          id:
+            type: "value"
+            operator: "is_truthy"
+          answer:
+            type: "value"
+            expected: "Tidak ada litigasi yang material."
+
+      - step: "Update question answer"
+        action: "write"
+        target: "question"
+        as_user: "base.user_admin"
+        values:
+          answer: "Ada satu litigasi tidak material, sudah diungkapkan."
+
+      - step: "Assert question answer updated"
+        action: "assert"
+        target: "question"
+        asserts:
+          answer:
+            type: "value"
+            expected: "Ada satu litigasi tidak material, sudah diungkapkan."
+
+      - step: "Delete question"
+        action: "unlink"
+        target: "question"
+
+      - step: "Verify question deleted"
+        action: "search"
+        model: "general_audit_ws_a145276.question"
+        domain:
+          - ["question", "=", "Apakah ada litigasi yang sedang berjalan?"]
+        save_as: "result"
+        expect_count: 0
+
+  # ------------------------------------------------------------------
+  # 8. Compute allowed_key_audit_procedure_ids - normal
+  # ------------------------------------------------------------------
+  - name: "Worksheet a145276 - Compute allowed_key_audit_procedure_ids normal"
+    steps:
+      - step: "Create worksheet a145276"
+        action: "create"
+        model: "general_audit_ws_a145276"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+
+      - step: "Set ws_e51bb1c_id"
+        action: "write"
+        target: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          ws_e51bb1c_id: "REC: ws_e51bb1c.id"
+
+      - step: "Assert allowed_key_audit_procedure_ids contains performed category"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          allowed_key_audit_procedure_ids:
+            type: "m2m"
+            check: "exact"
+            expected_records:
+              - "REC: category_performed"
+
+  # ------------------------------------------------------------------
+  # 9. Compute allowed_key_audit_procedure_ids - kosong
+  # ------------------------------------------------------------------
+  - name: "Worksheet a145276 - Compute allowed_key_audit_procedure_ids kosong"
+    steps:
+      - step: "Create worksheet a145276 without ws_e51bb1c_id"
+        action: "create"
+        model: "general_audit_ws_a145276"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+
+      - step: "Assert allowed_key_audit_procedure_ids is empty"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          allowed_key_audit_procedure_ids:
+            type: "m2m"
+            check: "count"
+            expected_count: 0
+
+  # ------------------------------------------------------------------
+  # 10. Compute detail_ws_e51bb1c_id - normal
+  # ------------------------------------------------------------------
+  - name: "Worksheet a145276 - Compute detail_ws_e51bb1c_id normal"
+    steps:
+      - step: "Create worksheet a145276"
+        action: "create"
+        model: "general_audit_ws_a145276"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+
+      - step: "Set ws_e51bb1c_id and key_audit_procedure_id"
+        action: "write"
+        target: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          ws_e51bb1c_id: "REC: ws_e51bb1c.id"
+          key_audit_procedure_id: "REC: category_performed.id"
+
+      - step: "Assert detail_ws_e51bb1c_id points to the matching detail"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          detail_ws_e51bb1c_id:
+            type: "m2o"
+            expected: "REC: detail_performed"
+
+  # ------------------------------------------------------------------
+  # 11. Compute detail_ws_e51bb1c_id - kosong
+  # ------------------------------------------------------------------
+  - name: "Worksheet a145276 - Compute detail_ws_e51bb1c_id kosong"
+    steps:
+      - step:
+          "Create worksheet a145276 with ws_e51bb1c_id but no key_audit_procedure_id"
+        action: "create"
+        model: "general_audit_ws_a145276"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+
+      - step: "Set only ws_e51bb1c_id"
+        action: "write"
+        target: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          ws_e51bb1c_id: "REC: ws_e51bb1c.id"
+
+      - step: "Assert detail_ws_e51bb1c_id is falsy"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          detail_ws_e51bb1c_id:
+            type: "value"
+            operator: "is_falsy"
+
+  # ------------------------------------------------------------------
+  # 12. Unlink cascade
+  # ------------------------------------------------------------------
+  - name: "Worksheet a145276 - Unlink cascades to questions"
+    steps:
+      - step: "Create worksheet a145276 with inline questions"
+        action: "create"
+        model: "general_audit_ws_a145276"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+          question_ids:
+            - - 0
+              - 0
+              - sequence: 10
+                question: "Pertanyaan cascade 1"
+                answer: "Jawaban cascade 1"
+            - - 0
+              - 0
+              - sequence: 20
+                question: "Pertanyaan cascade 2"
+                answer: "Jawaban cascade 2"
+
+      - step: "Delete worksheet"
+        action: "unlink"
+        target: "worksheet"
+        as_user: "base.user_admin"
+
+      - step: "Verify questions were cascade-deleted"
+        action: "search"
+        model: "general_audit_ws_a145276.question"
+        domain:
+          - ["worksheet_id", "=", "REC: worksheet.id"]
+        save_as: "result"
+        expect_count: 0
