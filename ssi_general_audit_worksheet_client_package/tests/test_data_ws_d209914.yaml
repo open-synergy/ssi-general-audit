@@ -1,0 +1,552 @@
+setup:
+  steps:
+    - step: "Get config parameter model"
+      action: "search"
+      model: "ir.config_parameter"
+      domain: []
+      save_as: "config_parameter"
+      limit: 1
+
+    - step: "Allow enough CPA licenses for this scenario"
+      action: "call"
+      target: "config_parameter"
+      method: "set_param"
+      args:
+        - "ssi_general_audit.max_number_of_cpa_license"
+        - "100"
+
+    - step: "Create client partner"
+      action: "create"
+      model: "res.partner"
+      save_as: "client"
+      as_user: "base.user_admin"
+      values:
+        name: "Test Audit Client - D209914"
+        is_company: true
+
+    - step: "Create accountant partner"
+      action: "create"
+      model: "res.partner"
+      save_as: "accountant"
+      as_user: "base.user_admin"
+      values:
+        name: "Test Audit Accountant - D209914"
+
+    - step: "Get CPA license id category"
+      action: "ref"
+      xml_id: "ssi_partner_identification_cpa_license.partner_identification_accountant_cpa_license"
+      save_as: "cpa_category"
+
+    - step: "Grant accountant a CPA license"
+      action: "create"
+      model: "res.partner.id_number"
+      save_as: "cpa_license"
+      as_user: "base.user_admin"
+      values:
+        partner_id: "REC: accountant.id"
+        category_id: "REC: cpa_category.id"
+        name: "CPA-D209914-0001"
+
+    - step: "Create account type set"
+      action: "create"
+      model: "client_account_type_set"
+      save_as: "account_type_set"
+      as_user: "base.user_admin"
+      values:
+        name: "Test Account Type Set - D209914"
+        code: "/"
+
+    - step: "Create financial accounting standard"
+      action: "create"
+      model: "accountant.financial_accounting_standard"
+      save_as: "standard"
+      as_user: "base.user_admin"
+      values:
+        name: "Test Financial Accounting Standard - D209914"
+        code: "/"
+
+    - step: "Create general audit"
+      action: "create"
+      model: "general_audit"
+      save_as: "audit"
+      as_user: "base.user_admin"
+      values:
+        title: "Test General Audit - D209914"
+        partner_id: "REC: client.id"
+        accountant_id: "REC: accountant.id"
+        account_type_set_id: "REC: account_type_set.id"
+        financial_accounting_standard_id: "REC: standard.id"
+        date_start: 2026-01-01
+        date_end: 2026-12-31
+        need_interim: false
+        need_previous: false
+        num_of_consecutive_audit_firm: 1
+        num_of_consecutive_audit_accountant: 1
+
+    - step: "Open general audit"
+      action: "call"
+      target: "audit"
+      method: "action_open"
+      as_user: "base.user_admin"
+
+    - step: "Invalidate cache after opening general audit"
+      action: "call"
+      target: "audit"
+      method: "invalidate_cache"
+
+    - step: "Get worksheet type d209914"
+      action: "ref"
+      xml_id: "ssi_general_audit_worksheet_client_package.worksheet_type_d209914"
+      save_as: "ws_type"
+
+    - step: "Create client account group"
+      action: "create"
+      model: "client_account_group"
+      save_as: "account_group"
+      as_user: "base.user_admin"
+      values:
+        name: "Test Account Group - D209914"
+        code: "/"
+
+    - step: "Create client account type"
+      action: "create"
+      model: "client_account_type"
+      save_as: "account_type"
+      as_user: "base.user_admin"
+      values:
+        name: "Test Account Type - D209914"
+        code: "/"
+        group_id: "REC: account_group.id"
+        normal_balance: "dr"
+        # DILARANG membiarkan python_code pada default "result = document.balance":
+        # general_audit.standard_detail._compute_extrapolation_balance akan crash
+        # (AttributeError) begitu tipe akun ini terhubung ke sebuah standard_detail.
+        python_code: "result = 0.0"
+
+    - step: "Create client account"
+      action: "create"
+      model: "client_account"
+      save_as: "account"
+      as_user: "base.user_admin"
+      values:
+        name: "Test Client Account - D209914"
+        code: "/"
+        partner_id: "REC: client.id"
+        type_id: "REC: account_type.id"
+
+    - step: "Create conclusion for d209914 worksheet type"
+      action: "create"
+      model: "general_audit_worksheet_conclusion"
+      save_as: "conclusion"
+      as_user: "base.user_admin"
+      values:
+        name: "General Ledger is fully entered"
+        code: "/"
+        type_id: "REC: ws_type.id"
+
+scenarios:
+  # ------------------------------------------------------------------
+  # general_audit_ws_d209914 - Create in draft
+  # ------------------------------------------------------------------
+  - name: "Worksheet d209914 - Create in draft"
+    steps:
+      - step: "Create worksheet d209914"
+        action: "create"
+        model: "general_audit_ws_d209914"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+          account_mode: "account"
+          account_id: "REC: account.id"
+
+      - step: "Assert worksheet created in draft"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          id:
+            type: "value"
+            operator: "is_truthy"
+          state:
+            type: "value"
+            expected: "draft"
+          general_audit_id:
+            type: "m2o"
+            expected: "REC: audit"
+          type_id:
+            type: "m2o"
+            expected: "REC: ws_type"
+          account_id:
+            type: "m2o"
+            expected: "REC: account"
+
+  # ------------------------------------------------------------------
+  # _compute_debit / _compute_credit / _compute_balance / _compute_ending_balance
+  # - normal, CSV deterministik
+  # ------------------------------------------------------------------
+  - name: "Worksheet d209914 - Compute debit/credit/balance/ending_balance (normal)"
+    steps:
+      - step: "Create worksheet with deterministic CSV raw data"
+        action: "create"
+        model: "general_audit_ws_d209914"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+          account_mode: "account"
+          account_id: "REC: account.id"
+          debit_col_number: 3
+          credit_col_number: 4
+          thousand_separator: ","
+          decimal_separator: "."
+          initial_balance: 5000.0
+          raw_data: |
+            Date,Description,Debit,Credit
+            2026-01-05,Sale,"1,000.50",0
+            2026-01-10,Purchase,0,"2,500.75"
+            2026-01-15,Adjustment,500.25,0
+
+      - step: "Assert debit/credit/balance/ending_balance computed from CSV"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          # debit = 1,000.50 + 0 + 500.25 = 1500.75
+          debit:
+            type: "value"
+            expected: 1500.75
+          # credit = 0 + 2,500.75 + 0 = 2500.75
+          credit:
+            type: "value"
+            expected: 2500.75
+          # normal_balance = dr -> balance = debit - credit = 1500.75 - 2500.75
+          balance:
+            type: "value"
+            expected: -1000.0
+          # ending_balance = initial_balance + balance = 5000.0 + (-1000.0)
+          ending_balance:
+            type: "value"
+            expected: 4000.0
+
+  # ------------------------------------------------------------------
+  # _compute_debit / _compute_credit / _compute_balance / _compute_ending_balance
+  # - kosong (raw_data tidak diisi)
+  # ------------------------------------------------------------------
+  - name: "Worksheet d209914 - Compute debit/credit/balance/ending_balance (kosong)"
+    steps:
+      - step: "Create worksheet without raw data"
+        action: "create"
+        model: "general_audit_ws_d209914"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+          account_mode: "account"
+          account_id: "REC: account.id"
+          debit_col_number: 3
+          credit_col_number: 4
+          thousand_separator: ","
+          decimal_separator: "."
+          initial_balance: 300.0
+
+      - step:
+          "Assert debit/credit/balance are zero, ending_balance equals initial_balance"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          debit:
+            type: "value"
+            expected: 0.0
+          credit:
+            type: "value"
+            expected: 0.0
+          balance:
+            type: "value"
+            expected: 0.0
+          ending_balance:
+            type: "value"
+            expected: 300.0
+
+  # ------------------------------------------------------------------
+  # _compute_detail_id - normal (account_id set + matching general_audit.detail)
+  #                       and kosong (no account_id)
+  # ------------------------------------------------------------------
+  - name: "Worksheet d209914 - Compute detail_id (normal and kosong)"
+    steps:
+      - step: "Create general_audit.detail for the account"
+        action: "create"
+        model: "general_audit.detail"
+        save_as: "detail"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          account_id: "REC: account.id"
+
+      - step: "Create worksheet with account_id set"
+        action: "create"
+        model: "general_audit_ws_d209914"
+        save_as: "worksheet_with_account"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+          account_mode: "account"
+          account_id: "REC: account.id"
+
+      - step: "Assert detail_id resolved to the matching general_audit.detail"
+        action: "assert"
+        target: "worksheet_with_account"
+        asserts:
+          detail_id:
+            type: "m2o"
+            expected: "REC: detail"
+
+      - step: "Create worksheet without account_id (standard_account mode)"
+        action: "create"
+        model: "general_audit_ws_d209914"
+        save_as: "worksheet_without_account"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+          account_mode: "standard_account"
+          account_type_id: "REC: account_type.id"
+
+      - step: "Assert detail_id empty when account_id is not set"
+        action: "assert"
+        target: "worksheet_without_account"
+        asserts:
+          detail_id:
+            type: "value"
+            operator: "is_falsy"
+
+  # ------------------------------------------------------------------
+  # onchange_account_mode - clears the field not relevant to the new mode
+  # ------------------------------------------------------------------
+  - name: "Worksheet d209914 - Onchange account_mode clears the other account field"
+    steps:
+      - step: "Create worksheet in account mode with account_id set"
+        action: "create"
+        model: "general_audit_ws_d209914"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+          account_mode: "account"
+          account_id: "REC: account.id"
+
+      - step: "Open worksheet (account_mode/account_id/account_type_id become editable)"
+        action: "call"
+        target: "worksheet"
+        method: "action_open"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after opening worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Switch account_mode to standard_account via Form"
+        action: "form"
+        target: "worksheet"
+        as_user: "base.user_admin"
+        save: true
+        ops:
+          - set: {account_mode: "standard_account"}
+
+      - step: "Assert account_id was cleared by the onchange"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          account_id:
+            type: "value"
+            operator: "is_falsy"
+
+      - step: "Set account_type_id now that standard_account mode is active"
+        action: "form"
+        target: "worksheet"
+        as_user: "base.user_admin"
+        save: true
+        ops:
+          - set: {account_type_id: "REC: account_type"}
+
+      - step: "Assert account_type_id was actually persisted"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          account_type_id:
+            type: "value"
+            operator: "is_truthy"
+
+      - step: "Switch account_mode back to account via Form"
+        action: "form"
+        target: "worksheet"
+        as_user: "base.user_admin"
+        save: true
+        ops:
+          - set: {account_mode: "account"}
+
+      - step: "Assert account_type_id was cleared by the onchange"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          account_type_id:
+            type: "value"
+            operator: "is_falsy"
+
+  # ------------------------------------------------------------------
+  # Workflow draft -> open -> confirm -> done
+  # ------------------------------------------------------------------
+  - name: "Worksheet d209914 - Workflow confirm to done"
+    steps:
+      - step: "Create worksheet for workflow"
+        action: "create"
+        model: "general_audit_ws_d209914"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+          account_mode: "account"
+          account_id: "REC: account.id"
+
+      - step: "Open worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_open"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after opening worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Assert worksheet open"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          state:
+            type: "value"
+            expected: "open"
+
+      - step: "Fill required conclusion fields before confirm"
+        action: "write"
+        target: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          conclusion_id: "REC: conclusion.id"
+          conclusion: "General ledger fully reconciles to the trial balance."
+
+      - step: "Confirm worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_confirm"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after confirming worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Assert worksheet confirmed"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          state:
+            type: "value"
+            expected: "confirm"
+
+      - step: "Approve worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_approve_approval"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after approving worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Assert worksheet done"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          state:
+            type: "value"
+            expected: "done"
+
+  # ------------------------------------------------------------------
+  # Cancel and restart (from open)
+  # ------------------------------------------------------------------
+  - name: "Worksheet d209914 - Cancel and restart"
+    steps:
+      - step: "Create worksheet for cancel/restart"
+        action: "create"
+        model: "general_audit_ws_d209914"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+          account_mode: "account"
+          account_id: "REC: account.id"
+
+      - step: "Open worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_open"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after opening worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Assert worksheet open"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          state:
+            type: "value"
+            expected: "open"
+
+      - step: "Cancel worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_cancel"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after cancelling worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Assert worksheet cancelled"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          state:
+            type: "value"
+            expected: "cancel"
+
+      - step: "Restart worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_restart"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after restarting worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Assert worksheet back to draft"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          state:
+            type: "value"
+            expected: "draft"
