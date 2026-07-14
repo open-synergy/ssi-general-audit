@@ -1643,13 +1643,14 @@ scenarios:
       "Worksheet cbbbaf4 - Onchange allocation_total_hour_id sets
       total_manhour_allocation"
     steps:
-      # The five milestone dates become `required=True` (not just editable)
-      # once state == "open" (`states={"open": [("readonly", False),
-      # ("required", True)]}`). Since the worksheet is opened below and the
-      # Form step further down calls `save()`, they must already be filled
-      # in here -- otherwise `Form.save()` raises "engagement_date is a
-      # required field" even though this scenario isn't about those dates.
-      - step: "Create worksheet cbbbaf4 with the milestone dates already set"
+      # The five milestone dates AND allocation_template_id all become
+      # `required=True` (not just editable) once state == "open"
+      # (`states={"open": [("readonly", False), ("required", True)]}`).
+      # Since the worksheet is opened below and the Form step further down
+      # calls `save()`, they must already be filled in here -- otherwise
+      # `Form.save()` raises "<field> is a required field" even though this
+      # scenario isn't about those fields.
+      - step: "Create worksheet cbbbaf4 with the required-on-open fields already set"
         action: "create"
         model: "general_audit_ws_cbbbaf4"
         save_as: "worksheet"
@@ -1662,6 +1663,7 @@ scenarios:
           fieldwork_date: 2024-08-08
           pullout_date: 2024-08-12
           reporting_date: 2024-08-14
+          allocation_template_id: "REC: template.id"
 
       - step: "Open worksheet (allocation_total_hour_id becomes editable)"
         action: "call"
