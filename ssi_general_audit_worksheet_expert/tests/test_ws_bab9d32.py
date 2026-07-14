@@ -21,10 +21,15 @@ class TestWSBab9d32(YamlTransactionCase):
         Form loads a brand-new record, which is what this asserts:
         ``parent_type_id`` mirrors ``type_id`` without any explicit
         assignment being possible.
+
+        Deliberately not using ``with Form(...) as form:`` — the context
+        manager calls ``save()`` on ``__exit__``, which would fail here
+        because ``general_audit_id`` (a real required field) is never
+        filled; this test only cares about the pending onchange state.
         """
         ws_type = self.env.ref(
             "ssi_general_audit_worksheet_expert.worksheet_type_bab9d32"
         )
-        with Form(self.env["general_audit_ws_bab9d32"]) as form:
-            self.assertEqual(form.type_id, ws_type)
-            self.assertEqual(form.parent_type_id, ws_type)
+        form = Form(self.env["general_audit_ws_bab9d32"])
+        self.assertEqual(form.type_id, ws_type)
+        self.assertEqual(form.parent_type_id, ws_type)
