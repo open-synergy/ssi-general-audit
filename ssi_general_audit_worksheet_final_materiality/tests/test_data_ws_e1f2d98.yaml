@@ -1,0 +1,876 @@
+setup:
+  steps:
+    - step: "Get config parameter model"
+      action: "search"
+      model: "ir.config_parameter"
+      domain: []
+      save_as: "config_parameter"
+      limit: 1
+
+    - step: "Allow enough CPA licenses for this scenario"
+      action: "call"
+      target: "config_parameter"
+      method: "set_param"
+      args:
+        - "ssi_general_audit.max_number_of_cpa_license"
+        - "100"
+
+    - step: "Create client partner"
+      action: "create"
+      model: "res.partner"
+      save_as: "client"
+      as_user: "base.user_admin"
+      values:
+        name: "Test Audit Client - E1F2D98"
+        is_company: true
+
+    - step: "Create accountant partner"
+      action: "create"
+      model: "res.partner"
+      save_as: "accountant"
+      as_user: "base.user_admin"
+      values:
+        name: "Test Audit Accountant - E1F2D98"
+
+    - step: "Get CPA license id category"
+      action: "ref"
+      xml_id: "ssi_partner_identification_cpa_license.partner_identification_accountant_cpa_license"
+      save_as: "cpa_category"
+
+    - step: "Grant accountant a CPA license"
+      action: "create"
+      model: "res.partner.id_number"
+      save_as: "cpa_license"
+      as_user: "base.user_admin"
+      values:
+        partner_id: "REC: accountant.id"
+        category_id: "REC: cpa_category.id"
+        name: "CPA-E1F2D98-0001"
+
+    - step: "Create account type set"
+      action: "create"
+      model: "client_account_type_set"
+      save_as: "account_type_set"
+      as_user: "base.user_admin"
+      values:
+        name: "Test Account Type Set - E1F2D98"
+        code: "/"
+
+    - step: "Create financial accounting standard"
+      action: "create"
+      model: "accountant.financial_accounting_standard"
+      save_as: "standard"
+      as_user: "base.user_admin"
+      values:
+        name: "Test Financial Accounting Standard - E1F2D98"
+        code: "/"
+
+    - step: "Create general audit"
+      action: "create"
+      model: "general_audit"
+      save_as: "audit"
+      as_user: "base.user_admin"
+      values:
+        title: "Test General Audit - E1F2D98"
+        partner_id: "REC: client.id"
+        accountant_id: "REC: accountant.id"
+        account_type_set_id: "REC: account_type_set.id"
+        financial_accounting_standard_id: "REC: standard.id"
+        date_start: 2026-01-01
+        date_end: 2026-12-31
+        need_interim: false
+        need_previous: false
+        num_of_consecutive_audit_firm: 1
+        num_of_consecutive_audit_accountant: 1
+
+    - step: "Open general audit"
+      action: "call"
+      target: "audit"
+      method: "action_open"
+      as_user: "base.user_admin"
+
+    - step: "Invalidate cache after opening general audit"
+      action: "call"
+      target: "audit"
+      method: "invalidate_cache"
+
+    - step: "Assert general audit open"
+      action: "assert"
+      target: "audit"
+      asserts:
+        state:
+          type: "value"
+          expected: "open"
+
+    - step: "Get worksheet type e1f2d98"
+      action: "ref"
+      xml_id: "ssi_general_audit_worksheet_final_materiality.worksheet_type_e1f2d98"
+      save_as: "ws_type_e1f2d98"
+
+    - step:
+        "Get worksheet type b32655a (preliminary analytic procedure, used as fixture
+        only)"
+      action: "ref"
+      xml_id: "ssi_general_audit_worksheet_preliminary_analytic_procedure.worksheet_type_b32655a"
+      save_as: "ws_type_b32655a"
+
+    - step: "Get conclusion e1f2d98"
+      action: "ref"
+      xml_id: "ssi_general_audit_worksheet_final_materiality.general_audit_worksheet_conclusion_143_a5c7da26"
+      save_as: "conclusion_e1f2d98"
+
+    - step: "Create client account group"
+      action: "create"
+      model: "client_account_group"
+      save_as: "account_group"
+      as_user: "base.user_admin"
+      values:
+        name: "Test Account Group - E1F2D98"
+        code: "/"
+
+scenarios:
+  # ------------------------------------------------------------------
+  # action_load_analysis - menambah baris, menghapus baris, idempoten
+  # ------------------------------------------------------------------
+  - name: "e1f2d98 - action_load_analysis (add, remove, idempotent)"
+    steps:
+      - step:
+          "Create client account type (line 1) with a safe extrapolation python_code"
+        action: "create"
+        model: "client_account_type"
+        save_as: "account_type_1"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Account Type 1 - Load Analysis"
+          code: "/"
+          group_id: "REC: account_group.id"
+          python_code: "result = 0.0"
+
+      - step:
+          "Create client account type (line 2) with a safe extrapolation python_code"
+        action: "create"
+        model: "client_account_type"
+        save_as: "account_type_2"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Account Type 2 - Load Analysis"
+          code: "/"
+          group_id: "REC: account_group.id"
+          python_code: "result = 0.0"
+
+      - step: "Create general audit standard detail (line 1)"
+        action: "create"
+        model: "general_audit.standard_detail"
+        save_as: "standard_detail_1"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: account_type_1.id"
+
+      - step: "Create general audit standard detail (line 2)"
+        action: "create"
+        model: "general_audit.standard_detail"
+        save_as: "standard_detail_2"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: account_type_2.id"
+
+      - step: "Create preliminary b32655a worksheet"
+        action: "create"
+        model: "general_audit_ws_b32655a"
+        save_as: "ws_b32655a"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_b32655a.id"
+
+      - step: "Open preliminary b32655a worksheet"
+        action: "call"
+        target: "ws_b32655a"
+        method: "action_open"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after opening preliminary b32655a worksheet"
+        action: "call"
+        target: "ws_b32655a"
+        method: "invalidate_cache"
+
+      - step: "Create preliminary analysis line 1"
+        action: "create"
+        model: "general_audit_ws_b32655a.vertical_horizontal_analysis"
+        save_as: "prelim_line_1"
+        as_user: "base.user_admin"
+        values:
+          worksheet_id: "REC: ws_b32655a.id"
+          standard_detail_id: "REC: standard_detail_1.id"
+          industry_average: 12.5
+          vertical_need_attention: true
+          horizontal_need_attention: false
+          explanation: "Line 1 requires vertical attention"
+
+      - step: "Create preliminary analysis line 2"
+        action: "create"
+        model: "general_audit_ws_b32655a.vertical_horizontal_analysis"
+        save_as: "prelim_line_2"
+        as_user: "base.user_admin"
+        values:
+          worksheet_id: "REC: ws_b32655a.id"
+          standard_detail_id: "REC: standard_detail_2.id"
+          industry_average: 8.0
+          vertical_need_attention: false
+          horizontal_need_attention: true
+          explanation: "Line 2 requires horizontal attention"
+
+      - step: "Create worksheet e1f2d98"
+        action: "create"
+        model: "general_audit_ws_e1f2d98"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_e1f2d98.id"
+
+      - step: "Open worksheet e1f2d98"
+        action: "call"
+        target: "worksheet"
+        method: "action_open"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after opening worksheet e1f2d98"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Set ws_b32655a_id"
+        action: "write"
+        target: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          ws_b32655a_id: "REC: ws_b32655a.id"
+
+      - step: "Call action_load_analysis"
+        action: "call"
+        target: "worksheet"
+        method: "action_load_analysis"
+        as_user: "base.user_admin"
+
+      - step: "Assert 2 analysis lines were loaded"
+        action: "search"
+        model: "general_audit_ws_e1f2d98.vertical_horizontal_analysis"
+        domain:
+          - ["worksheet_id", "=", "REC: worksheet.id"]
+        save_as: "loaded_lines"
+        expect_count: 2
+
+      - step: "Assert line 1 copied industry_average / attention flags / explanation"
+        action: "search"
+        model: "general_audit_ws_e1f2d98.vertical_horizontal_analysis"
+        domain:
+          - ["worksheet_id", "=", "REC: worksheet.id"]
+          - ["prelim_analysis_id", "=", "REC: prelim_line_1.id"]
+        save_as: "loaded_line_1"
+        expect_count: 1
+
+      - step: "Assert loaded_line_1 field values"
+        action: "assert"
+        target: "loaded_line_1"
+        asserts:
+          industry_average:
+            type: "value"
+            expected: 12.5
+          vertical_need_attention:
+            type: "value"
+            expected: true
+          horizontal_need_attention:
+            type: "value"
+            expected: false
+          explanation:
+            type: "value"
+            expected: "Line 1 requires vertical attention"
+
+      # prelim_line_2 cannot be unlinked directly here: e1f2d98's own
+      # analysis line still references it via prelim_analysis_id
+      # (ondelete="restrict"), and _load_analysis() only ever unlinks its
+      # OWN child line (models/ga_e1f2d98/general_audit_ws_e1f2d98.py,
+      # _load_analysis) - it never touches the b32655a source row. To
+      # exercise the "source line no longer part of the worksheet" removal
+      # path the way _load_analysis actually detects it (a
+      # `all_details = search([("worksheet_id", "=", ws_b32655a_id)])`
+      # domain lookup), re-parent prelim_line_2 to a different b32655a
+      # worksheet instead of deleting it. worksheet_type_b32655a also has no
+      # allowed_audit override (one b32655a per general_audit), so the
+      # throwaway worksheet needs its own general_audit.
+      - step: "Create second client partner for the throwaway b32655a worksheet"
+        action: "create"
+        model: "res.partner"
+        save_as: "client_other"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Audit Client Other - E1F2D98 Load Analysis"
+          is_company: true
+
+      - step: "Create second accountant partner"
+        action: "create"
+        model: "res.partner"
+        save_as: "accountant_other"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Audit Accountant Other - E1F2D98 Load Analysis"
+
+      - step: "Grant second accountant a CPA license"
+        action: "create"
+        model: "res.partner.id_number"
+        save_as: "cpa_license_other"
+        as_user: "base.user_admin"
+        values:
+          partner_id: "REC: accountant_other.id"
+          category_id: "REC: cpa_category.id"
+          name: "CPA-E1F2D98-OTHER"
+
+      - step: "Create second general audit for the throwaway b32655a worksheet"
+        action: "create"
+        model: "general_audit"
+        save_as: "audit_other"
+        as_user: "base.user_admin"
+        values:
+          title: "Test General Audit Other - E1F2D98 Load Analysis"
+          partner_id: "REC: client_other.id"
+          accountant_id: "REC: accountant_other.id"
+          account_type_set_id: "REC: account_type_set.id"
+          financial_accounting_standard_id: "REC: standard.id"
+          date_start: 2026-01-01
+          date_end: 2026-12-31
+          need_interim: false
+          need_previous: false
+          num_of_consecutive_audit_firm: 1
+          num_of_consecutive_audit_accountant: 1
+
+      - step: "Open second general audit"
+        action: "call"
+        target: "audit_other"
+        method: "action_open"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after opening second general audit"
+        action: "call"
+        target: "audit_other"
+        method: "invalidate_cache"
+
+      - step:
+          "Create a throwaway b32655a worksheet (on the second audit) to re-parent
+          prelim_line_2 into"
+        action: "create"
+        model: "general_audit_ws_b32655a"
+        save_as: "ws_b32655a_other"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit_other.id"
+          type_id: "REC: ws_type_b32655a.id"
+
+      - step:
+          "Re-parent prelim_line_2 away from ws_b32655a (source line removed from
+          domain)"
+        action: "write"
+        target: "prelim_line_2"
+        as_user: "base.user_admin"
+        values:
+          worksheet_id: "REC: ws_b32655a_other.id"
+
+      - step: "Call action_load_analysis again after source line removed"
+        action: "call"
+        target: "worksheet"
+        method: "action_load_analysis"
+        as_user: "base.user_admin"
+
+      - step: "Assert orphaned analysis line for prelim_line_2 was removed"
+        action: "search"
+        model: "general_audit_ws_e1f2d98.vertical_horizontal_analysis"
+        domain:
+          - ["worksheet_id", "=", "REC: worksheet.id"]
+        save_as: "remaining_lines"
+        expect_count: 1
+
+      - step: "Call action_load_analysis a third time (idempotent)"
+        action: "call"
+        target: "worksheet"
+        method: "action_load_analysis"
+        as_user: "base.user_admin"
+
+      - step: "Assert analysis line count unchanged after idempotent reload"
+        action: "search"
+        model: "general_audit_ws_e1f2d98.vertical_horizontal_analysis"
+        domain:
+          - ["worksheet_id", "=", "REC: worksheet.id"]
+        save_as: "remaining_lines_again"
+        expect_count: 1
+
+  # ------------------------------------------------------------------
+  # _compute_vertical / _compute_horizontal - base figure nol (guard, tanpa ZeroDivisionError)
+  # ------------------------------------------------------------------
+  - name: "e1f2d98 - _compute_vertical / _compute_horizontal (base figure nol)"
+    steps:
+      - step: "Create client account type without analytic procedure computation item"
+        action: "create"
+        model: "client_account_type"
+        save_as: "account_type"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Account Type - Vertical Horizontal Zero"
+          code: "/"
+          group_id: "REC: account_group.id"
+          python_code: "result = 0.0"
+
+      - step: "Create general audit standard detail"
+        action: "create"
+        model: "general_audit.standard_detail"
+        save_as: "standard_detail"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: account_type.id"
+
+      - step: "Create preliminary b32655a worksheet"
+        action: "create"
+        model: "general_audit_ws_b32655a"
+        save_as: "ws_b32655a"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_b32655a.id"
+
+      - step: "Open preliminary b32655a worksheet"
+        action: "call"
+        target: "ws_b32655a"
+        method: "action_open"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after opening preliminary b32655a worksheet"
+        action: "call"
+        target: "ws_b32655a"
+        method: "invalidate_cache"
+
+      - step: "Create preliminary analysis line"
+        action: "create"
+        model: "general_audit_ws_b32655a.vertical_horizontal_analysis"
+        save_as: "prelim_line"
+        as_user: "base.user_admin"
+        values:
+          worksheet_id: "REC: ws_b32655a.id"
+          standard_detail_id: "REC: standard_detail.id"
+
+      - step: "Create worksheet e1f2d98"
+        action: "create"
+        model: "general_audit_ws_e1f2d98"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_e1f2d98.id"
+
+      - step: "Open worksheet e1f2d98"
+        action: "call"
+        target: "worksheet"
+        method: "action_open"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after opening worksheet e1f2d98"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Set ws_b32655a_id and load analysis"
+        action: "write"
+        target: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          ws_b32655a_id: "REC: ws_b32655a.id"
+
+      - step: "Call action_load_analysis"
+        action: "call"
+        target: "worksheet"
+        method: "action_load_analysis"
+        as_user: "base.user_admin"
+
+      - step: "Get the loaded analysis line"
+        action: "search"
+        model: "general_audit_ws_e1f2d98.vertical_horizontal_analysis"
+        domain:
+          - ["worksheet_id", "=", "REC: worksheet.id"]
+          - ["prelim_analysis_id", "=", "REC: prelim_line.id"]
+        save_as: "line"
+        expect_count: 1
+
+      - step:
+          "Assert vertical/horizontal analysis is guarded to zero (no base figure /
+          balance data)"
+        action: "assert"
+        target: "line"
+        asserts:
+          previous_vertical_analysis:
+            type: "value"
+            expected: 0.0
+          end_period_vertical_analysis:
+            type: "value"
+            expected: 0.0
+          audited_vertical_analysis:
+            type: "value"
+            expected: 0.0
+          end_period_change:
+            type: "value"
+            expected: 0.0
+          end_period_change_percent:
+            type: "value"
+            expected: 0.0
+          audited_change:
+            type: "value"
+            expected: 0.0
+          audited_change_percent:
+            type: "value"
+            expected: 0.0
+
+  # ------------------------------------------------------------------
+  # _compute_total_asset_revenue - normal (audited concrete), kosong (tanpa computation)
+  # ------------------------------------------------------------------
+  - name: "e1f2d98 - _compute_total_asset_revenue (normal and kosong)"
+    steps:
+      - step: "Get shipped Total Asset computation item"
+        action: "ref"
+        xml_id: "ssi_general_audit.trial_balance_computation_item_1_d0b0cb3e"
+        save_as: "ta_item"
+
+      - step: "Get shipped Total Revenue computation item"
+        action: "ref"
+        xml_id: "ssi_general_audit.trial_balance_computation_item_5_2a8e8641"
+        save_as: "tr_item"
+
+      - step: "Point the company's Total Asset / Total Revenue computation items"
+        action: "write"
+        target: "company"
+        as_user: "base.user_admin"
+        values:
+          ta_computation_item_id: "REC: ta_item.id"
+          tr_computation_item_id: "REC: tr_item.id"
+
+      - step: "Create general audit computation for Total Asset (audited)"
+        action: "create"
+        model: "general_audit.computation"
+        save_as: "computation_ta"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          computation_item_id: "REC: ta_item.id"
+          audited_amount: 900000.0
+
+      - step: "Create general audit computation for Total Revenue (audited)"
+        action: "create"
+        model: "general_audit.computation"
+        save_as: "computation_tr"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          computation_item_id: "REC: tr_item.id"
+          audited_amount: 1500000.0
+
+      - step: "Create worksheet e1f2d98"
+        action: "create"
+        model: "general_audit_ws_e1f2d98"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_e1f2d98.id"
+
+      - step:
+          "Assert audited totals are concrete; previous/end period stay zero without a
+          trial balance"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          audited_total_asset:
+            type: "value"
+            expected: 900000.0
+          audited_total_revenue:
+            type: "value"
+            expected: 1500000.0
+          previous_total_asset:
+            type: "value"
+            expected: 0.0
+          previous_total_revenue:
+            type: "value"
+            expected: 0.0
+          end_period_total_asset:
+            type: "value"
+            expected: 0.0
+          end_period_total_revenue:
+            type: "value"
+            expected: 0.0
+
+      - step: "Create second client partner for an audit without computations"
+        action: "create"
+        model: "res.partner"
+        save_as: "client_2"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Audit Client 2 - E1F2D98 Totals Kosong"
+          is_company: true
+
+      - step: "Create second accountant partner"
+        action: "create"
+        model: "res.partner"
+        save_as: "accountant_2"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Audit Accountant 2 - E1F2D98 Totals Kosong"
+
+      - step: "Grant second accountant a CPA license"
+        action: "create"
+        model: "res.partner.id_number"
+        save_as: "cpa_license_2"
+        as_user: "base.user_admin"
+        values:
+          partner_id: "REC: accountant_2.id"
+          category_id: "REC: cpa_category.id"
+          name: "CPA-E1F2D98-0002"
+
+      - step: "Create general audit without any computation"
+        action: "create"
+        model: "general_audit"
+        save_as: "audit_2"
+        as_user: "base.user_admin"
+        values:
+          title: "Test General Audit 2 - E1F2D98 Totals Kosong"
+          partner_id: "REC: client_2.id"
+          accountant_id: "REC: accountant_2.id"
+          account_type_set_id: "REC: account_type_set.id"
+          financial_accounting_standard_id: "REC: standard.id"
+          date_start: 2026-01-01
+          date_end: 2026-12-31
+          need_interim: false
+          need_previous: false
+          num_of_consecutive_audit_firm: 1
+          num_of_consecutive_audit_accountant: 1
+
+      - step: "Open second general audit"
+        action: "call"
+        target: "audit_2"
+        method: "action_open"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after opening second general audit"
+        action: "call"
+        target: "audit_2"
+        method: "invalidate_cache"
+
+      - step: "Create worksheet e1f2d98 on the general audit without computations"
+        action: "create"
+        model: "general_audit_ws_e1f2d98"
+        save_as: "worksheet_kosong"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit_2.id"
+          type_id: "REC: ws_type_e1f2d98.id"
+
+      - step: "Assert all six total asset/revenue fields are zero"
+        action: "assert"
+        target: "worksheet_kosong"
+        asserts:
+          previous_total_asset:
+            type: "value"
+            expected: 0.0
+          previous_total_revenue:
+            type: "value"
+            expected: 0.0
+          end_period_total_asset:
+            type: "value"
+            expected: 0.0
+          end_period_total_revenue:
+            type: "value"
+            expected: 0.0
+          audited_total_asset:
+            type: "value"
+            expected: 0.0
+          audited_total_revenue:
+            type: "value"
+            expected: 0.0
+
+  # ------------------------------------------------------------------
+  # Workflow - draft -> open -> confirm -> approve -> done
+  # ------------------------------------------------------------------
+  - name: "e1f2d98 - Workflow draft to done"
+    steps:
+      - step: "Create preliminary b32655a worksheet"
+        action: "create"
+        model: "general_audit_ws_b32655a"
+        save_as: "ws_b32655a"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_b32655a.id"
+
+      - step: "Open preliminary b32655a worksheet"
+        action: "call"
+        target: "ws_b32655a"
+        method: "action_open"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after opening preliminary b32655a worksheet"
+        action: "call"
+        target: "ws_b32655a"
+        method: "invalidate_cache"
+
+      - step: "Create worksheet e1f2d98"
+        action: "create"
+        model: "general_audit_ws_e1f2d98"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_e1f2d98.id"
+
+      - step: "Assert initial state is draft"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          state:
+            type: "value"
+            expected: "draft"
+
+      - step: "Open worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_open"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after opening worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Assert worksheet open"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          state:
+            type: "value"
+            expected: "open"
+
+      - step: "Set ws_b32655a_id and fill required conclusion fields before confirm"
+        action: "write"
+        target: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          ws_b32655a_id: "REC: ws_b32655a.id"
+          conclusion_id: "REC: conclusion_e1f2d98.id"
+          conclusion:
+            "Vertical and horizontal analysis does not indicate a risk of material
+            misstatement."
+
+      - step: "Confirm worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_confirm"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after confirming worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Assert worksheet confirmed"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          state:
+            type: "value"
+            expected: "confirm"
+
+      - step: "Approve worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_approve_approval"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after approving worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Assert worksheet done"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          state:
+            type: "value"
+            expected: "done"
+
+  # ------------------------------------------------------------------
+  # Workflow - cancel and restart
+  # ------------------------------------------------------------------
+  - name: "e1f2d98 - Cancel and restart"
+    steps:
+      - step: "Create worksheet e1f2d98"
+        action: "create"
+        model: "general_audit_ws_e1f2d98"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_e1f2d98.id"
+
+      - step: "Open worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_open"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after opening worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Assert worksheet open"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          state:
+            type: "value"
+            expected: "open"
+
+      - step: "Cancel worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_cancel"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after cancelling worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Assert worksheet cancelled"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          state:
+            type: "value"
+            expected: "cancel"
+
+      - step: "Restart worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_restart"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after restarting worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Assert worksheet back to draft"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          state:
+            type: "value"
+            expected: "draft"
