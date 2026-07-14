@@ -118,16 +118,6 @@ setup:
         name: "Test Team Role - CBBBAF4"
         code: "/"
 
-    - step: "Create res.users for employee 1 (used by team_allocation_user_ids)"
-      action: "create"
-      model: "res.users"
-      save_as: "user_1"
-      as_user: "base.user_admin"
-      values:
-        name: "Test Team User One"
-        login: "team.user.one.cbbbaf4@example.com"
-        groups_id: [[6, 0, ["REF: base.group_user"]]]
-
     - step: "Create team member employee 1"
       action: "create"
       model: "hr.employee"
@@ -135,7 +125,6 @@ setup:
       as_user: "base.user_admin"
       values:
         name: "Test Team Member One - CBBBAF4"
-        user_id: "REC: user_1.id"
 
     - step: "Create team member employee 2"
       action: "create"
@@ -1023,6 +1012,28 @@ scenarios:
   # ------------------------------------------------------------------
   - name: "General audit - Compute team_allocation_user_ids (normal)"
     steps:
+      # `res.users.login` is globally unique, and `setup:` is replayed before
+      # every scenario in this file, so the user fixture is created here
+      # (inside this scenario's own body, run exactly once) rather than in
+      # `setup:` -- creating it there would collide with itself on the next
+      # scenario replay.
+      - step: "Create a user and link it to employee 1"
+        action: "create"
+        model: "res.users"
+        save_as: "user_1"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Team User One - CBBBAF4"
+          login: "team.user.one.cbbbaf4@example.com"
+          groups_id: [[6, 0, ["REF: base.group_user"]]]
+
+      - step: "Link employee 1 to the user"
+        action: "write"
+        target: "employee_1"
+        as_user: "base.user_admin"
+        values:
+          user_id: "REC: user_1.id"
+
       - step: "Create worksheet cbbbaf4"
         action: "create"
         model: "general_audit_ws_cbbbaf4"
