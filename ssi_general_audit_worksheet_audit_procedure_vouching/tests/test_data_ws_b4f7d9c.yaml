@@ -832,13 +832,96 @@ scenarios:
   # ------------------------------------------------------------------
   - name: "Worksheet b4f7d9c - Onchange ws_e51bb1c_id clears key_audit_procedure_id"
     steps:
-      - step: "Create a second WS-E51BB1C worksheet to switch to"
+      # general_audit_worksheet_mixin only allows one worksheet per
+      # (general_audit_id, type_id) -- worksheet_type_e51bb1c does not set
+      # allowed_audit, so a second general_audit_ws_e51bb1c on the SAME
+      # `audit` fixture is rejected by _check_unique_general_audit. Build a
+      # fully independent second general_audit (own client/accountant/
+      # account_type_set/standard, opened) to host the second WS-E51BB1C,
+      # same pattern as
+      # ssi_general_audit_worksheet_audit_procedure_reperformance's
+      # "allowed_key_audit_procedure_ids ... no performed detail" scenario.
+      - step: "Create second client partner"
+        action: "create"
+        model: "res.partner"
+        save_as: "client_2"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Audit Client 2 - B4F7D9C"
+          is_company: true
+
+      - step: "Create second accountant partner"
+        action: "create"
+        model: "res.partner"
+        save_as: "accountant_2"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Audit Accountant 2 - B4F7D9C"
+
+      - step: "Grant second accountant a CPA license"
+        action: "create"
+        model: "res.partner.id_number"
+        save_as: "cpa_license_2"
+        as_user: "base.user_admin"
+        values:
+          partner_id: "REC: accountant_2.id"
+          category_id: "REC: cpa_category.id"
+          name: "CPA-B4F7D9C-0002"
+
+      - step: "Create second account type set"
+        action: "create"
+        model: "client_account_type_set"
+        save_as: "account_type_set_2"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Account Type Set 2 - B4F7D9C"
+          code: "/"
+
+      - step: "Create second financial accounting standard"
+        action: "create"
+        model: "accountant.financial_accounting_standard"
+        save_as: "standard_2"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Financial Accounting Standard 2 - B4F7D9C"
+          code: "/"
+
+      - step: "Create second general audit"
+        action: "create"
+        model: "general_audit"
+        save_as: "audit_2"
+        as_user: "base.user_admin"
+        values:
+          title: "Test General Audit 2 - B4F7D9C"
+          partner_id: "REC: client_2.id"
+          accountant_id: "REC: accountant_2.id"
+          account_type_set_id: "REC: account_type_set_2.id"
+          financial_accounting_standard_id: "REC: standard_2.id"
+          date_start: 2026-01-01
+          date_end: 2026-12-31
+          need_interim: false
+          need_previous: false
+          num_of_consecutive_audit_firm: 1
+          num_of_consecutive_audit_accountant: 1
+
+      - step: "Open second general audit"
+        action: "call"
+        target: "audit_2"
+        method: "action_open"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after opening second general audit"
+        action: "call"
+        target: "audit_2"
+        method: "invalidate_cache"
+
+      - step: "Create a second WS-E51BB1C worksheet on the second general audit"
         action: "create"
         model: "general_audit_ws_e51bb1c"
         save_as: "ws_e51bb1c_2"
         as_user: "base.user_admin"
         values:
-          general_audit_id: "REC: audit.id"
+          general_audit_id: "REC: audit_2.id"
           type_id: "REC: ws_type_e51bb1c.id"
 
       - step: "Create worksheet b4f7d9c"
