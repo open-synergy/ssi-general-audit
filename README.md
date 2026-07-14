@@ -152,7 +152,7 @@ addon | version | maintainers | summary
 [ssi_general_audit_worksheet_audit_procedure_confirmation](ssi_general_audit_worksheet_audit_procedure_confirmation/) | 14.0.1.1.0 |  | General Audit Worksheet - Reperformance Audit Procedure
 [ssi_general_audit_worksheet_audit_procedure_inquiry](ssi_general_audit_worksheet_audit_procedure_inquiry/) | 14.0.1.1.0 |  | General Audit Worksheet - Inquiry Audit Procedure
 [ssi_general_audit_worksheet_audit_procedure_observation](ssi_general_audit_worksheet_audit_procedure_observation/) | 14.0.1.1.0 |  | General Audit Worksheet - Observation Audit Procedure
-[ssi_general_audit_worksheet_audit_procedure_recompute](ssi_general_audit_worksheet_audit_procedure_recompute/) | 14.0.1.0.1 |  | General Audit Worksheet - Recompute Audit Procedure
+[ssi_general_audit_worksheet_audit_procedure_recompute](ssi_general_audit_worksheet_audit_procedure_recompute/) | 14.0.1.1.0 |  | General Audit Worksheet - Recompute Audit Procedure
 [ssi_general_audit_worksheet_audit_procedure_reperformance](ssi_general_audit_worksheet_audit_procedure_reperformance/) | 14.0.1.0.1 |  | General Audit Worksheet - Reperformance Audit Procedure
 [ssi_general_audit_worksheet_audit_procedure_vouching](ssi_general_audit_worksheet_audit_procedure_vouching/) | 14.0.1.0.1 |  | General Audit Worksheet - Vouching Audit Procedure
 [ssi_general_audit_worksheet_audit_result](ssi_general_audit_worksheet_audit_result/) | 14.0.1.0.1 |  | General Audit Worksheet - Audit Result
