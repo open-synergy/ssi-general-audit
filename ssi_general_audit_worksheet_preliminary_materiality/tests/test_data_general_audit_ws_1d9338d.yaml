@@ -1,0 +1,408 @@
+setup:
+  steps:
+    - step: "Get config parameter model"
+      action: "search"
+      model: "ir.config_parameter"
+      domain: []
+      save_as: "config_parameter"
+      limit: 1
+
+    - step: "Allow enough CPA licenses for this scenario"
+      action: "call"
+      target: "config_parameter"
+      method: "set_param"
+      args:
+        - "ssi_general_audit.max_number_of_cpa_license"
+        - "100"
+
+    - step: "Create client partner"
+      action: "create"
+      model: "res.partner"
+      save_as: "client"
+      as_user: "base.user_admin"
+      values:
+        name: "Test Audit Client - 1D9338D"
+        is_company: true
+
+    - step: "Create accountant partner"
+      action: "create"
+      model: "res.partner"
+      save_as: "accountant"
+      as_user: "base.user_admin"
+      values:
+        name: "Test Audit Accountant - 1D9338D"
+
+    - step: "Get CPA license id category"
+      action: "ref"
+      xml_id: "ssi_partner_identification_cpa_license.partner_identification_accountant_cpa_license"
+      save_as: "cpa_category"
+
+    - step: "Grant accountant a CPA license"
+      action: "create"
+      model: "res.partner.id_number"
+      save_as: "cpa_license"
+      as_user: "base.user_admin"
+      values:
+        partner_id: "REC: accountant.id"
+        category_id: "REC: cpa_category.id"
+        name: "CPA-1D9338D-0001"
+
+    - step: "Create account type set"
+      action: "create"
+      model: "client_account_type_set"
+      save_as: "account_type_set"
+      as_user: "base.user_admin"
+      values:
+        name: "Test Account Type Set - 1D9338D"
+        code: "/"
+
+    - step: "Create financial accounting standard"
+      action: "create"
+      model: "accountant.financial_accounting_standard"
+      save_as: "standard"
+      as_user: "base.user_admin"
+      values:
+        name: "Test Financial Accounting Standard - 1D9338D"
+        code: "/"
+
+    - step: "Create general audit"
+      action: "create"
+      model: "general_audit"
+      save_as: "audit"
+      as_user: "base.user_admin"
+      values:
+        title: "Test General Audit - 1D9338D"
+        partner_id: "REC: client.id"
+        accountant_id: "REC: accountant.id"
+        account_type_set_id: "REC: account_type_set.id"
+        financial_accounting_standard_id: "REC: standard.id"
+        date_start: 2026-01-01
+        date_end: 2026-12-31
+        need_interim: false
+        need_previous: false
+        num_of_consecutive_audit_firm: 1
+        num_of_consecutive_audit_accountant: 1
+
+    - step: "Open general audit"
+      action: "call"
+      target: "audit"
+      method: "action_open"
+      as_user: "base.user_admin"
+
+    - step: "Invalidate cache after opening general audit"
+      action: "call"
+      target: "audit"
+      method: "invalidate_cache"
+
+    - step: "Assert general audit open"
+      action: "assert"
+      target: "audit"
+      asserts:
+        state:
+          type: "value"
+          expected: "open"
+
+    - step: "Get worksheet type 1d9338d"
+      action: "ref"
+      xml_id: "ssi_general_audit_worksheet_preliminary_materiality.worksheet_type_1d9338d"
+      save_as: "ws_type_1d9338d"
+
+    - step: "Get conclusion for worksheet type 1d9338d (module master data)"
+      action: "ref"
+      xml_id: "ssi_general_audit_worksheet_preliminary_materiality.general_audit_worksheet_conclusion_34_d204302c"
+      save_as: "conclusion_1d9338d"
+
+    - step: "Get checklist option set (shipped module master data, not demo)"
+      action: "ref"
+      xml_id: "ssi_general_audit.checklist_option_set_2"
+      save_as: "option_set"
+
+# NOTE: worksheet_type_1d9338d has no allowed_audit override (defaults to
+# False, see data/general_audit_worksheet_type_data.xml), so AT MOST ONE
+# general_audit_ws_1d9338d record may be linked to a given general_audit
+# (general_audit_worksheet_mixin._check_unique_general_audit). Every
+# scenario below creates at most one, against its own fresh "audit"
+# (setup: is replayed before each scenario).
+scenarios:
+  # ------------------------------------------------------------------
+  # general_audit_ws_1d9338d.item - CRUD
+  # ------------------------------------------------------------------
+  - name: "1d9338d.item - Create, write, delete"
+    steps:
+      - step: "Create checklist item"
+        action: "create"
+        model: "general_audit_ws_1d9338d.item"
+        save_as: "item"
+        as_user: "base.user_admin"
+        values:
+          name: "Test checklist item - CRUD"
+          checklist_type: "materiality_comp"
+          option_set_id: "REC: option_set.id"
+
+      - step: "Assert item created"
+        action: "assert"
+        target: "item"
+        asserts:
+          id:
+            type: "value"
+            operator: "is_truthy"
+          name:
+            type: "value"
+            expected: "Test checklist item - CRUD"
+          checklist_type:
+            type: "value"
+            expected: "materiality_comp"
+
+      - step: "Write new name"
+        action: "write"
+        target: "item"
+        as_user: "base.user_admin"
+        values:
+          name: "Test checklist item - CRUD (updated)"
+
+      - step: "Assert name updated"
+        action: "assert"
+        target: "item"
+        asserts:
+          name:
+            type: "value"
+            expected: "Test checklist item - CRUD (updated)"
+
+      - step: "Delete item"
+        action: "unlink"
+        target: "item"
+        as_user: "base.user_admin"
+
+      - step: "Verify item deleted (filtered by id, not name)"
+        action: "search"
+        model: "general_audit_ws_1d9338d.item"
+        domain:
+          - ["id", "=", "REC: item.id"]
+        save_as: "result"
+        expect_count: 0
+
+  # ------------------------------------------------------------------
+  # Create worksheet 1d9338d + checklist line
+  # ------------------------------------------------------------------
+  - name: "1d9338d - Create worksheet with checklist line"
+    steps:
+      - step: "Create checklist item"
+        action: "create"
+        model: "general_audit_ws_1d9338d.item"
+        save_as: "item"
+        as_user: "base.user_admin"
+        values:
+          name: "Test checklist item - Worksheet Line"
+          checklist_type: "account_mapping"
+          option_set_id: "REC: option_set.id"
+
+      - step: "Create worksheet 1d9338d"
+        action: "create"
+        model: "general_audit_ws_1d9338d"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_1d9338d.id"
+
+      - step: "Assert worksheet created in draft"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          id:
+            type: "value"
+            operator: "is_truthy"
+          state:
+            type: "value"
+            expected: "draft"
+          general_audit_id:
+            type: "m2o"
+            expected: "REC: audit"
+          type_id:
+            type: "m2o"
+            expected: "REC: ws_type_1d9338d"
+
+      - step: "Create checklist line on the worksheet"
+        action: "create"
+        model: "general_audit_ws_1d9338d.checklist"
+        save_as: "checklist_line"
+        as_user: "base.user_admin"
+        values:
+          worksheet_id: "REC: worksheet.id"
+          item_id: "REC: item.id"
+
+      - step: "Assert checklist_ids contains the new line"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          checklist_ids:
+            type: "o2m"
+            check: "contains"
+            expected_records:
+              - "REC: checklist_line"
+
+      - step: "Assert checklist_type mirrors the item (related field)"
+        action: "assert"
+        target: "checklist_line"
+        asserts:
+          checklist_type:
+            type: "value"
+            expected: "account_mapping"
+
+  # ------------------------------------------------------------------
+  # Workflow - draft -> open -> confirm -> approve -> done
+  # ------------------------------------------------------------------
+  - name: "1d9338d - Workflow draft to done"
+    steps:
+      - step: "Create worksheet 1d9338d"
+        action: "create"
+        model: "general_audit_ws_1d9338d"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_1d9338d.id"
+
+      - step: "Assert initial state is draft"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          state:
+            type: "value"
+            expected: "draft"
+
+      - step: "Open worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_open"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after opening worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Assert worksheet open"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          state:
+            type: "value"
+            expected: "open"
+
+      - step: "Fill required conclusion fields before confirm"
+        action: "write"
+        target: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          conclusion_id: "REC: conclusion_1d9338d.id"
+          conclusion: "Preliminary materiality has been adequately established."
+
+      - step: "Confirm worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_confirm"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after confirming worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Assert worksheet confirmed"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          state:
+            type: "value"
+            expected: "confirm"
+
+      - step: "Approve worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_approve_approval"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after approving worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Assert worksheet done"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          state:
+            type: "value"
+            expected: "done"
+
+  # ------------------------------------------------------------------
+  # Workflow - cancel and restart
+  # ------------------------------------------------------------------
+  - name: "1d9338d - Cancel and restart"
+    steps:
+      - step: "Create worksheet 1d9338d"
+        action: "create"
+        model: "general_audit_ws_1d9338d"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_1d9338d.id"
+
+      - step: "Open worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_open"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after opening worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Assert worksheet open"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          state:
+            type: "value"
+            expected: "open"
+
+      - step: "Cancel worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_cancel"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after cancelling worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Assert worksheet cancelled"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          state:
+            type: "value"
+            expected: "cancel"
+
+      - step: "Restart worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_restart"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after restarting worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Assert worksheet back to draft"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          state:
+            type: "value"
+            expected: "draft"
