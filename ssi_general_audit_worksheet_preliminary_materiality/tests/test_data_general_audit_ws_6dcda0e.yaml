@@ -1,0 +1,1249 @@
+setup:
+  steps:
+    - step: "Get config parameter model"
+      action: "search"
+      model: "ir.config_parameter"
+      domain: []
+      save_as: "config_parameter"
+      limit: 1
+
+    - step: "Allow enough CPA licenses for this scenario"
+      action: "call"
+      target: "config_parameter"
+      method: "set_param"
+      args:
+        - "ssi_general_audit.max_number_of_cpa_license"
+        - "100"
+
+    - step: "Create client partner"
+      action: "create"
+      model: "res.partner"
+      save_as: "client"
+      as_user: "base.user_admin"
+      values:
+        name: "Test Audit Client - 6DCDA0E"
+        is_company: true
+
+    - step: "Create accountant partner"
+      action: "create"
+      model: "res.partner"
+      save_as: "accountant"
+      as_user: "base.user_admin"
+      values:
+        name: "Test Audit Accountant - 6DCDA0E"
+
+    - step: "Get CPA license id category"
+      action: "ref"
+      xml_id: "ssi_partner_identification_cpa_license.partner_identification_accountant_cpa_license"
+      save_as: "cpa_category"
+
+    - step: "Grant accountant a CPA license"
+      action: "create"
+      model: "res.partner.id_number"
+      save_as: "cpa_license"
+      as_user: "base.user_admin"
+      values:
+        partner_id: "REC: accountant.id"
+        category_id: "REC: cpa_category.id"
+        name: "CPA-6DCDA0E-0001"
+
+    - step: "Create account type set"
+      action: "create"
+      model: "client_account_type_set"
+      save_as: "account_type_set"
+      as_user: "base.user_admin"
+      values:
+        name: "Test Account Type Set - 6DCDA0E"
+        code: "/"
+
+    - step: "Create financial accounting standard"
+      action: "create"
+      model: "accountant.financial_accounting_standard"
+      save_as: "standard"
+      as_user: "base.user_admin"
+      values:
+        name: "Test Financial Accounting Standard - 6DCDA0E"
+        code: "/"
+
+    - step: "Create general audit"
+      action: "create"
+      model: "general_audit"
+      save_as: "audit"
+      as_user: "base.user_admin"
+      values:
+        title: "Test General Audit - 6DCDA0E"
+        partner_id: "REC: client.id"
+        accountant_id: "REC: accountant.id"
+        account_type_set_id: "REC: account_type_set.id"
+        financial_accounting_standard_id: "REC: standard.id"
+        date_start: 2026-01-01
+        date_end: 2026-12-31
+        need_interim: false
+        need_previous: false
+        num_of_consecutive_audit_firm: 1
+        num_of_consecutive_audit_accountant: 1
+
+    - step: "Open general audit"
+      action: "call"
+      target: "audit"
+      method: "action_open"
+      as_user: "base.user_admin"
+
+    - step: "Invalidate cache after opening general audit"
+      action: "call"
+      target: "audit"
+      method: "invalidate_cache"
+
+    - step: "Assert general audit open"
+      action: "assert"
+      target: "audit"
+      asserts:
+        state:
+          type: "value"
+          expected: "open"
+
+    - step: "Get worksheet type d9d2b44"
+      action: "ref"
+      xml_id: "ssi_general_audit_worksheet_preliminary_materiality.worksheet_type_d9d2b44"
+      save_as: "ws_type_d9d2b44"
+
+    - step: "Get worksheet type 6dcda0e"
+      action: "ref"
+      xml_id: "ssi_general_audit_worksheet_preliminary_materiality.worksheet_type_6dcda0e"
+      save_as: "ws_type_6dcda0e"
+
+    - step: "Get conclusion for worksheet type 6dcda0e (module master data)"
+      action: "ref"
+      xml_id: "ssi_general_audit_worksheet_preliminary_materiality.general_audit_worksheet_conclusion_38_26e032ad"
+      save_as: "conclusion_6dcda0e"
+
+    # Shared helper d9d2b44 (Materiality Computation) worksheet, used by most
+    # scenarios below as the "worksheet_d9d2b44_id" source of Overall / Performance
+    # Materiality. Base = 1,000,000.0 (extrapolation), OM% = 5.0 -> OM = 50,000.0,
+    # PM% = 50.0 -> PM = 25,000.0 (25% of base). It does not need to reach
+    # "confirm"/"done" -- overall_materiality / performance_materiality are
+    # computed as soon as the inputs are set, regardless of state.
+    - step: "Create computation item for the helper d9d2b44 worksheet"
+      action: "create"
+      model: "trial_balance_computation_item"
+      save_as: "comp_item"
+      as_user: "base.user_admin"
+      values:
+        name: "Test Computation Item - 6DCDA0E Helper"
+        code: "/"
+
+    - step: "Create general audit computation for the helper d9d2b44 worksheet"
+      action: "create"
+      model: "general_audit.computation"
+      save_as: "computation"
+      as_user: "base.user_admin"
+      values:
+        general_audit_id: "REC: audit.id"
+        computation_item_id: "REC: comp_item.id"
+        extrapolation_amount: 1000000.0
+
+    - step: "Create helper worksheet d9d2b44"
+      action: "create"
+      model: "general_audit_ws_d9d2b44"
+      save_as: "ws_d9d2b44"
+      as_user: "base.user_admin"
+      values:
+        general_audit_id: "REC: audit.id"
+        type_id: "REC: ws_type_d9d2b44.id"
+        other_base_amount: 0.0
+
+    - step: "Open helper worksheet d9d2b44"
+      action: "call"
+      target: "ws_d9d2b44"
+      method: "action_open"
+      as_user: "base.user_admin"
+
+    - step: "Invalidate cache after opening helper worksheet d9d2b44"
+      action: "call"
+      target: "ws_d9d2b44"
+      method: "invalidate_cache"
+
+    - step: "Configure helper worksheet d9d2b44 (base amount and percentages)"
+      action: "write"
+      target: "ws_d9d2b44"
+      as_user: "base.user_admin"
+      values:
+        computation_item_id: "REC: comp_item.id"
+        base_amount_source: "extrapolation"
+        overall_materiality_percentage: 5.0
+        performance_materiality_percentage: 50.0
+        tolerable_misstatement_percentage: 10.0
+
+    - step: "Assert helper worksheet d9d2b44 OM/PM computed"
+      action: "assert"
+      target: "ws_d9d2b44"
+      asserts:
+        overall_materiality:
+          type: "value"
+          expected: 50000.0
+        performance_materiality:
+          type: "value"
+          expected: 25000.0
+
+    - step: "Create client account group (for standard_detail fixtures)"
+      action: "create"
+      model: "client_account_group"
+      save_as: "account_group"
+      as_user: "base.user_admin"
+      values:
+        name: "Test Account Group - 6DCDA0E"
+        code: "/"
+
+# NOTE: worksheet_type_6dcda0e has allowed_audit=True and max_number_allowed=2
+# (see data/general_audit_worksheet_type_data.xml), so at most TWO
+# general_audit_ws_6dcda0e records may be linked to a given general_audit.
+# "audit" (and its helper "ws_d9d2b44") is a brand-new record per scenario
+# (setup: is replayed fresh), so the limit never accumulates across scenarios.
+scenarios:
+  # ------------------------------------------------------------------
+  # Create - defaults, base_amount_source is a related (non-stored) field
+  # ------------------------------------------------------------------
+  - name: "6dcda0e - Create in draft (base_amount_source mirrors worksheet_d9d2b44_id)"
+    steps:
+      - step: "Create worksheet 6dcda0e"
+        action: "create"
+        model: "general_audit_ws_6dcda0e"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_6dcda0e.id"
+          worksheet_d9d2b44_id: "REC: ws_d9d2b44.id"
+          materiality_type: "pm"
+
+      - step: "Assert worksheet created in draft with related base_amount_source"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          id:
+            type: "value"
+            operator: "is_truthy"
+          state:
+            type: "value"
+            expected: "draft"
+          base_amount_source:
+            type: "value"
+            expected: "extrapolation"
+          worksheet_d9d2b44_id:
+            type: "m2o"
+            expected: "REC: ws_d9d2b44"
+
+  # ------------------------------------------------------------------
+  # _compute_base_amount - materiality_type = pm
+  # ------------------------------------------------------------------
+  - name: "6dcda0e - _compute_base_amount (pm)"
+    steps:
+      - step: "Create worksheet 6dcda0e using Performance Materiality"
+        action: "create"
+        model: "general_audit_ws_6dcda0e"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_6dcda0e.id"
+          worksheet_d9d2b44_id: "REC: ws_d9d2b44.id"
+          materiality_type: "pm"
+
+      - step: "Assert base equals Performance Materiality"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          base:
+            type: "value"
+            expected: 25000.0
+
+  # ------------------------------------------------------------------
+  # _compute_base_amount - materiality_type = om
+  # ------------------------------------------------------------------
+  - name: "6dcda0e - _compute_base_amount (om)"
+    steps:
+      - step: "Create worksheet 6dcda0e using Overall Materiality"
+        action: "create"
+        model: "general_audit_ws_6dcda0e"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_6dcda0e.id"
+          worksheet_d9d2b44_id: "REC: ws_d9d2b44.id"
+          materiality_type: "om"
+
+      - step: "Assert base equals Overall Materiality"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          base:
+            type: "value"
+            expected: 50000.0
+
+  # ------------------------------------------------------------------
+  # _compute_base_amount - kosong (no worksheet_d9d2b44_id)
+  # ------------------------------------------------------------------
+  - name: "6dcda0e - _compute_base_amount (kosong)"
+    steps:
+      - step: "Create worksheet 6dcda0e without a linked d9d2b44 worksheet"
+        action: "create"
+        model: "general_audit_ws_6dcda0e"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_6dcda0e.id"
+          materiality_type: "pm"
+
+      - step: "Assert base is zero without a linked d9d2b44 worksheet"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          base:
+            type: "value"
+            expected: 0.0
+          base_amount_source:
+            type: "value"
+            operator: "is_falsy"
+
+  # ------------------------------------------------------------------
+  # action_reload_materiality_mapping - populate + idempotent
+  # ------------------------------------------------------------------
+  - name: "6dcda0e - action_reload_materiality_mapping (populate, idempotent)"
+    steps:
+      - step: "Create client account type 1 with a safe extrapolation python_code"
+        action: "create"
+        model: "client_account_type"
+        save_as: "account_type_1"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Account Type 1 - Reload Mapping"
+          code: "/"
+          group_id: "REC: account_group.id"
+          # general_audit.standard_detail has no "balance" field, unlike
+          # client_trial_balance.standard_detail which the field's own
+          # default python_code ("result = document.balance") is written
+          # for. Use a safe no-op to avoid an unrelated crash in
+          # general_audit.standard_detail._compute_extrapolation_balance.
+          python_code: "result = 0.0"
+
+      - step: "Create client account type 2 with a safe extrapolation python_code"
+        action: "create"
+        model: "client_account_type"
+        save_as: "account_type_2"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Account Type 2 - Reload Mapping"
+          code: "/"
+          group_id: "REC: account_group.id"
+          python_code: "result = 0.0"
+
+      - step: "Add standard detail 1 to the audit"
+        action: "create"
+        model: "general_audit.standard_detail"
+        save_as: "standard_detail_1"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: account_type_1.id"
+
+      - step: "Add standard detail 2 to the audit"
+        action: "create"
+        model: "general_audit.standard_detail"
+        save_as: "standard_detail_2"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: account_type_2.id"
+
+      - step: "Create worksheet 6dcda0e"
+        action: "create"
+        model: "general_audit_ws_6dcda0e"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_6dcda0e.id"
+          worksheet_d9d2b44_id: "REC: ws_d9d2b44.id"
+          materiality_type: "pm"
+
+      - step: "Open worksheet 6dcda0e"
+        action: "call"
+        target: "worksheet"
+        method: "action_open"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after opening worksheet 6dcda0e"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Assert materiality_mapping_ids is empty before reload"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          materiality_mapping_ids:
+            type: "o2m"
+            check: "count"
+            expected_count: 0
+
+      - step: "Call action_reload_materiality_mapping"
+        action: "call"
+        target: "worksheet"
+        method: "action_reload_materiality_mapping"
+        as_user: "base.user_admin"
+
+      - step: "Assert materiality_mapping_ids has one line per standard detail"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          materiality_mapping_ids:
+            type: "o2m"
+            check: "count"
+            expected_count: 2
+
+      - step: "Call action_reload_materiality_mapping again (idempotent)"
+        action: "call"
+        target: "worksheet"
+        method: "action_reload_materiality_mapping"
+        as_user: "base.user_admin"
+
+      - step: "Search mapping lines for this worksheet - still two, not duplicated"
+        action: "search"
+        model: "general_audit_ws_6dcda0e_materiality_mapping"
+        domain:
+          - ["worksheet_id", "=", "REC: worksheet.id"]
+        save_as: "mapping_lines"
+        expect_count: 2
+
+  # ------------------------------------------------------------------
+  # action_reload_materiality_mapping - orphan line unlinked
+  #
+  # general_audit_ws_6dcda0e_materiality_mapping.standard_detail_id is
+  # ondelete="restrict", so a standard_detail referenced by a mapping line
+  # cannot simply be unlinked directly (that would raise, not exercise the
+  # cleanup path). The real production cleanup path
+  # (general_audit._reload_standard_account) unlinks stale mapping lines
+  # itself before removing standard details. To exercise _populate()'s own
+  # orphan-removal branch in isolation, reassign the standard_detail to a
+  # second (throwaway) general_audit -- this removes it from
+  # general_audit_id.standard_detail_ids without deleting the record, which
+  # is exactly the condition _populate() checks for.
+  # ------------------------------------------------------------------
+  - name: "6dcda0e - action_reload_materiality_mapping (orphan line unlinked)"
+    steps:
+      - step: "Create a second (throwaway) general audit"
+        action: "create"
+        model: "general_audit"
+        save_as: "other_audit"
+        as_user: "base.user_admin"
+        values:
+          title: "Test General Audit - 6DCDA0E Other"
+          partner_id: "REC: client.id"
+          accountant_id: "REC: accountant.id"
+          account_type_set_id: "REC: account_type_set.id"
+          financial_accounting_standard_id: "REC: standard.id"
+          date_start: 2026-01-01
+          date_end: 2026-12-31
+          need_interim: false
+          need_previous: false
+          num_of_consecutive_audit_firm: 1
+          num_of_consecutive_audit_accountant: 1
+
+      - step: "Create client account type (orphan scenario)"
+        action: "create"
+        model: "client_account_type"
+        save_as: "account_type_orphan"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Account Type - Orphan Mapping"
+          code: "/"
+          group_id: "REC: account_group.id"
+          python_code: "result = 0.0"
+
+      - step: "Add standard detail to the audit"
+        action: "create"
+        model: "general_audit.standard_detail"
+        save_as: "standard_detail"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: account_type_orphan.id"
+
+      - step: "Create worksheet 6dcda0e"
+        action: "create"
+        model: "general_audit_ws_6dcda0e"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_6dcda0e.id"
+          worksheet_d9d2b44_id: "REC: ws_d9d2b44.id"
+          materiality_type: "pm"
+
+      - step: "Open worksheet 6dcda0e"
+        action: "call"
+        target: "worksheet"
+        method: "action_open"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after opening worksheet 6dcda0e"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Populate materiality mapping (creates the line to be orphaned)"
+        action: "call"
+        target: "worksheet"
+        method: "action_reload_materiality_mapping"
+        as_user: "base.user_admin"
+
+      - step: "Assert one mapping line exists"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          materiality_mapping_ids:
+            type: "o2m"
+            check: "count"
+            expected_count: 1
+
+      - step: "Move the standard detail away from the audit (reassign parent)"
+        action: "write"
+        target: "standard_detail"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: other_audit.id"
+
+      - step: "Reload materiality mapping again"
+        action: "call"
+        target: "worksheet"
+        method: "action_reload_materiality_mapping"
+        as_user: "base.user_admin"
+
+      - step: "Assert the orphaned mapping line was unlinked"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          materiality_mapping_ids:
+            type: "o2m"
+            check: "count"
+            expected_count: 0
+
+  # ------------------------------------------------------------------
+  # _compute_materiality (mapping) - MATERIAL
+  # ------------------------------------------------------------------
+  - name: "6dcda0e - Compute materiality mapping (MATERIAL)"
+    steps:
+      - step: "Create client account type"
+        action: "create"
+        model: "client_account_type"
+        save_as: "account_type"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Account Type - Material"
+          code: "/"
+          group_id: "REC: account_group.id"
+          # adjusted_extrapolation_balance (compute=True, store=True) cannot
+          # be set directly via action: create/write -- Odoo silently resets
+          # it back to whatever python_code genuinely produces the next time
+          # it is read after a cache invalidation. Control the real input
+          # (python_code) instead and let the compute chain produce the
+          # balance itself.
+          python_code: "result = 30000.0"
+
+      - step: "Create standard detail with balance above the PM threshold"
+        action: "create"
+        model: "general_audit.standard_detail"
+        save_as: "standard_detail"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: account_type.id"
+
+      - step: "Create worksheet 6dcda0e (PM base = 25,000.0)"
+        action: "create"
+        model: "general_audit_ws_6dcda0e"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_6dcda0e.id"
+          worksheet_d9d2b44_id: "REC: ws_d9d2b44.id"
+          materiality_type: "pm"
+
+      - step: "Create materiality mapping line"
+        action: "create"
+        model: "general_audit_ws_6dcda0e_materiality_mapping"
+        save_as: "mapping"
+        as_user: "base.user_admin"
+        values:
+          worksheet_id: "REC: worksheet.id"
+          standard_detail_id: "REC: standard_detail.id"
+
+      - step: "Assert balance >= base -> Material"
+        action: "assert"
+        target: "mapping"
+        asserts:
+          balance:
+            type: "value"
+            expected: 30000.0
+          materiality:
+            type: "value"
+            expected: "m"
+          final_materiality:
+            type: "value"
+            expected: "m"
+
+  # ------------------------------------------------------------------
+  # _compute_materiality (mapping) - IMMATERIAL
+  # ------------------------------------------------------------------
+  - name: "6dcda0e - Compute materiality mapping (IMMATERIAL)"
+    steps:
+      - step: "Create client account type"
+        action: "create"
+        model: "client_account_type"
+        save_as: "account_type"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Account Type - Immaterial"
+          code: "/"
+          group_id: "REC: account_group.id"
+          python_code: "result = 10000.0"
+
+      - step: "Create standard detail with balance below the PM threshold"
+        action: "create"
+        model: "general_audit.standard_detail"
+        save_as: "standard_detail"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: account_type.id"
+
+      - step: "Create worksheet 6dcda0e (PM base = 25,000.0)"
+        action: "create"
+        model: "general_audit_ws_6dcda0e"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_6dcda0e.id"
+          worksheet_d9d2b44_id: "REC: ws_d9d2b44.id"
+          materiality_type: "pm"
+
+      - step: "Create materiality mapping line"
+        action: "create"
+        model: "general_audit_ws_6dcda0e_materiality_mapping"
+        save_as: "mapping"
+        as_user: "base.user_admin"
+        values:
+          worksheet_id: "REC: worksheet.id"
+          standard_detail_id: "REC: standard_detail.id"
+
+      - step: "Assert balance < base -> Immaterial"
+        action: "assert"
+        target: "mapping"
+        asserts:
+          balance:
+            type: "value"
+            expected: 10000.0
+          materiality:
+            type: "value"
+            expected: "im"
+          final_materiality:
+            type: "value"
+            expected: "im"
+
+  # ------------------------------------------------------------------
+  # _compute_materiality (mapping) - BATAS: balance == base
+  # ------------------------------------------------------------------
+  - name: "6dcda0e - Compute materiality mapping (BATAS: balance == base)"
+    steps:
+      - step: "Create client account type"
+        action: "create"
+        model: "client_account_type"
+        save_as: "account_type"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Account Type - Boundary"
+          code: "/"
+          group_id: "REC: account_group.id"
+          python_code: "result = 25000.0"
+
+      - step: "Create standard detail with balance exactly at the PM threshold"
+        action: "create"
+        model: "general_audit.standard_detail"
+        save_as: "standard_detail"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: account_type.id"
+
+      - step: "Create worksheet 6dcda0e (PM base = 25,000.0)"
+        action: "create"
+        model: "general_audit_ws_6dcda0e"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_6dcda0e.id"
+          worksheet_d9d2b44_id: "REC: ws_d9d2b44.id"
+          materiality_type: "pm"
+
+      - step: "Create materiality mapping line"
+        action: "create"
+        model: "general_audit_ws_6dcda0e_materiality_mapping"
+        save_as: "mapping"
+        as_user: "base.user_admin"
+        values:
+          worksheet_id: "REC: worksheet.id"
+          standard_detail_id: "REC: standard_detail.id"
+
+      - step: "Assert balance == base -> Material (>=)"
+        action: "assert"
+        target: "mapping"
+        asserts:
+          balance:
+            type: "value"
+            expected: 25000.0
+          materiality:
+            type: "value"
+            expected: "m"
+
+  # ------------------------------------------------------------------
+  # _compute_materiality (mapping) - negative balance uses abs()
+  # ------------------------------------------------------------------
+  - name: "6dcda0e - Compute materiality mapping (BALANCE NEGATIF)"
+    steps:
+      - step: "Create client account type"
+        action: "create"
+        model: "client_account_type"
+        save_as: "account_type"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Account Type - Negative Balance"
+          code: "/"
+          group_id: "REC: account_group.id"
+          python_code: "result = -30000.0"
+
+      - step: "Create standard detail with a large negative balance"
+        action: "create"
+        model: "general_audit.standard_detail"
+        save_as: "standard_detail"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: account_type.id"
+
+      - step: "Create worksheet 6dcda0e (PM base = 25,000.0)"
+        action: "create"
+        model: "general_audit_ws_6dcda0e"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_6dcda0e.id"
+          worksheet_d9d2b44_id: "REC: ws_d9d2b44.id"
+          materiality_type: "pm"
+
+      - step: "Create materiality mapping line"
+        action: "create"
+        model: "general_audit_ws_6dcda0e_materiality_mapping"
+        save_as: "mapping"
+        as_user: "base.user_admin"
+        values:
+          worksheet_id: "REC: worksheet.id"
+          standard_detail_id: "REC: standard_detail.id"
+
+      - step: "Assert abs(balance) >= base -> Material even though balance is negative"
+        action: "assert"
+        target: "mapping"
+        asserts:
+          balance:
+            type: "value"
+            expected: -30000.0
+          materiality:
+            type: "value"
+            expected: "m"
+
+  # ------------------------------------------------------------------
+  # _compute_materiality (mapping) - nol
+  # ------------------------------------------------------------------
+  - name: "6dcda0e - Compute materiality mapping (NOL)"
+    steps:
+      - step: "Create client account type"
+        action: "create"
+        model: "client_account_type"
+        save_as: "account_type"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Account Type - Zero Balance"
+          code: "/"
+          group_id: "REC: account_group.id"
+          python_code: "result = 0.0"
+
+      - step: "Create standard detail with zero balance"
+        action: "create"
+        model: "general_audit.standard_detail"
+        save_as: "standard_detail"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: account_type.id"
+
+      - step: "Create worksheet 6dcda0e (PM base = 25,000.0)"
+        action: "create"
+        model: "general_audit_ws_6dcda0e"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_6dcda0e.id"
+          worksheet_d9d2b44_id: "REC: ws_d9d2b44.id"
+          materiality_type: "pm"
+
+      - step: "Create materiality mapping line"
+        action: "create"
+        model: "general_audit_ws_6dcda0e_materiality_mapping"
+        save_as: "mapping"
+        as_user: "base.user_admin"
+        values:
+          worksheet_id: "REC: worksheet.id"
+          standard_detail_id: "REC: standard_detail.id"
+
+      - step: "Assert zero balance -> Immaterial"
+        action: "assert"
+        target: "mapping"
+        asserts:
+          balance:
+            type: "value"
+            expected: 0.0
+          materiality:
+            type: "value"
+            expected: "im"
+
+  # ------------------------------------------------------------------
+  # _compute_materiality (mapping) - end_period source
+  # ------------------------------------------------------------------
+  - name: "6dcda0e - Compute materiality mapping (end_period source)"
+    steps:
+      - step: "Create computation item for the end_period helper worksheet"
+        action: "create"
+        model: "trial_balance_computation_item"
+        save_as: "comp_item_end_period"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Computation Item - End Period Helper"
+          code: "/"
+
+      # home_amount cannot be set directly (see the comment on the shared
+      # helper computation above) -- feed a real home trial balance +
+      # client_trial_balance.computation instead.
+      - step: "Create home trial balance for the end_period helper"
+        action: "create"
+        model: "client_trial_balance"
+        save_as: "tb_home_end_period"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          trial_balance_type: "home"
+
+      - step: "Create trial balance computation line (real home amount source)"
+        action: "create"
+        model: "client_trial_balance.computation"
+        save_as: "tb_computation_end_period"
+        as_user: "base.user_admin"
+        values:
+          trial_balance_id: "REC: tb_home_end_period.id"
+          computation_item_id: "REC: comp_item_end_period.id"
+          amount: 1000000.0
+
+      - step: "Create general audit computation"
+        action: "create"
+        model: "general_audit.computation"
+        save_as: "computation_end_period"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          computation_item_id: "REC: comp_item_end_period.id"
+          extrapolation_amount: 2000000.0
+
+      - step: "Create a second helper worksheet d9d2b44 sourced from end_period"
+        action: "create"
+        model: "general_audit_ws_d9d2b44"
+        save_as: "ws_d9d2b44_end_period"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_d9d2b44.id"
+          other_base_amount: 0.0
+
+      - step: "Open second helper worksheet d9d2b44"
+        action: "call"
+        target: "ws_d9d2b44_end_period"
+        method: "action_open"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after opening second helper worksheet d9d2b44"
+        action: "call"
+        target: "ws_d9d2b44_end_period"
+        method: "invalidate_cache"
+
+      - step: "Configure second helper worksheet d9d2b44 (end_period source)"
+        action: "write"
+        target: "ws_d9d2b44_end_period"
+        as_user: "base.user_admin"
+        values:
+          computation_item_id: "REC: comp_item_end_period.id"
+          base_amount_source: "end_period"
+          overall_materiality_percentage: 5.0
+          performance_materiality_percentage: 50.0
+          tolerable_misstatement_percentage: 10.0
+
+      - step: "Assert second helper worksheet d9d2b44 PM computed from home_amount"
+        action: "assert"
+        target: "ws_d9d2b44_end_period"
+        asserts:
+          base_computation_amount:
+            type: "value"
+            expected: 1000000.0
+          performance_materiality:
+            type: "value"
+            expected: 25000.0
+
+      - step: "Create client account type"
+        action: "create"
+        model: "client_account_type"
+        save_as: "account_type"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Account Type - End Period"
+          code: "/"
+          group_id: "REC: account_group.id"
+          # A large decoy extrapolation balance. home_statement_balance
+          # (related="home_standard_line_id.balance") cannot be forced to a
+          # specific value the same way python_code forces
+          # adjusted_extrapolation_balance -- it is only ever non-zero
+          # through a real client_trial_balance.standard_detail rollup of
+          # actual client_trial_balance.detail lines (see
+          # client_trial_balance_standard_detail.py._compute_balance), which
+          # this fixture does not build. Leaving it at its natural 0.0 (no
+          # home trial balance line for this account type) is still enough
+          # to prove the branch selection: if the mapping wrongly read
+          # adjusted_extrapolation_balance instead of home_statement_balance
+          # here, balance would show 99999.0 (Material); it must show 0.0
+          # (Immaterial) to prove it correctly followed
+          # base_amount_source == "end_period".
+          python_code: "result = 99999.0"
+
+      - step:
+          "Create standard detail with different extrapolation vs. end_period balances"
+        action: "create"
+        model: "general_audit.standard_detail"
+        save_as: "standard_detail"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: account_type.id"
+
+      - step: "Create worksheet 6dcda0e using the end_period helper"
+        action: "create"
+        model: "general_audit_ws_6dcda0e"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_6dcda0e.id"
+          worksheet_d9d2b44_id: "REC: ws_d9d2b44_end_period.id"
+          materiality_type: "pm"
+
+      - step: "Create materiality mapping line"
+        action: "create"
+        model: "general_audit_ws_6dcda0e_materiality_mapping"
+        save_as: "mapping"
+        as_user: "base.user_admin"
+        values:
+          worksheet_id: "REC: worksheet.id"
+          standard_detail_id: "REC: standard_detail.id"
+
+      - step:
+          "Assert balance mirrors home_statement_balance (0.0, no real home TB line),
+          not the extrapolation figure (99999.0)"
+        action: "assert"
+        target: "mapping"
+        asserts:
+          balance:
+            type: "value"
+            expected: 0.0
+          materiality:
+            type: "value"
+            expected: "im"
+
+  # ------------------------------------------------------------------
+  # use_specific_materiality override
+  # ------------------------------------------------------------------
+  - name: "6dcda0e - use_specific_materiality forces final_materiality to Material"
+    steps:
+      - step: "Create client account type"
+        action: "create"
+        model: "client_account_type"
+        save_as: "account_type"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Account Type - Specific Materiality"
+          code: "/"
+          group_id: "REC: account_group.id"
+          python_code: "result = 10000.0"
+
+      - step: "Create standard detail with balance below the PM threshold"
+        action: "create"
+        model: "general_audit.standard_detail"
+        save_as: "standard_detail"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: account_type.id"
+
+      - step: "Create worksheet 6dcda0e (PM base = 25,000.0)"
+        action: "create"
+        model: "general_audit_ws_6dcda0e"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_6dcda0e.id"
+          worksheet_d9d2b44_id: "REC: ws_d9d2b44.id"
+          materiality_type: "pm"
+
+      - step: "Create materiality mapping line with the specific materiality override"
+        action: "create"
+        model: "general_audit_ws_6dcda0e_materiality_mapping"
+        save_as: "mapping"
+        as_user: "base.user_admin"
+        values:
+          worksheet_id: "REC: worksheet.id"
+          standard_detail_id: "REC: standard_detail.id"
+          use_specific_materiality: true
+          specific_materiality: 5000.0
+
+      - step:
+          "Assert raw materiality stays Immaterial but final_materiality is forced
+          Material"
+        action: "assert"
+        target: "mapping"
+        asserts:
+          materiality:
+            type: "value"
+            expected: "im"
+          final_materiality:
+            type: "value"
+            expected: "m"
+
+  # ------------------------------------------------------------------
+  # Guard _10_check_balance_type - duplicate balance type on confirm
+  # ------------------------------------------------------------------
+  - name: "6dcda0e - Guard _10_check_balance_type rejects duplicate balance type"
+    steps:
+      - step: "Create first worksheet 6dcda0e"
+        action: "create"
+        model: "general_audit_ws_6dcda0e"
+        save_as: "worksheet_1"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_6dcda0e.id"
+          worksheet_d9d2b44_id: "REC: ws_d9d2b44.id"
+          materiality_type: "pm"
+
+      - step: "Create second worksheet 6dcda0e (same audit, same balance type)"
+        action: "create"
+        model: "general_audit_ws_6dcda0e"
+        save_as: "worksheet_2"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_6dcda0e.id"
+          worksheet_d9d2b44_id: "REC: ws_d9d2b44.id"
+          materiality_type: "om"
+
+      - step: "Open second worksheet"
+        action: "call"
+        target: "worksheet_2"
+        method: "action_open"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after opening second worksheet"
+        action: "call"
+        target: "worksheet_2"
+        method: "invalidate_cache"
+
+      - step: "Confirming the second worksheet must be rejected"
+        action: "call"
+        target: "worksheet_2"
+        method: "action_confirm"
+        as_user: "base.user_admin"
+        expect_error:
+          type: "ValidationError"
+          message_contains: "already used"
+
+  # ------------------------------------------------------------------
+  # Workflow - draft -> open -> confirm -> approve -> done
+  # ------------------------------------------------------------------
+  - name: "6dcda0e - Workflow draft to done"
+    steps:
+      - step: "Create worksheet 6dcda0e"
+        action: "create"
+        model: "general_audit_ws_6dcda0e"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_6dcda0e.id"
+          worksheet_d9d2b44_id: "REC: ws_d9d2b44.id"
+          materiality_type: "pm"
+
+      - step: "Assert initial state is draft"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          state:
+            type: "value"
+            expected: "draft"
+
+      - step: "Open worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_open"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after opening worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Assert worksheet open"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          state:
+            type: "value"
+            expected: "open"
+
+      - step: "Fill required conclusion fields before confirm"
+        action: "write"
+        target: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          conclusion_id: "REC: conclusion_6dcda0e.id"
+          conclusion: "Specific materiality has been adequately determined."
+
+      - step: "Confirm worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_confirm"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after confirming worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Assert worksheet confirmed"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          state:
+            type: "value"
+            expected: "confirm"
+
+      - step: "Approve worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_approve_approval"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after approving worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Assert worksheet done"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          state:
+            type: "value"
+            expected: "done"
+
+  # ------------------------------------------------------------------
+  # Workflow - cancel and restart
+  # ------------------------------------------------------------------
+  - name: "6dcda0e - Cancel and restart"
+    steps:
+      - step: "Create worksheet 6dcda0e"
+        action: "create"
+        model: "general_audit_ws_6dcda0e"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_6dcda0e.id"
+          worksheet_d9d2b44_id: "REC: ws_d9d2b44.id"
+          materiality_type: "pm"
+
+      - step: "Open worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_open"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after opening worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Assert worksheet open"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          state:
+            type: "value"
+            expected: "open"
+
+      - step: "Cancel worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_cancel"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after cancelling worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Assert worksheet cancelled"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          state:
+            type: "value"
+            expected: "cancel"
+
+      - step: "Restart worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_restart"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after restarting worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Assert worksheet back to draft"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          state:
+            type: "value"
+            expected: "draft"
