@@ -62,58 +62,94 @@ class TestGeneralAuditWSd9d2b44(YamlTransactionCase):
         no Python-level constraint enforcing it on ``create``/``write``, so
         the restriction can only be observed by inspecting the Form's
         computed value, which requires the Form API.
+
+        ``computation_item_id`` is itself ``readonly=True`` except while the
+        *worksheet's own* ``state == "open"`` (see ``states=`` on the field
+        in ``general_audit_ws_d9d2b44.py``) -- not the linked general
+        audit's state. The worksheet record is therefore created and opened
+        via plain ORM calls FIRST, and only THEN wrapped in ``Form(record)``
+        (the existing-record constructor, not ``Form(self.env[model_name])``
+        which would build a brand-new draft record and keep the field
+        readonly regardless of what the general audit's state is).
+
+        Every workflow-policy-gated step runs ``as_user`` ``base.user_admin``
+        -- same reason as everywhere else in this module's YAML fixtures
+        (``README_FIXTURE.md``): the default test user (OdooBot, uid=1) is
+        not a member of any ``res.groups``, so ``open_ok`` would evaluate
+        ``False`` for it.
         """
+        admin = self.env.ref("base.user_admin")
         icp = self.env["ir.config_parameter"].sudo()
         icp.set_param("ssi_general_audit.max_number_of_cpa_license", "100")
 
-        client = self.env["res.partner"].create(
-            {"name": "Test Audit Client - Form Allowed Comp", "is_company": True}
+        client = (
+            self.env["res.partner"]
+            .with_user(admin)
+            .create(
+                {"name": "Test Audit Client - Form Allowed Comp", "is_company": True}
+            )
         )
-        accountant = self.env["res.partner"].create(
-            {"name": "Test Audit Accountant - Form Allowed Comp"}
+        accountant = (
+            self.env["res.partner"]
+            .with_user(admin)
+            .create({"name": "Test Audit Accountant - Form Allowed Comp"})
         )
         cpa_category = self.env.ref(
             "ssi_partner_identification_cpa_license."
             "partner_identification_accountant_cpa_license"
         )
-        self.env["res.partner.id_number"].create(
+        self.env["res.partner.id_number"].with_user(admin).create(
             {
                 "partner_id": accountant.id,
                 "category_id": cpa_category.id,
                 "name": "CPA-FORM-ALLOWED-COMP-0001",
             }
         )
-        account_type_set = self.env["client_account_type_set"].create(
-            {"name": "Test Account Type Set - Form Allowed Comp", "code": "/"}
+        account_type_set = (
+            self.env["client_account_type_set"]
+            .with_user(admin)
+            .create({"name": "Test Account Type Set - Form Allowed Comp", "code": "/"})
         )
-        standard = self.env["accountant.financial_accounting_standard"].create(
-            {"name": "Test Standard - Form Allowed Comp", "code": "/"}
+        standard = (
+            self.env["accountant.financial_accounting_standard"]
+            .with_user(admin)
+            .create({"name": "Test Standard - Form Allowed Comp", "code": "/"})
         )
-        audit = self.env["general_audit"].create(
-            {
-                "title": "Test General Audit - Form Allowed Comp",
-                "partner_id": client.id,
-                "accountant_id": accountant.id,
-                "account_type_set_id": account_type_set.id,
-                "financial_accounting_standard_id": standard.id,
-                "date_start": "2026-01-01",
-                "date_end": "2026-12-31",
-                "need_interim": False,
-                "need_previous": False,
-                "num_of_consecutive_audit_firm": 1,
-                "num_of_consecutive_audit_accountant": 1,
-            }
+        audit = (
+            self.env["general_audit"]
+            .with_user(admin)
+            .create(
+                {
+                    "title": "Test General Audit - Form Allowed Comp",
+                    "partner_id": client.id,
+                    "accountant_id": accountant.id,
+                    "account_type_set_id": account_type_set.id,
+                    "financial_accounting_standard_id": standard.id,
+                    "date_start": "2026-01-01",
+                    "date_end": "2026-12-31",
+                    "need_interim": False,
+                    "need_previous": False,
+                    "num_of_consecutive_audit_firm": 1,
+                    "num_of_consecutive_audit_accountant": 1,
+                }
+            )
         )
-        audit.action_open()
+        audit.with_user(admin).action_open()
         audit.invalidate_cache()
 
-        comp_item_allowed = self.env["trial_balance_computation_item"].create(
-            {"name": "Allowed Computation Item", "code": "/"}
+        comp_item_allowed = (
+            self.env["trial_balance_computation_item"]
+            .with_user(admin)
+            .create({"name": "Allowed Computation Item", "code": "/"})
         )
-        comp_item_other = self.env["trial_balance_computation_item"].create(
-            {"name": "Other Computation Item (not linked to audit)", "code": "/"}
+        comp_item_other = (
+            self.env["trial_balance_computation_item"]
+            .with_user(admin)
+            .create(
+                {"name": "Other Computation Item (not linked to audit)", "code": "/"}
+            )
         )
-        self.env["general_audit.computation"].create(
+        self.env["general_audit.computation"].with_user(admin).create(
             {
                 "general_audit_id": audit.id,
                 "computation_item_id": comp_item_allowed.id,
@@ -121,11 +157,31 @@ class TestGeneralAuditWSd9d2b44(YamlTransactionCase):
             }
         )
 
-        form = Form(self.env["general_audit_ws_d9d2b44"])
-        form.general_audit_id = audit
+        ws_type = self.env.ref(
+            "ssi_general_audit_worksheet_preliminary_materiality."
+            "worksheet_type_d9d2b44"
+        )
+        record = (
+            self.env["general_audit_ws_d9d2b44"]
+            .with_user(admin)
+            .create(
+                {
+                    "general_audit_id": audit.id,
+                    "type_id": ws_type.id,
+                    "other_base_amount": 0.0,
+                }
+            )
+        )
+        record.with_user(admin).action_open()
+        record.invalidate_cache()
+        self.assertEqual(record.state, "open")
+
+        form = Form(record.with_user(admin))
         self.assertIn(comp_item_allowed, form.allowed_computation_item_ids)
         self.assertNotIn(comp_item_other, form.allowed_computation_item_ids)
 
-        # Within the allowed set, the widget accepts the assignment.
+        # Within the allowed set, and now that the worksheet itself is
+        # "open", the widget accepts the assignment.
         form.computation_item_id = comp_item_allowed
         self.assertEqual(form.computation_item_id, comp_item_allowed)
+        form.save()
