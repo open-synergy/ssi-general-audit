@@ -1,0 +1,940 @@
+setup:
+  steps:
+    - step: "Get config parameter model"
+      action: "search"
+      model: "ir.config_parameter"
+      domain: []
+      save_as: "config_parameter"
+      limit: 1
+
+    - step: "Allow enough CPA licenses for this scenario"
+      action: "call"
+      target: "config_parameter"
+      method: "set_param"
+      args:
+        - "ssi_general_audit.max_number_of_cpa_license"
+        - "100"
+
+    - step: "Create client partner"
+      action: "create"
+      model: "res.partner"
+      save_as: "client"
+      as_user: "base.user_admin"
+      values:
+        name: "Test Audit Client - cda3a68"
+        is_company: true
+
+    - step: "Create accountant partner"
+      action: "create"
+      model: "res.partner"
+      save_as: "accountant"
+      as_user: "base.user_admin"
+      values:
+        name: "Test Audit Accountant - cda3a68"
+
+    - step: "Get CPA license id category"
+      action: "ref"
+      xml_id: "ssi_partner_identification_cpa_license.partner_identification_accountant_cpa_license"
+      save_as: "cpa_category"
+
+    - step: "Grant accountant a CPA license"
+      action: "create"
+      model: "res.partner.id_number"
+      save_as: "cpa_license"
+      as_user: "base.user_admin"
+      values:
+        partner_id: "REC: accountant.id"
+        category_id: "REC: cpa_category.id"
+        name: "CPA-CDA3A68-0001"
+
+    - step: "Create account type set"
+      action: "create"
+      model: "client_account_type_set"
+      save_as: "account_type_set"
+      as_user: "base.user_admin"
+      values:
+        name: "Test Account Type Set - cda3a68"
+        code: "/"
+
+    - step: "Create financial accounting standard"
+      action: "create"
+      model: "accountant.financial_accounting_standard"
+      save_as: "standard"
+      as_user: "base.user_admin"
+      values:
+        name: "Test Financial Accounting Standard - cda3a68"
+        code: "/"
+
+    - step: "Create general audit"
+      action: "create"
+      model: "general_audit"
+      save_as: "audit"
+      as_user: "base.user_admin"
+      values:
+        title: "Test General Audit - cda3a68"
+        partner_id: "REC: client.id"
+        accountant_id: "REC: accountant.id"
+        account_type_set_id: "REC: account_type_set.id"
+        financial_accounting_standard_id: "REC: standard.id"
+        date_start: 2026-01-01
+        date_end: 2026-12-31
+        need_interim: false
+        need_previous: false
+        num_of_consecutive_audit_firm: 1
+        num_of_consecutive_audit_accountant: 1
+
+    - step: "Open general audit"
+      action: "call"
+      target: "audit"
+      method: "action_open"
+      as_user: "base.user_admin"
+
+    - step: "Invalidate cache after opening general audit"
+      action: "call"
+      target: "audit"
+      method: "invalidate_cache"
+
+    - step: "Get worksheet type cda3a68 (Management Expert)"
+      action: "ref"
+      xml_id: "ssi_general_audit_worksheet_expert.worksheet_type_cda3a68"
+      save_as: "ws_type"
+
+    - step: "Create expert type fixture"
+      action: "create"
+      model: "general_audit_expert_type"
+      save_as: "expert_type"
+      as_user: "base.user_admin"
+      values:
+        name: "Actuarial Valuation Specialist"
+        code: "/"
+
+    - step: "Create conclusion fixture for cda3a68"
+      action: "create"
+      model: "general_audit_worksheet_conclusion"
+      save_as: "conclusion"
+      as_user: "base.user_admin"
+      values:
+        name: "Management's expert competence adequately evaluated"
+        code: "/"
+        type_id: "REC: ws_type.id"
+
+scenarios:
+  # ------------------------------------------------------------------
+  # general_audit_ws_cda3a68.category - CRUD
+  # ------------------------------------------------------------------
+  - name: "Category cda3a68 - Create"
+    steps:
+      - step: "Create category"
+        action: "create"
+        model: "general_audit_ws_cda3a68.category"
+        save_as: "category"
+        values:
+          name: "Competence"
+          code: "/"
+      - step: "Assert category created"
+        action: "assert"
+        target: "category"
+        asserts:
+          id:
+            type: "value"
+            operator: "is_truthy"
+          name:
+            type: "value"
+            expected: "Competence"
+
+  - name: "Category cda3a68 - Edit name"
+    steps:
+      - step: "Create category"
+        action: "create"
+        model: "general_audit_ws_cda3a68.category"
+        save_as: "category"
+        values:
+          name: "Competence"
+          code: "/"
+      - step: "Rename category"
+        action: "write"
+        target: "category"
+        values:
+          name: "Competence & Capability"
+      - step: "Assert category renamed"
+        action: "assert"
+        target: "category"
+        asserts:
+          name:
+            type: "value"
+            expected: "Competence & Capability"
+
+  - name: "Category cda3a68 - Delete"
+    steps:
+      - step: "Create category"
+        action: "create"
+        model: "general_audit_ws_cda3a68.category"
+        save_as: "category"
+        values:
+          name: "Objectivity - to delete"
+          code: "/"
+      - step: "Delete category"
+        action: "unlink"
+        target: "category"
+      - step: "Verify category deleted"
+        action: "search"
+        model: "general_audit_ws_cda3a68.category"
+        domain:
+          - ["name", "=", "Objectivity - to delete"]
+        save_as: "result"
+        expect_count: 0
+
+  # ------------------------------------------------------------------
+  # general_audit_ws_cda3a68.factor - CRUD
+  # ------------------------------------------------------------------
+  - name: "Factor cda3a68 - Create"
+    steps:
+      - step: "Create category for factor"
+        action: "create"
+        model: "general_audit_ws_cda3a68.category"
+        save_as: "category"
+        values:
+          name: "Competence"
+          code: "/"
+      - step: "Create factor"
+        action: "create"
+        model: "general_audit_ws_cda3a68.factor"
+        save_as: "factor"
+        values:
+          name: "Professional Certification"
+          category_id: "REC: category.id"
+          sequence: 10
+      - step: "Assert factor created"
+        action: "assert"
+        target: "factor"
+        asserts:
+          id:
+            type: "value"
+            operator: "is_truthy"
+          name:
+            type: "value"
+            expected: "Professional Certification"
+          sequence:
+            type: "value"
+            expected: 10
+          category_id:
+            type: "m2o"
+            expected: "REC: category"
+
+  - name: "Factor cda3a68 - Edit sequence"
+    steps:
+      - step: "Create category for factor"
+        action: "create"
+        model: "general_audit_ws_cda3a68.category"
+        save_as: "category"
+        values:
+          name: "Competence"
+          code: "/"
+      - step: "Create factor"
+        action: "create"
+        model: "general_audit_ws_cda3a68.factor"
+        save_as: "factor"
+        values:
+          name: "Professional Certification"
+          category_id: "REC: category.id"
+          sequence: 10
+      - step: "Update factor sequence"
+        action: "write"
+        target: "factor"
+        values:
+          sequence: 20
+      - step: "Assert factor sequence updated"
+        action: "assert"
+        target: "factor"
+        asserts:
+          sequence:
+            type: "value"
+            expected: 20
+
+  - name: "Factor cda3a68 - Delete"
+    steps:
+      - step: "Create category for factor"
+        action: "create"
+        model: "general_audit_ws_cda3a68.category"
+        save_as: "category"
+        values:
+          name: "Competence"
+          code: "/"
+      - step: "Create factor"
+        action: "create"
+        model: "general_audit_ws_cda3a68.factor"
+        save_as: "factor"
+        values:
+          name: "Factor to delete"
+          category_id: "REC: category.id"
+          sequence: 10
+      - step: "Delete factor"
+        action: "unlink"
+        target: "factor"
+      - step: "Verify factor deleted"
+        action: "search"
+        model: "general_audit_ws_cda3a68.factor"
+        domain:
+          - ["name", "=", "Factor to delete"]
+        save_as: "result"
+        expect_count: 0
+
+  # ------------------------------------------------------------------
+  # action_populate_expert
+  # ------------------------------------------------------------------
+  # NOTE: this module ships built-in factor master records for cda3a68
+  # too (data/master/general_audit_ws_cda3a68_factor.xml), loaded
+  # unconditionally via the manifest's `data` key (not `demo`). Since
+  # `action_populate_expert` calls `Factor.search([])` with no domain, the
+  # scenarios below never assert a hardcoded total row count — they assert
+  # the *currently searchable* factor count via `EVAL:` and independently
+  # verify presence/absence of specific factor-linked detail rows created
+  # within the scenario itself.
+  - name: "Worksheet cda3a68 - action_populate_expert creates detail from factor"
+    steps:
+      - step: "Create category for populate test"
+        action: "create"
+        model: "general_audit_ws_cda3a68.category"
+        save_as: "category"
+        values:
+          name: "Populate Category 1"
+          code: "/"
+
+      - step: "Create factor 1"
+        action: "create"
+        model: "general_audit_ws_cda3a68.factor"
+        save_as: "factor1"
+        values:
+          name: "Populate Factor 1"
+          category_id: "REC: category.id"
+          sequence: 10
+
+      - step: "Create factor 2"
+        action: "create"
+        model: "general_audit_ws_cda3a68.factor"
+        save_as: "factor2"
+        values:
+          name: "Populate Factor 2"
+          category_id: "REC: category.id"
+          sequence: 20
+
+      - step: "Create worksheet cda3a68"
+        action: "create"
+        model: "general_audit_ws_cda3a68"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+
+      - step: "Populate expert detail from factor master"
+        action: "call"
+        target: "worksheet"
+        method: "action_populate_expert"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after populate"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Assert detail_ids has one row per currently available factor"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          detail_ids:
+            type: "o2m"
+            check: "count"
+            expected_count:
+              "EVAL: len(env['general_audit_ws_cda3a68.factor'].search([]))"
+
+      - step: "Verify populated detail row for factor 1"
+        action: "search"
+        model: "general_audit_ws_cda3a68.detail"
+        domain:
+          - ["expert_id", "=", "REC: worksheet.id"]
+          - ["factor_id", "=", "REC: factor1.id"]
+        save_as: "detail1"
+        expect_count: 1
+
+      - step: "Assert detail row 1 related fields and sequence"
+        action: "assert"
+        target: "detail1"
+        asserts:
+          factor_name:
+            type: "value"
+            expected: "Populate Factor 1"
+          category_id:
+            type: "m2o"
+            expected: "REC: category"
+          sequence:
+            type: "value"
+            expected: 10
+
+      - step: "Verify populated detail row for factor 2"
+        action: "search"
+        model: "general_audit_ws_cda3a68.detail"
+        domain:
+          - ["expert_id", "=", "REC: worksheet.id"]
+          - ["factor_id", "=", "REC: factor2.id"]
+        save_as: "detail2"
+        expect_count: 1
+
+      - step: "Assert detail row 2 related fields and sequence"
+        action: "assert"
+        target: "detail2"
+        asserts:
+          factor_name:
+            type: "value"
+            expected: "Populate Factor 2"
+          category_id:
+            type: "m2o"
+            expected: "REC: category"
+          sequence:
+            type: "value"
+            expected: 20
+
+  - name:
+      "Worksheet cda3a68 - action_populate_expert removes detail when factor archived"
+    steps:
+      - step: "Create category for archive test"
+        action: "create"
+        model: "general_audit_ws_cda3a68.category"
+        save_as: "category"
+        values:
+          name: "Archive Test Category"
+          code: "/"
+
+      - step: "Create factor A"
+        action: "create"
+        model: "general_audit_ws_cda3a68.factor"
+        save_as: "factor_a"
+        values:
+          name: "Archive Test Factor A"
+          category_id: "REC: category.id"
+          sequence: 10
+
+      - step: "Create factor B"
+        action: "create"
+        model: "general_audit_ws_cda3a68.factor"
+        save_as: "factor_b"
+        values:
+          name: "Archive Test Factor B"
+          category_id: "REC: category.id"
+          sequence: 20
+
+      - step: "Create worksheet cda3a68"
+        action: "create"
+        model: "general_audit_ws_cda3a68"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+
+      - step: "Populate expert detail (first pass)"
+        action: "call"
+        target: "worksheet"
+        method: "action_populate_expert"
+        as_user: "base.user_admin"
+
+      - step: "Verify factor B detail row exists before archiving"
+        action: "search"
+        model: "general_audit_ws_cda3a68.detail"
+        domain:
+          - ["expert_id", "=", "REC: worksheet.id"]
+          - ["factor_id", "=", "REC: factor_b.id"]
+        save_as: "detail_b_before"
+        expect_count: 1
+
+      - step:
+          "Archive factor B (no longer an active master item; factor_id has
+          ondelete=restrict so unlink is not usable here)"
+        action: "write"
+        target: "factor_b"
+        as_user: "base.user_admin"
+        values:
+          active: false
+
+      - step: "Re-run populate after factor B was archived"
+        action: "call"
+        target: "worksheet"
+        method: "action_populate_expert"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after re-populating"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Verify factor B detail row was removed"
+        action: "search"
+        model: "general_audit_ws_cda3a68.detail"
+        domain:
+          - ["expert_id", "=", "REC: worksheet.id"]
+          - ["factor_id", "=", "REC: factor_b.id"]
+        save_as: "detail_b_after"
+        expect_count: 0
+
+      - step: "Verify factor A detail row still exists"
+        action: "search"
+        model: "general_audit_ws_cda3a68.detail"
+        domain:
+          - ["expert_id", "=", "REC: worksheet.id"]
+          - ["factor_id", "=", "REC: factor_a.id"]
+        save_as: "detail_a_after"
+        expect_count: 1
+
+      - step: "Assert total detail_ids matches currently active/searchable factors"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          detail_ids:
+            type: "o2m"
+            check: "count"
+            expected_count:
+              "EVAL: len(env['general_audit_ws_cda3a68.factor'].search([]))"
+
+  - name: "Worksheet cda3a68 - action_populate_expert is idempotent"
+    steps:
+      - step: "Create category for idempotent test"
+        action: "create"
+        model: "general_audit_ws_cda3a68.category"
+        save_as: "category"
+        values:
+          name: "Idempotent Test Category"
+          code: "/"
+
+      - step: "Create factor C"
+        action: "create"
+        model: "general_audit_ws_cda3a68.factor"
+        save_as: "factor_c"
+        values:
+          name: "Idempotent Test Factor C"
+          category_id: "REC: category.id"
+          sequence: 10
+
+      - step: "Create worksheet cda3a68"
+        action: "create"
+        model: "general_audit_ws_cda3a68"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+
+      - step: "Populate expert detail (first call)"
+        action: "call"
+        target: "worksheet"
+        method: "action_populate_expert"
+        as_user: "base.user_admin"
+
+      - step: "Populate expert detail (second call, should not duplicate)"
+        action: "call"
+        target: "worksheet"
+        method: "action_populate_expert"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after repeated populate"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Verify factor C detail row still appears only once"
+        action: "search"
+        model: "general_audit_ws_cda3a68.detail"
+        domain:
+          - ["expert_id", "=", "REC: worksheet.id"]
+          - ["factor_id", "=", "REC: factor_c.id"]
+        save_as: "detail_c"
+        expect_count: 1
+
+      - step: "Assert total detail_ids row count is not duplicated"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          detail_ids:
+            type: "o2m"
+            check: "count"
+            expected_count:
+              "EVAL: len(env['general_audit_ws_cda3a68.factor'].search([]))"
+
+  - name: "Worksheet cda3a68 - write explanation on detail line"
+    steps:
+      - step: "Create category for explanation test"
+        action: "create"
+        model: "general_audit_ws_cda3a68.category"
+        save_as: "category"
+        values:
+          name: "Explanation Test Category"
+          code: "/"
+
+      - step: "Create factor D"
+        action: "create"
+        model: "general_audit_ws_cda3a68.factor"
+        save_as: "factor_d"
+        values:
+          name: "Explanation Test Factor D"
+          category_id: "REC: category.id"
+          sequence: 10
+
+      - step: "Create worksheet cda3a68"
+        action: "create"
+        model: "general_audit_ws_cda3a68"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+
+      - step: "Populate expert detail"
+        action: "call"
+        target: "worksheet"
+        method: "action_populate_expert"
+        as_user: "base.user_admin"
+
+      - step: "Find detail row for factor D"
+        action: "search"
+        model: "general_audit_ws_cda3a68.detail"
+        domain:
+          - ["expert_id", "=", "REC: worksheet.id"]
+          - ["factor_id", "=", "REC: factor_d.id"]
+        save_as: "detail_d"
+        expect_count: 1
+
+      - step: "Write explanation on the detail line"
+        action: "write"
+        target: "detail_d"
+        as_user: "base.user_admin"
+        values:
+          explanation: "CPA sejak 2015"
+
+      - step: "Assert explanation saved"
+        action: "assert"
+        target: "detail_d"
+        asserts:
+          explanation:
+            type: "value"
+            expected: "CPA sejak 2015"
+
+  # ------------------------------------------------------------------
+  # Workflow
+  # ------------------------------------------------------------------
+  - name: "Worksheet cda3a68 - workflow draft to done"
+    steps:
+      - step: "Create worksheet cda3a68"
+        action: "create"
+        model: "general_audit_ws_cda3a68"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+
+      - step: "Assert worksheet created in draft"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          state:
+            type: "value"
+            expected: "draft"
+
+      - step: "Open worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_open"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after opening worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Assert worksheet open"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          state:
+            type: "value"
+            expected: "open"
+
+      - step: "Fill expert identity fields and conclusion before confirm"
+        action: "write"
+        target: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          expert_name: "Independent Actuary"
+          expert_type_id: "REC: expert_type.id"
+          contracting_party: "Client Management"
+          conclusion_id: "REC: conclusion.id"
+          conclusion: "Management's expert is competent, capable, and objective."
+
+      - step: "Assert expert identity fields saved"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          expert_name:
+            type: "value"
+            expected: "Independent Actuary"
+          expert_type_id:
+            type: "m2o"
+            expected: "REC: expert_type"
+          contracting_party:
+            type: "value"
+            expected: "Client Management"
+
+      - step: "Confirm worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_confirm"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after confirming worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Assert worksheet confirmed"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          state:
+            type: "value"
+            expected: "confirm"
+
+      - step: "Approve worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_approve_approval"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after approving worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Assert worksheet done"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          state:
+            type: "value"
+            expected: "done"
+
+  - name: "Worksheet cda3a68 - cancel and restart"
+    steps:
+      - step: "Create worksheet cda3a68"
+        action: "create"
+        model: "general_audit_ws_cda3a68"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+
+      - step: "Open worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_open"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after opening worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Assert worksheet open"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          state:
+            type: "value"
+            expected: "open"
+
+      - step: "Cancel worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_cancel"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after cancelling worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Assert worksheet cancelled"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          state:
+            type: "value"
+            expected: "cancel"
+
+      - step: "Restart worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_restart"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after restarting worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Assert worksheet back to draft"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          state:
+            type: "value"
+            expected: "draft"
+
+  # ------------------------------------------------------------------
+  # Negative path: _10_check_expert_type_id
+  # ------------------------------------------------------------------
+  - name: "Worksheet cda3a68 - duplicate expert_type_id rejected on confirm"
+    steps:
+      - step: "Create first worksheet cda3a68"
+        action: "create"
+        model: "general_audit_ws_cda3a68"
+        save_as: "worksheet_1"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+
+      - step: "Open first worksheet"
+        action: "call"
+        target: "worksheet_1"
+        method: "action_open"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after opening first worksheet"
+        action: "call"
+        target: "worksheet_1"
+        method: "invalidate_cache"
+
+      - step: "Fill first worksheet with expert_type and conclusion"
+        action: "write"
+        target: "worksheet_1"
+        as_user: "base.user_admin"
+        values:
+          expert_type_id: "REC: expert_type.id"
+          conclusion_id: "REC: conclusion.id"
+          conclusion: "First worksheet conclusion."
+
+      - step: "Confirm first worksheet succeeds"
+        action: "call"
+        target: "worksheet_1"
+        method: "action_confirm"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after confirming first worksheet"
+        action: "call"
+        target: "worksheet_1"
+        method: "invalidate_cache"
+
+      - step: "Assert first worksheet confirmed"
+        action: "assert"
+        target: "worksheet_1"
+        asserts:
+          state:
+            type: "value"
+            expected: "confirm"
+
+      - step: "Create second worksheet cda3a68 on the same audit"
+        action: "create"
+        model: "general_audit_ws_cda3a68"
+        save_as: "worksheet_2"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+
+      - step: "Open second worksheet"
+        action: "call"
+        target: "worksheet_2"
+        method: "action_open"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after opening second worksheet"
+        action: "call"
+        target: "worksheet_2"
+        method: "invalidate_cache"
+
+      - step: "Fill second worksheet with the SAME expert_type and conclusion"
+        action: "write"
+        target: "worksheet_2"
+        as_user: "base.user_admin"
+        values:
+          expert_type_id: "REC: expert_type.id"
+          conclusion_id: "REC: conclusion.id"
+          conclusion: "Second worksheet conclusion."
+
+      - step: "Confirm second worksheet must be rejected as duplicate expert_type_id"
+        action: "call"
+        target: "worksheet_2"
+        method: "action_confirm"
+        as_user: "base.user_admin"
+        expect_error:
+          type: "ValidationError"
+          message_contains: "already used"
+
+  # ------------------------------------------------------------------
+  # Cascade delete
+  # ------------------------------------------------------------------
+  - name: "Worksheet cda3a68 - cascade delete of detail on unlink"
+    steps:
+      - step: "Create category for cascade test"
+        action: "create"
+        model: "general_audit_ws_cda3a68.category"
+        save_as: "category"
+        values:
+          name: "Cascade Test Category"
+          code: "/"
+
+      - step: "Create factor E"
+        action: "create"
+        model: "general_audit_ws_cda3a68.factor"
+        save_as: "factor_e"
+        values:
+          name: "Cascade Test Factor E"
+          category_id: "REC: category.id"
+          sequence: 10
+
+      - step: "Create worksheet cda3a68"
+        action: "create"
+        model: "general_audit_ws_cda3a68"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+
+      - step: "Populate expert detail"
+        action: "call"
+        target: "worksheet"
+        method: "action_populate_expert"
+        as_user: "base.user_admin"
+
+      - step: "Verify a detail row exists for factor E before unlink"
+        action: "search"
+        model: "general_audit_ws_cda3a68.detail"
+        domain:
+          - ["expert_id", "=", "REC: worksheet.id"]
+          - ["factor_id", "=", "REC: factor_e.id"]
+        save_as: "detail_e_before"
+        expect_count: 1
+
+      - step: "Delete the worksheet"
+        action: "unlink"
+        target: "worksheet"
+        as_user: "base.user_admin"
+
+      - step: "Verify all detail rows were cascade-deleted"
+        action: "search"
+        model: "general_audit_ws_cda3a68.detail"
+        domain:
+          - ["expert_id", "=", "REC: worksheet.id"]
+        save_as: "detail_after_unlink"
+        expect_count: 0
