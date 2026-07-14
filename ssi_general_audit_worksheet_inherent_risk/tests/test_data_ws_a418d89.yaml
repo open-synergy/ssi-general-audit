@@ -1,0 +1,837 @@
+setup:
+  steps:
+    - step: "Get config parameter model"
+      action: "search"
+      model: "ir.config_parameter"
+      domain: []
+      save_as: "config_parameter"
+      limit: 1
+
+    - step: "Allow enough CPA licenses for this scenario"
+      action: "call"
+      target: "config_parameter"
+      method: "set_param"
+      args:
+        - "ssi_general_audit.max_number_of_cpa_license"
+        - "100"
+
+    - step: "Create client partner"
+      action: "create"
+      model: "res.partner"
+      save_as: "client"
+      as_user: "base.user_admin"
+      values:
+        name: "Test Audit Client - a418d89"
+        is_company: true
+
+    - step: "Create accountant partner"
+      action: "create"
+      model: "res.partner"
+      save_as: "accountant"
+      as_user: "base.user_admin"
+      values:
+        name: "Test Audit Accountant - a418d89"
+
+    - step: "Get CPA license id category"
+      action: "ref"
+      xml_id: "ssi_partner_identification_cpa_license.partner_identification_accountant_cpa_license"
+      save_as: "cpa_category"
+
+    - step: "Grant accountant a CPA license"
+      action: "create"
+      model: "res.partner.id_number"
+      save_as: "cpa_license"
+      as_user: "base.user_admin"
+      values:
+        partner_id: "REC: accountant.id"
+        category_id: "REC: cpa_category.id"
+        name: "CPA-A418D89-0001"
+
+    - step: "Create client account group"
+      action: "create"
+      model: "client_account_group"
+      save_as: "account_group"
+      as_user: "base.user_admin"
+      values:
+        name: "Test Account Group - a418d89"
+        code: "/"
+
+    - step: "Create client account type 1 with a safe extrapolation python_code"
+      action: "create"
+      model: "client_account_type"
+      save_as: "account_type_1"
+      as_user: "base.user_admin"
+      values:
+        name: "Test Account Type 1 - a418d89"
+        code: "/"
+        group_id: "REC: account_group.id"
+        python_code: "result = 0.0"
+
+    - step: "Create client account type 2 with a safe extrapolation python_code"
+      action: "create"
+      model: "client_account_type"
+      save_as: "account_type_2"
+      as_user: "base.user_admin"
+      values:
+        name: "Test Account Type 2 - a418d89"
+        code: "/"
+        group_id: "REC: account_group.id"
+        python_code: "result = 0.0"
+
+    - step: "Create account type set"
+      action: "create"
+      model: "client_account_type_set"
+      save_as: "account_type_set"
+      as_user: "base.user_admin"
+      values:
+        name: "Test Account Type Set - a418d89"
+        code: "/"
+
+    - step: "Create financial accounting standard"
+      action: "create"
+      model: "accountant.financial_accounting_standard"
+      save_as: "standard"
+      as_user: "base.user_admin"
+      values:
+        name: "Test Financial Accounting Standard - a418d89"
+        code: "/"
+
+    - step: "Create general audit"
+      action: "create"
+      model: "general_audit"
+      save_as: "audit"
+      as_user: "base.user_admin"
+      values:
+        title: "Test General Audit - a418d89"
+        partner_id: "REC: client.id"
+        accountant_id: "REC: accountant.id"
+        account_type_set_id: "REC: account_type_set.id"
+        financial_accounting_standard_id: "REC: standard.id"
+        date_start: 2024-01-01
+        date_end: 2024-12-31
+        need_interim: false
+        need_previous: false
+        num_of_consecutive_audit_firm: 1
+        num_of_consecutive_audit_accountant: 1
+
+    - step: "Open general audit"
+      action: "call"
+      target: "audit"
+      method: "action_open"
+      as_user: "base.user_admin"
+
+    - step: "Invalidate cache after opening general audit"
+      action: "call"
+      target: "audit"
+      method: "invalidate_cache"
+
+    - step: "Add standard detail 1 to the audit (account type 1)"
+      action: "create"
+      model: "general_audit.standard_detail"
+      save_as: "standard_detail_1"
+      as_user: "base.user_admin"
+      values:
+        general_audit_id: "REC: audit.id"
+        type_id: "REC: account_type_1.id"
+
+    - step: "Add standard detail 2 to the audit (account type 2)"
+      action: "create"
+      model: "general_audit.standard_detail"
+      save_as: "standard_detail_2"
+      as_user: "base.user_admin"
+      values:
+        general_audit_id: "REC: audit.id"
+        type_id: "REC: account_type_2.id"
+
+    - step: "Get worksheet type a418d89"
+      action: "ref"
+      xml_id: "ssi_general_audit_worksheet_inherent_risk.worksheet_type_a418d89"
+      save_as: "ws_type_a418d89"
+
+    - step: "Create inherent risk factor with direct impact"
+      action: "create"
+      model: "general_audit_inherent_risk_factor"
+      save_as: "factor_with_impact"
+      as_user: "base.user_admin"
+      values:
+        name: "Test Inherent Risk Factor With Impact - a418d89"
+        code: "/"
+        direct_impact: true
+
+    - step: "Create inherent risk factor without direct impact"
+      action: "create"
+      model: "general_audit_inherent_risk_factor"
+      save_as: "factor_without_impact"
+      as_user: "base.user_admin"
+      values:
+        name: "Test Inherent Risk Factor Without Impact - a418d89"
+        code: "/"
+        direct_impact: false
+
+    - step: "Create conclusion for a418d89 worksheet type"
+      action: "create"
+      model: "general_audit_worksheet_conclusion"
+      save_as: "conclusion"
+      as_user: "base.user_admin"
+      values:
+        name: "Account level inherent risk is properly assessed"
+        code: "/"
+        type_id: "REC: ws_type_a418d89.id"
+
+scenarios:
+  # ------------------------------------------------------------------
+  # a418d89 - Create worksheet
+  # ------------------------------------------------------------------
+  - name: "Worksheet a418d89 - Create"
+    steps:
+      - step: "Create worksheet a418d89"
+        action: "create"
+        model: "general_audit_ws_a418d89"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_a418d89.id"
+
+      - step: "Assert worksheet created in draft with no detail lines"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          state:
+            type: "value"
+            expected: "draft"
+          type_id:
+            type: "value"
+            operator: "is_truthy"
+          detail_ids:
+            type: "o2m"
+            check: "count"
+            expected_count: 0
+
+  # ------------------------------------------------------------------
+  # a418d89 - action_load_detail
+  # ------------------------------------------------------------------
+  - name: "Worksheet a418d89 - Load detail"
+    steps:
+      - step: "Create worksheet a418d89"
+        action: "create"
+        model: "general_audit_ws_a418d89"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_a418d89.id"
+
+      - step: "Assert no detail lines exist before loading"
+        action: "search"
+        model: "general_audit_ws_a418d89.detail"
+        domain:
+          - ["worksheet_id", "=", "REC: worksheet.id"]
+        save_as: "before_load"
+        expect_count: 0
+
+      - step: "Call action_load_detail"
+        action: "call"
+        target: "worksheet"
+        method: "action_load_detail"
+        as_user: "base.user_admin"
+
+      - step: "Assert 2 detail lines loaded (one per standard detail)"
+        action: "search"
+        model: "general_audit_ws_a418d89.detail"
+        domain:
+          - ["worksheet_id", "=", "REC: worksheet.id"]
+        save_as: "after_load"
+        expect_count: 2
+
+      - step: "Assert a detail line references standard detail 1"
+        action: "search"
+        model: "general_audit_ws_a418d89.detail"
+        domain:
+          - ["worksheet_id", "=", "REC: worksheet.id"]
+          - ["standard_detail_id", "=", "REC: standard_detail_1.id"]
+        save_as: "line_for_detail_1"
+        expect_count: 1
+
+      - step: "Assert a detail line references standard detail 2"
+        action: "search"
+        model: "general_audit_ws_a418d89.detail"
+        domain:
+          - ["worksheet_id", "=", "REC: worksheet.id"]
+          - ["standard_detail_id", "=", "REC: standard_detail_2.id"]
+        save_as: "line_for_detail_2"
+        expect_count: 1
+
+  # ------------------------------------------------------------------
+  # a418d89 - action_load_detail called twice stays idempotent
+  # ------------------------------------------------------------------
+  - name: "Worksheet a418d89 - Load detail called twice is idempotent"
+    steps:
+      - step: "Create worksheet a418d89"
+        action: "create"
+        model: "general_audit_ws_a418d89"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_a418d89.id"
+
+      - step: "Call action_load_detail first time"
+        action: "call"
+        target: "worksheet"
+        method: "action_load_detail"
+        as_user: "base.user_admin"
+
+      - step: "Call action_load_detail second time"
+        action: "call"
+        target: "worksheet"
+        method: "action_load_detail"
+        as_user: "base.user_admin"
+
+      - step: "Assert detail count stays 2, not 4 (unlink then reload)"
+        action: "search"
+        model: "general_audit_ws_a418d89.detail"
+        domain:
+          - ["worksheet_id", "=", "REC: worksheet.id"]
+        save_as: "after_double_load"
+        expect_count: 2
+
+  # ------------------------------------------------------------------
+  # a418d89.detail - _compute_risk: likelihood high, impact high -> high
+  # ------------------------------------------------------------------
+  - name: "Worksheet a418d89 - Compute risk (likelihood high, impact high -> high)"
+    steps:
+      - step: "Create worksheet a418d89"
+        action: "create"
+        model: "general_audit_ws_a418d89"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_a418d89.id"
+
+      - step: "Create detail with likelihood high / impact high"
+        action: "create"
+        model: "general_audit_ws_a418d89.detail"
+        save_as: "detail"
+        as_user: "base.user_admin"
+        values:
+          worksheet_id: "REC: worksheet.id"
+          standard_detail_id: "REC: standard_detail_1.id"
+          likelihood_risk_occuring: "high"
+          impact_of_risk: "high"
+
+      - step: "Assert inherent_risk is high"
+        action: "assert"
+        target: "detail"
+        asserts:
+          inherent_risk:
+            type: "value"
+            expected: "high"
+
+  # ------------------------------------------------------------------
+  # a418d89.detail - _compute_risk: likelihood high, impact low -> medium
+  # ------------------------------------------------------------------
+  - name: "Worksheet a418d89 - Compute risk (likelihood high, impact low -> medium)"
+    steps:
+      - step: "Create worksheet a418d89"
+        action: "create"
+        model: "general_audit_ws_a418d89"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_a418d89.id"
+
+      - step: "Create detail with likelihood high / impact low"
+        action: "create"
+        model: "general_audit_ws_a418d89.detail"
+        save_as: "detail"
+        as_user: "base.user_admin"
+        values:
+          worksheet_id: "REC: worksheet.id"
+          standard_detail_id: "REC: standard_detail_1.id"
+          likelihood_risk_occuring: "high"
+          impact_of_risk: "low"
+
+      - step: "Assert inherent_risk is medium"
+        action: "assert"
+        target: "detail"
+        asserts:
+          inherent_risk:
+            type: "value"
+            expected: "medium"
+
+  # ------------------------------------------------------------------
+  # a418d89.detail - _compute_risk: likelihood low, impact high -> high
+  # ------------------------------------------------------------------
+  - name: "Worksheet a418d89 - Compute risk (likelihood low, impact high -> high)"
+    steps:
+      - step: "Create worksheet a418d89"
+        action: "create"
+        model: "general_audit_ws_a418d89"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_a418d89.id"
+
+      - step: "Create detail with likelihood low / impact high"
+        action: "create"
+        model: "general_audit_ws_a418d89.detail"
+        save_as: "detail"
+        as_user: "base.user_admin"
+        values:
+          worksheet_id: "REC: worksheet.id"
+          standard_detail_id: "REC: standard_detail_1.id"
+          likelihood_risk_occuring: "low"
+          impact_of_risk: "high"
+
+      - step: "Assert inherent_risk is high"
+        action: "assert"
+        target: "detail"
+        asserts:
+          inherent_risk:
+            type: "value"
+            expected: "high"
+
+  # ------------------------------------------------------------------
+  # a418d89.detail - _compute_risk: likelihood low, impact low -> low
+  # ------------------------------------------------------------------
+  - name: "Worksheet a418d89 - Compute risk (likelihood low, impact low -> low)"
+    steps:
+      - step: "Create worksheet a418d89"
+        action: "create"
+        model: "general_audit_ws_a418d89"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_a418d89.id"
+
+      - step: "Create detail with likelihood low / impact low"
+        action: "create"
+        model: "general_audit_ws_a418d89.detail"
+        save_as: "detail"
+        as_user: "base.user_admin"
+        values:
+          worksheet_id: "REC: worksheet.id"
+          standard_detail_id: "REC: standard_detail_1.id"
+          likelihood_risk_occuring: "low"
+          impact_of_risk: "low"
+
+      - step: "Assert inherent_risk is low"
+        action: "assert"
+        target: "detail"
+        asserts:
+          inherent_risk:
+            type: "value"
+            expected: "low"
+
+  # ------------------------------------------------------------------
+  # a418d89.detail - _compute_risk: empty likelihood/impact -> falsy, not significant
+  # ------------------------------------------------------------------
+  - name: "Worksheet a418d89 - Compute risk (empty likelihood/impact)"
+    steps:
+      - step: "Create worksheet a418d89"
+        action: "create"
+        model: "general_audit_ws_a418d89"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_a418d89.id"
+
+      - step: "Create detail without likelihood/impact"
+        action: "create"
+        model: "general_audit_ws_a418d89.detail"
+        save_as: "detail"
+        as_user: "base.user_admin"
+        values:
+          worksheet_id: "REC: worksheet.id"
+          standard_detail_id: "REC: standard_detail_1.id"
+
+      - step: "Assert inherent_risk falsy and significant_risk False"
+        action: "assert"
+        target: "detail"
+        asserts:
+          inherent_risk:
+            type: "value"
+            operator: "is_falsy"
+          significant_risk:
+            type: "value"
+            expected: false
+
+  # ------------------------------------------------------------------
+  # a418d89.detail - significant_risk via inherent_risk_factor_with_impact_ids
+  # ------------------------------------------------------------------
+  - name: "Worksheet a418d89 - Significant risk via direct-impact factor"
+    steps:
+      - step: "Create worksheet a418d89"
+        action: "create"
+        model: "general_audit_ws_a418d89"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_a418d89.id"
+
+      - step: "Create detail (high/high) with a direct-impact factor"
+        action: "create"
+        model: "general_audit_ws_a418d89.detail"
+        save_as: "detail"
+        as_user: "base.user_admin"
+        values:
+          worksheet_id: "REC: worksheet.id"
+          standard_detail_id: "REC: standard_detail_1.id"
+          likelihood_risk_occuring: "high"
+          impact_of_risk: "high"
+          inherent_risk_factor_with_impact_ids: [[6, 0, ["REC: factor_with_impact.id"]]]
+
+      - step: "Assert significant_risk is True"
+        action: "assert"
+        target: "detail"
+        asserts:
+          significant_risk:
+            type: "value"
+            expected: true
+
+  # ------------------------------------------------------------------
+  # a418d89.detail - significant_risk via other_significant_risk_factor
+  # ------------------------------------------------------------------
+  - name: "Worksheet a418d89 - Significant risk via other_significant_risk_factor"
+    steps:
+      - step: "Create worksheet a418d89"
+        action: "create"
+        model: "general_audit_ws_a418d89"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_a418d89.id"
+
+      - step: "Create detail (high/high) with other_significant_risk_factor flag"
+        action: "create"
+        model: "general_audit_ws_a418d89.detail"
+        save_as: "detail"
+        as_user: "base.user_admin"
+        values:
+          worksheet_id: "REC: worksheet.id"
+          standard_detail_id: "REC: standard_detail_1.id"
+          likelihood_risk_occuring: "high"
+          impact_of_risk: "high"
+          other_significant_risk_factor: true
+
+      - step: "Assert significant_risk is True"
+        action: "assert"
+        target: "detail"
+        asserts:
+          significant_risk:
+            type: "value"
+            expected: true
+
+  # ------------------------------------------------------------------
+  # a418d89.detail - significant_risk False cases
+  # ------------------------------------------------------------------
+  - name: "Worksheet a418d89 - Significant risk False cases"
+    steps:
+      - step: "Create worksheet a418d89"
+        action: "create"
+        model: "general_audit_ws_a418d89"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_a418d89.id"
+
+      - step: "Create detail (high/high) with no factor and no flag"
+        action: "create"
+        model: "general_audit_ws_a418d89.detail"
+        save_as: "detail_high_high_no_factor"
+        as_user: "base.user_admin"
+        values:
+          worksheet_id: "REC: worksheet.id"
+          standard_detail_id: "REC: standard_detail_1.id"
+          likelihood_risk_occuring: "high"
+          impact_of_risk: "high"
+
+      - step: "Assert significant_risk False when high/high without factor"
+        action: "assert"
+        target: "detail_high_high_no_factor"
+        asserts:
+          significant_risk:
+            type: "value"
+            expected: false
+
+      - step: "Create detail (low/high) with a direct-impact factor filled"
+        action: "create"
+        model: "general_audit_ws_a418d89.detail"
+        save_as: "detail_low_high_with_factor"
+        as_user: "base.user_admin"
+        values:
+          worksheet_id: "REC: worksheet.id"
+          standard_detail_id: "REC: standard_detail_2.id"
+          likelihood_risk_occuring: "low"
+          impact_of_risk: "high"
+          inherent_risk_factor_with_impact_ids: [[6, 0, ["REC: factor_with_impact.id"]]]
+
+      - step: "Assert significant_risk stays False when likelihood is low"
+        action: "assert"
+        target: "detail_low_high_with_factor"
+        asserts:
+          significant_risk:
+            type: "value"
+            expected: false
+
+  # ------------------------------------------------------------------
+  # a418d89.detail - _inverse_to_standard_detail writes back to standard detail
+  # ------------------------------------------------------------------
+  - name:
+      "Worksheet a418d89 - Inverse writes inherent/significant risk to standard detail"
+    steps:
+      - step: "Create worksheet a418d89"
+        action: "create"
+        model: "general_audit_ws_a418d89"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_a418d89.id"
+
+      - step: "Create detail (high/high) with a direct-impact factor"
+        action: "create"
+        model: "general_audit_ws_a418d89.detail"
+        save_as: "detail"
+        as_user: "base.user_admin"
+        values:
+          worksheet_id: "REC: worksheet.id"
+          standard_detail_id: "REC: standard_detail_1.id"
+          likelihood_risk_occuring: "high"
+          impact_of_risk: "high"
+          inherent_risk_factor_with_impact_ids: [[6, 0, ["REC: factor_with_impact.id"]]]
+
+      - step: "Assert detail computed as significant high risk"
+        action: "assert"
+        target: "detail"
+        asserts:
+          inherent_risk:
+            type: "value"
+            expected: "high"
+          significant_risk:
+            type: "value"
+            expected: true
+
+      - step: "Assert standard detail 1 received the inverse write"
+        action: "assert"
+        target: "standard_detail_1"
+        asserts:
+          inherent_risk:
+            type: "value"
+            expected: "high"
+          significant_risk:
+            type: "value"
+            expected: true
+
+  # ------------------------------------------------------------------
+  # general_audit._compute_significant_risk_account_type_ids - kosong then normal
+  # ------------------------------------------------------------------
+  - name: "General audit - Compute significant_risk_account_type_ids"
+    steps:
+      - step:
+          "Assert significant_risk_account_type_ids empty before any significant risk"
+        action: "assert"
+        target: "audit"
+        asserts:
+          significant_risk_account_type_ids:
+            type: "m2m"
+            check: "count"
+            expected_count: 0
+
+      - step: "Create worksheet a418d89"
+        action: "create"
+        model: "general_audit_ws_a418d89"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_a418d89.id"
+
+      - step: "Create detail (high/high) with other_significant_risk_factor flag"
+        action: "create"
+        model: "general_audit_ws_a418d89.detail"
+        save_as: "detail"
+        as_user: "base.user_admin"
+        values:
+          worksheet_id: "REC: worksheet.id"
+          standard_detail_id: "REC: standard_detail_1.id"
+          likelihood_risk_occuring: "high"
+          impact_of_risk: "high"
+          other_significant_risk_factor: true
+
+      - step: "Assert detail is significant risk"
+        action: "assert"
+        target: "detail"
+        asserts:
+          significant_risk:
+            type: "value"
+            expected: true
+
+      - step: "Assert significant_risk_account_type_ids now contains account type 1"
+        action: "assert"
+        target: "audit"
+        asserts:
+          significant_risk_account_type_ids:
+            type: "m2m"
+            check: "contains"
+            expected_records:
+              - "REC: account_type_1"
+
+  # ------------------------------------------------------------------
+  # a418d89 - Workflow draft to done
+  # ------------------------------------------------------------------
+  - name: "Worksheet a418d89 - Workflow confirm to done"
+    steps:
+      - step: "Create worksheet a418d89"
+        action: "create"
+        model: "general_audit_ws_a418d89"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_a418d89.id"
+
+      - step: "Open worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_open"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after opening worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Assert worksheet open"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          state:
+            type: "value"
+            expected: "open"
+
+      - step: "Fill required conclusion fields before confirm"
+        action: "write"
+        target: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          conclusion_id: "REC: conclusion.id"
+          conclusion: "Account level inherent risk reviewed and adequately assessed."
+
+      - step: "Confirm worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_confirm"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after confirming worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Assert worksheet confirmed"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          state:
+            type: "value"
+            expected: "confirm"
+
+      - step: "Approve worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_approve_approval"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after approving worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Assert worksheet done"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          state:
+            type: "value"
+            expected: "done"
+
+  # ------------------------------------------------------------------
+  # a418d89 - Cancel and restart
+  # ------------------------------------------------------------------
+  - name: "Worksheet a418d89 - Cancel and restart"
+    steps:
+      - step: "Create worksheet a418d89"
+        action: "create"
+        model: "general_audit_ws_a418d89"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_a418d89.id"
+
+      - step: "Open worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_open"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after opening worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Assert worksheet open"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          state:
+            type: "value"
+            expected: "open"
+
+      - step: "Cancel worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_cancel"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after cancelling worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Assert worksheet cancelled"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          state:
+            type: "value"
+            expected: "cancel"
+
+      - step: "Restart worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_restart"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after restarting worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Assert worksheet back to draft"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          state:
+            type: "value"
+            expected: "draft"
