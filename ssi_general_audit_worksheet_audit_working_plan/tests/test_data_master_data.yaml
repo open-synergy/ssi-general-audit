@@ -1,0 +1,209 @@
+scenarios:
+  # ------------------------------------------------------------------
+  # allocation_template - CRUD (create, write, delete)
+  # ------------------------------------------------------------------
+  - name: "Allocation Template - Create, write, delete"
+    steps:
+      - step: "Create allocation template (pe20/ra30/rr40/wr10, total 100)"
+        action: "create"
+        model: "allocation_template"
+        save_as: "template"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Allocation Template"
+          code: "/"
+          pe_percentage: 20.0
+          ra_percentage: 30.0
+          rr_percentage: 40.0
+          wr_percentage: 10.0
+
+      - step: "Assert allocation template created"
+        action: "assert"
+        target: "template"
+        asserts:
+          id:
+            type: "value"
+            operator: "is_truthy"
+          name:
+            type: "value"
+            expected: "Test Allocation Template"
+          pe_percentage:
+            type: "value"
+            expected: 20.0
+          ra_percentage:
+            type: "value"
+            expected: 30.0
+          rr_percentage:
+            type: "value"
+            expected: 40.0
+          wr_percentage:
+            type: "value"
+            expected: 10.0
+
+      - step: "Write new name"
+        action: "write"
+        target: "template"
+        as_user: "base.user_admin"
+        values:
+          name: "Updated Allocation Template"
+
+      - step: "Assert name updated"
+        action: "assert"
+        target: "template"
+        asserts:
+          name:
+            type: "value"
+            expected: "Updated Allocation Template"
+
+      - step: "Delete allocation template"
+        action: "unlink"
+        target: "template"
+        as_user: "base.user_admin"
+
+      - step: "Verify allocation template deleted"
+        action: "search"
+        model: "allocation_template"
+        domain:
+          - ["id", "=", "REC: template.id"]
+        save_as: "result"
+        expect_count: 0
+
+  # ------------------------------------------------------------------
+  # allocation_template - _check_percentage_total constraint
+  # ------------------------------------------------------------------
+  - name: "Allocation Template - Percentage total must be 100"
+    steps:
+      - step: "Create allocation template with total 110 must be rejected"
+        action: "create"
+        model: "allocation_template"
+        as_user: "base.user_admin"
+        expect_error:
+          type: "ValidationError"
+        values:
+          name: "Invalid Allocation Template"
+          code: "/"
+          pe_percentage: 20.0
+          ra_percentage: 30.0
+          rr_percentage: 40.0
+          wr_percentage: 20.0
+
+  # ------------------------------------------------------------------
+  # allocation_total_hour - CRUD (create, write, delete)
+  # ------------------------------------------------------------------
+  - name: "Allocation Total Hour - Create, write, delete"
+    steps:
+      - step: "Create allocation total hour"
+        action: "create"
+        model: "allocation_total_hour"
+        save_as: "total_hour"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Allocation Total Hour"
+          code: "/"
+          total_hour: 100.0
+
+      - step: "Assert allocation total hour created"
+        action: "assert"
+        target: "total_hour"
+        asserts:
+          id:
+            type: "value"
+            operator: "is_truthy"
+          total_hour:
+            type: "value"
+            expected: 100.0
+
+      - step: "Write new total_hour"
+        action: "write"
+        target: "total_hour"
+        as_user: "base.user_admin"
+        values:
+          total_hour: 500.0
+
+      - step: "Assert total_hour updated"
+        action: "assert"
+        target: "total_hour"
+        asserts:
+          total_hour:
+            type: "value"
+            expected: 500.0
+
+      - step: "Delete allocation total hour"
+        action: "unlink"
+        target: "total_hour"
+        as_user: "base.user_admin"
+
+      - step: "Verify allocation total hour deleted"
+        action: "search"
+        model: "allocation_total_hour"
+        domain:
+          - ["id", "=", "REC: total_hour.id"]
+        save_as: "result"
+        expect_count: 0
+
+  # ------------------------------------------------------------------
+  # general_audit_competency_upgrade - CRUD (create, write, delete)
+  # ------------------------------------------------------------------
+  - name: "General Audit Competency Upgrade - Create, write, delete"
+    steps:
+      - step: "Create a competency item to reference"
+        action: "create"
+        model: "general_audit_ws_b9d8a5c.competency_item"
+        save_as: "competency_item"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Competency Item - Master Data"
+          code: "/"
+
+      - step: "Create competency upgrade"
+        action: "create"
+        model: "general_audit_competency_upgrade"
+        save_as: "upgrade"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Competency Upgrade"
+          code: "/"
+          sequence: 10
+          compentency_item_id: "REC: competency_item.id"
+
+      - step: "Assert competency upgrade created"
+        action: "assert"
+        target: "upgrade"
+        asserts:
+          id:
+            type: "value"
+            operator: "is_truthy"
+          sequence:
+            type: "value"
+            expected: 10
+          compentency_item_id:
+            type: "m2o"
+            expected: "REC: competency_item"
+
+      - step: "Write new sequence"
+        action: "write"
+        target: "upgrade"
+        as_user: "base.user_admin"
+        values:
+          sequence: 20
+
+      - step: "Assert sequence updated"
+        action: "assert"
+        target: "upgrade"
+        asserts:
+          sequence:
+            type: "value"
+            expected: 20
+
+      - step: "Delete competency upgrade"
+        action: "unlink"
+        target: "upgrade"
+        as_user: "base.user_admin"
+
+      - step: "Verify competency upgrade deleted"
+        action: "search"
+        model: "general_audit_competency_upgrade"
+        domain:
+          - ["id", "=", "REC: upgrade.id"]
+        save_as: "result"
+        expect_count: 0

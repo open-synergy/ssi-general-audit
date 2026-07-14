@@ -1,0 +1,1669 @@
+setup:
+  steps:
+    - step: "Get config parameter model"
+      action: "search"
+      model: "ir.config_parameter"
+      domain: []
+      save_as: "config_parameter"
+      limit: 1
+
+    - step: "Allow enough CPA licenses for this scenario"
+      action: "call"
+      target: "config_parameter"
+      method: "set_param"
+      args:
+        - "ssi_general_audit.max_number_of_cpa_license"
+        - "100"
+
+    - step: "Create client partner"
+      action: "create"
+      model: "res.partner"
+      save_as: "client"
+      as_user: "base.user_admin"
+      values:
+        name: "Test Audit Client - CBBBAF4"
+        is_company: true
+
+    - step: "Create accountant partner"
+      action: "create"
+      model: "res.partner"
+      save_as: "accountant"
+      as_user: "base.user_admin"
+      values:
+        name: "Test Audit Accountant - CBBBAF4"
+
+    - step: "Get CPA license id category"
+      action: "ref"
+      xml_id: "ssi_partner_identification_cpa_license.partner_identification_accountant_cpa_license"
+      save_as: "cpa_category"
+
+    - step: "Grant accountant a CPA license"
+      action: "create"
+      model: "res.partner.id_number"
+      save_as: "cpa_license"
+      as_user: "base.user_admin"
+      values:
+        partner_id: "REC: accountant.id"
+        category_id: "REC: cpa_category.id"
+        name: "CPA-CBBBAF4-0001"
+
+    - step: "Create account type set"
+      action: "create"
+      model: "client_account_type_set"
+      save_as: "account_type_set"
+      as_user: "base.user_admin"
+      values:
+        name: "Test Account Type Set - CBBBAF4"
+        code: "/"
+
+    - step: "Create financial accounting standard"
+      action: "create"
+      model: "accountant.financial_accounting_standard"
+      save_as: "standard"
+      as_user: "base.user_admin"
+      values:
+        name: "Test Financial Accounting Standard - CBBBAF4"
+        code: "/"
+
+    - step: "Create general audit"
+      action: "create"
+      model: "general_audit"
+      save_as: "audit"
+      as_user: "base.user_admin"
+      values:
+        title: "Test General Audit - CBBBAF4"
+        partner_id: "REC: client.id"
+        accountant_id: "REC: accountant.id"
+        account_type_set_id: "REC: account_type_set.id"
+        financial_accounting_standard_id: "REC: standard.id"
+        date_start: 2024-01-01
+        date_end: 2024-12-31
+        need_interim: false
+        need_previous: false
+        num_of_consecutive_audit_firm: 1
+        num_of_consecutive_audit_accountant: 1
+
+    - step: "Open general audit"
+      action: "call"
+      target: "audit"
+      method: "action_open"
+      as_user: "base.user_admin"
+
+    - step: "Invalidate cache after opening general audit"
+      action: "call"
+      target: "audit"
+      method: "invalidate_cache"
+
+    - step: "Get worksheet type cbbbaf4"
+      action: "ref"
+      xml_id: "ssi_general_audit_worksheet_audit_working_plan.worksheet_type_cbbbaf4"
+      save_as: "ws_type"
+
+    - step: "Get worksheet type 806c4e1"
+      action: "ref"
+      xml_id: "ssi_general_audit_worksheet_acceptance_continuance.worksheet_type_806c4e1"
+      save_as: "ws_type_806c4e1"
+
+    - step: "Get worksheet type b9d8a5c"
+      action: "ref"
+      xml_id: "ssi_general_audit_worksheet_acceptance_continuance.worksheet_type_b9d8a5c"
+      save_as: "ws_type_b9d8a5c"
+
+    - step: "Create team role"
+      action: "create"
+      model: "team_role"
+      save_as: "team_role"
+      as_user: "base.user_admin"
+      values:
+        name: "Test Team Role - CBBBAF4"
+        code: "/"
+
+    - step: "Create res.users for employee 1 (used by team_allocation_user_ids)"
+      action: "create"
+      model: "res.users"
+      save_as: "user_1"
+      as_user: "base.user_admin"
+      values:
+        name: "Test Team User One"
+        login: "team.user.one.cbbbaf4@example.com"
+        groups_id: [[6, 0, ["REF: base.group_user"]]]
+
+    - step: "Create team member employee 1"
+      action: "create"
+      model: "hr.employee"
+      save_as: "employee_1"
+      as_user: "base.user_admin"
+      values:
+        name: "Test Team Member One - CBBBAF4"
+        user_id: "REC: user_1.id"
+
+    - step: "Create team member employee 2"
+      action: "create"
+      model: "hr.employee"
+      save_as: "employee_2"
+      as_user: "base.user_admin"
+      values:
+        name: "Test Team Member Two - CBBBAF4"
+
+    - step: "Create allocation template (pe20/ra30/rr40/wr10)"
+      action: "create"
+      model: "allocation_template"
+      save_as: "template"
+      as_user: "base.user_admin"
+      values:
+        name: "Test Allocation Template - CBBBAF4"
+        code: "/"
+        pe_percentage: 20.0
+        ra_percentage: 30.0
+        rr_percentage: 40.0
+        wr_percentage: 10.0
+
+    - step: "Create allocation total hour (100)"
+      action: "create"
+      model: "allocation_total_hour"
+      save_as: "allocation_total_hour"
+      as_user: "base.user_admin"
+      values:
+        name: "Test Allocation Total Hour - CBBBAF4"
+        code: "/"
+        total_hour: 100.0
+
+    - step: "Create conclusion for cbbbaf4 worksheet type"
+      action: "create"
+      model: "general_audit_worksheet_conclusion"
+      save_as: "conclusion"
+      as_user: "base.user_admin"
+      values:
+        name: "Working plan approved"
+        code: "/"
+        type_id: "REC: ws_type.id"
+
+    - step: "Create worksheet 806c4e1 (link_1) for the audit"
+      action: "create"
+      model: "general_audit_ws_806c4e1"
+      save_as: "ws_806c4e1"
+      as_user: "base.user_admin"
+      values:
+        general_audit_id: "REC: audit.id"
+        type_id: "REC: ws_type_806c4e1.id"
+
+    - step: "Create worksheet b9d8a5c (link_2) for the audit"
+      action: "create"
+      model: "general_audit_ws_b9d8a5c"
+      save_as: "ws_b9d8a5c"
+      as_user: "base.user_admin"
+      values:
+        general_audit_id: "REC: audit.id"
+        type_id: "REC: ws_type_b9d8a5c.id"
+
+    - step: "Add summary row for employee 1 (select_team=yes)"
+      action: "create"
+      model: "general_audit_ws_b9d8a5c.summary"
+      save_as: "summary_1"
+      as_user: "base.user_admin"
+      values:
+        worksheet_id: "REC: ws_b9d8a5c.id"
+        employee_id: "REC: employee_1.id"
+        select_team: "yes"
+        team_role_id: "REC: team_role.id"
+
+    - step: "Add summary row for employee 2 (select_team=yes)"
+      action: "create"
+      model: "general_audit_ws_b9d8a5c.summary"
+      save_as: "summary_2"
+      as_user: "base.user_admin"
+      values:
+        worksheet_id: "REC: ws_b9d8a5c.id"
+        employee_id: "REC: employee_2.id"
+        select_team: "yes"
+        team_role_id: "REC: team_role.id"
+
+scenarios:
+  # ------------------------------------------------------------------
+  # Create in draft
+  # ------------------------------------------------------------------
+  - name: "Worksheet cbbbaf4 - Create in draft with full fixture"
+    steps:
+      - step: "Create worksheet cbbbaf4"
+        action: "create"
+        model: "general_audit_ws_cbbbaf4"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+          engagement_date: 2024-08-01
+          risk_assessment_date: 2024-08-05
+          fieldwork_date: 2024-08-08
+          pullout_date: 2024-08-12
+          reporting_date: 2024-08-14
+          allocation_template_id: "REC: template.id"
+          allocation_total_hour_id: "REC: allocation_total_hour.id"
+          total_manhour_allocation: 100.0
+          link_1: "REC: ws_806c4e1.id"
+          link_2: "REC: ws_b9d8a5c.id"
+
+      - step: "Assert worksheet created in draft"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          id:
+            type: "value"
+            operator: "is_truthy"
+          state:
+            type: "value"
+            expected: "draft"
+          general_audit_id:
+            type: "m2o"
+            expected: "REC: audit"
+          link_1:
+            type: "m2o"
+            expected: "REC: ws_806c4e1"
+          link_2:
+            type: "m2o"
+            expected: "REC: ws_b9d8a5c"
+
+  # ------------------------------------------------------------------
+  # Workflow draft -> open -> confirm -> done
+  # ------------------------------------------------------------------
+  - name: "Worksheet cbbbaf4 - Workflow confirm to done"
+    steps:
+      - step: "Create worksheet cbbbaf4 with link_1/link_2 already set"
+        action: "create"
+        model: "general_audit_ws_cbbbaf4"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+          link_1: "REC: ws_806c4e1.id"
+          link_2: "REC: ws_b9d8a5c.id"
+
+      - step: "Open worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_open"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after opening worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Assert worksheet open and team auto-populated by post_open_action hook"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          state:
+            type: "value"
+            expected: "open"
+          team_allocation_ids:
+            type: "o2m"
+            check: "count"
+            expected_count: 2
+          team_competency_ids:
+            type: "o2m"
+            check: "count"
+            expected_count: 2
+
+      - step: "Fill required conclusion fields before confirm"
+        action: "write"
+        target: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          conclusion_id: "REC: conclusion.id"
+          conclusion: "Audit working plan reviewed and approved."
+
+      - step: "Confirm worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_confirm"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after confirming worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Assert worksheet confirmed"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          state:
+            type: "value"
+            expected: "confirm"
+
+      - step: "Approve worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_approve_approval"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after approving worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Assert worksheet done"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          state:
+            type: "value"
+            expected: "done"
+
+  # ------------------------------------------------------------------
+  # Cancel and restart
+  # ------------------------------------------------------------------
+  - name: "Worksheet cbbbaf4 - Cancel and restart"
+    steps:
+      - step: "Create worksheet cbbbaf4"
+        action: "create"
+        model: "general_audit_ws_cbbbaf4"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+
+      - step: "Open worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_open"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after opening worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Assert worksheet open"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          state:
+            type: "value"
+            expected: "open"
+
+      - step: "Cancel worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_cancel"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after cancelling worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Assert worksheet cancelled"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          state:
+            type: "value"
+            expected: "cancel"
+
+      - step: "Restart worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_restart"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after restarting worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Assert worksheet back to draft"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          state:
+            type: "value"
+            expected: "draft"
+
+  # ------------------------------------------------------------------
+  # _compute_effective_days - normal
+  # ------------------------------------------------------------------
+  - name: "Worksheet cbbbaf4 - Compute effective_days (normal)"
+    steps:
+      - step: "Create worksheet cbbbaf4 with engagement/reporting dates"
+        action: "create"
+        model: "general_audit_ws_cbbbaf4"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+          engagement_date: 2024-08-01
+          reporting_date: 2024-08-14
+
+      - step: "Assert effective_days counts Mon-Fri inclusive (10 working days)"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          effective_days:
+            type: "value"
+            expected: 10
+
+  # ------------------------------------------------------------------
+  # _compute_effective_days - kosong
+  # ------------------------------------------------------------------
+  - name: "Worksheet cbbbaf4 - Compute effective_days (kosong)"
+    steps:
+      - step: "Create worksheet cbbbaf4 without engagement/reporting dates"
+        action: "create"
+        model: "general_audit_ws_cbbbaf4"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+
+      - step: "Assert effective_days is zero"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          effective_days:
+            type: "value"
+            expected: 0
+
+  # ------------------------------------------------------------------
+  # _compute_allocation - normal
+  # ------------------------------------------------------------------
+  - name: "Worksheet cbbbaf4 - Compute pe/ra/rr/wr_manhour_allocation (normal)"
+    steps:
+      - step: "Create worksheet cbbbaf4 with template and total_manhour_allocation"
+        action: "create"
+        model: "general_audit_ws_cbbbaf4"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+          allocation_template_id: "REC: template.id"
+          total_manhour_allocation: 100.0
+
+      - step: "Assert manhour allocation split according to template percentages"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          pe_manhour_allocation:
+            type: "value"
+            expected: 20.0
+          ra_manhour_allocation:
+            type: "value"
+            expected: 30.0
+          rr_manhour_allocation:
+            type: "value"
+            expected: 40.0
+          wr_manhour_allocation:
+            type: "value"
+            expected: 10.0
+
+  # ------------------------------------------------------------------
+  # _compute_allocation - kosong (no template + template but zero hours)
+  # ------------------------------------------------------------------
+  - name: "Worksheet cbbbaf4 - Compute pe/ra/rr/wr_manhour_allocation (kosong)"
+    steps:
+      - step: "Create worksheet cbbbaf4 without allocation_template_id"
+        action: "create"
+        model: "general_audit_ws_cbbbaf4"
+        save_as: "worksheet_no_template"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+          total_manhour_allocation: 100.0
+
+      - step: "Assert manhour allocation is zero without a template"
+        action: "assert"
+        target: "worksheet_no_template"
+        asserts:
+          pe_manhour_allocation:
+            type: "value"
+            expected: 0.0
+          ra_manhour_allocation:
+            type: "value"
+            expected: 0.0
+          rr_manhour_allocation:
+            type: "value"
+            expected: 0.0
+          wr_manhour_allocation:
+            type: "value"
+            expected: 0.0
+
+      # A second, fully independent general_audit is required for the
+      # template-but-zero-hour sub-case: `_check_unique_general_audit` only
+      # allows one general_audit_ws_cbbbaf4 per (general_audit_id, type_id),
+      # and `audit` already got one above (`worksheet_no_template`).
+      - step: "Create second client partner"
+        action: "create"
+        model: "res.partner"
+        save_as: "client_zero_hour"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Audit Client - CBBBAF4 Zero Hour"
+          is_company: true
+
+      - step: "Create second accountant partner"
+        action: "create"
+        model: "res.partner"
+        save_as: "accountant_zero_hour"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Audit Accountant - CBBBAF4 Zero Hour"
+
+      - step: "Grant second accountant a CPA license"
+        action: "create"
+        model: "res.partner.id_number"
+        save_as: "cpa_license_zero_hour"
+        as_user: "base.user_admin"
+        values:
+          partner_id: "REC: accountant_zero_hour.id"
+          category_id: "REC: cpa_category.id"
+          name: "CPA-CBBBAF4-ZEROHOUR-0001"
+
+      - step: "Create second account type set"
+        action: "create"
+        model: "client_account_type_set"
+        save_as: "account_type_set_zero_hour"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Account Type Set - CBBBAF4 Zero Hour"
+          code: "/"
+
+      - step: "Create second financial accounting standard"
+        action: "create"
+        model: "accountant.financial_accounting_standard"
+        save_as: "standard_zero_hour"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Financial Accounting Standard - CBBBAF4 Zero Hour"
+          code: "/"
+
+      - step: "Create second general audit for the zero-total-hour sub-case"
+        action: "create"
+        model: "general_audit"
+        save_as: "audit_zero_hour"
+        as_user: "base.user_admin"
+        values:
+          title: "Test General Audit - CBBBAF4 Zero Hour"
+          partner_id: "REC: client_zero_hour.id"
+          accountant_id: "REC: accountant_zero_hour.id"
+          account_type_set_id: "REC: account_type_set_zero_hour.id"
+          financial_accounting_standard_id: "REC: standard_zero_hour.id"
+          date_start: 2024-01-01
+          date_end: 2024-12-31
+          need_interim: false
+          need_previous: false
+          num_of_consecutive_audit_firm: 1
+          num_of_consecutive_audit_accountant: 1
+
+      - step: "Open second general audit"
+        action: "call"
+        target: "audit_zero_hour"
+        method: "action_open"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after opening second general audit"
+        action: "call"
+        target: "audit_zero_hour"
+        method: "invalidate_cache"
+
+      - step: "Create worksheet cbbbaf4 with template but total_manhour_allocation=0"
+        action: "create"
+        model: "general_audit_ws_cbbbaf4"
+        save_as: "worksheet_zero_hour"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit_zero_hour.id"
+          type_id: "REC: ws_type.id"
+          allocation_template_id: "REC: template.id"
+          total_manhour_allocation: 0.0
+
+      - step: "Assert manhour allocation is zero when total_manhour_allocation is 0"
+        action: "assert"
+        target: "worksheet_zero_hour"
+        asserts:
+          pe_manhour_allocation:
+            type: "value"
+            expected: 0.0
+          ra_manhour_allocation:
+            type: "value"
+            expected: 0.0
+          rr_manhour_allocation:
+            type: "value"
+            expected: 0.0
+          wr_manhour_allocation:
+            type: "value"
+            expected: 0.0
+
+  # ------------------------------------------------------------------
+  # _compute_total_manhour - normal
+  # ------------------------------------------------------------------
+  - name: "Worksheet cbbbaf4 - Compute total_*_manhour + total_manhour (normal)"
+    steps:
+      - step: "Create worksheet cbbbaf4"
+        action: "create"
+        model: "general_audit_ws_cbbbaf4"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+
+      - step: "Create team allocation line for employee 1"
+        action: "create"
+        model: "general_audit_ws_cbbbaf4.team_allocation"
+        save_as: "allocation_1"
+        as_user: "base.user_admin"
+        values:
+          worksheet_id: "REC: worksheet.id"
+          team_id: "REC: employee_1.id"
+          pe_allocation: 5.0
+          ra_allocation: 10.0
+          rr_allocation: 15.0
+          reporting_allocation: 2.0
+
+      - step: "Create team allocation line for employee 2"
+        action: "create"
+        model: "general_audit_ws_cbbbaf4.team_allocation"
+        save_as: "allocation_2"
+        as_user: "base.user_admin"
+        values:
+          worksheet_id: "REC: worksheet.id"
+          team_id: "REC: employee_2.id"
+          pe_allocation: 5.0
+          ra_allocation: 10.0
+          rr_allocation: 15.0
+          reporting_allocation: 3.0
+
+      - step: "Assert total manhour aggregated from both lines"
+        action: "assert"
+        target: "worksheet"
+        refresh: true
+        asserts:
+          total_pe_manhour:
+            type: "value"
+            expected: 10.0
+          total_ra_manhour:
+            type: "value"
+            expected: 20.0
+          total_rr_manhour:
+            type: "value"
+            expected: 30.0
+          total_reporting_manhour:
+            type: "value"
+            expected: 5.0
+          total_manhour:
+            type: "value"
+            expected: 65.0
+
+  # ------------------------------------------------------------------
+  # _compute_total_manhour - kosong
+  # ------------------------------------------------------------------
+  - name: "Worksheet cbbbaf4 - Compute total_*_manhour + total_manhour (kosong)"
+    steps:
+      - step: "Create worksheet cbbbaf4 without team_allocation_ids"
+        action: "create"
+        model: "general_audit_ws_cbbbaf4"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+
+      - step: "Assert total manhour is zero without team allocation lines"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          total_pe_manhour:
+            type: "value"
+            expected: 0.0
+          total_ra_manhour:
+            type: "value"
+            expected: 0.0
+          total_rr_manhour:
+            type: "value"
+            expected: 0.0
+          total_reporting_manhour:
+            type: "value"
+            expected: 0.0
+          total_manhour:
+            type: "value"
+            expected: 0.0
+
+  # ------------------------------------------------------------------
+  # team_allocation._compute_total_allocation
+  # ------------------------------------------------------------------
+  - name: "Team allocation line - Compute total_allocation"
+    steps:
+      - step: "Create worksheet cbbbaf4"
+        action: "create"
+        model: "general_audit_ws_cbbbaf4"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+
+      - step: "Create team allocation line with hours"
+        action: "create"
+        model: "general_audit_ws_cbbbaf4.team_allocation"
+        save_as: "allocation_1"
+        as_user: "base.user_admin"
+        values:
+          worksheet_id: "REC: worksheet.id"
+          team_id: "REC: employee_1.id"
+          pe_allocation: 5.0
+          ra_allocation: 10.0
+          rr_allocation: 15.0
+          reporting_allocation: 2.0
+
+      - step: "Assert total_allocation sums the four phases"
+        action: "assert"
+        target: "allocation_1"
+        asserts:
+          total_allocation:
+            type: "value"
+            expected: 32.0
+
+      - step: "Create team allocation line without any hours"
+        action: "create"
+        model: "general_audit_ws_cbbbaf4.team_allocation"
+        save_as: "allocation_2"
+        as_user: "base.user_admin"
+        values:
+          worksheet_id: "REC: worksheet.id"
+          team_id: "REC: employee_2.id"
+
+      - step: "Assert total_allocation is zero without hours"
+        action: "assert"
+        target: "allocation_2"
+        asserts:
+          total_allocation:
+            type: "value"
+            expected: 0.0
+
+  # ------------------------------------------------------------------
+  # _compute_diff_manhour - normal
+  # ------------------------------------------------------------------
+  - name: "Worksheet cbbbaf4 - Compute diff_*_manhour + dif_total_manhour (normal)"
+    steps:
+      - step: "Create worksheet cbbbaf4 with template and total_manhour_allocation"
+        action: "create"
+        model: "general_audit_ws_cbbbaf4"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+          allocation_template_id: "REC: template.id"
+          total_manhour_allocation: 100.0
+
+      - step: "Create team allocation line for employee 1"
+        action: "create"
+        model: "general_audit_ws_cbbbaf4.team_allocation"
+        save_as: "allocation_1"
+        as_user: "base.user_admin"
+        values:
+          worksheet_id: "REC: worksheet.id"
+          team_id: "REC: employee_1.id"
+          pe_allocation: 5.0
+          ra_allocation: 10.0
+          rr_allocation: 15.0
+          reporting_allocation: 2.0
+
+      - step: "Create team allocation line for employee 2"
+        action: "create"
+        model: "general_audit_ws_cbbbaf4.team_allocation"
+        save_as: "allocation_2"
+        as_user: "base.user_admin"
+        values:
+          worksheet_id: "REC: worksheet.id"
+          team_id: "REC: employee_2.id"
+          pe_allocation: 5.0
+          ra_allocation: 10.0
+          rr_allocation: 15.0
+          reporting_allocation: 3.0
+
+      - step: "Assert diff manhour equals actual total minus planned allocation"
+        action: "assert"
+        target: "worksheet"
+        refresh: true
+        asserts:
+          diff_pe_manhour:
+            type: "value"
+            expected: -10.0
+          diff_ra_manhour:
+            type: "value"
+            expected: -10.0
+          diff_rr_manhour:
+            type: "value"
+            expected: -10.0
+          diff_reporting_manhour:
+            type: "value"
+            expected: -5.0
+          dif_total_manhour:
+            type: "value"
+            expected: -35.0
+
+  # ------------------------------------------------------------------
+  # _compute_diff_manhour - kosong
+  # ------------------------------------------------------------------
+  - name: "Worksheet cbbbaf4 - Compute diff_*_manhour + dif_total_manhour (kosong)"
+    steps:
+      - step: "Create worksheet cbbbaf4 without template/allocation/team lines"
+        action: "create"
+        model: "general_audit_ws_cbbbaf4"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+
+      - step: "Assert diff manhour is zero on all fronts"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          diff_pe_manhour:
+            type: "value"
+            expected: 0.0
+          diff_ra_manhour:
+            type: "value"
+            expected: 0.0
+          diff_rr_manhour:
+            type: "value"
+            expected: 0.0
+          diff_reporting_manhour:
+            type: "value"
+            expected: 0.0
+          dif_total_manhour:
+            type: "value"
+            expected: 0.0
+
+  # ------------------------------------------------------------------
+  # _compute_allowed_link_1_ids / _compute_allowed_link_2_ids - normal
+  # ------------------------------------------------------------------
+  - name: "Worksheet cbbbaf4 - Compute allowed_link_1_ids / allowed_link_2_ids (normal)"
+    steps:
+      - step: "Create worksheet cbbbaf4 for the audit that already has 806c4e1/b9d8a5c"
+        action: "create"
+        model: "general_audit_ws_cbbbaf4"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+
+      - step: "Assert allowed_link_1_ids / allowed_link_2_ids contain the fixtures"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          allowed_link_1_ids:
+            type: "m2m"
+            check: "exact"
+            expected_records:
+              - "REC: ws_806c4e1"
+          allowed_link_2_ids:
+            type: "m2m"
+            check: "exact"
+            expected_records:
+              - "REC: ws_b9d8a5c"
+
+  # ------------------------------------------------------------------
+  # _compute_allowed_link_1_ids / _compute_allowed_link_2_ids - kosong
+  # ------------------------------------------------------------------
+  - name: "Worksheet cbbbaf4 - Compute allowed_link_1_ids / allowed_link_2_ids (kosong)"
+    steps:
+      # A fully independent second general_audit is required here: `audit`
+      # (built in `setup:`) already has a general_audit_ws_806c4e1 and a
+      # general_audit_ws_b9d8a5c linked to it, so allowed_link_1_ids /
+      # allowed_link_2_ids would never be empty for it.
+      - step: "Create second client partner"
+        action: "create"
+        model: "res.partner"
+        save_as: "client_empty"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Audit Client - CBBBAF4 Empty Links"
+          is_company: true
+
+      - step: "Create second accountant partner"
+        action: "create"
+        model: "res.partner"
+        save_as: "accountant_empty"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Audit Accountant - CBBBAF4 Empty Links"
+
+      - step: "Grant second accountant a CPA license"
+        action: "create"
+        model: "res.partner.id_number"
+        save_as: "cpa_license_empty"
+        as_user: "base.user_admin"
+        values:
+          partner_id: "REC: accountant_empty.id"
+          category_id: "REC: cpa_category.id"
+          name: "CPA-CBBBAF4-EMPTY-0001"
+
+      - step: "Create second account type set"
+        action: "create"
+        model: "client_account_type_set"
+        save_as: "account_type_set_empty"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Account Type Set - CBBBAF4 Empty Links"
+          code: "/"
+
+      - step: "Create second financial accounting standard"
+        action: "create"
+        model: "accountant.financial_accounting_standard"
+        save_as: "standard_empty"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Financial Accounting Standard - CBBBAF4 Empty Links"
+          code: "/"
+
+      - step: "Create second general audit without 806c4e1/b9d8a5c worksheets"
+        action: "create"
+        model: "general_audit"
+        save_as: "audit_empty"
+        as_user: "base.user_admin"
+        values:
+          title: "Test General Audit - CBBBAF4 Empty Links"
+          partner_id: "REC: client_empty.id"
+          accountant_id: "REC: accountant_empty.id"
+          account_type_set_id: "REC: account_type_set_empty.id"
+          financial_accounting_standard_id: "REC: standard_empty.id"
+          date_start: 2024-01-01
+          date_end: 2024-12-31
+          need_interim: false
+          need_previous: false
+          num_of_consecutive_audit_firm: 1
+          num_of_consecutive_audit_accountant: 1
+
+      - step: "Open second general audit"
+        action: "call"
+        target: "audit_empty"
+        method: "action_open"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after opening second general audit"
+        action: "call"
+        target: "audit_empty"
+        method: "invalidate_cache"
+
+      - step: "Create worksheet cbbbaf4 for the audit without any linked worksheets"
+        action: "create"
+        model: "general_audit_ws_cbbbaf4"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit_empty.id"
+          type_id: "REC: ws_type.id"
+
+      - step: "Assert allowed_link_1_ids / allowed_link_2_ids are empty"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          allowed_link_1_ids:
+            type: "m2m"
+            check: "count"
+            expected_count: 0
+          allowed_link_2_ids:
+            type: "m2m"
+            check: "count"
+            expected_count: 0
+
+  # ------------------------------------------------------------------
+  # general_audit._compute_team_allocation_user_ids - normal
+  # ------------------------------------------------------------------
+  - name: "General audit - Compute team_allocation_user_ids (normal)"
+    steps:
+      - step: "Create worksheet cbbbaf4"
+        action: "create"
+        model: "general_audit_ws_cbbbaf4"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+
+      - step: "Create team allocation line for employee 1 (linked to user_1)"
+        action: "create"
+        model: "general_audit_ws_cbbbaf4.team_allocation"
+        save_as: "allocation_1"
+        as_user: "base.user_admin"
+        values:
+          worksheet_id: "REC: worksheet.id"
+          team_id: "REC: employee_1.id"
+
+      - step: "Assert general audit's team_allocation_user_ids contains user_1"
+        action: "assert"
+        target: "audit"
+        refresh: true
+        asserts:
+          team_allocation_user_ids:
+            type: "m2m"
+            check: "contains"
+            expected_records:
+              - "REC: user_1"
+
+  # ------------------------------------------------------------------
+  # general_audit._compute_team_allocation_user_ids - kosong
+  # ------------------------------------------------------------------
+  - name: "General audit - Compute team_allocation_user_ids (kosong)"
+    steps:
+      - step: "Create worksheet cbbbaf4 without any team allocation lines"
+        action: "create"
+        model: "general_audit_ws_cbbbaf4"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+
+      - step: "Assert general audit's team_allocation_user_ids is empty"
+        action: "assert"
+        target: "audit"
+        asserts:
+          team_allocation_user_ids:
+            type: "m2m"
+            check: "count"
+            expected_count: 0
+
+  # ------------------------------------------------------------------
+  # action_refresh_allocation_team - normal
+  # ------------------------------------------------------------------
+  - name: "Action refresh allocation team - normal"
+    steps:
+      - step: "Create worksheet cbbbaf4 with link_2 pointing at the summary fixture"
+        action: "create"
+        model: "general_audit_ws_cbbbaf4"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+          link_2: "REC: ws_b9d8a5c.id"
+
+      - step: "Call action_refresh_allocation_team"
+        action: "call"
+        target: "worksheet"
+        method: "action_refresh_allocation_team"
+        as_user: "base.user_admin"
+
+      - step: "Verify two team_allocation rows were created (one per summary row)"
+        action: "search"
+        model: "general_audit_ws_cbbbaf4.team_allocation"
+        domain:
+          - ["worksheet_id", "=", "REC: worksheet.id"]
+        save_as: "rows"
+        expect_count: 2
+
+      - step: "Get the row created for employee 1"
+        action: "search"
+        model: "general_audit_ws_cbbbaf4.team_allocation"
+        domain:
+          - ["worksheet_id", "=", "REC: worksheet.id"]
+          - ["team_id", "=", "REC: employee_1.id"]
+        save_as: "row_emp1"
+        limit: 1
+        expect_count: 1
+
+      - step: "Assert row for employee 1 has the role from the summary"
+        action: "assert"
+        target: "row_emp1"
+        asserts:
+          role_id:
+            type: "m2o"
+            expected: "REC: team_role"
+
+      - step: "Get the row created for employee 2"
+        action: "search"
+        model: "general_audit_ws_cbbbaf4.team_allocation"
+        domain:
+          - ["worksheet_id", "=", "REC: worksheet.id"]
+          - ["team_id", "=", "REC: employee_2.id"]
+        save_as: "row_emp2"
+        limit: 1
+        expect_count: 1
+
+      - step: "Assert row for employee 2 has the role from the summary"
+        action: "assert"
+        target: "row_emp2"
+        asserts:
+          role_id:
+            type: "m2o"
+            expected: "REC: team_role"
+
+  # ------------------------------------------------------------------
+  # action_refresh_allocation_team - idempoten
+  # ------------------------------------------------------------------
+  - name: "Action refresh allocation team - idempotent"
+    steps:
+      - step: "Create worksheet cbbbaf4 with link_2 pointing at the summary fixture"
+        action: "create"
+        model: "general_audit_ws_cbbbaf4"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+          link_2: "REC: ws_b9d8a5c.id"
+
+      - step: "Call action_refresh_allocation_team the first time"
+        action: "call"
+        target: "worksheet"
+        method: "action_refresh_allocation_team"
+        as_user: "base.user_admin"
+
+      - step: "Call action_refresh_allocation_team a second time"
+        action: "call"
+        target: "worksheet"
+        method: "action_refresh_allocation_team"
+        as_user: "base.user_admin"
+
+      - step: "Verify row count stayed at 2, not duplicated to 4"
+        action: "search"
+        model: "general_audit_ws_cbbbaf4.team_allocation"
+        domain:
+          - ["worksheet_id", "=", "REC: worksheet.id"]
+        save_as: "rows"
+        expect_count: 2
+
+  # ------------------------------------------------------------------
+  # action_refresh_allocation_team - unlink when summary select_team=no
+  # ------------------------------------------------------------------
+  - name: "Action refresh allocation team - unlink on select_team=no"
+    steps:
+      - step: "Create worksheet cbbbaf4 with link_2 pointing at the summary fixture"
+        action: "create"
+        model: "general_audit_ws_cbbbaf4"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+          link_2: "REC: ws_b9d8a5c.id"
+
+      - step: "Call action_refresh_allocation_team to create both rows"
+        action: "call"
+        target: "worksheet"
+        method: "action_refresh_allocation_team"
+        as_user: "base.user_admin"
+
+      - step: "Verify two rows exist before the change"
+        action: "search"
+        model: "general_audit_ws_cbbbaf4.team_allocation"
+        domain:
+          - ["worksheet_id", "=", "REC: worksheet.id"]
+        save_as: "rows_before"
+        expect_count: 2
+
+      - step: "Drop employee 2 from the team on the summary"
+        action: "write"
+        target: "summary_2"
+        as_user: "base.user_admin"
+        values:
+          select_team: "no"
+
+      - step: "Call action_refresh_allocation_team again"
+        action: "call"
+        target: "worksheet"
+        method: "action_refresh_allocation_team"
+        as_user: "base.user_admin"
+
+      - step: "Verify only employee 1's row remains"
+        action: "search"
+        model: "general_audit_ws_cbbbaf4.team_allocation"
+        domain:
+          - ["worksheet_id", "=", "REC: worksheet.id"]
+        save_as: "rows_after"
+        expect_count: 1
+
+      - step: "Get the remaining row"
+        action: "search"
+        model: "general_audit_ws_cbbbaf4.team_allocation"
+        domain:
+          - ["worksheet_id", "=", "REC: worksheet.id"]
+        save_as: "remaining_row"
+        limit: 1
+
+      - step: "Assert the remaining row belongs to employee 1"
+        action: "assert"
+        target: "remaining_row"
+        asserts:
+          team_id:
+            type: "m2o"
+            expected: "REC: employee_1"
+
+  # ------------------------------------------------------------------
+  # action_refresh_allocation_team - link_2 kosong
+  # ------------------------------------------------------------------
+  - name: "Action refresh allocation team - link_2 empty"
+    steps:
+      - step: "Create worksheet cbbbaf4 without link_2"
+        action: "create"
+        model: "general_audit_ws_cbbbaf4"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+
+      - step: "Call action_refresh_allocation_team"
+        action: "call"
+        target: "worksheet"
+        method: "action_refresh_allocation_team"
+        as_user: "base.user_admin"
+
+      - step: "Verify no team_allocation row was created"
+        action: "search"
+        model: "general_audit_ws_cbbbaf4.team_allocation"
+        domain:
+          - ["worksheet_id", "=", "REC: worksheet.id"]
+        save_as: "rows"
+        expect_count: 0
+
+  # ------------------------------------------------------------------
+  # action_refresh_competency_team - normal
+  #
+  # NOTE: `_prepare_competency_data` calls `Upgrade.search([])` with NO
+  # domain at all, so it always also picks up the 6 production
+  # `general_audit_competency_upgrade` records shipped by this module's own
+  # `data/master/general_audit_competency_upgrade.xml` (and any created by
+  # other installed modules). Asserting an exact/total count here would
+  # therefore be coupled to unrelated data files. Instead this scenario
+  # creates its own competency_item + upgrade fixture and asserts with
+  # `check: "contains"`, which only proves our own fixture is included --
+  # regardless of how many other upgrade records exist in the database.
+  # ------------------------------------------------------------------
+  - name: "Action refresh competency team - normal"
+    steps:
+      - step: "Create a competency item specific to this scenario"
+        action: "create"
+        model: "general_audit_ws_b9d8a5c.competency_item"
+        save_as: "competency_item"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Competency Item - Refresh Normal"
+          code: "/"
+
+      - step: "Create a competency upgrade needing that item"
+        action: "create"
+        model: "general_audit_competency_upgrade"
+        save_as: "upgrade"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Competency Upgrade - Refresh Normal"
+          code: "/"
+          sequence: 10
+          compentency_item_id: "REC: competency_item.id"
+
+      - step: "Create worksheet cbbbaf4 with link_2 pointing at the summary fixture"
+        action: "create"
+        model: "general_audit_ws_cbbbaf4"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+          link_2: "REC: ws_b9d8a5c.id"
+
+      - step:
+          "Create a competency analysis for employee 1 that does NOT cover the
+          scenario's item"
+        action: "create"
+        model: "general_audit_ws_b9d8a5c.competency"
+        save_as: "competency_analysis_1"
+        as_user: "base.user_admin"
+        values:
+          worksheet_id: "REC: ws_b9d8a5c.id"
+          employee_id: "REC: employee_1.id"
+
+      - step: "Call action_refresh_competency_team"
+        action: "call"
+        target: "worksheet"
+        method: "action_refresh_competency_team"
+        as_user: "base.user_admin"
+
+      - step: "Verify two team_competency rows were created (one per summary row)"
+        action: "search"
+        model: "general_audit_ws_cbbbaf4.team_competency"
+        domain:
+          - ["worksheet_id", "=", "REC: worksheet.id"]
+        save_as: "rows"
+        expect_count: 2
+
+      - step: "Get the row created for employee 1"
+        action: "search"
+        model: "general_audit_ws_cbbbaf4.team_competency"
+        domain:
+          - ["worksheet_id", "=", "REC: worksheet.id"]
+          - ["team_id", "=", "REC: employee_1.id"]
+        save_as: "row_emp1"
+        limit: 1
+        expect_count: 1
+
+      - step: "Assert employee 1's row lists the scenario's upgrade as still needed"
+        action: "assert"
+        target: "row_emp1"
+        asserts:
+          competency_upgrade_ids:
+            type: "m2m"
+            check: "contains"
+            expected_records:
+              - "REC: upgrade"
+
+      - step: "Get the row created for employee 2 (no competency analysis at all)"
+        action: "search"
+        model: "general_audit_ws_cbbbaf4.team_competency"
+        domain:
+          - ["worksheet_id", "=", "REC: worksheet.id"]
+          - ["team_id", "=", "REC: employee_2.id"]
+        save_as: "row_emp2"
+        limit: 1
+        expect_count: 1
+
+      - step:
+          "Assert employee 2's row has no upgrade needed (no matching competency
+          analysis at all -> _prepare_competency_data short-circuits to an empty list)"
+        action: "assert"
+        target: "row_emp2"
+        asserts:
+          competency_upgrade_ids:
+            type: "m2m"
+            check: "count"
+            expected_count: 0
+
+  # ------------------------------------------------------------------
+  # action_refresh_competency_team - idempoten
+  # ------------------------------------------------------------------
+  - name: "Action refresh competency team - idempotent"
+    steps:
+      - step: "Create worksheet cbbbaf4 with link_2 pointing at the summary fixture"
+        action: "create"
+        model: "general_audit_ws_cbbbaf4"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+          link_2: "REC: ws_b9d8a5c.id"
+
+      - step: "Call action_refresh_competency_team the first time"
+        action: "call"
+        target: "worksheet"
+        method: "action_refresh_competency_team"
+        as_user: "base.user_admin"
+
+      - step: "Call action_refresh_competency_team a second time"
+        action: "call"
+        target: "worksheet"
+        method: "action_refresh_competency_team"
+        as_user: "base.user_admin"
+
+      - step: "Verify row count stayed at 2, not duplicated to 4"
+        action: "search"
+        model: "general_audit_ws_cbbbaf4.team_competency"
+        domain:
+          - ["worksheet_id", "=", "REC: worksheet.id"]
+        save_as: "rows"
+        expect_count: 2
+
+  # ------------------------------------------------------------------
+  # action_refresh_competency_team - unlink when summary select_team=no
+  # ------------------------------------------------------------------
+  - name: "Action refresh competency team - unlink on select_team=no"
+    steps:
+      - step: "Create worksheet cbbbaf4 with link_2 pointing at the summary fixture"
+        action: "create"
+        model: "general_audit_ws_cbbbaf4"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+          link_2: "REC: ws_b9d8a5c.id"
+
+      - step: "Call action_refresh_competency_team to create both rows"
+        action: "call"
+        target: "worksheet"
+        method: "action_refresh_competency_team"
+        as_user: "base.user_admin"
+
+      - step: "Verify two rows exist before the change"
+        action: "search"
+        model: "general_audit_ws_cbbbaf4.team_competency"
+        domain:
+          - ["worksheet_id", "=", "REC: worksheet.id"]
+        save_as: "rows_before"
+        expect_count: 2
+
+      - step: "Drop employee 2 from the team on the summary"
+        action: "write"
+        target: "summary_2"
+        as_user: "base.user_admin"
+        values:
+          select_team: "no"
+
+      - step: "Call action_refresh_competency_team again"
+        action: "call"
+        target: "worksheet"
+        method: "action_refresh_competency_team"
+        as_user: "base.user_admin"
+
+      - step: "Verify only employee 1's row remains"
+        action: "search"
+        model: "general_audit_ws_cbbbaf4.team_competency"
+        domain:
+          - ["worksheet_id", "=", "REC: worksheet.id"]
+        save_as: "rows_after"
+        expect_count: 1
+
+      - step: "Get the remaining row"
+        action: "search"
+        model: "general_audit_ws_cbbbaf4.team_competency"
+        domain:
+          - ["worksheet_id", "=", "REC: worksheet.id"]
+        save_as: "remaining_row"
+        limit: 1
+
+      - step: "Assert the remaining row belongs to employee 1"
+        action: "assert"
+        target: "remaining_row"
+        asserts:
+          team_id:
+            type: "m2o"
+            expected: "REC: employee_1"
+
+  # ------------------------------------------------------------------
+  # action_refresh_competency_team - link_2 kosong
+  # ------------------------------------------------------------------
+  - name: "Action refresh competency team - link_2 empty"
+    steps:
+      - step: "Create worksheet cbbbaf4 without link_2"
+        action: "create"
+        model: "general_audit_ws_cbbbaf4"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+
+      - step: "Call action_refresh_competency_team"
+        action: "call"
+        target: "worksheet"
+        method: "action_refresh_competency_team"
+        as_user: "base.user_admin"
+
+      - step: "Verify no team_competency row was created"
+        action: "search"
+        model: "general_audit_ws_cbbbaf4.team_competency"
+        domain:
+          - ["worksheet_id", "=", "REC: worksheet.id"]
+        save_as: "rows"
+        expect_count: 0
+
+  # ------------------------------------------------------------------
+  # _check_dates_order - reporting_date < pullout_date
+  # ------------------------------------------------------------------
+  - name: "Worksheet cbbbaf4 - Constraint reporting_date must be >= pullout_date"
+    steps:
+      - step: "Create worksheet cbbbaf4 with reporting_date before pullout_date"
+        action: "create"
+        model: "general_audit_ws_cbbbaf4"
+        as_user: "base.user_admin"
+        expect_error:
+          type: "ValidationError"
+          message_contains: "Reporting Date must be greater than Pullout Date"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+          pullout_date: 2024-08-10
+          reporting_date: 2024-08-05
+
+  # ------------------------------------------------------------------
+  # _check_dates_order - pullout_date < fieldwork_date
+  # ------------------------------------------------------------------
+  - name: "Worksheet cbbbaf4 - Constraint pullout_date must be >= fieldwork_date"
+    steps:
+      - step: "Create worksheet cbbbaf4 with pullout_date before fieldwork_date"
+        action: "create"
+        model: "general_audit_ws_cbbbaf4"
+        as_user: "base.user_admin"
+        expect_error:
+          type: "ValidationError"
+          message_contains: "Pullout Date must be greater than Fieldwork Date"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+          fieldwork_date: 2024-08-10
+          pullout_date: 2024-08-05
+
+  # ------------------------------------------------------------------
+  # _check_dates_order - fieldwork_date < risk_assessment_date
+  # ------------------------------------------------------------------
+  - name:
+      "Worksheet cbbbaf4 - Constraint fieldwork_date must be >= risk_assessment_date"
+    steps:
+      - step: "Create worksheet cbbbaf4 with fieldwork_date before risk_assessment_date"
+        action: "create"
+        model: "general_audit_ws_cbbbaf4"
+        as_user: "base.user_admin"
+        expect_error:
+          type: "ValidationError"
+          message_contains: "Fieldwork Date must be greater than Risk Assessment Date"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+          risk_assessment_date: 2024-08-10
+          fieldwork_date: 2024-08-05
+
+  # ------------------------------------------------------------------
+  # _check_dates_order - risk_assessment_date < engagement_date
+  # ------------------------------------------------------------------
+  - name:
+      "Worksheet cbbbaf4 - Constraint risk_assessment_date must be >= engagement_date"
+    steps:
+      - step:
+          "Create worksheet cbbbaf4 with risk_assessment_date before engagement_date"
+        action: "create"
+        model: "general_audit_ws_cbbbaf4"
+        as_user: "base.user_admin"
+        expect_error:
+          type: "ValidationError"
+          message_contains: "Risk Assessment Date must be greater than Engagement Date"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+          engagement_date: 2024-08-10
+          risk_assessment_date: 2024-08-05
+
+  # ------------------------------------------------------------------
+  # onchange_link_1 / onchange_link_2 - triggered by general_audit_id
+  #
+  # Unlike some sibling worksheets, `link_1`/`link_2` on this model carry no
+  # `readonly`/`states` restriction of their own, and `general_audit_id` is
+  # editable (readonly=False) while state == "draft" -- the default state of
+  # a brand-new Form record. There is no readonly conflict here, so both
+  # onchange methods are exercised directly through the Form API via
+  # `action: form`, per the odoo-yaml-test DSL.
+  # ------------------------------------------------------------------
+  - name: "Worksheet cbbbaf4 - Onchange general_audit_id sets link_1 and link_2"
+    steps:
+      - step: "Open a new form and set general_audit_id"
+        action: "form"
+        model: "general_audit_ws_cbbbaf4"
+        save_as: "onchange_worksheet"
+        as_user: "base.user_admin"
+        save: true
+        values:
+          general_audit_id: "REC: audit"
+
+      - step: "Assert link_1 was set by onchange_link_1"
+        action: "assert"
+        target: "onchange_worksheet"
+        asserts:
+          link_1:
+            type: "m2o"
+            expected: "REC: ws_806c4e1"
+
+      - step: "Assert link_2 was set by onchange_link_2"
+        action: "assert"
+        target: "onchange_worksheet"
+        asserts:
+          link_2:
+            type: "m2o"
+            expected: "REC: ws_b9d8a5c"
+
+  # ------------------------------------------------------------------
+  # onchange_total_manhour_allocation - triggered by allocation_total_hour_id
+  #
+  # `allocation_total_hour_id` and `total_manhour_allocation` share the same
+  # readonly gate (both editable only while state == "open"), so there is no
+  # readonly conflict -- open the worksheet first, then drive the Form.
+  # ------------------------------------------------------------------
+  - name:
+      "Worksheet cbbbaf4 - Onchange allocation_total_hour_id sets
+      total_manhour_allocation"
+    steps:
+      - step: "Create worksheet cbbbaf4"
+        action: "create"
+        model: "general_audit_ws_cbbbaf4"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+
+      - step: "Open worksheet (allocation_total_hour_id becomes editable)"
+        action: "call"
+        target: "worksheet"
+        method: "action_open"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after opening worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Set allocation_total_hour_id via Form"
+        action: "form"
+        target: "worksheet"
+        as_user: "base.user_admin"
+        save: true
+        values:
+          allocation_total_hour_id: "REC: allocation_total_hour"
+
+      - step: "Assert total_manhour_allocation was set from allocation_total_hour_id"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          total_manhour_allocation:
+            type: "value"
+            expected: 100.0
