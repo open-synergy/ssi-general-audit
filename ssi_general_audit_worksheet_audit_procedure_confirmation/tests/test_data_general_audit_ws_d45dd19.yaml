@@ -1,0 +1,1125 @@
+setup:
+  steps:
+    - step: "Get config parameter model"
+      action: "search"
+      model: "ir.config_parameter"
+      domain: []
+      save_as: "config_parameter"
+      limit: 1
+
+    - step: "Allow enough CPA licenses for this scenario"
+      action: "call"
+      target: "config_parameter"
+      method: "set_param"
+      args:
+        - "ssi_general_audit.max_number_of_cpa_license"
+        - "100"
+
+    - step: "Create client partner"
+      action: "create"
+      model: "res.partner"
+      save_as: "client"
+      as_user: "base.user_admin"
+      values:
+        name: "Test Audit Client - D45DD19"
+        is_company: true
+
+    - step: "Create accountant partner"
+      action: "create"
+      model: "res.partner"
+      save_as: "accountant"
+      as_user: "base.user_admin"
+      values:
+        name: "Test Audit Accountant - D45DD19"
+
+    - step: "Get CPA license id category"
+      action: "ref"
+      xml_id: "ssi_partner_identification_cpa_license.partner_identification_accountant_cpa_license"
+      save_as: "cpa_category"
+
+    - step: "Grant accountant a CPA license"
+      action: "create"
+      model: "res.partner.id_number"
+      save_as: "cpa_license"
+      as_user: "base.user_admin"
+      values:
+        partner_id: "REC: accountant.id"
+        category_id: "REC: cpa_category.id"
+        name: "CPA-D45DD19-0001"
+
+    - step: "Create account type set"
+      action: "create"
+      model: "client_account_type_set"
+      save_as: "account_type_set"
+      as_user: "base.user_admin"
+      values:
+        name: "Test Account Type Set - D45DD19"
+        code: "/"
+
+    - step: "Create financial accounting standard"
+      action: "create"
+      model: "accountant.financial_accounting_standard"
+      save_as: "standard"
+      as_user: "base.user_admin"
+      values:
+        name: "Test Financial Accounting Standard - D45DD19"
+        code: "/"
+
+    - step: "Create general audit"
+      action: "create"
+      model: "general_audit"
+      save_as: "audit"
+      as_user: "base.user_admin"
+      values:
+        title: "Test General Audit - D45DD19"
+        partner_id: "REC: client.id"
+        accountant_id: "REC: accountant.id"
+        account_type_set_id: "REC: account_type_set.id"
+        financial_accounting_standard_id: "REC: standard.id"
+        date_start: 2026-01-01
+        date_end: 2026-12-31
+        need_interim: false
+        need_previous: false
+        num_of_consecutive_audit_firm: 1
+        num_of_consecutive_audit_accountant: 1
+
+    - step: "Open general audit"
+      action: "call"
+      target: "audit"
+      method: "action_open"
+      as_user: "base.user_admin"
+
+    - step: "Invalidate cache after opening general audit"
+      action: "call"
+      target: "audit"
+      method: "invalidate_cache"
+
+    - step: "Get worksheet type d45dd19"
+      action: "ref"
+      xml_id: "ssi_general_audit_worksheet_audit_procedure_confirmation.worksheet_type_d45dd19"
+      save_as: "ws_type"
+
+    - step: "Get worksheet type e51bb1c"
+      action: "ref"
+      xml_id: "ssi_general_audit_worksheet_lead_schedule.worksheet_type_e51bb1c"
+      save_as: "ws_type_e51bb1c"
+
+    - step: "Get worksheet type d209914 (General Ledger)"
+      action: "ref"
+      xml_id: "ssi_general_audit_worksheet_client_package.worksheet_type_d209914"
+      save_as: "ws_type_gl"
+
+    - step: "Get worksheet type b5e3d9f (Subledger)"
+      action: "ref"
+      xml_id: "ssi_general_audit_worksheet_client_package.worksheet_type_b5e3d9f"
+      save_as: "ws_type_subledger"
+
+    - step: "Create client account group"
+      action: "create"
+      model: "client_account_group"
+      save_as: "account_group"
+      as_user: "base.user_admin"
+      values:
+        name: "Test Account Group - D45DD19"
+        code: "/"
+
+    - step: "Create client account type"
+      action: "create"
+      model: "client_account_type"
+      save_as: "account_type"
+      as_user: "base.user_admin"
+      values:
+        name: "Test Account Type - D45DD19"
+        code: "/"
+        group_id: "REC: account_group.id"
+        # general_audit.standard_detail has no "balance" field, so a
+        # safe no-op avoids an unrelated crash in
+        # general_audit.standard_detail._compute_extrapolation_balance.
+        python_code: "result = 0.0"
+
+    - step: "Create assertion type"
+      action: "create"
+      model: "general_audit_assersion_type"
+      save_as: "assertion_type"
+      as_user: "base.user_admin"
+      values:
+        name: "Existence"
+        code: "/"
+
+    - step: "Create audit procedure category (performed)"
+      action: "create"
+      model: "general_audit_audit_procedure_category"
+      save_as: "category_performed"
+      as_user: "base.user_admin"
+      values:
+        name: "External Confirmation - Performed Category"
+        code: "/"
+        account_type_id: "REC: account_type.id"
+        assertion_type_ids:
+          - - 6
+            - 0
+            - - "REC: assertion_type.id"
+
+    - step: "Create WS-E51BB1C worksheet (Key Audit Procedures)"
+      action: "create"
+      model: "general_audit_ws_e51bb1c"
+      save_as: "ws_e51bb1c"
+      as_user: "base.user_admin"
+      values:
+        general_audit_id: "REC: audit.id"
+        type_id: "REC: ws_type_e51bb1c.id"
+
+    - step: "Create WS-E51BB1C detail with status performed"
+      action: "create"
+      model: "general_audit_ws_e51bb1c.detail"
+      save_as: "detail_performed"
+      as_user: "base.user_admin"
+      values:
+        worksheet_id: "REC: ws_e51bb1c.id"
+        audit_procedure_category_id: "REC: category_performed.id"
+        assertion_type_ids:
+          - - 6
+            - 0
+            - - "REC: assertion_type.id"
+        status: "performed"
+
+    - step: "Create conclusion for d45dd19 worksheet type"
+      action: "create"
+      model: "general_audit_worksheet_conclusion"
+      save_as: "conclusion"
+      as_user: "base.user_admin"
+      values:
+        name: "No exception noted"
+        code: "/"
+        type_id: "REC: ws_type.id"
+
+scenarios:
+  # ------------------------------------------------------------------
+  # 1. general_audit_ws_d45dd19 - Create in draft
+  # ------------------------------------------------------------------
+  - name: "Worksheet d45dd19 - Create in draft"
+    steps:
+      - step: "Create worksheet d45dd19"
+        action: "create"
+        model: "general_audit_ws_d45dd19"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+          tolerable_amount: 0.0
+
+      - step: "Assert worksheet created in draft"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          id:
+            type: "value"
+            operator: "is_truthy"
+          state:
+            type: "value"
+            expected: "draft"
+          general_audit_id:
+            type: "m2o"
+            expected: "REC: audit"
+          type_id:
+            type: "m2o"
+            expected: "REC: ws_type"
+
+  # ------------------------------------------------------------------
+  # 2. Workflow draft -> open -> confirm -> done
+  # ------------------------------------------------------------------
+  - name: "Worksheet d45dd19 - Workflow confirm to done"
+    steps:
+      - step: "Create worksheet d45dd19"
+        action: "create"
+        model: "general_audit_ws_d45dd19"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+
+      - step: "Open worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_open"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after opening worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Assert worksheet open"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          state:
+            type: "value"
+            expected: "open"
+
+      - step: "Fill required conclusion fields before confirm"
+        action: "write"
+        target: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          conclusion_id: "REC: conclusion.id"
+          conclusion: "External confirmation procedure raised no exception."
+
+      - step: "Confirm worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_confirm"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after confirming worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Assert worksheet confirmed"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          state:
+            type: "value"
+            expected: "confirm"
+
+      - step: "Approve worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_approve_approval"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after approving worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Assert worksheet done"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          state:
+            type: "value"
+            expected: "done"
+
+  # ------------------------------------------------------------------
+  # 2b. Cancel and restart
+  # ------------------------------------------------------------------
+  - name: "Worksheet d45dd19 - Cancel and restart"
+    steps:
+      - step: "Create worksheet d45dd19"
+        action: "create"
+        model: "general_audit_ws_d45dd19"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+
+      - step: "Open worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_open"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after opening worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Assert worksheet open"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          state:
+            type: "value"
+            expected: "open"
+
+      - step: "Cancel worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_cancel"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after cancelling worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Assert worksheet cancelled"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          state:
+            type: "value"
+            expected: "cancel"
+
+      - step: "Restart worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_restart"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after restarting worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Assert worksheet back to draft"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          state:
+            type: "value"
+            expected: "draft"
+
+  # ------------------------------------------------------------------
+  # 3. Compute audit results - kosong (no confirmation_ids)
+  # ------------------------------------------------------------------
+  - name: "Worksheet d45dd19 - Compute audit results kosong"
+    steps:
+      - step: "Create worksheet d45dd19 without confirmations"
+        action: "create"
+        model: "general_audit_ws_d45dd19"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+
+      - step: "Assert all audit result amounts and percentages are zero"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          kfo_amount:
+            type: "value"
+            expected: 0.0
+          kfb_amount:
+            type: "value"
+            expected: 0.0
+          kft_amount:
+            type: "value"
+            expected: 0.0
+          kfk_amount:
+            type: "value"
+            expected: 0.0
+          kfo_percentage:
+            type: "value"
+            expected: 0.0
+          kfb_percentage:
+            type: "value"
+            expected: 0.0
+          kft_percentage:
+            type: "value"
+            expected: 0.0
+          kfk_percentage:
+            type: "value"
+            expected: 0.0
+
+  # ------------------------------------------------------------------
+  # 4. Confirmation result_status = kfk (no date_sent)
+  # ------------------------------------------------------------------
+  - name: "Confirmation d45dd19 - result_status kfk when date_sent is empty"
+    steps:
+      - step: "Create worksheet d45dd19"
+        action: "create"
+        model: "general_audit_ws_d45dd19"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+
+      - step: "Create confirmation without date_sent"
+        action: "create"
+        model: "general_audit_ws_d45dd19.confirmation"
+        save_as: "confirmation"
+        as_user: "base.user_admin"
+        values:
+          worksheet_id: "REC: worksheet.id"
+          party_name: "Bank ABC"
+
+      - step: "Assert result_status is kfk"
+        action: "assert"
+        target: "confirmation"
+        asserts:
+          result_status:
+            type: "value"
+            expected: "kfk"
+
+  # ------------------------------------------------------------------
+  # 5. Confirmation result_status = kft (sent, not received)
+  # ------------------------------------------------------------------
+  - name: "Confirmation d45dd19 - result_status kft when sent but not received"
+    steps:
+      - step: "Create worksheet d45dd19"
+        action: "create"
+        model: "general_audit_ws_d45dd19"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+
+      - step: "Create confirmation with date_sent, no date_received"
+        action: "create"
+        model: "general_audit_ws_d45dd19.confirmation"
+        save_as: "confirmation"
+        as_user: "base.user_admin"
+        values:
+          worksheet_id: "REC: worksheet.id"
+          party_name: "Bank ABC"
+          date_sent: 2026-02-01
+
+      - step: "Assert result_status is kft"
+        action: "assert"
+        target: "confirmation"
+        asserts:
+          result_status:
+            type: "value"
+            expected: "kft"
+
+  # ------------------------------------------------------------------
+  # 6. Confirmation result_status = kfo (received, detail agreed)
+  # ------------------------------------------------------------------
+  - name: "Confirmation d45dd19 - result_status kfo when all details agree"
+    steps:
+      - step: "Create worksheet d45dd19"
+        action: "create"
+        model: "general_audit_ws_d45dd19"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+
+      - step: "Create confirmation received with one agreed detail"
+        action: "create"
+        model: "general_audit_ws_d45dd19.confirmation"
+        save_as: "confirmation"
+        as_user: "base.user_admin"
+        values:
+          worksheet_id: "REC: worksheet.id"
+          party_name: "Bank ABC"
+          date_sent: 2026-02-01
+          date_received: 2026-02-10
+          detail_ids:
+            - - 0
+              - 0
+              - confirmation_data: "Ref,Original,Confirmation Amount\nR1,100,100\n"
+
+      - step: "Assert result_status kfo and internal_confirmation_result ok"
+        action: "assert"
+        target: "confirmation"
+        asserts:
+          result_status:
+            type: "value"
+            expected: "kfo"
+          internal_confirmation_result:
+            type: "value"
+            expected: "ok"
+
+  # ------------------------------------------------------------------
+  # 7. Confirmation result_status = kfb (received, detail differs)
+  # ------------------------------------------------------------------
+  - name: "Confirmation d45dd19 - result_status kfb when a detail disagrees"
+    steps:
+      - step: "Create worksheet d45dd19 with default tolerable_amount (0.0)"
+        action: "create"
+        model: "general_audit_ws_d45dd19"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+
+      - step: "Create confirmation received with one disagreed detail"
+        action: "create"
+        model: "general_audit_ws_d45dd19.confirmation"
+        save_as: "confirmation"
+        as_user: "base.user_admin"
+        values:
+          worksheet_id: "REC: worksheet.id"
+          party_name: "Bank ABC"
+          date_sent: 2026-02-01
+          date_received: 2026-02-10
+          detail_ids:
+            - - 0
+              - 0
+              - confirmation_data: "Ref,Original,Confirmation Amount\nR1,100,80\n"
+
+      - step: "Assert result_status kfb and internal_confirmation_result not_ok"
+        action: "assert"
+        target: "confirmation"
+        asserts:
+          result_status:
+            type: "value"
+            expected: "kfb"
+          internal_confirmation_result:
+            type: "value"
+            expected: "not_ok"
+
+  # ------------------------------------------------------------------
+  # 8. internal_confirmation_result = partial (mixed detail lines)
+  # ------------------------------------------------------------------
+  - name:
+      "Confirmation d45dd19 - internal_confirmation_result partial with mixed details"
+    steps:
+      - step: "Create worksheet d45dd19"
+        action: "create"
+        model: "general_audit_ws_d45dd19"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+
+      - step: "Create confirmation with one agreed and one disagreed detail"
+        action: "create"
+        model: "general_audit_ws_d45dd19.confirmation"
+        save_as: "confirmation"
+        as_user: "base.user_admin"
+        values:
+          worksheet_id: "REC: worksheet.id"
+          party_name: "Bank ABC"
+          date_sent: 2026-02-01
+          date_received: 2026-02-10
+          detail_ids:
+            - - 0
+              - 0
+              - confirmation_data: "Ref,Original,Confirmation Amount\nR1,100,100\n"
+            - - 0
+              - 0
+              - confirmation_data: "Ref,Original,Confirmation Amount\nR2,100,80\n"
+
+      - step: "Assert internal_confirmation_result is partial"
+        action: "assert"
+        target: "confirmation"
+        asserts:
+          internal_confirmation_result:
+            type: "value"
+            expected: "partial"
+
+  # ------------------------------------------------------------------
+  # 9. Compute audit results - normal (two confirmations, two statuses)
+  # ------------------------------------------------------------------
+  - name: "Worksheet d45dd19 - Compute audit results normal (kfo + kfb)"
+    steps:
+      - step: "Create worksheet d45dd19"
+        action: "create"
+        model: "general_audit_ws_d45dd19"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+
+      - step: "Create confirmation A - kfo, total Original 100"
+        action: "create"
+        model: "general_audit_ws_d45dd19.confirmation"
+        save_as: "confirmation_a"
+        as_user: "base.user_admin"
+        values:
+          worksheet_id: "REC: worksheet.id"
+          party_name: "Bank A"
+          date_sent: 2026-02-01
+          date_received: 2026-02-10
+          detail_ids:
+            - - 0
+              - 0
+              - confirmation_data: "Ref,Original,Confirmation Amount\nR1,100,100\n"
+
+      - step: "Create confirmation B - kfb, total Original 300"
+        action: "create"
+        model: "general_audit_ws_d45dd19.confirmation"
+        save_as: "confirmation_b"
+        as_user: "base.user_admin"
+        values:
+          worksheet_id: "REC: worksheet.id"
+          party_name: "Bank B"
+          date_sent: 2026-02-01
+          date_received: 2026-02-10
+          detail_ids:
+            - - 0
+              - 0
+              - confirmation_data: "Ref,Original,Confirmation Amount\nR1,300,250\n"
+
+      - step: "Assert kfo/kfb amounts and percentages, kft/kfk remain zero"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          kfo_amount:
+            type: "value"
+            expected: 100.0
+          kfb_amount:
+            type: "value"
+            expected: 300.0
+          kfo_percentage:
+            type: "value"
+            expected: 25.0
+          kfb_percentage:
+            type: "value"
+            expected: 75.0
+          kft_amount:
+            type: "value"
+            expected: 0.0
+          kfk_amount:
+            type: "value"
+            expected: 0.0
+
+  # ------------------------------------------------------------------
+  # 9b. tolerable_amount lets a small difference count as agreed (kfo)
+  # ------------------------------------------------------------------
+  - name: "Worksheet d45dd19 - tolerable_amount treats small difference as agreed"
+    steps:
+      - step: "Create worksheet d45dd19 with tolerable_amount 25.0"
+        action: "create"
+        model: "general_audit_ws_d45dd19"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+          tolerable_amount: 25.0
+
+      - step: "Create confirmation received with a detail differing by 20"
+        action: "create"
+        model: "general_audit_ws_d45dd19.confirmation"
+        save_as: "confirmation"
+        as_user: "base.user_admin"
+        values:
+          worksheet_id: "REC: worksheet.id"
+          party_name: "Bank ABC"
+          date_sent: 2026-02-01
+          date_received: 2026-02-10
+          detail_ids:
+            - - 0
+              - 0
+              - confirmation_data: "Ref,Original,Confirmation Amount\nR1,100,80\n"
+
+      - step: "Assert result_status is kfo because the difference is within tolerance"
+        action: "assert"
+        target: "confirmation"
+        asserts:
+          result_status:
+            type: "value"
+            expected: "kfo"
+
+      - step: "Assert worksheet kfo_amount reflects the tolerated confirmation"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          kfo_amount:
+            type: "value"
+            expected: 100.0
+          kfb_amount:
+            type: "value"
+            expected: 0.0
+
+  # ------------------------------------------------------------------
+  # 10. action_generate_data fills confirmation_data from GL raw data
+  # ------------------------------------------------------------------
+  - name: "Confirmation detail d45dd19 - action_generate_data from General Ledger"
+    steps:
+      - step: "Create GL worksheet with raw CSV data"
+        action: "create"
+        model: "general_audit_ws_d209914"
+        save_as: "ws_gl"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_gl.id"
+          title: "Bank Ledger"
+          raw_data: |
+            Ref,Debit
+            R1,100
+            R2,200
+
+      - step: "Create worksheet d45dd19"
+        action: "create"
+        model: "general_audit_ws_d45dd19"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+
+      - step: "Create confirmation sourced from the GL worksheet"
+        action: "create"
+        model: "general_audit_ws_d45dd19.confirmation"
+        save_as: "confirmation"
+        as_user: "base.user_admin"
+        values:
+          worksheet_id: "REC: worksheet.id"
+          party_name: "Bank ABC"
+          data_mode: "gl"
+          general_ledger_id: "REC: ws_gl.id"
+
+      - step: "Create confirmation detail with column mapping"
+        action: "create"
+        model: "general_audit_ws_d45dd19.confirmation.detail"
+        save_as: "detail"
+        as_user: "base.user_admin"
+        values:
+          confirmation_id: "REC: confirmation.id"
+          reference_col_number: 1
+          amount_original_col_number: 2
+
+      - step: "Call action_generate_data"
+        action: "call"
+        target: "detail"
+        method: "action_generate_data"
+        as_user: "base.user_admin"
+
+      - step: "Assert confirmation_data was generated (is_truthy)"
+        action: "assert"
+        target: "detail"
+        asserts:
+          confirmation_data:
+            type: "value"
+            operator: "is_truthy"
+
+      - step: "Assert confirmation_data has the expected CSV header"
+        action: "assert"
+        target: "detail"
+        asserts:
+          confirmation_data:
+            type: "value"
+            operator: "contains"
+            expected: "Ref,Original,Confirmation Amount"
+
+      - step: "Assert worksheet kfk_amount sums the total Original amount (300)"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          kfk_amount:
+            type: "value"
+            expected: 300.0
+
+  # ------------------------------------------------------------------
+  # 11. _apply_where_clause rejects dangerous SQL and applies safe filters
+  # ------------------------------------------------------------------
+  - name:
+      "Confirmation d45dd19 - _apply_where_clause rejects dangerous SQL, applies safe
+      filter"
+    steps:
+      - step: "Create GL worksheet with raw CSV data"
+        action: "create"
+        model: "general_audit_ws_d209914"
+        save_as: "ws_gl"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_gl.id"
+          title: "Bank Ledger"
+          raw_data: |
+            Ref,Debit
+            R1,100
+            R2,200
+
+      - step: "Create worksheet d45dd19"
+        action: "create"
+        model: "general_audit_ws_d45dd19"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+
+      - step: "Create confirmation sourced from the GL worksheet"
+        action: "create"
+        model: "general_audit_ws_d45dd19.confirmation"
+        save_as: "confirmation"
+        as_user: "base.user_admin"
+        values:
+          worksheet_id: "REC: worksheet.id"
+          party_name: "Bank ABC"
+          data_mode: "gl"
+          general_ledger_id: "REC: ws_gl.id"
+
+      - step: "Set a dangerous filter_where_clause"
+        action: "write"
+        target: "confirmation"
+        as_user: "base.user_admin"
+        values:
+          filter_where_clause: "DROP TABLE data"
+
+      - step: "Assert raw_data is left unfiltered (identical to source)"
+        action: "assert"
+        target: "confirmation"
+        asserts:
+          raw_data:
+            type: "value"
+            expected: "REC: ws_gl.raw_data"
+
+      - step: "Set a safe filter_where_clause"
+        action: "write"
+        target: "confirmation"
+        as_user: "base.user_admin"
+        values:
+          filter_where_clause: "Debit > 150"
+
+      - step: "Assert raw_data only contains the matching row"
+        action: "assert"
+        target: "confirmation"
+        asserts:
+          raw_data:
+            type: "value"
+            expected: "Ref,Debit\r\nR2,200\r\n"
+
+  # ------------------------------------------------------------------
+  # 12. Compute detail_ws_e51bb1c_id / allowed_key_audit_procedure_ids - normal
+  # ------------------------------------------------------------------
+  - name: "Worksheet d45dd19 - Compute detail_ws_e51bb1c_id normal"
+    steps:
+      - step: "Create worksheet d45dd19"
+        action: "create"
+        model: "general_audit_ws_d45dd19"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+
+      - step: "Set ws_e51bb1c_id and key_audit_procedure_id"
+        action: "write"
+        target: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          ws_e51bb1c_id: "REC: ws_e51bb1c.id"
+          key_audit_procedure_id: "REC: category_performed.id"
+
+      - step: "Assert detail_ws_e51bb1c_id and allowed_key_audit_procedure_ids"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          detail_ws_e51bb1c_id:
+            type: "m2o"
+            expected: "REC: detail_performed"
+          allowed_key_audit_procedure_ids:
+            type: "m2m"
+            check: "exact"
+            expected_records:
+              - "REC: category_performed"
+
+  # ------------------------------------------------------------------
+  # 13. Compute detail_ws_e51bb1c_id / allowed_key_audit_procedure_ids - kosong
+  # ------------------------------------------------------------------
+  - name: "Worksheet d45dd19 - Compute detail_ws_e51bb1c_id kosong"
+    steps:
+      - step: "Create worksheet d45dd19 without ws_e51bb1c_id"
+        action: "create"
+        model: "general_audit_ws_d45dd19"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+
+      - step:
+          "Assert detail_ws_e51bb1c_id and allowed_key_audit_procedure_ids are empty"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          detail_ws_e51bb1c_id:
+            type: "value"
+            operator: "is_falsy"
+          allowed_key_audit_procedure_ids:
+            type: "m2m"
+            check: "count"
+            expected_count: 0
+
+  # ------------------------------------------------------------------
+  # 14. action_open_confirmations
+  # ------------------------------------------------------------------
+  - name:
+      "Worksheet d45dd19 - action_open_confirmations scopes to its own confirmations"
+    steps:
+      - step: "Create worksheet d45dd19"
+        action: "create"
+        model: "general_audit_ws_d45dd19"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+
+      - step: "Create first confirmation"
+        action: "create"
+        model: "general_audit_ws_d45dd19.confirmation"
+        save_as: "confirmation_1"
+        as_user: "base.user_admin"
+        values:
+          worksheet_id: "REC: worksheet.id"
+          party_name: "Bank A"
+
+      - step: "Create second confirmation"
+        action: "create"
+        model: "general_audit_ws_d45dd19.confirmation"
+        save_as: "confirmation_2"
+        as_user: "base.user_admin"
+        values:
+          worksheet_id: "REC: worksheet.id"
+          party_name: "Bank B"
+
+      - step: "Call action_open_confirmations"
+        action: "call"
+        target: "worksheet"
+        method: "action_open_confirmations"
+        as_user: "base.user_admin"
+
+      - step: "Verify confirmations scoped to this worksheet"
+        action: "search"
+        model: "general_audit_ws_d45dd19.confirmation"
+        domain:
+          - ["worksheet_id", "=", "REC: worksheet.id"]
+        save_as: "result"
+        expect_count: 2
+
+  # ------------------------------------------------------------------
+  # 14b. action_open_confirmation_details
+  # ------------------------------------------------------------------
+  - name:
+      "Confirmation d45dd19 - action_open_confirmation_details scopes to its own details"
+    steps:
+      - step: "Create worksheet d45dd19"
+        action: "create"
+        model: "general_audit_ws_d45dd19"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+
+      - step: "Create confirmation with two details"
+        action: "create"
+        model: "general_audit_ws_d45dd19.confirmation"
+        save_as: "confirmation"
+        as_user: "base.user_admin"
+        values:
+          worksheet_id: "REC: worksheet.id"
+          party_name: "Bank ABC"
+          detail_ids:
+            - - 0
+              - 0
+              - reference_col_number: 1
+                amount_original_col_number: 2
+            - - 0
+              - 0
+              - reference_col_number: 1
+                amount_original_col_number: 3
+
+      - step: "Call action_open_confirmation_details"
+        action: "call"
+        target: "confirmation"
+        method: "action_open_confirmation_details"
+        as_user: "base.user_admin"
+
+      - step: "Verify details scoped to this confirmation"
+        action: "search"
+        model: "general_audit_ws_d45dd19.confirmation.detail"
+        domain:
+          - ["confirmation_id", "=", "REC: confirmation.id"]
+        save_as: "result"
+        expect_count: 2
+
+  # ------------------------------------------------------------------
+  # 15. Onchange confirmation.data_mode clears general_ledger_id
+  # ------------------------------------------------------------------
+  - name: "Confirmation d45dd19 - Onchange data_mode clears general_ledger_id"
+    steps:
+      - step: "Create worksheet d45dd19 to host the confirmation"
+        action: "create"
+        model: "general_audit_ws_d45dd19"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+
+      - step: "Create GL worksheet as a candidate data source"
+        action: "create"
+        model: "general_audit_ws_d209914"
+        save_as: "ws_gl"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_gl.id"
+
+      - step: "Set data_mode to gl with general_ledger_id, then switch to subledger"
+        action: "form"
+        model: "general_audit_ws_d45dd19.confirmation"
+        save_as: "onchange_confirmation"
+        as_user: "base.user_admin"
+        ops:
+          - set:
+              worksheet_id: "REC: worksheet"
+          - set:
+              party_name: "Bank ABC"
+          - set:
+              data_mode: "gl"
+          - set:
+              general_ledger_id: "REC: ws_gl"
+          - set:
+              data_mode: "subledger"
+        save: true
+
+      - step: "Assert general_ledger_id was cleared by the onchange"
+        action: "assert"
+        target: "onchange_confirmation"
+        asserts:
+          general_ledger_id:
+            type: "value"
+            operator: "is_falsy"
+
+  # ------------------------------------------------------------------
+  # 16. Onchange confirmation.data_mode clears subledger_id
+  # ------------------------------------------------------------------
+  - name: "Confirmation d45dd19 - Onchange data_mode clears subledger_id"
+    steps:
+      - step: "Create worksheet d45dd19 to host the confirmation"
+        action: "create"
+        model: "general_audit_ws_d45dd19"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+
+      - step: "Create Subledger worksheet as a candidate data source"
+        action: "create"
+        model: "general_audit_ws_b5e3d9f"
+        save_as: "ws_subledger"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_subledger.id"
+
+      - step: "Set data_mode to subledger with subledger_id, then switch to gl"
+        action: "form"
+        model: "general_audit_ws_d45dd19.confirmation"
+        save_as: "onchange_confirmation"
+        as_user: "base.user_admin"
+        ops:
+          - set:
+              worksheet_id: "REC: worksheet"
+          - set:
+              party_name: "Bank ABC"
+          - set:
+              data_mode: "subledger"
+          - set:
+              subledger_id: "REC: ws_subledger"
+          - set:
+              data_mode: "gl"
+        save: true
+
+      - step: "Assert subledger_id was cleared by the onchange"
+        action: "assert"
+        target: "onchange_confirmation"
+        asserts:
+          subledger_id:
+            type: "value"
+            operator: "is_falsy"
