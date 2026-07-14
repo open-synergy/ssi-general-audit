@@ -1,0 +1,477 @@
+setup:
+  steps:
+    - step: "Get config parameter model"
+      action: "search"
+      model: "ir.config_parameter"
+      domain: []
+      save_as: "config_parameter"
+      limit: 1
+
+    - step: "Allow enough CPA licenses for this scenario"
+      action: "call"
+      target: "config_parameter"
+      method: "set_param"
+      args:
+        - "ssi_general_audit.max_number_of_cpa_license"
+        - "100"
+
+    - step: "Create client partner"
+      action: "create"
+      model: "res.partner"
+      save_as: "client"
+      as_user: "base.user_admin"
+      values:
+        name: "Test Audit Client - a58e29c"
+        is_company: true
+
+    - step: "Create accountant partner"
+      action: "create"
+      model: "res.partner"
+      save_as: "accountant"
+      as_user: "base.user_admin"
+      values:
+        name: "Test Audit Accountant - a58e29c"
+
+    - step: "Get CPA license id category"
+      action: "ref"
+      xml_id: "ssi_partner_identification_cpa_license.partner_identification_accountant_cpa_license"
+      save_as: "cpa_category"
+
+    - step: "Grant accountant a CPA license"
+      action: "create"
+      model: "res.partner.id_number"
+      save_as: "cpa_license"
+      as_user: "base.user_admin"
+      values:
+        partner_id: "REC: accountant.id"
+        category_id: "REC: cpa_category.id"
+        name: "CPA-A58E29C-0001"
+
+    - step: "Create account type set"
+      action: "create"
+      model: "client_account_type_set"
+      save_as: "account_type_set"
+      as_user: "base.user_admin"
+      values:
+        name: "Test Account Type Set - a58e29c"
+        code: "/"
+
+    - step: "Create financial accounting standard"
+      action: "create"
+      model: "accountant.financial_accounting_standard"
+      save_as: "standard"
+      as_user: "base.user_admin"
+      values:
+        name: "Test Financial Accounting Standard - a58e29c"
+        code: "/"
+
+    - step: "Create general audit"
+      action: "create"
+      model: "general_audit"
+      save_as: "audit"
+      as_user: "base.user_admin"
+      values:
+        title: "Test General Audit - a58e29c"
+        partner_id: "REC: client.id"
+        accountant_id: "REC: accountant.id"
+        account_type_set_id: "REC: account_type_set.id"
+        financial_accounting_standard_id: "REC: standard.id"
+        date_start: 2024-01-01
+        date_end: 2024-12-31
+        need_interim: false
+        need_previous: false
+        num_of_consecutive_audit_firm: 1
+        num_of_consecutive_audit_accountant: 1
+
+    - step: "Open general audit"
+      action: "call"
+      target: "audit"
+      method: "action_open"
+      as_user: "base.user_admin"
+
+    - step: "Invalidate cache after opening general audit"
+      action: "call"
+      target: "audit"
+      method: "invalidate_cache"
+
+    - step: "Get worksheet type a58e29c"
+      action: "ref"
+      xml_id: "ssi_general_audit_worksheet_control_risk.worksheet_type_a58e29c"
+      save_as: "ws_type_a58e29c"
+
+    - step: "Get worksheet type b59b886"
+      action: "ref"
+      xml_id: "ssi_general_audit_worksheet_control_risk.worksheet_type_b59b886"
+      save_as: "ws_type_b59b886"
+
+    - step: "Get worksheet type eabdaad"
+      action: "ref"
+      xml_id: "ssi_general_audit_worksheet_control_risk.worksheet_type_eabdaad"
+      save_as: "ws_type_eabdaad"
+
+    - step: "Get worksheet type ba9b2f0"
+      action: "ref"
+      xml_id: "ssi_general_audit_worksheet_control_risk.worksheet_type_ba9b2f0"
+      save_as: "ws_type_ba9b2f0"
+
+scenarios:
+  # ------------------------------------------------------------------
+  # a58e29c - Compute link_1_id / link_2_ids / link_3_id (normal)
+  # ------------------------------------------------------------------
+  - name: "Worksheet a58e29c - Compute link_1_id/link_2_ids/link_3_id (normal)"
+    steps:
+      - step: "Create worksheet b59b886 for the audit (link_1 source)"
+        action: "create"
+        model: "general_audit_ws_b59b886"
+        save_as: "ws_b59b886"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_b59b886.id"
+
+      - step: "Create worksheet eabdaad for the audit (link_2 source)"
+        action: "create"
+        model: "general_audit_ws_eabdaad"
+        save_as: "ws_eabdaad"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_eabdaad.id"
+
+      - step: "Create worksheet ba9b2f0 for the audit (link_3 source)"
+        action: "create"
+        model: "general_audit_ws_ba9b2f0"
+        save_as: "ws_ba9b2f0"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_ba9b2f0.id"
+
+      - step: "Create worksheet a58e29c after the source worksheets already exist"
+        action: "create"
+        model: "general_audit_ws_a58e29c"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_a58e29c.id"
+
+      - step: "Assert link_1_id / link_2_ids / link_3_id resolved at create time"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          link_1_id:
+            type: "m2o"
+            expected: "REC: ws_b59b886"
+          link_2_ids:
+            type: "m2m"
+            check: "exact"
+            expected_records:
+              - "REC: ws_eabdaad"
+          link_3_id:
+            type: "m2o"
+            expected: "REC: ws_ba9b2f0"
+
+  # ------------------------------------------------------------------
+  # a58e29c - Compute link_1_id / link_2_ids / link_3_id (kosong)
+  # ------------------------------------------------------------------
+  - name: "Worksheet a58e29c - Compute link_1_id/link_2_ids/link_3_id (kosong)"
+    steps:
+      - step: "Create worksheet a58e29c without any source worksheet for the audit"
+        action: "create"
+        model: "general_audit_ws_a58e29c"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_a58e29c.id"
+
+      - step: "Assert link_1_id is empty"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          link_1_id:
+            type: "value"
+            operator: "is_falsy"
+          link_3_id:
+            type: "value"
+            operator: "is_falsy"
+
+      - step: "Assert link_2_ids is empty"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          link_2_ids:
+            type: "m2m"
+            check: "count"
+            expected_count: 0
+
+  # ------------------------------------------------------------------
+  # a58e29c - action_reload_links
+  # ------------------------------------------------------------------
+  - name: "Worksheet a58e29c - Action reload links"
+    steps:
+      - step: "Create worksheet a58e29c before any source worksheet exists"
+        action: "create"
+        model: "general_audit_ws_a58e29c"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_a58e29c.id"
+
+      - step: "Assert links are still empty right after creation"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          link_1_id:
+            type: "value"
+            operator: "is_falsy"
+          link_3_id:
+            type: "value"
+            operator: "is_falsy"
+          link_2_ids:
+            type: "m2m"
+            check: "count"
+            expected_count: 0
+
+      - step: "Create worksheet b59b886 for the audit (link_1 source)"
+        action: "create"
+        model: "general_audit_ws_b59b886"
+        save_as: "ws_b59b886"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_b59b886.id"
+
+      - step: "Create worksheet eabdaad for the audit (link_2 source)"
+        action: "create"
+        model: "general_audit_ws_eabdaad"
+        save_as: "ws_eabdaad"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_eabdaad.id"
+
+      - step: "Create worksheet ba9b2f0 for the audit (link_3 source)"
+        action: "create"
+        model: "general_audit_ws_ba9b2f0"
+        save_as: "ws_ba9b2f0"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_ba9b2f0.id"
+
+      - step: "Call action_reload_links"
+        action: "call"
+        target: "worksheet"
+        method: "action_reload_links"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after reloading links"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Assert links are now populated"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          link_1_id:
+            type: "m2o"
+            expected: "REC: ws_b59b886"
+          link_2_ids:
+            type: "m2m"
+            check: "exact"
+            expected_records:
+              - "REC: ws_eabdaad"
+          link_3_id:
+            type: "m2o"
+            expected: "REC: ws_ba9b2f0"
+
+  # ------------------------------------------------------------------
+  # a58e29c - Workflow confirm to done
+  # ------------------------------------------------------------------
+  - name: "Worksheet a58e29c - Workflow confirm to done"
+    steps:
+      - step: "Create conclusion for a58e29c worksheet type"
+        action: "create"
+        model: "general_audit_worksheet_conclusion"
+        save_as: "conclusion"
+        as_user: "base.user_admin"
+        values:
+          name: "Control risk conclusion is adequate"
+          code: "/"
+          type_id: "REC: ws_type_a58e29c.id"
+
+      - step: "Create worksheet b59b886 for the audit (link_1 source)"
+        action: "create"
+        model: "general_audit_ws_b59b886"
+        save_as: "ws_b59b886"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_b59b886.id"
+
+      - step: "Create worksheet eabdaad for the audit (link_2 source)"
+        action: "create"
+        model: "general_audit_ws_eabdaad"
+        save_as: "ws_eabdaad"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_eabdaad.id"
+
+      - step: "Create worksheet ba9b2f0 for the audit (link_3 source)"
+        action: "create"
+        model: "general_audit_ws_ba9b2f0"
+        save_as: "ws_ba9b2f0"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_ba9b2f0.id"
+
+      - step: "Create worksheet a58e29c (links resolved automatically at create)"
+        action: "create"
+        model: "general_audit_ws_a58e29c"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_a58e29c.id"
+
+      - step: "Open worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_open"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after opening worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Assert worksheet open"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          state:
+            type: "value"
+            expected: "open"
+
+      - step: "Fill required conclusion fields before confirm"
+        action: "write"
+        target: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          conclusion_id: "REC: conclusion.id"
+          conclusion: "Overall control risk conclusion reviewed and adequate."
+
+      - step: "Confirm worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_confirm"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after confirming worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Assert worksheet confirmed"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          state:
+            type: "value"
+            expected: "confirm"
+
+      - step: "Approve worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_approve_approval"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after approving worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Assert worksheet done"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          state:
+            type: "value"
+            expected: "done"
+
+  # ------------------------------------------------------------------
+  # a58e29c - Cancel and restart
+  # ------------------------------------------------------------------
+  - name: "Worksheet a58e29c - Cancel and restart"
+    steps:
+      - step: "Create worksheet a58e29c"
+        action: "create"
+        model: "general_audit_ws_a58e29c"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_a58e29c.id"
+
+      - step: "Open worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_open"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after opening worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Assert worksheet open"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          state:
+            type: "value"
+            expected: "open"
+
+      - step: "Cancel worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_cancel"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after cancelling worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Assert worksheet cancelled"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          state:
+            type: "value"
+            expected: "cancel"
+
+      - step: "Restart worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_restart"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after restarting worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Assert worksheet back to draft"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          state:
+            type: "value"
+            expected: "draft"
