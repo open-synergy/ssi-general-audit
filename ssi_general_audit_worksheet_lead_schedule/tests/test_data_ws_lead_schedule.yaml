@@ -1,0 +1,1856 @@
+setup:
+  steps:
+    - step: "Get config parameter model"
+      action: "search"
+      model: "ir.config_parameter"
+      domain: []
+      save_as: "config_parameter"
+      limit: 1
+
+    - step: "Allow enough CPA licenses for this scenario"
+      action: "call"
+      target: "config_parameter"
+      method: "set_param"
+      args:
+        - "ssi_general_audit.max_number_of_cpa_license"
+        - "100"
+
+    - step: "Create client partner"
+      action: "create"
+      model: "res.partner"
+      save_as: "client"
+      as_user: "base.user_admin"
+      values:
+        name: "Test Audit Client - Lead Schedule"
+        is_company: true
+
+    - step: "Create accountant partner"
+      action: "create"
+      model: "res.partner"
+      save_as: "accountant"
+      as_user: "base.user_admin"
+      values:
+        name: "Test Audit Accountant - Lead Schedule"
+
+    - step: "Get CPA license id category"
+      action: "ref"
+      xml_id: "ssi_partner_identification_cpa_license.partner_identification_accountant_cpa_license"
+      save_as: "cpa_category"
+
+    - step: "Grant accountant a CPA license"
+      action: "create"
+      model: "res.partner.id_number"
+      save_as: "cpa_license"
+      as_user: "base.user_admin"
+      values:
+        partner_id: "REC: accountant.id"
+        category_id: "REC: cpa_category.id"
+        name: "CPA-LEAD-SCHEDULE-0001"
+
+    - step: "Create account type set"
+      action: "create"
+      model: "client_account_type_set"
+      save_as: "account_type_set"
+      as_user: "base.user_admin"
+      values:
+        name: "Test Account Type Set - Lead Schedule"
+        code: "/"
+
+    - step: "Create financial accounting standard"
+      action: "create"
+      model: "accountant.financial_accounting_standard"
+      save_as: "standard"
+      as_user: "base.user_admin"
+      values:
+        name: "Test Financial Accounting Standard - Lead Schedule"
+        code: "/"
+
+    - step: "Create general audit"
+      action: "create"
+      model: "general_audit"
+      save_as: "audit"
+      as_user: "base.user_admin"
+      values:
+        title: "Test General Audit - Lead Schedule"
+        partner_id: "REC: client.id"
+        accountant_id: "REC: accountant.id"
+        account_type_set_id: "REC: account_type_set.id"
+        financial_accounting_standard_id: "REC: standard.id"
+        date_start: 2026-01-01
+        date_end: 2026-12-31
+        need_interim: false
+        need_previous: false
+        num_of_consecutive_audit_firm: 1
+        num_of_consecutive_audit_accountant: 1
+
+    - step: "Open general audit"
+      action: "call"
+      target: "audit"
+      method: "action_open"
+      as_user: "base.user_admin"
+
+    - step: "Invalidate cache after opening general audit"
+      action: "call"
+      target: "audit"
+      method: "invalidate_cache"
+
+    - step: "Get worksheet type b26d482"
+      action: "ref"
+      xml_id: "ssi_general_audit_worksheet_lead_schedule.worksheet_type_b26d482"
+      save_as: "ws_type_b26d482"
+
+    - step: "Get worksheet type e51bb1c"
+      action: "ref"
+      xml_id: "ssi_general_audit_worksheet_lead_schedule.worksheet_type_e51bb1c"
+      save_as: "ws_type_e51bb1c"
+
+    - step: "Get worksheet type f9f3299"
+      action: "ref"
+      xml_id: "ssi_general_audit_worksheet_lead_schedule.worksheet_type_f9f3299"
+      save_as: "ws_type_f9f3299"
+
+    - step: "Get conclusion for b26d482 (worksheet has been completed)"
+      action: "ref"
+      xml_id: "ssi_general_audit_worksheet_lead_schedule.general_audit_worksheet_conclusion_96_5e252e2e"
+      save_as: "conclusion_b26d482"
+
+    - step: "Get conclusion for e51bb1c (key audit procedures is adequate)"
+      action: "ref"
+      xml_id: "ssi_general_audit_worksheet_lead_schedule.general_audit_worksheet_conclusion_95_466d9305"
+      save_as: "conclusion_e51bb1c"
+
+    - step: "Get conclusion for f9f3299 (lead schedule - account is adequate)"
+      action: "ref"
+      xml_id: "ssi_general_audit_worksheet_lead_schedule.general_audit_worksheet_conclusion_92_82e3bdf1"
+      save_as: "conclusion_f9f3299"
+
+    - step: "Create client account group"
+      action: "create"
+      model: "client_account_group"
+      save_as: "account_group"
+      as_user: "base.user_admin"
+      values:
+        name: "Test Account Group - Lead Schedule"
+        code: "/"
+
+    - step: "Create client account type A (debit-normal)"
+      action: "create"
+      model: "client_account_type"
+      save_as: "account_type_a"
+      as_user: "base.user_admin"
+      values:
+        name: "Test Account Type A - Lead Schedule"
+        code: "/"
+        group_id: "REC: account_group.id"
+        normal_balance: "dr"
+        # DILARANG membiarkan python_code pada default "result = document.balance":
+        # general_audit.standard_detail._compute_extrapolation_balance akan crash
+        # (AttributeError) begitu tipe akun ini terhubung ke sebuah standard_detail
+        # (dipakai di skenario allowed_account_type_ids).
+        python_code: "result = 0.0"
+
+    - step: "Create client account type B (credit-normal)"
+      action: "create"
+      model: "client_account_type"
+      save_as: "account_type_b"
+      as_user: "base.user_admin"
+      values:
+        name: "Test Account Type B - Lead Schedule"
+        code: "/"
+        group_id: "REC: account_group.id"
+        normal_balance: "cr"
+        python_code: "result = 0.0"
+
+    - step: "Create client account A (debit-normal)"
+      action: "create"
+      model: "client_account"
+      save_as: "account_a"
+      as_user: "base.user_admin"
+      values:
+        name: "Test Client Account A - Lead Schedule"
+        # client_account._check_duplicate_code enforces uniqueness of the
+        # LITERAL code value per partner_id (not auto-sequenced like "/" on
+        # other mixin.master_data models). Every scenario in this file gets
+        # its own fresh "client" partner (setup: is replayed before every
+        # scenario), so reusing the same literal code across scenarios never
+        # collides.
+        code: "ACC-A-LEAD-SCHEDULE"
+        partner_id: "REC: client.id"
+        type_id: "REC: account_type_a.id"
+
+    - step: "Create client account B (credit-normal)"
+      action: "create"
+      model: "client_account"
+      save_as: "account_b"
+      as_user: "base.user_admin"
+      values:
+        name: "Test Client Account B - Lead Schedule"
+        code: "ACC-B-LEAD-SCHEDULE"
+        partner_id: "REC: client.id"
+        type_id: "REC: account_type_b.id"
+
+scenarios:
+  # ==================================================================
+  # b26d482 - Worksheet
+  # ==================================================================
+  - name: "b26d482 - Create in draft"
+    steps:
+      - step: "Create worksheet b26d482"
+        action: "create"
+        model: "general_audit_ws_b26d482"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_b26d482.id"
+
+      - step: "Assert worksheet created in draft with no detail"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          id:
+            type: "value"
+            operator: "is_truthy"
+          state:
+            type: "value"
+            expected: "draft"
+          detail_ids:
+            type: "o2m"
+            check: "count"
+            expected_count: 0
+
+  - name: "b26d482 - action_load_detail (create then idempotent, diff-based)"
+    steps:
+      - step: "Create client account mapping for the audit"
+        action: "create"
+        model: "client_account_mapping"
+        save_as: "mapping"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+
+      - step: "Map client account A"
+        action: "create"
+        model: "client_account_mapping.detail"
+        save_as: "mapping_detail_a"
+        as_user: "base.user_admin"
+        values:
+          mapping_id: "REC: mapping.id"
+          account_id: "REC: account_a.id"
+
+      - step: "Map client account B"
+        action: "create"
+        model: "client_account_mapping.detail"
+        save_as: "mapping_detail_b"
+        as_user: "base.user_admin"
+        values:
+          mapping_id: "REC: mapping.id"
+          account_id: "REC: account_b.id"
+
+      - step: "Reload general audit accounts from the mapping"
+        action: "call"
+        target: "audit"
+        method: "action_reload_account"
+        as_user: "base.user_admin"
+
+      - step: "Sanity check: general_audit.detail_ids has 2 accounts"
+        action: "search"
+        model: "general_audit.detail"
+        domain:
+          - ["general_audit_id", "=", "REC: audit.id"]
+        save_as: "gad_all"
+        expect_count: 2
+
+      - step: "Create worksheet b26d482"
+        action: "create"
+        model: "general_audit_ws_b26d482"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_b26d482.id"
+
+      - step: "Assert no detail before loading"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          detail_ids:
+            type: "o2m"
+            check: "count"
+            expected_count: 0
+
+      - step: "Load detail"
+        action: "call"
+        target: "worksheet"
+        method: "action_load_detail"
+        as_user: "base.user_admin"
+
+      - step: "Assert two detail lines were created (one per audited account)"
+        action: "search"
+        model: "general_audit_ws_b26d482.detail"
+        domain:
+          - ["worksheet_id", "=", "REC: worksheet.id"]
+        save_as: "details_after_load"
+        expect_count: 2
+
+      - step: "Load detail a second time"
+        action: "call"
+        target: "worksheet"
+        method: "action_load_detail"
+        as_user: "base.user_admin"
+
+      - step: "Assert still exactly two detail lines (diff-based, no duplicates)"
+        action: "search"
+        model: "general_audit_ws_b26d482.detail"
+        domain:
+          - ["worksheet_id", "=", "REC: worksheet.id"]
+        save_as: "details_after_reload"
+        expect_count: 2
+
+  - name:
+      "b26d482 - Compute current_balance (end_period/interim) and adjusted_balance
+      (debit/credit)"
+    steps:
+      - step: "Create client account mapping for the audit"
+        action: "create"
+        model: "client_account_mapping"
+        save_as: "mapping"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+
+      - step: "Map client account A"
+        action: "create"
+        model: "client_account_mapping.detail"
+        save_as: "mapping_detail_a"
+        as_user: "base.user_admin"
+        values:
+          mapping_id: "REC: mapping.id"
+          account_id: "REC: account_a.id"
+
+      - step: "Map client account B"
+        action: "create"
+        model: "client_account_mapping.detail"
+        save_as: "mapping_detail_b"
+        as_user: "base.user_admin"
+        values:
+          mapping_id: "REC: mapping.id"
+          account_id: "REC: account_b.id"
+
+      - step: "Reload general audit accounts from the mapping"
+        action: "call"
+        target: "audit"
+        method: "action_reload_account"
+        as_user: "base.user_admin"
+
+      - step: "Find general_audit.detail for account A"
+        action: "search"
+        model: "general_audit.detail"
+        domain:
+          - ["general_audit_id", "=", "REC: audit.id"]
+          - ["account_id", "=", "REC: account_a.id"]
+        save_as: "detail_a"
+        limit: 1
+
+      - step: "Find general_audit.detail for account B"
+        action: "search"
+        model: "general_audit.detail"
+        domain:
+          - ["general_audit_id", "=", "REC: audit.id"]
+          - ["account_id", "=", "REC: account_b.id"]
+        save_as: "detail_b"
+        limit: 1
+
+      - step: "Create home trial balance"
+        action: "create"
+        model: "client_trial_balance"
+        save_as: "tb_home"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          trial_balance_type: "home"
+
+      - step: "Home trial balance line for account A (debit 1,000,000)"
+        action: "create"
+        model: "client_trial_balance.detail"
+        save_as: "tb_home_detail_a"
+        as_user: "base.user_admin"
+        values:
+          trial_balance_id: "REC: tb_home.id"
+          account_id: "REC: account_a.id"
+          debit: 1000000.0
+
+      - step: "Home trial balance line for account B (credit 1,000,000)"
+        action: "create"
+        model: "client_trial_balance.detail"
+        save_as: "tb_home_detail_b"
+        as_user: "base.user_admin"
+        values:
+          trial_balance_id: "REC: tb_home.id"
+          account_id: "REC: account_b.id"
+          credit: 1000000.0
+
+      - step: "Create interim trial balance"
+        action: "create"
+        model: "client_trial_balance"
+        save_as: "tb_interim"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          trial_balance_type: "interim"
+
+      - step: "Interim trial balance line for account A (debit 800,000)"
+        action: "create"
+        model: "client_trial_balance.detail"
+        save_as: "tb_interim_detail_a"
+        as_user: "base.user_admin"
+        values:
+          trial_balance_id: "REC: tb_interim.id"
+          account_id: "REC: account_a.id"
+          debit: 800000.0
+
+      - step: "Interim trial balance line for account B (credit 800,000)"
+        action: "create"
+        model: "client_trial_balance.detail"
+        save_as: "tb_interim_detail_b"
+        as_user: "base.user_admin"
+        values:
+          trial_balance_id: "REC: tb_interim.id"
+          account_id: "REC: account_b.id"
+          credit: 800000.0
+
+      - step: "Create adjustment entry"
+        action: "create"
+        model: "client_adjustment_entry"
+        save_as: "adj_entry"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          adjustment_type: "propose"
+
+      - step: "Adjustment line - account A debit 50,000"
+        action: "create"
+        model: "client_adjustment_entry.detail"
+        save_as: "adj_line_a_dr"
+        as_user: "base.user_admin"
+        values:
+          entry_id: "REC: adj_entry.id"
+          account_id: "REC: account_a.id"
+          name: "Reclass debit A"
+          debit: 50000.0
+
+      - step: "Adjustment line - account A credit 20,000"
+        action: "create"
+        model: "client_adjustment_entry.detail"
+        save_as: "adj_line_a_cr"
+        as_user: "base.user_admin"
+        values:
+          entry_id: "REC: adj_entry.id"
+          account_id: "REC: account_a.id"
+          name: "Reclass credit A"
+          credit: 20000.0
+
+      - step: "Adjustment line - account B debit 15,000"
+        action: "create"
+        model: "client_adjustment_entry.detail"
+        save_as: "adj_line_b_dr"
+        as_user: "base.user_admin"
+        values:
+          entry_id: "REC: adj_entry.id"
+          account_id: "REC: account_b.id"
+          name: "Reclass debit B"
+          debit: 15000.0
+
+      - step: "Adjustment line - account B credit 45,000"
+        action: "create"
+        model: "client_adjustment_entry.detail"
+        save_as: "adj_line_b_cr"
+        as_user: "base.user_admin"
+        values:
+          entry_id: "REC: adj_entry.id"
+          account_id: "REC: account_b.id"
+          name: "Reclass credit B"
+          credit: 45000.0
+
+      - step: "Confirm adjustment entry (total debit 65,000 = total credit 65,000)"
+        action: "call"
+        target: "adj_entry"
+        method: "action_confirm"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after confirming adjustment entry"
+        action: "call"
+        target: "adj_entry"
+        method: "invalidate_cache"
+
+      - step: "Approve adjustment entry"
+        action: "call"
+        target: "adj_entry"
+        method: "action_approve_approval"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after approving adjustment entry"
+        action: "call"
+        target: "adj_entry"
+        method: "invalidate_cache"
+
+      - step: "Assert adjustment entry done"
+        action: "assert"
+        target: "adj_entry"
+        asserts:
+          state:
+            type: "value"
+            expected: "done"
+
+      - step: "Invalidate cache on general_audit.detail after adjustment approval"
+        action: "call"
+        target: "detail_a"
+        method: "invalidate_cache"
+
+      - step: "Invalidate cache on general_audit.detail B after adjustment approval"
+        action: "call"
+        target: "detail_b"
+        method: "invalidate_cache"
+
+      - step: "Assert adjustment_dr/adjustment_cr propagated to general_audit.detail A"
+        action: "assert"
+        target: "detail_a"
+        asserts:
+          adjustment_dr:
+            type: "value"
+            expected: 50000.0
+          adjustment_cr:
+            type: "value"
+            expected: 20000.0
+
+      - step: "Assert adjustment_dr/adjustment_cr propagated to general_audit.detail B"
+        action: "assert"
+        target: "detail_b"
+        asserts:
+          adjustment_dr:
+            type: "value"
+            expected: 15000.0
+          adjustment_cr:
+            type: "value"
+            expected: 45000.0
+
+      - step: "Create worksheet b26d482"
+        action: "create"
+        model: "general_audit_ws_b26d482"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_b26d482.id"
+
+      - step: "Open worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_open"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after opening worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Set balance_type to end_period"
+        action: "write"
+        target: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          balance_type: "end_period"
+
+      - step: "Load detail"
+        action: "call"
+        target: "worksheet"
+        method: "action_load_detail"
+        as_user: "base.user_admin"
+
+      - step: "Find worksheet detail for account A"
+        action: "search"
+        model: "general_audit_ws_b26d482.detail"
+        domain:
+          - ["worksheet_id", "=", "REC: worksheet.id"]
+          - ["account_id", "=", "REC: account_a.id"]
+        save_as: "ws_detail_a"
+        limit: 1
+
+      - step: "Find worksheet detail for account B"
+        action: "search"
+        model: "general_audit_ws_b26d482.detail"
+        domain:
+          - ["worksheet_id", "=", "REC: worksheet.id"]
+          - ["account_id", "=", "REC: account_b.id"]
+        save_as: "ws_detail_b"
+        limit: 1
+
+      - step: "Invalidate cache on worksheet detail A"
+        action: "call"
+        target: "ws_detail_a"
+        method: "invalidate_cache"
+
+      - step: "Invalidate cache on worksheet detail B"
+        action: "call"
+        target: "ws_detail_b"
+        method: "invalidate_cache"
+
+      - step: "Assert current_balance/adjusted_balance at end_period"
+        action: "assert"
+        target: "ws_detail_a"
+        asserts:
+          current_balance:
+            type: "value"
+            expected: 1000000.0
+          # normal_balance = debit -> adjusted = current + dr - cr
+          # = 1,000,000 + 50,000 - 20,000
+          adjusted_balance:
+            type: "value"
+            expected: 1030000.0
+
+      - step: "Assert current_balance/adjusted_balance (credit account) at end_period"
+        action: "assert"
+        target: "ws_detail_b"
+        asserts:
+          current_balance:
+            type: "value"
+            expected: 1000000.0
+          # normal_balance = credit -> adjusted = current - dr + cr
+          # = 1,000,000 - 15,000 + 45,000
+          adjusted_balance:
+            type: "value"
+            expected: 1030000.0
+
+      - step: "Switch balance_type to interim"
+        action: "write"
+        target: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          balance_type: "interim"
+
+      - step: "Invalidate cache on worksheet detail A after switching balance_type"
+        action: "call"
+        target: "ws_detail_a"
+        method: "invalidate_cache"
+
+      - step: "Invalidate cache on worksheet detail B after switching balance_type"
+        action: "call"
+        target: "ws_detail_b"
+        method: "invalidate_cache"
+
+      - step: "Assert current_balance/adjusted_balance at interim"
+        action: "assert"
+        target: "ws_detail_a"
+        asserts:
+          current_balance:
+            type: "value"
+            expected: 800000.0
+          adjusted_balance:
+            type: "value"
+            expected: 830000.0
+
+      - step: "Assert current_balance/adjusted_balance (credit account) at interim"
+        action: "assert"
+        target: "ws_detail_b"
+        asserts:
+          current_balance:
+            type: "value"
+            expected: 800000.0
+          adjusted_balance:
+            type: "value"
+            expected: 830000.0
+
+  - name: "b26d482 - Workflow draft to done"
+    steps:
+      - step: "Create worksheet b26d482"
+        action: "create"
+        model: "general_audit_ws_b26d482"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_b26d482.id"
+
+      - step: "Assert initial state is draft"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          state:
+            type: "value"
+            expected: "draft"
+
+      - step: "Open worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_open"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after opening worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Assert worksheet open"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          state:
+            type: "value"
+            expected: "open"
+
+      - step: "Fill required conclusion fields before confirm"
+        action: "write"
+        target: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          conclusion_id: "REC: conclusion_b26d482.id"
+          conclusion: "The worksheet has been completed and reviewed."
+
+      - step: "Confirm worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_confirm"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after confirming worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Assert worksheet confirmed"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          state:
+            type: "value"
+            expected: "confirm"
+
+      - step: "Approve worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_approve_approval"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after approving worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Assert worksheet done"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          state:
+            type: "value"
+            expected: "done"
+
+  - name: "b26d482 - Cancel and restart"
+    steps:
+      - step: "Create worksheet b26d482"
+        action: "create"
+        model: "general_audit_ws_b26d482"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_b26d482.id"
+
+      - step: "Open worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_open"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after opening worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Assert worksheet open"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          state:
+            type: "value"
+            expected: "open"
+
+      - step: "Cancel worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_cancel"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after cancelling worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Assert worksheet cancelled"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          state:
+            type: "value"
+            expected: "cancel"
+
+      - step: "Restart worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_restart"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after restarting worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Assert worksheet back to draft"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          state:
+            type: "value"
+            expected: "draft"
+
+  - name: "b26d482 - Onchange type_id sets parent_type_id"
+    steps:
+      # type_id is hard-readonly (readonly="1" force_save="1") in the shared
+      # worksheet mixin form view and only ever takes its default value on a
+      # new record, so the onchange only fires once from that default. It
+      # cannot be re-assigned via Form.set() since the view marks it readonly
+      # regardless of state. Save the form and assert on the resulting
+      # record, matching the proven pattern already used by
+      # ssi_general_audit_worksheet_final_materiality.
+      - step: "Open new worksheet form with default type_id"
+        action: "form"
+        model: "general_audit_ws_b26d482"
+        save_as: "onchange_worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit"
+        save: true
+
+      - step: "Assert default type_id propagated to parent_type_id via onchange"
+        action: "assert"
+        target: "onchange_worksheet"
+        asserts:
+          type_id:
+            type: "m2o"
+            expected_xml_id: "ssi_general_audit_worksheet_lead_schedule.worksheet_type_b26d482"
+          parent_type_id:
+            type: "m2o"
+            expected_xml_id: "ssi_general_audit_worksheet_lead_schedule.worksheet_type_b26d482"
+
+  # ==================================================================
+  # f9f3299 - Lead Schedule - Account
+  # ==================================================================
+  - name:
+      "f9f3299 - action_reload_account (create then idempotent, filtered by
+      account_type)"
+    steps:
+      - step: "Create client account mapping for the audit"
+        action: "create"
+        model: "client_account_mapping"
+        save_as: "mapping"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+
+      - step: "Map client account A"
+        action: "create"
+        model: "client_account_mapping.detail"
+        save_as: "mapping_detail_a"
+        as_user: "base.user_admin"
+        values:
+          mapping_id: "REC: mapping.id"
+          account_id: "REC: account_a.id"
+
+      - step: "Map client account B"
+        action: "create"
+        model: "client_account_mapping.detail"
+        save_as: "mapping_detail_b"
+        as_user: "base.user_admin"
+        values:
+          mapping_id: "REC: mapping.id"
+          account_id: "REC: account_b.id"
+
+      - step: "Reload general audit accounts from the mapping"
+        action: "call"
+        target: "audit"
+        method: "action_reload_account"
+        as_user: "base.user_admin"
+
+      - step: "Create worksheet f9f3299"
+        action: "create"
+        model: "general_audit_ws_f9f3299"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_f9f3299.id"
+
+      - step: "Open worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_open"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after opening worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Restrict worksheet to account type A"
+        action: "write"
+        target: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          account_type_id: "REC: account_type_a.id"
+          balance_type: "end_period"
+
+      - step: "Assert no detail before reload"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          detail_ids:
+            type: "o2m"
+            check: "count"
+            expected_count: 0
+
+      - step: "Reload account (filtered by account_type_id)"
+        action: "call"
+        target: "worksheet"
+        method: "action_reload_account"
+        as_user: "base.user_admin"
+
+      - step: "Assert only account A's detail line was created (type B excluded)"
+        action: "search"
+        model: "general_audit_ws_f9f3299.detail"
+        domain:
+          - ["worksheet_id", "=", "REC: worksheet.id"]
+        save_as: "details_after_reload"
+        expect_count: 1
+
+      - step: "Assert the surviving line refers to account A"
+        action: "search"
+        model: "general_audit_ws_f9f3299.detail"
+        domain:
+          - ["worksheet_id", "=", "REC: worksheet.id"]
+          - ["account_id", "=", "REC: account_a.id"]
+        save_as: "details_account_a"
+        expect_count: 1
+
+      - step: "Reload account a second time (unlink-then-recreate, no dup)"
+        action: "call"
+        target: "worksheet"
+        method: "action_reload_account"
+        as_user: "base.user_admin"
+
+      - step: "Assert still exactly one detail line"
+        action: "search"
+        model: "general_audit_ws_f9f3299.detail"
+        domain:
+          - ["worksheet_id", "=", "REC: worksheet.id"]
+        save_as: "details_after_second_reload"
+        expect_count: 1
+
+  - name: "f9f3299 - Compute current_balance, adjusted_balance and diff"
+    steps:
+      - step: "Create client account mapping for the audit"
+        action: "create"
+        model: "client_account_mapping"
+        save_as: "mapping"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+
+      - step: "Map client account A"
+        action: "create"
+        model: "client_account_mapping.detail"
+        save_as: "mapping_detail_a"
+        as_user: "base.user_admin"
+        values:
+          mapping_id: "REC: mapping.id"
+          account_id: "REC: account_a.id"
+
+      - step: "Map client account B"
+        action: "create"
+        model: "client_account_mapping.detail"
+        save_as: "mapping_detail_b"
+        as_user: "base.user_admin"
+        values:
+          mapping_id: "REC: mapping.id"
+          account_id: "REC: account_b.id"
+
+      - step: "Reload general audit accounts from the mapping"
+        action: "call"
+        target: "audit"
+        method: "action_reload_account"
+        as_user: "base.user_admin"
+
+      - step: "Create home trial balance"
+        action: "create"
+        model: "client_trial_balance"
+        save_as: "tb_home"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          trial_balance_type: "home"
+
+      - step: "Home trial balance line for account A (debit 1,200,000)"
+        action: "create"
+        model: "client_trial_balance.detail"
+        save_as: "tb_home_detail_a"
+        as_user: "base.user_admin"
+        values:
+          trial_balance_id: "REC: tb_home.id"
+          account_id: "REC: account_a.id"
+          debit: 1200000.0
+
+      - step: "Home trial balance line for account B (credit 1,000,000)"
+        action: "create"
+        model: "client_trial_balance.detail"
+        save_as: "tb_home_detail_b"
+        as_user: "base.user_admin"
+        values:
+          trial_balance_id: "REC: tb_home.id"
+          account_id: "REC: account_b.id"
+          credit: 1000000.0
+
+      - step: "Create interim trial balance"
+        action: "create"
+        model: "client_trial_balance"
+        save_as: "tb_interim"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          trial_balance_type: "interim"
+
+      - step: "Interim trial balance line for account A (debit 900,000)"
+        action: "create"
+        model: "client_trial_balance.detail"
+        save_as: "tb_interim_detail_a"
+        as_user: "base.user_admin"
+        values:
+          trial_balance_id: "REC: tb_interim.id"
+          account_id: "REC: account_a.id"
+          debit: 900000.0
+
+      - step: "Create previous trial balance"
+        action: "create"
+        model: "client_trial_balance"
+        save_as: "tb_previous"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          trial_balance_type: "previous"
+
+      - step:
+          "Previous trial balance line for account A only (debit 800,000) - account B
+          intentionally has no previous line, so its previous_balance stays 0.0"
+        action: "create"
+        model: "client_trial_balance.detail"
+        save_as: "tb_previous_detail_a"
+        as_user: "base.user_admin"
+        values:
+          trial_balance_id: "REC: tb_previous.id"
+          account_id: "REC: account_a.id"
+          debit: 800000.0
+
+      - step: "Create worksheet f9f3299"
+        action: "create"
+        model: "general_audit_ws_f9f3299"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_f9f3299.id"
+
+      - step: "Open worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_open"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after opening worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Restrict worksheet to account type A, balance_type end_period"
+        action: "write"
+        target: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          account_type_id: "REC: account_type_a.id"
+          balance_type: "end_period"
+
+      - step: "Reload account"
+        action: "call"
+        target: "worksheet"
+        method: "action_reload_account"
+        as_user: "base.user_admin"
+
+      - step: "Find worksheet detail for account A"
+        action: "search"
+        model: "general_audit_ws_f9f3299.detail"
+        domain:
+          - ["worksheet_id", "=", "REC: worksheet.id"]
+          - ["account_id", "=", "REC: account_a.id"]
+        save_as: "ws_detail_a"
+        limit: 1
+
+      - step:
+          "Assert current_balance/adjusted_balance/diff at end_period (debit account)"
+        action: "assert"
+        target: "ws_detail_a"
+        asserts:
+          current_balance:
+            type: "value"
+            expected: 1200000.0
+          # No adjustment entries -> adjusted_balance = current_balance
+          adjusted_balance:
+            type: "value"
+            expected: 1200000.0
+          previous_balance:
+            type: "value"
+            expected: 800000.0
+          # diff = (adjusted_balance - previous_balance) / abs(previous_balance)
+          # = (1,200,000 - 800,000) / 800,000 = 0.5
+          diff:
+            type: "value"
+            expected: 0.5
+
+      - step: "Switch balance_type to interim"
+        action: "write"
+        target: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          balance_type: "interim"
+
+      - step: "Invalidate cache on worksheet detail A after switching balance_type"
+        action: "call"
+        target: "ws_detail_a"
+        method: "invalidate_cache"
+
+      - step: "Assert current_balance/adjusted_balance/diff at interim"
+        action: "assert"
+        target: "ws_detail_a"
+        asserts:
+          current_balance:
+            type: "value"
+            expected: 900000.0
+          adjusted_balance:
+            type: "value"
+            expected: 900000.0
+          # diff = (900,000 - 800,000) / 800,000 = 0.125
+          diff:
+            type: "value"
+            expected: 0.125
+
+      - step: "Switch worksheet to account type B, balance_type end_period"
+        action: "write"
+        target: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          account_type_id: "REC: account_type_b.id"
+          balance_type: "end_period"
+
+      - step: "Reload account (switches detail_ids to account type B)"
+        action: "call"
+        target: "worksheet"
+        method: "action_reload_account"
+        as_user: "base.user_admin"
+
+      - step: "Find worksheet detail for account B"
+        action: "search"
+        model: "general_audit_ws_f9f3299.detail"
+        domain:
+          - ["worksheet_id", "=", "REC: worksheet.id"]
+          - ["account_id", "=", "REC: account_b.id"]
+        save_as: "ws_detail_b"
+        limit: 1
+
+      - step: "Assert current_balance/adjusted_balance (credit account)"
+        action: "assert"
+        target: "ws_detail_b"
+        asserts:
+          current_balance:
+            type: "value"
+            expected: 1000000.0
+          # normal_balance = credit, no adjustments -> adjusted = current
+          adjusted_balance:
+            type: "value"
+            expected: 1000000.0
+
+      - step:
+          "Assert diff is guarded to 0.0 when previous_balance is 0 (division by zero
+          guard)"
+        action: "assert"
+        target: "ws_detail_b"
+        asserts:
+          previous_balance:
+            type: "value"
+            expected: 0.0
+          diff:
+            type: "value"
+            expected: 0.0
+
+  - name: "f9f3299 - Workflow draft to done"
+    steps:
+      - step: "Create worksheet f9f3299"
+        action: "create"
+        model: "general_audit_ws_f9f3299"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_f9f3299.id"
+
+      - step: "Assert initial state is draft"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          state:
+            type: "value"
+            expected: "draft"
+
+      - step: "Open worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_open"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after opening worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Assert worksheet open"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          state:
+            type: "value"
+            expected: "open"
+
+      - step: "Fill required conclusion fields before confirm"
+        action: "write"
+        target: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          conclusion_id: "REC: conclusion_f9f3299.id"
+          conclusion: "The lead schedule per account type is adequate."
+
+      - step: "Confirm worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_confirm"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after confirming worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Assert worksheet confirmed"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          state:
+            type: "value"
+            expected: "confirm"
+
+      - step: "Approve worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_approve_approval"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after approving worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Assert worksheet done"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          state:
+            type: "value"
+            expected: "done"
+
+  - name: "f9f3299 - Cancel and restart"
+    steps:
+      - step: "Create worksheet f9f3299"
+        action: "create"
+        model: "general_audit_ws_f9f3299"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_f9f3299.id"
+
+      - step: "Open worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_open"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after opening worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Assert worksheet open"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          state:
+            type: "value"
+            expected: "open"
+
+      - step: "Cancel worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_cancel"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after cancelling worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Assert worksheet cancelled"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          state:
+            type: "value"
+            expected: "cancel"
+
+      - step: "Restart worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_restart"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after restarting worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Assert worksheet back to draft"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          state:
+            type: "value"
+            expected: "draft"
+
+  # ==================================================================
+  # e51bb1c - Key Audit Procedures
+  # ==================================================================
+  - name: "e51bb1c - action_load_detail (create from procedure categories)"
+    steps:
+      - step: "Create assertion type"
+        action: "create"
+        model: "general_audit_assersion_type"
+        save_as: "assertion_type"
+        as_user: "base.user_admin"
+        values:
+          name: "Existence"
+          code: "/"
+
+      - step: "Create audit procedure category 1 for account type A"
+        action: "create"
+        model: "general_audit_audit_procedure_category"
+        save_as: "category_1"
+        as_user: "base.user_admin"
+        values:
+          name: "Existence and Occurrence - Type A"
+          code: "/"
+          account_type_id: "REC: account_type_a.id"
+          assertion_type_ids:
+            - - 6
+              - 0
+              - - "REC: assertion_type.id"
+
+      - step: "Create audit procedure step for category 1"
+        action: "create"
+        model: "general_audit_audit_procedure"
+        save_as: "procedure_1"
+        as_user: "base.user_admin"
+        values:
+          name: "Confirm balances directly with third parties"
+          code: "/"
+          account_type_id: "REC: account_type_a.id"
+          category_id: "REC: category_1.id"
+
+      - step: "Create audit procedure category 2 for account type A"
+        action: "create"
+        model: "general_audit_audit_procedure_category"
+        save_as: "category_2"
+        as_user: "base.user_admin"
+        values:
+          name: "Completeness - Type A"
+          code: "/"
+          account_type_id: "REC: account_type_a.id"
+          assertion_type_ids:
+            - - 6
+              - 0
+              - - "REC: assertion_type.id"
+
+      - step: "Create audit procedure step for category 2"
+        action: "create"
+        model: "general_audit_audit_procedure"
+        save_as: "procedure_2"
+        as_user: "base.user_admin"
+        values:
+          name: "Trace subsequent transactions to supporting documents"
+          code: "/"
+          account_type_id: "REC: account_type_a.id"
+          category_id: "REC: category_2.id"
+
+      - step: "Create worksheet e51bb1c"
+        action: "create"
+        model: "general_audit_ws_e51bb1c"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_e51bb1c.id"
+
+      - step: "Open worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_open"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after opening worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Restrict worksheet to account type A"
+        action: "write"
+        target: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          account_type_id: "REC: account_type_a.id"
+
+      - step: "Assert no detail before loading"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          detail_ids:
+            type: "o2m"
+            check: "count"
+            expected_count: 0
+
+      - step: "Load detail"
+        action: "call"
+        target: "worksheet"
+        method: "action_load_detail"
+        as_user: "base.user_admin"
+
+      - step: "Assert two detail lines were created (one per category)"
+        action: "search"
+        model: "general_audit_ws_e51bb1c.detail"
+        domain:
+          - ["worksheet_id", "=", "REC: worksheet.id"]
+        save_as: "details_after_load"
+        expect_count: 2
+
+      - step: "Find detail line for category 1"
+        action: "search"
+        model: "general_audit_ws_e51bb1c.detail"
+        domain:
+          - ["worksheet_id", "=", "REC: worksheet.id"]
+          - ["audit_procedure_category_id", "=", "REC: category_1.id"]
+        save_as: "detail_category_1"
+        limit: 1
+
+      - step: "Assert detail line status defaults to not_relevant and assertions copied"
+        action: "assert"
+        target: "detail_category_1"
+        asserts:
+          status:
+            type: "value"
+            expected: "not_relevant"
+          assertion_type_ids:
+            type: "m2m"
+            check: "exact"
+            expected_records:
+              - "REC: assertion_type"
+          step_ids:
+            type: "m2m"
+            check: "exact"
+            expected_records:
+              - "REC: procedure_1"
+
+  - name: "e51bb1c - Load detail without account_type_id (no error, stays empty)"
+    steps:
+      - step: "Create worksheet e51bb1c without account_type_id"
+        action: "create"
+        model: "general_audit_ws_e51bb1c"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_e51bb1c.id"
+
+      - step: "Load detail (must return early without error)"
+        action: "call"
+        target: "worksheet"
+        method: "action_load_detail"
+        as_user: "base.user_admin"
+
+      - step: "Assert no detail lines were created"
+        action: "search"
+        model: "general_audit_ws_e51bb1c.detail"
+        domain:
+          - ["worksheet_id", "=", "REC: worksheet.id"]
+        save_as: "details_after_load"
+        expect_count: 0
+
+  - name: "e51bb1c - Workflow draft to done"
+    steps:
+      - step: "Create worksheet e51bb1c"
+        action: "create"
+        model: "general_audit_ws_e51bb1c"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_e51bb1c.id"
+
+      - step: "Assert initial state is draft"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          state:
+            type: "value"
+            expected: "draft"
+
+      - step: "Open worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_open"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after opening worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Assert worksheet open"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          state:
+            type: "value"
+            expected: "open"
+
+      - step: "Fill required conclusion fields before confirm"
+        action: "write"
+        target: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          conclusion_id: "REC: conclusion_e51bb1c.id"
+          conclusion: "Key audit procedures selected are adequate."
+
+      - step: "Confirm worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_confirm"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after confirming worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Assert worksheet confirmed"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          state:
+            type: "value"
+            expected: "confirm"
+
+      - step: "Approve worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_approve_approval"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after approving worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Assert worksheet done"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          state:
+            type: "value"
+            expected: "done"
+
+  - name: "e51bb1c - Cancel and restart"
+    steps:
+      - step: "Create worksheet e51bb1c"
+        action: "create"
+        model: "general_audit_ws_e51bb1c"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_e51bb1c.id"
+
+      - step: "Open worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_open"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after opening worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Assert worksheet open"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          state:
+            type: "value"
+            expected: "open"
+
+      - step: "Cancel worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_cancel"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after cancelling worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Assert worksheet cancelled"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          state:
+            type: "value"
+            expected: "cancel"
+
+      - step: "Restart worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_restart"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after restarting worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Assert worksheet back to draft"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          state:
+            type: "value"
+            expected: "draft"
+
+  # ==================================================================
+  # allowed_account_type_ids - e51bb1c and f9f3299 (shared compute pattern)
+  # ==================================================================
+  - name: "e51bb1c - Compute allowed_account_type_ids (normal)"
+    steps:
+      - step: "Add a standard detail line with account type A to the audit"
+        action: "create"
+        model: "general_audit.standard_detail"
+        save_as: "standard_detail"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: account_type_a.id"
+
+      - step: "Create worksheet e51bb1c"
+        action: "create"
+        model: "general_audit_ws_e51bb1c"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_e51bb1c.id"
+
+      - step: "Assert allowed_account_type_ids contains account type A"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          allowed_account_type_ids:
+            type: "m2m"
+            check: "contains"
+            expected_records:
+              - "REC: account_type_a"
+
+  - name: "e51bb1c - Compute allowed_account_type_ids (kosong)"
+    steps:
+      - step: "Create worksheet e51bb1c without any standard detail on the audit"
+        action: "create"
+        model: "general_audit_ws_e51bb1c"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_e51bb1c.id"
+
+      - step: "Assert allowed_account_type_ids is empty"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          allowed_account_type_ids:
+            type: "m2m"
+            check: "count"
+            expected_count: 0
+
+  - name: "f9f3299 - Compute allowed_account_type_ids (normal)"
+    steps:
+      - step: "Add a standard detail line with account type A to the audit"
+        action: "create"
+        model: "general_audit.standard_detail"
+        save_as: "standard_detail"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: account_type_a.id"
+
+      - step: "Create worksheet f9f3299"
+        action: "create"
+        model: "general_audit_ws_f9f3299"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_f9f3299.id"
+
+      - step: "Assert allowed_account_type_ids contains account type A"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          allowed_account_type_ids:
+            type: "m2m"
+            check: "contains"
+            expected_records:
+              - "REC: account_type_a"
+
+  - name: "f9f3299 - Compute allowed_account_type_ids (kosong)"
+    steps:
+      - step: "Create worksheet f9f3299 without any standard detail on the audit"
+        action: "create"
+        model: "general_audit_ws_f9f3299"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_f9f3299.id"
+
+      - step: "Assert allowed_account_type_ids is empty"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          allowed_account_type_ids:
+            type: "m2m"
+            check: "count"
+            expected_count: 0
+
+  # ==================================================================
+  # allowed_employee_ids - e51bb1c only
+  # ==================================================================
+  - name: "e51bb1c - Compute allowed_employee_ids (normal)"
+    steps:
+      # general_audit_ws_b9d8a5c belongs to
+      # ssi_general_audit_worksheet_acceptance_continuance, which is NOT a
+      # declared dependency of ssi_general_audit_worksheet_lead_schedule.
+      # This repo's CI installs and tests all of its modules together in one
+      # process/database (see ssi_general_audit/tests/README_FIXTURE.md), so
+      # the model and its xml_id are present at test time even though the
+      # production _compute_allowed_employee_ids code
+      # (general_audit_ws_e51bb1c.py) reaches for
+      # self.env["general_audit_ws_b9d8a5c"] unconditionally -- an implicit,
+      # undeclared soft dependency worth flagging separately.
+      - step: "Get worksheet type b9d8a5c"
+        action: "ref"
+        xml_id: "ssi_general_audit_worksheet_acceptance_continuance.worksheet_type_b9d8a5c"
+        save_as: "ws_type_b9d8a5c"
+
+      - step: "Create employee"
+        action: "create"
+        model: "hr.employee"
+        save_as: "employee"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Team Member - Lead Schedule"
+
+      - step: "Create worksheet b9d8a5c (team roster fixture)"
+        action: "create"
+        model: "general_audit_ws_b9d8a5c"
+        save_as: "ws_b9d8a5c"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_b9d8a5c.id"
+
+      - step: "Select the employee as part of the team"
+        action: "create"
+        model: "general_audit_ws_b9d8a5c.summary"
+        save_as: "summary"
+        as_user: "base.user_admin"
+        values:
+          worksheet_id: "REC: ws_b9d8a5c.id"
+          employee_id: "REC: employee.id"
+          select_team: "yes"
+
+      - step: "Create worksheet e51bb1c"
+        action: "create"
+        model: "general_audit_ws_e51bb1c"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_e51bb1c.id"
+
+      - step: "Assert allowed_employee_ids contains the selected team member"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          allowed_employee_ids:
+            type: "m2m"
+            check: "exact"
+            expected_records:
+              - "REC: employee"
+
+  - name: "e51bb1c - Compute allowed_employee_ids (kosong)"
+    steps:
+      - step: "Create worksheet e51bb1c without any team roster worksheet on the audit"
+        action: "create"
+        model: "general_audit_ws_e51bb1c"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_e51bb1c.id"
+
+      - step: "Assert allowed_employee_ids is empty"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          allowed_employee_ids:
+            type: "m2m"
+            check: "count"
+            expected_count: 0
