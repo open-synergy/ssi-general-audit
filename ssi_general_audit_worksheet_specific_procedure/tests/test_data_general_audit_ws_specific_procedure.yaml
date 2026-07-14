@@ -1,0 +1,1342 @@
+setup:
+  steps:
+    - step: "Get config parameter model"
+      action: "search"
+      model: "ir.config_parameter"
+      domain: []
+      save_as: "config_parameter"
+      limit: 1
+
+    - step: "Allow enough CPA licenses for this scenario"
+      action: "call"
+      target: "config_parameter"
+      method: "set_param"
+      args:
+        - "ssi_general_audit.max_number_of_cpa_license"
+        - "100"
+
+    - step: "Create client partner"
+      action: "create"
+      model: "res.partner"
+      save_as: "client"
+      as_user: "base.user_admin"
+      values:
+        name: "Test Audit Client - Specific Procedure"
+        is_company: true
+
+    - step: "Create accountant partner"
+      action: "create"
+      model: "res.partner"
+      save_as: "accountant"
+      as_user: "base.user_admin"
+      values:
+        name: "Test Audit Accountant - Specific Procedure"
+
+    - step: "Get CPA license id category"
+      action: "ref"
+      xml_id: "ssi_partner_identification_cpa_license.partner_identification_accountant_cpa_license"
+      save_as: "cpa_category"
+
+    - step: "Grant accountant a CPA license"
+      action: "create"
+      model: "res.partner.id_number"
+      save_as: "cpa_license"
+      as_user: "base.user_admin"
+      values:
+        partner_id: "REC: accountant.id"
+        category_id: "REC: cpa_category.id"
+        name: "CPA-SPECPROC-0001"
+
+    - step: "Create account type set"
+      action: "create"
+      model: "client_account_type_set"
+      save_as: "account_type_set"
+      as_user: "base.user_admin"
+      values:
+        name: "Test Account Type Set - Specific Procedure"
+        code: "/"
+
+    - step: "Create financial accounting standard"
+      action: "create"
+      model: "accountant.financial_accounting_standard"
+      save_as: "standard"
+      as_user: "base.user_admin"
+      values:
+        name: "Test Financial Accounting Standard - Specific Procedure"
+        code: "/"
+
+    - step: "Create general audit"
+      action: "create"
+      model: "general_audit"
+      save_as: "audit"
+      as_user: "base.user_admin"
+      values:
+        title: "Test General Audit - Specific Procedure"
+        partner_id: "REC: client.id"
+        accountant_id: "REC: accountant.id"
+        account_type_set_id: "REC: account_type_set.id"
+        financial_accounting_standard_id: "REC: standard.id"
+        date_start: 2026-01-01
+        date_end: 2026-12-31
+        need_interim: false
+        need_previous: false
+        num_of_consecutive_audit_firm: 1
+        num_of_consecutive_audit_accountant: 1
+
+    - step: "Open general audit"
+      action: "call"
+      target: "audit"
+      method: "action_open"
+      as_user: "base.user_admin"
+
+    - step: "Invalidate cache after opening general audit"
+      action: "call"
+      target: "audit"
+      method: "invalidate_cache"
+
+    - step: "Assert general audit open"
+      action: "assert"
+      target: "audit"
+      asserts:
+        state:
+          type: "value"
+          expected: "open"
+
+    - step: "Get worksheet type a8f4d88"
+      action: "ref"
+      xml_id: "ssi_general_audit_worksheet_specific_procedure.worksheet_type_a8f4d88"
+      save_as: "ws_type_a8f4d88"
+
+    - step: "Get worksheet type c40cfd9"
+      action: "ref"
+      xml_id: "ssi_general_audit_worksheet_specific_procedure.worksheet_type_c40cfd9"
+      save_as: "ws_type_c40cfd9"
+
+    - step: "Get worksheet type cb82c5f"
+      action: "ref"
+      xml_id: "ssi_general_audit_worksheet_specific_procedure.worksheet_type_cb82c5f"
+      save_as: "ws_type_cb82c5f"
+
+    - step: "Get worksheet type fbf57ee"
+      action: "ref"
+      xml_id: "ssi_general_audit_worksheet_specific_procedure.worksheet_type_fbf57ee"
+      save_as: "ws_type_fbf57ee"
+
+    - step: "Get worksheet type ee819ae"
+      action: "ref"
+      xml_id: "ssi_general_audit_worksheet_specific_procedure.worksheet_type_ee819ae"
+      save_as: "ws_type_ee819ae"
+
+    - step:
+        "Get worksheet type ae11f7e (Understanding of the Entity, source for c40cfd9)"
+      action: "ref"
+      xml_id: "ssi_general_audit_worksheet_understanding_entity.worksheet_type_ae11f7e"
+      save_as: "ws_type_ae11f7e"
+
+    - step: "Get seeded conclusion for a8f4d88"
+      action: "ref"
+      xml_id: "ssi_general_audit_worksheet_specific_procedure.general_audit_worksheet_conclusion_98_55ed0386"
+      save_as: "conclusion_a8f4d88"
+
+    - step: "Get seeded conclusion for c40cfd9"
+      action: "ref"
+      xml_id: "ssi_general_audit_worksheet_specific_procedure.general_audit_worksheet_conclusion_100_fb2bbce4"
+      save_as: "conclusion_c40cfd9"
+
+    - step: "Get seeded conclusion for cb82c5f"
+      action: "ref"
+      xml_id: "ssi_general_audit_worksheet_specific_procedure.general_audit_worksheet_conclusion_102_cedd4794"
+      save_as: "conclusion_cb82c5f"
+
+    - step: "Get seeded conclusion for fbf57ee"
+      action: "ref"
+      xml_id: "ssi_general_audit_worksheet_specific_procedure.general_audit_worksheet_conclusion_104_22e53346"
+      save_as: "conclusion_fbf57ee"
+
+    - step: "Get seeded conclusion for ee819ae"
+      action: "ref"
+      xml_id: "ssi_general_audit_worksheet_specific_procedure.general_audit_worksheet_conclusion_110_8d6085b1"
+      save_as: "conclusion_ee819ae"
+
+scenarios:
+  # ------------------------------------------------------------------
+  # fbf57ee (Going Concern) - Create and workflow draft to done
+  # ------------------------------------------------------------------
+  - name: "WS fbf57ee - Create and workflow draft to done"
+    steps:
+      - step: "Create z-score coefficient set (required before open)"
+        action: "create"
+        model: "general_audit_going_concern_z_score_coeficient_set"
+        save_as: "coefficient_set"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Z-Score Coefficient Set - fbf57ee Workflow"
+          code: "/"
+
+      - step: "Create worksheet fbf57ee"
+        action: "create"
+        model: "general_audit_ws_fbf57ee"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_fbf57ee.id"
+          balance_type: "end_period"
+          z_score_coefficient_set_id: "REC: coefficient_set.id"
+
+      - step: "Assert worksheet created in draft"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          id:
+            type: "value"
+            operator: "is_truthy"
+          state:
+            type: "value"
+            expected: "draft"
+
+      - step: "Open worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_open"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after opening worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Assert worksheet open"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          state:
+            type: "value"
+            expected: "open"
+
+      - step: "Fill required conclusion fields before confirm"
+        action: "write"
+        target: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          conclusion_id: "REC: conclusion_fbf57ee.id"
+          conclusion: "Going concern evaluation reviewed and adequately addressed."
+
+      - step: "Confirm worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_confirm"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after confirming worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Assert worksheet confirmed"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          state:
+            type: "value"
+            expected: "confirm"
+
+      - step: "Approve worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_approve_approval"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after approving worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Assert worksheet done"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          state:
+            type: "value"
+            expected: "done"
+
+  # ------------------------------------------------------------------
+  # fbf57ee - action_load_computation
+  #
+  # PRODUCTION BUG (documented, NOT patched -- see BL-0168 task summary):
+  # general_audit_ws_fbf57ee_computation.py's _compute_current_amount
+  # (models/fbf57ee/general_audit_ws_fbf57ee_computation.py) reads
+  # `general_audit_computation_id.home_balance` / `.interim_balance`, but
+  # `general_audit.computation` (ssi_general_audit/models/general_audit/
+  # general_audit_computation.py) only defines `home_amount` /
+  # `interim_amount` -- there is no `home_balance` or `interim_balance`
+  # field anywhere in that model's class hierarchy (verified: no module in
+  # this repo extends general_audit.computation with those names). Every
+  # creation of a general_audit_ws_fbf57ee.computation row -- whether via
+  # action_load_computation or a direct `create` -- crashes with
+  # AttributeError as soon as the stored, `@api.depends`-driven
+  # `current_amount` field is computed (Odoo computes stored fields
+  # synchronously as part of `create()`). This scenario locks in the
+  # ACTUAL (buggy) behaviour per BL-0168 instructions. It blocks testing
+  # the Z-Score solvent / grey_area / unsolvent categories with real
+  # computation data (scenario "z_score with no computation lines" below
+  # covers the only Z-Score case reachable without hitting this bug).
+  # ------------------------------------------------------------------
+  - name:
+      "WS fbf57ee - action_load_computation (production bug:
+      home_balance/interim_balance)"
+    steps:
+      - step: "Create computation item flagged for going concern"
+        action: "create"
+        model: "trial_balance_computation_item"
+        save_as: "gc_computation_item"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Computation Item - fbf57ee Load (going_concern_ok)"
+          code: "/"
+          going_concern_ok: true
+
+      - step: "Create general_audit.computation row for the audit"
+        action: "create"
+        model: "general_audit.computation"
+        save_as: "audit_computation"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          computation_item_id: "REC: gc_computation_item.id"
+          extrapolation_amount: 100.0
+
+      - step: "Create z-score coefficient set with a coefficient for the item"
+        action: "create"
+        model: "general_audit_going_concern_z_score_coeficient_set"
+        save_as: "coefficient_set"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Z-Score Coefficient Set - fbf57ee Load"
+          code: "/"
+          item_ids:
+            - - 0
+              - 0
+              - computation_item_id: "REC: gc_computation_item.id"
+                coefficient: 2.0
+
+      - step: "Create worksheet fbf57ee"
+        action: "create"
+        model: "general_audit_ws_fbf57ee"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_fbf57ee.id"
+          balance_type: "end_period"
+          z_score_coefficient_set_id: "REC: coefficient_set.id"
+
+      - step: "Verify no computation lines before loading"
+        action: "search"
+        model: "general_audit_ws_fbf57ee.computation"
+        domain:
+          - ["worksheet_id", "=", "REC: worksheet.id"]
+        save_as: "lines_before"
+        expect_count: 0
+
+      - step: "Call action_load_computation -- crashes on the production bug"
+        action: "call"
+        target: "worksheet"
+        method: "action_load_computation"
+        as_user: "base.user_admin"
+        expect_error:
+          type: "AttributeError"
+          message_contains: "home_balance"
+
+  # ------------------------------------------------------------------
+  # fbf57ee - z_score with no computation lines (only Z-Score case
+  # reachable without hitting the action_load_computation bug above)
+  # ------------------------------------------------------------------
+  - name: "WS fbf57ee - z_score with no computation lines (locked-in current behaviour)"
+    steps:
+      # _compute_z_score sums computation_line_ids.result (0.0 when empty)
+      # and categorizes strictly by `total_z_score < 1.23` => "unsolvent".
+      # This locks in the EXISTING behaviour per BL-0168 notes: it is not
+      # necessarily the intended business rule for "no data yet", but the
+      # backlog directs testing actual behaviour, not desired behaviour.
+      - step: "Create z-score coefficient set (required before open, unused here)"
+        action: "create"
+        model: "general_audit_going_concern_z_score_coeficient_set"
+        save_as: "coefficient_set"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Z-Score Coefficient Set - fbf57ee Empty"
+          code: "/"
+
+      - step: "Create worksheet fbf57ee without any computation line"
+        action: "create"
+        model: "general_audit_ws_fbf57ee"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_fbf57ee.id"
+          balance_type: "end_period"
+          z_score_coefficient_set_id: "REC: coefficient_set.id"
+
+      - step: "Assert z_score is 0.0 and category is unsolvent"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          z_score:
+            type: "value"
+            expected: 0.0
+          z_score_category:
+            type: "value"
+            expected: "unsolvent"
+
+  # ------------------------------------------------------------------
+  # fbf57ee - action_load_confirmation_procedure and action_load_analysis
+  # ------------------------------------------------------------------
+  - name: "WS fbf57ee - action_load_confirmation_procedure and action_load_analysis"
+    steps:
+      - step: "Create z-score coefficient set (required before open, unused here)"
+        action: "create"
+        model: "general_audit_going_concern_z_score_coeficient_set"
+        save_as: "coefficient_set"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Z-Score Coefficient Set - fbf57ee Confirmation"
+          code: "/"
+
+      - step: "Create worksheet fbf57ee"
+        action: "create"
+        model: "general_audit_ws_fbf57ee"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_fbf57ee.id"
+          balance_type: "end_period"
+          z_score_coefficient_set_id: "REC: coefficient_set.id"
+
+      - step: "Create custom going concern confirmation procedure master"
+        action: "create"
+        model: "general_audit_going_concern_confirmation_procedure"
+        save_as: "procedure"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Going Concern Confirmation Procedure - fbf57ee Load"
+          code: "/"
+
+      - step: "Verify no confirmation procedure lines before loading"
+        action: "search"
+        model: "general_audit_ws_fbf57ee.confirmation_procedure"
+        domain:
+          - ["worksheet_id", "=", "REC: worksheet.id"]
+        save_as: "cp_lines_before"
+        expect_count: 0
+
+      - step: "Call action_load_confirmation_procedure the first time"
+        action: "call"
+        target: "worksheet"
+        method: "action_load_confirmation_procedure"
+        as_user: "base.user_admin"
+
+      - step: "Verify confirmation procedure line was populated"
+        action: "search"
+        model: "general_audit_ws_fbf57ee.confirmation_procedure"
+        domain:
+          - ["worksheet_id", "=", "REC: worksheet.id"]
+          - ["confirmation_procedure_id", "=", "REC: procedure.id"]
+        save_as: "cp_lines_after"
+        expect_count: 1
+
+      - step: "Call action_load_confirmation_procedure a second time"
+        action: "call"
+        target: "worksheet"
+        method: "action_load_confirmation_procedure"
+        as_user: "base.user_admin"
+
+      - step: "Verify confirmation procedure line was not duplicated"
+        action: "search"
+        model: "general_audit_ws_fbf57ee.confirmation_procedure"
+        domain:
+          - ["worksheet_id", "=", "REC: worksheet.id"]
+          - ["confirmation_procedure_id", "=", "REC: procedure.id"]
+        save_as: "cp_lines_idempotent"
+        expect_count: 1
+
+      - step: "Get any existing going concern indicator (seeded master data)"
+        action: "search"
+        model: "general_audit_going_concern"
+        domain: []
+        save_as: "any_going_concern"
+        limit: 1
+
+      - step: "Verify no analysis lines before loading"
+        action: "search"
+        model: "general_audit_ws_fbf57ee.analysis"
+        domain:
+          - ["worksheet_id", "=", "REC: worksheet.id"]
+        save_as: "analysis_lines_before"
+        expect_count: 0
+
+      - step: "Call action_load_analysis the first time"
+        action: "call"
+        target: "worksheet"
+        method: "action_load_analysis"
+        as_user: "base.user_admin"
+
+      - step: "Verify analysis line for the going concern indicator was populated"
+        action: "search"
+        model: "general_audit_ws_fbf57ee.analysis"
+        domain:
+          - ["worksheet_id", "=", "REC: worksheet.id"]
+          - ["going_concern_id", "=", "REC: any_going_concern.id"]
+        save_as: "analysis_lines_after"
+        expect_count: 1
+
+      - step: "Call action_load_analysis a second time"
+        action: "call"
+        target: "worksheet"
+        method: "action_load_analysis"
+        as_user: "base.user_admin"
+
+      - step: "Verify analysis line was not duplicated"
+        action: "search"
+        model: "general_audit_ws_fbf57ee.analysis"
+        domain:
+          - ["worksheet_id", "=", "REC: worksheet.id"]
+          - ["going_concern_id", "=", "REC: any_going_concern.id"]
+        save_as: "analysis_lines_idempotent"
+        expect_count: 1
+
+  # ------------------------------------------------------------------
+  # cb82c5f (Subsequent Event) - Create and workflow draft to done
+  # ------------------------------------------------------------------
+  - name: "WS cb82c5f - Create and workflow draft to done"
+    steps:
+      - step: "Create worksheet cb82c5f"
+        action: "create"
+        model: "general_audit_ws_cb82c5f"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_cb82c5f.id"
+
+      - step: "Assert worksheet created in draft"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          id:
+            type: "value"
+            operator: "is_truthy"
+          state:
+            type: "value"
+            expected: "draft"
+
+      - step: "Open worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_open"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after opening worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Assert worksheet open"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          state:
+            type: "value"
+            expected: "open"
+
+      - step: "Fill required conclusion fields before confirm"
+        action: "write"
+        target: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          conclusion_id: "REC: conclusion_cb82c5f.id"
+          conclusion: "Subsequent events reviewed and adequately addressed."
+
+      - step: "Confirm worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_confirm"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after confirming worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Assert worksheet confirmed"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          state:
+            type: "value"
+            expected: "confirm"
+
+      - step: "Approve worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_approve_approval"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after approving worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Assert worksheet done"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          state:
+            type: "value"
+            expected: "done"
+
+  # ------------------------------------------------------------------
+  # cb82c5f - action_load_adjustment_detail and
+  # action_load_non_adjustment_detail
+  #
+  # Uses scoped-domain assertions (worksheet_id + specific
+  # subsequent_event_id), NOT total counts: this module ships
+  # production seed data (data/master/general_audit_subsequent_event.xml,
+  # ~42 records, both need_adjustment true and false) that both load
+  # methods also pick up via their unfiltered `search([...])`, so a total
+  # row-count assertion would be fragile / coupled to that seed data.
+  # ------------------------------------------------------------------
+  - name:
+      "WS cb82c5f - action_load_adjustment_detail and action_load_non_adjustment_detail"
+    steps:
+      - step: "Create worksheet cb82c5f"
+        action: "create"
+        model: "general_audit_ws_cb82c5f"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_cb82c5f.id"
+
+      - step: "Create custom subsequent event needing adjustment"
+        action: "create"
+        model: "general_audit_subsequent_event"
+        save_as: "event_adjustment"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Subsequent Event - Needs Adjustment"
+          code: "/"
+          need_adjustment: true
+
+      - step: "Create custom subsequent event not needing adjustment"
+        action: "create"
+        model: "general_audit_subsequent_event"
+        save_as: "event_non_adjustment"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Subsequent Event - No Adjustment"
+          code: "/"
+          need_adjustment: false
+
+      - step: "Verify no adjustment detail lines before loading"
+        action: "search"
+        model: "general_audit_ws_cb82c5f.adjustment_detail"
+        domain:
+          - ["worksheet_id", "=", "REC: worksheet.id"]
+        save_as: "adjustment_before"
+        expect_count: 0
+
+      - step: "Call action_load_adjustment_detail"
+        action: "call"
+        target: "worksheet"
+        method: "action_load_adjustment_detail"
+        as_user: "base.user_admin"
+
+      - step: "Verify the adjustment-needing event was loaded"
+        action: "search"
+        model: "general_audit_ws_cb82c5f.adjustment_detail"
+        domain:
+          - ["worksheet_id", "=", "REC: worksheet.id"]
+          - ["subsequent_event_id", "=", "REC: event_adjustment.id"]
+        save_as: "adjustment_after"
+        expect_count: 1
+
+      - step: "Verify the non-adjustment event was NOT loaded as adjustment"
+        action: "search"
+        model: "general_audit_ws_cb82c5f.adjustment_detail"
+        domain:
+          - ["worksheet_id", "=", "REC: worksheet.id"]
+          - ["subsequent_event_id", "=", "REC: event_non_adjustment.id"]
+        save_as: "adjustment_wrong_type"
+        expect_count: 0
+
+      - step: "Call action_load_adjustment_detail a second time"
+        action: "call"
+        target: "worksheet"
+        method: "action_load_adjustment_detail"
+        as_user: "base.user_admin"
+
+      - step: "Verify adjustment detail line was not duplicated"
+        action: "search"
+        model: "general_audit_ws_cb82c5f.adjustment_detail"
+        domain:
+          - ["worksheet_id", "=", "REC: worksheet.id"]
+          - ["subsequent_event_id", "=", "REC: event_adjustment.id"]
+        save_as: "adjustment_idempotent"
+        expect_count: 1
+
+      - step: "Verify no non-adjustment detail lines before loading"
+        action: "search"
+        model: "general_audit_ws_cb82c5f.non_adjustment_detail"
+        domain:
+          - ["worksheet_id", "=", "REC: worksheet.id"]
+        save_as: "non_adjustment_before"
+        expect_count: 0
+
+      - step: "Call action_load_non_adjustment_detail"
+        action: "call"
+        target: "worksheet"
+        method: "action_load_non_adjustment_detail"
+        as_user: "base.user_admin"
+
+      - step: "Verify the non-adjustment event was loaded"
+        action: "search"
+        model: "general_audit_ws_cb82c5f.non_adjustment_detail"
+        domain:
+          - ["worksheet_id", "=", "REC: worksheet.id"]
+          - ["subsequent_event_id", "=", "REC: event_non_adjustment.id"]
+        save_as: "non_adjustment_after"
+        expect_count: 1
+
+      - step: "Verify the adjustment-needing event was NOT loaded as non-adjustment"
+        action: "search"
+        model: "general_audit_ws_cb82c5f.non_adjustment_detail"
+        domain:
+          - ["worksheet_id", "=", "REC: worksheet.id"]
+          - ["subsequent_event_id", "=", "REC: event_adjustment.id"]
+        save_as: "non_adjustment_wrong_type"
+        expect_count: 0
+
+      - step: "Call action_load_non_adjustment_detail a second time"
+        action: "call"
+        target: "worksheet"
+        method: "action_load_non_adjustment_detail"
+        as_user: "base.user_admin"
+
+      - step: "Verify non-adjustment detail line was not duplicated"
+        action: "search"
+        model: "general_audit_ws_cb82c5f.non_adjustment_detail"
+        domain:
+          - ["worksheet_id", "=", "REC: worksheet.id"]
+          - ["subsequent_event_id", "=", "REC: event_non_adjustment.id"]
+        save_as: "non_adjustment_idempotent"
+        expect_count: 1
+
+  # ------------------------------------------------------------------
+  # c40cfd9 (Related Party Transaction) - Create and workflow draft to
+  # done
+  # ------------------------------------------------------------------
+  - name: "WS c40cfd9 - Create and workflow draft to done"
+    steps:
+      - step: "Create worksheet c40cfd9"
+        action: "create"
+        model: "general_audit_ws_c40cfd9"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_c40cfd9.id"
+
+      - step: "Assert worksheet created in draft"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          id:
+            type: "value"
+            operator: "is_truthy"
+          state:
+            type: "value"
+            expected: "draft"
+
+      - step: "Open worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_open"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after opening worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Assert worksheet open"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          state:
+            type: "value"
+            expected: "open"
+
+      - step: "Fill required conclusion fields before confirm"
+        action: "write"
+        target: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          conclusion_id: "REC: conclusion_c40cfd9.id"
+          conclusion: "Related party transactions reviewed and adequately addressed."
+
+      - step: "Confirm worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_confirm"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after confirming worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Assert worksheet confirmed"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          state:
+            type: "value"
+            expected: "confirm"
+
+      - step: "Approve worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_approve_approval"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after approving worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Assert worksheet done"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          state:
+            type: "value"
+            expected: "done"
+
+  # ------------------------------------------------------------------
+  # c40cfd9 - action_load_related_party
+  # ------------------------------------------------------------------
+  - name: "WS c40cfd9 - action_load_related_party"
+    steps:
+      - step: "Create account group prerequisite"
+        action: "create"
+        model: "client_account_group"
+        save_as: "account_group"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Account Group - c40cfd9 Related Party"
+          code: "/"
+
+      - step: "Create account type prerequisite"
+        action: "create"
+        model: "client_account_type"
+        save_as: "account_type"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Account Type - c40cfd9 Related Party"
+          code: "/"
+          group_id: "REC: account_group.id"
+          python_code: "result = 0.0"
+
+      - step: "Create source worksheet ae11f7e"
+        action: "create"
+        model: "general_audit_ws_ae11f7e"
+        save_as: "ws_ae11f7e"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_ae11f7e.id"
+
+      - step: "Add related party 1 on source worksheet"
+        action: "create"
+        model: "general_audit_ws_ae11f7e.related_party"
+        save_as: "source_related_party_1"
+        as_user: "base.user_admin"
+        values:
+          worksheet_id: "REC: ws_ae11f7e.id"
+          name: "Test Related Party 1"
+          relation: "Subsidiary"
+          related_account_type_ids: [[6, 0, ["REC: account_type.id"]]]
+
+      - step: "Add related party 2 on source worksheet"
+        action: "create"
+        model: "general_audit_ws_ae11f7e.related_party"
+        save_as: "source_related_party_2"
+        as_user: "base.user_admin"
+        values:
+          worksheet_id: "REC: ws_ae11f7e.id"
+          name: "Test Related Party 2"
+          relation: "Shareholder"
+          related_account_type_ids: [[6, 0, ["REC: account_type.id"]]]
+
+      - step: "Create worksheet c40cfd9 linked to ae11f7e"
+        action: "create"
+        model: "general_audit_ws_c40cfd9"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_c40cfd9.id"
+          ws_ae11f7e_id: "REC: ws_ae11f7e.id"
+
+      - step: "Verify no related party lines before loading"
+        action: "search"
+        model: "general_audit_ws_c40cfd9.related_party"
+        domain:
+          - ["worksheet_id", "=", "REC: worksheet.id"]
+        save_as: "related_party_before"
+        expect_count: 0
+
+      - step: "Call action_load_related_party"
+        action: "call"
+        target: "worksheet"
+        method: "action_load_related_party"
+        as_user: "base.user_admin"
+
+      - step: "Verify both related parties were loaded"
+        action: "search"
+        model: "general_audit_ws_c40cfd9.related_party"
+        domain:
+          - ["worksheet_id", "=", "REC: worksheet.id"]
+        save_as: "related_party_after"
+        expect_count: 2
+
+      - step: "Verify related party 1 was copied with its relation"
+        action: "search"
+        model: "general_audit_ws_c40cfd9.related_party"
+        domain:
+          - ["worksheet_id", "=", "REC: worksheet.id"]
+          - ["name", "=", "Test Related Party 1"]
+          - ["final_relation", "=", "Subsidiary"]
+        save_as: "copied_line_1"
+        expect_count: 1
+
+      - step: "Verify related party 2 was copied with its relation"
+        action: "search"
+        model: "general_audit_ws_c40cfd9.related_party"
+        domain:
+          - ["worksheet_id", "=", "REC: worksheet.id"]
+          - ["name", "=", "Test Related Party 2"]
+          - ["final_relation", "=", "Shareholder"]
+        save_as: "copied_line_2"
+        expect_count: 1
+
+  # ------------------------------------------------------------------
+  # c40cfd9 - action_load_confirmation_procedure
+  # ------------------------------------------------------------------
+  - name: "WS c40cfd9 - action_load_confirmation_procedure"
+    steps:
+      - step: "Create worksheet c40cfd9"
+        action: "create"
+        model: "general_audit_ws_c40cfd9"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_c40cfd9.id"
+
+      - step: "Create custom related party confirmation procedure master"
+        action: "create"
+        model: "general_audit_related_party_confirmation_procedure"
+        save_as: "procedure"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Related Party Confirmation Procedure - c40cfd9 Load"
+          code: "/"
+
+      - step: "Verify no confirmation procedure lines before loading"
+        action: "search"
+        model: "general_audit_ws_c40cfd9.confirmation_procedure"
+        domain:
+          - ["worksheet_id", "=", "REC: worksheet.id"]
+          - ["confirmation_procedure_id", "=", "REC: procedure.id"]
+        save_as: "cp_lines_before"
+        expect_count: 0
+
+      - step: "Call action_load_confirmation_procedure the first time"
+        action: "call"
+        target: "worksheet"
+        method: "action_load_confirmation_procedure"
+        as_user: "base.user_admin"
+
+      - step: "Verify confirmation procedure line was populated"
+        action: "search"
+        model: "general_audit_ws_c40cfd9.confirmation_procedure"
+        domain:
+          - ["worksheet_id", "=", "REC: worksheet.id"]
+          - ["confirmation_procedure_id", "=", "REC: procedure.id"]
+        save_as: "cp_lines_after"
+        expect_count: 1
+
+      - step: "Call action_load_confirmation_procedure a second time"
+        action: "call"
+        target: "worksheet"
+        method: "action_load_confirmation_procedure"
+        as_user: "base.user_admin"
+
+      - step: "Verify confirmation procedure line was not duplicated"
+        action: "search"
+        model: "general_audit_ws_c40cfd9.confirmation_procedure"
+        domain:
+          - ["worksheet_id", "=", "REC: worksheet.id"]
+          - ["confirmation_procedure_id", "=", "REC: procedure.id"]
+        save_as: "cp_lines_idempotent"
+        expect_count: 1
+
+  # ------------------------------------------------------------------
+  # a8f4d88 (Accounting Estimation) - Create and workflow draft to done
+  # ------------------------------------------------------------------
+  - name: "WS a8f4d88 - Create and workflow draft to done"
+    steps:
+      - step: "Create worksheet a8f4d88"
+        action: "create"
+        model: "general_audit_ws_a8f4d88"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_a8f4d88.id"
+
+      - step: "Assert worksheet created in draft"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          id:
+            type: "value"
+            operator: "is_truthy"
+          state:
+            type: "value"
+            expected: "draft"
+
+      - step: "Open worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_open"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after opening worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Assert worksheet open"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          state:
+            type: "value"
+            expected: "open"
+
+      - step: "Fill required conclusion fields before confirm"
+        action: "write"
+        target: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          conclusion_id: "REC: conclusion_a8f4d88.id"
+          conclusion: "Accounting estimations reviewed and adequately addressed."
+
+      - step: "Confirm worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_confirm"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after confirming worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Assert worksheet confirmed"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          state:
+            type: "value"
+            expected: "confirm"
+
+      - step: "Approve worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_approve_approval"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after approving worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Assert worksheet done"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          state:
+            type: "value"
+            expected: "done"
+
+  # ------------------------------------------------------------------
+  # a8f4d88._compute_allowed_account_type_ids - normal (general_audit
+  # has standard details of 2 different types)
+  # ------------------------------------------------------------------
+  - name: "WS a8f4d88 - Compute allowed_account_type_ids (normal)"
+    steps:
+      - step: "Create account group prerequisite"
+        action: "create"
+        model: "client_account_group"
+        save_as: "account_group"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Account Group - a8f4d88 Allowed Types"
+          code: "/"
+
+      - step: "Create client account type 1"
+        action: "create"
+        model: "client_account_type"
+        save_as: "account_type_1"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Account Type 1 - a8f4d88 Allowed Types"
+          code: "/"
+          group_id: "REC: account_group.id"
+          # general_audit.standard_detail has no "balance" field, unlike
+          # client_trial_balance.standard_detail which the field's own
+          # default python_code ("result = document.balance") is written
+          # for. Use a safe no-op instead to avoid an unrelated crash in
+          # general_audit.standard_detail._compute_extrapolation_balance
+          # (same trap documented in ssi_general_audit_worksheet_romm's
+          # tests).
+          python_code: "result = 0.0"
+
+      - step: "Create client account type 2"
+        action: "create"
+        model: "client_account_type"
+        save_as: "account_type_2"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Account Type 2 - a8f4d88 Allowed Types"
+          code: "/"
+          group_id: "REC: account_group.id"
+          python_code: "result = 0.0"
+
+      - step: "Create standard detail 1 for the audit"
+        action: "create"
+        model: "general_audit.standard_detail"
+        save_as: "standard_detail_1"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: account_type_1.id"
+
+      - step: "Create standard detail 2 for the audit"
+        action: "create"
+        model: "general_audit.standard_detail"
+        save_as: "standard_detail_2"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: account_type_2.id"
+
+      - step: "Create worksheet a8f4d88 after standard details exist"
+        action: "create"
+        model: "general_audit_ws_a8f4d88"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_a8f4d88.id"
+
+      - step: "Assert allowed_account_type_ids contains both types"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          allowed_account_type_ids:
+            type: "m2m"
+            check: "exact"
+            expected_records:
+              - "REC: account_type_1"
+              - "REC: account_type_2"
+
+  # ------------------------------------------------------------------
+  # a8f4d88._compute_allowed_account_type_ids - kosong (general_audit
+  # without any standard detail)
+  # ------------------------------------------------------------------
+  - name: "WS a8f4d88 - Compute allowed_account_type_ids (kosong)"
+    steps:
+      - step: "Create worksheet a8f4d88 without any standard detail"
+        action: "create"
+        model: "general_audit_ws_a8f4d88"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_a8f4d88.id"
+
+      - step: "Assert allowed_account_type_ids is empty"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          allowed_account_type_ids:
+            type: "m2m"
+            check: "count"
+            expected_count: 0
+
+  # ------------------------------------------------------------------
+  # ee819ae (Commitment and Contingent) - Create, action_populate_checklist,
+  # and workflow draft to done
+  # ------------------------------------------------------------------
+  - name: "WS ee819ae - Create, action_populate_checklist, and workflow draft to done"
+    steps:
+      - step: "Create checklist option set"
+        action: "create"
+        model: "checklist.option_set"
+        save_as: "option_set"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Option Set - ee819ae Checklist"
+          code: "/"
+
+      - step: "Create custom checklist item"
+        action: "create"
+        model: "general_audit_ws_ee819ae.item"
+        save_as: "item"
+        as_user: "base.user_admin"
+        values:
+          name: "Custom checklist item - ee819ae Populate"
+          sequence: 20
+          option_set_id: "REC: option_set.id"
+
+      - step: "Create worksheet ee819ae"
+        action: "create"
+        model: "general_audit_ws_ee819ae"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_ee819ae.id"
+
+      - step: "Assert worksheet created in draft"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          id:
+            type: "value"
+            operator: "is_truthy"
+          state:
+            type: "value"
+            expected: "draft"
+
+      - step: "Verify no checklist line for the custom item before populate"
+        action: "search"
+        model: "general_audit_ws_ee819ae.checklist"
+        domain:
+          - ["worksheet_id", "=", "REC: worksheet.id"]
+          - ["item_id", "=", "REC: item.id"]
+        save_as: "checklist_before"
+        expect_count: 0
+
+      - step: "Call action_populate_checklist the first time"
+        action: "call"
+        target: "worksheet"
+        method: "action_populate_checklist"
+        as_user: "base.user_admin"
+
+      - step: "Verify checklist line for the custom item was populated"
+        action: "search"
+        model: "general_audit_ws_ee819ae.checklist"
+        domain:
+          - ["worksheet_id", "=", "REC: worksheet.id"]
+          - ["item_id", "=", "REC: item.id"]
+        save_as: "checklist_after"
+        expect_count: 1
+
+      - step: "Call action_populate_checklist a second time"
+        action: "call"
+        target: "worksheet"
+        method: "action_populate_checklist"
+        as_user: "base.user_admin"
+
+      - step: "Verify checklist line was not duplicated"
+        action: "search"
+        model: "general_audit_ws_ee819ae.checklist"
+        domain:
+          - ["worksheet_id", "=", "REC: worksheet.id"]
+          - ["item_id", "=", "REC: item.id"]
+        save_as: "checklist_idempotent"
+        expect_count: 1
+
+      - step: "Open worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_open"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after opening worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Assert worksheet open"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          state:
+            type: "value"
+            expected: "open"
+
+      - step: "Fill required conclusion fields before confirm"
+        action: "write"
+        target: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          conclusion_id: "REC: conclusion_ee819ae.id"
+          conclusion:
+            "Commitment and contingent liabilities reviewed and adequately addressed."
+
+      - step: "Confirm worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_confirm"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after confirming worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Assert worksheet confirmed"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          state:
+            type: "value"
+            expected: "confirm"
+
+      - step: "Approve worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_approve_approval"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after approving worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Assert worksheet done"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          state:
+            type: "value"
+            expected: "done"

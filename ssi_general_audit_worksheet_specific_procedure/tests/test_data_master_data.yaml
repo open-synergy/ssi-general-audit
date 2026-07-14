@@ -1,0 +1,427 @@
+scenarios:
+  # ------------------------------------------------------------------
+  # general_audit_going_concern_z_score_coeficient_set - CRUD (with
+  # inline item_ids)
+  # ------------------------------------------------------------------
+  - name: "Z-Score Coefficient Set - Create with item, write, delete"
+    steps:
+      - step: "Create computation item prerequisite"
+        action: "create"
+        model: "trial_balance_computation_item"
+        save_as: "computation_item"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Computation Item - ZScore Set CRUD"
+          code: "/"
+
+      - step: "Create z-score coefficient set with inline item"
+        action: "create"
+        model: "general_audit_going_concern_z_score_coeficient_set"
+        save_as: "coefficient_set"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Z-Score Coefficient Set"
+          code: "/"
+          item_ids:
+            - - 0
+              - 0
+              - computation_item_id: "REC: computation_item.id"
+                coefficient: 1.2
+
+      - step: "Assert coefficient set created with item"
+        action: "assert"
+        target: "coefficient_set"
+        asserts:
+          id:
+            type: "value"
+            operator: "is_truthy"
+          item_ids:
+            type: "o2m"
+            check: "count"
+            expected_count: 1
+
+      - step: "Write new name"
+        action: "write"
+        target: "coefficient_set"
+        as_user: "base.user_admin"
+        values:
+          name: "Updated Z-Score Coefficient Set"
+
+      - step: "Assert name updated"
+        action: "assert"
+        target: "coefficient_set"
+        asserts:
+          name:
+            type: "value"
+            expected: "Updated Z-Score Coefficient Set"
+
+      - step: "Delete z-score coefficient set"
+        action: "unlink"
+        target: "coefficient_set"
+        as_user: "base.user_admin"
+
+      - step: "Verify z-score coefficient set deleted"
+        action: "search"
+        model: "general_audit_going_concern_z_score_coeficient_set"
+        domain:
+          - ["id", "=", "REC: coefficient_set.id"]
+        save_as: "result"
+        expect_count: 0
+
+  # ------------------------------------------------------------------
+  # general_audit_going_concern_z_score_coeficient_set.item - CRUD
+  # ------------------------------------------------------------------
+  - name: "Z-Score Coefficient Set Item - Create, write, delete"
+    steps:
+      - step: "Create computation item prerequisite"
+        action: "create"
+        model: "trial_balance_computation_item"
+        save_as: "computation_item"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Computation Item - ZScore Item CRUD"
+          code: "/"
+
+      - step: "Create coefficient set prerequisite"
+        action: "create"
+        model: "general_audit_going_concern_z_score_coeficient_set"
+        save_as: "coefficient_set"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Z-Score Coefficient Set - Item CRUD"
+          code: "/"
+
+      - step: "Create coefficient set item"
+        action: "create"
+        model: "general_audit_going_concern_z_score_coeficient_set.item"
+        save_as: "item"
+        as_user: "base.user_admin"
+        values:
+          set_id: "REC: coefficient_set.id"
+          computation_item_id: "REC: computation_item.id"
+          coefficient: 1.2
+
+      - step: "Assert coefficient set item created"
+        action: "assert"
+        target: "item"
+        asserts:
+          id:
+            type: "value"
+            operator: "is_truthy"
+          coefficient:
+            type: "value"
+            expected: 1.2
+          set_id:
+            type: "m2o"
+            expected: "REC: coefficient_set"
+          computation_item_id:
+            type: "m2o"
+            expected: "REC: computation_item"
+
+      - step: "Write new coefficient"
+        action: "write"
+        target: "item"
+        as_user: "base.user_admin"
+        values:
+          coefficient: 3.3
+
+      - step: "Assert coefficient updated"
+        action: "assert"
+        target: "item"
+        asserts:
+          coefficient:
+            type: "value"
+            expected: 3.3
+
+      - step: "Delete coefficient set item"
+        action: "unlink"
+        target: "item"
+        as_user: "base.user_admin"
+
+      - step: "Verify coefficient set item deleted"
+        action: "search"
+        model: "general_audit_going_concern_z_score_coeficient_set.item"
+        domain:
+          - ["id", "=", "REC: item.id"]
+        save_as: "result"
+        expect_count: 0
+
+  # ------------------------------------------------------------------
+  # general_audit_going_concern_confirmation_procedure - CRUD
+  # ------------------------------------------------------------------
+  - name: "Going Concern Confirmation Procedure - Create, write, delete"
+    steps:
+      - step: "Create going concern confirmation procedure"
+        action: "create"
+        model: "general_audit_going_concern_confirmation_procedure"
+        save_as: "procedure"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Going Concern Confirmation Procedure"
+          code: "/"
+          sequence: 10
+
+      - step: "Assert procedure created"
+        action: "assert"
+        target: "procedure"
+        asserts:
+          id:
+            type: "value"
+            operator: "is_truthy"
+          name:
+            type: "value"
+            expected: "Test Going Concern Confirmation Procedure"
+          sequence:
+            type: "value"
+            expected: 10
+
+      - step: "Write new name and sequence"
+        action: "write"
+        target: "procedure"
+        as_user: "base.user_admin"
+        values:
+          name: "Updated Going Concern Confirmation Procedure"
+          sequence: 20
+
+      - step: "Assert name and sequence updated"
+        action: "assert"
+        target: "procedure"
+        asserts:
+          name:
+            type: "value"
+            expected: "Updated Going Concern Confirmation Procedure"
+          sequence:
+            type: "value"
+            expected: 20
+
+      - step: "Delete procedure"
+        action: "unlink"
+        target: "procedure"
+        as_user: "base.user_admin"
+
+      - step: "Verify procedure deleted"
+        action: "search"
+        model: "general_audit_going_concern_confirmation_procedure"
+        domain:
+          - ["id", "=", "REC: procedure.id"]
+        save_as: "result"
+        expect_count: 0
+
+  # ------------------------------------------------------------------
+  # general_audit_related_party_confirmation_procedure - CRUD
+  # ------------------------------------------------------------------
+  - name: "Related Party Confirmation Procedure - Create, write, delete"
+    steps:
+      - step: "Create related party confirmation procedure"
+        action: "create"
+        model: "general_audit_related_party_confirmation_procedure"
+        save_as: "procedure"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Related Party Confirmation Procedure"
+          sequence: 10
+
+      - step: "Assert procedure created with default code"
+        action: "assert"
+        target: "procedure"
+        asserts:
+          id:
+            type: "value"
+            operator: "is_truthy"
+          code:
+            type: "value"
+            expected: "/"
+
+      - step: "Write new name"
+        action: "write"
+        target: "procedure"
+        as_user: "base.user_admin"
+        values:
+          name: "Updated Related Party Confirmation Procedure"
+
+      - step: "Assert name updated"
+        action: "assert"
+        target: "procedure"
+        asserts:
+          name:
+            type: "value"
+            expected: "Updated Related Party Confirmation Procedure"
+
+      - step: "Delete procedure"
+        action: "unlink"
+        target: "procedure"
+        as_user: "base.user_admin"
+
+      - step: "Verify procedure deleted"
+        action: "search"
+        model: "general_audit_related_party_confirmation_procedure"
+        domain:
+          - ["id", "=", "REC: procedure.id"]
+        save_as: "result"
+        expect_count: 0
+
+  # ------------------------------------------------------------------
+  # general_audit_subsequent_event - CRUD
+  # ------------------------------------------------------------------
+  - name: "Subsequent Event - Create, write, delete"
+    steps:
+      - step: "Create subsequent event needing adjustment"
+        action: "create"
+        model: "general_audit_subsequent_event"
+        save_as: "event"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Subsequent Event"
+          need_adjustment: true
+
+      - step: "Assert event created with default code and need_adjustment true"
+        action: "assert"
+        target: "event"
+        asserts:
+          id:
+            type: "value"
+            operator: "is_truthy"
+          code:
+            type: "value"
+            expected: "/"
+          need_adjustment:
+            type: "value"
+            expected: true
+
+      - step: "Write need_adjustment to false"
+        action: "write"
+        target: "event"
+        as_user: "base.user_admin"
+        values:
+          need_adjustment: false
+
+      - step: "Assert need_adjustment updated"
+        action: "assert"
+        target: "event"
+        asserts:
+          need_adjustment:
+            type: "value"
+            expected: false
+
+      - step: "Delete event"
+        action: "unlink"
+        target: "event"
+        as_user: "base.user_admin"
+
+      - step: "Verify event deleted"
+        action: "search"
+        model: "general_audit_subsequent_event"
+        domain:
+          - ["id", "=", "REC: event.id"]
+        save_as: "result"
+        expect_count: 0
+
+  # ------------------------------------------------------------------
+  # general_audit_accounting_estimation_method - CRUD
+  # ------------------------------------------------------------------
+  - name: "Accounting Estimation Method - Create, write, delete"
+    steps:
+      - step: "Create account group prerequisite"
+        action: "create"
+        model: "client_account_group"
+        save_as: "account_group"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Account Group - Estimation Method CRUD"
+          code: "/"
+
+      - step: "Create account type prerequisite"
+        action: "create"
+        model: "client_account_type"
+        save_as: "account_type"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Account Type - Estimation Method CRUD"
+          code: "/"
+          group_id: "REC: account_group.id"
+
+      - step: "Create accounting estimation method"
+        action: "create"
+        model: "general_audit_accounting_estimation_method"
+        save_as: "method"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Accounting Estimation Method"
+          code: "/"
+          account_type_id: "REC: account_type.id"
+
+      - step: "Assert method created"
+        action: "assert"
+        target: "method"
+        asserts:
+          id:
+            type: "value"
+            operator: "is_truthy"
+          account_type_id:
+            type: "m2o"
+            expected: "REC: account_type"
+
+      - step: "Write new name"
+        action: "write"
+        target: "method"
+        as_user: "base.user_admin"
+        values:
+          name: "Updated Accounting Estimation Method"
+
+      - step: "Assert name updated"
+        action: "assert"
+        target: "method"
+        asserts:
+          name:
+            type: "value"
+            expected: "Updated Accounting Estimation Method"
+
+      - step: "Delete method"
+        action: "unlink"
+        target: "method"
+        as_user: "base.user_admin"
+
+      - step: "Verify method deleted"
+        action: "search"
+        model: "general_audit_accounting_estimation_method"
+        domain:
+          - ["id", "=", "REC: method.id"]
+        save_as: "result"
+        expect_count: 0
+
+  # ------------------------------------------------------------------
+  # trial_balance_computation_item.going_concern_ok - default and write
+  # ------------------------------------------------------------------
+  - name: "Trial Balance Computation Item - going_concern_ok default and write"
+    steps:
+      - step: "Create computation item without going_concern_ok"
+        action: "create"
+        model: "trial_balance_computation_item"
+        save_as: "computation_item"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Computation Item - going_concern_ok"
+          code: "/"
+
+      - step: "Assert going_concern_ok defaults to false"
+        action: "assert"
+        target: "computation_item"
+        asserts:
+          going_concern_ok:
+            type: "value"
+            expected: false
+
+      - step: "Write going_concern_ok to true"
+        action: "write"
+        target: "computation_item"
+        as_user: "base.user_admin"
+        values:
+          going_concern_ok: true
+
+      - step: "Assert going_concern_ok updated to true"
+        action: "assert"
+        target: "computation_item"
+        asserts:
+          going_concern_ok:
+            type: "value"
+            expected: true
