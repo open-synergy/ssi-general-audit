@@ -1,0 +1,1129 @@
+scenarios:
+  # ------------------------------------------------------------------
+  # general_audit_general_control_category - CRUD
+  # ------------------------------------------------------------------
+  - name: "General Control Category - Create, write, delete"
+    steps:
+      - step: "Create general control category"
+        action: "create"
+        model: "general_audit_general_control_category"
+        save_as: "category"
+        as_user: "base.user_admin"
+        values:
+          name: "Test General Control Category"
+          code: "/"
+          sequence: 10
+
+      - step: "Assert general control category created"
+        action: "assert"
+        target: "category"
+        asserts:
+          id:
+            type: "value"
+            operator: "is_truthy"
+          name:
+            type: "value"
+            expected: "Test General Control Category"
+
+      - step: "Write new name"
+        action: "write"
+        target: "category"
+        as_user: "base.user_admin"
+        values:
+          name: "Updated General Control Category"
+
+      - step: "Assert name updated"
+        action: "assert"
+        target: "category"
+        asserts:
+          name:
+            type: "value"
+            expected: "Updated General Control Category"
+
+      - step: "Delete general control category"
+        action: "unlink"
+        target: "category"
+        as_user: "base.user_admin"
+
+      - step: "Verify general control category deleted"
+        action: "search"
+        model: "general_audit_general_control_category"
+        domain:
+          - ["id", "=", "REC: category.id"]
+        save_as: "result"
+        expect_count: 0
+
+  # ------------------------------------------------------------------
+  # general_audit_general_control - CRUD
+  # ------------------------------------------------------------------
+  - name: "General Control - Create, write, delete"
+    steps:
+      - step: "Create category prerequisite"
+        action: "create"
+        model: "general_audit_general_control_category"
+        save_as: "category"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Category - General Control CRUD"
+          code: "/"
+
+      - step: "Create option set prerequisite"
+        action: "create"
+        model: "checklist.option_set"
+        save_as: "option_set"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Option Set - General Control CRUD"
+          code: "/"
+
+      - step: "Create general control"
+        action: "create"
+        model: "general_audit_general_control"
+        save_as: "control"
+        as_user: "base.user_admin"
+        values:
+          name: "Test General Control"
+          code: "/"
+          sequence: 10
+          category_id: "REC: category.id"
+          option_set_id: "REC: option_set.id"
+
+      - step: "Assert general control created"
+        action: "assert"
+        target: "control"
+        asserts:
+          id:
+            type: "value"
+            operator: "is_truthy"
+          category_id:
+            type: "m2o"
+            expected: "REC: category"
+          option_set_id:
+            type: "m2o"
+            expected: "REC: option_set"
+
+      - step: "Write new name"
+        action: "write"
+        target: "control"
+        as_user: "base.user_admin"
+        values:
+          name: "Updated General Control"
+
+      - step: "Assert name updated"
+        action: "assert"
+        target: "control"
+        asserts:
+          name:
+            type: "value"
+            expected: "Updated General Control"
+
+      - step: "Delete general control"
+        action: "unlink"
+        target: "control"
+        as_user: "base.user_admin"
+
+      - step: "Verify general control deleted"
+        action: "search"
+        model: "general_audit_general_control"
+        domain:
+          - ["id", "=", "REC: control.id"]
+        save_as: "result"
+        expect_count: 0
+
+  # ------------------------------------------------------------------
+  # general_audit_general_control_indicator - CRUD
+  # ------------------------------------------------------------------
+  - name: "General Control Indicator - Create, write, delete"
+    steps:
+      - step: "Create category prerequisite"
+        action: "create"
+        model: "general_audit_general_control_category"
+        save_as: "category"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Category - General Control Indicator CRUD"
+          code: "/"
+
+      - step: "Create option set prerequisite"
+        action: "create"
+        model: "checklist.option_set"
+        save_as: "option_set"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Option Set - General Control Indicator CRUD"
+          code: "/"
+
+      - step: "Create general control prerequisite"
+        action: "create"
+        model: "general_audit_general_control"
+        save_as: "control"
+        as_user: "base.user_admin"
+        values:
+          name: "Test General Control - Indicator CRUD"
+          code: "/"
+          category_id: "REC: category.id"
+          option_set_id: "REC: option_set.id"
+
+      - step: "Create general control indicator"
+        action: "create"
+        model: "general_audit_general_control_indicator"
+        save_as: "indicator"
+        as_user: "base.user_admin"
+        values:
+          name: "Test General Control Indicator"
+          code: "/"
+          sequence: 10
+          control_id: "REC: control.id"
+          option_set_id: "REC: option_set.id"
+
+      - step: "Assert general control indicator created"
+        action: "assert"
+        target: "indicator"
+        asserts:
+          id:
+            type: "value"
+            operator: "is_truthy"
+          control_id:
+            type: "m2o"
+            expected: "REC: control"
+          category_id:
+            type: "m2o"
+            expected: "REC: category"
+
+      - step: "Write new name"
+        action: "write"
+        target: "indicator"
+        as_user: "base.user_admin"
+        values:
+          name: "Updated General Control Indicator"
+
+      - step: "Assert name updated"
+        action: "assert"
+        target: "indicator"
+        asserts:
+          name:
+            type: "value"
+            expected: "Updated General Control Indicator"
+
+      - step: "Delete general control indicator"
+        action: "unlink"
+        target: "indicator"
+        as_user: "base.user_admin"
+
+      - step: "Verify general control indicator deleted"
+        action: "search"
+        model: "general_audit_general_control_indicator"
+        domain:
+          - ["id", "=", "REC: indicator.id"]
+        save_as: "result"
+        expect_count: 0
+
+  # ------------------------------------------------------------------
+  # general_audit_general_control_set - CRUD
+  # ------------------------------------------------------------------
+  - name: "General Control Set - Create, write, delete"
+    steps:
+      - step: "Create general control set"
+        action: "create"
+        model: "general_audit_general_control_set"
+        save_as: "set"
+        as_user: "base.user_admin"
+        values:
+          name: "Test General Control Set"
+          code: "/"
+
+      - step: "Assert general control set created"
+        action: "assert"
+        target: "set"
+        asserts:
+          id:
+            type: "value"
+            operator: "is_truthy"
+          name:
+            type: "value"
+            expected: "Test General Control Set"
+
+      - step: "Write new name"
+        action: "write"
+        target: "set"
+        as_user: "base.user_admin"
+        values:
+          name: "Updated General Control Set"
+
+      - step: "Assert name updated"
+        action: "assert"
+        target: "set"
+        asserts:
+          name:
+            type: "value"
+            expected: "Updated General Control Set"
+
+      - step: "Delete general control set"
+        action: "unlink"
+        target: "set"
+        as_user: "base.user_admin"
+
+      - step: "Verify general control set deleted"
+        action: "search"
+        model: "general_audit_general_control_set"
+        domain:
+          - ["id", "=", "REC: set.id"]
+        save_as: "result"
+        expect_count: 0
+
+  # ------------------------------------------------------------------
+  # general_audit_it_control_category - CRUD
+  # ------------------------------------------------------------------
+  - name: "IT Control Category - Create, write, delete"
+    steps:
+      - step: "Create IT control category"
+        action: "create"
+        model: "general_audit_it_control_category"
+        save_as: "category"
+        as_user: "base.user_admin"
+        values:
+          name: "Test IT Control Category"
+          code: "/"
+          sequence: 10
+
+      - step: "Assert IT control category created"
+        action: "assert"
+        target: "category"
+        asserts:
+          id:
+            type: "value"
+            operator: "is_truthy"
+          name:
+            type: "value"
+            expected: "Test IT Control Category"
+
+      - step: "Write new name"
+        action: "write"
+        target: "category"
+        as_user: "base.user_admin"
+        values:
+          name: "Updated IT Control Category"
+
+      - step: "Assert name updated"
+        action: "assert"
+        target: "category"
+        asserts:
+          name:
+            type: "value"
+            expected: "Updated IT Control Category"
+
+      - step: "Delete IT control category"
+        action: "unlink"
+        target: "category"
+        as_user: "base.user_admin"
+
+      - step: "Verify IT control category deleted"
+        action: "search"
+        model: "general_audit_it_control_category"
+        domain:
+          - ["id", "=", "REC: category.id"]
+        save_as: "result"
+        expect_count: 0
+
+  # ------------------------------------------------------------------
+  # general_audit_it_control - CRUD
+  # ------------------------------------------------------------------
+  - name: "IT Control - Create, write, delete"
+    steps:
+      - step: "Create IT control category prerequisite"
+        action: "create"
+        model: "general_audit_it_control_category"
+        save_as: "category"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Category - IT Control CRUD"
+          code: "/"
+
+      - step: "Create option set prerequisite"
+        action: "create"
+        model: "checklist.option_set"
+        save_as: "option_set"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Option Set - IT Control CRUD"
+          code: "/"
+
+      - step: "Create IT control"
+        action: "create"
+        model: "general_audit_it_control"
+        save_as: "control"
+        as_user: "base.user_admin"
+        values:
+          name: "Test IT Control"
+          code: "/"
+          sequence: 10
+          category_id: "REC: category.id"
+          option_set_id: "REC: option_set.id"
+
+      - step: "Assert IT control created"
+        action: "assert"
+        target: "control"
+        asserts:
+          id:
+            type: "value"
+            operator: "is_truthy"
+          category_id:
+            type: "m2o"
+            expected: "REC: category"
+          option_set_id:
+            type: "m2o"
+            expected: "REC: option_set"
+
+      - step: "Write new name"
+        action: "write"
+        target: "control"
+        as_user: "base.user_admin"
+        values:
+          name: "Updated IT Control"
+
+      - step: "Assert name updated"
+        action: "assert"
+        target: "control"
+        asserts:
+          name:
+            type: "value"
+            expected: "Updated IT Control"
+
+      - step: "Delete IT control"
+        action: "unlink"
+        target: "control"
+        as_user: "base.user_admin"
+
+      - step: "Verify IT control deleted"
+        action: "search"
+        model: "general_audit_it_control"
+        domain:
+          - ["id", "=", "REC: control.id"]
+        save_as: "result"
+        expect_count: 0
+
+  # ------------------------------------------------------------------
+  # general_audit_it_control_indicator - CRUD
+  # ------------------------------------------------------------------
+  - name: "IT Control Indicator - Create, write, delete"
+    steps:
+      - step: "Create IT control category prerequisite"
+        action: "create"
+        model: "general_audit_it_control_category"
+        save_as: "category"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Category - IT Control Indicator CRUD"
+          code: "/"
+
+      - step: "Create option set prerequisite"
+        action: "create"
+        model: "checklist.option_set"
+        save_as: "option_set"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Option Set - IT Control Indicator CRUD"
+          code: "/"
+
+      - step: "Create IT control prerequisite"
+        action: "create"
+        model: "general_audit_it_control"
+        save_as: "control"
+        as_user: "base.user_admin"
+        values:
+          name: "Test IT Control - Indicator CRUD"
+          code: "/"
+          category_id: "REC: category.id"
+          option_set_id: "REC: option_set.id"
+
+      - step: "Create IT control indicator"
+        action: "create"
+        model: "general_audit_it_control_indicator"
+        save_as: "indicator"
+        as_user: "base.user_admin"
+        values:
+          name: "Test IT Control Indicator"
+          code: "/"
+          sequence: 10
+          control_id: "REC: control.id"
+          option_set_id: "REC: option_set.id"
+          procedure: "Review the control implementation"
+
+      - step: "Assert IT control indicator created"
+        action: "assert"
+        target: "indicator"
+        asserts:
+          id:
+            type: "value"
+            operator: "is_truthy"
+          control_id:
+            type: "m2o"
+            expected: "REC: control"
+          category_id:
+            type: "m2o"
+            expected: "REC: category"
+
+      - step: "Write new name"
+        action: "write"
+        target: "indicator"
+        as_user: "base.user_admin"
+        values:
+          name: "Updated IT Control Indicator"
+
+      - step: "Assert name updated"
+        action: "assert"
+        target: "indicator"
+        asserts:
+          name:
+            type: "value"
+            expected: "Updated IT Control Indicator"
+
+      - step: "Delete IT control indicator"
+        action: "unlink"
+        target: "indicator"
+        as_user: "base.user_admin"
+
+      - step: "Verify IT control indicator deleted"
+        action: "search"
+        model: "general_audit_it_control_indicator"
+        domain:
+          - ["id", "=", "REC: indicator.id"]
+        save_as: "result"
+        expect_count: 0
+
+  # ------------------------------------------------------------------
+  # general_audit_it_control_set - CRUD
+  # ------------------------------------------------------------------
+  - name: "IT Control Set - Create, write, delete"
+    steps:
+      - step: "Create IT control set"
+        action: "create"
+        model: "general_audit_it_control_set"
+        save_as: "set"
+        as_user: "base.user_admin"
+        values:
+          name: "Test IT Control Set"
+          code: "/"
+
+      - step: "Assert IT control set created"
+        action: "assert"
+        target: "set"
+        asserts:
+          id:
+            type: "value"
+            operator: "is_truthy"
+          name:
+            type: "value"
+            expected: "Test IT Control Set"
+
+      - step: "Write new name"
+        action: "write"
+        target: "set"
+        as_user: "base.user_admin"
+        values:
+          name: "Updated IT Control Set"
+
+      - step: "Assert name updated"
+        action: "assert"
+        target: "set"
+        asserts:
+          name:
+            type: "value"
+            expected: "Updated IT Control Set"
+
+      - step: "Delete IT control set"
+        action: "unlink"
+        target: "set"
+        as_user: "base.user_admin"
+
+      - step: "Verify IT control set deleted"
+        action: "search"
+        model: "general_audit_it_control_set"
+        domain:
+          - ["id", "=", "REC: set.id"]
+        save_as: "result"
+        expect_count: 0
+
+  # ------------------------------------------------------------------
+  # general_audit_control_activity - CRUD
+  # ------------------------------------------------------------------
+  - name: "Control Activity - Create, write, delete"
+    steps:
+      - step: "Create control activity"
+        action: "create"
+        model: "general_audit_control_activity"
+        save_as: "activity"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Control Activity"
+          code: "/"
+
+      - step: "Assert control activity created"
+        action: "assert"
+        target: "activity"
+        asserts:
+          id:
+            type: "value"
+            operator: "is_truthy"
+          name:
+            type: "value"
+            expected: "Test Control Activity"
+
+      - step: "Write new name"
+        action: "write"
+        target: "activity"
+        as_user: "base.user_admin"
+        values:
+          name: "Updated Control Activity"
+
+      - step: "Assert name updated"
+        action: "assert"
+        target: "activity"
+        asserts:
+          name:
+            type: "value"
+            expected: "Updated Control Activity"
+
+      - step: "Delete control activity"
+        action: "unlink"
+        target: "activity"
+        as_user: "base.user_admin"
+
+      - step: "Verify control activity deleted"
+        action: "search"
+        model: "general_audit_control_activity"
+        domain:
+          - ["id", "=", "REC: activity.id"]
+        save_as: "result"
+        expect_count: 0
+
+  # ------------------------------------------------------------------
+  # general_audit_assersion_type - CRUD
+  # ------------------------------------------------------------------
+  - name: "Assersion Type - Create, write, delete"
+    steps:
+      - step: "Create assersion type"
+        action: "create"
+        model: "general_audit_assersion_type"
+        save_as: "assersion_type"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Assersion Type"
+          code: "/"
+
+      - step: "Assert assersion type created"
+        action: "assert"
+        target: "assersion_type"
+        asserts:
+          id:
+            type: "value"
+            operator: "is_truthy"
+          name:
+            type: "value"
+            expected: "Test Assersion Type"
+
+      - step: "Write new name"
+        action: "write"
+        target: "assersion_type"
+        as_user: "base.user_admin"
+        values:
+          name: "Updated Assersion Type"
+
+      - step: "Assert name updated"
+        action: "assert"
+        target: "assersion_type"
+        asserts:
+          name:
+            type: "value"
+            expected: "Updated Assersion Type"
+
+      - step: "Delete assersion type"
+        action: "unlink"
+        target: "assersion_type"
+        as_user: "base.user_admin"
+
+      - step: "Verify assersion type deleted"
+        action: "search"
+        model: "general_audit_assersion_type"
+        domain:
+          - ["id", "=", "REC: assersion_type.id"]
+        save_as: "result"
+        expect_count: 0
+
+  # ------------------------------------------------------------------
+  # general_audit_key_internal_control - CRUD
+  # ------------------------------------------------------------------
+  - name: "Key Internal Control (Business Cycle) - Create, write, delete"
+    steps:
+      - step: "Create business cycle prerequisite"
+        action: "create"
+        model: "client_business_process"
+        save_as: "business_cycle"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Business Cycle - Key Internal Control CRUD"
+          code: "/"
+
+      - step: "Create control activity prerequisite"
+        action: "create"
+        model: "general_audit_control_activity"
+        save_as: "activity"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Control Activity - Key Internal Control CRUD"
+          code: "/"
+
+      - step: "Create assersion type prerequisite"
+        action: "create"
+        model: "general_audit_assersion_type"
+        save_as: "assersion_type"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Assersion Type - Key Internal Control CRUD"
+          code: "/"
+
+      - step: "Create key internal control"
+        action: "create"
+        model: "general_audit_key_internal_control"
+        save_as: "key_control"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Key Internal Control"
+          code: "/"
+          sequence: 10
+          business_cycle_ids: [[6, 0, ["REC: business_cycle.id"]]]
+          control_activity_id: "REC: activity.id"
+          assersion_type_ids: [[6, 0, ["REC: assersion_type.id"]]]
+
+      - step: "Assert key internal control created"
+        action: "assert"
+        target: "key_control"
+        asserts:
+          id:
+            type: "value"
+            operator: "is_truthy"
+          control_activity_id:
+            type: "m2o"
+            expected: "REC: activity"
+          business_cycle_ids:
+            type: "m2m"
+            check: "exact"
+            expected_records:
+              - "REC: business_cycle"
+          assersion_type_ids:
+            type: "m2m"
+            check: "exact"
+            expected_records:
+              - "REC: assersion_type"
+
+      - step: "Assert inherited reverse m2m on client_business_process"
+        action: "assert"
+        target: "business_cycle"
+        refresh: true
+        asserts:
+          key_internal_control_ids:
+            type: "m2m"
+            check: "contains"
+            expected_records:
+              - "REC: key_control"
+
+      - step: "Write new sequence"
+        action: "write"
+        target: "key_control"
+        as_user: "base.user_admin"
+        values:
+          sequence: 20
+
+      - step: "Assert sequence updated"
+        action: "assert"
+        target: "key_control"
+        asserts:
+          sequence:
+            type: "value"
+            expected: 20
+
+      - step: "Delete key internal control"
+        action: "unlink"
+        target: "key_control"
+        as_user: "base.user_admin"
+
+      - step: "Verify key internal control deleted"
+        action: "search"
+        model: "general_audit_key_internal_control"
+        domain:
+          - ["id", "=", "REC: key_control.id"]
+        save_as: "result"
+        expect_count: 0
+
+  # ------------------------------------------------------------------
+  # general_audit_account_key_internal_control - CRUD
+  # ------------------------------------------------------------------
+  - name: "Account Key Internal Control (Significant Account) - Create, write, delete"
+    steps:
+      - step: "Create account group prerequisite"
+        action: "create"
+        model: "client_account_group"
+        save_as: "group"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Account Group - Account Key Internal Control CRUD"
+          code: "/"
+
+      - step: "Create account type prerequisite"
+        action: "create"
+        model: "client_account_type"
+        save_as: "account_type"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Account Type - Account Key Internal Control CRUD"
+          code: "/"
+          group_id: "REC: group.id"
+
+      - step: "Create control activity prerequisite"
+        action: "create"
+        model: "general_audit_control_activity"
+        save_as: "activity"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Control Activity - Account Key Internal Control CRUD"
+          code: "/"
+
+      - step: "Create assersion type prerequisite"
+        action: "create"
+        model: "general_audit_assersion_type"
+        save_as: "assersion_type"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Assersion Type - Account Key Internal Control CRUD"
+          code: "/"
+
+      - step: "Create account key internal control"
+        action: "create"
+        model: "general_audit_account_key_internal_control"
+        save_as: "key_control"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Account Key Internal Control"
+          code: "/"
+          sequence: 10
+          account_type_ids: [[6, 0, ["REC: account_type.id"]]]
+          control_activity_id: "REC: activity.id"
+          assersion_type_id_ids: [[6, 0, ["REC: assersion_type.id"]]]
+
+      - step: "Assert account key internal control created"
+        action: "assert"
+        target: "key_control"
+        asserts:
+          id:
+            type: "value"
+            operator: "is_truthy"
+          control_activity_id:
+            type: "m2o"
+            expected: "REC: activity"
+          account_type_ids:
+            type: "m2m"
+            check: "exact"
+            expected_records:
+              - "REC: account_type"
+          assersion_type_id_ids:
+            type: "m2m"
+            check: "exact"
+            expected_records:
+              - "REC: assersion_type"
+
+      - step: "Assert inherited reverse m2m on client_account_type"
+        action: "assert"
+        target: "account_type"
+        refresh: true
+        asserts:
+          account_key_internal_control_ids:
+            type: "m2m"
+            check: "contains"
+            expected_records:
+              - "REC: key_control"
+
+      - step: "Write new sequence"
+        action: "write"
+        target: "key_control"
+        as_user: "base.user_admin"
+        values:
+          sequence: 20
+
+      - step: "Assert sequence updated"
+        action: "assert"
+        target: "key_control"
+        asserts:
+          sequence:
+            type: "value"
+            expected: 20
+
+      - step: "Delete account key internal control"
+        action: "unlink"
+        target: "key_control"
+        as_user: "base.user_admin"
+
+      - step: "Verify account key internal control deleted"
+        action: "search"
+        model: "general_audit_account_key_internal_control"
+        domain:
+          - ["id", "=", "REC: key_control.id"]
+        save_as: "result"
+        expect_count: 0
+
+  # ------------------------------------------------------------------
+  # general_audit_general_control_set._compute_general_control_ids - normal
+  # ------------------------------------------------------------------
+  - name: "General Control Set - Compute general_control_ids (normal)"
+    steps:
+      - step: "Create category prerequisite"
+        action: "create"
+        model: "general_audit_general_control_category"
+        save_as: "category"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Category - Compute Set Normal"
+          code: "/"
+
+      - step: "Create option set prerequisite"
+        action: "create"
+        model: "checklist.option_set"
+        save_as: "option_set"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Option Set - Compute Set Normal"
+          code: "/"
+
+      - step: "Create control A"
+        action: "create"
+        model: "general_audit_general_control"
+        save_as: "control_a"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Control A - Compute Set Normal"
+          code: "/"
+          category_id: "REC: category.id"
+          option_set_id: "REC: option_set.id"
+
+      - step: "Create control B"
+        action: "create"
+        model: "general_audit_general_control"
+        save_as: "control_b"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Control B - Compute Set Normal"
+          code: "/"
+          category_id: "REC: category.id"
+          option_set_id: "REC: option_set.id"
+
+      - step: "Create indicator 1 for control A"
+        action: "create"
+        model: "general_audit_general_control_indicator"
+        save_as: "indicator_1"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Indicator 1 - Compute Set Normal"
+          code: "/"
+          control_id: "REC: control_a.id"
+          option_set_id: "REC: option_set.id"
+
+      - step: "Create indicator 2 for control A"
+        action: "create"
+        model: "general_audit_general_control_indicator"
+        save_as: "indicator_2"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Indicator 2 - Compute Set Normal"
+          code: "/"
+          control_id: "REC: control_a.id"
+          option_set_id: "REC: option_set.id"
+
+      - step: "Create indicator 3 for control B"
+        action: "create"
+        model: "general_audit_general_control_indicator"
+        save_as: "indicator_3"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Indicator 3 - Compute Set Normal"
+          code: "/"
+          control_id: "REC: control_b.id"
+          option_set_id: "REC: option_set.id"
+
+      - step: "Create general control set with all 3 indicators"
+        action: "create"
+        model: "general_audit_general_control_set"
+        save_as: "set"
+        as_user: "base.user_admin"
+        values:
+          name: "Test General Control Set - Compute Normal"
+          code: "/"
+          general_control_indicator_ids:
+            [
+              [
+                6,
+                0,
+                ["REC: indicator_1.id", "REC: indicator_2.id", "REC: indicator_3.id"],
+              ],
+            ]
+
+      - step: "Assert general_control_ids contains the 2 distinct controls"
+        action: "assert"
+        target: "set"
+        asserts:
+          general_control_ids:
+            type: "m2m"
+            check: "exact"
+            expected_records:
+              - "REC: control_a"
+              - "REC: control_b"
+
+  # ------------------------------------------------------------------
+  # general_audit_general_control_set._compute_general_control_ids - kosong
+  # ------------------------------------------------------------------
+  - name: "General Control Set - Compute general_control_ids (kosong)"
+    steps:
+      - step: "Create general control set without indicators"
+        action: "create"
+        model: "general_audit_general_control_set"
+        save_as: "set"
+        as_user: "base.user_admin"
+        values:
+          name: "Test General Control Set - Compute Kosong"
+          code: "/"
+
+      - step: "Assert general_control_ids is empty"
+        action: "assert"
+        target: "set"
+        asserts:
+          general_control_ids:
+            type: "m2m"
+            check: "count"
+            expected_count: 0
+
+  # ------------------------------------------------------------------
+  # general_audit_it_control_set._compute_it_control_ids - normal
+  # ------------------------------------------------------------------
+  - name: "IT Control Set - Compute it_control_ids (normal)"
+    steps:
+      - step: "Create category prerequisite"
+        action: "create"
+        model: "general_audit_it_control_category"
+        save_as: "category"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Category - Compute IT Set Normal"
+          code: "/"
+
+      - step: "Create option set prerequisite"
+        action: "create"
+        model: "checklist.option_set"
+        save_as: "option_set"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Option Set - Compute IT Set Normal"
+          code: "/"
+
+      - step: "Create IT control A"
+        action: "create"
+        model: "general_audit_it_control"
+        save_as: "control_a"
+        as_user: "base.user_admin"
+        values:
+          name: "Test IT Control A - Compute Set Normal"
+          code: "/"
+          category_id: "REC: category.id"
+          option_set_id: "REC: option_set.id"
+
+      - step: "Create IT control B"
+        action: "create"
+        model: "general_audit_it_control"
+        save_as: "control_b"
+        as_user: "base.user_admin"
+        values:
+          name: "Test IT Control B - Compute Set Normal"
+          code: "/"
+          category_id: "REC: category.id"
+          option_set_id: "REC: option_set.id"
+
+      - step: "Create indicator 1 for IT control A"
+        action: "create"
+        model: "general_audit_it_control_indicator"
+        save_as: "indicator_1"
+        as_user: "base.user_admin"
+        values:
+          name: "Test IT Indicator 1 - Compute Set Normal"
+          code: "/"
+          control_id: "REC: control_a.id"
+          option_set_id: "REC: option_set.id"
+
+      - step: "Create indicator 2 for IT control A"
+        action: "create"
+        model: "general_audit_it_control_indicator"
+        save_as: "indicator_2"
+        as_user: "base.user_admin"
+        values:
+          name: "Test IT Indicator 2 - Compute Set Normal"
+          code: "/"
+          control_id: "REC: control_a.id"
+          option_set_id: "REC: option_set.id"
+
+      - step: "Create indicator 3 for IT control B"
+        action: "create"
+        model: "general_audit_it_control_indicator"
+        save_as: "indicator_3"
+        as_user: "base.user_admin"
+        values:
+          name: "Test IT Indicator 3 - Compute Set Normal"
+          code: "/"
+          control_id: "REC: control_b.id"
+          option_set_id: "REC: option_set.id"
+
+      - step: "Create IT control set with all 3 indicators"
+        action: "create"
+        model: "general_audit_it_control_set"
+        save_as: "set"
+        as_user: "base.user_admin"
+        values:
+          name: "Test IT Control Set - Compute Normal"
+          code: "/"
+          it_control_indicator_ids:
+            [
+              [
+                6,
+                0,
+                ["REC: indicator_1.id", "REC: indicator_2.id", "REC: indicator_3.id"],
+              ],
+            ]
+
+      - step: "Assert it_control_ids contains the 2 distinct controls"
+        action: "assert"
+        target: "set"
+        asserts:
+          it_control_ids:
+            type: "m2m"
+            check: "exact"
+            expected_records:
+              - "REC: control_a"
+              - "REC: control_b"
+
+  # ------------------------------------------------------------------
+  # general_audit_it_control_set._compute_it_control_ids - kosong
+  # ------------------------------------------------------------------
+  - name: "IT Control Set - Compute it_control_ids (kosong)"
+    steps:
+      - step: "Create IT control set without indicators"
+        action: "create"
+        model: "general_audit_it_control_set"
+        save_as: "set"
+        as_user: "base.user_admin"
+        values:
+          name: "Test IT Control Set - Compute Kosong"
+          code: "/"
+
+      - step: "Assert it_control_ids is empty"
+        action: "assert"
+        target: "set"
+        asserts:
+          it_control_ids:
+            type: "m2m"
+            check: "count"
+            expected_count: 0

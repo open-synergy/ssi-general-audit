@@ -1,0 +1,968 @@
+setup:
+  steps:
+    - step: "Get config parameter model"
+      action: "search"
+      model: "ir.config_parameter"
+      domain: []
+      save_as: "config_parameter"
+      limit: 1
+
+    - step: "Allow enough CPA licenses for this scenario"
+      action: "call"
+      target: "config_parameter"
+      method: "set_param"
+      args:
+        - "ssi_general_audit.max_number_of_cpa_license"
+        - "100"
+
+    - step: "Create client partner"
+      action: "create"
+      model: "res.partner"
+      save_as: "client"
+      as_user: "base.user_admin"
+      values:
+        name: "Test Audit Client - Control Evaluation"
+        is_company: true
+
+    - step: "Create accountant partner"
+      action: "create"
+      model: "res.partner"
+      save_as: "accountant"
+      as_user: "base.user_admin"
+      values:
+        name: "Test Audit Accountant - Control Evaluation"
+
+    - step: "Get CPA license id category"
+      action: "ref"
+      xml_id: "ssi_partner_identification_cpa_license.partner_identification_accountant_cpa_license"
+      save_as: "cpa_category"
+
+    - step: "Grant accountant a CPA license"
+      action: "create"
+      model: "res.partner.id_number"
+      save_as: "cpa_license"
+      as_user: "base.user_admin"
+      values:
+        partner_id: "REC: accountant.id"
+        category_id: "REC: cpa_category.id"
+        name: "CPA-CTRLEVAL-0001"
+
+    - step: "Create account type set"
+      action: "create"
+      model: "client_account_type_set"
+      save_as: "account_type_set"
+      as_user: "base.user_admin"
+      values:
+        name: "Test Account Type Set - Control Evaluation"
+        code: "/"
+
+    - step: "Create financial accounting standard"
+      action: "create"
+      model: "accountant.financial_accounting_standard"
+      save_as: "standard"
+      as_user: "base.user_admin"
+      values:
+        name: "Test Financial Accounting Standard - Control Evaluation"
+        code: "/"
+
+    - step: "Create general audit"
+      action: "create"
+      model: "general_audit"
+      save_as: "audit"
+      as_user: "base.user_admin"
+      values:
+        title: "Test General Audit - Control Evaluation"
+        partner_id: "REC: client.id"
+        accountant_id: "REC: accountant.id"
+        account_type_set_id: "REC: account_type_set.id"
+        financial_accounting_standard_id: "REC: standard.id"
+        date_start: 2024-01-01
+        date_end: 2024-12-31
+        need_interim: false
+        need_previous: false
+        num_of_consecutive_audit_firm: 1
+        num_of_consecutive_audit_accountant: 1
+
+    - step: "Open general audit"
+      action: "call"
+      target: "audit"
+      method: "action_open"
+      as_user: "base.user_admin"
+
+    - step: "Invalidate cache after opening general audit"
+      action: "call"
+      target: "audit"
+      method: "invalidate_cache"
+
+    - step: "Get worksheet type d3d2719"
+      action: "ref"
+      xml_id: "ssi_general_audit_worksheet_control_risk.worksheet_type_d3d2719"
+      save_as: "ws_type_d3d2719"
+
+    - step: "Get worksheet type f63f569"
+      action: "ref"
+      xml_id: "ssi_general_audit_worksheet_control_risk.worksheet_type_f63f569"
+      save_as: "ws_type_f63f569"
+
+scenarios:
+  # ------------------------------------------------------------------
+  # d3d2719 - action_load_detail (normal)
+  # ------------------------------------------------------------------
+  - name: "Worksheet d3d2719 - Action load detail (normal)"
+    steps:
+      - step: "Create general control category"
+        action: "create"
+        model: "general_audit_general_control_category"
+        save_as: "category"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Category - d3d2719 Load Detail Normal"
+          code: "/"
+
+      - step: "Create option set"
+        action: "create"
+        model: "checklist.option_set"
+        save_as: "option_set"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Option Set - d3d2719 Load Detail Normal"
+          code: "/"
+
+      - step: "Create control A"
+        action: "create"
+        model: "general_audit_general_control"
+        save_as: "control_a"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Control A - d3d2719 Load Detail Normal"
+          code: "/"
+          category_id: "REC: category.id"
+          option_set_id: "REC: option_set.id"
+
+      - step: "Create control B"
+        action: "create"
+        model: "general_audit_general_control"
+        save_as: "control_b"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Control B - d3d2719 Load Detail Normal"
+          code: "/"
+          category_id: "REC: category.id"
+          option_set_id: "REC: option_set.id"
+
+      - step: "Create indicator 1 for control A"
+        action: "create"
+        model: "general_audit_general_control_indicator"
+        save_as: "indicator_1"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Indicator 1 - d3d2719 Load Detail Normal"
+          code: "/"
+          control_id: "REC: control_a.id"
+          option_set_id: "REC: option_set.id"
+
+      - step: "Create indicator 2 for control A"
+        action: "create"
+        model: "general_audit_general_control_indicator"
+        save_as: "indicator_2"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Indicator 2 - d3d2719 Load Detail Normal"
+          code: "/"
+          control_id: "REC: control_a.id"
+          option_set_id: "REC: option_set.id"
+
+      - step: "Create indicator 3 for control B"
+        action: "create"
+        model: "general_audit_general_control_indicator"
+        save_as: "indicator_3"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Indicator 3 - d3d2719 Load Detail Normal"
+          code: "/"
+          control_id: "REC: control_b.id"
+          option_set_id: "REC: option_set.id"
+
+      - step: "Create general control set with 2 controls / 3 indicators"
+        action: "create"
+        model: "general_audit_general_control_set"
+        save_as: "set"
+        as_user: "base.user_admin"
+        values:
+          name: "Test General Control Set - d3d2719 Load Detail Normal"
+          code: "/"
+          general_control_indicator_ids:
+            [
+              [
+                6,
+                0,
+                ["REC: indicator_1.id", "REC: indicator_2.id", "REC: indicator_3.id"],
+              ],
+            ]
+
+      - step: "Create worksheet d3d2719 with the control set"
+        action: "create"
+        model: "general_audit_ws_d3d2719"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_d3d2719.id"
+          set_id: "REC: set.id"
+
+      - step: "Call action_load_detail"
+        action: "call"
+        target: "worksheet"
+        method: "action_load_detail"
+        as_user: "base.user_admin"
+
+      - step: "Verify 2 detail lines were generated (1 per control)"
+        action: "search"
+        model: "general_audit_ws_d3d2719.detail"
+        domain:
+          - ["worksheet_id", "=", "REC: worksheet.id"]
+        save_as: "details"
+        expect_count: 2
+
+      - step: "Verify 3 indicator lines were generated"
+        action: "search"
+        model: "general_audit_ws_d3d2719.indicator"
+        domain:
+          - ["worksheet_id", "=", "REC: worksheet.id"]
+        save_as: "indicators"
+        expect_count: 3
+
+  # ------------------------------------------------------------------
+  # d3d2719 - action_load_detail (idempoten)
+  # ------------------------------------------------------------------
+  - name: "Worksheet d3d2719 - Action load detail (idempotent)"
+    steps:
+      - step: "Create general control category"
+        action: "create"
+        model: "general_audit_general_control_category"
+        save_as: "category"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Category - d3d2719 Load Detail Idempotent"
+          code: "/"
+
+      - step: "Create option set"
+        action: "create"
+        model: "checklist.option_set"
+        save_as: "option_set"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Option Set - d3d2719 Load Detail Idempotent"
+          code: "/"
+
+      - step: "Create control A"
+        action: "create"
+        model: "general_audit_general_control"
+        save_as: "control_a"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Control A - d3d2719 Load Detail Idempotent"
+          code: "/"
+          category_id: "REC: category.id"
+          option_set_id: "REC: option_set.id"
+
+      - step: "Create control B"
+        action: "create"
+        model: "general_audit_general_control"
+        save_as: "control_b"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Control B - d3d2719 Load Detail Idempotent"
+          code: "/"
+          category_id: "REC: category.id"
+          option_set_id: "REC: option_set.id"
+
+      - step: "Create indicator 1 for control A"
+        action: "create"
+        model: "general_audit_general_control_indicator"
+        save_as: "indicator_1"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Indicator 1 - d3d2719 Load Detail Idempotent"
+          code: "/"
+          control_id: "REC: control_a.id"
+          option_set_id: "REC: option_set.id"
+
+      - step: "Create indicator 2 for control B"
+        action: "create"
+        model: "general_audit_general_control_indicator"
+        save_as: "indicator_2"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Indicator 2 - d3d2719 Load Detail Idempotent"
+          code: "/"
+          control_id: "REC: control_b.id"
+          option_set_id: "REC: option_set.id"
+
+      - step: "Create general control set with 2 controls / 2 indicators"
+        action: "create"
+        model: "general_audit_general_control_set"
+        save_as: "set"
+        as_user: "base.user_admin"
+        values:
+          name: "Test General Control Set - d3d2719 Load Detail Idempotent"
+          code: "/"
+          general_control_indicator_ids:
+            [[6, 0, ["REC: indicator_1.id", "REC: indicator_2.id"]]]
+
+      - step: "Create worksheet d3d2719 with the control set"
+        action: "create"
+        model: "general_audit_ws_d3d2719"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_d3d2719.id"
+          set_id: "REC: set.id"
+
+      - step: "Call action_load_detail the first time"
+        action: "call"
+        target: "worksheet"
+        method: "action_load_detail"
+        as_user: "base.user_admin"
+
+      - step: "Call action_load_detail a second time"
+        action: "call"
+        target: "worksheet"
+        method: "action_load_detail"
+        as_user: "base.user_admin"
+
+      - step: "Verify detail count stayed at 2, not duplicated"
+        action: "search"
+        model: "general_audit_ws_d3d2719.detail"
+        domain:
+          - ["worksheet_id", "=", "REC: worksheet.id"]
+        save_as: "details"
+        expect_count: 2
+
+      - step: "Verify indicator count stayed at 2, not duplicated"
+        action: "search"
+        model: "general_audit_ws_d3d2719.indicator"
+        domain:
+          - ["worksheet_id", "=", "REC: worksheet.id"]
+        save_as: "indicators"
+        expect_count: 2
+
+  # ------------------------------------------------------------------
+  # d3d2719 - action_load_detail (set_id kosong)
+  # ------------------------------------------------------------------
+  - name: "Worksheet d3d2719 - Action load detail (set_id kosong)"
+    steps:
+      - step: "Create worksheet d3d2719 without set_id"
+        action: "create"
+        model: "general_audit_ws_d3d2719"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_d3d2719.id"
+
+      - step: "Call action_load_detail"
+        action: "call"
+        target: "worksheet"
+        method: "action_load_detail"
+        as_user: "base.user_admin"
+
+      - step: "Verify no detail lines were generated"
+        action: "search"
+        model: "general_audit_ws_d3d2719.detail"
+        domain:
+          - ["worksheet_id", "=", "REC: worksheet.id"]
+        save_as: "details"
+        expect_count: 0
+
+  # ------------------------------------------------------------------
+  # f63f569 - action_load_detail (normal)
+  # ------------------------------------------------------------------
+  - name: "Worksheet f63f569 - Action load detail (normal)"
+    steps:
+      - step: "Create IT control category"
+        action: "create"
+        model: "general_audit_it_control_category"
+        save_as: "category"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Category - f63f569 Load Detail Normal"
+          code: "/"
+
+      - step: "Create option set"
+        action: "create"
+        model: "checklist.option_set"
+        save_as: "option_set"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Option Set - f63f569 Load Detail Normal"
+          code: "/"
+
+      - step: "Create IT control A"
+        action: "create"
+        model: "general_audit_it_control"
+        save_as: "control_a"
+        as_user: "base.user_admin"
+        values:
+          name: "Test IT Control A - f63f569 Load Detail Normal"
+          code: "/"
+          category_id: "REC: category.id"
+          option_set_id: "REC: option_set.id"
+
+      - step: "Create IT control B"
+        action: "create"
+        model: "general_audit_it_control"
+        save_as: "control_b"
+        as_user: "base.user_admin"
+        values:
+          name: "Test IT Control B - f63f569 Load Detail Normal"
+          code: "/"
+          category_id: "REC: category.id"
+          option_set_id: "REC: option_set.id"
+
+      - step: "Create indicator 1 for IT control A"
+        action: "create"
+        model: "general_audit_it_control_indicator"
+        save_as: "indicator_1"
+        as_user: "base.user_admin"
+        values:
+          name: "Test IT Indicator 1 - f63f569 Load Detail Normal"
+          code: "/"
+          control_id: "REC: control_a.id"
+          option_set_id: "REC: option_set.id"
+
+      - step: "Create indicator 2 for IT control A"
+        action: "create"
+        model: "general_audit_it_control_indicator"
+        save_as: "indicator_2"
+        as_user: "base.user_admin"
+        values:
+          name: "Test IT Indicator 2 - f63f569 Load Detail Normal"
+          code: "/"
+          control_id: "REC: control_a.id"
+          option_set_id: "REC: option_set.id"
+
+      - step: "Create indicator 3 for IT control B"
+        action: "create"
+        model: "general_audit_it_control_indicator"
+        save_as: "indicator_3"
+        as_user: "base.user_admin"
+        values:
+          name: "Test IT Indicator 3 - f63f569 Load Detail Normal"
+          code: "/"
+          control_id: "REC: control_b.id"
+          option_set_id: "REC: option_set.id"
+
+      - step: "Create IT control set with 2 controls / 3 indicators"
+        action: "create"
+        model: "general_audit_it_control_set"
+        save_as: "set"
+        as_user: "base.user_admin"
+        values:
+          name: "Test IT Control Set - f63f569 Load Detail Normal"
+          code: "/"
+          it_control_indicator_ids:
+            [
+              [
+                6,
+                0,
+                ["REC: indicator_1.id", "REC: indicator_2.id", "REC: indicator_3.id"],
+              ],
+            ]
+
+      - step: "Create worksheet f63f569 with the IT control set"
+        action: "create"
+        model: "general_audit_ws_f63f569"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_f63f569.id"
+          set_id: "REC: set.id"
+
+      - step: "Call action_load_detail"
+        action: "call"
+        target: "worksheet"
+        method: "action_load_detail"
+        as_user: "base.user_admin"
+
+      - step: "Verify 2 detail lines were generated (1 per IT control)"
+        action: "search"
+        model: "general_audit_ws_f63f569.detail"
+        domain:
+          - ["worksheet_id", "=", "REC: worksheet.id"]
+        save_as: "details"
+        expect_count: 2
+
+      - step: "Verify 3 indicator lines were generated"
+        action: "search"
+        model: "general_audit_ws_f63f569.indicator"
+        domain:
+          - ["worksheet_id", "=", "REC: worksheet.id"]
+        save_as: "indicators"
+        expect_count: 3
+
+  # ------------------------------------------------------------------
+  # f63f569 - action_load_detail (idempoten)
+  # ------------------------------------------------------------------
+  - name: "Worksheet f63f569 - Action load detail (idempotent)"
+    steps:
+      - step: "Create IT control category"
+        action: "create"
+        model: "general_audit_it_control_category"
+        save_as: "category"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Category - f63f569 Load Detail Idempotent"
+          code: "/"
+
+      - step: "Create option set"
+        action: "create"
+        model: "checklist.option_set"
+        save_as: "option_set"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Option Set - f63f569 Load Detail Idempotent"
+          code: "/"
+
+      - step: "Create IT control A"
+        action: "create"
+        model: "general_audit_it_control"
+        save_as: "control_a"
+        as_user: "base.user_admin"
+        values:
+          name: "Test IT Control A - f63f569 Load Detail Idempotent"
+          code: "/"
+          category_id: "REC: category.id"
+          option_set_id: "REC: option_set.id"
+
+      - step: "Create IT control B"
+        action: "create"
+        model: "general_audit_it_control"
+        save_as: "control_b"
+        as_user: "base.user_admin"
+        values:
+          name: "Test IT Control B - f63f569 Load Detail Idempotent"
+          code: "/"
+          category_id: "REC: category.id"
+          option_set_id: "REC: option_set.id"
+
+      - step: "Create indicator 1 for IT control A"
+        action: "create"
+        model: "general_audit_it_control_indicator"
+        save_as: "indicator_1"
+        as_user: "base.user_admin"
+        values:
+          name: "Test IT Indicator 1 - f63f569 Load Detail Idempotent"
+          code: "/"
+          control_id: "REC: control_a.id"
+          option_set_id: "REC: option_set.id"
+
+      - step: "Create indicator 2 for IT control B"
+        action: "create"
+        model: "general_audit_it_control_indicator"
+        save_as: "indicator_2"
+        as_user: "base.user_admin"
+        values:
+          name: "Test IT Indicator 2 - f63f569 Load Detail Idempotent"
+          code: "/"
+          control_id: "REC: control_b.id"
+          option_set_id: "REC: option_set.id"
+
+      - step: "Create IT control set with 2 controls / 2 indicators"
+        action: "create"
+        model: "general_audit_it_control_set"
+        save_as: "set"
+        as_user: "base.user_admin"
+        values:
+          name: "Test IT Control Set - f63f569 Load Detail Idempotent"
+          code: "/"
+          it_control_indicator_ids:
+            [[6, 0, ["REC: indicator_1.id", "REC: indicator_2.id"]]]
+
+      - step: "Create worksheet f63f569 with the IT control set"
+        action: "create"
+        model: "general_audit_ws_f63f569"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_f63f569.id"
+          set_id: "REC: set.id"
+
+      - step: "Call action_load_detail the first time"
+        action: "call"
+        target: "worksheet"
+        method: "action_load_detail"
+        as_user: "base.user_admin"
+
+      - step: "Call action_load_detail a second time"
+        action: "call"
+        target: "worksheet"
+        method: "action_load_detail"
+        as_user: "base.user_admin"
+
+      - step: "Verify detail count stayed at 2, not duplicated"
+        action: "search"
+        model: "general_audit_ws_f63f569.detail"
+        domain:
+          - ["worksheet_id", "=", "REC: worksheet.id"]
+        save_as: "details"
+        expect_count: 2
+
+      - step: "Verify indicator count stayed at 2, not duplicated"
+        action: "search"
+        model: "general_audit_ws_f63f569.indicator"
+        domain:
+          - ["worksheet_id", "=", "REC: worksheet.id"]
+        save_as: "indicators"
+        expect_count: 2
+
+  # ------------------------------------------------------------------
+  # f63f569 - action_load_detail (set_id kosong)
+  # ------------------------------------------------------------------
+  - name: "Worksheet f63f569 - Action load detail (set_id kosong)"
+    steps:
+      - step: "Create worksheet f63f569 without set_id"
+        action: "create"
+        model: "general_audit_ws_f63f569"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_f63f569.id"
+
+      - step: "Call action_load_detail"
+        action: "call"
+        target: "worksheet"
+        method: "action_load_detail"
+        as_user: "base.user_admin"
+
+      - step: "Verify no detail lines were generated"
+        action: "search"
+        model: "general_audit_ws_f63f569.detail"
+        domain:
+          - ["worksheet_id", "=", "REC: worksheet.id"]
+        save_as: "details"
+        expect_count: 0
+
+  # ------------------------------------------------------------------
+  # d3d2719 - Workflow confirm to done
+  # ------------------------------------------------------------------
+  - name: "Worksheet d3d2719 - Workflow confirm to done"
+    steps:
+      - step: "Create conclusion for d3d2719 worksheet type"
+        action: "create"
+        model: "general_audit_worksheet_conclusion"
+        save_as: "conclusion"
+        as_user: "base.user_admin"
+        values:
+          name: "General control evaluation completed"
+          code: "/"
+          type_id: "REC: ws_type_d3d2719.id"
+
+      - step: "Create worksheet d3d2719"
+        action: "create"
+        model: "general_audit_ws_d3d2719"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_d3d2719.id"
+
+      - step: "Open worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_open"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after opening worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Assert worksheet open"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          state:
+            type: "value"
+            expected: "open"
+
+      - step: "Fill required conclusion fields before confirm"
+        action: "write"
+        target: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          conclusion_id: "REC: conclusion.id"
+          conclusion: "General control evaluation reviewed and adequate."
+
+      - step: "Confirm worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_confirm"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after confirming worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Assert worksheet confirmed"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          state:
+            type: "value"
+            expected: "confirm"
+
+      - step: "Approve worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_approve_approval"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after approving worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Assert worksheet done"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          state:
+            type: "value"
+            expected: "done"
+
+  # ------------------------------------------------------------------
+  # d3d2719 - Cancel and restart
+  # ------------------------------------------------------------------
+  - name: "Worksheet d3d2719 - Cancel and restart"
+    steps:
+      - step: "Create worksheet d3d2719"
+        action: "create"
+        model: "general_audit_ws_d3d2719"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_d3d2719.id"
+
+      - step: "Open worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_open"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after opening worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Assert worksheet open"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          state:
+            type: "value"
+            expected: "open"
+
+      - step: "Cancel worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_cancel"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after cancelling worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Assert worksheet cancelled"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          state:
+            type: "value"
+            expected: "cancel"
+
+      - step: "Restart worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_restart"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after restarting worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Assert worksheet back to draft"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          state:
+            type: "value"
+            expected: "draft"
+
+  # ------------------------------------------------------------------
+  # f63f569 - Workflow confirm to done
+  # ------------------------------------------------------------------
+  - name: "Worksheet f63f569 - Workflow confirm to done"
+    steps:
+      - step: "Create conclusion for f63f569 worksheet type"
+        action: "create"
+        model: "general_audit_worksheet_conclusion"
+        save_as: "conclusion"
+        as_user: "base.user_admin"
+        values:
+          name: "IT control evaluation completed"
+          code: "/"
+          type_id: "REC: ws_type_f63f569.id"
+
+      - step: "Create worksheet f63f569"
+        action: "create"
+        model: "general_audit_ws_f63f569"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_f63f569.id"
+
+      - step: "Open worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_open"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after opening worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Assert worksheet open"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          state:
+            type: "value"
+            expected: "open"
+
+      - step: "Fill required conclusion fields before confirm"
+        action: "write"
+        target: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          conclusion_id: "REC: conclusion.id"
+          conclusion: "IT control evaluation reviewed and adequate."
+
+      - step: "Confirm worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_confirm"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after confirming worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Assert worksheet confirmed"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          state:
+            type: "value"
+            expected: "confirm"
+
+      - step: "Approve worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_approve_approval"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after approving worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Assert worksheet done"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          state:
+            type: "value"
+            expected: "done"
+
+  # ------------------------------------------------------------------
+  # f63f569 - Cancel and restart
+  # ------------------------------------------------------------------
+  - name: "Worksheet f63f569 - Cancel and restart"
+    steps:
+      - step: "Create worksheet f63f569"
+        action: "create"
+        model: "general_audit_ws_f63f569"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_f63f569.id"
+
+      - step: "Open worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_open"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after opening worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Assert worksheet open"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          state:
+            type: "value"
+            expected: "open"
+
+      - step: "Cancel worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_cancel"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after cancelling worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Assert worksheet cancelled"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          state:
+            type: "value"
+            expected: "cancel"
+
+      - step: "Restart worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_restart"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after restarting worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Assert worksheet back to draft"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          state:
+            type: "value"
+            expected: "draft"

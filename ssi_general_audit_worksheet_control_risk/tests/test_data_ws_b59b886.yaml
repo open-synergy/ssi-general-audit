@@ -1,0 +1,730 @@
+setup:
+  steps:
+    - step: "Get config parameter model"
+      action: "search"
+      model: "ir.config_parameter"
+      domain: []
+      save_as: "config_parameter"
+      limit: 1
+
+    - step: "Allow enough CPA licenses for this scenario"
+      action: "call"
+      target: "config_parameter"
+      method: "set_param"
+      args:
+        - "ssi_general_audit.max_number_of_cpa_license"
+        - "100"
+
+    - step: "Create client partner"
+      action: "create"
+      model: "res.partner"
+      save_as: "client"
+      as_user: "base.user_admin"
+      values:
+        name: "Test Audit Client - b59b886"
+        is_company: true
+
+    - step: "Create accountant partner"
+      action: "create"
+      model: "res.partner"
+      save_as: "accountant"
+      as_user: "base.user_admin"
+      values:
+        name: "Test Audit Accountant - b59b886"
+
+    - step: "Get CPA license id category"
+      action: "ref"
+      xml_id: "ssi_partner_identification_cpa_license.partner_identification_accountant_cpa_license"
+      save_as: "cpa_category"
+
+    - step: "Grant accountant a CPA license"
+      action: "create"
+      model: "res.partner.id_number"
+      save_as: "cpa_license"
+      as_user: "base.user_admin"
+      values:
+        partner_id: "REC: accountant.id"
+        category_id: "REC: cpa_category.id"
+        name: "CPA-B59B886-0001"
+
+    - step: "Create account type set"
+      action: "create"
+      model: "client_account_type_set"
+      save_as: "account_type_set"
+      as_user: "base.user_admin"
+      values:
+        name: "Test Account Type Set - b59b886"
+        code: "/"
+
+    - step: "Create financial accounting standard"
+      action: "create"
+      model: "accountant.financial_accounting_standard"
+      save_as: "standard"
+      as_user: "base.user_admin"
+      values:
+        name: "Test Financial Accounting Standard - b59b886"
+        code: "/"
+
+    - step: "Create general audit"
+      action: "create"
+      model: "general_audit"
+      save_as: "audit"
+      as_user: "base.user_admin"
+      values:
+        title: "Test General Audit - b59b886"
+        partner_id: "REC: client.id"
+        accountant_id: "REC: accountant.id"
+        account_type_set_id: "REC: account_type_set.id"
+        financial_accounting_standard_id: "REC: standard.id"
+        date_start: 2024-01-01
+        date_end: 2024-12-31
+        need_interim: false
+        need_previous: false
+        num_of_consecutive_audit_firm: 1
+        num_of_consecutive_audit_accountant: 1
+
+    - step: "Open general audit"
+      action: "call"
+      target: "audit"
+      method: "action_open"
+      as_user: "base.user_admin"
+
+    - step: "Invalidate cache after opening general audit"
+      action: "call"
+      target: "audit"
+      method: "invalidate_cache"
+
+    - step: "Get worksheet type b59b886"
+      action: "ref"
+      xml_id: "ssi_general_audit_worksheet_control_risk.worksheet_type_b59b886"
+      save_as: "ws_type_b59b886"
+
+    - step: "Get worksheet type d3d2719"
+      action: "ref"
+      xml_id: "ssi_general_audit_worksheet_control_risk.worksheet_type_d3d2719"
+      save_as: "ws_type_d3d2719"
+
+    - step: "Get worksheet type f63f569"
+      action: "ref"
+      xml_id: "ssi_general_audit_worksheet_control_risk.worksheet_type_f63f569"
+      save_as: "ws_type_f63f569"
+
+scenarios:
+  # ------------------------------------------------------------------
+  # b59b886 - action_populate (normal)
+  # ------------------------------------------------------------------
+  - name: "Worksheet b59b886 - Action populate (normal)"
+    steps:
+      - step: "Create general control category"
+        action: "create"
+        model: "general_audit_general_control_category"
+        save_as: "gc_category"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Category - b59b886 Populate Normal (GC)"
+          code: "/"
+
+      - step: "Create general control option set"
+        action: "create"
+        model: "checklist.option_set"
+        save_as: "gc_option_set"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Option Set - b59b886 Populate Normal (GC)"
+          code: "/"
+
+      - step: "Create general control A"
+        action: "create"
+        model: "general_audit_general_control"
+        save_as: "gc_control_a"
+        as_user: "base.user_admin"
+        values:
+          name: "Test GC Control A - b59b886 Populate Normal"
+          code: "/"
+          category_id: "REC: gc_category.id"
+          option_set_id: "REC: gc_option_set.id"
+
+      - step: "Create general control B"
+        action: "create"
+        model: "general_audit_general_control"
+        save_as: "gc_control_b"
+        as_user: "base.user_admin"
+        values:
+          name: "Test GC Control B - b59b886 Populate Normal"
+          code: "/"
+          category_id: "REC: gc_category.id"
+          option_set_id: "REC: gc_option_set.id"
+
+      - step: "Create general control indicator for control A"
+        action: "create"
+        model: "general_audit_general_control_indicator"
+        save_as: "gc_indicator_a"
+        as_user: "base.user_admin"
+        values:
+          name: "Test GC Indicator A - b59b886 Populate Normal"
+          code: "/"
+          control_id: "REC: gc_control_a.id"
+          option_set_id: "REC: gc_option_set.id"
+
+      - step: "Create general control indicator for control B"
+        action: "create"
+        model: "general_audit_general_control_indicator"
+        save_as: "gc_indicator_b"
+        as_user: "base.user_admin"
+        values:
+          name: "Test GC Indicator B - b59b886 Populate Normal"
+          code: "/"
+          control_id: "REC: gc_control_b.id"
+          option_set_id: "REC: gc_option_set.id"
+
+      - step: "Create general control set"
+        action: "create"
+        model: "general_audit_general_control_set"
+        save_as: "gc_set"
+        as_user: "base.user_admin"
+        values:
+          name: "Test General Control Set - b59b886 Populate Normal"
+          code: "/"
+          general_control_indicator_ids:
+            [[6, 0, ["REC: gc_indicator_a.id", "REC: gc_indicator_b.id"]]]
+
+      - step: "Create worksheet d3d2719 and load its 2 details"
+        action: "create"
+        model: "general_audit_ws_d3d2719"
+        save_as: "ws_d3d2719"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_d3d2719.id"
+          set_id: "REC: gc_set.id"
+
+      - step: "Load details for d3d2719"
+        action: "call"
+        target: "ws_d3d2719"
+        method: "action_load_detail"
+        as_user: "base.user_admin"
+
+      - step: "Create IT control category"
+        action: "create"
+        model: "general_audit_it_control_category"
+        save_as: "it_category"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Category - b59b886 Populate Normal (IT)"
+          code: "/"
+
+      - step: "Create IT control option set"
+        action: "create"
+        model: "checklist.option_set"
+        save_as: "it_option_set"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Option Set - b59b886 Populate Normal (IT)"
+          code: "/"
+
+      - step: "Create IT control A"
+        action: "create"
+        model: "general_audit_it_control"
+        save_as: "it_control_a"
+        as_user: "base.user_admin"
+        values:
+          name: "Test IT Control A - b59b886 Populate Normal"
+          code: "/"
+          category_id: "REC: it_category.id"
+          option_set_id: "REC: it_option_set.id"
+
+      - step: "Create IT control B"
+        action: "create"
+        model: "general_audit_it_control"
+        save_as: "it_control_b"
+        as_user: "base.user_admin"
+        values:
+          name: "Test IT Control B - b59b886 Populate Normal"
+          code: "/"
+          category_id: "REC: it_category.id"
+          option_set_id: "REC: it_option_set.id"
+
+      - step: "Create IT control indicator for control A"
+        action: "create"
+        model: "general_audit_it_control_indicator"
+        save_as: "it_indicator_a"
+        as_user: "base.user_admin"
+        values:
+          name: "Test IT Indicator A - b59b886 Populate Normal"
+          code: "/"
+          control_id: "REC: it_control_a.id"
+          option_set_id: "REC: it_option_set.id"
+
+      - step: "Create IT control indicator for control B"
+        action: "create"
+        model: "general_audit_it_control_indicator"
+        save_as: "it_indicator_b"
+        as_user: "base.user_admin"
+        values:
+          name: "Test IT Indicator B - b59b886 Populate Normal"
+          code: "/"
+          control_id: "REC: it_control_b.id"
+          option_set_id: "REC: it_option_set.id"
+
+      - step: "Create IT control set"
+        action: "create"
+        model: "general_audit_it_control_set"
+        save_as: "it_set"
+        as_user: "base.user_admin"
+        values:
+          name: "Test IT Control Set - b59b886 Populate Normal"
+          code: "/"
+          it_control_indicator_ids:
+            [[6, 0, ["REC: it_indicator_a.id", "REC: it_indicator_b.id"]]]
+
+      - step: "Create worksheet f63f569 and load its 2 details"
+        action: "create"
+        model: "general_audit_ws_f63f569"
+        save_as: "ws_f63f569"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_f63f569.id"
+          set_id: "REC: it_set.id"
+
+      - step: "Load details for f63f569"
+        action: "call"
+        target: "ws_f63f569"
+        method: "action_load_detail"
+        as_user: "base.user_admin"
+
+      - step: "Create worksheet b59b886"
+        action: "create"
+        model: "general_audit_ws_b59b886"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_b59b886.id"
+
+      - step: "Call action_populate"
+        action: "call"
+        target: "worksheet"
+        method: "action_populate"
+        as_user: "base.user_admin"
+
+      - step: "Verify 2 general_control rows were populated"
+        action: "search"
+        model: "general_audit_ws_b59b886.general_control"
+        domain:
+          - ["worksheet_id", "=", "REC: worksheet.id"]
+        save_as: "gc_rows"
+        expect_count: 2
+
+      - step: "Verify 2 it_control rows were populated"
+        action: "search"
+        model: "general_audit_ws_b59b886.it_control"
+        domain:
+          - ["worksheet_id", "=", "REC: worksheet.id"]
+        save_as: "it_rows"
+        expect_count: 2
+
+  # ------------------------------------------------------------------
+  # b59b886 - action_populate (idempoten)
+  # ------------------------------------------------------------------
+  - name: "Worksheet b59b886 - Action populate (idempotent)"
+    steps:
+      - step: "Create general control category"
+        action: "create"
+        model: "general_audit_general_control_category"
+        save_as: "gc_category"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Category - b59b886 Populate Idempotent (GC)"
+          code: "/"
+
+      - step: "Create general control option set"
+        action: "create"
+        model: "checklist.option_set"
+        save_as: "gc_option_set"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Option Set - b59b886 Populate Idempotent (GC)"
+          code: "/"
+
+      - step: "Create general control"
+        action: "create"
+        model: "general_audit_general_control"
+        save_as: "gc_control"
+        as_user: "base.user_admin"
+        values:
+          name: "Test GC Control - b59b886 Populate Idempotent"
+          code: "/"
+          category_id: "REC: gc_category.id"
+          option_set_id: "REC: gc_option_set.id"
+
+      - step: "Create general control indicator"
+        action: "create"
+        model: "general_audit_general_control_indicator"
+        save_as: "gc_indicator"
+        as_user: "base.user_admin"
+        values:
+          name: "Test GC Indicator - b59b886 Populate Idempotent"
+          code: "/"
+          control_id: "REC: gc_control.id"
+          option_set_id: "REC: gc_option_set.id"
+
+      - step: "Create general control set"
+        action: "create"
+        model: "general_audit_general_control_set"
+        save_as: "gc_set"
+        as_user: "base.user_admin"
+        values:
+          name: "Test General Control Set - b59b886 Populate Idempotent"
+          code: "/"
+          general_control_indicator_ids: [[6, 0, ["REC: gc_indicator.id"]]]
+
+      - step: "Create worksheet d3d2719 and load its 1 detail"
+        action: "create"
+        model: "general_audit_ws_d3d2719"
+        save_as: "ws_d3d2719"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_d3d2719.id"
+          set_id: "REC: gc_set.id"
+
+      - step: "Load details for d3d2719"
+        action: "call"
+        target: "ws_d3d2719"
+        method: "action_load_detail"
+        as_user: "base.user_admin"
+
+      - step: "Create IT control category"
+        action: "create"
+        model: "general_audit_it_control_category"
+        save_as: "it_category"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Category - b59b886 Populate Idempotent (IT)"
+          code: "/"
+
+      - step: "Create IT control option set"
+        action: "create"
+        model: "checklist.option_set"
+        save_as: "it_option_set"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Option Set - b59b886 Populate Idempotent (IT)"
+          code: "/"
+
+      - step: "Create IT control"
+        action: "create"
+        model: "general_audit_it_control"
+        save_as: "it_control"
+        as_user: "base.user_admin"
+        values:
+          name: "Test IT Control - b59b886 Populate Idempotent"
+          code: "/"
+          category_id: "REC: it_category.id"
+          option_set_id: "REC: it_option_set.id"
+
+      - step: "Create IT control indicator"
+        action: "create"
+        model: "general_audit_it_control_indicator"
+        save_as: "it_indicator"
+        as_user: "base.user_admin"
+        values:
+          name: "Test IT Indicator - b59b886 Populate Idempotent"
+          code: "/"
+          control_id: "REC: it_control.id"
+          option_set_id: "REC: it_option_set.id"
+
+      - step: "Create IT control set"
+        action: "create"
+        model: "general_audit_it_control_set"
+        save_as: "it_set"
+        as_user: "base.user_admin"
+        values:
+          name: "Test IT Control Set - b59b886 Populate Idempotent"
+          code: "/"
+          it_control_indicator_ids: [[6, 0, ["REC: it_indicator.id"]]]
+
+      - step: "Create worksheet f63f569 and load its 1 detail"
+        action: "create"
+        model: "general_audit_ws_f63f569"
+        save_as: "ws_f63f569"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_f63f569.id"
+          set_id: "REC: it_set.id"
+
+      - step: "Load details for f63f569"
+        action: "call"
+        target: "ws_f63f569"
+        method: "action_load_detail"
+        as_user: "base.user_admin"
+
+      - step: "Create worksheet b59b886"
+        action: "create"
+        model: "general_audit_ws_b59b886"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_b59b886.id"
+
+      - step: "Call action_populate the first time"
+        action: "call"
+        target: "worksheet"
+        method: "action_populate"
+        as_user: "base.user_admin"
+
+      - step: "Call action_populate a second time"
+        action: "call"
+        target: "worksheet"
+        method: "action_populate"
+        as_user: "base.user_admin"
+
+      - step: "Verify general_control row count stayed at 1, not duplicated"
+        action: "search"
+        model: "general_audit_ws_b59b886.general_control"
+        domain:
+          - ["worksheet_id", "=", "REC: worksheet.id"]
+        save_as: "gc_rows"
+        expect_count: 1
+
+      - step: "Verify it_control row count stayed at 1, not duplicated"
+        action: "search"
+        model: "general_audit_ws_b59b886.it_control"
+        domain:
+          - ["worksheet_id", "=", "REC: worksheet.id"]
+        save_as: "it_rows"
+        expect_count: 1
+
+  # ------------------------------------------------------------------
+  # b59b886 - action_populate (sumber kosong)
+  # ------------------------------------------------------------------
+  - name: "Worksheet b59b886 - Action populate (sumber kosong)"
+    steps:
+      - step: "Create worksheet b59b886 without any d3d2719/f63f569 for the audit"
+        action: "create"
+        model: "general_audit_ws_b59b886"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_b59b886.id"
+
+      - step: "Call action_populate"
+        action: "call"
+        target: "worksheet"
+        method: "action_populate"
+        as_user: "base.user_admin"
+
+      - step: "Verify general_control_ids is empty"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          general_control_ids:
+            type: "o2m"
+            check: "count"
+            expected_count: 0
+
+      - step: "Verify it_control_ids is empty"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          it_control_ids:
+            type: "o2m"
+            check: "count"
+            expected_count: 0
+
+  # ------------------------------------------------------------------
+  # b59b886 - Write control/significant deficiency fields
+  # ------------------------------------------------------------------
+  - name: "Worksheet b59b886 - Write deficiency fields"
+    steps:
+      - step: "Create worksheet b59b886"
+        action: "create"
+        model: "general_audit_ws_b59b886"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_b59b886.id"
+
+      - step: "Write control/significant deficiency identified"
+        action: "write"
+        target: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          control_deficiency_identified: "yes"
+          significant_deficiency_identified: "no"
+
+      - step: "Assert deficiency field values"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          control_deficiency_identified:
+            type: "value"
+            expected: "yes"
+          significant_deficiency_identified:
+            type: "value"
+            expected: "no"
+
+  # ------------------------------------------------------------------
+  # b59b886 - Workflow confirm to done
+  # ------------------------------------------------------------------
+  - name: "Worksheet b59b886 - Workflow confirm to done"
+    steps:
+      - step: "Create conclusion for b59b886 worksheet type"
+        action: "create"
+        model: "general_audit_worksheet_conclusion"
+        save_as: "conclusion"
+        as_user: "base.user_admin"
+        values:
+          name: "Entity level control risk is adequate"
+          code: "/"
+          type_id: "REC: ws_type_b59b886.id"
+
+      - step: "Create worksheet b59b886"
+        action: "create"
+        model: "general_audit_ws_b59b886"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_b59b886.id"
+
+      - step: "Open worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_open"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after opening worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Assert worksheet open"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          state:
+            type: "value"
+            expected: "open"
+
+      - step: "Fill required conclusion fields before confirm"
+        action: "write"
+        target: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          conclusion_id: "REC: conclusion.id"
+          conclusion: "Entity level control risk reviewed and adequate."
+
+      - step: "Confirm worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_confirm"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after confirming worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Assert worksheet confirmed"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          state:
+            type: "value"
+            expected: "confirm"
+
+      - step: "Approve worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_approve_approval"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after approving worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Assert worksheet done"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          state:
+            type: "value"
+            expected: "done"
+
+  # ------------------------------------------------------------------
+  # b59b886 - Cancel and restart
+  # ------------------------------------------------------------------
+  - name: "Worksheet b59b886 - Cancel and restart"
+    steps:
+      - step: "Create worksheet b59b886"
+        action: "create"
+        model: "general_audit_ws_b59b886"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_b59b886.id"
+
+      - step: "Open worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_open"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after opening worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Assert worksheet open"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          state:
+            type: "value"
+            expected: "open"
+
+      - step: "Cancel worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_cancel"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after cancelling worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Assert worksheet cancelled"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          state:
+            type: "value"
+            expected: "cancel"
+
+      - step: "Restart worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_restart"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after restarting worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Assert worksheet back to draft"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          state:
+            type: "value"
+            expected: "draft"
