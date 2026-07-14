@@ -349,23 +349,53 @@ scenarios:
         target: "worksheet"
         method: "invalidate_cache"
 
-      - step: "Toggle account_mode via Form and verify onchange clears fields"
+      - step: "Switch account_mode to standard_account via Form"
         action: "form"
         target: "worksheet"
         as_user: "base.user_admin"
         save: true
         ops:
           - set: {account_mode: "standard_account"}
-          - assert:
-              account_id:
-                type: "value"
-                operator: "is_falsy"
+
+      - step: "Assert account_id was cleared by the onchange"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          account_id:
+            type: "value"
+            operator: "is_falsy"
+
+      - step: "Set account_type_id now that standard_account mode is active"
+        action: "form"
+        target: "worksheet"
+        as_user: "base.user_admin"
+        save: true
+        ops:
           - set: {account_type_id: "REC: account_type"}
+
+      - step: "Assert account_type_id was actually persisted"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          account_type_id:
+            type: "value"
+            operator: "is_truthy"
+
+      - step: "Switch account_mode back to account via Form"
+        action: "form"
+        target: "worksheet"
+        as_user: "base.user_admin"
+        save: true
+        ops:
           - set: {account_mode: "account"}
-          - assert:
-              account_type_id:
-                type: "value"
-                operator: "is_falsy"
+
+      - step: "Assert account_type_id was cleared by the onchange"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          account_type_id:
+            type: "value"
+            operator: "is_falsy"
 
   # ------------------------------------------------------------------
   # Workflow draft -> open -> confirm -> done

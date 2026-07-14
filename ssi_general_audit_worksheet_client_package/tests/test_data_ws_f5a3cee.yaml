@@ -152,7 +152,12 @@ setup:
       as_user: "base.user_admin"
       values:
         name: "Test Client Account A - F5A3CEE"
-        code: "/"
+        # client_account._check_duplicate_code enforces uniqueness of the
+        # LITERAL code value per partner_id -- unlike other mixin.master_data
+        # models used in this file, "/" is stored as-is here (not
+        # auto-sequenced), so a second account for the same partner needs an
+        # explicit, distinct code.
+        code: "ACC-A-F5A3CEE"
         partner_id: "REC: client.id"
         type_id: "REC: account_type_a.id"
 
@@ -163,7 +168,7 @@ setup:
       as_user: "base.user_admin"
       values:
         name: "Test Client Account B - F5A3CEE"
-        code: "/"
+        code: "ACC-B-F5A3CEE"
         partner_id: "REC: client.id"
         type_id: "REC: account_type_b.id"
 
