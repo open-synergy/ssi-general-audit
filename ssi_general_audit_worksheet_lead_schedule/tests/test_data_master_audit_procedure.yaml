@@ -143,10 +143,16 @@ scenarios:
         as_user: "base.user_admin"
 
       - step: "Verify category deleted"
+        # Filter by the deleted record's own id, NOT by name: the DB is not
+        # rolled back between scenarios within this file (each scenario only
+        # resets the registry alias map), so the "Create"/"Edit" scenarios
+        # above leave their own same-named category rows behind. Filtering
+        # by name would find those leftovers instead of proving THIS
+        # scenario's own record is gone.
         action: "search"
         model: "general_audit_audit_procedure_category"
         domain:
-          - ["name", "=", "Existence and Occurrence - Cash"]
+          - ["id", "=", "REC: category.id"]
         save_as: "result"
         expect_count: 0
 
@@ -278,41 +284,28 @@ scenarios:
         as_user: "base.user_admin"
 
       - step: "Verify procedure deleted"
+        # Same reasoning as "Verify category deleted" above: filter by id,
+        # not by name, since same-named leftovers from other scenarios in
+        # this file are still present in the DB.
         action: "search"
         model: "general_audit_audit_procedure"
         domain:
-          - ["name", "=", "Trace cash receipts to bank statement"]
+          - ["id", "=", "REC: procedure.id"]
         save_as: "result"
         expect_count: 0
 
-  # ------------------------------------------------------------------
-  # general_audit_audit_procedure - Onchange account_type_id clears category_id
-  # ------------------------------------------------------------------
-  - name: "Audit procedure - Onchange account_type_id clears category_id"
-    steps:
-      - step: "Create audit procedure category for account type A"
-        action: "create"
-        model: "general_audit_audit_procedure_category"
-        save_as: "category_a"
-        as_user: "base.user_admin"
-        values:
-          name: "Existence and Occurrence - Cash (A)"
-          code: "/"
-          account_type_id: "REC: account_type_a.id"
-          assertion_type_ids:
-            - - 6
-              - 0
-              - - "REC: assertion_type.id"
-
-      - step: "Fill form, set category, then change account_type_id"
-        action: "form"
-        model: "general_audit_audit_procedure"
-        save: false
-        ops:
-          - set: {account_type_id: "REC: account_type_a"}
-          - set: {category_id: "REC: category_a"}
-          - set: {account_type_id: "REC: account_type_b"}
-          - assert:
-              category_id:
-                type: "value"
-                operator: "is_falsy"
+  # NOTE: `Audit procedure - Onchange account_type_id clears category_id` is
+  # deliberately NOT declared here as a YAML scenario. `action: form` +
+  # `ops: [..., {assert: {category_id: {type: value, operator: is_falsy}}}]`
+  # crashes with `AssertionError: __len__ was not found in the view`: the
+  # installed odoo_yaml_test's `_read_path()` calls
+  # `hasattr(current, "__len__")` on the live Form proxy before reading any
+  # field, and Odoo's `Form.__getattr__` (odoo/tests/common.py) raises
+  # `AssertionError` (not `AttributeError`) for any attribute absent from
+  # the view's field list; Python's `hasattr()` only swallows
+  # `AttributeError`, so the AssertionError propagates and aborts the step.
+  # Saving the form afterwards is also not an option: `category_id` is
+  # `required=True` on `general_audit_audit_procedure` and the onchange
+  # leaves it empty, so `form.save()` would fail on the missing required
+  # field. See `test_onchange_account_type_id_clears_category` in
+  # test_master_audit_procedure.py for a plain Python Form() test instead.
