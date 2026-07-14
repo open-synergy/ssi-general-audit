@@ -89,6 +89,11 @@ setup:
       method: "action_open"
       as_user: "base.user_admin"
 
+    - step: "Invalidate cache after opening general audit"
+      action: "call"
+      target: "audit"
+      method: "invalidate_cache"
+
     - step: "Get worksheet type fbbe0f8"
       action: "ref"
       xml_id: "ssi_general_audit_worksheet_planning_memorandum.worksheet_type_fbbe0f8"
@@ -976,6 +981,11 @@ scenarios:
         method: "action_open"
         as_user: "base.user_admin"
 
+      - step: "Invalidate cache after opening worksheet fbbe0f8"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
       - step: "Assert worksheet fbbe0f8 open"
         action: "assert"
         target: "worksheet"
@@ -1008,6 +1018,11 @@ scenarios:
         method: "action_confirm"
         as_user: "base.user_admin"
 
+      - step: "Invalidate cache after confirming worksheet fbbe0f8"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
       - step: "Assert worksheet fbbe0f8 confirmed"
         action: "assert"
         target: "worksheet"
@@ -1021,6 +1036,11 @@ scenarios:
         target: "worksheet"
         method: "action_approve_approval"
         as_user: "base.user_admin"
+
+      - step: "Invalidate cache after approving worksheet fbbe0f8"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
 
       - step: "Assert worksheet fbbe0f8 done"
         action: "assert"
@@ -1163,6 +1183,11 @@ scenarios:
         method: "action_open"
         as_user: "base.user_admin"
 
+      - step: "Invalidate cache after opening worksheet fbbe0f8"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
       - step: "Assert worksheet open"
         action: "assert"
         target: "worksheet"
@@ -1177,6 +1202,11 @@ scenarios:
         method: "action_cancel"
         as_user: "base.user_admin"
 
+      - step: "Invalidate cache after cancelling worksheet fbbe0f8"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
       - step: "Assert worksheet cancelled"
         action: "assert"
         target: "worksheet"
@@ -1190,6 +1220,11 @@ scenarios:
         target: "worksheet"
         method: "action_restart"
         as_user: "base.user_admin"
+
+      - step: "Invalidate cache after restarting worksheet fbbe0f8"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
 
       - step: "Assert worksheet back to draft"
         action: "assert"
