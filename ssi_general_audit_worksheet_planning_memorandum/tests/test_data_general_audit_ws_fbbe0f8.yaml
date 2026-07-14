@@ -1,0 +1,1200 @@
+setup:
+  steps:
+    - step: "Get config parameter model"
+      action: "search"
+      model: "ir.config_parameter"
+      domain: []
+      save_as: "config_parameter"
+      limit: 1
+
+    - step: "Allow enough CPA licenses for this scenario"
+      action: "call"
+      target: "config_parameter"
+      method: "set_param"
+      args:
+        - "ssi_general_audit.max_number_of_cpa_license"
+        - "100"
+
+    - step: "Create client partner"
+      action: "create"
+      model: "res.partner"
+      save_as: "client"
+      as_user: "base.user_admin"
+      values:
+        name: "Test Audit Client - fbbe0f8"
+        is_company: true
+
+    - step: "Create accountant partner"
+      action: "create"
+      model: "res.partner"
+      save_as: "accountant"
+      as_user: "base.user_admin"
+      values:
+        name: "Test Audit Accountant - fbbe0f8"
+
+    - step: "Get CPA license id category"
+      action: "ref"
+      xml_id: "ssi_partner_identification_cpa_license.partner_identification_accountant_cpa_license"
+      save_as: "cpa_category"
+
+    - step: "Grant accountant a CPA license"
+      action: "create"
+      model: "res.partner.id_number"
+      save_as: "cpa_license"
+      as_user: "base.user_admin"
+      values:
+        partner_id: "REC: accountant.id"
+        category_id: "REC: cpa_category.id"
+        name: "CPA-FBBE0F8-0001"
+
+    - step: "Create account type set"
+      action: "create"
+      model: "client_account_type_set"
+      save_as: "account_type_set"
+      as_user: "base.user_admin"
+      values:
+        name: "Test Account Type Set - fbbe0f8"
+        code: "/"
+
+    - step: "Create financial accounting standard"
+      action: "create"
+      model: "accountant.financial_accounting_standard"
+      save_as: "standard"
+      as_user: "base.user_admin"
+      values:
+        name: "Test Financial Accounting Standard - fbbe0f8"
+        code: "/"
+
+    - step: "Create general audit"
+      action: "create"
+      model: "general_audit"
+      save_as: "audit"
+      as_user: "base.user_admin"
+      values:
+        title: "Test General Audit - fbbe0f8"
+        partner_id: "REC: client.id"
+        accountant_id: "REC: accountant.id"
+        account_type_set_id: "REC: account_type_set.id"
+        financial_accounting_standard_id: "REC: standard.id"
+        date_start: 2026-01-01
+        date_end: 2026-12-31
+        need_interim: false
+        need_previous: false
+        num_of_consecutive_audit_firm: 1
+        num_of_consecutive_audit_accountant: 1
+
+    - step: "Open general audit"
+      action: "call"
+      target: "audit"
+      method: "action_open"
+      as_user: "base.user_admin"
+
+    - step: "Get worksheet type fbbe0f8"
+      action: "ref"
+      xml_id: "ssi_general_audit_worksheet_planning_memorandum.worksheet_type_fbbe0f8"
+      save_as: "ws_type_fbbe0f8"
+
+    - step: "Get worksheet type bdcdfc5"
+      action: "ref"
+      xml_id: "ssi_general_audit_worksheet_understanding_entity.worksheet_type_bdcdfc5"
+      save_as: "ws_type_bdcdfc5"
+
+    - step: "Get worksheet type a604795"
+      action: "ref"
+      xml_id: "ssi_general_audit_worksheet_understanding_entity.worksheet_type_a604795"
+      save_as: "ws_type_a604795"
+
+    - step: "Get worksheet type ae11f7e"
+      action: "ref"
+      xml_id: "ssi_general_audit_worksheet_understanding_entity.worksheet_type_ae11f7e"
+      save_as: "ws_type_ae11f7e"
+
+    - step: "Get worksheet type d9d2b44"
+      action: "ref"
+      xml_id: "ssi_general_audit_worksheet_preliminary_materiality.worksheet_type_d9d2b44"
+      save_as: "ws_type_d9d2b44"
+
+    - step: "Get worksheet type 6dcda0e"
+      action: "ref"
+      xml_id: "ssi_general_audit_worksheet_preliminary_materiality.worksheet_type_6dcda0e"
+      save_as: "ws_type_6dcda0e"
+
+    - step: "Get worksheet type c16abd7"
+      action: "ref"
+      xml_id: "ssi_general_audit_worksheet_inherent_risk.worksheet_type_c16abd7"
+      save_as: "ws_type_c16abd7"
+
+    - step: "Get worksheet type 437fc8f"
+      action: "ref"
+      xml_id: "ssi_general_audit_worksheet_team_communication.worksheet_type_437fc8f"
+      save_as: "ws_type_437fc8f"
+
+    - step: "Get worksheet type b59b886"
+      action: "ref"
+      xml_id: "ssi_general_audit_worksheet_control_risk.worksheet_type_b59b886"
+      save_as: "ws_type_b59b886"
+
+    - step: "Get worksheet type eabdaad"
+      action: "ref"
+      xml_id: "ssi_general_audit_worksheet_control_risk.worksheet_type_eabdaad"
+      save_as: "ws_type_eabdaad"
+
+    - step: "Get worksheet type ba9b2f0"
+      action: "ref"
+      xml_id: "ssi_general_audit_worksheet_control_risk.worksheet_type_ba9b2f0"
+      save_as: "ws_type_ba9b2f0"
+
+    - step: "Get worksheet type b9d8a5c"
+      action: "ref"
+      xml_id: "ssi_general_audit_worksheet_acceptance_continuance.worksheet_type_b9d8a5c"
+      save_as: "ws_type_b9d8a5c"
+
+    - step: "Get worksheet type ae48e68"
+      action: "ref"
+      xml_id: "ssi_general_audit_worksheet_external_communication.worksheet_type_ae48e68"
+      save_as: "ws_type_ae48e68"
+
+    - step: "Get worksheet type cbbbaf4"
+      action: "ref"
+      xml_id: "ssi_general_audit_worksheet_audit_working_plan.worksheet_type_cbbbaf4"
+      save_as: "ws_type_cbbbaf4"
+
+    - step: "Get business environment - Industry Trends"
+      action: "ref"
+      xml_id: "ssi_general_audit.general_audit_business_environment_1_297034dd"
+      save_as: "be_industry"
+
+    - step: "Get business environment - Amendments to Accounting Standards"
+      action: "ref"
+      xml_id: "ssi_general_audit.general_audit_business_environment_3_bd6c9b55"
+      save_as: "be_amendment"
+
+    - step: "Get business environment - Regulatory Changes"
+      action: "ref"
+      xml_id: "ssi_general_audit.general_audit_business_environment_4_aaeebb37"
+      save_as: "be_regulatory"
+
+    - step: "Get business environment - Technological Developments (IT)"
+      action: "ref"
+      xml_id: "ssi_general_audit.general_audit_business_environment_5_ffea3e57"
+      save_as: "be_it"
+
+scenarios:
+  # ------------------------------------------------------------------
+  # Empty condition - no upstream worksheets at all
+  # ------------------------------------------------------------------
+  - name: "Create fbbe0f8 without upstream worksheets - links and computed fields empty"
+    steps:
+      - step: "Create worksheet fbbe0f8 with no upstream worksheets"
+        action: "create"
+        model: "general_audit_ws_fbbe0f8"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_fbbe0f8.id"
+
+      - step: "Assert all 13 links and derived compute fields are empty"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          id:
+            type: "value"
+            operator: "is_truthy"
+          state:
+            type: "value"
+            expected: "draft"
+          link_1_ids:
+            type: "m2m"
+            check: "count"
+            expected_count: 0
+          link_2_ids:
+            type: "m2m"
+            check: "count"
+            expected_count: 0
+          link_3_ids:
+            type: "m2m"
+            check: "count"
+            expected_count: 0
+          link_4_ids:
+            type: "m2m"
+            check: "count"
+            expected_count: 0
+          link_5_id:
+            type: "value"
+            operator: "is_falsy"
+          link_6_id:
+            type: "value"
+            operator: "is_falsy"
+          link_7_id:
+            type: "value"
+            operator: "is_falsy"
+          link_8_id:
+            type: "value"
+            operator: "is_falsy"
+          link_9_id:
+            type: "value"
+            operator: "is_falsy"
+          link_10_id:
+            type: "value"
+            operator: "is_falsy"
+          link_11_ids:
+            type: "m2m"
+            check: "count"
+            expected_count: 0
+          link_12_ids:
+            type: "m2m"
+            check: "count"
+            expected_count: 0
+          link_13_id:
+            type: "value"
+            operator: "is_falsy"
+          overall_materiality:
+            type: "value"
+            expected: 0.0
+          performance_materiality:
+            type: "value"
+            expected: 0.0
+          tolerable_misstatement:
+            type: "value"
+            expected: 0.0
+          specific_materiality_ids:
+            type: "m2m"
+            check: "count"
+            expected_count: 0
+          unannounced_audit_ids:
+            type: "m2m"
+            check: "count"
+            expected_count: 0
+          assigned_team_member_ids:
+            type: "m2m"
+            check: "count"
+            expected_count: 0
+          volume_transaction_ids:
+            type: "m2m"
+            check: "count"
+            expected_count: 0
+          cycle_level_ids:
+            type: "m2m"
+            check: "count"
+            expected_count: 0
+          significant_acc_ids:
+            type: "m2m"
+            check: "count"
+            expected_count: 0
+          previous_auditor_ids:
+            type: "m2m"
+            check: "count"
+            expected_count: 0
+          other_provided_service_ids:
+            type: "m2m"
+            check: "count"
+            expected_count: 0
+          previous_audit_evidence_ids:
+            type: "m2m"
+            check: "count"
+            expected_count: 0
+          other_evidence_ids:
+            type: "m2m"
+            check: "count"
+            expected_count: 0
+          assignment_team_ids:
+            type: "m2m"
+            check: "count"
+            expected_count: 0
+          it_review:
+            type: "value"
+            operator: "is_falsy"
+          industry_review:
+            type: "value"
+            operator: "is_falsy"
+          amendment_review:
+            type: "value"
+            operator: "is_falsy"
+          regulatory_review:
+            type: "value"
+            operator: "is_falsy"
+
+  # ------------------------------------------------------------------
+  # Normal condition - all 13 upstream worksheets present, plus full
+  # workflow (open -> confirm -> approve -> done), since confirm on
+  # fbbe0f8 requires all 13 links to be filled already.
+  # ------------------------------------------------------------------
+  - name: "Compute link_1..link_13 (normal) with derived fields and full workflow"
+    steps:
+      # ---- shared minimal master data used by several upstream worksheets ----
+      - step: "Create shared client account group"
+        action: "create"
+        model: "client_account_group"
+        save_as: "account_group"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Account Group - fbbe0f8 Normal"
+          code: "/"
+
+      - step: "Create shared client account type"
+        action: "create"
+        model: "client_account_type"
+        save_as: "account_type"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Account Type - fbbe0f8 Normal"
+          code: "/"
+          group_id: "REC: account_group.id"
+
+      - step: "Create shared employee"
+        action: "create"
+        model: "hr.employee"
+        save_as: "employee"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Employee - fbbe0f8 Normal"
+
+      - step: "Create shared class of transaction"
+        action: "create"
+        model: "general_audit_class_transaction"
+        save_as: "class_transaction"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Class Transaction - fbbe0f8 Normal"
+          code: "/"
+
+      - step: "Create shared audit evidence type"
+        action: "create"
+        model: "general_audit_evidence"
+        save_as: "evidence"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Evidence - fbbe0f8 Normal"
+
+      - step: "Create shared client business process (business cycle)"
+        action: "create"
+        model: "client_business_process"
+        save_as: "business_cycle"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Business Cycle - fbbe0f8 Normal"
+          code: "/"
+
+      # ---- LINK 1: 4x general_audit_ws_bdcdfc5, one per business environment ----
+      - step:
+          "Create worksheet bdcdfc5 for IT environment (link_1, it_detail_ids/it_review)"
+        action: "create"
+        model: "general_audit_ws_bdcdfc5"
+        save_as: "ws_bdcdfc5_it"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_bdcdfc5.id"
+          business_environment_id: "REC: be_it.id"
+          review: "IT review note."
+          detail_ids:
+            - - 0
+              - 0
+              - understanding_result: "IT environment understanding result."
+                impact_to_financial_report: "Impact on financial report from IT."
+                related_account_type_ids: [[6, 0, ["REC: account_type.id"]]]
+
+      - step: "Open worksheet bdcdfc5 (IT)"
+        action: "call"
+        target: "ws_bdcdfc5_it"
+        method: "action_open"
+        as_user: "base.user_admin"
+
+      - step:
+          "Create worksheet bdcdfc5 for Industry environment (link_1, industry_review)"
+        action: "create"
+        model: "general_audit_ws_bdcdfc5"
+        save_as: "ws_bdcdfc5_industry"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_bdcdfc5.id"
+          business_environment_id: "REC: be_industry.id"
+          review: "Industry review note."
+
+      - step: "Open worksheet bdcdfc5 (Industry)"
+        action: "call"
+        target: "ws_bdcdfc5_industry"
+        method: "action_open"
+        as_user: "base.user_admin"
+
+      - step:
+          "Create worksheet bdcdfc5 for Amendment environment (link_1, amendment_review)"
+        action: "create"
+        model: "general_audit_ws_bdcdfc5"
+        save_as: "ws_bdcdfc5_amendment"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_bdcdfc5.id"
+          business_environment_id: "REC: be_amendment.id"
+          review: "Amendment review note."
+
+      - step: "Open worksheet bdcdfc5 (Amendment)"
+        action: "call"
+        target: "ws_bdcdfc5_amendment"
+        method: "action_open"
+        as_user: "base.user_admin"
+
+      - step:
+          "Create worksheet bdcdfc5 for Regulatory environment (link_1,
+          regulatory_review)"
+        action: "create"
+        model: "general_audit_ws_bdcdfc5"
+        save_as: "ws_bdcdfc5_regulatory"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_bdcdfc5.id"
+          business_environment_id: "REC: be_regulatory.id"
+          review: "Regulatory review note."
+
+      - step: "Open worksheet bdcdfc5 (Regulatory)"
+        action: "call"
+        target: "ws_bdcdfc5_regulatory"
+        method: "action_open"
+        as_user: "base.user_admin"
+
+      # ---- LINK 2: general_audit_ws_a604795 (business cycle summaries) ----
+      - step: "Create worksheet a604795 (link_2)"
+        action: "create"
+        model: "general_audit_ws_a604795"
+        save_as: "ws_a604795"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_a604795.id"
+          estimated_transaction_volume: 5000
+          assigned_team_member_ids: [[6, 0, ["REC: employee.id"]]]
+          detail_ids:
+            - - 0
+              - 0
+              - class_transaction_id: "REC: class_transaction.id"
+                related_account_type_ids: [[6, 0, ["REC: account_type.id"]]]
+                need_unannounced_audit: true
+
+      - step: "Open worksheet a604795"
+        action: "call"
+        target: "ws_a604795"
+        method: "action_open"
+        as_user: "base.user_admin"
+
+      # ---- LINK 3: general_audit_ws_d9d2b44 (materiality computation) ----
+      - step: "Create worksheet d9d2b44 (link_3, materiality)"
+        action: "create"
+        model: "general_audit_ws_d9d2b44"
+        save_as: "ws_d9d2b44"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_d9d2b44.id"
+          base_amount_source: "extrapolation"
+          other_amount_ok: true
+          other_base_amount: 1000000.0
+          overall_materiality_percentage: 5.0
+          performance_materiality_percentage: 50.0
+          tolerable_misstatement_percentage: 10.0
+
+      - step: "Open worksheet d9d2b44"
+        action: "call"
+        target: "ws_d9d2b44"
+        method: "action_open"
+        as_user: "base.user_admin"
+
+      # ---- LINK 4: general_audit_ws_6dcda0e (specific materiality) ----
+      - step: "Create worksheet 6dcda0e (link_4, specific materiality)"
+        action: "create"
+        model: "general_audit_ws_6dcda0e"
+        save_as: "ws_6dcda0e"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_6dcda0e.id"
+          worksheet_d9d2b44_id: "REC: ws_d9d2b44.id"
+
+      - step: "Open worksheet 6dcda0e"
+        action: "call"
+        target: "ws_6dcda0e"
+        method: "action_open"
+        as_user: "base.user_admin"
+
+      # ---- LINK 5: general_audit_ws_c16abd7 (inherent risk - FS level) ----
+      - step: "Create worksheet c16abd7 (link_5)"
+        action: "create"
+        model: "general_audit_ws_c16abd7"
+        save_as: "ws_c16abd7"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_c16abd7.id"
+          review: "Inherent risk financial statement review note."
+
+      - step: "Open worksheet c16abd7"
+        action: "call"
+        target: "ws_c16abd7"
+        method: "action_open"
+        as_user: "base.user_admin"
+
+      # ---- LINK 6: general_audit_ws_437fc8f (team communication pre-engagement) ----
+      - step: "Create worksheet 437fc8f (link_6)"
+        action: "create"
+        model: "general_audit_ws_437fc8f"
+        save_as: "ws_437fc8f"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_437fc8f.id"
+          review: "Team communication pre-engagement review note."
+          communication_planning_date: 2026-02-01
+          communication_date: 2026-02-05
+          communication_reporting_date: 2026-02-10
+
+      - step: "Open worksheet 437fc8f"
+        action: "call"
+        target: "ws_437fc8f"
+        method: "action_open"
+        as_user: "base.user_admin"
+
+      # ---- LINK 7: general_audit_ws_ae11f7e (main business activity process) ----
+      - step: "Create worksheet ae11f7e (link_7)"
+        action: "create"
+        model: "general_audit_ws_ae11f7e"
+        save_as: "ws_ae11f7e"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_ae11f7e.id"
+          previous_audit_information_ids:
+            - - 0
+              - 0
+              - name: "Prior year audit noted no material misstatements."
+                related_account_type_ids: [[6, 0, ["REC: account_type.id"]]]
+          other_provided_service_ids:
+            - - 0
+              - 0
+              - name: "Tax advisory service"
+                partner_id: "REC: client.id"
+                related_account_type_ids: [[6, 0, ["REC: account_type.id"]]]
+          previous_audit_evidence_ids:
+            - - 0
+              - 0
+              - evidence_id: "REC: evidence.id"
+                related_account_type_ids: [[6, 0, ["REC: account_type.id"]]]
+          other_evidence_ids:
+            - - 0
+              - 0
+              - evidence_id: "REC: evidence.id"
+                partner_name: "External Bank"
+                summary: "Bank confirmation received."
+                related_account_type_ids: [[6, 0, ["REC: account_type.id"]]]
+
+      - step: "Open worksheet ae11f7e"
+        action: "call"
+        target: "ws_ae11f7e"
+        method: "action_open"
+        as_user: "base.user_admin"
+
+      # ---- LINK 8: general_audit_ws_b59b886 (control risk - entity level) ----
+      - step: "Create worksheet b59b886 (link_8)"
+        action: "create"
+        model: "general_audit_ws_b59b886"
+        save_as: "ws_b59b886"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_b59b886.id"
+          review: "Control risk entity level review note."
+
+      - step: "Open worksheet b59b886"
+        action: "call"
+        target: "ws_b59b886"
+        method: "action_open"
+        as_user: "base.user_admin"
+
+      # ---- LINK 9: general_audit_ws_b9d8a5c (assignment team) ----
+      - step: "Create worksheet b9d8a5c (link_9)"
+        action: "create"
+        model: "general_audit_ws_b9d8a5c"
+        save_as: "ws_b9d8a5c"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_b9d8a5c.id"
+          summary_ids:
+            - - 0
+              - 0
+              - employee_id: "REC: employee.id"
+                select_team: "yes"
+
+      - step: "Open worksheet b9d8a5c"
+        action: "call"
+        target: "ws_b9d8a5c"
+        method: "action_open"
+        as_user: "base.user_admin"
+
+      # ---- LINK 10: general_audit_ws_ae48e68 (external communication) ----
+      - step: "Create worksheet ae48e68 (link_10)"
+        action: "create"
+        model: "general_audit_ws_ae48e68"
+        save_as: "ws_ae48e68"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_ae48e68.id"
+          mgmt_communication_planning_date: 2026-03-01
+          mgmt_communication_date: 2026-03-05
+          mgmt_communication_reporting_date: 2026-03-10
+          tcwg_communication_planning_date: 2026-03-02
+          tcwg_communication_date: 2026-03-06
+          tcwg_communication_reporting_date: 2026-03-11
+          ia_communication_planning_date: 2026-03-03
+          ia_communication_date: 2026-03-07
+          ia_communication_reporting_date: 2026-03-12
+
+      - step: "Open worksheet ae48e68"
+        action: "call"
+        target: "ws_ae48e68"
+        method: "action_open"
+        as_user: "base.user_admin"
+
+      # ---- LINK 11: general_audit_ws_eabdaad (control risk - cycle level) ----
+      - step: "Create worksheet eabdaad (link_11)"
+        action: "create"
+        model: "general_audit_ws_eabdaad"
+        save_as: "ws_eabdaad"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_eabdaad.id"
+          risk: "high"
+          business_cycle_id: "REC: business_cycle.id"
+
+      - step: "Open worksheet eabdaad"
+        action: "call"
+        target: "ws_eabdaad"
+        method: "action_open"
+        as_user: "base.user_admin"
+
+      # ---- LINK 12: general_audit_ws_ba9b2f0 (significant account) ----
+      - step: "Create worksheet ba9b2f0 (link_12)"
+        action: "create"
+        model: "general_audit_ws_ba9b2f0"
+        save_as: "ws_ba9b2f0"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_ba9b2f0.id"
+          risk: "high"
+          account_type_id: "REC: account_type.id"
+
+      - step: "Open worksheet ba9b2f0"
+        action: "call"
+        target: "ws_ba9b2f0"
+        method: "action_open"
+        as_user: "base.user_admin"
+
+      # ---- LINK 13: general_audit_ws_cbbbaf4 (audit working plan) ----
+      - step: "Create worksheet cbbbaf4 (link_13)"
+        action: "create"
+        model: "general_audit_ws_cbbbaf4"
+        save_as: "ws_cbbbaf4"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_cbbbaf4.id"
+          budget_plan_status: "prepared"
+
+      - step: "Open worksheet cbbbaf4"
+        action: "call"
+        target: "ws_cbbbaf4"
+        method: "action_open"
+        as_user: "base.user_admin"
+
+      # ---- Now create fbbe0f8 itself; all 13 links compute at create time ----
+      - step: "Create worksheet fbbe0f8 with all 13 upstream worksheets present"
+        action: "create"
+        model: "general_audit_ws_fbbe0f8"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_fbbe0f8.id"
+          materiality_balance_type: "extrapolation"
+
+      - step: "Assert all 13 links resolved to the created upstream worksheets"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          link_1_ids:
+            type: "m2m"
+            check: "exact"
+            expected_records:
+              - "REC: ws_bdcdfc5_it"
+              - "REC: ws_bdcdfc5_industry"
+              - "REC: ws_bdcdfc5_amendment"
+              - "REC: ws_bdcdfc5_regulatory"
+          link_2_ids:
+            type: "m2m"
+            check: "exact"
+            expected_records:
+              - "REC: ws_a604795"
+          link_3_ids:
+            type: "m2m"
+            check: "exact"
+            expected_records:
+              - "REC: ws_d9d2b44"
+          link_4_ids:
+            type: "m2m"
+            check: "exact"
+            expected_records:
+              - "REC: ws_6dcda0e"
+          link_5_id:
+            type: "m2o"
+            expected: "REC: ws_c16abd7"
+          link_6_id:
+            type: "m2o"
+            expected: "REC: ws_437fc8f"
+          link_7_id:
+            type: "m2o"
+            expected: "REC: ws_ae11f7e"
+          link_8_id:
+            type: "m2o"
+            expected: "REC: ws_b59b886"
+          link_9_id:
+            type: "m2o"
+            expected: "REC: ws_b9d8a5c"
+          link_10_id:
+            type: "m2o"
+            expected: "REC: ws_ae48e68"
+          link_11_ids:
+            type: "m2m"
+            check: "exact"
+            expected_records:
+              - "REC: ws_eabdaad"
+          link_12_ids:
+            type: "m2m"
+            check: "exact"
+            expected_records:
+              - "REC: ws_ba9b2f0"
+          link_13_id:
+            type: "m2o"
+            expected: "REC: ws_cbbbaf4"
+
+      - step: "Assert derived fields from link_1 (bdcdfc5) business environment filters"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          it_detail_ids:
+            type: "m2m"
+            check: "count"
+            expected_count: 1
+          it_review:
+            type: "value"
+            expected: "IT review note."
+          industry_review:
+            type: "value"
+            expected: "Industry review note."
+          amendment_review:
+            type: "value"
+            expected: "Amendment review note."
+          regulatory_review:
+            type: "value"
+            expected: "Regulatory review note."
+
+      - step: "Assert derived fields from link_2 (a604795 business cycle summaries)"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          unannounced_audit_ids:
+            type: "m2m"
+            check: "count"
+            expected_count: 1
+          assigned_team_member_ids:
+            type: "m2m"
+            check: "exact"
+            expected_records:
+              - "REC: ws_a604795"
+          volume_transaction_ids:
+            type: "m2m"
+            check: "exact"
+            expected_records:
+              - "REC: ws_a604795"
+
+      - step: "Assert materiality computed from link_3 (d9d2b44), matching balance type"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          overall_materiality:
+            type: "value"
+            expected: 50000.0
+          performance_materiality:
+            type: "value"
+            expected: 25000.0
+          tolerable_misstatement:
+            type: "value"
+            expected: 2500.0
+
+      - step:
+          "Assert specific_materiality_ids stays empty (no materiality mapping rows
+          created)"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          specific_materiality_ids:
+            type: "m2m"
+            check: "count"
+            expected_count: 0
+
+      - step: "Assert inherent_finance_review from link_5 (c16abd7)"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          inherent_finance_review:
+            type: "value"
+            expected: "Inherent risk financial statement review note."
+
+      - step: "Assert team_pe_review and communication dates from link_6 (437fc8f)"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          team_pe_review:
+            type: "value"
+            expected: "Team communication pre-engagement review note."
+          communication_planning_date:
+            type: "value"
+            expected: 2026-02-01
+          communication_date:
+            type: "value"
+            expected: 2026-02-05
+          communication_reporting_date:
+            type: "value"
+            expected: 2026-02-10
+
+      - step: "Assert main business activity fields from link_7 (ae11f7e)"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          previous_auditor_ids:
+            type: "m2m"
+            check: "count"
+            expected_count: 1
+          other_provided_service_ids:
+            type: "m2m"
+            check: "count"
+            expected_count: 1
+          previous_audit_evidence_ids:
+            type: "m2m"
+            check: "count"
+            expected_count: 1
+          other_evidence_ids:
+            type: "m2m"
+            check: "count"
+            expected_count: 1
+
+      - step: "Assert control_entity_review from link_8 (b59b886)"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          control_entity_review:
+            type: "value"
+            expected: "Control risk entity level review note."
+
+      - step: "Assert assignment_team_ids from link_9 (b9d8a5c)"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          assignment_team_ids:
+            type: "m2m"
+            check: "count"
+            expected_count: 1
+
+      - step: "Assert external communication dates from link_10 (ae48e68)"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          mgmt_communication_planning_date:
+            type: "value"
+            expected: 2026-03-01
+          mgmt_communication_date:
+            type: "value"
+            expected: 2026-03-05
+          mgmt_communication_reporting_date:
+            type: "value"
+            expected: 2026-03-10
+          tcwg_communication_planning_date:
+            type: "value"
+            expected: 2026-03-02
+          tcwg_communication_date:
+            type: "value"
+            expected: 2026-03-06
+          tcwg_communication_reporting_date:
+            type: "value"
+            expected: 2026-03-11
+          ia_communication_planning_date:
+            type: "value"
+            expected: 2026-03-03
+          ia_communication_date:
+            type: "value"
+            expected: 2026-03-07
+          ia_communication_reporting_date:
+            type: "value"
+            expected: 2026-03-12
+
+      - step: "Assert cycle_level_ids from link_11 (eabdaad, risk=high)"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          cycle_level_ids:
+            type: "m2m"
+            check: "exact"
+            expected_records:
+              - "REC: business_cycle"
+
+      - step: "Assert significant_acc_ids from link_12 (ba9b2f0, risk=high)"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          significant_acc_ids:
+            type: "m2m"
+            check: "exact"
+            expected_records:
+              - "REC: account_type"
+
+      - step: "Assert budget_plan_status from link_13 (cbbbaf4)"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          budget_plan_status:
+            type: "value"
+            expected: "prepared"
+
+      # ---- Full workflow: open -> confirm -> approve -> done ----
+      - step: "Open worksheet fbbe0f8"
+        action: "call"
+        target: "worksheet"
+        method: "action_open"
+        as_user: "base.user_admin"
+
+      - step: "Assert worksheet fbbe0f8 open"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          state:
+            type: "value"
+            expected: "open"
+
+      - step: "Create conclusion for fbbe0f8 worksheet type"
+        action: "create"
+        model: "general_audit_worksheet_conclusion"
+        save_as: "conclusion"
+        as_user: "base.user_admin"
+        values:
+          name: "Audit Planning Memorandum - Detail is adequate (test)"
+          code: "/"
+          type_id: "REC: ws_type_fbbe0f8.id"
+
+      - step: "Fill required conclusion fields before confirm"
+        action: "write"
+        target: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          conclusion_id: "REC: conclusion.id"
+          conclusion: "All 13 planning memorandum links reviewed and adequate."
+
+      - step: "Confirm worksheet fbbe0f8 (all 13 links + conclusion are filled)"
+        action: "call"
+        target: "worksheet"
+        method: "action_confirm"
+        as_user: "base.user_admin"
+
+      - step: "Assert worksheet fbbe0f8 confirmed"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          state:
+            type: "value"
+            expected: "confirm"
+
+      - step: "Approve worksheet fbbe0f8"
+        action: "call"
+        target: "worksheet"
+        method: "action_approve_approval"
+        as_user: "base.user_admin"
+
+      - step: "Assert worksheet fbbe0f8 done"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          state:
+            type: "value"
+            expected: "done"
+
+  # ------------------------------------------------------------------
+  # Materiality balance type mismatch -> zero
+  # ------------------------------------------------------------------
+  - name: "Compute materiality - balance type mismatch yields zero"
+    steps:
+      - step: "Create worksheet d9d2b44 with extrapolation balance type"
+        action: "create"
+        model: "general_audit_ws_d9d2b44"
+        save_as: "ws_d9d2b44"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_d9d2b44.id"
+          base_amount_source: "extrapolation"
+          other_amount_ok: true
+          other_base_amount: 1000000.0
+          overall_materiality_percentage: 5.0
+          performance_materiality_percentage: 50.0
+          tolerable_misstatement_percentage: 10.0
+
+      - step: "Open worksheet d9d2b44"
+        action: "call"
+        target: "ws_d9d2b44"
+        method: "action_open"
+        as_user: "base.user_admin"
+
+      - step: "Create worksheet fbbe0f8 with mismatching balance type (end_period)"
+        action: "create"
+        model: "general_audit_ws_fbbe0f8"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_fbbe0f8.id"
+          materiality_balance_type: "end_period"
+
+      - step:
+          "Assert materiality fields are zero (base_amount_source mismatch filters out
+          link_3_ids)"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          link_3_ids:
+            type: "m2m"
+            check: "exact"
+            expected_records:
+              - "REC: ws_d9d2b44"
+          overall_materiality:
+            type: "value"
+            expected: 0.0
+          performance_materiality:
+            type: "value"
+            expected: 0.0
+          tolerable_misstatement:
+            type: "value"
+            expected: 0.0
+
+  # ------------------------------------------------------------------
+  # action_reload_links
+  # ------------------------------------------------------------------
+  - name: "action_reload_links populates link_1_ids after upstream worksheet is opened"
+    steps:
+      - step: "Create worksheet fbbe0f8 with no upstream worksheets yet"
+        action: "create"
+        model: "general_audit_ws_fbbe0f8"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_fbbe0f8.id"
+
+      - step: "Assert link_1_ids is empty before any upstream worksheet exists"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          link_1_ids:
+            type: "m2m"
+            check: "count"
+            expected_count: 0
+
+      - step: "Create worksheet bdcdfc5 for the same audit"
+        action: "create"
+        model: "general_audit_ws_bdcdfc5"
+        save_as: "ws_bdcdfc5"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_bdcdfc5.id"
+          business_environment_id: "REC: be_it.id"
+          review: "IT review note (reload test)."
+
+      - step: "Open worksheet bdcdfc5"
+        action: "call"
+        target: "ws_bdcdfc5"
+        method: "action_open"
+        as_user: "base.user_admin"
+
+      - step: "Call action_reload_links on fbbe0f8"
+        action: "call"
+        target: "worksheet"
+        method: "action_reload_links"
+        as_user: "base.user_admin"
+
+      - step: "Assert link_1_ids now contains the newly opened worksheet"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          link_1_ids:
+            type: "m2m"
+            check: "exact"
+            expected_records:
+              - "REC: ws_bdcdfc5"
+
+  # ------------------------------------------------------------------
+  # Cancel and restart
+  # ------------------------------------------------------------------
+  - name: "Workflow fbbe0f8 - cancel and restart"
+    steps:
+      - step: "Create worksheet fbbe0f8"
+        action: "create"
+        model: "general_audit_ws_fbbe0f8"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_fbbe0f8.id"
+
+      - step: "Open worksheet fbbe0f8"
+        action: "call"
+        target: "worksheet"
+        method: "action_open"
+        as_user: "base.user_admin"
+
+      - step: "Assert worksheet open"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          state:
+            type: "value"
+            expected: "open"
+
+      - step: "Cancel worksheet fbbe0f8"
+        action: "call"
+        target: "worksheet"
+        method: "action_cancel"
+        as_user: "base.user_admin"
+
+      - step: "Assert worksheet cancelled"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          state:
+            type: "value"
+            expected: "cancel"
+
+      - step: "Restart worksheet fbbe0f8"
+        action: "call"
+        target: "worksheet"
+        method: "action_restart"
+        as_user: "base.user_admin"
+
+      - step: "Assert worksheet back to draft"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          state:
+            type: "value"
+            expected: "draft"
