@@ -744,23 +744,31 @@ scenarios:
           account_type_id: "REC: account_type.id"
           ws_e51bb1c_id: "REC: ws_e51bb1c.id"
 
+      # Asserting directly on the live (unsaved) Form object trips a
+      # library/Form interaction bug (`hasattr(form, "__len__")` raises
+      # AssertionError instead of returning False), so save the form
+      # first and assert on the resulting record instead -- same pattern
+      # ssi_general_audit_worksheet_physical_check's onchange test uses.
       - step:
           "Open the existing (draft) worksheet in a Form and switch general_audit_id"
         action: "form"
         target: "worksheet"
+        save_as: "onchange_worksheet"
         as_user: "base.user_admin"
-        save: false
-        ops:
-          - set:
-              general_audit_id: "REC: audit2"
-          - assert:
-              account_type_id:
-                type: "value"
-                operator: "is_falsy"
-          - assert:
-              ws_e51bb1c_id:
-                type: "value"
-                operator: "is_falsy"
+        values:
+          general_audit_id: "REC: audit2"
+        save: true
+
+      - step: "Assert account_type_id and ws_e51bb1c_id were cleared by the onchange"
+        action: "assert"
+        target: "onchange_worksheet"
+        asserts:
+          account_type_id:
+            type: "value"
+            operator: "is_falsy"
+          ws_e51bb1c_id:
+            type: "value"
+            operator: "is_falsy"
 
   # ------------------------------------------------------------------
   # Delete in draft

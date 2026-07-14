@@ -1353,23 +1353,31 @@ scenarios:
           account_type_id: "REC: account_type.id"
           ws_e51bb1c_id: "REC: ws_e51bb1c.id"
 
+      # Asserting directly on the live (unsaved) Form object trips a
+      # library/Form interaction bug (`hasattr(form, "__len__")` raises
+      # AssertionError instead of returning False), so save the form
+      # first and assert on the resulting record instead -- same pattern
+      # ssi_general_audit_worksheet_physical_check's onchange test uses.
       - step:
           "Open the existing (draft) worksheet in a Form and switch general_audit_id"
         action: "form"
         target: "worksheet"
+        save_as: "onchange_worksheet"
         as_user: "base.user_admin"
-        save: false
-        ops:
-          - set:
-              general_audit_id: "REC: audit2"
-          - assert:
-              account_type_id:
-                type: "value"
-                operator: "is_falsy"
-          - assert:
-              ws_e51bb1c_id:
-                type: "value"
-                operator: "is_falsy"
+        values:
+          general_audit_id: "REC: audit2"
+        save: true
+
+      - step: "Assert account_type_id and ws_e51bb1c_id were cleared by the onchange"
+        action: "assert"
+        target: "onchange_worksheet"
+        asserts:
+          account_type_id:
+            type: "value"
+            operator: "is_falsy"
+          ws_e51bb1c_id:
+            type: "value"
+            operator: "is_falsy"
 
   # ------------------------------------------------------------------
   # general_audit_ws_aa899baf.variable - onchange data_mode
@@ -1394,24 +1402,38 @@ scenarios:
           general_audit_id: "REC: audit.id"
           type_id: "REC: ws_type_gl.id"
 
+      # Asserting directly on the live (unsaved) Form object trips a
+      # library/Form interaction bug (`hasattr(form, "__len__")` raises
+      # AssertionError instead of returning False), so save the form
+      # first and assert on the resulting record instead. name and
+      # value_col_number (no default) are filled so the save succeeds.
       - step: "Set data_mode to gl with general_ledger_id, then switch to subledger"
         action: "form"
         model: "general_audit_ws_aa899baf.variable"
+        save_as: "onchange_variable"
         as_user: "base.user_admin"
-        save: false
         ops:
           - set:
               worksheet_id: "REC: worksheet"
+          - set:
+              name: "Onchange Test Variable"
+          - set:
+              value_col_number: 1
           - set:
               data_mode: "gl"
           - set:
               general_ledger_id: "REC: ws_gl"
           - set:
               data_mode: "subledger"
-          - assert:
-              general_ledger_id:
-                type: "value"
-                operator: "is_falsy"
+        save: true
+
+      - step: "Assert general_ledger_id was cleared by the onchange"
+        action: "assert"
+        target: "onchange_variable"
+        asserts:
+          general_ledger_id:
+            type: "value"
+            operator: "is_falsy"
 
   - name: "Variable aa899baf - Onchange data_mode clears subledger_id"
     steps:
@@ -1433,24 +1455,38 @@ scenarios:
           general_audit_id: "REC: audit.id"
           type_id: "REC: ws_type_subledger.id"
 
+      # Asserting directly on the live (unsaved) Form object trips a
+      # library/Form interaction bug (`hasattr(form, "__len__")` raises
+      # AssertionError instead of returning False), so save the form
+      # first and assert on the resulting record instead. name and
+      # value_col_number (no default) are filled so the save succeeds.
       - step: "Set data_mode to subledger with subledger_id, then switch to gl"
         action: "form"
         model: "general_audit_ws_aa899baf.variable"
+        save_as: "onchange_variable"
         as_user: "base.user_admin"
-        save: false
         ops:
           - set:
               worksheet_id: "REC: worksheet"
+          - set:
+              name: "Onchange Test Variable"
+          - set:
+              value_col_number: 1
           - set:
               data_mode: "subledger"
           - set:
               subledger_id: "REC: ws_subledger"
           - set:
               data_mode: "gl"
-          - assert:
-              subledger_id:
-                type: "value"
-                operator: "is_falsy"
+        save: true
+
+      - step: "Assert subledger_id was cleared by the onchange"
+        action: "assert"
+        target: "onchange_variable"
+        asserts:
+          subledger_id:
+            type: "value"
+            operator: "is_falsy"
 
   # ------------------------------------------------------------------
   # Delete in draft
