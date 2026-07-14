@@ -1,0 +1,311 @@
+setup:
+  steps:
+    - step: "Create client account group"
+      action: "create"
+      model: "client_account_group"
+      save_as: "account_group"
+      as_user: "base.user_admin"
+      values:
+        name: "Test Account Group - Master Audit Procedure"
+        code: "/"
+
+    - step: "Create client account type A"
+      action: "create"
+      model: "client_account_type"
+      save_as: "account_type_a"
+      as_user: "base.user_admin"
+      values:
+        name: "Test Account Type A - Master Audit Procedure"
+        code: "/"
+        group_id: "REC: account_group.id"
+        normal_balance: "dr"
+        # DILARANG membiarkan python_code pada default "result = document.balance":
+        # general_audit.standard_detail._compute_extrapolation_balance akan crash
+        # (AttributeError) begitu tipe akun ini terhubung ke sebuah standard_detail.
+        python_code: "result = 0.0"
+
+    - step: "Create client account type B"
+      action: "create"
+      model: "client_account_type"
+      save_as: "account_type_b"
+      as_user: "base.user_admin"
+      values:
+        name: "Test Account Type B - Master Audit Procedure"
+        code: "/"
+        group_id: "REC: account_group.id"
+        normal_balance: "cr"
+        python_code: "result = 0.0"
+
+    - step: "Create assertion type"
+      action: "create"
+      model: "general_audit_assersion_type"
+      save_as: "assertion_type"
+      as_user: "base.user_admin"
+      values:
+        name: "Existence"
+        code: "/"
+
+scenarios:
+  # ------------------------------------------------------------------
+  # general_audit_audit_procedure_category - Create
+  # ------------------------------------------------------------------
+  - name: "Audit procedure category - Create"
+    steps:
+      - step: "Create audit procedure category"
+        action: "create"
+        model: "general_audit_audit_procedure_category"
+        save_as: "category"
+        as_user: "base.user_admin"
+        values:
+          name: "Existence and Occurrence - Cash"
+          code: "/"
+          account_type_id: "REC: account_type_a.id"
+          assertion_type_ids:
+            - - 6
+              - 0
+              - - "REC: assertion_type.id"
+
+      - step: "Assert category created"
+        action: "assert"
+        target: "category"
+        asserts:
+          id:
+            type: "value"
+            operator: "is_truthy"
+          name:
+            type: "value"
+            expected: "Existence and Occurrence - Cash"
+          account_type_id:
+            type: "m2o"
+            expected: "REC: account_type_a"
+          assertion_type_ids:
+            type: "m2m"
+            check: "exact"
+            expected_records:
+              - "REC: assertion_type"
+
+  # ------------------------------------------------------------------
+  # general_audit_audit_procedure_category - Edit
+  # ------------------------------------------------------------------
+  - name: "Audit procedure category - Edit"
+    steps:
+      - step: "Create audit procedure category"
+        action: "create"
+        model: "general_audit_audit_procedure_category"
+        save_as: "category"
+        as_user: "base.user_admin"
+        values:
+          name: "Existence and Occurrence - Cash"
+          code: "/"
+          account_type_id: "REC: account_type_a.id"
+          assertion_type_ids:
+            - - 6
+              - 0
+              - - "REC: assertion_type.id"
+
+      - step: "Write new name"
+        action: "write"
+        target: "category"
+        as_user: "base.user_admin"
+        values:
+          name: "Completeness - Cash"
+
+      - step: "Assert name updated"
+        action: "assert"
+        target: "category"
+        asserts:
+          name:
+            type: "value"
+            expected: "Completeness - Cash"
+
+  # ------------------------------------------------------------------
+  # general_audit_audit_procedure_category - Delete
+  # ------------------------------------------------------------------
+  - name: "Audit procedure category - Delete"
+    steps:
+      - step: "Create audit procedure category"
+        action: "create"
+        model: "general_audit_audit_procedure_category"
+        save_as: "category"
+        as_user: "base.user_admin"
+        values:
+          name: "Existence and Occurrence - Cash"
+          code: "/"
+          account_type_id: "REC: account_type_a.id"
+          assertion_type_ids:
+            - - 6
+              - 0
+              - - "REC: assertion_type.id"
+
+      - step: "Delete category"
+        action: "unlink"
+        target: "category"
+        as_user: "base.user_admin"
+
+      - step: "Verify category deleted"
+        # Filter by the deleted record's own id, NOT by name: the DB is not
+        # rolled back between scenarios within this file (each scenario only
+        # resets the registry alias map), so the "Create"/"Edit" scenarios
+        # above leave their own same-named category rows behind. Filtering
+        # by name would find those leftovers instead of proving THIS
+        # scenario's own record is gone.
+        action: "search"
+        model: "general_audit_audit_procedure_category"
+        domain:
+          - ["id", "=", "REC: category.id"]
+        save_as: "result"
+        expect_count: 0
+
+  # ------------------------------------------------------------------
+  # general_audit_audit_procedure - Create
+  # ------------------------------------------------------------------
+  - name: "Audit procedure - Create"
+    steps:
+      - step: "Create audit procedure category"
+        action: "create"
+        model: "general_audit_audit_procedure_category"
+        save_as: "category"
+        as_user: "base.user_admin"
+        values:
+          name: "Existence and Occurrence - Cash"
+          code: "/"
+          account_type_id: "REC: account_type_a.id"
+          assertion_type_ids:
+            - - 6
+              - 0
+              - - "REC: assertion_type.id"
+
+      - step: "Create audit procedure step"
+        action: "create"
+        model: "general_audit_audit_procedure"
+        save_as: "procedure"
+        as_user: "base.user_admin"
+        values:
+          name: "Trace cash receipts to bank statement"
+          code: "/"
+          account_type_id: "REC: account_type_a.id"
+          category_id: "REC: category.id"
+
+      - step: "Assert procedure created"
+        action: "assert"
+        target: "procedure"
+        asserts:
+          id:
+            type: "value"
+            operator: "is_truthy"
+          name:
+            type: "value"
+            expected: "Trace cash receipts to bank statement"
+          account_type_id:
+            type: "m2o"
+            expected: "REC: account_type_a"
+          category_id:
+            type: "m2o"
+            expected: "REC: category"
+
+  # ------------------------------------------------------------------
+  # general_audit_audit_procedure - Edit
+  # ------------------------------------------------------------------
+  - name: "Audit procedure - Edit"
+    steps:
+      - step: "Create audit procedure category"
+        action: "create"
+        model: "general_audit_audit_procedure_category"
+        save_as: "category"
+        as_user: "base.user_admin"
+        values:
+          name: "Existence and Occurrence - Cash"
+          code: "/"
+          account_type_id: "REC: account_type_a.id"
+          assertion_type_ids:
+            - - 6
+              - 0
+              - - "REC: assertion_type.id"
+
+      - step: "Create audit procedure step"
+        action: "create"
+        model: "general_audit_audit_procedure"
+        save_as: "procedure"
+        as_user: "base.user_admin"
+        values:
+          name: "Trace cash receipts to bank statement"
+          code: "/"
+          account_type_id: "REC: account_type_a.id"
+          category_id: "REC: category.id"
+
+      - step: "Write new name"
+        action: "write"
+        target: "procedure"
+        as_user: "base.user_admin"
+        values:
+          name: "Confirm cash balances with the bank"
+
+      - step: "Assert name updated"
+        action: "assert"
+        target: "procedure"
+        asserts:
+          name:
+            type: "value"
+            expected: "Confirm cash balances with the bank"
+
+  # ------------------------------------------------------------------
+  # general_audit_audit_procedure - Delete
+  # ------------------------------------------------------------------
+  - name: "Audit procedure - Delete"
+    steps:
+      - step: "Create audit procedure category"
+        action: "create"
+        model: "general_audit_audit_procedure_category"
+        save_as: "category"
+        as_user: "base.user_admin"
+        values:
+          name: "Existence and Occurrence - Cash"
+          code: "/"
+          account_type_id: "REC: account_type_a.id"
+          assertion_type_ids:
+            - - 6
+              - 0
+              - - "REC: assertion_type.id"
+
+      - step: "Create audit procedure step"
+        action: "create"
+        model: "general_audit_audit_procedure"
+        save_as: "procedure"
+        as_user: "base.user_admin"
+        values:
+          name: "Trace cash receipts to bank statement"
+          code: "/"
+          account_type_id: "REC: account_type_a.id"
+          category_id: "REC: category.id"
+
+      - step: "Delete procedure"
+        action: "unlink"
+        target: "procedure"
+        as_user: "base.user_admin"
+
+      - step: "Verify procedure deleted"
+        # Same reasoning as "Verify category deleted" above: filter by id,
+        # not by name, since same-named leftovers from other scenarios in
+        # this file are still present in the DB.
+        action: "search"
+        model: "general_audit_audit_procedure"
+        domain:
+          - ["id", "=", "REC: procedure.id"]
+        save_as: "result"
+        expect_count: 0
+
+  # NOTE: `Audit procedure - Onchange account_type_id clears category_id` is
+  # deliberately NOT declared here as a YAML scenario. `action: form` +
+  # `ops: [..., {assert: {category_id: {type: value, operator: is_falsy}}}]`
+  # crashes with `AssertionError: __len__ was not found in the view`: the
+  # installed odoo_yaml_test's `_read_path()` calls
+  # `hasattr(current, "__len__")` on the live Form proxy before reading any
+  # field, and Odoo's `Form.__getattr__` (odoo/tests/common.py) raises
+  # `AssertionError` (not `AttributeError`) for any attribute absent from
+  # the view's field list; Python's `hasattr()` only swallows
+  # `AttributeError`, so the AssertionError propagates and aborts the step.
+  # Saving the form afterwards is also not an option: `category_id` is
+  # `required=True` on `general_audit_audit_procedure` and the onchange
+  # leaves it empty, so `form.save()` would fail on the missing required
+  # field. See `test_onchange_account_type_id_clears_category` in
+  # test_master_audit_procedure.py for a plain Python Form() test instead.
