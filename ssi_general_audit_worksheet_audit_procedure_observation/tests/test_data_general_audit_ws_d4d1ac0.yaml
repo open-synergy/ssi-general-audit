@@ -1,0 +1,752 @@
+setup:
+  steps:
+    - step: "Get config parameter model"
+      action: "search"
+      model: "ir.config_parameter"
+      domain: []
+      save_as: "config_parameter"
+      limit: 1
+
+    - step: "Allow enough CPA licenses for this scenario"
+      action: "call"
+      target: "config_parameter"
+      method: "set_param"
+      args:
+        - "ssi_general_audit.max_number_of_cpa_license"
+        - "100"
+
+    - step: "Create client partner"
+      action: "create"
+      model: "res.partner"
+      save_as: "client"
+      as_user: "base.user_admin"
+      values:
+        name: "Test Audit Client - D4D1AC0"
+        is_company: true
+
+    - step: "Create accountant partner"
+      action: "create"
+      model: "res.partner"
+      save_as: "accountant"
+      as_user: "base.user_admin"
+      values:
+        name: "Test Audit Accountant - D4D1AC0"
+
+    - step: "Get CPA license id category"
+      action: "ref"
+      xml_id: "ssi_partner_identification_cpa_license.partner_identification_accountant_cpa_license"
+      save_as: "cpa_category"
+
+    - step: "Grant accountant a CPA license"
+      action: "create"
+      model: "res.partner.id_number"
+      save_as: "cpa_license"
+      as_user: "base.user_admin"
+      values:
+        partner_id: "REC: accountant.id"
+        category_id: "REC: cpa_category.id"
+        name: "CPA-D4D1AC0-0001"
+
+    - step: "Create account type set"
+      action: "create"
+      model: "client_account_type_set"
+      save_as: "account_type_set"
+      as_user: "base.user_admin"
+      values:
+        name: "Test Account Type Set - D4D1AC0"
+        code: "/"
+
+    - step: "Create financial accounting standard"
+      action: "create"
+      model: "accountant.financial_accounting_standard"
+      save_as: "standard"
+      as_user: "base.user_admin"
+      values:
+        name: "Test Financial Accounting Standard - D4D1AC0"
+        code: "/"
+
+    - step: "Create general audit"
+      action: "create"
+      model: "general_audit"
+      save_as: "audit"
+      as_user: "base.user_admin"
+      values:
+        title: "Test General Audit - D4D1AC0"
+        partner_id: "REC: client.id"
+        accountant_id: "REC: accountant.id"
+        account_type_set_id: "REC: account_type_set.id"
+        financial_accounting_standard_id: "REC: standard.id"
+        date_start: 2026-01-01
+        date_end: 2026-12-31
+        need_interim: false
+        need_previous: false
+        num_of_consecutive_audit_firm: 1
+        num_of_consecutive_audit_accountant: 1
+
+    - step: "Open general audit"
+      action: "call"
+      target: "audit"
+      method: "action_open"
+      as_user: "base.user_admin"
+
+    - step: "Invalidate cache after opening general audit"
+      action: "call"
+      target: "audit"
+      method: "invalidate_cache"
+
+    - step: "Get worksheet type d4d1ac0"
+      action: "ref"
+      xml_id: "ssi_general_audit_worksheet_audit_procedure_observation.worksheet_type_d4d1ac0"
+      save_as: "ws_type"
+
+    - step: "Get worksheet type e51bb1c"
+      action: "ref"
+      xml_id: "ssi_general_audit_worksheet_lead_schedule.worksheet_type_e51bb1c"
+      save_as: "ws_type_e51bb1c"
+
+    - step: "Create client account group"
+      action: "create"
+      model: "client_account_group"
+      save_as: "account_group"
+      as_user: "base.user_admin"
+      values:
+        name: "Test Account Group - D4D1AC0"
+        code: "/"
+
+    - step: "Create client account type (AR)"
+      action: "create"
+      model: "client_account_type"
+      save_as: "account_type"
+      as_user: "base.user_admin"
+      values:
+        name: "Test Account Type AR - D4D1AC0"
+        code: "/"
+        group_id: "REC: account_group.id"
+        # general_audit.standard_detail has no "balance" field, so a
+        # safe no-op avoids an unrelated crash in
+        # general_audit.standard_detail._compute_extrapolation_balance.
+        python_code: "result = 0.0"
+
+    - step: "Create assertion type"
+      action: "create"
+      model: "general_audit_assersion_type"
+      save_as: "assertion_type"
+      as_user: "base.user_admin"
+      values:
+        name: "Existence"
+        code: "/"
+
+    - step: "Create audit procedure category (performed)"
+      action: "create"
+      model: "general_audit_audit_procedure_category"
+      save_as: "category_performed"
+      as_user: "base.user_admin"
+      values:
+        name: "Observation - Performed Category"
+        code: "/"
+        account_type_id: "REC: account_type.id"
+        assertion_type_ids:
+          - - 6
+            - 0
+            - - "REC: assertion_type.id"
+
+    - step: "Create WS-E51BB1C worksheet (Key Audit Procedures)"
+      action: "create"
+      model: "general_audit_ws_e51bb1c"
+      save_as: "ws_e51bb1c"
+      as_user: "base.user_admin"
+      values:
+        general_audit_id: "REC: audit.id"
+        type_id: "REC: ws_type_e51bb1c.id"
+
+    - step: "Create WS-E51BB1C detail with status performed"
+      action: "create"
+      model: "general_audit_ws_e51bb1c.detail"
+      save_as: "detail_performed"
+      as_user: "base.user_admin"
+      values:
+        worksheet_id: "REC: ws_e51bb1c.id"
+        audit_procedure_category_id: "REC: category_performed.id"
+        assertion_type_ids:
+          - - 6
+            - 0
+            - - "REC: assertion_type.id"
+        status: "performed"
+
+    - step: "Create conclusion for d4d1ac0 worksheet type"
+      action: "create"
+      model: "general_audit_worksheet_conclusion"
+      save_as: "conclusion"
+      as_user: "base.user_admin"
+      values:
+        name: "No exception noted"
+        code: "/"
+        type_id: "REC: ws_type.id"
+
+    - step: "Create class of transaction (Penjualan Kredit) linked to AR"
+      action: "create"
+      model: "general_audit_class_transaction"
+      save_as: "class_transaction"
+      as_user: "base.user_admin"
+      values:
+        name: "Penjualan Kredit"
+        code: "/"
+        related_account_type_ids:
+          - - 6
+            - 0
+            - - "REC: account_type.id"
+
+scenarios:
+  # ------------------------------------------------------------------
+  # 1. Create WS-D4D1AC0
+  # ------------------------------------------------------------------
+  - name: "Worksheet d4d1ac0 - Create in draft"
+    steps:
+      - step: "Create worksheet d4d1ac0"
+        action: "create"
+        model: "general_audit_ws_d4d1ac0"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+          background: "Observasi stock opname akhir tahun"
+          primary_concern: "Prosedur otorisasi barang keluar gudang"
+          summary: "Belum ada observasi yang dilakukan."
+
+      - step: "Assert worksheet created in draft"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          id:
+            type: "value"
+            operator: "is_truthy"
+          state:
+            type: "value"
+            expected: "draft"
+          background:
+            type: "value"
+            expected: "Observasi stock opname akhir tahun"
+          general_audit_id:
+            type: "m2o"
+            expected: "REC: audit"
+          type_id:
+            type: "m2o"
+            expected: "REC: ws_type"
+
+  # ------------------------------------------------------------------
+  # 2. Workflow draft -> open -> confirm -> done
+  # ------------------------------------------------------------------
+  - name: "Worksheet d4d1ac0 - Workflow confirm to done"
+    steps:
+      - step: "Create worksheet d4d1ac0"
+        action: "create"
+        model: "general_audit_ws_d4d1ac0"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+
+      - step: "Open worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_open"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after opening worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Assert worksheet open"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          state:
+            type: "value"
+            expected: "open"
+
+      - step: "Fill required conclusion fields before confirm"
+        action: "write"
+        target: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          conclusion_id: "REC: conclusion.id"
+          conclusion: "Observation procedure raised no exception."
+
+      - step: "Confirm worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_confirm"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after confirming worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Assert worksheet confirmed"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          state:
+            type: "value"
+            expected: "confirm"
+
+      - step: "Approve worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_approve_approval"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after approving worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Assert worksheet done"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          state:
+            type: "value"
+            expected: "done"
+
+  # ------------------------------------------------------------------
+  # 2b. Cancel and restart
+  # ------------------------------------------------------------------
+  - name: "Worksheet d4d1ac0 - Cancel and restart"
+    steps:
+      - step: "Create worksheet d4d1ac0"
+        action: "create"
+        model: "general_audit_ws_d4d1ac0"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+
+      - step: "Open worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_open"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after opening worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Assert worksheet open"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          state:
+            type: "value"
+            expected: "open"
+
+      - step: "Cancel worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_cancel"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after cancelling worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Assert worksheet cancelled"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          state:
+            type: "value"
+            expected: "cancel"
+
+      - step: "Restart worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_restart"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after restarting worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Assert worksheet back to draft"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          state:
+            type: "value"
+            expected: "draft"
+
+  # ------------------------------------------------------------------
+  # 3. Edit worksheet - summary and primary_concern
+  # ------------------------------------------------------------------
+  - name: "Worksheet d4d1ac0 - Edit summary and primary_concern"
+    steps:
+      - step: "Create worksheet d4d1ac0 with initial summary"
+        action: "create"
+        model: "general_audit_ws_d4d1ac0"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+          summary: "Initial summary."
+          primary_concern: "Initial concern."
+
+      - step: "Update summary and primary_concern"
+        action: "write"
+        target: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          summary: "Updated summary after further observation."
+          primary_concern: "Updated primary concern."
+
+      - step: "Assert summary and primary_concern updated"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          summary:
+            type: "value"
+            expected: "Updated summary after further observation."
+          primary_concern:
+            type: "value"
+            expected: "Updated primary concern."
+
+  # ------------------------------------------------------------------
+  # 4. Create observation (O2M inline)
+  # ------------------------------------------------------------------
+  - name: "Worksheet d4d1ac0 - Create with inline observations"
+    steps:
+      - step: "Create worksheet d4d1ac0 with two inline observations"
+        action: "create"
+        model: "general_audit_ws_d4d1ac0"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+          observation_ids:
+            - - 0
+              - 0
+              - sequence: 10
+                subject: "Alur otorisasi pengeluaran barang"
+                observation: "Otorisasi dilakukan supervisor gudang"
+            - - 0
+              - 0
+              - sequence: 20
+                subject: "Prosedur stock opname"
+                observation: "Perhitungan fisik dilakukan dua orang secara silang"
+
+      - step: "Assert two observations created"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          observation_ids:
+            type: "o2m"
+            check: "count"
+            expected_count: 2
+
+  # ------------------------------------------------------------------
+  # 5, 6, 7. Create observation directly, edit, delete
+  # ------------------------------------------------------------------
+  - name: "Observation d4d1ac0 - Create, write, delete"
+    steps:
+      - step: "Create worksheet d4d1ac0"
+        action: "create"
+        model: "general_audit_ws_d4d1ac0"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+
+      - step: "Create observation directly"
+        action: "create"
+        model: "general_audit_ws_d4d1ac0.observation"
+        save_as: "observation"
+        as_user: "base.user_admin"
+        values:
+          worksheet_id: "REC: worksheet.id"
+          sequence: 30
+          subject: "Prosedur pengamanan aset tetap"
+          observation: "Aset tetap disimpan di gudang dengan akses terbatas."
+
+      - step: "Assert observation created"
+        action: "assert"
+        target: "observation"
+        asserts:
+          id:
+            type: "value"
+            operator: "is_truthy"
+          observation:
+            type: "value"
+            expected: "Aset tetap disimpan di gudang dengan akses terbatas."
+
+      - step: "Update observation"
+        action: "write"
+        target: "observation"
+        as_user: "base.user_admin"
+        values:
+          observation: "Aset tetap disimpan di gudang dengan CCTV dan akses terbatas."
+
+      - step: "Assert observation updated"
+        action: "assert"
+        target: "observation"
+        asserts:
+          observation:
+            type: "value"
+            expected: "Aset tetap disimpan di gudang dengan CCTV dan akses terbatas."
+
+      - step: "Delete observation"
+        action: "unlink"
+        target: "observation"
+
+      - step: "Verify observation deleted"
+        action: "search"
+        model: "general_audit_ws_d4d1ac0.observation"
+        domain:
+          - ["subject", "=", "Prosedur pengamanan aset tetap"]
+        save_as: "result"
+        expect_count: 0
+
+  # ------------------------------------------------------------------
+  # 8. Compute allowed_key_audit_procedure_ids - normal
+  # ------------------------------------------------------------------
+  - name: "Worksheet d4d1ac0 - Compute allowed_key_audit_procedure_ids normal"
+    steps:
+      - step: "Create worksheet d4d1ac0"
+        action: "create"
+        model: "general_audit_ws_d4d1ac0"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+
+      - step: "Set ws_e51bb1c_id"
+        action: "write"
+        target: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          ws_e51bb1c_id: "REC: ws_e51bb1c.id"
+
+      - step: "Assert allowed_key_audit_procedure_ids contains performed category"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          allowed_key_audit_procedure_ids:
+            type: "m2m"
+            check: "exact"
+            expected_records:
+              - "REC: category_performed"
+
+  # ------------------------------------------------------------------
+  # 9. Compute allowed_key_audit_procedure_ids - kosong
+  # ------------------------------------------------------------------
+  - name: "Worksheet d4d1ac0 - Compute allowed_key_audit_procedure_ids kosong"
+    steps:
+      - step: "Create worksheet d4d1ac0 without ws_e51bb1c_id"
+        action: "create"
+        model: "general_audit_ws_d4d1ac0"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+
+      - step: "Assert allowed_key_audit_procedure_ids is empty"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          allowed_key_audit_procedure_ids:
+            type: "m2m"
+            check: "count"
+            expected_count: 0
+
+  # ------------------------------------------------------------------
+  # 10. Compute detail_ws_e51bb1c_id - normal
+  # ------------------------------------------------------------------
+  - name: "Worksheet d4d1ac0 - Compute detail_ws_e51bb1c_id normal"
+    steps:
+      - step: "Create worksheet d4d1ac0"
+        action: "create"
+        model: "general_audit_ws_d4d1ac0"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+
+      - step: "Set ws_e51bb1c_id and key_audit_procedure_id"
+        action: "write"
+        target: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          ws_e51bb1c_id: "REC: ws_e51bb1c.id"
+          key_audit_procedure_id: "REC: category_performed.id"
+
+      - step: "Assert detail_ws_e51bb1c_id points to the matching detail"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          detail_ws_e51bb1c_id:
+            type: "m2o"
+            expected: "REC: detail_performed"
+
+  # ------------------------------------------------------------------
+  # 11. Compute detail_ws_e51bb1c_id - kosong
+  # ------------------------------------------------------------------
+  - name: "Worksheet d4d1ac0 - Compute detail_ws_e51bb1c_id kosong"
+    steps:
+      - step:
+          "Create worksheet d4d1ac0 with ws_e51bb1c_id but no key_audit_procedure_id"
+        action: "create"
+        model: "general_audit_ws_d4d1ac0"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+
+      - step: "Set only ws_e51bb1c_id"
+        action: "write"
+        target: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          ws_e51bb1c_id: "REC: ws_e51bb1c.id"
+
+      - step: "Assert detail_ws_e51bb1c_id is falsy"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          detail_ws_e51bb1c_id:
+            type: "value"
+            operator: "is_falsy"
+
+  # ------------------------------------------------------------------
+  # 12. Compute allowed_class_of_transaction_ids - normal
+  # ------------------------------------------------------------------
+  - name: "Worksheet d4d1ac0 - Compute allowed_class_of_transaction_ids normal"
+    steps:
+      - step: "Create worksheet d4d1ac0"
+        action: "create"
+        model: "general_audit_ws_d4d1ac0"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+
+      - step: "Set account_type_id (AR)"
+        action: "write"
+        target: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          account_type_id: "REC: account_type.id"
+
+      - step: "Assert allowed_class_of_transaction_ids contains Penjualan Kredit"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          allowed_class_of_transaction_ids:
+            type: "m2m"
+            check: "exact"
+            expected_records:
+              - "REC: class_transaction"
+
+  # ------------------------------------------------------------------
+  # 13. Compute allowed_class_of_transaction_ids - kosong
+  # ------------------------------------------------------------------
+  - name: "Worksheet d4d1ac0 - Compute allowed_class_of_transaction_ids kosong"
+    steps:
+      - step: "Create worksheet d4d1ac0 without account_type_id"
+        action: "create"
+        model: "general_audit_ws_d4d1ac0"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+
+      - step: "Assert allowed_class_of_transaction_ids is empty"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          allowed_class_of_transaction_ids:
+            type: "m2m"
+            check: "count"
+            expected_count: 0
+
+  # ------------------------------------------------------------------
+  # 14. Set class_of_transaction_id
+  # ------------------------------------------------------------------
+  - name: "Worksheet d4d1ac0 - Set class_of_transaction_id"
+    steps:
+      - step: "Create worksheet d4d1ac0"
+        action: "create"
+        model: "general_audit_ws_d4d1ac0"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+
+      - step: "Set class_of_transaction_id"
+        action: "write"
+        target: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          class_of_transaction_id: "REC: class_transaction.id"
+
+      - step: "Assert class_of_transaction_id set"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          class_of_transaction_id:
+            type: "m2o"
+            expected: "REC: class_transaction"
+
+  # ------------------------------------------------------------------
+  # 15. Unlink cascade
+  # ------------------------------------------------------------------
+  - name: "Worksheet d4d1ac0 - Unlink cascades to observations"
+    steps:
+      - step: "Create worksheet d4d1ac0 with inline observations"
+        action: "create"
+        model: "general_audit_ws_d4d1ac0"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+          observation_ids:
+            - - 0
+              - 0
+              - sequence: 10
+                subject: "Observasi cascade 1"
+                observation: "Catatan cascade 1"
+            - - 0
+              - 0
+              - sequence: 20
+                subject: "Observasi cascade 2"
+                observation: "Catatan cascade 2"
+
+      - step: "Delete worksheet"
+        action: "unlink"
+        target: "worksheet"
+        as_user: "base.user_admin"
+
+      - step: "Verify observations were cascade-deleted"
+        action: "search"
+        model: "general_audit_ws_d4d1ac0.observation"
+        domain:
+          - ["worksheet_id", "=", "REC: worksheet.id"]
+        save_as: "result"
+        expect_count: 0
