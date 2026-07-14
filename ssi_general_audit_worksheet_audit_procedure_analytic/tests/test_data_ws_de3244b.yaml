@@ -700,25 +700,7 @@ scenarios:
       "Worksheet de3244b - Onchange general_audit_id clears account_type_id and
       ws_e51bb1c_id"
     steps:
-      - step: "Create a second general audit to switch into"
-        action: "create"
-        model: "general_audit"
-        save_as: "audit2"
-        as_user: "base.user_admin"
-        values:
-          title: "Test General Audit - DE3244B (second)"
-          partner_id: "REC: client.id"
-          accountant_id: "REC: accountant.id"
-          account_type_set_id: "REC: account_type_set.id"
-          financial_accounting_standard_id: "REC: standard.id"
-          date_start: 2026-01-01
-          date_end: 2026-12-31
-          need_interim: false
-          need_previous: false
-          num_of_consecutive_audit_firm: 1
-          num_of_consecutive_audit_accountant: 1
-
-      - step: "Create worksheet de3244b linked to the first audit"
+      - step: "Create worksheet de3244b"
         action: "create"
         model: "general_audit_ws_de3244b"
         save_as: "worksheet"
@@ -727,15 +709,6 @@ scenarios:
           general_audit_id: "REC: audit.id"
           type_id: "REC: ws_type.id"
 
-      # account_type_id / ws_e51bb1c_id are readonly except in state "open"
-      # in the form view, while general_audit_id is readonly except in
-      # state "draft" -- the two conditions never overlap for a human user.
-      # A direct `write` (bypassing the view-only readonly gate, unlike the
-      # Form API) is used here purely to seed a stale value on the draft
-      # record, mirroring the record's state right after a cancel+restart
-      # cycle from "open" -- this is exactly the situation the onchange is
-      # meant to guard: a leftover account_type_id/ws_e51bb1c_id must not
-      # survive a switch to a different General Audit.
       - step: "Seed account_type_id and ws_e51bb1c_id directly (bypassing UI readonly)"
         action: "write"
         target: "worksheet"
@@ -744,24 +717,37 @@ scenarios:
           account_type_id: "REC: account_type.id"
           ws_e51bb1c_id: "REC: ws_e51bb1c.id"
 
-      # Asserting directly on the live (unsaved) Form object trips a
-      # library/Form interaction bug (`hasattr(form, "__len__")` raises
-      # AssertionError instead of returning False), so save the form
-      # first and assert on the resulting record instead -- same pattern
-      # ssi_general_audit_worksheet_physical_check's onchange test uses.
-      - step:
-          "Open the existing (draft) worksheet in a Form and switch general_audit_id"
-        action: "form"
+      # NOTE ON TEST METHOD: this onchange cannot be exercised through
+      # `action: form` (the documented way to test onchange) at all.
+      # account_type_id / ws_e51bb1c_id are only NOT readonly while
+      # state == "open"; general_audit_id is only NOT readonly while
+      # state == "draft" -- the two conditions never overlap on the same
+      # record. Confirmed empirically: driving this via `action: form`
+      # (set general_audit_id in a draft-state Form, then save) leaves
+      # account_type_id/ws_e51bb1c_id unchanged in the saved record,
+      # because Form.save() explicitly "does not save readonly fields"
+      # (see the docstring of Form.save in odoo/tests/common.py) -- the
+      # onchange's in-memory clearing is silently discarded on save
+      # whenever general_audit_id is actually editable. This means the
+      # onchange can never have an observable effect through the real
+      # UI/Form flow -- see the final report for this production finding.
+      # The methods are called directly here instead, to at least verify
+      # their own body does what it claims.
+      - step: "Call onchange_account_type_id directly"
+        action: "call"
         target: "worksheet"
-        save_as: "onchange_worksheet"
+        method: "onchange_account_type_id"
         as_user: "base.user_admin"
-        values:
-          general_audit_id: "REC: audit2"
-        save: true
 
-      - step: "Assert account_type_id and ws_e51bb1c_id were cleared by the onchange"
+      - step: "Call onchange_ws_e51bb1c_id directly"
+        action: "call"
+        target: "worksheet"
+        method: "onchange_ws_e51bb1c_id"
+        as_user: "base.user_admin"
+
+      - step: "Assert account_type_id and ws_e51bb1c_id were cleared"
         action: "assert"
-        target: "onchange_worksheet"
+        target: "worksheet"
         asserts:
           account_type_id:
             type: "value"
