@@ -1,0 +1,1412 @@
+setup:
+  steps:
+    - step: "Get config parameter model"
+      action: "search"
+      model: "ir.config_parameter"
+      domain: []
+      save_as: "config_parameter"
+      limit: 1
+
+    - step: "Allow enough CPA licenses for this scenario"
+      action: "call"
+      target: "config_parameter"
+      method: "set_param"
+      args:
+        - "ssi_general_audit.max_number_of_cpa_license"
+        - "100"
+
+    - step: "Create client partner"
+      action: "create"
+      model: "res.partner"
+      save_as: "client"
+      as_user: "base.user_admin"
+      values:
+        name: "Test Audit Client - B4F7D9C"
+        is_company: true
+
+    - step: "Create accountant partner"
+      action: "create"
+      model: "res.partner"
+      save_as: "accountant"
+      as_user: "base.user_admin"
+      values:
+        name: "Test Audit Accountant - B4F7D9C"
+
+    - step: "Get CPA license id category"
+      action: "ref"
+      xml_id: "ssi_partner_identification_cpa_license.partner_identification_accountant_cpa_license"
+      save_as: "cpa_category"
+
+    - step: "Grant accountant a CPA license"
+      action: "create"
+      model: "res.partner.id_number"
+      save_as: "cpa_license"
+      as_user: "base.user_admin"
+      values:
+        partner_id: "REC: accountant.id"
+        category_id: "REC: cpa_category.id"
+        name: "CPA-B4F7D9C-0001"
+
+    - step: "Create account type set"
+      action: "create"
+      model: "client_account_type_set"
+      save_as: "account_type_set"
+      as_user: "base.user_admin"
+      values:
+        name: "Test Account Type Set - B4F7D9C"
+        code: "/"
+
+    - step: "Create financial accounting standard"
+      action: "create"
+      model: "accountant.financial_accounting_standard"
+      save_as: "standard"
+      as_user: "base.user_admin"
+      values:
+        name: "Test Financial Accounting Standard - B4F7D9C"
+        code: "/"
+
+    - step: "Create general audit"
+      action: "create"
+      model: "general_audit"
+      save_as: "audit"
+      as_user: "base.user_admin"
+      values:
+        title: "Test General Audit - B4F7D9C"
+        partner_id: "REC: client.id"
+        accountant_id: "REC: accountant.id"
+        account_type_set_id: "REC: account_type_set.id"
+        financial_accounting_standard_id: "REC: standard.id"
+        date_start: 2026-01-01
+        date_end: 2026-12-31
+        need_interim: false
+        need_previous: false
+        num_of_consecutive_audit_firm: 1
+        num_of_consecutive_audit_accountant: 1
+
+    - step: "Open general audit"
+      action: "call"
+      target: "audit"
+      method: "action_open"
+      as_user: "base.user_admin"
+
+    - step: "Invalidate cache after opening general audit"
+      action: "call"
+      target: "audit"
+      method: "invalidate_cache"
+
+    - step: "Get worksheet type b4f7d9c"
+      action: "ref"
+      xml_id: "ssi_general_audit_worksheet_audit_procedure_vouching.worksheet_type_b4f7d9c"
+      save_as: "ws_type"
+
+    - step: "Get worksheet type e51bb1c"
+      action: "ref"
+      xml_id: "ssi_general_audit_worksheet_lead_schedule.worksheet_type_e51bb1c"
+      save_as: "ws_type_e51bb1c"
+
+    - step: "Get worksheet type d209914 (General Ledger)"
+      action: "ref"
+      xml_id: "ssi_general_audit_worksheet_client_package.worksheet_type_d209914"
+      save_as: "ws_type_d209914"
+
+    - step: "Get worksheet type b5e3d9f (Subledger)"
+      action: "ref"
+      xml_id: "ssi_general_audit_worksheet_client_package.worksheet_type_b5e3d9f"
+      save_as: "ws_type_b5e3d9f"
+
+    - step: "Get worksheet type a916660 (Test of Detail)"
+      action: "ref"
+      xml_id: "ssi_general_audit_worksheet_test_of_detail.worksheet_type_a916660"
+      save_as: "ws_type_a916660"
+
+    - step: "Create client account group"
+      action: "create"
+      model: "client_account_group"
+      save_as: "account_group"
+      as_user: "base.user_admin"
+      values:
+        name: "Test Account Group - B4F7D9C"
+        code: "/"
+
+    - step: "Create client account type"
+      action: "create"
+      model: "client_account_type"
+      save_as: "account_type"
+      as_user: "base.user_admin"
+      values:
+        name: "Test Account Type - B4F7D9C"
+        code: "/"
+        group_id: "REC: account_group.id"
+        # No general_audit.standard_detail is created against this account
+        # type anywhere in this file, so the crashing default
+        # ("result = document.balance") never actually gets evaluated here.
+        # Set explicitly anyway, per the repo-wide rule of never leaving
+        # client_account_type.python_code at its default.
+        python_code: "result = 0.0"
+
+    - step: "Create assertion type"
+      action: "create"
+      model: "general_audit_assersion_type"
+      save_as: "assertion_type"
+      as_user: "base.user_admin"
+      values:
+        name: "Existence"
+        code: "/"
+
+    - step: "Create audit procedure category (performed #1)"
+      action: "create"
+      model: "general_audit_audit_procedure_category"
+      save_as: "category_performed"
+      as_user: "base.user_admin"
+      values:
+        name: "Vouching - Performed Category 1"
+        code: "/"
+        account_type_id: "REC: account_type.id"
+        assertion_type_ids:
+          - - 6
+            - 0
+            - - "REC: assertion_type.id"
+
+    - step: "Create audit procedure category (performed #2)"
+      action: "create"
+      model: "general_audit_audit_procedure_category"
+      save_as: "category_performed_2"
+      as_user: "base.user_admin"
+      values:
+        name: "Vouching - Performed Category 2"
+        code: "/"
+        account_type_id: "REC: account_type.id"
+        assertion_type_ids:
+          - - 6
+            - 0
+            - - "REC: assertion_type.id"
+
+    - step: "Create WS-E51BB1C worksheet (Key Audit Procedures)"
+      action: "create"
+      model: "general_audit_ws_e51bb1c"
+      save_as: "ws_e51bb1c"
+      as_user: "base.user_admin"
+      values:
+        general_audit_id: "REC: audit.id"
+        type_id: "REC: ws_type_e51bb1c.id"
+
+    - step: "Create WS-E51BB1C detail with status performed (#1)"
+      action: "create"
+      model: "general_audit_ws_e51bb1c.detail"
+      save_as: "detail_performed"
+      as_user: "base.user_admin"
+      values:
+        worksheet_id: "REC: ws_e51bb1c.id"
+        audit_procedure_category_id: "REC: category_performed.id"
+        assertion_type_ids:
+          - - 6
+            - 0
+            - - "REC: assertion_type.id"
+        status: "performed"
+
+    - step: "Create WS-E51BB1C detail with status performed (#2)"
+      action: "create"
+      model: "general_audit_ws_e51bb1c.detail"
+      save_as: "detail_performed_2"
+      as_user: "base.user_admin"
+      values:
+        worksheet_id: "REC: ws_e51bb1c.id"
+        audit_procedure_category_id: "REC: category_performed_2.id"
+        assertion_type_ids:
+          - - 6
+            - 0
+            - - "REC: assertion_type.id"
+        status: "performed"
+
+    - step: "Create conclusion for b4f7d9c worksheet type"
+      action: "create"
+      model: "general_audit_worksheet_conclusion"
+      save_as: "conclusion"
+      as_user: "base.user_admin"
+      values:
+        name: "No exception noted"
+        code: "/"
+        type_id: "REC: ws_type.id"
+
+scenarios:
+  # ------------------------------------------------------------------
+  # general_audit_ws_b4f7d9c - Create in draft
+  # ------------------------------------------------------------------
+  - name: "Worksheet b4f7d9c - Create in draft"
+    steps:
+      - step: "Create worksheet b4f7d9c"
+        action: "create"
+        model: "general_audit_ws_b4f7d9c"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+
+      - step: "Assert worksheet created in draft"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          id:
+            type: "value"
+            operator: "is_truthy"
+          state:
+            type: "value"
+            expected: "draft"
+          general_audit_id:
+            type: "m2o"
+            expected: "REC: audit"
+          type_id:
+            type: "m2o"
+            expected: "REC: ws_type"
+
+  # ------------------------------------------------------------------
+  # Workflow draft -> open -> confirm -> done
+  # ------------------------------------------------------------------
+  - name: "Worksheet b4f7d9c - Workflow confirm to done"
+    steps:
+      - step: "Create worksheet b4f7d9c"
+        action: "create"
+        model: "general_audit_ws_b4f7d9c"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+
+      - step: "Open worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_open"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after opening worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Assert worksheet open"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          state:
+            type: "value"
+            expected: "open"
+
+      - step: "Fill required conclusion fields before confirm"
+        action: "write"
+        target: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          conclusion_id: "REC: conclusion.id"
+          conclusion: "Vouching raised no exception."
+
+      - step: "Confirm worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_confirm"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after confirming worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Assert worksheet confirmed"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          state:
+            type: "value"
+            expected: "confirm"
+
+      - step: "Approve worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_approve_approval"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after approving worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Assert worksheet done"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          state:
+            type: "value"
+            expected: "done"
+
+  # ------------------------------------------------------------------
+  # Cancel and restart
+  # ------------------------------------------------------------------
+  - name: "Worksheet b4f7d9c - Cancel and restart"
+    steps:
+      - step: "Create worksheet b4f7d9c"
+        action: "create"
+        model: "general_audit_ws_b4f7d9c"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+
+      - step: "Open worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_open"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after opening worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Assert worksheet open"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          state:
+            type: "value"
+            expected: "open"
+
+      - step: "Cancel worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_cancel"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after cancelling worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Assert worksheet cancelled"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          state:
+            type: "value"
+            expected: "cancel"
+
+      - step: "Restart worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_restart"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after restarting worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Assert worksheet back to draft"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          state:
+            type: "value"
+            expected: "draft"
+
+  # ------------------------------------------------------------------
+  # _compute_allowed_general_ledger_ids / _compute_allowed_subledger_ids
+  # - normal
+  # ------------------------------------------------------------------
+  - name:
+      "Worksheet b4f7d9c - Compute allowed_general_ledger_ids / allowed_subledger_ids
+      (normal)"
+    steps:
+      - step: "Create General Ledger worksheet for this audit"
+        action: "create"
+        model: "general_audit_ws_d209914"
+        save_as: "gl"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_d209914.id"
+          account_mode: "standard_account"
+          account_type_id: "REC: account_type.id"
+          title: "GL for allowed_general_ledger_ids"
+
+      - step: "Create Subledger worksheet for this audit"
+        action: "create"
+        model: "general_audit_ws_b5e3d9f"
+        save_as: "sl"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_b5e3d9f.id"
+          account_mode: "standard_account"
+          account_type_id: "REC: account_type.id"
+          title: "SL for allowed_subledger_ids"
+
+      - step: "Create worksheet b4f7d9c"
+        action: "create"
+        model: "general_audit_ws_b4f7d9c"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+
+      - step:
+          "Assert allowed_general_ledger_ids / allowed_subledger_ids contain the
+          fixtures"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          allowed_general_ledger_ids:
+            type: "m2m"
+            check: "exact"
+            expected_records:
+              - "REC: gl"
+          allowed_subledger_ids:
+            type: "m2m"
+            check: "exact"
+            expected_records:
+              - "REC: sl"
+
+  # ------------------------------------------------------------------
+  # _compute_allowed_general_ledger_ids / _compute_allowed_subledger_ids
+  # - kosong (no GL/SL created for this scenario's own audit)
+  # ------------------------------------------------------------------
+  - name:
+      "Worksheet b4f7d9c - Compute allowed_general_ledger_ids / allowed_subledger_ids
+      (kosong)"
+    steps:
+      - step: "Create worksheet b4f7d9c without any GL/SL fixture for this audit"
+        action: "create"
+        model: "general_audit_ws_b4f7d9c"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+
+      - step: "Assert allowed_general_ledger_ids / allowed_subledger_ids are empty"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          allowed_general_ledger_ids:
+            type: "m2m"
+            check: "count"
+            expected_count: 0
+          allowed_subledger_ids:
+            type: "m2m"
+            check: "count"
+            expected_count: 0
+
+  # ------------------------------------------------------------------
+  # _compute_raw_data - data_mode = gl
+  # ------------------------------------------------------------------
+  - name: "Worksheet b4f7d9c - Compute raw_data (data_mode = gl)"
+    steps:
+      - step: "Create General Ledger worksheet with raw data"
+        action: "create"
+        model: "general_audit_ws_d209914"
+        save_as: "gl"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_d209914.id"
+          account_mode: "standard_account"
+          account_type_id: "REC: account_type.id"
+          raw_data: "Ref,Amount\nR1,1000\nR2,2000\n"
+          title: "GL Kas"
+
+      - step: "Create worksheet b4f7d9c pointing at the GL"
+        action: "create"
+        model: "general_audit_ws_b4f7d9c"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+          data_mode: "gl"
+          general_ledger_id: "REC: gl.id"
+
+      - step: "Assert raw_data comes from the GL"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          raw_data:
+            type: "value"
+            expected: "Ref,Amount\nR1,1000\nR2,2000\n"
+
+  # ------------------------------------------------------------------
+  # _compute_raw_data - data_mode = subledger
+  # ------------------------------------------------------------------
+  - name: "Worksheet b4f7d9c - Compute raw_data (data_mode = subledger)"
+    steps:
+      - step: "Create Subledger worksheet with raw data"
+        action: "create"
+        model: "general_audit_ws_b5e3d9f"
+        save_as: "sl"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_b5e3d9f.id"
+          account_mode: "standard_account"
+          account_type_id: "REC: account_type.id"
+          raw_data: "Ref,Amount\nR1,500\nR2,700\n"
+          title: "Subledger AR"
+
+      - step: "Create worksheet b4f7d9c pointing at the Subledger"
+        action: "create"
+        model: "general_audit_ws_b4f7d9c"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+          data_mode: "subledger"
+          subledger_id: "REC: sl.id"
+
+      - step: "Assert raw_data comes from the Subledger"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          raw_data:
+            type: "value"
+            expected: "Ref,Amount\nR1,500\nR2,700\n"
+
+  # ------------------------------------------------------------------
+  # _compute_raw_data - kosong
+  # ------------------------------------------------------------------
+  - name: "Worksheet b4f7d9c - Compute raw_data (kosong)"
+    steps:
+      - step: "Create worksheet b4f7d9c without data_mode"
+        action: "create"
+        model: "general_audit_ws_b4f7d9c"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+
+      - step: "Assert raw_data is empty"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          raw_data:
+            type: "value"
+            operator: "is_falsy"
+
+  # ------------------------------------------------------------------
+  # _compute_allowed_test_of_detail_ids / _compute_allowed_key_audit_procedure_ids
+  # - normal
+  # ------------------------------------------------------------------
+  - name:
+      "Worksheet b4f7d9c - Compute allowed_test_of_detail_ids +
+      allowed_key_audit_procedure_ids (normal)"
+    steps:
+      - step: "Create General Ledger worksheet"
+        action: "create"
+        model: "general_audit_ws_d209914"
+        save_as: "gl"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_d209914.id"
+          account_mode: "standard_account"
+          account_type_id: "REC: account_type.id"
+          title: "GL for allowed_test_of_detail_ids"
+
+      - step: "Create Test of Detail worksheet pointing at the same GL"
+        action: "create"
+        model: "general_audit_ws_a916660"
+        save_as: "tod"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_a916660.id"
+          general_ledger_id: "REC: gl.id"
+
+      - step:
+          "Create worksheet b4f7d9c with matching
+          data_mode/general_ledger_id/ws_e51bb1c_id"
+        action: "create"
+        model: "general_audit_ws_b4f7d9c"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+          data_mode: "gl"
+          general_ledger_id: "REC: gl.id"
+          ws_e51bb1c_id: "REC: ws_e51bb1c.id"
+
+      - step: "Assert allowed_test_of_detail_ids / allowed_key_audit_procedure_ids"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          allowed_test_of_detail_ids:
+            type: "m2m"
+            check: "exact"
+            expected_records:
+              - "REC: tod"
+          allowed_key_audit_procedure_ids:
+            type: "m2m"
+            check: "exact"
+            expected_records:
+              - "REC: category_performed"
+              - "REC: category_performed_2"
+
+  # ------------------------------------------------------------------
+  # _compute_allowed_test_of_detail_ids / _compute_allowed_key_audit_procedure_ids
+  # - kosong
+  # ------------------------------------------------------------------
+  - name:
+      "Worksheet b4f7d9c - Compute allowed_test_of_detail_ids +
+      allowed_key_audit_procedure_ids (kosong)"
+    steps:
+      - step: "Create worksheet b4f7d9c without data_mode/ws_e51bb1c_id"
+        action: "create"
+        model: "general_audit_ws_b4f7d9c"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+
+      - step:
+          "Assert allowed_test_of_detail_ids / allowed_key_audit_procedure_ids are empty"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          allowed_test_of_detail_ids:
+            type: "m2m"
+            check: "count"
+            expected_count: 0
+          allowed_key_audit_procedure_ids:
+            type: "m2m"
+            check: "count"
+            expected_count: 0
+
+  # ------------------------------------------------------------------
+  # _compute_detail_ws_e51bb1c_id - normal
+  # ------------------------------------------------------------------
+  - name: "Worksheet b4f7d9c - Compute detail_ws_e51bb1c_id (normal)"
+    steps:
+      - step: "Create worksheet b4f7d9c"
+        action: "create"
+        model: "general_audit_ws_b4f7d9c"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+
+      - step: "Set ws_e51bb1c_id and key_audit_procedure_id"
+        action: "write"
+        target: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          ws_e51bb1c_id: "REC: ws_e51bb1c.id"
+          key_audit_procedure_id: "REC: category_performed.id"
+
+      - step: "Assert detail_ws_e51bb1c_id points to the matching detail"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          detail_ws_e51bb1c_id:
+            type: "m2o"
+            expected: "REC: detail_performed"
+
+  # ------------------------------------------------------------------
+  # _compute_detail_ws_e51bb1c_id - kosong
+  # ------------------------------------------------------------------
+  - name: "Worksheet b4f7d9c - Compute detail_ws_e51bb1c_id (kosong)"
+    steps:
+      - step: "Create worksheet b4f7d9c without ws_e51bb1c_id"
+        action: "create"
+        model: "general_audit_ws_b4f7d9c"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+
+      - step: "Assert detail_ws_e51bb1c_id is empty"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          detail_ws_e51bb1c_id:
+            type: "value"
+            operator: "is_falsy"
+
+  # ------------------------------------------------------------------
+  # _compute_vouching_data (header) - normal
+  #
+  # NOTE: this compute depends on raw_data / sampling_data /
+  # reference_col_number -- NOT on vouching_ids (the O2M of
+  # general_audit_ws_b4f7d9c.vouching lines, which is a distinct model
+  # covered by its own action_compute_vouching_data in
+  # test_data_ws_b4f7d9c_vouching.yaml). Exercised here against its real
+  # dependency chain instead.
+  # ------------------------------------------------------------------
+  - name: "Worksheet b4f7d9c - Compute vouching_data (normal)"
+    steps:
+      - step: "Create General Ledger worksheet with raw data"
+        action: "create"
+        model: "general_audit_ws_d209914"
+        save_as: "gl"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_d209914.id"
+          account_mode: "standard_account"
+          account_type_id: "REC: account_type.id"
+          raw_data: "Ref,Amount\nREF1,1000\nREF2,2000\nREF3,3000\n"
+          title: "GL Vouching Header"
+
+      - step: "Create Test of Detail worksheet with sampling data"
+        action: "create"
+        model: "general_audit_ws_a916660"
+        save_as: "tod"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_a916660.id"
+          sampling_data: "No,Ref\n1,REF1\n2,REF3\n"
+
+      - step: "Create worksheet b4f7d9c referencing both"
+        action: "create"
+        model: "general_audit_ws_b4f7d9c"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+          data_mode: "gl"
+          general_ledger_id: "REC: gl.id"
+          test_of_detail_id: "REC: tod.id"
+          reference_col_number: 1
+
+      - step: "Assert vouching_data contains only the sampled references"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          vouching_data:
+            type: "value"
+            operator: "contains"
+            expected: "REF1,1000"
+
+      - step: "Assert vouching_data contains the second sampled reference too"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          vouching_data:
+            type: "value"
+            operator: "contains"
+            expected: "REF3,3000"
+
+  # ------------------------------------------------------------------
+  # _compute_vouching_data (header) - kosong
+  # ------------------------------------------------------------------
+  - name: "Worksheet b4f7d9c - Compute vouching_data (kosong)"
+    steps:
+      - step:
+          "Create worksheet b4f7d9c without
+          data_mode/test_of_detail_id/reference_col_number"
+        action: "create"
+        model: "general_audit_ws_b4f7d9c"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+
+      - step: "Assert vouching_data is empty"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          vouching_data:
+            type: "value"
+            operator: "is_falsy"
+
+  # ------------------------------------------------------------------
+  # Onchange key_audit_procedure_id clears (triggered by ws_e51bb1c_id)
+  # ------------------------------------------------------------------
+  - name: "Worksheet b4f7d9c - Onchange ws_e51bb1c_id clears key_audit_procedure_id"
+    steps:
+      # general_audit_worksheet_mixin only allows one worksheet per
+      # (general_audit_id, type_id) -- worksheet_type_e51bb1c does not set
+      # allowed_audit, so a second general_audit_ws_e51bb1c on the SAME
+      # `audit` fixture is rejected by _check_unique_general_audit. Build a
+      # fully independent second general_audit (own client/accountant/
+      # account_type_set/standard, opened) to host the second WS-E51BB1C,
+      # same pattern as
+      # ssi_general_audit_worksheet_audit_procedure_reperformance's
+      # "allowed_key_audit_procedure_ids ... no performed detail" scenario.
+      - step: "Create second client partner"
+        action: "create"
+        model: "res.partner"
+        save_as: "client_2"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Audit Client 2 - B4F7D9C"
+          is_company: true
+
+      - step: "Create second accountant partner"
+        action: "create"
+        model: "res.partner"
+        save_as: "accountant_2"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Audit Accountant 2 - B4F7D9C"
+
+      - step: "Grant second accountant a CPA license"
+        action: "create"
+        model: "res.partner.id_number"
+        save_as: "cpa_license_2"
+        as_user: "base.user_admin"
+        values:
+          partner_id: "REC: accountant_2.id"
+          category_id: "REC: cpa_category.id"
+          name: "CPA-B4F7D9C-0002"
+
+      - step: "Create second account type set"
+        action: "create"
+        model: "client_account_type_set"
+        save_as: "account_type_set_2"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Account Type Set 2 - B4F7D9C"
+          code: "/"
+
+      - step: "Create second financial accounting standard"
+        action: "create"
+        model: "accountant.financial_accounting_standard"
+        save_as: "standard_2"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Financial Accounting Standard 2 - B4F7D9C"
+          code: "/"
+
+      - step: "Create second general audit"
+        action: "create"
+        model: "general_audit"
+        save_as: "audit_2"
+        as_user: "base.user_admin"
+        values:
+          title: "Test General Audit 2 - B4F7D9C"
+          partner_id: "REC: client_2.id"
+          accountant_id: "REC: accountant_2.id"
+          account_type_set_id: "REC: account_type_set_2.id"
+          financial_accounting_standard_id: "REC: standard_2.id"
+          date_start: 2026-01-01
+          date_end: 2026-12-31
+          need_interim: false
+          need_previous: false
+          num_of_consecutive_audit_firm: 1
+          num_of_consecutive_audit_accountant: 1
+
+      - step: "Open second general audit"
+        action: "call"
+        target: "audit_2"
+        method: "action_open"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after opening second general audit"
+        action: "call"
+        target: "audit_2"
+        method: "invalidate_cache"
+
+      - step: "Create a second WS-E51BB1C worksheet on the second general audit"
+        action: "create"
+        model: "general_audit_ws_e51bb1c"
+        save_as: "ws_e51bb1c_2"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit_2.id"
+          type_id: "REC: ws_type_e51bb1c.id"
+
+      - step: "Create worksheet b4f7d9c"
+        action: "create"
+        model: "general_audit_ws_b4f7d9c"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+
+      - step: "Open worksheet (ws_e51bb1c_id/key_audit_procedure_id become editable)"
+        action: "call"
+        target: "worksheet"
+        method: "action_open"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after opening worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Set ws_e51bb1c_id then key_audit_procedure_id via Form"
+        action: "form"
+        target: "worksheet"
+        as_user: "base.user_admin"
+        save: true
+        ops:
+          - set: {ws_e51bb1c_id: "REC: ws_e51bb1c"}
+          - set: {key_audit_procedure_id: "REC: category_performed"}
+
+      - step: "Assert key_audit_procedure_id was actually persisted"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          key_audit_procedure_id:
+            type: "value"
+            operator: "is_truthy"
+
+      - step: "Switch ws_e51bb1c_id to a different value via Form"
+        action: "form"
+        target: "worksheet"
+        as_user: "base.user_admin"
+        save: true
+        ops:
+          - set: {ws_e51bb1c_id: "REC: ws_e51bb1c_2"}
+
+      - step: "Assert key_audit_procedure_id was cleared by the onchange"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          key_audit_procedure_id:
+            type: "value"
+            operator: "is_falsy"
+
+  # ------------------------------------------------------------------
+  # Onchange assertion_type_ids clears (triggered by key_audit_procedure_id)
+  # ------------------------------------------------------------------
+  - name:
+      "Worksheet b4f7d9c - Onchange key_audit_procedure_id clears assertion_type_ids"
+    steps:
+      - step: "Create worksheet b4f7d9c"
+        action: "create"
+        model: "general_audit_ws_b4f7d9c"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+
+      - step:
+          "Open worksheet (key_audit_procedure_id/assertion_type_ids become editable)"
+        action: "call"
+        target: "worksheet"
+        method: "action_open"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after opening worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Set ws_e51bb1c_id and key_audit_procedure_id via Form"
+        action: "form"
+        target: "worksheet"
+        as_user: "base.user_admin"
+        save: true
+        ops:
+          - set: {ws_e51bb1c_id: "REC: ws_e51bb1c"}
+          - set: {key_audit_procedure_id: "REC: category_performed"}
+
+      - step: "Pre-fill assertion_type_ids directly (not going through Form/onchange)"
+        action: "write"
+        target: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          assertion_type_ids:
+            - - 6
+              - 0
+              - - "REC: assertion_type.id"
+
+      - step: "Assert assertion_type_ids was actually persisted"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          assertion_type_ids:
+            type: "m2m"
+            check: "count"
+            expected_count: 1
+
+      - step: "Switch key_audit_procedure_id to a different value via Form"
+        action: "form"
+        target: "worksheet"
+        as_user: "base.user_admin"
+        save: true
+        ops:
+          - set: {key_audit_procedure_id: "REC: category_performed_2"}
+
+      - step: "Assert assertion_type_ids was cleared by the onchange"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          assertion_type_ids:
+            type: "m2m"
+            check: "count"
+            expected_count: 0
+
+  # ------------------------------------------------------------------
+  # Onchange general_ledger_id clears (triggered by data_mode)
+  # ------------------------------------------------------------------
+  - name: "Worksheet b4f7d9c - Onchange data_mode clears general_ledger_id"
+    steps:
+      - step: "Create GL available to this general_audit"
+        action: "create"
+        model: "general_audit_ws_d209914"
+        save_as: "gl"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_d209914.id"
+          account_mode: "standard_account"
+
+      - step: "Create worksheet b4f7d9c"
+        action: "create"
+        model: "general_audit_ws_b4f7d9c"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+
+      - step: "Open worksheet (data_mode/general_ledger_id become editable)"
+        action: "call"
+        target: "worksheet"
+        method: "action_open"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after opening worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Set data_mode=gl and general_ledger_id via Form"
+        action: "form"
+        target: "worksheet"
+        as_user: "base.user_admin"
+        save: true
+        ops:
+          - set: {data_mode: "gl"}
+          - set: {general_ledger_id: "REC: gl"}
+
+      - step: "Assert general_ledger_id was actually persisted"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          general_ledger_id:
+            type: "value"
+            operator: "is_truthy"
+
+      - step: "Switch data_mode away from gl via Form"
+        action: "form"
+        target: "worksheet"
+        as_user: "base.user_admin"
+        save: true
+        ops:
+          - set: {data_mode: "subledger"}
+
+      - step: "Assert general_ledger_id was cleared by the onchange"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          general_ledger_id:
+            type: "value"
+            operator: "is_falsy"
+
+  # ------------------------------------------------------------------
+  # Onchange subledger_id clears (triggered by data_mode)
+  # ------------------------------------------------------------------
+  - name: "Worksheet b4f7d9c - Onchange data_mode clears subledger_id"
+    steps:
+      - step: "Create Subledger available to this general_audit"
+        action: "create"
+        model: "general_audit_ws_b5e3d9f"
+        save_as: "sl"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_b5e3d9f.id"
+          account_mode: "standard_account"
+
+      - step: "Create worksheet b4f7d9c"
+        action: "create"
+        model: "general_audit_ws_b4f7d9c"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+
+      - step: "Open worksheet (data_mode/subledger_id become editable)"
+        action: "call"
+        target: "worksheet"
+        method: "action_open"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after opening worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Set data_mode=subledger and subledger_id via Form"
+        action: "form"
+        target: "worksheet"
+        as_user: "base.user_admin"
+        save: true
+        ops:
+          - set: {data_mode: "subledger"}
+          - set: {subledger_id: "REC: sl"}
+
+      - step: "Assert subledger_id was actually persisted"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          subledger_id:
+            type: "value"
+            operator: "is_truthy"
+
+      - step: "Switch data_mode away from subledger via Form"
+        action: "form"
+        target: "worksheet"
+        as_user: "base.user_admin"
+        save: true
+        ops:
+          - set: {data_mode: "gl"}
+
+      - step: "Assert subledger_id was cleared by the onchange"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          subledger_id:
+            type: "value"
+            operator: "is_falsy"
+
+  # ------------------------------------------------------------------
+  # Onchange test_of_detail_id clears
+  # (triggered by data_mode / general_ledger_id / subledger_id)
+  # ------------------------------------------------------------------
+  - name: "Worksheet b4f7d9c - Onchange data_mode clears test_of_detail_id"
+    steps:
+      - step: "Create GL available to this general_audit"
+        action: "create"
+        model: "general_audit_ws_d209914"
+        save_as: "gl"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_d209914.id"
+          account_mode: "standard_account"
+
+      - step: "Create Test of Detail worksheet pointing at the GL"
+        action: "create"
+        model: "general_audit_ws_a916660"
+        save_as: "tod"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_a916660.id"
+          general_ledger_id: "REC: gl.id"
+
+      - step: "Create worksheet b4f7d9c"
+        action: "create"
+        model: "general_audit_ws_b4f7d9c"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+
+      - step:
+          "Open worksheet (data_mode/general_ledger_id/test_of_detail_id become
+          editable)"
+        action: "call"
+        target: "worksheet"
+        method: "action_open"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after opening worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Set data_mode/general_ledger_id/test_of_detail_id via Form"
+        action: "form"
+        target: "worksheet"
+        as_user: "base.user_admin"
+        save: true
+        ops:
+          - set: {data_mode: "gl"}
+          - set: {general_ledger_id: "REC: gl"}
+          - set: {test_of_detail_id: "REC: tod"}
+
+      - step: "Assert test_of_detail_id was actually persisted"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          test_of_detail_id:
+            type: "value"
+            operator: "is_truthy"
+
+      - step: "Switch data_mode away from gl via Form"
+        action: "form"
+        target: "worksheet"
+        as_user: "base.user_admin"
+        save: true
+        ops:
+          - set: {data_mode: "subledger"}
+
+      - step: "Assert test_of_detail_id was cleared by the onchange"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          test_of_detail_id:
+            type: "value"
+            operator: "is_falsy"
+
+  # ------------------------------------------------------------------
+  # data_comparison - Onchange data_mode clears general_ledger_id
+  # ------------------------------------------------------------------
+  - name: "Data comparison b4f7d9c - Onchange data_mode clears general_ledger_id"
+    steps:
+      - step: "Create GL available to this general_audit"
+        action: "create"
+        model: "general_audit_ws_d209914"
+        save_as: "gl"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_d209914.id"
+          account_mode: "standard_account"
+
+      - step: "Create worksheet b4f7d9c (parent of the data comparison)"
+        action: "create"
+        model: "general_audit_ws_b4f7d9c"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+
+      - step: "Set worksheet_id/data_mode/general_ledger_id via Form"
+        action: "form"
+        model: "general_audit_ws_b4f7d9c.data_comparison"
+        save_as: "dc"
+        as_user: "base.user_admin"
+        save: true
+        ops:
+          - set: {worksheet_id: "REC: worksheet"}
+          - set: {data_mode: "gl"}
+          - set: {general_ledger_id: "REC: gl"}
+
+      - step: "Assert general_ledger_id was actually persisted"
+        action: "assert"
+        target: "dc"
+        asserts:
+          general_ledger_id:
+            type: "value"
+            operator: "is_truthy"
+
+      - step: "Switch data_mode away from gl via Form"
+        action: "form"
+        target: "dc"
+        as_user: "base.user_admin"
+        save: true
+        ops:
+          - set: {data_mode: "subledger"}
+
+      - step: "Assert general_ledger_id was cleared by the onchange"
+        action: "assert"
+        target: "dc"
+        asserts:
+          general_ledger_id:
+            type: "value"
+            operator: "is_falsy"
+
+  # ------------------------------------------------------------------
+  # data_comparison - Onchange data_mode clears subledger_id
+  # ------------------------------------------------------------------
+  - name: "Data comparison b4f7d9c - Onchange data_mode clears subledger_id"
+    steps:
+      - step: "Create Subledger available to this general_audit"
+        action: "create"
+        model: "general_audit_ws_b5e3d9f"
+        save_as: "sl"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_b5e3d9f.id"
+          account_mode: "standard_account"
+
+      - step: "Create worksheet b4f7d9c (parent of the data comparison)"
+        action: "create"
+        model: "general_audit_ws_b4f7d9c"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+
+      - step: "Set worksheet_id/data_mode/subledger_id via Form"
+        action: "form"
+        model: "general_audit_ws_b4f7d9c.data_comparison"
+        save_as: "dc"
+        as_user: "base.user_admin"
+        save: true
+        ops:
+          - set: {worksheet_id: "REC: worksheet"}
+          - set: {data_mode: "subledger"}
+          - set: {subledger_id: "REC: sl"}
+
+      - step: "Assert subledger_id was actually persisted"
+        action: "assert"
+        target: "dc"
+        asserts:
+          subledger_id:
+            type: "value"
+            operator: "is_truthy"
+
+      - step: "Switch data_mode away from subledger via Form"
+        action: "form"
+        target: "dc"
+        as_user: "base.user_admin"
+        save: true
+        ops:
+          - set: {data_mode: "gl"}
+
+      - step: "Assert subledger_id was cleared by the onchange"
+        action: "assert"
+        target: "dc"
+        asserts:
+          subledger_id:
+            type: "value"
+            operator: "is_falsy"
+
+  # ------------------------------------------------------------------
+  # Delete in draft
+  # ------------------------------------------------------------------
+  - name: "Worksheet b4f7d9c - Delete in draft"
+    steps:
+      - step: "Create worksheet b4f7d9c"
+        action: "create"
+        model: "general_audit_ws_b4f7d9c"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+
+      - step: "Delete the worksheet"
+        action: "unlink"
+        target: "worksheet"
+
+      - step: "Verify worksheet deleted"
+        action: "search"
+        model: "general_audit_ws_b4f7d9c"
+        domain:
+          - ["id", "=", "REC: worksheet.id"]
+        save_as: "result"
+        expect_count: 0
