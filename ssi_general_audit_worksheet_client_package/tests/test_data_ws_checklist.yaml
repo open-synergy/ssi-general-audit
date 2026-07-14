@@ -1,0 +1,572 @@
+setup:
+  steps:
+    - step: "Get config parameter model"
+      action: "search"
+      model: "ir.config_parameter"
+      domain: []
+      save_as: "config_parameter"
+      limit: 1
+
+    - step: "Allow enough CPA licenses for this scenario"
+      action: "call"
+      target: "config_parameter"
+      method: "set_param"
+      args:
+        - "ssi_general_audit.max_number_of_cpa_license"
+        - "100"
+
+    - step: "Create client partner"
+      action: "create"
+      model: "res.partner"
+      save_as: "client"
+      as_user: "base.user_admin"
+      values:
+        name: "Test Audit Client - Checklist"
+        is_company: true
+
+    - step: "Create accountant partner"
+      action: "create"
+      model: "res.partner"
+      save_as: "accountant"
+      as_user: "base.user_admin"
+      values:
+        name: "Test Audit Accountant - Checklist"
+
+    - step: "Get CPA license id category"
+      action: "ref"
+      xml_id: "ssi_partner_identification_cpa_license.partner_identification_accountant_cpa_license"
+      save_as: "cpa_category"
+
+    - step: "Grant accountant a CPA license"
+      action: "create"
+      model: "res.partner.id_number"
+      save_as: "cpa_license"
+      as_user: "base.user_admin"
+      values:
+        partner_id: "REC: accountant.id"
+        category_id: "REC: cpa_category.id"
+        name: "CPA-CHECKLIST-0001"
+
+    - step: "Create account type set"
+      action: "create"
+      model: "client_account_type_set"
+      save_as: "account_type_set"
+      as_user: "base.user_admin"
+      values:
+        name: "Test Account Type Set - Checklist"
+        code: "/"
+
+    - step: "Create financial accounting standard"
+      action: "create"
+      model: "accountant.financial_accounting_standard"
+      save_as: "standard"
+      as_user: "base.user_admin"
+      values:
+        name: "Test Financial Accounting Standard - Checklist"
+        code: "/"
+
+    - step: "Create general audit"
+      action: "create"
+      model: "general_audit"
+      save_as: "audit"
+      as_user: "base.user_admin"
+      values:
+        title: "Test General Audit - Checklist"
+        partner_id: "REC: client.id"
+        accountant_id: "REC: accountant.id"
+        account_type_set_id: "REC: account_type_set.id"
+        financial_accounting_standard_id: "REC: standard.id"
+        date_start: 2026-01-01
+        date_end: 2026-12-31
+        need_interim: false
+        need_previous: false
+        num_of_consecutive_audit_firm: 1
+        num_of_consecutive_audit_accountant: 1
+
+    - step: "Open general audit"
+      action: "call"
+      target: "audit"
+      method: "action_open"
+      as_user: "base.user_admin"
+
+    - step: "Invalidate cache after opening general audit"
+      action: "call"
+      target: "audit"
+      method: "invalidate_cache"
+
+    - step: "Get worksheet type abd82ed"
+      action: "ref"
+      xml_id: "ssi_general_audit_worksheet_client_package.worksheet_type_abd82ed"
+      save_as: "ws_type_abd82ed"
+
+    - step: "Get worksheet type e301171"
+      action: "ref"
+      xml_id: "ssi_general_audit_worksheet_client_package.worksheet_type_e301171"
+      save_as: "ws_type_e301171"
+
+    - step: "Create conclusion for abd82ed worksheet type"
+      action: "create"
+      model: "general_audit_worksheet_conclusion"
+      save_as: "conclusion_abd82ed"
+      as_user: "base.user_admin"
+      values:
+        name: "Client Assistance Package is complete"
+        code: "/"
+        type_id: "REC: ws_type_abd82ed.id"
+
+    - step: "Create conclusion for e301171 worksheet type"
+      action: "create"
+      model: "general_audit_worksheet_conclusion"
+      save_as: "conclusion_e301171"
+      as_user: "base.user_admin"
+      values:
+        name: "Journal entry testing is complete"
+        code: "/"
+        type_id: "REC: ws_type_e301171.id"
+
+    - step: "Create checklist item master for abd82ed"
+      action: "create"
+      model: "general_audit_ws_abd82ed.item"
+      save_as: "item_abd82ed"
+      as_user: "base.user_admin"
+      values:
+        name: "Client provided the trial balance"
+        code: "/"
+        option_set_id: "REF: ssi_general_audit.checklist_option_set_2"
+
+    - step: "Create checklist item master for e301171"
+      action: "create"
+      model: "general_audit_ws_e301171.item"
+      save_as: "item_e301171"
+      as_user: "base.user_admin"
+      values:
+        name: "Manual journal entries were tested for authorisation"
+        code: "/"
+        option_set_id: "REF: ssi_general_audit.checklist_option_set_2"
+
+scenarios:
+  # ------------------------------------------------------------------
+  # general_audit_ws_abd82ed - checklist row create + write
+  # ------------------------------------------------------------------
+  - name: "Checklist abd82ed - Create checklist row and write"
+    steps:
+      - step: "Create worksheet abd82ed"
+        action: "create"
+        model: "general_audit_ws_abd82ed"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_abd82ed.id"
+
+      - step: "Assert worksheet created in draft"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          id:
+            type: "value"
+            operator: "is_truthy"
+          state:
+            type: "value"
+            expected: "draft"
+
+      - step: "Create checklist row for the master item"
+        action: "create"
+        model: "general_audit_ws_abd82ed.checklist"
+        save_as: "checklist_row"
+        as_user: "base.user_admin"
+        values:
+          worksheet_id: "REC: worksheet.id"
+          item_id: "REC: item_abd82ed.id"
+
+      - step: "Assert checklist row created"
+        action: "assert"
+        target: "checklist_row"
+        asserts:
+          id:
+            type: "value"
+            operator: "is_truthy"
+          worksheet_id:
+            type: "m2o"
+            expected: "REC: worksheet"
+          item_id:
+            type: "m2o"
+            expected: "REC: item_abd82ed"
+
+      - step: "Write checklist_ok on the checklist row"
+        action: "write"
+        target: "checklist_row"
+        as_user: "base.user_admin"
+        values:
+          checklist_ok: false
+
+      - step: "Assert checklist_ok value saved"
+        action: "assert"
+        target: "checklist_row"
+        asserts:
+          checklist_ok:
+            type: "value"
+            expected: false
+
+  # ------------------------------------------------------------------
+  # general_audit_ws_abd82ed - Workflow draft -> open -> confirm -> done
+  # ------------------------------------------------------------------
+  - name: "Checklist abd82ed - Workflow confirm to done"
+    steps:
+      - step: "Create worksheet abd82ed"
+        action: "create"
+        model: "general_audit_ws_abd82ed"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_abd82ed.id"
+
+      - step: "Open worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_open"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after opening worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Assert worksheet open"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          state:
+            type: "value"
+            expected: "open"
+
+      - step: "Fill required conclusion fields before confirm"
+        action: "write"
+        target: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          conclusion_id: "REC: conclusion_abd82ed.id"
+          conclusion: "All required client documents were received."
+
+      - step: "Confirm worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_confirm"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after confirming worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Assert worksheet confirmed"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          state:
+            type: "value"
+            expected: "confirm"
+
+      - step: "Approve worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_approve_approval"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after approving worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Assert worksheet done"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          state:
+            type: "value"
+            expected: "done"
+
+  # ------------------------------------------------------------------
+  # general_audit_ws_abd82ed - Cancel and restart (from open)
+  # ------------------------------------------------------------------
+  - name: "Checklist abd82ed - Cancel and restart"
+    steps:
+      - step: "Create worksheet abd82ed"
+        action: "create"
+        model: "general_audit_ws_abd82ed"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_abd82ed.id"
+
+      - step: "Open worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_open"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after opening worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Assert worksheet open"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          state:
+            type: "value"
+            expected: "open"
+
+      - step: "Cancel worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_cancel"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after cancelling worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Assert worksheet cancelled"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          state:
+            type: "value"
+            expected: "cancel"
+
+      - step: "Restart worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_restart"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after restarting worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Assert worksheet back to draft"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          state:
+            type: "value"
+            expected: "draft"
+
+  # ------------------------------------------------------------------
+  # general_audit_ws_e301171 - checklist row create + write
+  # ------------------------------------------------------------------
+  - name: "Checklist e301171 - Create checklist row and write"
+    steps:
+      - step: "Create worksheet e301171"
+        action: "create"
+        model: "general_audit_ws_e301171"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_e301171.id"
+
+      - step: "Assert worksheet created in draft"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          id:
+            type: "value"
+            operator: "is_truthy"
+          state:
+            type: "value"
+            expected: "draft"
+
+      - step: "Create checklist row for the master item"
+        action: "create"
+        model: "general_audit_ws_e301171.checklist"
+        save_as: "checklist_row"
+        as_user: "base.user_admin"
+        values:
+          worksheet_id: "REC: worksheet.id"
+          item_id: "REC: item_e301171.id"
+
+      - step: "Assert checklist row created"
+        action: "assert"
+        target: "checklist_row"
+        asserts:
+          id:
+            type: "value"
+            operator: "is_truthy"
+          worksheet_id:
+            type: "m2o"
+            expected: "REC: worksheet"
+          item_id:
+            type: "m2o"
+            expected: "REC: item_e301171"
+
+      - step: "Write checklist_ok on the checklist row"
+        action: "write"
+        target: "checklist_row"
+        as_user: "base.user_admin"
+        values:
+          checklist_ok: false
+
+      - step: "Assert checklist_ok value saved"
+        action: "assert"
+        target: "checklist_row"
+        asserts:
+          checklist_ok:
+            type: "value"
+            expected: false
+
+  # ------------------------------------------------------------------
+  # general_audit_ws_e301171 - Workflow draft -> open -> confirm -> done
+  # ------------------------------------------------------------------
+  - name: "Checklist e301171 - Workflow confirm to done"
+    steps:
+      - step: "Create worksheet e301171"
+        action: "create"
+        model: "general_audit_ws_e301171"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_e301171.id"
+
+      - step: "Open worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_open"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after opening worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Assert worksheet open"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          state:
+            type: "value"
+            expected: "open"
+
+      - step: "Fill required conclusion fields before confirm"
+        action: "write"
+        target: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          conclusion_id: "REC: conclusion_e301171.id"
+          conclusion: "No unauthorised journal entries were noted."
+
+      - step: "Confirm worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_confirm"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after confirming worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Assert worksheet confirmed"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          state:
+            type: "value"
+            expected: "confirm"
+
+      - step: "Approve worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_approve_approval"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after approving worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Assert worksheet done"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          state:
+            type: "value"
+            expected: "done"
+
+  # ------------------------------------------------------------------
+  # general_audit_ws_e301171 - Cancel and restart (from open)
+  # ------------------------------------------------------------------
+  - name: "Checklist e301171 - Cancel and restart"
+    steps:
+      - step: "Create worksheet e301171"
+        action: "create"
+        model: "general_audit_ws_e301171"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_e301171.id"
+
+      - step: "Open worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_open"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after opening worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Assert worksheet open"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          state:
+            type: "value"
+            expected: "open"
+
+      - step: "Cancel worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_cancel"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after cancelling worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Assert worksheet cancelled"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          state:
+            type: "value"
+            expected: "cancel"
+
+      - step: "Restart worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_restart"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after restarting worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Assert worksheet back to draft"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          state:
+            type: "value"
+            expected: "draft"

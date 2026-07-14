@@ -1,0 +1,647 @@
+setup:
+  steps:
+    - step: "Get config parameter model"
+      action: "search"
+      model: "ir.config_parameter"
+      domain: []
+      save_as: "config_parameter"
+      limit: 1
+
+    - step: "Allow enough CPA licenses for this scenario"
+      action: "call"
+      target: "config_parameter"
+      method: "set_param"
+      args:
+        - "ssi_general_audit.max_number_of_cpa_license"
+        - "100"
+
+    - step: "Create client partner"
+      action: "create"
+      model: "res.partner"
+      save_as: "client"
+      as_user: "base.user_admin"
+      values:
+        name: "Test Audit Client - F5A3CEE"
+        is_company: true
+
+    - step: "Create accountant partner"
+      action: "create"
+      model: "res.partner"
+      save_as: "accountant"
+      as_user: "base.user_admin"
+      values:
+        name: "Test Audit Accountant - F5A3CEE"
+
+    - step: "Get CPA license id category"
+      action: "ref"
+      xml_id: "ssi_partner_identification_cpa_license.partner_identification_accountant_cpa_license"
+      save_as: "cpa_category"
+
+    - step: "Grant accountant a CPA license"
+      action: "create"
+      model: "res.partner.id_number"
+      save_as: "cpa_license"
+      as_user: "base.user_admin"
+      values:
+        partner_id: "REC: accountant.id"
+        category_id: "REC: cpa_category.id"
+        name: "CPA-F5A3CEE-0001"
+
+    - step: "Create account type set"
+      action: "create"
+      model: "client_account_type_set"
+      save_as: "account_type_set"
+      as_user: "base.user_admin"
+      values:
+        name: "Test Account Type Set - F5A3CEE"
+        code: "/"
+
+    - step: "Create financial accounting standard"
+      action: "create"
+      model: "accountant.financial_accounting_standard"
+      save_as: "standard"
+      as_user: "base.user_admin"
+      values:
+        name: "Test Financial Accounting Standard - F5A3CEE"
+        code: "/"
+
+    - step: "Create general audit"
+      action: "create"
+      model: "general_audit"
+      save_as: "audit"
+      as_user: "base.user_admin"
+      values:
+        title: "Test General Audit - F5A3CEE"
+        partner_id: "REC: client.id"
+        accountant_id: "REC: accountant.id"
+        account_type_set_id: "REC: account_type_set.id"
+        financial_accounting_standard_id: "REC: standard.id"
+        date_start: 2026-01-01
+        date_end: 2026-12-31
+        need_interim: false
+        need_previous: false
+        num_of_consecutive_audit_firm: 1
+        num_of_consecutive_audit_accountant: 1
+
+    - step: "Open general audit"
+      action: "call"
+      target: "audit"
+      method: "action_open"
+      as_user: "base.user_admin"
+
+    - step: "Invalidate cache after opening general audit"
+      action: "call"
+      target: "audit"
+      method: "invalidate_cache"
+
+    - step: "Get worksheet type f5a3cee"
+      action: "ref"
+      xml_id: "ssi_general_audit_worksheet_client_package.worksheet_type_f5a3cee"
+      save_as: "ws_type"
+
+    - step: "Create conclusion for f5a3cee worksheet type"
+      action: "create"
+      model: "general_audit_worksheet_conclusion"
+      save_as: "conclusion"
+      as_user: "base.user_admin"
+      values:
+        name: "Data collection is complete"
+        code: "/"
+        type_id: "REC: ws_type.id"
+
+    - step: "Create client account group"
+      action: "create"
+      model: "client_account_group"
+      save_as: "account_group"
+      as_user: "base.user_admin"
+      values:
+        name: "Test Account Group - F5A3CEE"
+        code: "/"
+
+    - step: "Create client account type A"
+      action: "create"
+      model: "client_account_type"
+      save_as: "account_type_a"
+      as_user: "base.user_admin"
+      values:
+        name: "Test Account Type A - F5A3CEE"
+        code: "/"
+        group_id: "REC: account_group.id"
+        normal_balance: "dr"
+        # DILARANG membiarkan python_code pada default "result = document.balance":
+        # general_audit.standard_detail._compute_extrapolation_balance akan crash
+        # (AttributeError) begitu tipe akun ini terhubung ke sebuah standard_detail.
+        python_code: "result = 0.0"
+
+    - step: "Create client account type B"
+      action: "create"
+      model: "client_account_type"
+      save_as: "account_type_b"
+      as_user: "base.user_admin"
+      values:
+        name: "Test Account Type B - F5A3CEE"
+        code: "/"
+        group_id: "REC: account_group.id"
+        normal_balance: "cr"
+        python_code: "result = 0.0"
+
+    - step: "Create client account A"
+      action: "create"
+      model: "client_account"
+      save_as: "account_a"
+      as_user: "base.user_admin"
+      values:
+        name: "Test Client Account A - F5A3CEE"
+        code: "/"
+        partner_id: "REC: client.id"
+        type_id: "REC: account_type_a.id"
+
+    - step: "Create client account B"
+      action: "create"
+      model: "client_account"
+      save_as: "account_b"
+      as_user: "base.user_admin"
+      values:
+        name: "Test Client Account B - F5A3CEE"
+        code: "/"
+        partner_id: "REC: client.id"
+        type_id: "REC: account_type_b.id"
+
+scenarios:
+  # ------------------------------------------------------------------
+  # general_audit_ws_f5a3cee - Create in draft
+  # ------------------------------------------------------------------
+  - name: "Worksheet f5a3cee - Create in draft"
+    steps:
+      - step: "Create worksheet f5a3cee"
+        action: "create"
+        model: "general_audit_ws_f5a3cee"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+
+      - step: "Assert worksheet created in draft"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          id:
+            type: "value"
+            operator: "is_truthy"
+          state:
+            type: "value"
+            expected: "draft"
+          general_audit_id:
+            type: "m2o"
+            expected: "REC: audit"
+          type_id:
+            type: "m2o"
+            expected: "REC: ws_type"
+
+  # ------------------------------------------------------------------
+  # action_populate_details - normal (2 account types mapped for the partner)
+  # ------------------------------------------------------------------
+  - name: "Worksheet f5a3cee - Action populate details (normal)"
+    steps:
+      - step: "Create client account mapping for the worksheet's partner"
+        action: "create"
+        model: "client_account_mapping"
+        save_as: "mapping"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+
+      - step: "Map client account A to standard type A"
+        action: "create"
+        model: "client_account_mapping.detail"
+        save_as: "mapping_detail_a"
+        as_user: "base.user_admin"
+        values:
+          mapping_id: "REC: mapping.id"
+          account_id: "REC: account_a.id"
+
+      - step: "Map client account B to standard type B"
+        action: "create"
+        model: "client_account_mapping.detail"
+        save_as: "mapping_detail_b"
+        as_user: "base.user_admin"
+        values:
+          mapping_id: "REC: mapping.id"
+          account_id: "REC: account_b.id"
+
+      - step: "Create worksheet f5a3cee for the same partner"
+        action: "create"
+        model: "general_audit_ws_f5a3cee"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+
+      - step: "Populate details from client account mapping"
+        action: "call"
+        target: "worksheet"
+        method: "action_populate_details"
+        as_user: "base.user_admin"
+
+      - step: "Assert two detail lines were created"
+        action: "search"
+        model: "general_audit_ws_f5a3cee.detail"
+        domain:
+          - ["worksheet_id", "=", "REC: worksheet.id"]
+        save_as: "details_after_populate"
+        expect_count: 2
+
+  # ------------------------------------------------------------------
+  # action_populate_details - idempoten (dipanggil dua kali)
+  # ------------------------------------------------------------------
+  - name: "Worksheet f5a3cee - Action populate details (idempoten)"
+    steps:
+      - step: "Create client account mapping for the worksheet's partner"
+        action: "create"
+        model: "client_account_mapping"
+        save_as: "mapping"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+
+      - step: "Map client account A to standard type A"
+        action: "create"
+        model: "client_account_mapping.detail"
+        save_as: "mapping_detail_a"
+        as_user: "base.user_admin"
+        values:
+          mapping_id: "REC: mapping.id"
+          account_id: "REC: account_a.id"
+
+      - step: "Map client account B to standard type B"
+        action: "create"
+        model: "client_account_mapping.detail"
+        save_as: "mapping_detail_b"
+        as_user: "base.user_admin"
+        values:
+          mapping_id: "REC: mapping.id"
+          account_id: "REC: account_b.id"
+
+      - step: "Create worksheet f5a3cee for the same partner"
+        action: "create"
+        model: "general_audit_ws_f5a3cee"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+
+      - step: "Populate details a first time"
+        action: "call"
+        target: "worksheet"
+        method: "action_populate_details"
+        as_user: "base.user_admin"
+
+      - step: "Populate details a second time"
+        action: "call"
+        target: "worksheet"
+        method: "action_populate_details"
+        as_user: "base.user_admin"
+
+      - step: "Assert still exactly two detail lines (no duplicates)"
+        action: "search"
+        model: "general_audit_ws_f5a3cee.detail"
+        domain:
+          - ["worksheet_id", "=", "REC: worksheet.id"]
+        save_as: "details_after_repopulate"
+        expect_count: 2
+
+  # ------------------------------------------------------------------
+  # action_populate_details - unlink satu mapping detail lalu populate ulang
+  # ------------------------------------------------------------------
+  - name: "Worksheet f5a3cee - Action populate details (unlink one mapping)"
+    steps:
+      - step: "Create client account mapping for the worksheet's partner"
+        action: "create"
+        model: "client_account_mapping"
+        save_as: "mapping"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+
+      - step: "Map client account A to standard type A"
+        action: "create"
+        model: "client_account_mapping.detail"
+        save_as: "mapping_detail_a"
+        as_user: "base.user_admin"
+        values:
+          mapping_id: "REC: mapping.id"
+          account_id: "REC: account_a.id"
+
+      - step: "Map client account B to standard type B"
+        action: "create"
+        model: "client_account_mapping.detail"
+        save_as: "mapping_detail_b"
+        as_user: "base.user_admin"
+        values:
+          mapping_id: "REC: mapping.id"
+          account_id: "REC: account_b.id"
+
+      - step: "Create worksheet f5a3cee for the same partner"
+        action: "create"
+        model: "general_audit_ws_f5a3cee"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+
+      - step: "Populate details (both types mapped)"
+        action: "call"
+        target: "worksheet"
+        method: "action_populate_details"
+        as_user: "base.user_admin"
+
+      - step: "Assert two detail lines exist before unlink"
+        action: "search"
+        model: "general_audit_ws_f5a3cee.detail"
+        domain:
+          - ["worksheet_id", "=", "REC: worksheet.id"]
+        save_as: "details_before_unlink"
+        expect_count: 2
+
+      - step: "Remove the mapping for account type B"
+        action: "unlink"
+        target: "mapping_detail_b"
+
+      - step: "Populate details again after removing one mapping"
+        action: "call"
+        target: "worksheet"
+        method: "action_populate_details"
+        as_user: "base.user_admin"
+
+      - step: "Assert only the remaining mapped type's detail line survives"
+        action: "search"
+        model: "general_audit_ws_f5a3cee.detail"
+        domain:
+          - ["worksheet_id", "=", "REC: worksheet.id"]
+        save_as: "details_after_unlink"
+        expect_count: 1
+
+      - step: "Assert the surviving detail line refers to account type A"
+        action: "search"
+        model: "general_audit_ws_f5a3cee.detail"
+        domain:
+          - ["worksheet_id", "=", "REC: worksheet.id"]
+          - ["account_client_type_id", "=", "REC: account_type_a.id"]
+        save_as: "details_type_a"
+        expect_count: 1
+
+  # ------------------------------------------------------------------
+  # action_populate_details - partner tanpa client_account_mapping
+  # ------------------------------------------------------------------
+  - name: "Worksheet f5a3cee - Action populate details (partner without mapping)"
+    steps:
+      - step: "Create a second client partner without any account mapping"
+        action: "create"
+        model: "res.partner"
+        save_as: "client_no_mapping"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Audit Client Without Mapping - F5A3CEE"
+          is_company: true
+
+      - step: "Create a second accountant partner"
+        action: "create"
+        model: "res.partner"
+        save_as: "accountant_no_mapping"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Audit Accountant Without Mapping - F5A3CEE"
+
+      - step: "Grant second accountant a CPA license"
+        action: "create"
+        model: "res.partner.id_number"
+        save_as: "cpa_license_no_mapping"
+        as_user: "base.user_admin"
+        values:
+          partner_id: "REC: accountant_no_mapping.id"
+          category_id: "REC: cpa_category.id"
+          name: "CPA-F5A3CEE-0002"
+
+      - step: "Create a second account type set"
+        action: "create"
+        model: "client_account_type_set"
+        save_as: "account_type_set_no_mapping"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Account Type Set Without Mapping - F5A3CEE"
+          code: "/"
+
+      - step: "Create a second financial accounting standard"
+        action: "create"
+        model: "accountant.financial_accounting_standard"
+        save_as: "standard_no_mapping"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Financial Accounting Standard Without Mapping - F5A3CEE"
+          code: "/"
+
+      - step: "Create a second general audit for the partner without mapping"
+        action: "create"
+        model: "general_audit"
+        save_as: "audit_no_mapping"
+        as_user: "base.user_admin"
+        values:
+          title: "Test General Audit Without Mapping - F5A3CEE"
+          partner_id: "REC: client_no_mapping.id"
+          accountant_id: "REC: accountant_no_mapping.id"
+          account_type_set_id: "REC: account_type_set_no_mapping.id"
+          financial_accounting_standard_id: "REC: standard_no_mapping.id"
+          date_start: 2026-01-01
+          date_end: 2026-12-31
+          need_interim: false
+          need_previous: false
+          num_of_consecutive_audit_firm: 1
+          num_of_consecutive_audit_accountant: 1
+
+      - step: "Open the second general audit"
+        action: "call"
+        target: "audit_no_mapping"
+        method: "action_open"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after opening the second general audit"
+        action: "call"
+        target: "audit_no_mapping"
+        method: "invalidate_cache"
+
+      - step: "Create worksheet f5a3cee for the partner without any mapping"
+        action: "create"
+        model: "general_audit_ws_f5a3cee"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit_no_mapping.id"
+          type_id: "REC: ws_type.id"
+
+      - step: "Populate details (no client_account_mapping exists for this partner)"
+        action: "call"
+        target: "worksheet"
+        method: "action_populate_details"
+        as_user: "base.user_admin"
+
+      - step: "Assert no detail lines were created"
+        action: "search"
+        model: "general_audit_ws_f5a3cee.detail"
+        domain:
+          - ["worksheet_id", "=", "REC: worksheet.id"]
+        save_as: "details_no_mapping"
+        expect_count: 0
+
+  # ------------------------------------------------------------------
+  # Workflow draft -> open -> confirm -> done
+  # ------------------------------------------------------------------
+  - name: "Worksheet f5a3cee - Workflow confirm to done"
+    steps:
+      - step: "Create worksheet for workflow"
+        action: "create"
+        model: "general_audit_ws_f5a3cee"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+
+      - step: "Open worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_open"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after opening worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Assert worksheet open"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          state:
+            type: "value"
+            expected: "open"
+
+      - step: "Fill required conclusion fields before confirm"
+        action: "write"
+        target: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          conclusion_id: "REC: conclusion.id"
+          conclusion: "All requested client data has been received."
+
+      - step: "Confirm worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_confirm"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after confirming worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Assert worksheet confirmed"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          state:
+            type: "value"
+            expected: "confirm"
+
+      - step: "Approve worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_approve_approval"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after approving worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Assert worksheet done"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          state:
+            type: "value"
+            expected: "done"
+
+  # ------------------------------------------------------------------
+  # Cancel and restart (from open)
+  # ------------------------------------------------------------------
+  - name: "Worksheet f5a3cee - Cancel and restart"
+    steps:
+      - step: "Create worksheet for cancel/restart"
+        action: "create"
+        model: "general_audit_ws_f5a3cee"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+
+      - step: "Open worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_open"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after opening worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Assert worksheet open"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          state:
+            type: "value"
+            expected: "open"
+
+      - step: "Cancel worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_cancel"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after cancelling worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Assert worksheet cancelled"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          state:
+            type: "value"
+            expected: "cancel"
+
+      - step: "Restart worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_restart"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after restarting worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Assert worksheet back to draft"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          state:
+            type: "value"
+            expected: "draft"
