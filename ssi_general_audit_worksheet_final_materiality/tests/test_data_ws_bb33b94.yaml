@@ -1,0 +1,1258 @@
+setup:
+  steps:
+    - step: "Get config parameter model"
+      action: "search"
+      model: "ir.config_parameter"
+      domain: []
+      save_as: "config_parameter"
+      limit: 1
+
+    - step: "Allow enough CPA licenses for this scenario"
+      action: "call"
+      target: "config_parameter"
+      method: "set_param"
+      args:
+        - "ssi_general_audit.max_number_of_cpa_license"
+        - "100"
+
+    - step: "Create client partner"
+      action: "create"
+      model: "res.partner"
+      save_as: "client"
+      as_user: "base.user_admin"
+      values:
+        name: "Test Audit Client - BB33B94"
+        is_company: true
+
+    - step: "Create accountant partner"
+      action: "create"
+      model: "res.partner"
+      save_as: "accountant"
+      as_user: "base.user_admin"
+      values:
+        name: "Test Audit Accountant - BB33B94"
+
+    - step: "Get CPA license id category"
+      action: "ref"
+      xml_id: "ssi_partner_identification_cpa_license.partner_identification_accountant_cpa_license"
+      save_as: "cpa_category"
+
+    - step: "Grant accountant a CPA license"
+      action: "create"
+      model: "res.partner.id_number"
+      save_as: "cpa_license"
+      as_user: "base.user_admin"
+      values:
+        partner_id: "REC: accountant.id"
+        category_id: "REC: cpa_category.id"
+        name: "CPA-BB33B94-0001"
+
+    - step: "Create account type set"
+      action: "create"
+      model: "client_account_type_set"
+      save_as: "account_type_set"
+      as_user: "base.user_admin"
+      values:
+        name: "Test Account Type Set - BB33B94"
+        code: "/"
+
+    - step: "Create financial accounting standard"
+      action: "create"
+      model: "accountant.financial_accounting_standard"
+      save_as: "standard"
+      as_user: "base.user_admin"
+      values:
+        name: "Test Financial Accounting Standard - BB33B94"
+        code: "/"
+
+    - step: "Create general audit"
+      action: "create"
+      model: "general_audit"
+      save_as: "audit"
+      as_user: "base.user_admin"
+      values:
+        title: "Test General Audit - BB33B94"
+        partner_id: "REC: client.id"
+        accountant_id: "REC: accountant.id"
+        account_type_set_id: "REC: account_type_set.id"
+        financial_accounting_standard_id: "REC: standard.id"
+        date_start: 2026-01-01
+        date_end: 2026-12-31
+        need_interim: false
+        need_previous: false
+        num_of_consecutive_audit_firm: 1
+        num_of_consecutive_audit_accountant: 1
+
+    - step: "Open general audit"
+      action: "call"
+      target: "audit"
+      method: "action_open"
+      as_user: "base.user_admin"
+
+    - step: "Invalidate cache after opening general audit"
+      action: "call"
+      target: "audit"
+      method: "invalidate_cache"
+
+    - step: "Assert general audit open"
+      action: "assert"
+      target: "audit"
+      asserts:
+        state:
+          type: "value"
+          expected: "open"
+
+    - step: "Get worksheet type bb33b94"
+      action: "ref"
+      xml_id: "ssi_general_audit_worksheet_final_materiality.worksheet_type_bb33b94"
+      save_as: "ws_type_bb33b94"
+
+    - step: "Get worksheet type d9d2b44 (preliminary materiality, used as fixture only)"
+      action: "ref"
+      xml_id: "ssi_general_audit_worksheet_preliminary_materiality.worksheet_type_d9d2b44"
+      save_as: "ws_type_d9d2b44"
+
+    - step: "Get conclusion bb33b94 (adequate)"
+      action: "ref"
+      xml_id: "ssi_general_audit_worksheet_final_materiality.general_audit_worksheet_conclusion_116_0f4a4d2d"
+      save_as: "conclusion_bb33b94"
+
+scenarios:
+  # ------------------------------------------------------------------
+  # _compute_base - normal, override other_amount_ok, kosong
+  # ------------------------------------------------------------------
+  - name: "bb33b94 - _compute_base (normal, override other_amount_ok, kosong)"
+    steps:
+      - step: "Create computation item"
+        action: "create"
+        model: "trial_balance_computation_item"
+        save_as: "comp_item"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Computation Item - Base Amount"
+          code: "/"
+
+      - step: "Create general audit computation with audited_amount"
+        action: "create"
+        model: "general_audit.computation"
+        save_as: "computation"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          computation_item_id: "REC: comp_item.id"
+          audited_amount: 1000000.0
+
+      - step: "Create worksheet bb33b94"
+        action: "create"
+        model: "general_audit_ws_bb33b94"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_bb33b94.id"
+
+      - step: "Open worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_open"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after opening worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Set computation_item_id"
+        action: "write"
+        target: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          computation_item_id: "REC: comp_item.id"
+
+      - step: "Assert base_computation_amount from computation"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          base_computation_amount:
+            type: "value"
+            expected: 1000000.0
+          general_audit_computation_id:
+            type: "m2o"
+            expected: "REC: computation"
+
+      - step: "Enable other_amount_ok override"
+        action: "write"
+        target: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          other_amount_ok: true
+          other_amount_source: "Management estimate"
+          other_base_amount: 750000.0
+
+      - step: "Assert base_computation_amount overridden by other_base_amount"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          base_computation_amount:
+            type: "value"
+            expected: 750000.0
+
+      - step: "Create worksheet bb33b94 without computation_item_id (kosong)"
+        action: "create"
+        model: "general_audit_ws_bb33b94"
+        save_as: "worksheet_empty"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_bb33b94.id"
+
+      - step: "Open empty worksheet"
+        action: "call"
+        target: "worksheet_empty"
+        method: "action_open"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after opening empty worksheet"
+        action: "call"
+        target: "worksheet_empty"
+        method: "invalidate_cache"
+
+      - step: "Assert base_computation_amount is zero without computation_item_id"
+        action: "assert"
+        target: "worksheet_empty"
+        asserts:
+          base_computation_amount:
+            type: "value"
+            expected: 0.0
+
+  # ------------------------------------------------------------------
+  # _compute_materiality - normal, nol
+  # ------------------------------------------------------------------
+  - name: "bb33b94 - _compute_materiality (normal and nol)"
+    steps:
+      - step: "Create computation item"
+        action: "create"
+        model: "trial_balance_computation_item"
+        save_as: "comp_item"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Computation Item - Materiality"
+          code: "/"
+
+      - step: "Create general audit computation with audited_amount"
+        action: "create"
+        model: "general_audit.computation"
+        save_as: "computation"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          computation_item_id: "REC: comp_item.id"
+          audited_amount: 1000000.0
+
+      - step: "Create worksheet bb33b94"
+        action: "create"
+        model: "general_audit_ws_bb33b94"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_bb33b94.id"
+
+      - step: "Open worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_open"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after opening worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Set computation item and materiality percentages"
+        action: "write"
+        target: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          computation_item_id: "REC: comp_item.id"
+          overall_materiality_percentage: 5.0
+          performance_materiality_percentage: 75.0
+          tolerable_misstatement_percentage: 50.0
+
+      - step: "Assert materiality amounts computed per formula"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          overall_materiality:
+            type: "value"
+            expected: 50000.0
+          performance_materiality:
+            type: "value"
+            expected: 37500.0
+          tolerable_misstatement:
+            type: "value"
+            expected: 18750.0
+
+      - step: "Set percentages to zero"
+        action: "write"
+        target: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          overall_materiality_percentage: 0.0
+          performance_materiality_percentage: 0.0
+          tolerable_misstatement_percentage: 0.0
+
+      - step: "Assert materiality amounts are zero"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          overall_materiality:
+            type: "value"
+            expected: 0.0
+          performance_materiality:
+            type: "value"
+            expected: 0.0
+          tolerable_misstatement:
+            type: "value"
+            expected: 0.0
+
+  # ------------------------------------------------------------------
+  # _compute_planning - normal, fallback ke end_period, kosong
+  # ------------------------------------------------------------------
+  - name: "bb33b94 - _compute_planning (normal, fallback, kosong)"
+    steps:
+      - step: "Create computation item for planning worksheet"
+        action: "create"
+        model: "trial_balance_computation_item"
+        save_as: "comp_item_planning"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Computation Item - Planning Materiality"
+          code: "/"
+
+      - step: "Create general audit computation with extrapolation_amount for planning"
+        action: "create"
+        model: "general_audit.computation"
+        save_as: "computation_planning"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          computation_item_id: "REC: comp_item_planning.id"
+          extrapolation_amount: 800000.0
+
+      - step: "Create preliminary materiality worksheet (planning)"
+        action: "create"
+        model: "general_audit_ws_d9d2b44"
+        save_as: "ws_planning"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_d9d2b44.id"
+
+      - step: "Open preliminary materiality worksheet"
+        action: "call"
+        target: "ws_planning"
+        method: "action_open"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after opening preliminary materiality worksheet"
+        action: "call"
+        target: "ws_planning"
+        method: "invalidate_cache"
+
+      - step: "Set base and percentages on preliminary materiality worksheet"
+        action: "write"
+        target: "ws_planning"
+        as_user: "base.user_admin"
+        values:
+          base_amount_source: "extrapolation"
+          computation_item_id: "REC: comp_item_planning.id"
+          overall_materiality_percentage: 4.0
+          performance_materiality_percentage: 70.0
+          tolerable_misstatement_percentage: 40.0
+
+      - step: "Assert preliminary materiality worksheet computed"
+        action: "assert"
+        target: "ws_planning"
+        asserts:
+          base_computation_amount:
+            type: "value"
+            expected: 800000.0
+          overall_materiality:
+            type: "value"
+            expected: 32000.0
+          performance_materiality:
+            type: "value"
+            expected: 22400.0
+          tolerable_misstatement:
+            type: "value"
+            expected: 8960.0
+
+      - step: "Create worksheet bb33b94 with planning_ws_d9d2b44_id set"
+        action: "create"
+        model: "general_audit_ws_bb33b94"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_bb33b94.id"
+
+      - step: "Open worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_open"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after opening worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Set planning_ws_d9d2b44_id"
+        action: "write"
+        target: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          planning_ws_d9d2b44_id: "REC: ws_planning.id"
+
+      - step: "Assert planning_* mirrors the linked preliminary materiality worksheet"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          planning_base_amount:
+            type: "value"
+            expected: 800000.0
+          planning_overall_materiality_percentage:
+            type: "value"
+            expected: 4.0
+          planning_overall_materiality:
+            type: "value"
+            expected: 32000.0
+          planning_performance_materiality_percentage:
+            type: "value"
+            expected: 70.0
+          planning_performance_materiality:
+            type: "value"
+            expected: 22400.0
+          planning_tolerable_misstatement_percentage:
+            type: "value"
+            expected: 40.0
+          planning_tolerable_misstatement:
+            type: "value"
+            expected: 8960.0
+
+      - step:
+          "Create worksheet bb33b94 with only end_period_ws_d9d2b44_id set (fallback)"
+        action: "create"
+        model: "general_audit_ws_bb33b94"
+        save_as: "worksheet_fallback"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_bb33b94.id"
+
+      - step: "Open fallback worksheet"
+        action: "call"
+        target: "worksheet_fallback"
+        method: "action_open"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after opening fallback worksheet"
+        action: "call"
+        target: "worksheet_fallback"
+        method: "invalidate_cache"
+
+      - step: "Set only end_period_ws_d9d2b44_id (planning_ws_d9d2b44_id left empty)"
+        action: "write"
+        target: "worksheet_fallback"
+        as_user: "base.user_admin"
+        values:
+          end_period_ws_d9d2b44_id: "REC: ws_planning.id"
+
+      - step: "Assert planning_* falls back to end_period_ws_d9d2b44_id values"
+        action: "assert"
+        target: "worksheet_fallback"
+        asserts:
+          planning_base_amount:
+            type: "value"
+            expected: 800000.0
+          planning_overall_materiality:
+            type: "value"
+            expected: 32000.0
+          planning_performance_materiality:
+            type: "value"
+            expected: 22400.0
+          planning_tolerable_misstatement:
+            type: "value"
+            expected: 8960.0
+
+      - step:
+          "Create worksheet bb33b94 with neither planning nor end_period source (kosong)"
+        action: "create"
+        model: "general_audit_ws_bb33b94"
+        save_as: "worksheet_kosong"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_bb33b94.id"
+
+      - step: "Assert planning_* is zero when both sources are empty"
+        action: "assert"
+        target: "worksheet_kosong"
+        asserts:
+          planning_base_amount:
+            type: "value"
+            expected: 0.0
+          planning_overall_materiality_percentage:
+            type: "value"
+            expected: 0.0
+          planning_overall_materiality:
+            type: "value"
+            expected: 0.0
+          planning_performance_materiality_percentage:
+            type: "value"
+            expected: 0.0
+          planning_performance_materiality:
+            type: "value"
+            expected: 0.0
+          planning_tolerable_misstatement_percentage:
+            type: "value"
+            expected: 0.0
+          planning_tolerable_misstatement:
+            type: "value"
+            expected: 0.0
+
+  # ------------------------------------------------------------------
+  # _compute_end_period - normal, kosong
+  # ------------------------------------------------------------------
+  - name: "bb33b94 - _compute_end_period (normal and kosong)"
+    steps:
+      - step: "Create computation item for end period worksheet"
+        action: "create"
+        model: "trial_balance_computation_item"
+        save_as: "comp_item_end_period"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Computation Item - End Period Materiality"
+          code: "/"
+
+      - step:
+          "Create general audit computation with extrapolation_amount for end period"
+        action: "create"
+        model: "general_audit.computation"
+        save_as: "computation_end_period"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          computation_item_id: "REC: comp_item_end_period.id"
+          extrapolation_amount: 500000.0
+
+      - step: "Create preliminary materiality worksheet (end period)"
+        action: "create"
+        model: "general_audit_ws_d9d2b44"
+        save_as: "ws_end_period"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_d9d2b44.id"
+
+      - step: "Open preliminary materiality worksheet (end period)"
+        action: "call"
+        target: "ws_end_period"
+        method: "action_open"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after opening end period preliminary worksheet"
+        action: "call"
+        target: "ws_end_period"
+        method: "invalidate_cache"
+
+      - step: "Set base and percentages on end period preliminary worksheet"
+        action: "write"
+        target: "ws_end_period"
+        as_user: "base.user_admin"
+        values:
+          base_amount_source: "extrapolation"
+          computation_item_id: "REC: comp_item_end_period.id"
+          overall_materiality_percentage: 6.0
+          performance_materiality_percentage: 80.0
+          tolerable_misstatement_percentage: 60.0
+
+      - step: "Create worksheet bb33b94 with end_period_ws_d9d2b44_id set"
+        action: "create"
+        model: "general_audit_ws_bb33b94"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_bb33b94.id"
+
+      - step: "Open worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_open"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after opening worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Set end_period_ws_d9d2b44_id"
+        action: "write"
+        target: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          end_period_ws_d9d2b44_id: "REC: ws_end_period.id"
+
+      - step: "Assert end_period_* mirrors the linked preliminary materiality worksheet"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          end_period_base_amount:
+            type: "value"
+            expected: 500000.0
+          end_period_overall_materiality:
+            type: "value"
+            expected: 30000.0
+          end_period_performance_materiality:
+            type: "value"
+            expected: 24000.0
+          end_period_tolerable_misstatement:
+            type: "value"
+            expected: 14400.0
+
+      - step: "Create worksheet bb33b94 without end_period_ws_d9d2b44_id (kosong)"
+        action: "create"
+        model: "general_audit_ws_bb33b94"
+        save_as: "worksheet_kosong"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_bb33b94.id"
+
+      - step: "Assert end_period_* is zero without a linked worksheet"
+        action: "assert"
+        target: "worksheet_kosong"
+        asserts:
+          end_period_base_amount:
+            type: "value"
+            expected: 0.0
+          end_period_overall_materiality:
+            type: "value"
+            expected: 0.0
+          end_period_performance_materiality:
+            type: "value"
+            expected: 0.0
+          end_period_tolerable_misstatement:
+            type: "value"
+            expected: 0.0
+
+  # ------------------------------------------------------------------
+  # _compute_diff - normal (planning, end period and audited berbeda), pembagi nol
+  # ------------------------------------------------------------------
+  - name: "bb33b94 - _compute_diff (normal and pembagi nol)"
+    steps:
+      - step: "Create computation item for audited base"
+        action: "create"
+        model: "trial_balance_computation_item"
+        save_as: "comp_item_audited"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Computation Item - Diff Audited"
+          code: "/"
+
+      - step: "Create general audit computation (audited base = 2,000,000)"
+        action: "create"
+        model: "general_audit.computation"
+        save_as: "computation_audited"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          computation_item_id: "REC: comp_item_audited.id"
+          audited_amount: 2000000.0
+
+      - step: "Create computation item for planning base"
+        action: "create"
+        model: "trial_balance_computation_item"
+        save_as: "comp_item_diff_planning"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Computation Item - Diff Planning"
+          code: "/"
+
+      - step: "Create general audit computation (planning base = 1,000,000)"
+        action: "create"
+        model: "general_audit.computation"
+        save_as: "computation_diff_planning"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          computation_item_id: "REC: comp_item_diff_planning.id"
+          extrapolation_amount: 1000000.0
+
+      - step: "Create computation item for end period base"
+        action: "create"
+        model: "trial_balance_computation_item"
+        save_as: "comp_item_diff_end_period"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Computation Item - Diff End Period"
+          code: "/"
+
+      - step: "Create general audit computation (end period base = 1,250,000)"
+        action: "create"
+        model: "general_audit.computation"
+        save_as: "computation_diff_end_period"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          computation_item_id: "REC: comp_item_diff_end_period.id"
+          extrapolation_amount: 1250000.0
+
+      - step:
+          "Create planning preliminary materiality worksheet (OM 5% / PM 80% / TM 50%)"
+        action: "create"
+        model: "general_audit_ws_d9d2b44"
+        save_as: "ws_diff_planning"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_d9d2b44.id"
+
+      - step: "Open planning preliminary materiality worksheet"
+        action: "call"
+        target: "ws_diff_planning"
+        method: "action_open"
+        as_user: "base.user_admin"
+
+      - step:
+          "Invalidate cache after opening planning preliminary materiality worksheet"
+        action: "call"
+        target: "ws_diff_planning"
+        method: "invalidate_cache"
+
+      - step: "Set base and percentages on planning preliminary materiality worksheet"
+        action: "write"
+        target: "ws_diff_planning"
+        as_user: "base.user_admin"
+        values:
+          base_amount_source: "extrapolation"
+          computation_item_id: "REC: comp_item_diff_planning.id"
+          overall_materiality_percentage: 5.0
+          performance_materiality_percentage: 80.0
+          tolerable_misstatement_percentage: 50.0
+
+      - step:
+          "Create end period preliminary materiality worksheet (OM 5% / PM 80% / TM 50%)"
+        action: "create"
+        model: "general_audit_ws_d9d2b44"
+        save_as: "ws_diff_end_period"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_d9d2b44.id"
+
+      - step: "Open end period preliminary materiality worksheet"
+        action: "call"
+        target: "ws_diff_end_period"
+        method: "action_open"
+        as_user: "base.user_admin"
+
+      - step:
+          "Invalidate cache after opening end period preliminary materiality worksheet"
+        action: "call"
+        target: "ws_diff_end_period"
+        method: "invalidate_cache"
+
+      - step: "Set base and percentages on end period preliminary materiality worksheet"
+        action: "write"
+        target: "ws_diff_end_period"
+        as_user: "base.user_admin"
+        values:
+          base_amount_source: "extrapolation"
+          computation_item_id: "REC: comp_item_diff_end_period.id"
+          overall_materiality_percentage: 5.0
+          performance_materiality_percentage: 80.0
+          tolerable_misstatement_percentage: 50.0
+
+      - step: "Create worksheet bb33b94 (audited OM 5% / PM 80% / TM 50%)"
+        action: "create"
+        model: "general_audit_ws_bb33b94"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_bb33b94.id"
+
+      - step: "Open worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_open"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after opening worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Set computation_item_id, percentages, planning and end_period sources"
+        action: "write"
+        target: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          computation_item_id: "REC: comp_item_audited.id"
+          overall_materiality_percentage: 5.0
+          performance_materiality_percentage: 80.0
+          tolerable_misstatement_percentage: 50.0
+          planning_ws_d9d2b44_id: "REC: ws_diff_planning.id"
+          end_period_ws_d9d2b44_id: "REC: ws_diff_end_period.id"
+
+      - step: "Assert own (audited) materiality figures"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          overall_materiality:
+            type: "value"
+            expected: 100000.0
+          performance_materiality:
+            type: "value"
+            expected: 80000.0
+          tolerable_misstatement:
+            type: "value"
+            expected: 40000.0
+          planning_overall_materiality:
+            type: "value"
+            expected: 50000.0
+          planning_performance_materiality:
+            type: "value"
+            expected: 40000.0
+          planning_tolerable_misstatement:
+            type: "value"
+            expected: 20000.0
+          end_period_overall_materiality:
+            type: "value"
+            expected: 62500.0
+          end_period_performance_materiality:
+            type: "value"
+            expected: 50000.0
+          end_period_tolerable_misstatement:
+            type: "value"
+            expected: 25000.0
+
+      - step: "Assert audited vs unaudited (end period) diffs"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          audited_unaudited_overall_materiality_diff:
+            type: "value"
+            expected: 37500.0
+          audited_unaudited_overall_materiality_diff_percentage:
+            type: "value"
+            expected: 60.0
+          audited_unaudited_performance_materiality_diff:
+            type: "value"
+            expected: 30000.0
+          audited_unaudited_performance_materiality_diff_percentage:
+            type: "value"
+            expected: 60.0
+          audited_unaudited_tolerable_misstatement_diff:
+            type: "value"
+            expected: 15000.0
+          audited_unaudited_tolerable_misstatement_diff_percentage:
+            type: "value"
+            expected: 60.0
+
+      - step: "Assert audited vs planning diffs"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          audited_planning_overall_materiality_diff:
+            type: "value"
+            expected: 50000.0
+          audited_planning_overall_materiality_diff_percentage:
+            type: "value"
+            expected: 100.0
+          audited_planning_performance_materiality_diff:
+            type: "value"
+            expected: 40000.0
+          audited_planning_performance_materiality_diff_percentage:
+            type: "value"
+            expected: 100.0
+          audited_planning_tolerable_misstatement_diff:
+            type: "value"
+            expected: 20000.0
+          audited_planning_tolerable_misstatement_diff_percentage:
+            type: "value"
+            expected: 100.0
+
+      - step:
+          "Create worksheet bb33b94 without planning/end_period sources (pembagi nol)"
+        action: "create"
+        model: "general_audit_ws_bb33b94"
+        save_as: "worksheet_zero_divisor"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_bb33b94.id"
+
+      - step: "Open zero divisor worksheet"
+        action: "call"
+        target: "worksheet_zero_divisor"
+        method: "action_open"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after opening zero divisor worksheet"
+        action: "call"
+        target: "worksheet_zero_divisor"
+        method: "invalidate_cache"
+
+      - step: "Set only the audited side of the zero divisor worksheet"
+        action: "write"
+        target: "worksheet_zero_divisor"
+        as_user: "base.user_admin"
+        values:
+          computation_item_id: "REC: comp_item_audited.id"
+          overall_materiality_percentage: 5.0
+          performance_materiality_percentage: 80.0
+          tolerable_misstatement_percentage: 50.0
+
+      - step: "Assert diff percentages guarded to zero when the divisor is zero"
+        action: "assert"
+        target: "worksheet_zero_divisor"
+        asserts:
+          audited_unaudited_overall_materiality_diff:
+            type: "value"
+            expected: 100000.0
+          audited_unaudited_overall_materiality_diff_percentage:
+            type: "value"
+            expected: 0.0
+          audited_planning_overall_materiality_diff:
+            type: "value"
+            expected: 100000.0
+          audited_planning_overall_materiality_diff_percentage:
+            type: "value"
+            expected: 0.0
+          audited_unaudited_performance_materiality_diff_percentage:
+            type: "value"
+            expected: 0.0
+          audited_planning_performance_materiality_diff_percentage:
+            type: "value"
+            expected: 0.0
+          audited_unaudited_tolerable_misstatement_diff_percentage:
+            type: "value"
+            expected: 0.0
+
+  # ------------------------------------------------------------------
+  # _compute_allowed_computation_item_ids - normal, kosong
+  # ------------------------------------------------------------------
+  - name: "bb33b94 - _compute_allowed_computation_item_ids (normal and kosong)"
+    steps:
+      - step: "Create first computation item"
+        action: "create"
+        model: "trial_balance_computation_item"
+        save_as: "item_1"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Computation Item - Allowed 1"
+          code: "/"
+
+      - step: "Create second computation item"
+        action: "create"
+        model: "trial_balance_computation_item"
+        save_as: "item_2"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Computation Item - Allowed 2"
+          code: "/"
+
+      - step: "Create general audit computation for item 1"
+        action: "create"
+        model: "general_audit.computation"
+        save_as: "computation_1"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          computation_item_id: "REC: item_1.id"
+          audited_amount: 100.0
+
+      - step: "Create general audit computation for item 2"
+        action: "create"
+        model: "general_audit.computation"
+        save_as: "computation_2"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          computation_item_id: "REC: item_2.id"
+          audited_amount: 200.0
+
+      - step: "Create worksheet bb33b94 on the general audit with 2 computations"
+        action: "create"
+        model: "general_audit_ws_bb33b94"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_bb33b94.id"
+
+      - step: "Assert allowed_computation_item_ids contains both computation items"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          allowed_computation_item_ids:
+            type: "m2m"
+            check: "exact"
+            expected_records:
+              - "REC: item_1"
+              - "REC: item_2"
+
+      - step: "Create second client partner for an audit without computations"
+        action: "create"
+        model: "res.partner"
+        save_as: "client_2"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Audit Client 2 - BB33B94 Allowed Kosong"
+          is_company: true
+
+      - step: "Create second accountant partner"
+        action: "create"
+        model: "res.partner"
+        save_as: "accountant_2"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Audit Accountant 2 - BB33B94 Allowed Kosong"
+
+      - step: "Grant second accountant a CPA license"
+        action: "create"
+        model: "res.partner.id_number"
+        save_as: "cpa_license_2"
+        as_user: "base.user_admin"
+        values:
+          partner_id: "REC: accountant_2.id"
+          category_id: "REC: cpa_category.id"
+          name: "CPA-BB33B94-0002"
+
+      - step: "Create general audit without any computation"
+        action: "create"
+        model: "general_audit"
+        save_as: "audit_2"
+        as_user: "base.user_admin"
+        values:
+          title: "Test General Audit 2 - BB33B94 Allowed Kosong"
+          partner_id: "REC: client_2.id"
+          accountant_id: "REC: accountant_2.id"
+          account_type_set_id: "REC: account_type_set.id"
+          financial_accounting_standard_id: "REC: standard.id"
+          date_start: 2026-01-01
+          date_end: 2026-12-31
+          need_interim: false
+          need_previous: false
+          num_of_consecutive_audit_firm: 1
+          num_of_consecutive_audit_accountant: 1
+
+      - step: "Open second general audit"
+        action: "call"
+        target: "audit_2"
+        method: "action_open"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after opening second general audit"
+        action: "call"
+        target: "audit_2"
+        method: "invalidate_cache"
+
+      - step: "Create worksheet bb33b94 on the general audit without computations"
+        action: "create"
+        model: "general_audit_ws_bb33b94"
+        save_as: "worksheet_kosong"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit_2.id"
+          type_id: "REC: ws_type_bb33b94.id"
+
+      - step: "Assert allowed_computation_item_ids is empty"
+        action: "assert"
+        target: "worksheet_kosong"
+        asserts:
+          allowed_computation_item_ids:
+            type: "m2m"
+            check: "count"
+            expected_count: 0
+
+  # ------------------------------------------------------------------
+  # Workflow - draft -> open -> confirm -> approve -> done
+  # ------------------------------------------------------------------
+  - name: "bb33b94 - Workflow draft to done"
+    steps:
+      - step: "Create worksheet bb33b94"
+        action: "create"
+        model: "general_audit_ws_bb33b94"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_bb33b94.id"
+
+      - step: "Assert initial state is draft"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          state:
+            type: "value"
+            expected: "draft"
+
+      - step: "Open worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_open"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after opening worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Assert worksheet open"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          state:
+            type: "value"
+            expected: "open"
+
+      - step: "Fill required conclusion fields before confirm"
+        action: "write"
+        target: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          conclusion_id: "REC: conclusion_bb33b94.id"
+          conclusion: "Final materiality is adequate and consistent with planning."
+
+      - step: "Confirm worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_confirm"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after confirming worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Assert worksheet confirmed"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          state:
+            type: "value"
+            expected: "confirm"
+
+      - step: "Approve worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_approve_approval"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after approving worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Assert worksheet done"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          state:
+            type: "value"
+            expected: "done"
+
+  # ------------------------------------------------------------------
+  # Workflow - cancel and restart
+  # ------------------------------------------------------------------
+  - name: "bb33b94 - Cancel and restart"
+    steps:
+      - step: "Create worksheet bb33b94"
+        action: "create"
+        model: "general_audit_ws_bb33b94"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_bb33b94.id"
+
+      - step: "Open worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_open"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after opening worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Assert worksheet open"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          state:
+            type: "value"
+            expected: "open"
+
+      - step: "Cancel worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_cancel"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after cancelling worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Assert worksheet cancelled"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          state:
+            type: "value"
+            expected: "cancel"
+
+      - step: "Restart worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_restart"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after restarting worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Assert worksheet back to draft"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          state:
+            type: "value"
+            expected: "draft"
+
+  # ------------------------------------------------------------------
+  # onchange type_id -> parent_type_id (general_audit_worksheet_mixin.onchange_parent_type_id)
+  # ------------------------------------------------------------------
+  - name: "bb33b94 - Onchange type_id sets parent_type_id"
+    steps:
+      - step: "Form: set type_id and check parent_type_id follows via onchange"
+        action: "form"
+        model: "general_audit_ws_bb33b94"
+        save: false
+        ops:
+          - set:
+              general_audit_id: "REC: audit"
+          - set:
+              type_id: "REC: ws_type_bb33b94"
+          - assert:
+              parent_type_id:
+                type: "m2o"
+                expected: "REC: ws_type_bb33b94"

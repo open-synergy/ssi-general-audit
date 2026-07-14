@@ -1,0 +1,572 @@
+setup:
+  steps:
+    - step: "Get config parameter model"
+      action: "search"
+      model: "ir.config_parameter"
+      domain: []
+      save_as: "config_parameter"
+      limit: 1
+
+    - step: "Allow enough CPA licenses for this scenario"
+      action: "call"
+      target: "config_parameter"
+      method: "set_param"
+      args:
+        - "ssi_general_audit.max_number_of_cpa_license"
+        - "100"
+
+    - step: "Create client partner"
+      action: "create"
+      model: "res.partner"
+      save_as: "client"
+      as_user: "base.user_admin"
+      values:
+        name: "Test Audit Client - F3A78DE"
+        is_company: true
+
+    - step: "Create accountant partner"
+      action: "create"
+      model: "res.partner"
+      save_as: "accountant"
+      as_user: "base.user_admin"
+      values:
+        name: "Test Audit Accountant - F3A78DE"
+
+    - step: "Get CPA license id category"
+      action: "ref"
+      xml_id: "ssi_partner_identification_cpa_license.partner_identification_accountant_cpa_license"
+      save_as: "cpa_category"
+
+    - step: "Grant accountant a CPA license"
+      action: "create"
+      model: "res.partner.id_number"
+      save_as: "cpa_license"
+      as_user: "base.user_admin"
+      values:
+        partner_id: "REC: accountant.id"
+        category_id: "REC: cpa_category.id"
+        name: "CPA-F3A78DE-0001"
+
+    - step: "Create account type set"
+      action: "create"
+      model: "client_account_type_set"
+      save_as: "account_type_set"
+      as_user: "base.user_admin"
+      values:
+        name: "Test Account Type Set - F3A78DE"
+        code: "/"
+
+    - step: "Create financial accounting standard"
+      action: "create"
+      model: "accountant.financial_accounting_standard"
+      save_as: "standard"
+      as_user: "base.user_admin"
+      values:
+        name: "Test Financial Accounting Standard - F3A78DE"
+        code: "/"
+
+    - step: "Create general audit"
+      action: "create"
+      model: "general_audit"
+      save_as: "audit"
+      as_user: "base.user_admin"
+      values:
+        title: "Test General Audit - F3A78DE"
+        partner_id: "REC: client.id"
+        accountant_id: "REC: accountant.id"
+        account_type_set_id: "REC: account_type_set.id"
+        financial_accounting_standard_id: "REC: standard.id"
+        date_start: 2026-01-01
+        date_end: 2026-12-31
+        need_interim: false
+        need_previous: false
+        num_of_consecutive_audit_firm: 1
+        num_of_consecutive_audit_accountant: 1
+
+    - step: "Open general audit"
+      action: "call"
+      target: "audit"
+      method: "action_open"
+      as_user: "base.user_admin"
+
+    - step: "Invalidate cache after opening general audit"
+      action: "call"
+      target: "audit"
+      method: "invalidate_cache"
+
+    - step: "Assert general audit open"
+      action: "assert"
+      target: "audit"
+      asserts:
+        state:
+          type: "value"
+          expected: "open"
+
+    - step: "Get worksheet type f3a78de"
+      action: "ref"
+      xml_id: "ssi_general_audit_worksheet_final_materiality.worksheet_type_f3a78de"
+      save_as: "ws_type_f3a78de"
+
+    - step:
+        "Get worksheet type d4289e4 (preliminary ratio analysis, used as fixture only)"
+      action: "ref"
+      xml_id: "ssi_general_audit_worksheet_preliminary_analytic_procedure.worksheet_type_d4289e4"
+      save_as: "ws_type_d4289e4"
+
+    - step: "Get conclusion f3a78de"
+      action: "ref"
+      xml_id: "ssi_general_audit_worksheet_final_materiality.general_audit_worksheet_conclusion_145_d81ce841"
+      save_as: "conclusion_f3a78de"
+
+    - step: "Create computation item RX with a real (non slash) code"
+      action: "create"
+      model: "trial_balance_computation_item"
+      save_as: "comp_item_rx"
+      as_user: "base.user_admin"
+      values:
+        name: "Test Computation Item - RX"
+        code: "RX"
+
+    - step: "Create general audit computation for RX (audited = 250,000)"
+      action: "create"
+      model: "general_audit.computation"
+      save_as: "computation_rx"
+      as_user: "base.user_admin"
+      values:
+        general_audit_id: "REC: audit.id"
+        computation_item_id: "REC: comp_item_rx.id"
+        audited_amount: 250000.0
+
+    - step: "Create client financial ratio RX (audited = RX audited * 2)"
+      action: "create"
+      model: "client_financial_ratio"
+      save_as: "ratio_rx"
+      as_user: "base.user_admin"
+      values:
+        name: "Test Ratio - RX doubled"
+        code: "/"
+        category: "liquidity"
+        python_code: >-
+          result_extrapolation = result_interim = result_previous = result_end_period =
+          result_audited = 0.0
+
+          result_audited = computation.get("RX", {}).get("audited", 0.0) * 2
+    - step: "Create client financial ratio RY (to be archived later)"
+      action: "create"
+      model: "client_financial_ratio"
+      save_as: "ratio_ry"
+      as_user: "base.user_admin"
+      values:
+        name: "Test Ratio - RY (archived scenario)"
+        code: "/"
+        category: "activity"
+        python_code: >-
+          result_extrapolation = result_interim = result_previous = result_end_period =
+          result_audited = 0.0
+
+          result_audited = computation.get("RX", {}).get("audited", 0.0)
+
+    - step: "Create preliminary d4289e4 worksheet"
+      action: "create"
+      model: "general_audit_ws_d4289e4"
+      save_as: "ws_d4289e4"
+      as_user: "base.user_admin"
+      values:
+        general_audit_id: "REC: audit.id"
+        type_id: "REC: ws_type_d4289e4.id"
+
+    - step: "Open preliminary d4289e4 worksheet"
+      action: "call"
+      target: "ws_d4289e4"
+      method: "action_open"
+      as_user: "base.user_admin"
+
+    - step: "Invalidate cache after opening preliminary d4289e4 worksheet"
+      action: "call"
+      target: "ws_d4289e4"
+      method: "invalidate_cache"
+
+scenarios:
+  # ------------------------------------------------------------------
+  # action_reload_ratio - menambah baris untuk ratio yang dibuat, menghapus baris untuk
+  # ratio yang diarsipkan, idempoten
+  # ------------------------------------------------------------------
+  - name: "f3a78de - action_reload_ratio (add, archive-remove, idempotent)"
+    steps:
+      - step: "Create worksheet f3a78de"
+        action: "create"
+        model: "general_audit_ws_f3a78de"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_f3a78de.id"
+
+      - step: "Open worksheet f3a78de"
+        action: "call"
+        target: "worksheet"
+        method: "action_open"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after opening worksheet f3a78de"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Set ws_d4289e4_id"
+        action: "write"
+        target: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          ws_d4289e4_id: "REC: ws_d4289e4.id"
+
+      - step: "Call action_reload_ratio"
+        action: "call"
+        target: "worksheet"
+        method: "action_reload_ratio"
+        as_user: "base.user_admin"
+
+      - step: "Assert ratio line was created for ratio_rx"
+        action: "search"
+        model: "general_audit_ws_f3a78de.ratio"
+        domain:
+          - ["worksheet_id", "=", "REC: worksheet.id"]
+          - ["financial_ratio_id", "=", "REC: ratio_rx.id"]
+        save_as: "line_rx"
+        expect_count: 1
+
+      - step: "Assert ratio line was created for ratio_ry"
+        action: "search"
+        model: "general_audit_ws_f3a78de.ratio"
+        domain:
+          - ["worksheet_id", "=", "REC: worksheet.id"]
+          - ["financial_ratio_id", "=", "REC: ratio_ry.id"]
+        save_as: "line_ry"
+        expect_count: 1
+
+      - step: "Archive ratio_ry"
+        action: "write"
+        target: "ratio_ry"
+        as_user: "base.user_admin"
+        values:
+          active: false
+
+      - step: "Call action_reload_ratio again after ratio_ry archived"
+        action: "call"
+        target: "worksheet"
+        method: "action_reload_ratio"
+        as_user: "base.user_admin"
+
+      - step: "Assert ratio_ry line was removed"
+        action: "search"
+        model: "general_audit_ws_f3a78de.ratio"
+        domain:
+          - ["worksheet_id", "=", "REC: worksheet.id"]
+          - ["financial_ratio_id", "=", "REC: ratio_ry.id"]
+        save_as: "line_ry_after"
+        expect_count: 0
+
+      - step: "Assert ratio_rx line still present (unaffected)"
+        action: "search"
+        model: "general_audit_ws_f3a78de.ratio"
+        domain:
+          - ["worksheet_id", "=", "REC: worksheet.id"]
+          - ["financial_ratio_id", "=", "REC: ratio_rx.id"]
+        save_as: "line_rx_after"
+        expect_count: 1
+
+      - step: "Call action_reload_ratio a third time (idempotent for ratio_rx)"
+        action: "call"
+        target: "worksheet"
+        method: "action_reload_ratio"
+        as_user: "base.user_admin"
+
+      - step: "Assert ratio_rx line count unchanged after idempotent reload"
+        action: "search"
+        model: "general_audit_ws_f3a78de.ratio"
+        domain:
+          - ["worksheet_id", "=", "REC: worksheet.id"]
+          - ["financial_ratio_id", "=", "REC: ratio_rx.id"]
+        save_as: "line_rx_idempotent"
+        expect_count: 1
+
+  # ------------------------------------------------------------------
+  # action_compute_ratio dan post_confirm_action _recompute_computation
+  # ------------------------------------------------------------------
+  - name: "f3a78de - action_compute_ratio and post_confirm_action recompute"
+    steps:
+      - step: "Create worksheet f3a78de"
+        action: "create"
+        model: "general_audit_ws_f3a78de"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_f3a78de.id"
+
+      - step: "Open worksheet f3a78de"
+        action: "call"
+        target: "worksheet"
+        method: "action_open"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after opening worksheet f3a78de"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Set ws_d4289e4_id and reload ratios (this also runs the first recompute)"
+        action: "write"
+        target: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          ws_d4289e4_id: "REC: ws_d4289e4.id"
+
+      - step: "Call action_reload_ratio"
+        action: "call"
+        target: "worksheet"
+        method: "action_reload_ratio"
+        as_user: "base.user_admin"
+
+      - step: "Get ratio_rx line"
+        action: "search"
+        model: "general_audit_ws_f3a78de.ratio"
+        domain:
+          - ["worksheet_id", "=", "REC: worksheet.id"]
+          - ["financial_ratio_id", "=", "REC: ratio_rx.id"]
+        save_as: "line_rx"
+        expect_count: 1
+
+      - step: "Assert ratio_rx computed after reload (250,000 * 2)"
+        action: "assert"
+        target: "line_rx"
+        asserts:
+          audited_amount:
+            type: "value"
+            expected: 500000.0
+
+      - step: "Change the underlying computation's audited_amount"
+        action: "write"
+        target: "computation_rx"
+        as_user: "base.user_admin"
+        values:
+          audited_amount: 400000.0
+
+      - step: "Call action_compute_ratio explicitly"
+        action: "call"
+        target: "worksheet"
+        method: "action_compute_ratio"
+        as_user: "base.user_admin"
+
+      - step: "Assert ratio_rx re-computed after action_compute_ratio (400,000 * 2)"
+        action: "assert"
+        target: "line_rx"
+        refresh: true
+        asserts:
+          audited_amount:
+            type: "value"
+            expected: 800000.0
+
+      - step: "Change the underlying computation's audited_amount again"
+        action: "write"
+        target: "computation_rx"
+        as_user: "base.user_admin"
+        values:
+          audited_amount: 600000.0
+
+      - step: "Fill required conclusion fields before confirm"
+        action: "write"
+        target: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          conclusion_id: "REC: conclusion_f3a78de.id"
+          conclusion:
+            "Ratio analysis does not indicate a risk of material misstatement."
+
+      - step: "Confirm worksheet (triggers post_confirm_action _recompute_computation)"
+        action: "call"
+        target: "worksheet"
+        method: "action_confirm"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after confirming worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Assert worksheet confirmed"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          state:
+            type: "value"
+            expected: "confirm"
+
+      - step: "Assert ratio_rx was re-computed as part of action_confirm (600,000 * 2)"
+        action: "assert"
+        target: "line_rx"
+        refresh: true
+        asserts:
+          audited_amount:
+            type: "value"
+            expected: 1200000.0
+
+  # ------------------------------------------------------------------
+  # Workflow - draft -> open -> confirm -> approve -> done
+  # ------------------------------------------------------------------
+  - name: "f3a78de - Workflow draft to done"
+    steps:
+      - step: "Create worksheet f3a78de"
+        action: "create"
+        model: "general_audit_ws_f3a78de"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_f3a78de.id"
+
+      - step: "Assert initial state is draft"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          state:
+            type: "value"
+            expected: "draft"
+
+      - step: "Open worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_open"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after opening worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Assert worksheet open"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          state:
+            type: "value"
+            expected: "open"
+
+      - step: "Set ws_d4289e4_id and fill required conclusion fields before confirm"
+        action: "write"
+        target: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          ws_d4289e4_id: "REC: ws_d4289e4.id"
+          conclusion_id: "REC: conclusion_f3a78de.id"
+          conclusion:
+            "Ratio analysis does not indicate a risk of material misstatement."
+
+      - step: "Confirm worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_confirm"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after confirming worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Assert worksheet confirmed"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          state:
+            type: "value"
+            expected: "confirm"
+
+      - step: "Approve worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_approve_approval"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after approving worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Assert worksheet done"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          state:
+            type: "value"
+            expected: "done"
+
+  # ------------------------------------------------------------------
+  # Workflow - cancel and restart
+  # ------------------------------------------------------------------
+  - name: "f3a78de - Cancel and restart"
+    steps:
+      - step: "Create worksheet f3a78de"
+        action: "create"
+        model: "general_audit_ws_f3a78de"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_f3a78de.id"
+
+      - step: "Open worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_open"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after opening worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Assert worksheet open"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          state:
+            type: "value"
+            expected: "open"
+
+      - step: "Cancel worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_cancel"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after cancelling worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Assert worksheet cancelled"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          state:
+            type: "value"
+            expected: "cancel"
+
+      - step: "Restart worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_restart"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after restarting worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Assert worksheet back to draft"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          state:
+            type: "value"
+            expected: "draft"

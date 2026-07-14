@@ -1,0 +1,537 @@
+setup:
+  steps:
+    - step: "Get config parameter model"
+      action: "search"
+      model: "ir.config_parameter"
+      domain: []
+      save_as: "config_parameter"
+      limit: 1
+
+    - step: "Allow enough CPA licenses for this scenario"
+      action: "call"
+      target: "config_parameter"
+      method: "set_param"
+      args:
+        - "ssi_general_audit.max_number_of_cpa_license"
+        - "100"
+
+    - step: "Create client partner"
+      action: "create"
+      model: "res.partner"
+      save_as: "client"
+      as_user: "base.user_admin"
+      values:
+        name: "Test Audit Client - C2375D8"
+        is_company: true
+
+    - step: "Create accountant partner"
+      action: "create"
+      model: "res.partner"
+      save_as: "accountant"
+      as_user: "base.user_admin"
+      values:
+        name: "Test Audit Accountant - C2375D8"
+
+    - step: "Get CPA license id category"
+      action: "ref"
+      xml_id: "ssi_partner_identification_cpa_license.partner_identification_accountant_cpa_license"
+      save_as: "cpa_category"
+
+    - step: "Grant accountant a CPA license"
+      action: "create"
+      model: "res.partner.id_number"
+      save_as: "cpa_license"
+      as_user: "base.user_admin"
+      values:
+        partner_id: "REC: accountant.id"
+        category_id: "REC: cpa_category.id"
+        name: "CPA-C2375D8-0001"
+
+    - step: "Create account type set"
+      action: "create"
+      model: "client_account_type_set"
+      save_as: "account_type_set"
+      as_user: "base.user_admin"
+      values:
+        name: "Test Account Type Set - C2375D8"
+        code: "/"
+
+    - step: "Create financial accounting standard"
+      action: "create"
+      model: "accountant.financial_accounting_standard"
+      save_as: "standard"
+      as_user: "base.user_admin"
+      values:
+        name: "Test Financial Accounting Standard - C2375D8"
+        code: "/"
+
+    - step: "Create general audit"
+      action: "create"
+      model: "general_audit"
+      save_as: "audit"
+      as_user: "base.user_admin"
+      values:
+        title: "Test General Audit - C2375D8"
+        partner_id: "REC: client.id"
+        accountant_id: "REC: accountant.id"
+        account_type_set_id: "REC: account_type_set.id"
+        financial_accounting_standard_id: "REC: standard.id"
+        date_start: 2026-01-01
+        date_end: 2026-12-31
+        need_interim: false
+        need_previous: false
+        num_of_consecutive_audit_firm: 1
+        num_of_consecutive_audit_accountant: 1
+
+    - step: "Open general audit"
+      action: "call"
+      target: "audit"
+      method: "action_open"
+      as_user: "base.user_admin"
+
+    - step: "Invalidate cache after opening general audit"
+      action: "call"
+      target: "audit"
+      method: "invalidate_cache"
+
+    - step: "Assert general audit open"
+      action: "assert"
+      target: "audit"
+      asserts:
+        state:
+          type: "value"
+          expected: "open"
+
+    - step: "Get worksheet type c2375d8"
+      action: "ref"
+      xml_id: "ssi_general_audit_worksheet_final_materiality.worksheet_type_c2375d8"
+      save_as: "ws_type_c2375d8"
+
+    - step: "Get conclusion c2375d8"
+      action: "ref"
+      xml_id: "ssi_general_audit_worksheet_final_materiality.general_audit_worksheet_conclusion_119_240354a6"
+      save_as: "conclusion_c2375d8"
+
+    - step: "Get checklist option set (shipped, used by shipped c2375d8 items too)"
+      action: "ref"
+      xml_id: "ssi_general_audit.checklist_option_set_2"
+      save_as: "option_set"
+
+    - step: "Get a shipped c2375d8 checklist item (module data, not demo)"
+      action: "ref"
+      xml_id: "ssi_general_audit_worksheet_final_materiality.general_audit_ws_c2375d8_item_1_9ee2a98f"
+      save_as: "shipped_item"
+
+scenarios:
+  # ------------------------------------------------------------------
+  # general_audit_ws_c2375d8.item - master CRUD
+  # ------------------------------------------------------------------
+  - name: "c2375d8.item - Create, write, delete"
+    steps:
+      - step: "Create master item"
+        action: "create"
+        model: "general_audit_ws_c2375d8.item"
+        save_as: "item"
+        as_user: "base.user_admin"
+        values:
+          name: "Test checklist item - CRUD"
+          sequence: 10
+          option_set_id: "REC: option_set.id"
+          analysis_type: "vertical_horizontal"
+
+      - step: "Assert master item created"
+        action: "assert"
+        target: "item"
+        asserts:
+          id:
+            type: "value"
+            operator: "is_truthy"
+          name:
+            type: "value"
+            expected: "Test checklist item - CRUD"
+          analysis_type:
+            type: "value"
+            expected: "vertical_horizontal"
+          code:
+            type: "value"
+            expected: "/"
+
+      - step: "Write new name and analysis_type"
+        action: "write"
+        target: "item"
+        as_user: "base.user_admin"
+        values:
+          name: "Test checklist item - CRUD (updated)"
+          analysis_type: "ratio"
+
+      - step: "Assert master item updated"
+        action: "assert"
+        target: "item"
+        asserts:
+          name:
+            type: "value"
+            expected: "Test checklist item - CRUD (updated)"
+          analysis_type:
+            type: "value"
+            expected: "ratio"
+
+      - step: "Delete master item"
+        action: "unlink"
+        target: "item"
+        as_user: "base.user_admin"
+
+      - step: "Verify master item deleted"
+        action: "search"
+        model: "general_audit_ws_c2375d8.item"
+        domain:
+          - ["name", "=", "Test checklist item - CRUD (updated)"]
+        save_as: "result"
+        expect_count: 0
+
+  # ------------------------------------------------------------------
+  # action_populate_checklist (inherited from mixin.checklist)
+  # ------------------------------------------------------------------
+  - name:
+      "c2375d8 - action_populate_checklist (empty before, populated after, idempotent)"
+    steps:
+      - step: "Create custom checklist item"
+        action: "create"
+        model: "general_audit_ws_c2375d8.item"
+        save_as: "item"
+        as_user: "base.user_admin"
+        values:
+          name: "Custom checklist item - Populate"
+          sequence: 20
+          option_set_id: "REC: option_set.id"
+          analysis_type: "vertical_horizontal"
+
+      - step: "Create worksheet c2375d8"
+        action: "create"
+        model: "general_audit_ws_c2375d8"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_c2375d8.id"
+
+      - step: "Open worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_open"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after opening worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step:
+          "Assert checklist is empty before populate (a brand new worksheet has no lines
+          yet)"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          checklist_ids:
+            type: "o2m"
+            check: "count"
+            expected_count: 0
+
+      - step: "Call action_populate_checklist"
+        action: "call"
+        target: "worksheet"
+        method: "action_populate_checklist"
+        as_user: "base.user_admin"
+
+      - step: "Search populated checklist line for the custom item"
+        action: "search"
+        model: "general_audit_ws_c2375d8.checklist"
+        domain:
+          - ["worksheet_id", "=", "REC: worksheet.id"]
+          - ["item_id", "=", "REC: item.id"]
+        save_as: "populated_line"
+        expect_count: 1
+
+      - step: "Assert populated checklist line appears on the worksheet"
+        action: "assert"
+        target: "worksheet"
+        refresh: true
+        asserts:
+          checklist_ids:
+            type: "o2m"
+            check: "contains"
+            expected_records:
+              - "REC: populated_line"
+
+      - step: "Search checklist line generated from a shipped module item"
+        action: "search"
+        model: "general_audit_ws_c2375d8.checklist"
+        domain:
+          - ["worksheet_id", "=", "REC: worksheet.id"]
+          - ["item_id", "=", "REC: shipped_item.id"]
+        save_as: "shipped_line"
+        expect_count: 1
+
+      - step: "Call action_populate_checklist again (idempotent)"
+        action: "call"
+        target: "worksheet"
+        method: "action_populate_checklist"
+        as_user: "base.user_admin"
+
+      - step:
+          "Assert the custom item's checklist line is still unique after a second
+          populate"
+        action: "search"
+        model: "general_audit_ws_c2375d8.checklist"
+        domain:
+          - ["worksheet_id", "=", "REC: worksheet.id"]
+          - ["item_id", "=", "REC: item.id"]
+        save_as: "populated_line_again"
+        expect_count: 1
+
+  # ------------------------------------------------------------------
+  # analysis_type (related) pada baris checklist mengikuti item_id
+  # ------------------------------------------------------------------
+  - name:
+      "c2375d8 - checklist analysis_type follows item_id (vertical_horizontal vs ratio)"
+    steps:
+      - step: "Create checklist item - vertical_horizontal"
+        action: "create"
+        model: "general_audit_ws_c2375d8.item"
+        save_as: "item_vh"
+        as_user: "base.user_admin"
+        values:
+          name: "Custom checklist item - Vertical Horizontal"
+          sequence: 30
+          option_set_id: "REC: option_set.id"
+          analysis_type: "vertical_horizontal"
+
+      - step: "Create checklist item - ratio"
+        action: "create"
+        model: "general_audit_ws_c2375d8.item"
+        save_as: "item_ratio"
+        as_user: "base.user_admin"
+        values:
+          name: "Custom checklist item - Ratio"
+          sequence: 31
+          option_set_id: "REC: option_set.id"
+          analysis_type: "ratio"
+
+      - step: "Create worksheet c2375d8"
+        action: "create"
+        model: "general_audit_ws_c2375d8"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_c2375d8.id"
+
+      - step: "Open worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_open"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after opening worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Call action_populate_checklist"
+        action: "call"
+        target: "worksheet"
+        method: "action_populate_checklist"
+        as_user: "base.user_admin"
+
+      - step: "Get checklist line for item_vh"
+        action: "search"
+        model: "general_audit_ws_c2375d8.checklist"
+        domain:
+          - ["worksheet_id", "=", "REC: worksheet.id"]
+          - ["item_id", "=", "REC: item_vh.id"]
+        save_as: "line_vh"
+        expect_count: 1
+
+      - step: "Assert checklist line for item_vh has analysis_type vertical_horizontal"
+        action: "assert"
+        target: "line_vh"
+        asserts:
+          analysis_type:
+            type: "value"
+            expected: "vertical_horizontal"
+
+      - step: "Get checklist line for item_ratio"
+        action: "search"
+        model: "general_audit_ws_c2375d8.checklist"
+        domain:
+          - ["worksheet_id", "=", "REC: worksheet.id"]
+          - ["item_id", "=", "REC: item_ratio.id"]
+        save_as: "line_ratio"
+        expect_count: 1
+
+      - step: "Assert checklist line for item_ratio has analysis_type ratio"
+        action: "assert"
+        target: "line_ratio"
+        asserts:
+          analysis_type:
+            type: "value"
+            expected: "ratio"
+
+  # ------------------------------------------------------------------
+  # Workflow - draft -> open -> confirm -> approve -> done
+  # ------------------------------------------------------------------
+  - name: "c2375d8 - Workflow draft to done"
+    steps:
+      - step: "Create worksheet c2375d8"
+        action: "create"
+        model: "general_audit_ws_c2375d8"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_c2375d8.id"
+
+      - step: "Assert initial state is draft"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          state:
+            type: "value"
+            expected: "draft"
+
+      - step: "Open worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_open"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after opening worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Assert worksheet open"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          state:
+            type: "value"
+            expected: "open"
+
+      - step: "Fill required conclusion fields before confirm"
+        action: "write"
+        target: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          conclusion_id: "REC: conclusion_c2375d8.id"
+          conclusion:
+            "Final analytical procedures do not indicate a risk of material
+            misstatement."
+
+      - step: "Confirm worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_confirm"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after confirming worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Assert worksheet confirmed"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          state:
+            type: "value"
+            expected: "confirm"
+
+      - step: "Approve worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_approve_approval"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after approving worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Assert worksheet done"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          state:
+            type: "value"
+            expected: "done"
+
+  # ------------------------------------------------------------------
+  # Workflow - cancel and restart
+  # ------------------------------------------------------------------
+  - name: "c2375d8 - Cancel and restart"
+    steps:
+      - step: "Create worksheet c2375d8"
+        action: "create"
+        model: "general_audit_ws_c2375d8"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_c2375d8.id"
+
+      - step: "Open worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_open"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after opening worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Assert worksheet open"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          state:
+            type: "value"
+            expected: "open"
+
+      - step: "Cancel worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_cancel"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after cancelling worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Assert worksheet cancelled"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          state:
+            type: "value"
+            expected: "cancel"
+
+      - step: "Restart worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_restart"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after restarting worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Assert worksheet back to draft"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          state:
+            type: "value"
+            expected: "draft"
