@@ -1,0 +1,538 @@
+setup:
+  steps:
+    - step: "Get config parameter model"
+      action: "search"
+      model: "ir.config_parameter"
+      domain: []
+      save_as: "config_parameter"
+      limit: 1
+
+    - step: "Allow enough CPA licenses for this scenario"
+      action: "call"
+      target: "config_parameter"
+      method: "set_param"
+      args:
+        - "ssi_general_audit.max_number_of_cpa_license"
+        - "100"
+
+    - step: "Create client partner"
+      action: "create"
+      model: "res.partner"
+      save_as: "client"
+      as_user: "base.user_admin"
+      values:
+        name: "Test Audit Client - bcc0d76"
+        is_company: true
+
+    - step: "Create accountant partner"
+      action: "create"
+      model: "res.partner"
+      save_as: "accountant"
+      as_user: "base.user_admin"
+      values:
+        name: "Test Audit Accountant - bcc0d76"
+
+    - step: "Get CPA license id category"
+      action: "ref"
+      xml_id: "ssi_partner_identification_cpa_license.partner_identification_accountant_cpa_license"
+      save_as: "cpa_category"
+
+    - step: "Grant accountant a CPA license"
+      action: "create"
+      model: "res.partner.id_number"
+      save_as: "cpa_license"
+      as_user: "base.user_admin"
+      values:
+        partner_id: "REC: accountant.id"
+        category_id: "REC: cpa_category.id"
+        name: "CPA-BCC0D76-0001"
+
+    - step: "Create account type set"
+      action: "create"
+      model: "client_account_type_set"
+      save_as: "account_type_set"
+      as_user: "base.user_admin"
+      values:
+        name: "Test Account Type Set - bcc0d76"
+        code: "/"
+
+    - step: "Create financial accounting standard"
+      action: "create"
+      model: "accountant.financial_accounting_standard"
+      save_as: "standard"
+      as_user: "base.user_admin"
+      values:
+        name: "Test Financial Accounting Standard - bcc0d76"
+        code: "/"
+
+    - step: "Create general audit"
+      action: "create"
+      model: "general_audit"
+      save_as: "audit"
+      as_user: "base.user_admin"
+      values:
+        title: "Test General Audit - bcc0d76"
+        partner_id: "REC: client.id"
+        accountant_id: "REC: accountant.id"
+        account_type_set_id: "REC: account_type_set.id"
+        financial_accounting_standard_id: "REC: standard.id"
+        date_start: 2026-01-01
+        date_end: 2026-12-31
+        need_interim: false
+        need_previous: false
+        num_of_consecutive_audit_firm: 1
+        num_of_consecutive_audit_accountant: 1
+
+    - step: "Open general audit"
+      action: "call"
+      target: "audit"
+      method: "action_open"
+      as_user: "base.user_admin"
+
+    - step: "Invalidate cache after opening general audit"
+      action: "call"
+      target: "audit"
+      method: "invalidate_cache"
+
+    - step: "Assert general audit open"
+      action: "assert"
+      target: "audit"
+      asserts:
+        state:
+          type: "value"
+          expected: "open"
+
+    - step: "Get worksheet type bcc0d76"
+      action: "ref"
+      xml_id: "ssi_general_audit_worksheet_review.worksheet_type_bcc0d76"
+      save_as: "ws_type_bcc0d76"
+
+scenarios:
+  # ------------------------------------------------------------------
+  # general_audit_ws_bcc0d76 - Create
+  # ------------------------------------------------------------------
+  - name: "Create worksheet bcc0d76"
+    steps:
+      - step: "Create worksheet bcc0d76"
+        action: "create"
+        model: "general_audit_ws_bcc0d76"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_bcc0d76.id"
+
+      - step: "Assert worksheet created in draft with no details"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          id:
+            type: "value"
+            operator: "is_truthy"
+          state:
+            type: "value"
+            expected: "draft"
+          detail_ids:
+            type: "o2m"
+            check: "count"
+            expected_count: 0
+
+  # ------------------------------------------------------------------
+  # Workflow
+  # ------------------------------------------------------------------
+  - name: "Workflow bcc0d76 - draft to done"
+    steps:
+      - step: "Create worksheet bcc0d76"
+        action: "create"
+        model: "general_audit_ws_bcc0d76"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_bcc0d76.id"
+
+      - step: "Open worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_open"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after opening worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Assert worksheet open"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          state:
+            type: "value"
+            expected: "open"
+
+      - step: "Create conclusion for bcc0d76 worksheet type"
+        action: "create"
+        model: "general_audit_worksheet_conclusion"
+        save_as: "conclusion"
+        as_user: "base.user_admin"
+        values:
+          name: "Audit quality reviewed"
+          code: "/"
+          type_id: "REC: ws_type_bcc0d76.id"
+
+      - step: "Fill required conclusion fields before confirm"
+        action: "write"
+        target: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          conclusion_id: "REC: conclusion.id"
+          conclusion: "Quality review of main worksheets completed."
+
+      - step: "Confirm worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_confirm"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after confirming worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Assert worksheet confirmed"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          state:
+            type: "value"
+            expected: "confirm"
+
+      - step: "Approve worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_approve_approval"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after approving worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Assert worksheet done"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          state:
+            type: "value"
+            expected: "done"
+
+  - name: "Workflow bcc0d76 - cancel and restart"
+    steps:
+      - step: "Create worksheet bcc0d76"
+        action: "create"
+        model: "general_audit_ws_bcc0d76"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_bcc0d76.id"
+
+      - step: "Open worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_open"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after opening worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Assert worksheet open"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          state:
+            type: "value"
+            expected: "open"
+
+      - step: "Cancel worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_cancel"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after cancelling worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Assert worksheet cancelled"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          state:
+            type: "value"
+            expected: "cancel"
+
+      - step: "Restart worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_restart"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after restarting worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Assert worksheet back to draft"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          state:
+            type: "value"
+            expected: "draft"
+
+  # ------------------------------------------------------------------
+  # bcc0d76 - action_populate: empty / normal / dedup / idempotent /
+  # unlink orphan, all combined into ONE scenario on purpose.
+  #
+  # GeneralAuditWSbcc0d76._populate() (models/ga_bcc0d76/
+  # general_audit_ws_bcc0d76.py) searches ALL general_audit_worksheet
+  # records with parent_type_id.main_worksheet = True WITHOUT filtering
+  # by general_audit_id. This is pre-existing production behaviour (see
+  # BL-0165 notes), not something this test patches. Scenarios in the
+  # same YAML file share one uncommitted transaction (only the registry
+  # is reset between scenarios, not the database), so any qualifying
+  # general_audit_worksheet created in an earlier scenario would still be
+  # picked up by a later scenario's action_populate call. Combining every
+  # populate sub-case into one scenario, and giving each sub-case its own
+  # dedicated general_audit_worksheet_type, keeps the assertions
+  # deterministic: filtered searches (worksheet_id + parent_type_id)
+  # prove each behaviour regardless of what other qualifying worksheets
+  # exist elsewhere in the transaction (e.g. worksheet_type_be62e79 also
+  # ships with main_worksheet=True as production seed data).
+  #
+  # "Unlink orphan" is exercised by flipping the source type's
+  # main_worksheet flag to False rather than literally deleting the
+  # general_audit_worksheet record: general_audit_ws_bcc0d76.detail
+  # .general_worksheet_id is ondelete="restrict", so a direct unlink
+  # would raise a psycopg2 ForeignKeyViolation, which is not one of the
+  # exception types this framework's expect_error supports. Disqualifying
+  # the type exercises the exact same cleanup branch in _populate()
+  # (the worksheet no longer appears in the qualifying search, so its
+  # detail line is removed) without touching an FK-referenced record.
+  # ------------------------------------------------------------------
+  - name:
+      "WS bcc0d76 - action_populate (empty, normal, dedup, idempotent, unlink orphan)"
+    steps:
+      - step: "Create worksheet bcc0d76"
+        action: "create"
+        model: "general_audit_ws_bcc0d76"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_bcc0d76.id"
+
+      - step: "Open worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_open"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after opening worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Populate with no qualifying main worksheets yet"
+        action: "call"
+        target: "worksheet"
+        method: "action_populate"
+        as_user: "base.user_admin"
+
+      - step: "Assert detail_ids empty"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          detail_ids:
+            type: "o2m"
+            check: "count"
+            expected_count: 0
+
+      - step: "Create dedicated main worksheet type #1"
+        action: "create"
+        model: "general_audit_worksheet_type"
+        save_as: "main_type_1"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Main Worksheet Type 1"
+          code: "/"
+          model_name: "general_audit_worksheet"
+          main_worksheet: true
+
+      - step: "Create a general_audit_worksheet of type #1"
+        action: "create"
+        model: "general_audit_worksheet"
+        save_as: "gw1"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          parent_type_id: "REC: main_type_1.id"
+
+      - step: "Populate (normal)"
+        action: "call"
+        target: "worksheet"
+        method: "action_populate"
+        as_user: "base.user_admin"
+
+      - step: "Assert one detail line was created for type #1"
+        action: "search"
+        model: "general_audit_ws_bcc0d76.detail"
+        domain:
+          [
+            ["worksheet_id", "=", "REC: worksheet.id"],
+            ["parent_type_id", "=", "REC: main_type_1.id"],
+          ]
+        save_as: "detail_type_1"
+        limit: 1
+        expect_count: 1
+
+      - step: "Assert the detail line points to gw1"
+        action: "assert"
+        target: "detail_type_1"
+        asserts:
+          general_worksheet_id:
+            type: "m2o"
+            expected: "REC: gw1"
+
+      - step: "Create dedicated main worksheet type #2 (for dedup)"
+        action: "create"
+        model: "general_audit_worksheet_type"
+        save_as: "main_type_2"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Main Worksheet Type 2"
+          code: "/"
+          model_name: "general_audit_worksheet"
+          main_worksheet: true
+
+      - step: "Create first general_audit_worksheet of type #2"
+        action: "create"
+        model: "general_audit_worksheet"
+        save_as: "gw2a"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          parent_type_id: "REC: main_type_2.id"
+
+      - step: "Create second general_audit_worksheet of type #2 (same type)"
+        action: "create"
+        model: "general_audit_worksheet"
+        save_as: "gw2b"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          parent_type_id: "REC: main_type_2.id"
+
+      - step: "Populate (dedup)"
+        action: "call"
+        target: "worksheet"
+        method: "action_populate"
+        as_user: "base.user_admin"
+
+      - step:
+          "Assert only one detail line was created for type #2 despite two source
+          worksheets"
+        action: "search"
+        model: "general_audit_ws_bcc0d76.detail"
+        domain:
+          [
+            ["worksheet_id", "=", "REC: worksheet.id"],
+            ["parent_type_id", "=", "REC: main_type_2.id"],
+          ]
+        save_as: "detail_type_2"
+        expect_count: 1
+
+      - step: "Capture total detail count before a repeated populate call"
+        action: "search"
+        model: "general_audit_ws_bcc0d76.detail"
+        domain: [["worksheet_id", "=", "REC: worksheet.id"]]
+        save_as: "details_before_repeat"
+        expect_count: 2
+
+      - step: "Populate again (idempotent, no new source worksheets)"
+        action: "call"
+        target: "worksheet"
+        method: "action_populate"
+        as_user: "base.user_admin"
+
+      - step: "Assert detail count is unchanged after the repeated populate call"
+        action: "search"
+        model: "general_audit_ws_bcc0d76.detail"
+        domain: [["worksheet_id", "=", "REC: worksheet.id"]]
+        save_as: "details_after_repeat"
+        expect_count: 2
+
+      - step: "Create dedicated main worksheet type #3 (for unlink-orphan)"
+        action: "create"
+        model: "general_audit_worksheet_type"
+        save_as: "main_type_3"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Main Worksheet Type 3"
+          code: "/"
+          model_name: "general_audit_worksheet"
+          main_worksheet: true
+
+      - step: "Create a general_audit_worksheet of type #3"
+        action: "create"
+        model: "general_audit_worksheet"
+        save_as: "gw3"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          parent_type_id: "REC: main_type_3.id"
+
+      - step: "Populate so a detail line for type #3 exists"
+        action: "call"
+        target: "worksheet"
+        method: "action_populate"
+        as_user: "base.user_admin"
+
+      - step: "Assert the detail line for type #3 was created"
+        action: "search"
+        model: "general_audit_ws_bcc0d76.detail"
+        domain:
+          [
+            ["worksheet_id", "=", "REC: worksheet.id"],
+            ["parent_type_id", "=", "REC: main_type_3.id"],
+          ]
+        save_as: "detail_type_3_before"
+        expect_count: 1
+
+      - step: "Disqualify type #3 as a main worksheet (source no longer qualifies)"
+        action: "write"
+        target: "main_type_3"
+        as_user: "base.user_admin"
+        values:
+          main_worksheet: false
+
+      - step: "Populate again after disqualifying the source"
+        action: "call"
+        target: "worksheet"
+        method: "action_populate"
+        as_user: "base.user_admin"
+
+      - step: "Assert the orphan detail line for type #3 was unlinked"
+        action: "search"
+        model: "general_audit_ws_bcc0d76.detail"
+        domain:
+          [
+            ["worksheet_id", "=", "REC: worksheet.id"],
+            ["parent_type_id", "=", "REC: main_type_3.id"],
+          ]
+        save_as: "detail_type_3_after"
+        expect_count: 0

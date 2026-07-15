@@ -1,0 +1,503 @@
+setup:
+  steps:
+    - step: "Get config parameter model"
+      action: "search"
+      model: "ir.config_parameter"
+      domain: []
+      save_as: "config_parameter"
+      limit: 1
+
+    - step: "Allow enough CPA licenses for this scenario"
+      action: "call"
+      target: "config_parameter"
+      method: "set_param"
+      args:
+        - "ssi_general_audit.max_number_of_cpa_license"
+        - "100"
+
+    - step: "Create client partner"
+      action: "create"
+      model: "res.partner"
+      save_as: "client"
+      as_user: "base.user_admin"
+      values:
+        name: "Test Audit Client - cae598e"
+        is_company: true
+
+    - step: "Create accountant partner"
+      action: "create"
+      model: "res.partner"
+      save_as: "accountant"
+      as_user: "base.user_admin"
+      values:
+        name: "Test Audit Accountant - cae598e"
+
+    - step: "Get CPA license id category"
+      action: "ref"
+      xml_id: "ssi_partner_identification_cpa_license.partner_identification_accountant_cpa_license"
+      save_as: "cpa_category"
+
+    - step: "Grant accountant a CPA license"
+      action: "create"
+      model: "res.partner.id_number"
+      save_as: "cpa_license"
+      as_user: "base.user_admin"
+      values:
+        partner_id: "REC: accountant.id"
+        category_id: "REC: cpa_category.id"
+        name: "CPA-CAE598E-0001"
+
+    - step: "Create account type set"
+      action: "create"
+      model: "client_account_type_set"
+      save_as: "account_type_set"
+      as_user: "base.user_admin"
+      values:
+        name: "Test Account Type Set - cae598e"
+        code: "/"
+
+    - step: "Create financial accounting standard"
+      action: "create"
+      model: "accountant.financial_accounting_standard"
+      save_as: "standard"
+      as_user: "base.user_admin"
+      values:
+        name: "Test Financial Accounting Standard - cae598e"
+        code: "/"
+
+    - step: "Create general audit"
+      action: "create"
+      model: "general_audit"
+      save_as: "audit"
+      as_user: "base.user_admin"
+      values:
+        title: "Test General Audit - cae598e"
+        partner_id: "REC: client.id"
+        accountant_id: "REC: accountant.id"
+        account_type_set_id: "REC: account_type_set.id"
+        financial_accounting_standard_id: "REC: standard.id"
+        date_start: 2026-01-01
+        date_end: 2026-12-31
+        need_interim: false
+        need_previous: false
+        num_of_consecutive_audit_firm: 1
+        num_of_consecutive_audit_accountant: 1
+
+    - step: "Open general audit"
+      action: "call"
+      target: "audit"
+      method: "action_open"
+      as_user: "base.user_admin"
+
+    - step: "Invalidate cache after opening general audit"
+      action: "call"
+      target: "audit"
+      method: "invalidate_cache"
+
+    - step: "Assert general audit open"
+      action: "assert"
+      target: "audit"
+      asserts:
+        state:
+          type: "value"
+          expected: "open"
+
+    - step: "Get worksheet type cae598e"
+      action: "ref"
+      xml_id: "ssi_general_audit_worksheet_review.worksheet_type_cae598e"
+      save_as: "ws_type_cae598e"
+
+    - step: "Get worksheet type bcc0d76"
+      action: "ref"
+      xml_id: "ssi_general_audit_worksheet_review.worksheet_type_bcc0d76"
+      save_as: "ws_type_bcc0d76"
+
+scenarios:
+  # ------------------------------------------------------------------
+  # general_audit_ws_cae598e - Create
+  # ------------------------------------------------------------------
+  - name: "Create worksheet cae598e"
+    steps:
+      - step: "Create worksheet cae598e"
+        action: "create"
+        model: "general_audit_ws_cae598e"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_cae598e.id"
+
+      - step: "Assert worksheet created in draft with no details"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          id:
+            type: "value"
+            operator: "is_truthy"
+          state:
+            type: "value"
+            expected: "draft"
+          detail_ids:
+            type: "o2m"
+            check: "count"
+            expected_count: 0
+
+  # ------------------------------------------------------------------
+  # Workflow
+  # ------------------------------------------------------------------
+  - name: "Workflow cae598e - draft to done"
+    steps:
+      - step: "Create worksheet cae598e"
+        action: "create"
+        model: "general_audit_ws_cae598e"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_cae598e.id"
+
+      - step: "Open worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_open"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after opening worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Assert worksheet open"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          state:
+            type: "value"
+            expected: "open"
+
+      - step: "Create conclusion for cae598e worksheet type"
+        action: "create"
+        model: "general_audit_worksheet_conclusion"
+        save_as: "conclusion"
+        as_user: "base.user_admin"
+        values:
+          name: "Audit evidence evaluation completed"
+          code: "/"
+          type_id: "REC: ws_type_cae598e.id"
+
+      - step: "Fill required conclusion fields before confirm"
+        action: "write"
+        target: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          conclusion_id: "REC: conclusion.id"
+          conclusion: "Evidence sufficiency and appropriateness evaluated."
+
+      - step: "Confirm worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_confirm"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after confirming worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Assert worksheet confirmed"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          state:
+            type: "value"
+            expected: "confirm"
+
+      - step: "Approve worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_approve_approval"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after approving worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Assert worksheet done"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          state:
+            type: "value"
+            expected: "done"
+
+  - name: "Workflow cae598e - cancel and restart"
+    steps:
+      - step: "Create worksheet cae598e"
+        action: "create"
+        model: "general_audit_ws_cae598e"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_cae598e.id"
+
+      - step: "Open worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_open"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after opening worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Assert worksheet open"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          state:
+            type: "value"
+            expected: "open"
+
+      - step: "Cancel worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_cancel"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after cancelling worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Assert worksheet cancelled"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          state:
+            type: "value"
+            expected: "cancel"
+
+      - step: "Restart worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_restart"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after restarting worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Assert worksheet back to draft"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          state:
+            type: "value"
+            expected: "draft"
+
+  # ------------------------------------------------------------------
+  # action_populate (empty)
+  #
+  # Unlike bcc0d76, GeneralAuditWScae598e._populate() DOES filter its
+  # source search by worksheet_id.general_audit_id = self.general_audit_id
+  # (models/ga_cae598e/general_audit_ws_cae598e.py), so this scenario is
+  # not affected by other scenarios' fixtures the way bcc0d76's is.
+  # ------------------------------------------------------------------
+  - name: "WS cae598e - action_populate (empty)"
+    steps:
+      - step: "Create worksheet cae598e"
+        action: "create"
+        model: "general_audit_ws_cae598e"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_cae598e.id"
+
+      - step: "Open worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_open"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after opening worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Populate with no bcc0d76 detail for this general audit"
+        action: "call"
+        target: "worksheet"
+        method: "action_populate"
+        as_user: "base.user_admin"
+
+      - step: "Assert detail_ids empty"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          detail_ids:
+            type: "o2m"
+            check: "count"
+            expected_count: 0
+
+  # ------------------------------------------------------------------
+  # action_populate (normal, idempotent)
+  # ------------------------------------------------------------------
+  - name: "WS cae598e - action_populate (normal, idempotent)"
+    steps:
+      - step: "Create worksheet bcc0d76 for the same general audit"
+        action: "create"
+        model: "general_audit_ws_bcc0d76"
+        save_as: "bcc_worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_bcc0d76.id"
+
+      - step: "Open bcc0d76 worksheet"
+        action: "call"
+        target: "bcc_worksheet"
+        method: "action_open"
+        as_user: "base.user_admin"
+
+      - step: "Create first bcc0d76 detail line directly"
+        action: "create"
+        model: "general_audit_ws_bcc0d76.detail"
+        save_as: "bcc_detail_1"
+        as_user: "base.user_admin"
+        values:
+          worksheet_id: "REC: bcc_worksheet.id"
+
+      - step: "Create second bcc0d76 detail line directly"
+        action: "create"
+        model: "general_audit_ws_bcc0d76.detail"
+        save_as: "bcc_detail_2"
+        as_user: "base.user_admin"
+        values:
+          worksheet_id: "REC: bcc_worksheet.id"
+
+      - step: "Create worksheet cae598e"
+        action: "create"
+        model: "general_audit_ws_cae598e"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_cae598e.id"
+
+      - step: "Open cae598e worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_open"
+        as_user: "base.user_admin"
+
+      - step: "Populate cae598e from the bcc0d76 detail lines"
+        action: "call"
+        target: "worksheet"
+        method: "action_populate"
+        as_user: "base.user_admin"
+
+      - step: "Assert two detail lines were created"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          detail_ids:
+            type: "o2m"
+            check: "count"
+            expected_count: 2
+
+      - step: "Assert a detail line links to bcc_detail_1"
+        action: "search"
+        model: "general_audit_ws_cae598e.detail"
+        domain:
+          [
+            ["worksheet_id", "=", "REC: worksheet.id"],
+            ["detail_id", "=", "REC: bcc_detail_1.id"],
+          ]
+        save_as: "detail_link_1"
+        expect_count: 1
+
+      - step: "Assert a detail line links to bcc_detail_2"
+        action: "search"
+        model: "general_audit_ws_cae598e.detail"
+        domain:
+          [
+            ["worksheet_id", "=", "REC: worksheet.id"],
+            ["detail_id", "=", "REC: bcc_detail_2.id"],
+          ]
+        save_as: "detail_link_2"
+        expect_count: 1
+
+      - step: "Populate again (idempotent, no new bcc0d76 detail lines)"
+        action: "call"
+        target: "worksheet"
+        method: "action_populate"
+        as_user: "base.user_admin"
+
+      - step: "Assert detail count is unchanged after the repeated populate call"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          detail_ids:
+            type: "o2m"
+            check: "count"
+            expected_count: 2
+
+  # ------------------------------------------------------------------
+  # Field selection values on general_audit_ws_cae598e.detail
+  #
+  # review_result is deliberately excluded here: it is declared as
+  # related="detail_id.review_result" with no store/readonly override, so
+  # writing it would pass the write through to the linked
+  # general_audit_ws_bcc0d76.detail record rather than exercising any
+  # logic local to cae598e.detail itself.
+  # ------------------------------------------------------------------
+  - name: "Field selection detail cae598e"
+    steps:
+      - step: "Create worksheet cae598e"
+        action: "create"
+        model: "general_audit_ws_cae598e"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_cae598e.id"
+
+      - step: "Create a detail line"
+        action: "create"
+        model: "general_audit_ws_cae598e.detail"
+        save_as: "detail"
+        as_user: "base.user_admin"
+        values:
+          worksheet_id: "REC: worksheet.id"
+
+      - step: "Write selection fields on the detail line"
+        action: "write"
+        target: "detail"
+        as_user: "base.user_admin"
+        values:
+          evidence_sufficiency: "sufficient"
+          evidence_completeness: "complete"
+          impact_misstatement: "none"
+          impact_pervasive: "none"
+
+      - step: "Assert selection field values were saved"
+        action: "assert"
+        target: "detail"
+        asserts:
+          evidence_sufficiency:
+            type: "value"
+            expected: "sufficient"
+          evidence_completeness:
+            type: "value"
+            expected: "complete"
+          impact_misstatement:
+            type: "value"
+            expected: "none"
+          impact_pervasive:
+            type: "value"
+            expected: "none"

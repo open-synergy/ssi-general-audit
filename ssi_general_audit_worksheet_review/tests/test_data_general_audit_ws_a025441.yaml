@@ -1,0 +1,589 @@
+setup:
+  steps:
+    - step: "Get config parameter model"
+      action: "search"
+      model: "ir.config_parameter"
+      domain: []
+      save_as: "config_parameter"
+      limit: 1
+
+    - step: "Allow enough CPA licenses for this scenario"
+      action: "call"
+      target: "config_parameter"
+      method: "set_param"
+      args:
+        - "ssi_general_audit.max_number_of_cpa_license"
+        - "100"
+
+    - step: "Create client partner"
+      action: "create"
+      model: "res.partner"
+      save_as: "client"
+      as_user: "base.user_admin"
+      values:
+        name: "Test Audit Client - a025441"
+        is_company: true
+
+    - step: "Create accountant partner"
+      action: "create"
+      model: "res.partner"
+      save_as: "accountant"
+      as_user: "base.user_admin"
+      values:
+        name: "Test Audit Accountant - a025441"
+
+    - step: "Get CPA license id category"
+      action: "ref"
+      xml_id: "ssi_partner_identification_cpa_license.partner_identification_accountant_cpa_license"
+      save_as: "cpa_category"
+
+    - step: "Grant accountant a CPA license"
+      action: "create"
+      model: "res.partner.id_number"
+      save_as: "cpa_license"
+      as_user: "base.user_admin"
+      values:
+        partner_id: "REC: accountant.id"
+        category_id: "REC: cpa_category.id"
+        name: "CPA-A025441-0001"
+
+    - step: "Create account type set"
+      action: "create"
+      model: "client_account_type_set"
+      save_as: "account_type_set"
+      as_user: "base.user_admin"
+      values:
+        name: "Test Account Type Set - a025441"
+        code: "/"
+
+    - step: "Create financial accounting standard FAS-A"
+      action: "create"
+      model: "accountant.financial_accounting_standard"
+      save_as: "fas_a"
+      as_user: "base.user_admin"
+      values:
+        name: "Test FAS-A"
+        code: "/"
+
+    - step: "Create general audit"
+      action: "create"
+      model: "general_audit"
+      save_as: "audit"
+      as_user: "base.user_admin"
+      values:
+        title: "Test General Audit - a025441"
+        partner_id: "REC: client.id"
+        accountant_id: "REC: accountant.id"
+        account_type_set_id: "REC: account_type_set.id"
+        financial_accounting_standard_id: "REC: fas_a.id"
+        date_start: 2026-01-01
+        date_end: 2026-12-31
+        need_interim: false
+        need_previous: false
+        num_of_consecutive_audit_firm: 1
+        num_of_consecutive_audit_accountant: 1
+
+    - step: "Open general audit"
+      action: "call"
+      target: "audit"
+      method: "action_open"
+      as_user: "base.user_admin"
+
+    - step: "Invalidate cache after opening general audit"
+      action: "call"
+      target: "audit"
+      method: "invalidate_cache"
+
+    - step: "Assert general audit open"
+      action: "assert"
+      target: "audit"
+      asserts:
+        state:
+          type: "value"
+          expected: "open"
+
+    - step: "Get worksheet type a025441"
+      action: "ref"
+      xml_id: "ssi_general_audit_worksheet_review.worksheet_type_a025441"
+      save_as: "ws_type_a025441"
+
+    - step: "Create relevant accounting standard"
+      action: "create"
+      model: "client_relevant_account_type"
+      save_as: "relevant_type"
+      as_user: "base.user_admin"
+      values:
+        name: "Test Relevant Accounting Standard"
+        code: "/"
+
+    - step: "Create checklist option set"
+      action: "create"
+      model: "checklist.option_set"
+      save_as: "option_set"
+      as_user: "base.user_admin"
+      values:
+        name: "Test Option Set - a025441"
+        code: "/"
+
+scenarios:
+  # ------------------------------------------------------------------
+  # general_audit_ws_a025441.item - CRUD
+  # ------------------------------------------------------------------
+  - name: "general_audit_ws_a025441.item - Create"
+    steps:
+      - step: "Create item"
+        action: "create"
+        model: "general_audit_ws_a025441.item"
+        save_as: "item"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Item A025441"
+          financial_accounting_standard_id: "REC: fas_a.id"
+          relevant_accounting_standard_id: "REC: relevant_type.id"
+          option_set_id: "REC: option_set.id"
+
+      - step: "Assert item created"
+        action: "assert"
+        target: "item"
+        asserts:
+          id:
+            type: "value"
+            operator: "is_truthy"
+          name:
+            type: "value"
+            expected: "Test Item A025441"
+
+  - name: "general_audit_ws_a025441.item - Edit"
+    steps:
+      - step: "Create item"
+        action: "create"
+        model: "general_audit_ws_a025441.item"
+        save_as: "item"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Item A025441"
+          financial_accounting_standard_id: "REC: fas_a.id"
+          relevant_accounting_standard_id: "REC: relevant_type.id"
+          option_set_id: "REC: option_set.id"
+
+      - step: "Write new name"
+        action: "write"
+        target: "item"
+        as_user: "base.user_admin"
+        values:
+          name: "Updated Item A025441"
+
+      - step: "Assert name updated"
+        action: "assert"
+        target: "item"
+        asserts:
+          name:
+            type: "value"
+            expected: "Updated Item A025441"
+
+  - name: "general_audit_ws_a025441.item - Delete"
+    steps:
+      - step: "Create item"
+        action: "create"
+        model: "general_audit_ws_a025441.item"
+        save_as: "item"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Item A025441 To Delete"
+          financial_accounting_standard_id: "REC: fas_a.id"
+          relevant_accounting_standard_id: "REC: relevant_type.id"
+          option_set_id: "REC: option_set.id"
+
+      - step: "Delete item"
+        action: "unlink"
+        target: "item"
+        as_user: "base.user_admin"
+
+      - step: "Verify deleted"
+        action: "search"
+        model: "general_audit_ws_a025441.item"
+        domain: [["name", "=", "Test Item A025441 To Delete"]]
+        save_as: "result"
+        expect_count: 0
+
+  # ------------------------------------------------------------------
+  # general_audit_ws_a025441 - Create
+  # ------------------------------------------------------------------
+  - name: "Create worksheet a025441"
+    steps:
+      - step: "Create worksheet a025441"
+        action: "create"
+        model: "general_audit_ws_a025441"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_a025441.id"
+
+      - step: "Assert worksheet created in draft"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          id:
+            type: "value"
+            operator: "is_truthy"
+          state:
+            type: "value"
+            expected: "draft"
+
+  # ------------------------------------------------------------------
+  # _get_checklist_item_domain() override
+  #
+  # action: call cannot capture a Python method's return value in this
+  # framework (odoo_yaml_test.case._action_call runs the method and only
+  # supports asserting fields on the target afterwards -- there is no
+  # save_as for a return value). The override is therefore exercised
+  # through action_populate_checklist() (mixin.checklist), the only
+  # production code path that actually consumes
+  # _get_checklist_item_domain(), which is arguably a more faithful test
+  # than inspecting the raw domain list would have been.
+  # ------------------------------------------------------------------
+  - name:
+      "Checklist domain filtering (a025441) - only matching financial accounting
+      standard passes"
+    steps:
+      - step:
+          "Create item matching the general audit's financial accounting standard
+          (FAS-A)"
+        action: "create"
+        model: "general_audit_ws_a025441.item"
+        save_as: "item_fas_a"
+        as_user: "base.user_admin"
+        values:
+          name: "Item FAS-A"
+          financial_accounting_standard_id: "REC: fas_a.id"
+          relevant_accounting_standard_id: "REC: relevant_type.id"
+          option_set_id: "REC: option_set.id"
+
+      - step: "Create a different financial accounting standard (FAS-B)"
+        action: "create"
+        model: "accountant.financial_accounting_standard"
+        save_as: "fas_b"
+        as_user: "base.user_admin"
+        values:
+          name: "Test FAS-B"
+          code: "/"
+
+      - step: "Create item with a different standard (FAS-B, must not pass the domain)"
+        action: "create"
+        model: "general_audit_ws_a025441.item"
+        save_as: "item_fas_b"
+        as_user: "base.user_admin"
+        values:
+          name: "Item FAS-B"
+          financial_accounting_standard_id: "REC: fas_b.id"
+          relevant_accounting_standard_id: "REC: relevant_type.id"
+          option_set_id: "REC: option_set.id"
+
+      - step: "Create worksheet a025441"
+        action: "create"
+        model: "general_audit_ws_a025441"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_a025441.id"
+
+      - step: "Open worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_open"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after opening worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Populate checklist from master items"
+        action: "call"
+        target: "worksheet"
+        method: "action_populate_checklist"
+        as_user: "base.user_admin"
+
+      - step: "Assert only the FAS-A item was populated"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          checklist_ids:
+            type: "o2m"
+            check: "count"
+            expected_count: 1
+
+      - step: "Assert a checklist line exists for the FAS-A item"
+        action: "search"
+        model: "general_audit_ws_a025441.checklist"
+        domain:
+          [
+            ["worksheet_id", "=", "REC: worksheet.id"],
+            ["item_id", "=", "REC: item_fas_a.id"],
+          ]
+        save_as: "line_fas_a"
+        expect_count: 1
+
+      - step: "Assert no checklist line was created for the FAS-B item"
+        action: "search"
+        model: "general_audit_ws_a025441.checklist"
+        domain:
+          [
+            ["worksheet_id", "=", "REC: worksheet.id"],
+            ["item_id", "=", "REC: item_fas_b.id"],
+          ]
+        save_as: "line_fas_b"
+        expect_count: 0
+
+  # ------------------------------------------------------------------
+  # general_audit_ws_a025441.checklist - line + related fields
+  # ------------------------------------------------------------------
+  - name: "Checklist line a025441"
+    steps:
+      - step: "Create worksheet a025441"
+        action: "create"
+        model: "general_audit_ws_a025441"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_a025441.id"
+
+      - step: "Open worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_open"
+        as_user: "base.user_admin"
+
+      - step: "Create item for the checklist line"
+        action: "create"
+        model: "general_audit_ws_a025441.item"
+        save_as: "item"
+        as_user: "base.user_admin"
+        values:
+          name: "Item For Checklist Line"
+          financial_accounting_standard_id: "REC: fas_a.id"
+          relevant_accounting_standard_id: "REC: relevant_type.id"
+          option_set_id: "REC: option_set.id"
+
+      - step: "Create checklist line"
+        action: "create"
+        model: "general_audit_ws_a025441.checklist"
+        save_as: "checklist_line"
+        as_user: "base.user_admin"
+        values:
+          worksheet_id: "REC: worksheet.id"
+          item_id: "REC: item.id"
+
+      - step: "Assert checklist_ids contains the new line"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          checklist_ids:
+            type: "o2m"
+            check: "contains"
+            expected_records:
+              - "REC: checklist_line"
+
+      - step: "Assert related fields on the checklist line"
+        action: "assert"
+        target: "checklist_line"
+        asserts:
+          financial_accounting_standard_id:
+            type: "m2o"
+            expected: "REC: fas_a"
+          relevant_accounting_standard_id:
+            type: "m2o"
+            expected: "REC: relevant_type"
+
+  # ------------------------------------------------------------------
+  # Workflow
+  # ------------------------------------------------------------------
+  - name: "Workflow a025441 - draft to done"
+    steps:
+      - step: "Create worksheet a025441"
+        action: "create"
+        model: "general_audit_ws_a025441"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_a025441.id"
+
+      - step: "Open worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_open"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after opening worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Assert worksheet open"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          state:
+            type: "value"
+            expected: "open"
+
+      - step: "Create conclusion for a025441 worksheet type"
+        action: "create"
+        model: "general_audit_worksheet_conclusion"
+        save_as: "conclusion"
+        as_user: "base.user_admin"
+        values:
+          name: "Financial statement disclosures reviewed"
+          code: "/"
+          type_id: "REC: ws_type_a025441.id"
+
+      - step: "Fill required conclusion fields before confirm"
+        action: "write"
+        target: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          conclusion_id: "REC: conclusion.id"
+          conclusion: "All disclosure items reviewed and documented."
+
+      - step: "Confirm worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_confirm"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after confirming worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Assert worksheet confirmed"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          state:
+            type: "value"
+            expected: "confirm"
+
+      - step: "Approve worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_approve_approval"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after approving worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Assert worksheet done"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          state:
+            type: "value"
+            expected: "done"
+
+  - name: "Workflow a025441 - cancel and restart"
+    steps:
+      - step: "Create worksheet a025441"
+        action: "create"
+        model: "general_audit_ws_a025441"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_a025441.id"
+
+      - step: "Open worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_open"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after opening worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Assert worksheet open"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          state:
+            type: "value"
+            expected: "open"
+
+      - step: "Cancel worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_cancel"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after cancelling worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Assert worksheet cancelled"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          state:
+            type: "value"
+            expected: "cancel"
+
+      - step: "Restart worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_restart"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after restarting worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Assert worksheet back to draft"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          state:
+            type: "value"
+            expected: "draft"
+
+  # ------------------------------------------------------------------
+  # Onchange type_id -> parent_type_id (general_audit_worksheet_mixin
+  # .onchange_parent_type_id). type_id is "readonly=1 force_save=1" on
+  # the form view inherited from general_audit_worksheet_mixin_views.xml,
+  # so Form cannot set it explicitly mid-form -- it can only observe its
+  # default value (from _default_type_id/_type_xml_id). general_audit_id
+  # is set only because it is required to save; the onchange under test
+  # fires from type_id's own default when the form is first opened, so
+  # the assertion is made on the saved record rather than inline on the
+  # (unsaved) Form.
+  # ------------------------------------------------------------------
+  - name: "Onchange type_id sets parent_type_id (a025441)"
+    steps:
+      - step: "Open a new worksheet form and save with the default type_id"
+        action: "form"
+        model: "general_audit_ws_a025441"
+        save_as: "record"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit"
+        save: true
+
+      - step: "Assert parent_type_id follows type_id via onchange_parent_type_id"
+        action: "assert"
+        target: "record"
+        asserts:
+          type_id:
+            type: "m2o"
+            expected: "REC: ws_type_a025441"
+          parent_type_id:
+            type: "m2o"
+            expected: "REC: ws_type_a025441"
