@@ -3,17 +3,22 @@
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl-3.0-standalone.html).
 
 # NOTE on the two `data_mode` onchanges (`onchange_general_ledger_id` /
-# `onchange_subledger_id`): unlike the sibling `general_audit_ws_c6c86fd` /
-# `general_audit_ws_b4f7d9c` cases (where the onchange's source field and its
-# target field are only ever editable in mutually exclusive states, making
-# `action: form` impossible), here BOTH the trigger field (`data_mode`) and
-# both target fields (`general_ledger_id`, `subledger_id`) share the exact
-# same `states={"open": [("readonly", False)]}` definition
+# `onchange_subledger_id`): the trigger field (`data_mode`) and both target
+# fields (`general_ledger_id`, `subledger_id`) share the exact same
+# `states={"open": [("readonly", False)]}` definition
 # (`models/a916660/general_audit_ws_a916660.py`) -- they overlap on state
-# `open`. `action: form` therefore works fine here: open the worksheet first
-# (`action_open`), then drive the Form on the now-`open` record. See
-# scenarios "Onchange data_mode clears general_ledger_id" and "Onchange
-# data_mode clears subledger_id" below.
+# `open`, unlike the sibling `general_audit_ws_c6c86fd` /
+# `general_audit_ws_b4f7d9c` cases. That state overlap is *not* the blocker
+# here, though: CI proved `action: form` on this model's form view fails
+# unconditionally with ``AssertionError: __len__ was not found in the
+# view`` regardless of which field is touched -- caused by the mixin-level
+# `allowed_general_ledger_ids` / `allowed_subledger_ids` Many2many fields
+# being declared `invisible="1"` in the view
+# (`views/general_audit_ws_a916660.xml`) with no sub-view/tree arch, which
+# the Form test helper cannot build editable metadata for. Production code
+# was left untouched per instructions; the two onchanges are verified by
+# calling the onchange methods directly in
+# ``tests/test_general_audit_ws_a916660.py`` instead.
 
 setup:
   steps:
@@ -964,97 +969,3 @@ scenarios:
           state:
             type: "value"
             expected: "draft"
-
-  # ------------------------------------------------------------------
-  # 17/18. Onchange data_mode - see NOTE at top of this file for why
-  # `action: form` is used here (both trigger and target fields overlap
-  # on state "open", unlike the sibling worksheets where this was not
-  # possible).
-  # ------------------------------------------------------------------
-  - name: "Onchange data_mode clears general_ledger_id"
-    steps:
-      - step: "Create worksheet with data_mode gl and a general_ledger_id"
-        action: "create"
-        model: "general_audit_ws_a916660"
-        save_as: "worksheet"
-        as_user: "base.user_admin"
-        values:
-          general_audit_id: "REC: audit.id"
-          type_id: "REC: ws_type.id"
-          data_mode: "gl"
-          general_ledger_id: "REC: gl.id"
-
-      - step: "Open worksheet so data_mode/general_ledger_id become editable"
-        action: "call"
-        target: "worksheet"
-        method: "action_open"
-        as_user: "base.user_admin"
-
-      - step: "Invalidate cache after opening worksheet"
-        action: "call"
-        target: "worksheet"
-        method: "invalidate_cache"
-
-      - step: "Assert general_ledger_id set before onchange"
-        action: "assert"
-        target: "worksheet"
-        asserts:
-          general_ledger_id:
-            type: "m2o"
-            expected: "REC: gl"
-
-      - step: "Change data_mode via Form to trigger onchange"
-        action: "form"
-        target: "worksheet"
-        as_user: "base.user_admin"
-        save: false
-        ops:
-          - set: {data_mode: "subledger"}
-          - assert:
-              general_ledger_id:
-                type: "value"
-                operator: "is_falsy"
-
-  - name: "Onchange data_mode clears subledger_id"
-    steps:
-      - step: "Create worksheet with data_mode subledger and a subledger_id"
-        action: "create"
-        model: "general_audit_ws_a916660"
-        save_as: "worksheet"
-        as_user: "base.user_admin"
-        values:
-          general_audit_id: "REC: audit.id"
-          type_id: "REC: ws_type.id"
-          data_mode: "subledger"
-          subledger_id: "REC: subledger.id"
-
-      - step: "Open worksheet so data_mode/subledger_id become editable"
-        action: "call"
-        target: "worksheet"
-        method: "action_open"
-        as_user: "base.user_admin"
-
-      - step: "Invalidate cache after opening worksheet"
-        action: "call"
-        target: "worksheet"
-        method: "invalidate_cache"
-
-      - step: "Assert subledger_id set before onchange"
-        action: "assert"
-        target: "worksheet"
-        asserts:
-          subledger_id:
-            type: "m2o"
-            expected: "REC: subledger"
-
-      - step: "Change data_mode via Form to trigger onchange"
-        action: "form"
-        target: "worksheet"
-        as_user: "base.user_admin"
-        save: false
-        ops:
-          - set: {data_mode: "gl"}
-          - assert:
-              subledger_id:
-                type: "value"
-                operator: "is_falsy"
