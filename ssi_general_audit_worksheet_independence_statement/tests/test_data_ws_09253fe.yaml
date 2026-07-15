@@ -1,0 +1,919 @@
+setup:
+  steps:
+    - step: "Get config parameter model"
+      action: "search"
+      model: "ir.config_parameter"
+      domain: []
+      save_as: "config_parameter"
+      limit: 1
+
+    - step: "Allow enough CPA licenses for this scenario"
+      action: "call"
+      target: "config_parameter"
+      method: "set_param"
+      args:
+        - "ssi_general_audit.max_number_of_cpa_license"
+        - "100"
+
+    - step: "Create client partner"
+      action: "create"
+      model: "res.partner"
+      save_as: "client"
+      as_user: "base.user_admin"
+      values:
+        name: "Test Audit Client - 09253FE"
+        is_company: true
+
+    - step: "Create accountant partner"
+      action: "create"
+      model: "res.partner"
+      save_as: "accountant"
+      as_user: "base.user_admin"
+      values:
+        name: "Test Audit Accountant - 09253FE"
+
+    - step: "Get CPA license id category"
+      action: "ref"
+      xml_id: "ssi_partner_identification_cpa_license.partner_identification_accountant_cpa_license"
+      save_as: "cpa_category"
+
+    - step: "Grant accountant a CPA license"
+      action: "create"
+      model: "res.partner.id_number"
+      save_as: "cpa_license"
+      as_user: "base.user_admin"
+      values:
+        partner_id: "REC: accountant.id"
+        category_id: "REC: cpa_category.id"
+        name: "CPA-09253FE-0001"
+
+    - step: "Create account type set"
+      action: "create"
+      model: "client_account_type_set"
+      save_as: "account_type_set"
+      as_user: "base.user_admin"
+      values:
+        name: "Test Account Type Set - 09253FE"
+        code: "/"
+
+    - step: "Create financial accounting standard"
+      action: "create"
+      model: "accountant.financial_accounting_standard"
+      save_as: "standard"
+      as_user: "base.user_admin"
+      values:
+        name: "Test Financial Accounting Standard - 09253FE"
+        code: "/"
+
+    - step: "Create general audit"
+      action: "create"
+      model: "general_audit"
+      save_as: "audit"
+      as_user: "base.user_admin"
+      values:
+        title: "Test General Audit - 09253FE"
+        partner_id: "REC: client.id"
+        accountant_id: "REC: accountant.id"
+        account_type_set_id: "REC: account_type_set.id"
+        financial_accounting_standard_id: "REC: standard.id"
+        date_start: 2026-01-01
+        date_end: 2026-12-31
+        need_interim: false
+        need_previous: false
+        num_of_consecutive_audit_firm: 1
+        num_of_consecutive_audit_accountant: 1
+
+    - step: "Open general audit"
+      action: "call"
+      target: "audit"
+      method: "action_open"
+      as_user: "base.user_admin"
+
+    - step: "Invalidate cache after opening general audit"
+      action: "call"
+      target: "audit"
+      method: "invalidate_cache"
+
+    - step: "Assert general audit open"
+      action: "assert"
+      target: "audit"
+      asserts:
+        state:
+          type: "value"
+          expected: "open"
+
+scenarios:
+  # ------------------------------------------------------------------
+  # general_audit_ws_09253fe.item - master CRUD
+  # ------------------------------------------------------------------
+  - name: "Master item - create, edit and delete"
+    steps:
+      - step: "Create option set"
+        action: "create"
+        model: "checklist.option_set"
+        save_as: "option_set"
+        as_user: "base.user_admin"
+        values:
+          name: "Yes/No - Master CRUD"
+          code: "/"
+
+      - step: "Create master item"
+        action: "create"
+        model: "general_audit_ws_09253fe.item"
+        save_as: "item"
+        as_user: "base.user_admin"
+        values:
+          name: "No financial relationship with the client"
+          code: "/"
+          sequence: 10
+          option_set_id: "REC: option_set.id"
+
+      - step: "Assert master item created"
+        action: "assert"
+        target: "item"
+        asserts:
+          id:
+            type: "value"
+            operator: "is_truthy"
+          name:
+            type: "value"
+            expected: "No financial relationship with the client"
+          code:
+            type: "value"
+            expected: "/"
+
+      - step: "Edit master item name"
+        action: "write"
+        target: "item"
+        values:
+          name: "No financial relationship with the client (Rev)"
+
+      - step: "Assert master item name updated"
+        action: "assert"
+        target: "item"
+        asserts:
+          name:
+            type: "value"
+            expected: "No financial relationship with the client (Rev)"
+
+      - step: "Delete master item"
+        action: "unlink"
+        target: "item"
+
+      - step: "Verify master item deleted"
+        action: "search"
+        model: "general_audit_ws_09253fe.item"
+        domain: [["name", "=", "No financial relationship with the client (Rev)"]]
+        save_as: "deleted_item_result"
+        expect_count: 0
+
+  # ------------------------------------------------------------------
+  # general_audit_ws_09253fe - create in draft
+  # ------------------------------------------------------------------
+  - name: "Worksheet 09253FE - create in draft"
+    steps:
+      - step: "Create worksheet 09253FE"
+        action: "create"
+        model: "general_audit_ws_09253fe"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+
+      - step: "Assert worksheet created in draft with default type_id"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          id:
+            type: "value"
+            operator: "is_truthy"
+          state:
+            type: "value"
+            expected: "draft"
+          general_audit_id:
+            type: "m2o"
+            expected: "REC: audit"
+          type_id:
+            type: "m2o"
+            expected_xml_id: "ssi_general_audit_worksheet_independence_statement.worksheet_type_09253fe"
+          checklist_ids:
+            type: "o2m"
+            check: "count"
+            expected_count: 0
+
+  # ------------------------------------------------------------------
+  # checklist_ids - create directly and edit the auditor's answer
+  # ------------------------------------------------------------------
+  - name: "Checklist lines - create and edit"
+    steps:
+      - step: "Create option set"
+        action: "create"
+        model: "checklist.option_set"
+        save_as: "option_set"
+        as_user: "base.user_admin"
+        values:
+          name: "Yes/No - Checklist Lines"
+          code: "/"
+
+      - step: "Create option Yes"
+        action: "create"
+        model: "checklist.option"
+        save_as: "option_yes"
+        as_user: "base.user_admin"
+        values:
+          name: "Yes"
+          code: "/"
+
+      - step: "Create option No"
+        action: "create"
+        model: "checklist.option"
+        save_as: "option_no"
+        as_user: "base.user_admin"
+        values:
+          name: "No"
+          code: "/"
+
+      - step: "Attach options to option set"
+        action: "write"
+        target: "option_set"
+        values:
+          option_ids: [[6, 0, ["REC: option_yes.id", "REC: option_no.id"]]]
+
+      - step: "Create master item"
+        action: "create"
+        model: "general_audit_ws_09253fe.item"
+        save_as: "item"
+        as_user: "base.user_admin"
+        values:
+          name: "No family relationship threatening independence"
+          code: "/"
+          sequence: 10
+          option_set_id: "REC: option_set.id"
+
+      - step: "Create worksheet 09253FE"
+        action: "create"
+        model: "general_audit_ws_09253fe"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+
+      - step: "Create checklist line"
+        action: "create"
+        model: "general_audit_ws_09253fe.checklist"
+        save_as: "checklist_line"
+        as_user: "base.user_admin"
+        values:
+          worksheet_id: "REC: worksheet.id"
+          item_id: "REC: item.id"
+          option_id: "REC: option_yes.id"
+
+      - step: "Assert checklist line created"
+        action: "assert"
+        target: "checklist_line"
+        asserts:
+          id:
+            type: "value"
+            operator: "is_truthy"
+          worksheet_id:
+            type: "m2o"
+            expected: "REC: worksheet"
+          item_id:
+            type: "m2o"
+            expected: "REC: item"
+          item_name:
+            type: "value"
+            expected: "No family relationship threatening independence"
+          option_id:
+            type: "m2o"
+            expected: "REC: option_yes"
+          checklist_ok:
+            type: "value"
+            expected: true
+
+      - step: "Assert checklist line appears on worksheet"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          checklist_ids:
+            type: "o2m"
+            check: "contains"
+            expected_records:
+              - "REC: checklist_line"
+
+      - step: "Write the auditor's answer on the checklist line"
+        action: "write"
+        target: "checklist_line"
+        values:
+          option_id: "REC: option_no.id"
+          checklist_ok: false
+
+      - step: "Assert checklist line answer updated"
+        action: "assert"
+        target: "checklist_line"
+        asserts:
+          option_id:
+            type: "m2o"
+            expected: "REC: option_no"
+          checklist_ok:
+            type: "value"
+            expected: false
+
+  # ------------------------------------------------------------------
+  # checklist_ids - cascade delete when worksheet is deleted
+  #
+  # Lesson learned (see similar worksheet modules in this repo): unlink()
+  # on the worksheet is only allowed while state == "draft" (guarded by
+  # mixin.transaction's _check_state_unlink). So this scenario creates the
+  # checklist row directly on a draft worksheet (bypassing action_open /
+  # action_populate_checklist entirely) instead of opening then trying to
+  # come back to draft via cancel/restart, which is a separate and
+  # unrelated workflow path.
+  # ------------------------------------------------------------------
+  - name: "Checklist lines - cascade delete with worksheet"
+    steps:
+      - step: "Create option set"
+        action: "create"
+        model: "checklist.option_set"
+        save_as: "option_set"
+        as_user: "base.user_admin"
+        values:
+          name: "Yes/No - Cascade Delete"
+          code: "/"
+
+      - step: "Create option Yes"
+        action: "create"
+        model: "checklist.option"
+        save_as: "option_yes"
+        as_user: "base.user_admin"
+        values:
+          name: "Yes"
+          code: "/"
+
+      - step: "Create master item"
+        action: "create"
+        model: "general_audit_ws_09253fe.item"
+        save_as: "item"
+        as_user: "base.user_admin"
+        values:
+          name: "No non-audit services threatening independence"
+          code: "/"
+          sequence: 10
+          option_set_id: "REC: option_set.id"
+
+      - step: "Create worksheet 09253FE"
+        action: "create"
+        model: "general_audit_ws_09253fe"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+
+      - step: "Create checklist line while worksheet is still draft"
+        action: "create"
+        model: "general_audit_ws_09253fe.checklist"
+        save_as: "checklist_line"
+        as_user: "base.user_admin"
+        values:
+          worksheet_id: "REC: worksheet.id"
+          item_id: "REC: item.id"
+          option_id: "REC: option_yes.id"
+
+      - step: "Delete worksheet while still draft"
+        action: "unlink"
+        target: "worksheet"
+        as_user: "base.user_admin"
+
+      - step: "Verify checklist line was cascade deleted"
+        action: "search"
+        model: "general_audit_ws_09253fe.checklist"
+        domain: [["item_id", "=", "REC: item.id"]]
+        save_as: "orphan_checklist_result"
+        expect_count: 0
+
+  # ------------------------------------------------------------------
+  # checklist_ids - empty right after open (population is a separate,
+  # explicit action - see "Action populate checklist" below)
+  # ------------------------------------------------------------------
+  - name: "Checklist is empty right after open"
+    steps:
+      - step: "Create worksheet 09253FE"
+        action: "create"
+        model: "general_audit_ws_09253fe"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+
+      - step: "Open worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_open"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after opening worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Assert checklist_ids is empty until populate is called"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          state:
+            type: "value"
+            expected: "open"
+          checklist_ids:
+            type: "o2m"
+            check: "count"
+            expected_count: 0
+
+  # ------------------------------------------------------------------
+  # action_populate_checklist (inherited from mixin.checklist)
+  #
+  # NOTE: `_item_model_name` items are loaded via `Item.search([])` (no
+  # domain override), and this module ships 4 checklist items as regular
+  # (non-demo) module data (data/master/general_audit_ws_09253fe_item.xml)
+  # that is always present once the module is installed - including under
+  # this repo's CI, which installs and tests every module together. So the
+  # total row count created by action_populate_checklist is NOT limited to
+  # the items this scenario creates. We therefore assert precisely, via
+  # scoped `action: search` on (worksheet_id, item_id), that a row exists
+  # for each item this scenario creates - not an absolute total count.
+  # ------------------------------------------------------------------
+  - name: "Action populate checklist from master items"
+    steps:
+      - step: "Create option set"
+        action: "create"
+        model: "checklist.option_set"
+        save_as: "option_set"
+        as_user: "base.user_admin"
+        values:
+          name: "Yes/No - Populate Checklist"
+          code: "/"
+
+      - step: "Create first master item"
+        action: "create"
+        model: "general_audit_ws_09253fe.item"
+        save_as: "item_1"
+        as_user: "base.user_admin"
+        values:
+          name: "Populate checklist master item 1"
+          code: "/"
+          sequence: 10
+          option_set_id: "REC: option_set.id"
+
+      - step: "Create second master item"
+        action: "create"
+        model: "general_audit_ws_09253fe.item"
+        save_as: "item_2"
+        as_user: "base.user_admin"
+        values:
+          name: "Populate checklist master item 2"
+          code: "/"
+          sequence: 20
+          option_set_id: "REC: option_set.id"
+
+      - step: "Create worksheet 09253FE"
+        action: "create"
+        model: "general_audit_ws_09253fe"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+
+      - step: "Open worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_open"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after opening worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Assert checklist_ids empty before populate"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          checklist_ids:
+            type: "o2m"
+            check: "count"
+            expected_count: 0
+
+      - step: "Call action_populate_checklist"
+        action: "call"
+        target: "worksheet"
+        method: "action_populate_checklist"
+        as_user: "base.user_admin"
+
+      - step: "Search populated checklist line for item 1"
+        action: "search"
+        model: "general_audit_ws_09253fe.checklist"
+        domain:
+          [
+            ["worksheet_id", "=", "REC: worksheet.id"],
+            ["item_id", "=", "REC: item_1.id"],
+          ]
+        save_as: "populated_line_1"
+        expect_count: 1
+
+      - step: "Search populated checklist line for item 2"
+        action: "search"
+        model: "general_audit_ws_09253fe.checklist"
+        domain:
+          [
+            ["worksheet_id", "=", "REC: worksheet.id"],
+            ["item_id", "=", "REC: item_2.id"],
+          ]
+        save_as: "populated_line_2"
+        expect_count: 1
+
+      - step: "Assert both populated checklist lines appear on worksheet"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          checklist_ids:
+            type: "o2m"
+            check: "contains"
+            expected_records:
+              - "REC: populated_line_1"
+              - "REC: populated_line_2"
+
+  # ------------------------------------------------------------------
+  # action_populate_checklist is idempotent (does not error, does not
+  # duplicate rows when called again with no change to the master items)
+  # ------------------------------------------------------------------
+  - name: "Action populate checklist is idempotent when called again"
+    steps:
+      - step: "Create option set"
+        action: "create"
+        model: "checklist.option_set"
+        save_as: "option_set"
+        as_user: "base.user_admin"
+        values:
+          name: "Yes/No - Idempotent Populate"
+          code: "/"
+
+      - step: "Create master item"
+        action: "create"
+        model: "general_audit_ws_09253fe.item"
+        save_as: "item"
+        as_user: "base.user_admin"
+        values:
+          name: "Idempotent populate checklist master item"
+          code: "/"
+          sequence: 10
+          option_set_id: "REC: option_set.id"
+
+      - step: "Create worksheet 09253FE"
+        action: "create"
+        model: "general_audit_ws_09253fe"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+
+      - step: "Open worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_open"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after opening worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Call action_populate_checklist first time"
+        action: "call"
+        target: "worksheet"
+        method: "action_populate_checklist"
+        as_user: "base.user_admin"
+
+      - step: "Search populated checklist line - first call"
+        action: "search"
+        model: "general_audit_ws_09253fe.checklist"
+        domain:
+          [["worksheet_id", "=", "REC: worksheet.id"], ["item_id", "=", "REC: item.id"]]
+        save_as: "populated_line_first"
+        expect_count: 1
+
+      - step: "Call action_populate_checklist a second time"
+        action: "call"
+        target: "worksheet"
+        method: "action_populate_checklist"
+        as_user: "base.user_admin"
+
+      - step: "Search populated checklist line - still unique after second call"
+        action: "search"
+        model: "general_audit_ws_09253fe.checklist"
+        domain:
+          [["worksheet_id", "=", "REC: worksheet.id"], ["item_id", "=", "REC: item.id"]]
+        save_as: "populated_line_again"
+        expect_count: 1
+
+  # ------------------------------------------------------------------
+  # Workflow - draft -> open -> confirm -> done
+  # ------------------------------------------------------------------
+  - name: "Workflow - open, confirm and approve to done"
+    steps:
+      - step: "Create worksheet 09253FE"
+        action: "create"
+        model: "general_audit_ws_09253fe"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+
+      - step: "Assert initial state is draft"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          state:
+            type: "value"
+            expected: "draft"
+
+      - step: "Open worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_open"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after opening worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Assert worksheet open"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          state:
+            type: "value"
+            expected: "open"
+
+      - step: "Fill conclusion fields required before confirm"
+        action: "write"
+        target: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          conclusion_id:
+            "REF:
+            ssi_general_audit_worksheet_independence_statement.general_audit_worksheet_conclusion_22_a9d51e15"
+          conclusion:
+            "The independence statement is sufficient for the engagement team."
+
+      - step: "Confirm worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_confirm"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after confirming worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Assert worksheet confirmed"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          state:
+            type: "value"
+            expected: "confirm"
+
+      - step: "Approve worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_approve_approval"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after approving worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Assert worksheet done"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          state:
+            type: "value"
+            expected: "done"
+          conclusion_id:
+            type: "m2o"
+            expected_xml_id: "ssi_general_audit_worksheet_independence_statement.general_audit_worksheet_conclusion_22_a9d51e15"
+
+  # ------------------------------------------------------------------
+  # Cancel and restart
+  # ------------------------------------------------------------------
+  - name: "Cancel and restart worksheet"
+    steps:
+      - step: "Create worksheet 09253FE"
+        action: "create"
+        model: "general_audit_ws_09253fe"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+
+      - step: "Open worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_open"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after opening worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Assert worksheet open"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          state:
+            type: "value"
+            expected: "open"
+
+      - step: "Cancel worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_cancel"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after cancelling worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Assert worksheet cancelled"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          state:
+            type: "value"
+            expected: "cancel"
+
+      - step: "Restart worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_restart"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after restarting worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Assert worksheet back to draft"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          state:
+            type: "value"
+            expected: "draft"
+
+  # ------------------------------------------------------------------
+  # Compute standard_item_ids / allowed_conclusion_ids - normal (non-empty)
+  #
+  # The module's own worksheet_type_09253fe ships with no standard_item_ids
+  # and its allowed conclusions are shared production data used by other
+  # scenarios in this file/run, so mutating it in place would bleed state
+  # across scenarios (there is no per-scenario DB rollback, only a
+  # per-scenario registry reset). Instead this scenario builds its own,
+  # isolated general_audit_worksheet_type + standard audit item +
+  # conclusion, and overrides type_id on a fresh worksheet (type_id is
+  # writable while the worksheet is draft) to exercise both computes.
+  # ------------------------------------------------------------------
+  - name: "Compute standard_item_ids and allowed_conclusion_ids - normal"
+    steps:
+      - step: "Create isolated worksheet type"
+        action: "create"
+        model: "general_audit_worksheet_type"
+        save_as: "custom_type"
+        as_user: "base.user_admin"
+        values:
+          name: "Custom Type - Compute Normal"
+          code: "/"
+          model_name: "general_audit_ws_09253fe"
+
+      - step: "Create standard audit item"
+        action: "create"
+        model: "general_audit_standard_audit"
+        save_as: "standard_item"
+        as_user: "base.user_admin"
+        values:
+          name: "ISA 200 - Compute Normal"
+          code: "/"
+
+      - step: "Attach standard audit item to the custom type"
+        action: "write"
+        target: "custom_type"
+        values:
+          standard_item_ids: [[6, 0, ["REC: standard_item.id"]]]
+
+      - step: "Create conclusion for the custom type"
+        action: "create"
+        model: "general_audit_worksheet_conclusion"
+        save_as: "custom_conclusion"
+        as_user: "base.user_admin"
+        values:
+          name: "Custom Conclusion - Compute Normal"
+          code: "/"
+          sequence: 5
+          type_id: "REC: custom_type.id"
+
+      - step: "Create worksheet with the custom type"
+        action: "create"
+        model: "general_audit_ws_09253fe"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: custom_type.id"
+
+      - step: "Assert computed fields are populated"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          standard_item_ids:
+            type: "m2m"
+            check: "exact"
+            expected_records:
+              - "REC: standard_item"
+          allowed_conclusion_ids:
+            type: "m2m"
+            check: "exact"
+            expected_records:
+              - "REC: custom_conclusion"
+
+  # ------------------------------------------------------------------
+  # Compute standard_item_ids / allowed_conclusion_ids - empty
+  # ------------------------------------------------------------------
+  - name: "Compute standard_item_ids and allowed_conclusion_ids - empty"
+    steps:
+      - step: "Create isolated worksheet type without standard items or conclusions"
+        action: "create"
+        model: "general_audit_worksheet_type"
+        save_as: "empty_type"
+        as_user: "base.user_admin"
+        values:
+          name: "Custom Type - Compute Empty"
+          code: "/"
+          model_name: "general_audit_ws_09253fe"
+
+      - step: "Create worksheet with the empty custom type"
+        action: "create"
+        model: "general_audit_ws_09253fe"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: empty_type.id"
+
+      - step: "Assert computed fields are empty"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          standard_item_ids:
+            type: "m2m"
+            check: "count"
+            expected_count: 0
+          allowed_conclusion_ids:
+            type: "m2m"
+            check: "count"
+            expected_count: 0
+
+  # ------------------------------------------------------------------
+  # Onchange type_id -> parent_type_id (general_audit_worksheet_mixin)
+  # ------------------------------------------------------------------
+  - name: "Onchange type_id sets parent_type_id"
+    steps:
+      # type_id is hard-readonly in the form view
+      # (`<field name="type_id" readonly="1" force_save="1" />` in
+      # ssi_general_audit/views/worksheet/general_audit_worksheet_mixin_views.xml),
+      # so it can only ever take its default value on a new record -- it is
+      # never user-editable. The onchange therefore only fires once, from
+      # that default. Save the form and assert on the resulting record.
+      - step: "Open new worksheet form with default type_id"
+        action: "form"
+        model: "general_audit_ws_09253fe"
+        save_as: "onchange_worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit"
+        save: true
+
+      - step: "Assert default type_id propagated to parent_type_id via onchange"
+        action: "assert"
+        target: "onchange_worksheet"
+        asserts:
+          type_id:
+            type: "m2o"
+            expected_xml_id: "ssi_general_audit_worksheet_independence_statement.worksheet_type_09253fe"
+          parent_type_id:
+            type: "m2o"
+            expected_xml_id: "ssi_general_audit_worksheet_independence_statement.worksheet_type_09253fe"
