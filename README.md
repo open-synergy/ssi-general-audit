@@ -164,7 +164,7 @@ addon | version | maintainers | summary
 [ssi_general_audit_worksheet_expert](ssi_general_audit_worksheet_expert/) | 14.0.1.1.0 |  | General Audit Worksheet - Expert
 [ssi_general_audit_worksheet_external_communication](ssi_general_audit_worksheet_external_communication/) | 14.0.1.1.0 |  | General Audit Worksheet - External Communication
 [ssi_general_audit_worksheet_final_materiality](ssi_general_audit_worksheet_final_materiality/) | 14.0.1.1.0 |  | General Audit Worksheet - Final Materiality & Analytical Procedures
-[ssi_general_audit_worksheet_final_report](ssi_general_audit_worksheet_final_report/) | 14.0.1.0.1 |  | General Audit Worksheet - Final Report
+[ssi_general_audit_worksheet_final_report](ssi_general_audit_worksheet_final_report/) | 14.0.1.1.0 |  | General Audit Worksheet - Final Report
 [ssi_general_audit_worksheet_independence_statement](ssi_general_audit_worksheet_independence_statement/) | 14.0.1.0.1 |  | General Audit Worksheet - Independence Statement
 [ssi_general_audit_worksheet_inherent_risk](ssi_general_audit_worksheet_inherent_risk/) | 14.0.2.3.0 |  | General Audit Worksheet - Inherent Risk
 [ssi_general_audit_worksheet_lead_schedule](ssi_general_audit_worksheet_lead_schedule/) | 14.0.1.1.0 |  | General Audit Worksheet - Lead Schedule
