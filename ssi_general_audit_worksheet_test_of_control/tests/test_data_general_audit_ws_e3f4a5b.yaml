@@ -517,6 +517,14 @@ scenarios:
             24,FALSE
             25,FALSE
 
+      - step:
+          "Call action_compute_deviation (sample_actual/deviation_count are not
+          auto-computed at create - see model docstring)"
+        action: "call"
+        target: "attribute"
+        method: "action_compute_deviation"
+        as_user: "base.user_admin"
+
       - step: "Assert sample_initial and cuer follow aro 5"
         action: "assert"
         target: "attribute"
@@ -957,13 +965,24 @@ scenarios:
         action: "form"
         target: "worksheet"
         as_user: "base.user_admin"
-        save: false
+        save: true
         ops:
           - set: {general_audit_id: "REC: audit"}
-          - assert:
-              account_type_id:
-                type: "value"
-                operator: "is_falsy"
+
+      # Asserted on the saved record (not inline inside the form `ops:` block):
+      # asserting a falsy many2one from within `ops: [..., {assert: ...}]`
+      # crashes odoo-yaml-test with `AssertionError: __len__ was not found in
+      # the view` (the library's form-field read helper mis-forwards __len__
+      # lookups on an empty many2one to the underlying Form's field resolver).
+      # Reading the persisted value through a normal top-level `action: assert`
+      # avoids that code path entirely and still proves the onchange fired.
+      - step: "Assert account_type_id was cleared by the onchange"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          account_type_id:
+            type: "value"
+            operator: "is_falsy"
 
   # ------------------------------------------------------------------
   # 15. onchange_account_id - triggered by account_type_id
@@ -991,14 +1010,19 @@ scenarios:
         action: "form"
         target: "worksheet"
         as_user: "base.user_admin"
-        save: false
+        save: true
         ops:
           - set: {account_id: "REC: account"}
           - set: {account_type_id: "REC: account_type"}
-          - assert:
-              account_id:
-                type: "value"
-                operator: "is_falsy"
+
+      # See note in the previous scenario: asserted post-save, not inline in `ops:`.
+      - step: "Assert account_id was cleared by the onchange"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          account_id:
+            type: "value"
+            operator: "is_falsy"
 
   # ------------------------------------------------------------------
   # 16. onchange_general_ledger_id - triggered by data_mode/account_type_id/account_id
@@ -1024,14 +1048,19 @@ scenarios:
         action: "form"
         target: "worksheet"
         as_user: "base.user_admin"
-        save: false
+        save: true
         ops:
           - set: {general_ledger_id: "REC: gl"}
           - set: {data_mode: "gl"}
-          - assert:
-              general_ledger_id:
-                type: "value"
-                operator: "is_falsy"
+
+      # See note two scenarios above: asserted post-save, not inline in `ops:`.
+      - step: "Assert general_ledger_id was cleared by the onchange"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          general_ledger_id:
+            type: "value"
+            operator: "is_falsy"
 
   # ------------------------------------------------------------------
   # 17. onchange_subledger_id - triggered by data_mode/account_type_id/account_id
@@ -1057,14 +1086,19 @@ scenarios:
         action: "form"
         target: "worksheet"
         as_user: "base.user_admin"
-        save: false
+        save: true
         ops:
           - set: {subledger_id: "REC: subledger"}
           - set: {data_mode: "subledger"}
-          - assert:
-              subledger_id:
-                type: "value"
-                operator: "is_falsy"
+
+      # See note three scenarios above: asserted post-save, not inline in `ops:`.
+      - step: "Assert subledger_id was cleared by the onchange"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          subledger_id:
+            type: "value"
+            operator: "is_falsy"
 
   # ------------------------------------------------------------------
   # 18. onchange_parent_type_id (mixin) - triggered by type_id
