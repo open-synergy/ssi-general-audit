@@ -1,0 +1,1706 @@
+setup:
+  steps:
+    - step: "Get config parameter model"
+      action: "search"
+      model: "ir.config_parameter"
+      domain: []
+      save_as: "config_parameter"
+      limit: 1
+
+    - step: "Allow enough CPA licenses for this scenario"
+      action: "call"
+      target: "config_parameter"
+      method: "set_param"
+      args:
+        - "ssi_general_audit.max_number_of_cpa_license"
+        - "100"
+
+    - step: "Create client partner"
+      action: "create"
+      model: "res.partner"
+      save_as: "client"
+      as_user: "base.user_admin"
+      values:
+        name: "Test Audit Client - F9A2C3D"
+        is_company: true
+
+    - step: "Create accountant partner"
+      action: "create"
+      model: "res.partner"
+      save_as: "accountant"
+      as_user: "base.user_admin"
+      values:
+        name: "Test Audit Accountant - F9A2C3D"
+
+    - step: "Get CPA license id category"
+      action: "ref"
+      xml_id: "ssi_partner_identification_cpa_license.partner_identification_accountant_cpa_license"
+      save_as: "cpa_category"
+
+    - step: "Grant accountant a CPA license"
+      action: "create"
+      model: "res.partner.id_number"
+      save_as: "cpa_license"
+      as_user: "base.user_admin"
+      values:
+        partner_id: "REC: accountant.id"
+        category_id: "REC: cpa_category.id"
+        name: "CPA-F9A2C3D-0001"
+
+    - step: "Create account type set"
+      action: "create"
+      model: "client_account_type_set"
+      save_as: "account_type_set"
+      as_user: "base.user_admin"
+      values:
+        name: "Test Account Type Set - F9A2C3D"
+        code: "/"
+
+    - step: "Create financial accounting standard"
+      action: "create"
+      model: "accountant.financial_accounting_standard"
+      save_as: "standard"
+      as_user: "base.user_admin"
+      values:
+        name: "Test Financial Accounting Standard - F9A2C3D"
+        code: "/"
+
+    - step: "Create general audit"
+      action: "create"
+      model: "general_audit"
+      save_as: "audit"
+      as_user: "base.user_admin"
+      values:
+        title: "Test General Audit - F9A2C3D"
+        partner_id: "REC: client.id"
+        accountant_id: "REC: accountant.id"
+        account_type_set_id: "REC: account_type_set.id"
+        financial_accounting_standard_id: "REC: standard.id"
+        date_start: 2026-01-01
+        date_end: 2026-12-31
+        need_interim: false
+        need_previous: false
+        num_of_consecutive_audit_firm: 1
+        num_of_consecutive_audit_accountant: 1
+
+    - step: "Open general audit"
+      action: "call"
+      target: "audit"
+      method: "action_open"
+      as_user: "base.user_admin"
+
+    - step: "Invalidate cache after opening general audit"
+      action: "call"
+      target: "audit"
+      method: "invalidate_cache"
+
+    - step: "Assert general audit open"
+      action: "assert"
+      target: "audit"
+      asserts:
+        state:
+          type: "value"
+          expected: "open"
+
+    - step: "Get worksheet type f9a2c3d"
+      action: "ref"
+      xml_id: "ssi_general_audit_worksheet_test_planning.worksheet_type_f9a2c3d"
+      save_as: "ws_type_f9a2c3d"
+
+    - step: "Get worksheet type d9d2b44 (Preliminary Materiality)"
+      action: "ref"
+      xml_id: "ssi_general_audit_worksheet_preliminary_materiality.worksheet_type_d9d2b44"
+      save_as: "ws_type_d9d2b44"
+
+    - step: "Get worksheet type 6dcda0e (Specific Materiality)"
+      action: "ref"
+      xml_id: "ssi_general_audit_worksheet_preliminary_materiality.worksheet_type_6dcda0e"
+      save_as: "ws_type_6dcda0e"
+
+    - step: "Create client account group"
+      action: "create"
+      model: "client_account_group"
+      save_as: "account_group"
+      as_user: "base.user_admin"
+      values:
+        name: "Test Account Group - F9A2C3D"
+        code: "/"
+
+    - step: "Create client account type (debit-normal)"
+      action: "create"
+      model: "client_account_type"
+      save_as: "account_type"
+      as_user: "base.user_admin"
+      values:
+        name: "Test Account Type - F9A2C3D"
+        code: "/"
+        group_id: "REC: account_group.id"
+        normal_balance: "dr"
+        # general_audit.standard_detail has no "balance" field, unlike
+        # client_trial_balance.standard_detail which the field's own
+        # default python_code ("result = document.balance") is written
+        # for. Use a safe no-op instead to avoid an unrelated crash in
+        # general_audit.standard_detail._compute_extrapolation_balance.
+        python_code: "result = 0.0"
+
+    - step: "Create client account for the header trial balance line"
+      action: "create"
+      model: "client_account"
+      save_as: "account_main"
+      as_user: "base.user_admin"
+      values:
+        name: "Test Client Account Main - F9A2C3D"
+        code: "ACC-MAIN-F9A2C3D"
+        partner_id: "REC: client.id"
+        type_id: "REC: account_type.id"
+
+    - step: "Create standard detail for the audit"
+      action: "create"
+      model: "general_audit.standard_detail"
+      save_as: "standard_detail"
+      as_user: "base.user_admin"
+      values:
+        general_audit_id: "REC: audit.id"
+        type_id: "REC: account_type.id"
+
+    - step: "Create home trial balance"
+      action: "create"
+      model: "client_trial_balance"
+      save_as: "tb_home"
+      as_user: "base.user_admin"
+      values:
+        general_audit_id: "REC: audit.id"
+        trial_balance_type: "home"
+
+    - step: "Home trial balance line for the main account (debit 10,000.0)"
+      action: "create"
+      model: "client_trial_balance.detail"
+      save_as: "tb_detail_main"
+      as_user: "base.user_admin"
+      values:
+        trial_balance_id: "REC: tb_home.id"
+        account_id: "REC: account_main.id"
+        debit: 10000.0
+
+    - step:
+        "Roll up the home trial balance line into the standard detail's type aggregate"
+      action: "create"
+      model: "client_trial_balance.standard_detail"
+      save_as: "tb_standard_detail"
+      as_user: "base.user_admin"
+      values:
+        trial_balance_id: "REC: tb_home.id"
+        standard_detail_id: "REC: standard_detail.id"
+
+    - step:
+        "Invalidate cache so standard_detail.audited_balance reflects the new trial
+        balance rollup"
+      action: "call"
+      target: "standard_detail"
+      method: "invalidate_cache"
+
+    - step: "Sanity-check the fixture: standard_detail audited_balance is 10,000.0"
+      action: "assert"
+      target: "standard_detail"
+      asserts:
+        audited_balance:
+          type: "value"
+          expected: 10000.0
+
+    - step:
+        "Create Preliminary Materiality worksheet (d9d2b44) with performance_materiality
+        = 6,000.0"
+      action: "create"
+      model: "general_audit_ws_d9d2b44"
+      save_as: "ws_pm"
+      as_user: "base.user_admin"
+      values:
+        general_audit_id: "REC: audit.id"
+        type_id: "REC: ws_type_d9d2b44.id"
+        other_amount_ok: true
+        other_base_amount: 120000.0
+        overall_materiality_percentage: 10.0
+        performance_materiality_percentage: 50.0
+        tolerable_misstatement_percentage: 10.0
+
+    - step: "Sanity-check the fixture: ws_pm performance_materiality is 6,000.0"
+      action: "assert"
+      target: "ws_pm"
+      asserts:
+        performance_materiality:
+          type: "value"
+          expected: 6000.0
+
+scenarios:
+  # ------------------------------------------------------------------
+  # 01 - Create
+  # ------------------------------------------------------------------
+  - name: "01 - Create worksheet f9a2c3d (defaults)"
+    steps:
+      - step: "Create worksheet f9a2c3d"
+        action: "create"
+        model: "general_audit_ws_f9a2c3d"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_f9a2c3d.id"
+
+      - step: "Assert worksheet created with defaults"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          id:
+            type: "value"
+            operator: "is_truthy"
+          state:
+            type: "value"
+            expected: "draft"
+          tod_level:
+            type: "value"
+            expected: "standard_account"
+          direct_examination:
+            type: "value"
+            expected: true
+          need_sampling:
+            type: "value"
+            expected: false
+
+  # ------------------------------------------------------------------
+  # 02 - Compute allowed_standard_detail_ids
+  # ------------------------------------------------------------------
+  - name: "02a - Compute allowed_standard_detail_ids (normal)"
+    steps:
+      - step: "Create worksheet f9a2c3d linked to the audit"
+        action: "create"
+        model: "general_audit_ws_f9a2c3d"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_f9a2c3d.id"
+
+      - step:
+          "Assert allowed_standard_detail_ids contains the fixture's standard detail"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          allowed_standard_detail_ids:
+            type: "m2m"
+            check: "contains"
+            expected_records:
+              - "REC: standard_detail"
+
+  - name: "02b - Compute allowed_standard_detail_ids (kosong)"
+    steps:
+      # general_audit_id is required=True on the worksheet mixin, so a
+      # worksheet cannot literally be created without it. The "empty"
+      # branch of _compute_allowed_standard_detail_ids is instead proven
+      # by pointing the worksheet at a *different*, freshly-created
+      # General Audit that has no general_audit.standard_detail rows at
+      # all: the compute still takes the "if record.general_audit_id:"
+      # branch, but the search finds nothing.
+      - step: "Create a second general audit with no standard details"
+        action: "create"
+        model: "general_audit"
+        save_as: "audit_empty"
+        as_user: "base.user_admin"
+        values:
+          title: "Test General Audit - F9A2C3D Empty SD"
+          partner_id: "REC: client.id"
+          accountant_id: "REC: accountant.id"
+          account_type_set_id: "REC: account_type_set.id"
+          financial_accounting_standard_id: "REC: standard.id"
+          date_start: 2026-01-01
+          date_end: 2026-12-31
+          need_interim: false
+          need_previous: false
+          num_of_consecutive_audit_firm: 1
+          num_of_consecutive_audit_accountant: 1
+
+      - step: "Open the second general audit"
+        action: "call"
+        target: "audit_empty"
+        method: "action_open"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after opening the second general audit"
+        action: "call"
+        target: "audit_empty"
+        method: "invalidate_cache"
+
+      - step: "Create worksheet under the empty general audit"
+        action: "create"
+        model: "general_audit_ws_f9a2c3d"
+        save_as: "worksheet_empty"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit_empty.id"
+          type_id: "REC: ws_type_f9a2c3d.id"
+
+      - step: "Assert allowed_standard_detail_ids is empty"
+        action: "assert"
+        target: "worksheet_empty"
+        asserts:
+          allowed_standard_detail_ids:
+            type: "m2m"
+            check: "count"
+            expected_count: 0
+
+  # ------------------------------------------------------------------
+  # 03 - Compute allowed_preliminary_materiality_ids
+  # ------------------------------------------------------------------
+  - name: "03a - Compute allowed_preliminary_materiality_ids (normal)"
+    steps:
+      - step: "Create worksheet f9a2c3d linked to the audit"
+        action: "create"
+        model: "general_audit_ws_f9a2c3d"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_f9a2c3d.id"
+
+      - step:
+          "Assert allowed_preliminary_materiality_ids contains the fixture's PM
+          worksheet"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          allowed_preliminary_materiality_ids:
+            type: "m2m"
+            check: "contains"
+            expected_records:
+              - "REC: ws_pm"
+
+  - name: "03b - Compute allowed_preliminary_materiality_ids (kosong)"
+    steps:
+      # general_audit lain tanpa worksheet d9d2b44 -> m2m kosong.
+      - step: "Create a second general audit with no Preliminary Materiality worksheet"
+        action: "create"
+        model: "general_audit"
+        save_as: "audit_empty"
+        as_user: "base.user_admin"
+        values:
+          title: "Test General Audit - F9A2C3D Empty PM"
+          partner_id: "REC: client.id"
+          accountant_id: "REC: accountant.id"
+          account_type_set_id: "REC: account_type_set.id"
+          financial_accounting_standard_id: "REC: standard.id"
+          date_start: 2026-01-01
+          date_end: 2026-12-31
+          need_interim: false
+          need_previous: false
+          num_of_consecutive_audit_firm: 1
+          num_of_consecutive_audit_accountant: 1
+
+      - step: "Open the second general audit"
+        action: "call"
+        target: "audit_empty"
+        method: "action_open"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after opening the second general audit"
+        action: "call"
+        target: "audit_empty"
+        method: "invalidate_cache"
+
+      - step: "Create worksheet under the empty general audit"
+        action: "create"
+        model: "general_audit_ws_f9a2c3d"
+        save_as: "worksheet_empty"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit_empty.id"
+          type_id: "REC: ws_type_f9a2c3d.id"
+
+      - step: "Assert allowed_preliminary_materiality_ids is empty"
+        action: "assert"
+        target: "worksheet_empty"
+        asserts:
+          allowed_preliminary_materiality_ids:
+            type: "m2m"
+            check: "count"
+            expected_count: 0
+
+  # ------------------------------------------------------------------
+  # 04 - Compute materiality
+  # ------------------------------------------------------------------
+  - name: "04a - Compute materiality (material via mapping)"
+    steps:
+      - step:
+          "Create Specific Materiality worksheet (6dcda0e) linked to the PM worksheet"
+        action: "create"
+        model: "general_audit_ws_6dcda0e"
+        save_as: "ws_6dcda0e"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_6dcda0e.id"
+          worksheet_d9d2b44_id: "REC: ws_pm.id"
+          materiality_type: "pm"
+
+      - step:
+          "Create a materiality mapping line forced to Material via the specific
+          materiality override"
+        action: "create"
+        model: "general_audit_ws_6dcda0e_materiality_mapping"
+        save_as: "mapping"
+        as_user: "base.user_admin"
+        values:
+          worksheet_id: "REC: ws_6dcda0e.id"
+          standard_detail_id: "REC: standard_detail.id"
+          use_specific_materiality: true
+          specific_materiality: 99999.0
+
+      - step: "Assert the mapping line is Material"
+        action: "assert"
+        target: "mapping"
+        asserts:
+          final_materiality:
+            type: "value"
+            expected: "m"
+
+      - step: "Create worksheet f9a2c3d for the same standard detail"
+        action: "create"
+        model: "general_audit_ws_f9a2c3d"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_f9a2c3d.id"
+          standard_detail_id: "REC: standard_detail.id"
+
+      - step: "Assert worksheet materiality mirrors the Material mapping"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          materiality:
+            type: "value"
+            expected: "m"
+
+  - name: "04b - Compute materiality (default tm tanpa mapping)"
+    steps:
+      - step:
+          "Create worksheet f9a2c3d for the standard detail with no materiality mapping"
+        action: "create"
+        model: "general_audit_ws_f9a2c3d"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_f9a2c3d.id"
+          standard_detail_id: "REC: standard_detail.id"
+
+      - step: "Assert worksheet materiality defaults to Not Material"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          materiality:
+            type: "value"
+            expected: "tm"
+
+  # ------------------------------------------------------------------
+  # 05 - Compute specific_materiality (header)
+  # ------------------------------------------------------------------
+  - name: "05a - Compute specific_materiality header (normal)"
+    steps:
+      - step: "Create worksheet with risk_factor_adjustment 50% on a 6,000.0 PM"
+        action: "create"
+        model: "general_audit_ws_f9a2c3d"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_f9a2c3d.id"
+          preliminary_materiality_id: "REC: ws_pm.id"
+          risk_factor_adjustment: 50.0
+
+      - step: "Assert specific_materiality = 50% x 6,000.0 = 3,000.0"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          performance_materiality:
+            type: "value"
+            expected: 6000.0
+          specific_materiality:
+            type: "value"
+            expected: 3000.0
+
+  - name: "05b - Compute specific_materiality header (risk_factor_adjustment 0)"
+    steps:
+      - step: "Create worksheet with risk_factor_adjustment 0%"
+        action: "create"
+        model: "general_audit_ws_f9a2c3d"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_f9a2c3d.id"
+          preliminary_materiality_id: "REC: ws_pm.id"
+          risk_factor_adjustment: 0.0
+
+      - step: "Assert specific_materiality is zero"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          specific_materiality:
+            type: "value"
+            expected: 0.0
+
+  # ------------------------------------------------------------------
+  # 06 - Compute timing
+  # ------------------------------------------------------------------
+  - name: "06a - Compute timing (interim)"
+    steps:
+      - step: "Mark the standard detail's planned response as Interim"
+        action: "write"
+        target: "standard_detail"
+        as_user: "base.user_admin"
+        values:
+          planned_response_interim: true
+
+      - step: "Create worksheet linked to the standard detail"
+        action: "create"
+        model: "general_audit_ws_f9a2c3d"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_f9a2c3d.id"
+          standard_detail_id: "REC: standard_detail.id"
+
+      - step: "Assert timing is Interim"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          timing:
+            type: "value"
+            expected: "interim"
+
+  - name: "06b - Compute timing (ye)"
+    steps:
+      - step: "Mark the standard detail's planned response as Year-End only"
+        action: "write"
+        target: "standard_detail"
+        as_user: "base.user_admin"
+        values:
+          planned_response_interim: false
+          planned_response_ye: true
+
+      - step: "Create worksheet linked to the standard detail"
+        action: "create"
+        model: "general_audit_ws_f9a2c3d"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_f9a2c3d.id"
+          standard_detail_id: "REC: standard_detail.id"
+
+      - step: "Assert timing is Year-End"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          timing:
+            type: "value"
+            expected: "ye"
+
+  - name: "06c - Compute timing (falsy - neither interim nor year-end)"
+    steps:
+      - step:
+          "Create worksheet linked to the standard detail with no planned response
+          timing"
+        action: "create"
+        model: "general_audit_ws_f9a2c3d"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_f9a2c3d.id"
+          standard_detail_id: "REC: standard_detail.id"
+
+      - step: "Assert timing is falsy"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          timing:
+            type: "value"
+            operator: "is_falsy"
+
+  # ------------------------------------------------------------------
+  # 07 - Compute sampling_amount (header)
+  # ------------------------------------------------------------------
+  - name: "07a - Compute sampling_amount header (with key item)"
+    steps:
+      - step:
+          "Create worksheet with key_item_amount 4,000 against audited_balance 10,000"
+        action: "create"
+        model: "general_audit_ws_f9a2c3d"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_f9a2c3d.id"
+          standard_detail_id: "REC: standard_detail.id"
+          key_item_amount: 4000.0
+
+      - step: "Assert sampling_amount = 10,000 - 4,000 = 6,000"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          audited_balance:
+            type: "value"
+            expected: 10000.0
+          sampling_amount:
+            type: "value"
+            expected: 6000.0
+
+  - name: "07b - Compute sampling_amount header (key item 0)"
+    steps:
+      - step: "Create worksheet with key_item_amount 0"
+        action: "create"
+        model: "general_audit_ws_f9a2c3d"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_f9a2c3d.id"
+          standard_detail_id: "REC: standard_detail.id"
+          key_item_amount: 0.0
+
+      - step: "Assert sampling_amount equals the full audited balance"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          sampling_amount:
+            type: "value"
+            expected: 10000.0
+
+  # ------------------------------------------------------------------
+  # 08 - Compute sampling_interval (header)
+  # ------------------------------------------------------------------
+  - name: "08a - Compute sampling_interval header (confidence_factor > 0)"
+    steps:
+      - step: "Create worksheet with PM 6,000 and confidence_factor 2.0"
+        action: "create"
+        model: "general_audit_ws_f9a2c3d"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_f9a2c3d.id"
+          preliminary_materiality_id: "REC: ws_pm.id"
+          confidence_factor: 2.0
+
+      - step: "Assert sampling_interval = 6,000 / 2.0 = 3,000"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          sampling_interval:
+            type: "value"
+            expected: 3000.0
+
+  - name: "08b - Compute sampling_interval header (confidence_factor = 0)"
+    steps:
+      - step: "Create worksheet with confidence_factor 0"
+        action: "create"
+        model: "general_audit_ws_f9a2c3d"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_f9a2c3d.id"
+          preliminary_materiality_id: "REC: ws_pm.id"
+          confidence_factor: 0.0
+
+      - step: "Assert sampling_interval is zero (guarded division)"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          sampling_interval:
+            type: "value"
+            expected: 0.0
+
+  # ------------------------------------------------------------------
+  # 09 - Compute sample_count (header)
+  # ------------------------------------------------------------------
+  - name: "09a - Compute sample_count header (sampling_interval > 0)"
+    steps:
+      - step: "Create worksheet with sampling_amount 6,000 and sampling_interval 3,000"
+        action: "create"
+        model: "general_audit_ws_f9a2c3d"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_f9a2c3d.id"
+          standard_detail_id: "REC: standard_detail.id"
+          preliminary_materiality_id: "REC: ws_pm.id"
+          key_item_amount: 4000.0
+          confidence_factor: 2.0
+
+      - step: "Assert sample_count = 6,000 / 3,000 = 2.0"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          sampling_amount:
+            type: "value"
+            expected: 6000.0
+          sampling_interval:
+            type: "value"
+            expected: 3000.0
+          sample_count:
+            type: "value"
+            expected: 2.0
+
+  - name: "09b - Compute sample_count header (sampling_interval = 0)"
+    steps:
+      - step: "Create worksheet with confidence_factor 0 so sampling_interval is 0"
+        action: "create"
+        model: "general_audit_ws_f9a2c3d"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_f9a2c3d.id"
+          standard_detail_id: "REC: standard_detail.id"
+          preliminary_materiality_id: "REC: ws_pm.id"
+          key_item_amount: 4000.0
+          confidence_factor: 0.0
+
+      - step: "Assert sample_count is zero (guarded division)"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          sampling_interval:
+            type: "value"
+            expected: 0.0
+          sample_count:
+            type: "value"
+            expected: 0.0
+
+  # ------------------------------------------------------------------
+  # 10/11 - action_load_detail (populate then idempotent)
+  # ------------------------------------------------------------------
+  - name: "10 - Action load detail (populate then idempotent)"
+    steps:
+      - step: "Create worksheet with tod_level = account"
+        action: "create"
+        model: "general_audit_ws_f9a2c3d"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_f9a2c3d.id"
+          standard_detail_id: "REC: standard_detail.id"
+          tod_level: "account"
+
+      - step: "Assert no detail lines before loading"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          detail_ids:
+            type: "o2m"
+            check: "count"
+            expected_count: 0
+
+      - step: "Create client account C (same type as the header)"
+        action: "create"
+        model: "client_account"
+        save_as: "account_c"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Client Account C - F9A2C3D"
+          code: "ACC-C-F9A2C3D"
+          partner_id: "REC: client.id"
+          type_id: "REC: account_type.id"
+
+      - step: "Create client account D (same type as the header)"
+        action: "create"
+        model: "client_account"
+        save_as: "account_d"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Client Account D - F9A2C3D"
+          code: "ACC-D-F9A2C3D"
+          partner_id: "REC: client.id"
+          type_id: "REC: account_type.id"
+
+      - step: "Home trial balance line for account C (debit 3,000.0)"
+        action: "create"
+        model: "client_trial_balance.detail"
+        save_as: "tb_detail_c"
+        as_user: "base.user_admin"
+        values:
+          trial_balance_id: "REC: tb_home.id"
+          account_id: "REC: account_c.id"
+          debit: 3000.0
+
+      - step: "Home trial balance line for account D (debit 7,000.0)"
+        action: "create"
+        model: "client_trial_balance.detail"
+        save_as: "tb_detail_d"
+        as_user: "base.user_admin"
+        values:
+          trial_balance_id: "REC: tb_home.id"
+          account_id: "REC: account_d.id"
+          debit: 7000.0
+
+      - step: "Create general_audit.detail for account C"
+        action: "create"
+        model: "general_audit.detail"
+        save_as: "audit_detail_c"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          account_id: "REC: account_c.id"
+
+      - step: "Create general_audit.detail for account D"
+        action: "create"
+        model: "general_audit.detail"
+        save_as: "audit_detail_d"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          account_id: "REC: account_d.id"
+
+      - step:
+          "Invalidate cache so audit_detail_c/d audited_balance reflect the new trial
+          balance lines"
+        action: "call"
+        target: "audit_detail_c"
+        method: "invalidate_cache"
+
+      - step: "Sanity-check audit_detail_c audited_balance is 3,000.0"
+        action: "assert"
+        target: "audit_detail_c"
+        asserts:
+          audited_balance:
+            type: "value"
+            expected: 3000.0
+
+      - step: "Sanity-check audit_detail_d audited_balance is 7,000.0"
+        action: "assert"
+        target: "audit_detail_d"
+        asserts:
+          audited_balance:
+            type: "value"
+            expected: 7000.0
+
+      - step: "Call action_load_detail the first time"
+        action: "call"
+        target: "worksheet"
+        method: "action_load_detail"
+        as_user: "base.user_admin"
+
+      - step: "Assert two detail lines were created, one per audited account"
+        action: "search"
+        model: "general_audit_ws_f9a2c3d.detail"
+        domain:
+          - ["worksheet_id", "=", "REC: worksheet.id"]
+        save_as: "details_after_load"
+        expect_count: 2
+
+      - step: "Find the loaded detail line for account C"
+        action: "search"
+        model: "general_audit_ws_f9a2c3d.detail"
+        domain:
+          - ["worksheet_id", "=", "REC: worksheet.id"]
+          - ["audit_detail_id", "=", "REC: audit_detail_c.id"]
+        save_as: "detail_line_c"
+        limit: 1
+
+      - step: "Find the loaded detail line for account D"
+        action: "search"
+        model: "general_audit_ws_f9a2c3d.detail"
+        domain:
+          - ["worksheet_id", "=", "REC: worksheet.id"]
+          - ["audit_detail_id", "=", "REC: audit_detail_d.id"]
+        save_as: "detail_line_d"
+        limit: 1
+
+      - step: "Assert detail line C's key_item_amount mirrors its audited balance"
+        action: "assert"
+        target: "detail_line_c"
+        asserts:
+          key_item_amount:
+            type: "value"
+            expected: 3000.0
+
+      - step: "Assert detail line D's key_item_amount mirrors its audited balance"
+        action: "assert"
+        target: "detail_line_d"
+        asserts:
+          key_item_amount:
+            type: "value"
+            expected: 7000.0
+
+      - step: "Call action_load_detail a second time"
+        action: "call"
+        target: "worksheet"
+        method: "action_load_detail"
+        as_user: "base.user_admin"
+
+      - step: "Assert still exactly two detail lines (idempotent, no duplicates)"
+        action: "search"
+        model: "general_audit_ws_f9a2c3d.detail"
+        domain:
+          - ["worksheet_id", "=", "REC: worksheet.id"]
+        save_as: "details_after_reload"
+        expect_count: 2
+
+  # ------------------------------------------------------------------
+  # 12 - Compute allowed_audit_detail_ids (detail)
+  # ------------------------------------------------------------------
+  - name: "12a - Compute allowed_audit_detail_ids detail (normal)"
+    steps:
+      - step: "Create worksheet with standard_detail_id set"
+        action: "create"
+        model: "general_audit_ws_f9a2c3d"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_f9a2c3d.id"
+          standard_detail_id: "REC: standard_detail.id"
+          tod_level: "account"
+
+      - step: "Create a client account of the same type"
+        action: "create"
+        model: "client_account"
+        save_as: "account_e"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Client Account E - F9A2C3D"
+          code: "ACC-E-F9A2C3D"
+          partner_id: "REC: client.id"
+          type_id: "REC: account_type.id"
+
+      - step: "Create the matching general_audit.detail"
+        action: "create"
+        model: "general_audit.detail"
+        save_as: "audit_detail_e"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          account_id: "REC: account_e.id"
+
+      - step: "Create a worksheet detail line for the worksheet"
+        action: "create"
+        model: "general_audit_ws_f9a2c3d.detail"
+        save_as: "detail_line"
+        as_user: "base.user_admin"
+        values:
+          worksheet_id: "REC: worksheet.id"
+          audit_detail_id: "REC: audit_detail_e.id"
+
+      - step: "Assert allowed_audit_detail_ids contains the fixture's audit detail"
+        action: "assert"
+        target: "detail_line"
+        asserts:
+          allowed_audit_detail_ids:
+            type: "m2m"
+            check: "contains"
+            expected_records:
+              - "REC: audit_detail_e"
+
+  - name: "12b - Compute allowed_audit_detail_ids detail (kosong)"
+    steps:
+      - step: "Create worksheet without a standard detail"
+        action: "create"
+        model: "general_audit_ws_f9a2c3d"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_f9a2c3d.id"
+
+      - step: "Create a client account of the fixture's type"
+        action: "create"
+        model: "client_account"
+        save_as: "account_f"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Client Account F - F9A2C3D"
+          code: "ACC-F-F9A2C3D"
+          partner_id: "REC: client.id"
+          type_id: "REC: account_type.id"
+
+      - step: "Create a matching general_audit.detail"
+        action: "create"
+        model: "general_audit.detail"
+        save_as: "audit_detail_f"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          account_id: "REC: account_f.id"
+
+      - step: "Create a worksheet detail line without standard_detail_id on the header"
+        action: "create"
+        model: "general_audit_ws_f9a2c3d.detail"
+        save_as: "detail_line"
+        as_user: "base.user_admin"
+        values:
+          worksheet_id: "REC: worksheet.id"
+          audit_detail_id: "REC: audit_detail_f.id"
+
+      - step: "Assert allowed_audit_detail_ids is empty"
+        action: "assert"
+        target: "detail_line"
+        asserts:
+          allowed_audit_detail_ids:
+            type: "m2m"
+            check: "count"
+            expected_count: 0
+
+  # ------------------------------------------------------------------
+  # 13 - Compute specific_materiality (detail)
+  # ------------------------------------------------------------------
+  - name: "13a - Compute specific_materiality detail (normal)"
+    steps:
+      - step: "Create worksheet with risk_factor_adjustment 50%"
+        action: "create"
+        model: "general_audit_ws_f9a2c3d"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_f9a2c3d.id"
+          risk_factor_adjustment: 50.0
+          tod_level: "account"
+
+      - step: "Create a client account of the fixture's type"
+        action: "create"
+        model: "client_account"
+        save_as: "account_g"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Client Account G - F9A2C3D"
+          code: "ACC-G-F9A2C3D"
+          partner_id: "REC: client.id"
+          type_id: "REC: account_type.id"
+
+      - step: "Create a matching general_audit.detail"
+        action: "create"
+        model: "general_audit.detail"
+        save_as: "audit_detail_g"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          account_id: "REC: account_g.id"
+
+      - step: "Create detail line with tolerable_misstatement 2,000"
+        action: "create"
+        model: "general_audit_ws_f9a2c3d.detail"
+        save_as: "detail_line"
+        as_user: "base.user_admin"
+        values:
+          worksheet_id: "REC: worksheet.id"
+          audit_detail_id: "REC: audit_detail_g.id"
+          tolerable_misstatement: 2000.0
+
+      - step: "Assert specific_materiality = 2,000 x 50% = 1,000"
+        action: "assert"
+        target: "detail_line"
+        asserts:
+          specific_materiality:
+            type: "value"
+            expected: 1000.0
+
+  - name: "13b - Compute specific_materiality detail (tolerable_misstatement 0)"
+    steps:
+      - step: "Create worksheet with risk_factor_adjustment 50%"
+        action: "create"
+        model: "general_audit_ws_f9a2c3d"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_f9a2c3d.id"
+          risk_factor_adjustment: 50.0
+          tod_level: "account"
+
+      - step: "Create a client account of the fixture's type"
+        action: "create"
+        model: "client_account"
+        save_as: "account_g2"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Client Account G2 - F9A2C3D"
+          code: "ACC-G2-F9A2C3D"
+          partner_id: "REC: client.id"
+          type_id: "REC: account_type.id"
+
+      - step: "Create a matching general_audit.detail"
+        action: "create"
+        model: "general_audit.detail"
+        save_as: "audit_detail_g2"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          account_id: "REC: account_g2.id"
+
+      - step: "Create detail line with tolerable_misstatement 0"
+        action: "create"
+        model: "general_audit_ws_f9a2c3d.detail"
+        save_as: "detail_line"
+        as_user: "base.user_admin"
+        values:
+          worksheet_id: "REC: worksheet.id"
+          audit_detail_id: "REC: audit_detail_g2.id"
+          tolerable_misstatement: 0.0
+
+      - step: "Assert specific_materiality is zero"
+        action: "assert"
+        target: "detail_line"
+        asserts:
+          specific_materiality:
+            type: "value"
+            expected: 0.0
+
+  # ------------------------------------------------------------------
+  # 14 - Compute sampling_amount (detail)
+  # ------------------------------------------------------------------
+  - name: "14a - Compute sampling_amount detail (with key item)"
+    steps:
+      - step: "Create worksheet"
+        action: "create"
+        model: "general_audit_ws_f9a2c3d"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_f9a2c3d.id"
+          tod_level: "account"
+
+      - step: "Create a client account of the fixture's type"
+        action: "create"
+        model: "client_account"
+        save_as: "account_h"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Client Account H - F9A2C3D"
+          code: "ACC-H-F9A2C3D"
+          partner_id: "REC: client.id"
+          type_id: "REC: account_type.id"
+
+      - step: "Home trial balance line for account H (debit 5,000.0)"
+        action: "create"
+        model: "client_trial_balance.detail"
+        save_as: "tb_detail_h"
+        as_user: "base.user_admin"
+        values:
+          trial_balance_id: "REC: tb_home.id"
+          account_id: "REC: account_h.id"
+          debit: 5000.0
+
+      - step: "Create the matching general_audit.detail"
+        action: "create"
+        model: "general_audit.detail"
+        save_as: "audit_detail_h"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          account_id: "REC: account_h.id"
+
+      - step: "Sanity-check audit_detail_h audited_balance is 5,000.0"
+        action: "assert"
+        target: "audit_detail_h"
+        asserts:
+          audited_balance:
+            type: "value"
+            expected: 5000.0
+
+      - step: "Create detail line with key_item_amount 2,000"
+        action: "create"
+        model: "general_audit_ws_f9a2c3d.detail"
+        save_as: "detail_line"
+        as_user: "base.user_admin"
+        values:
+          worksheet_id: "REC: worksheet.id"
+          audit_detail_id: "REC: audit_detail_h.id"
+          key_item_amount: 2000.0
+
+      - step: "Assert sampling_amount = 5,000 - 2,000 = 3,000"
+        action: "assert"
+        target: "detail_line"
+        asserts:
+          sampling_amount:
+            type: "value"
+            expected: 3000.0
+
+  - name: "14b - Compute sampling_amount detail (key item 0)"
+    steps:
+      - step: "Create worksheet"
+        action: "create"
+        model: "general_audit_ws_f9a2c3d"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_f9a2c3d.id"
+          tod_level: "account"
+
+      - step: "Create a client account of the fixture's type"
+        action: "create"
+        model: "client_account"
+        save_as: "account_i"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Client Account I - F9A2C3D"
+          code: "ACC-I-F9A2C3D"
+          partner_id: "REC: client.id"
+          type_id: "REC: account_type.id"
+
+      - step: "Home trial balance line for account I (debit 5,000.0)"
+        action: "create"
+        model: "client_trial_balance.detail"
+        save_as: "tb_detail_i"
+        as_user: "base.user_admin"
+        values:
+          trial_balance_id: "REC: tb_home.id"
+          account_id: "REC: account_i.id"
+          debit: 5000.0
+
+      - step: "Create the matching general_audit.detail"
+        action: "create"
+        model: "general_audit.detail"
+        save_as: "audit_detail_i"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          account_id: "REC: account_i.id"
+
+      - step: "Create detail line with key_item_amount 0"
+        action: "create"
+        model: "general_audit_ws_f9a2c3d.detail"
+        save_as: "detail_line"
+        as_user: "base.user_admin"
+        values:
+          worksheet_id: "REC: worksheet.id"
+          audit_detail_id: "REC: audit_detail_i.id"
+          key_item_amount: 0.0
+
+      - step: "Assert sampling_amount equals the full audited balance"
+        action: "assert"
+        target: "detail_line"
+        asserts:
+          sampling_amount:
+            type: "value"
+            expected: 5000.0
+
+  # ------------------------------------------------------------------
+  # 15 - Compute sampling_interval (detail)
+  # ------------------------------------------------------------------
+  - name: "15a - Compute sampling_interval detail (confidence_factor > 0)"
+    steps:
+      - step: "Create worksheet"
+        action: "create"
+        model: "general_audit_ws_f9a2c3d"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_f9a2c3d.id"
+          tod_level: "account"
+
+      - step: "Create a client account of the fixture's type"
+        action: "create"
+        model: "client_account"
+        save_as: "account_j"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Client Account J - F9A2C3D"
+          code: "ACC-J-F9A2C3D"
+          partner_id: "REC: client.id"
+          type_id: "REC: account_type.id"
+
+      - step: "Create the matching general_audit.detail"
+        action: "create"
+        model: "general_audit.detail"
+        save_as: "audit_detail_j"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          account_id: "REC: account_j.id"
+
+      - step:
+          "Create detail line with tolerable_misstatement 2,000 and confidence_factor
+          2.0"
+        action: "create"
+        model: "general_audit_ws_f9a2c3d.detail"
+        save_as: "detail_line"
+        as_user: "base.user_admin"
+        values:
+          worksheet_id: "REC: worksheet.id"
+          audit_detail_id: "REC: audit_detail_j.id"
+          tolerable_misstatement: 2000.0
+          confidence_factor: 2.0
+
+      - step: "Assert sampling_interval = 2,000 / 2.0 = 1,000"
+        action: "assert"
+        target: "detail_line"
+        asserts:
+          sampling_interval:
+            type: "value"
+            expected: 1000.0
+
+  - name: "15b - Compute sampling_interval detail (confidence_factor = 0)"
+    steps:
+      - step: "Create worksheet"
+        action: "create"
+        model: "general_audit_ws_f9a2c3d"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_f9a2c3d.id"
+          tod_level: "account"
+
+      - step: "Create a client account of the fixture's type"
+        action: "create"
+        model: "client_account"
+        save_as: "account_k"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Client Account K - F9A2C3D"
+          code: "ACC-K-F9A2C3D"
+          partner_id: "REC: client.id"
+          type_id: "REC: account_type.id"
+
+      - step: "Create the matching general_audit.detail"
+        action: "create"
+        model: "general_audit.detail"
+        save_as: "audit_detail_k"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          account_id: "REC: account_k.id"
+
+      - step: "Create detail line with confidence_factor 0"
+        action: "create"
+        model: "general_audit_ws_f9a2c3d.detail"
+        save_as: "detail_line"
+        as_user: "base.user_admin"
+        values:
+          worksheet_id: "REC: worksheet.id"
+          audit_detail_id: "REC: audit_detail_k.id"
+          tolerable_misstatement: 2000.0
+          confidence_factor: 0.0
+
+      - step: "Assert sampling_interval is zero (guarded division)"
+        action: "assert"
+        target: "detail_line"
+        asserts:
+          sampling_interval:
+            type: "value"
+            expected: 0.0
+
+  # ------------------------------------------------------------------
+  # 16 - Compute sample_count (detail)
+  # ------------------------------------------------------------------
+  - name: "16a - Compute sample_count detail (sampling_interval > 0)"
+    steps:
+      - step: "Create worksheet"
+        action: "create"
+        model: "general_audit_ws_f9a2c3d"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_f9a2c3d.id"
+          tod_level: "account"
+
+      - step: "Create a client account of the fixture's type"
+        action: "create"
+        model: "client_account"
+        save_as: "account_l"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Client Account L - F9A2C3D"
+          code: "ACC-L-F9A2C3D"
+          partner_id: "REC: client.id"
+          type_id: "REC: account_type.id"
+
+      - step: "Home trial balance line for account L (debit 5,000.0)"
+        action: "create"
+        model: "client_trial_balance.detail"
+        save_as: "tb_detail_l"
+        as_user: "base.user_admin"
+        values:
+          trial_balance_id: "REC: tb_home.id"
+          account_id: "REC: account_l.id"
+          debit: 5000.0
+
+      - step: "Create the matching general_audit.detail"
+        action: "create"
+        model: "general_audit.detail"
+        save_as: "audit_detail_l"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          account_id: "REC: account_l.id"
+
+      - step: "Sanity-check audit_detail_l audited_balance is 5,000.0"
+        action: "assert"
+        target: "audit_detail_l"
+        asserts:
+          audited_balance:
+            type: "value"
+            expected: 5000.0
+
+      - step:
+          "Create detail line with key_item_amount 0, tolerable_misstatement 2,000,
+          confidence_factor 2.0"
+        action: "create"
+        model: "general_audit_ws_f9a2c3d.detail"
+        save_as: "detail_line"
+        as_user: "base.user_admin"
+        values:
+          worksheet_id: "REC: worksheet.id"
+          audit_detail_id: "REC: audit_detail_l.id"
+          key_item_amount: 0.0
+          tolerable_misstatement: 2000.0
+          confidence_factor: 2.0
+
+      - step: "Assert sample_count = 5,000 / 1,000 = 5.0"
+        action: "assert"
+        target: "detail_line"
+        asserts:
+          sampling_amount:
+            type: "value"
+            expected: 5000.0
+          sampling_interval:
+            type: "value"
+            expected: 1000.0
+          sample_count:
+            type: "value"
+            expected: 5.0
+
+  - name: "16b - Compute sample_count detail (sampling_interval = 0)"
+    steps:
+      - step: "Create worksheet"
+        action: "create"
+        model: "general_audit_ws_f9a2c3d"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_f9a2c3d.id"
+          tod_level: "account"
+
+      - step: "Create a client account of the fixture's type"
+        action: "create"
+        model: "client_account"
+        save_as: "account_m"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Client Account M - F9A2C3D"
+          code: "ACC-M-F9A2C3D"
+          partner_id: "REC: client.id"
+          type_id: "REC: account_type.id"
+
+      - step: "Home trial balance line for account M (debit 5,000.0)"
+        action: "create"
+        model: "client_trial_balance.detail"
+        save_as: "tb_detail_m"
+        as_user: "base.user_admin"
+        values:
+          trial_balance_id: "REC: tb_home.id"
+          account_id: "REC: account_m.id"
+          debit: 5000.0
+
+      - step: "Create the matching general_audit.detail"
+        action: "create"
+        model: "general_audit.detail"
+        save_as: "audit_detail_m"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          account_id: "REC: account_m.id"
+
+      - step:
+          "Create detail line with key_item_amount 0 and confidence_factor 0
+          (sampling_interval stays 0)"
+        action: "create"
+        model: "general_audit_ws_f9a2c3d.detail"
+        save_as: "detail_line"
+        as_user: "base.user_admin"
+        values:
+          worksheet_id: "REC: worksheet.id"
+          audit_detail_id: "REC: audit_detail_m.id"
+          key_item_amount: 0.0
+          tolerable_misstatement: 2000.0
+          confidence_factor: 0.0
+
+      - step: "Assert sample_count is zero (guarded division)"
+        action: "assert"
+        target: "detail_line"
+        asserts:
+          sampling_interval:
+            type: "value"
+            expected: 0.0
+          sample_count:
+            type: "value"
+            expected: 0.0
+
+  # ------------------------------------------------------------------
+  # 17 - Workflow draft to done
+  # ------------------------------------------------------------------
+  - name: "17 - Workflow draft to done"
+    steps:
+      - step: "Create worksheet f9a2c3d"
+        action: "create"
+        model: "general_audit_ws_f9a2c3d"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_f9a2c3d.id"
+
+      - step: "Open worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_open"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after opening worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Assert worksheet open"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          state:
+            type: "value"
+            expected: "open"
+
+      - step: "Create conclusion for f9a2c3d worksheet type"
+        action: "create"
+        model: "general_audit_worksheet_conclusion"
+        save_as: "conclusion"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Planning has been completed"
+          code: "/"
+          type_id: "REC: ws_type_f9a2c3d.id"
+
+      - step: "Fill required conclusion fields before confirm"
+        action: "write"
+        target: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          conclusion_id: "REC: conclusion.id"
+          conclusion: "Test planning sampling parameters reviewed and documented."
+
+      - step: "Confirm worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_confirm"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after confirming worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Assert worksheet confirmed"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          state:
+            type: "value"
+            expected: "confirm"
+
+      - step: "Approve worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_approve_approval"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after approving worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Assert worksheet done"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          state:
+            type: "value"
+            expected: "done"
+
+  # ------------------------------------------------------------------
+  # 18 - Cancel and restart
+  # ------------------------------------------------------------------
+  - name: "18 - Cancel and restart"
+    steps:
+      - step: "Create worksheet f9a2c3d"
+        action: "create"
+        model: "general_audit_ws_f9a2c3d"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_f9a2c3d.id"
+
+      - step: "Open worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_open"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after opening worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Assert worksheet open"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          state:
+            type: "value"
+            expected: "open"
+
+      - step: "Cancel worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_cancel"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after cancelling worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Assert worksheet cancelled"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          state:
+            type: "value"
+            expected: "cancel"
+
+      - step: "Restart worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_restart"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after restarting worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Assert worksheet back to draft"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          state:
+            type: "value"
+            expected: "draft"
