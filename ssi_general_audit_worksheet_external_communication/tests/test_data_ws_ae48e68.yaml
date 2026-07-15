@@ -638,6 +638,23 @@ scenarios:
         save_as: "line_before_unlink"
         expect_count: 1
 
+      - step: "Cancel worksheet before delete"
+        action: "call"
+        target: "worksheet"
+        method: "action_cancel"
+        as_user: "base.user_admin"
+
+      - step: "Restart worksheet back to draft"
+        action: "call"
+        target: "worksheet"
+        method: "action_restart"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after restarting worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
       - step: "Delete the worksheet"
         action: "unlink"
         target: "worksheet"
