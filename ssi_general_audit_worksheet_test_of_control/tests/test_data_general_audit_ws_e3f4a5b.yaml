@@ -1,0 +1,1103 @@
+setup:
+  steps:
+    - step: "Get config parameter model"
+      action: "search"
+      model: "ir.config_parameter"
+      domain: []
+      save_as: "config_parameter"
+      limit: 1
+
+    - step: "Allow enough CPA licenses for this scenario"
+      action: "call"
+      target: "config_parameter"
+      method: "set_param"
+      args:
+        - "ssi_general_audit.max_number_of_cpa_license"
+        - "100"
+
+    - step: "Create client partner"
+      action: "create"
+      model: "res.partner"
+      save_as: "client"
+      as_user: "base.user_admin"
+      values:
+        name: "Test Audit Client - E3F4A5B"
+        is_company: true
+
+    - step: "Create accountant partner"
+      action: "create"
+      model: "res.partner"
+      save_as: "accountant"
+      as_user: "base.user_admin"
+      values:
+        name: "Test Audit Accountant - E3F4A5B"
+
+    - step: "Get CPA license id category"
+      action: "ref"
+      xml_id: "ssi_partner_identification_cpa_license.partner_identification_accountant_cpa_license"
+      save_as: "cpa_category"
+
+    - step: "Grant accountant a CPA license"
+      action: "create"
+      model: "res.partner.id_number"
+      save_as: "cpa_license"
+      as_user: "base.user_admin"
+      values:
+        partner_id: "REC: accountant.id"
+        category_id: "REC: cpa_category.id"
+        name: "CPA-E3F4A5B-0001"
+
+    - step: "Create account type set"
+      action: "create"
+      model: "client_account_type_set"
+      save_as: "account_type_set"
+      as_user: "base.user_admin"
+      values:
+        name: "Test Account Type Set - E3F4A5B"
+        code: "/"
+
+    - step: "Create financial accounting standard"
+      action: "create"
+      model: "accountant.financial_accounting_standard"
+      save_as: "standard"
+      as_user: "base.user_admin"
+      values:
+        name: "Test Financial Accounting Standard - E3F4A5B"
+        code: "/"
+
+    - step: "Create general audit"
+      action: "create"
+      model: "general_audit"
+      save_as: "audit"
+      as_user: "base.user_admin"
+      values:
+        title: "Test General Audit - E3F4A5B"
+        partner_id: "REC: client.id"
+        accountant_id: "REC: accountant.id"
+        account_type_set_id: "REC: account_type_set.id"
+        financial_accounting_standard_id: "REC: standard.id"
+        date_start: 2026-01-01
+        date_end: 2026-12-31
+        need_interim: false
+        need_previous: false
+        num_of_consecutive_audit_firm: 1
+        num_of_consecutive_audit_accountant: 1
+
+    - step: "Open general audit"
+      action: "call"
+      target: "audit"
+      method: "action_open"
+      as_user: "base.user_admin"
+
+    - step: "Invalidate cache after opening general audit"
+      action: "call"
+      target: "audit"
+      method: "invalidate_cache"
+
+    - step: "Assert general audit open"
+      action: "assert"
+      target: "audit"
+      asserts:
+        state:
+          type: "value"
+          expected: "open"
+
+    - step: "Get worksheet type e3f4a5b (Test of Control)"
+      action: "ref"
+      xml_id: "ssi_general_audit_worksheet_test_of_control.worksheet_type_e3f4a5b"
+      save_as: "ws_type"
+
+    - step: "Get worksheet type d209914 (General Ledger)"
+      action: "ref"
+      xml_id: "ssi_general_audit_worksheet_client_package.worksheet_type_d209914"
+      save_as: "gl_ws_type"
+
+    - step: "Get worksheet type b5e3d9f (Subledger)"
+      action: "ref"
+      xml_id: "ssi_general_audit_worksheet_client_package.worksheet_type_b5e3d9f"
+      save_as: "sl_ws_type"
+
+    - step: "Create client account group"
+      action: "create"
+      model: "client_account_group"
+      save_as: "account_group"
+      as_user: "base.user_admin"
+      values:
+        name: "Test Account Group - E3F4A5B"
+        code: "/"
+
+    - step: "Create client account type"
+      action: "create"
+      model: "client_account_type"
+      save_as: "account_type"
+      as_user: "base.user_admin"
+      values:
+        name: "Test Account Type - E3F4A5B"
+        code: "/"
+        group_id: "REC: account_group.id"
+        normal_balance: "dr"
+        # DILARANG membiarkan python_code pada default "result = document.balance":
+        # general_audit.standard_detail._compute_extrapolation_balance akan crash
+        # (AttributeError) begitu tipe akun ini terhubung ke sebuah standard_detail.
+        python_code: "result = 0.0"
+
+    - step: "Create client account"
+      action: "create"
+      model: "client_account"
+      save_as: "account"
+      as_user: "base.user_admin"
+      values:
+        name: "Test Client Account - E3F4A5B"
+        code: "/"
+        partner_id: "REC: client.id"
+        type_id: "REC: account_type.id"
+
+    - step: "Create conclusion for e3f4a5b worksheet type"
+      action: "create"
+      model: "general_audit_worksheet_conclusion"
+      save_as: "conclusion"
+      as_user: "base.user_admin"
+      values:
+        name: "Control is operating effectively"
+        code: "/"
+        type_id: "REC: ws_type.id"
+
+    - step: "Create GL worksheet with deterministic 20-row CSV population"
+      action: "create"
+      model: "general_audit_ws_d209914"
+      save_as: "gl"
+      as_user: "base.user_admin"
+      values:
+        general_audit_id: "REC: audit.id"
+        type_id: "REC: gl_ws_type.id"
+        account_mode: "account"
+        account_id: "REC: account.id"
+        title: "Test GL Population"
+        raw_data: |
+          Ref,Note,Description,Amount
+          REF-0001,Note-0001,Desc 1,100.00
+          REF-0002,Note-0002,Desc 2,200.00
+          REF-0003,Note-0003,Desc 3,300.00
+          REF-0004,Note-0004,Desc 4,400.00
+          REF-0005,Note-0005,Desc 5,500.00
+          REF-0006,Note-0006,Desc 6,600.00
+          REF-0007,Note-0007,Desc 7,700.00
+          REF-0008,Note-0008,Desc 8,800.00
+          REF-0009,Note-0009,Desc 9,900.00
+          REF-0010,Note-0010,Desc 10,1000.00
+          REF-0011,Note-0011,Desc 11,1100.00
+          REF-0012,Note-0012,Desc 12,1200.00
+          REF-0013,Note-0013,Desc 13,1300.00
+          REF-0014,Note-0014,Desc 14,1400.00
+          REF-0015,Note-0015,Desc 15,1500.00
+          REF-0016,Note-0016,Desc 16,1600.00
+          REF-0017,Note-0017,Desc 17,1700.00
+          REF-0018,Note-0018,Desc 18,1800.00
+          REF-0019,Note-0019,Desc 19,1900.00
+          REF-0020,Note-0020,Desc 20,2000.00
+
+    - step:
+        "Create Subledger worksheet (minimal, for onchange_subledger_id fixture only)"
+      action: "create"
+      model: "general_audit_ws_b5e3d9f"
+      save_as: "subledger"
+      as_user: "base.user_admin"
+      values:
+        general_audit_id: "REC: audit.id"
+        type_id: "REC: sl_ws_type.id"
+        account_mode: "account"
+        account_id: "REC: account.id"
+
+scenarios:
+  # ------------------------------------------------------------------
+  # 1. Create WS e3f4a5b - draft
+  # ------------------------------------------------------------------
+  - name: "WS e3f4a5b - Create in draft"
+    steps:
+      - step: "Create worksheet e3f4a5b"
+        action: "create"
+        model: "general_audit_ws_e3f4a5b"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+          data_mode: "gl"
+          general_ledger_id: "REC: gl.id"
+          ref_col_number: 1
+          note_col_number: 2
+
+      - step: "Assert worksheet created in draft"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          id:
+            type: "value"
+            operator: "is_truthy"
+          state:
+            type: "value"
+            expected: "draft"
+          general_audit_id:
+            type: "m2o"
+            expected: "REC: audit"
+          type_id:
+            type: "m2o"
+            expected: "REC: ws_type"
+
+  # ------------------------------------------------------------------
+  # 2. Workflow draft -> open -> confirm -> done
+  # ------------------------------------------------------------------
+  - name: "WS e3f4a5b - Workflow draft to done"
+    steps:
+      - step: "Create worksheet for workflow"
+        action: "create"
+        model: "general_audit_ws_e3f4a5b"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+          data_mode: "gl"
+          general_ledger_id: "REC: gl.id"
+          ref_col_number: 1
+          note_col_number: 2
+
+      - step: "Open worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_open"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after opening worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Assert worksheet open"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          state:
+            type: "value"
+            expected: "open"
+
+      - step: "Fill required conclusion fields before confirm"
+        action: "write"
+        target: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          conclusion_id: "REC: conclusion.id"
+          conclusion: "Control attributes tested are operating effectively."
+
+      - step: "Confirm worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_confirm"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after confirming worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Assert worksheet confirmed"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          state:
+            type: "value"
+            expected: "confirm"
+
+      - step: "Approve worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_approve_approval"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after approving worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Assert worksheet done"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          state:
+            type: "value"
+            expected: "done"
+
+  # ------------------------------------------------------------------
+  # 3. _compute_raw_data / _compute_raw_data_title / _compute_population_count - normal
+  # ------------------------------------------------------------------
+  - name: "WS e3f4a5b - Compute raw_data & population_count (normal)"
+    steps:
+      - step: "Create worksheet sourced from GL"
+        action: "create"
+        model: "general_audit_ws_e3f4a5b"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+          data_mode: "gl"
+          general_ledger_id: "REC: gl.id"
+          ref_col_number: 1
+          note_col_number: 2
+
+      - step: "Assert raw_data, raw_data_title and population_count computed from GL"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          raw_data:
+            type: "value"
+            operator: "is_truthy"
+          raw_data_title:
+            type: "value"
+            expected: "Test GL Population"
+          population_count:
+            type: "value"
+            expected: 20
+
+  # ------------------------------------------------------------------
+  # 4. _compute_raw_data / _compute_population_count - kosong (data_mode tidak diisi)
+  # ------------------------------------------------------------------
+  - name: "WS e3f4a5b - Compute raw_data & population_count (kosong)"
+    steps:
+      - step: "Create worksheet without data_mode/general_ledger_id"
+        action: "create"
+        model: "general_audit_ws_e3f4a5b"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+
+      - step: "Assert raw_data falsy and population_count zero"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          raw_data:
+            type: "value"
+            operator: "is_falsy"
+          population_count:
+            type: "value"
+            expected: 0
+
+  # ------------------------------------------------------------------
+  # 5. _compute_sample_actual (worksheet) - kosong, tanpa attribute
+  # ------------------------------------------------------------------
+  - name: "WS e3f4a5b - Compute sample_actual (kosong, tanpa attribute)"
+    steps:
+      - step: "Create worksheet without any attribute"
+        action: "create"
+        model: "general_audit_ws_e3f4a5b"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+          data_mode: "gl"
+          general_ledger_id: "REC: gl.id"
+
+      - step: "Assert sample_actual is zero"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          sample_actual:
+            type: "value"
+            expected: 0
+
+  # ------------------------------------------------------------------
+  # 6. Attribute - _compute_sample_sizes / _compute_sample_initial / _compute_sample_final
+  #    aro = "5" (default) - EPER 0.00%, TDR 5% -> AICPA table lookup
+  # ------------------------------------------------------------------
+  - name: "Attribute e3f4a5b - Compute sample sizes (aro 5)"
+    steps:
+      - step: "Create worksheet with 20-item population"
+        action: "create"
+        model: "general_audit_ws_e3f4a5b"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+          data_mode: "gl"
+          general_ledger_id: "REC: gl.id"
+
+      - step: "Create attribute Otorisasi"
+        action: "create"
+        model: "general_audit_ws_e3f4a5b.attribute"
+        save_as: "attribute"
+        as_user: "base.user_admin"
+        values:
+          worksheet_id: "REC: worksheet.id"
+          name: "Otorisasi"
+          eper: 0.0
+          tdr: 5
+          aro: "5"
+
+      - step: "Assert sample sizes from AICPA table (EPER 0.00%, TDR 5%)"
+        action: "assert"
+        target: "attribute"
+        asserts:
+          # _AICPA_5PCT[0.00][tdr=5] = 59
+          sample_5pct:
+            type: "value"
+            expected: 59
+          # _AICPA_10PCT[0.00][tdr=5] = 45
+          sample_10pct:
+            type: "value"
+            expected: 45
+          # aro = "5" -> sample_initial = sample_5pct
+          sample_initial:
+            type: "value"
+            expected: 59
+          # finite population correction: 59 / (1 + 59/20) = 14.9367... -> ceil = 15
+          sample_final:
+            type: "value"
+            expected: 15
+
+  # ------------------------------------------------------------------
+  # 7. Attribute - aro diganti ke "10": sample_initial dan cuer ikut ARO yang baru
+  # ------------------------------------------------------------------
+  - name: "Attribute e3f4a5b - aro diganti ke 10 (sample_initial & cuer ikut ARO)"
+    steps:
+      - step: "Create worksheet with 20-item population"
+        action: "create"
+        model: "general_audit_ws_e3f4a5b"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+          data_mode: "gl"
+          general_ledger_id: "REC: gl.id"
+
+      - step:
+          "Create attribute Otorisasi with aro 5 and a deterministic zero-deviation
+          sample"
+        action: "create"
+        model: "general_audit_ws_e3f4a5b.attribute"
+        save_as: "attribute"
+        as_user: "base.user_admin"
+        values:
+          worksheet_id: "REC: worksheet.id"
+          name: "Otorisasi"
+          eper: 0.0
+          tdr: 5
+          aro: "5"
+          # 25 filled rows, 0 deviations -> cuer_5pct = 11.3, cuer_10pct = 8.8
+          # (genuinely different, so switching aro below is a meaningful check)
+          sample_data: |
+            Seq,Deviation
+            1,FALSE
+            2,FALSE
+            3,FALSE
+            4,FALSE
+            5,FALSE
+            6,FALSE
+            7,FALSE
+            8,FALSE
+            9,FALSE
+            10,FALSE
+            11,FALSE
+            12,FALSE
+            13,FALSE
+            14,FALSE
+            15,FALSE
+            16,FALSE
+            17,FALSE
+            18,FALSE
+            19,FALSE
+            20,FALSE
+            21,FALSE
+            22,FALSE
+            23,FALSE
+            24,FALSE
+            25,FALSE
+
+      - step: "Assert sample_initial and cuer follow aro 5"
+        action: "assert"
+        target: "attribute"
+        asserts:
+          # aro = "5" -> sample_initial = sample_5pct
+          sample_initial:
+            type: "value"
+            expected: 59
+          # aro = "5" -> cuer = cuer_5pct = _CUER_5PCT[25][k=0] = 11.3
+          cuer:
+            type: "value"
+            expected: 11.3
+
+      - step: "Write aro to 10"
+        action: "write"
+        target: "attribute"
+        values:
+          aro: "10"
+
+      - step: "Assert sample_initial and cuer now follow aro 10"
+        action: "assert"
+        target: "attribute"
+        asserts:
+          # aro = "10" -> sample_initial = sample_10pct
+          sample_initial:
+            type: "value"
+            expected: 45
+          # aro = "10" -> cuer = cuer_10pct = _CUER_10PCT[25][k=0] = 8.8
+          cuer:
+            type: "value"
+            expected: 8.8
+
+  # ------------------------------------------------------------------
+  # 8. _compute_sample_actual (worksheet) - normal: max(sample_final) dari 2 attribute
+  # ------------------------------------------------------------------
+  - name: "WS e3f4a5b - Compute sample_actual (normal, dari 2 attribute)"
+    steps:
+      - step: "Create worksheet with 20-item population"
+        action: "create"
+        model: "general_audit_ws_e3f4a5b"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+          data_mode: "gl"
+          general_ledger_id: "REC: gl.id"
+
+      - step: "Create first attribute (sample_final = 15)"
+        action: "create"
+        model: "general_audit_ws_e3f4a5b.attribute"
+        save_as: "attribute_1"
+        as_user: "base.user_admin"
+        values:
+          worksheet_id: "REC: worksheet.id"
+          name: "Otorisasi"
+          eper: 0.0
+          tdr: 5
+          aro: "5"
+
+      - step: "Create second attribute (sample_final = 12)"
+        action: "create"
+        model: "general_audit_ws_e3f4a5b.attribute"
+        save_as: "attribute_2"
+        as_user: "base.user_admin"
+        values:
+          worksheet_id: "REC: worksheet.id"
+          name: "Verifikasi"
+          eper: 0.0
+          tdr: 10
+          aro: "5"
+
+      - step: "Assert both attribute sample_final computed as expected"
+        action: "assert"
+        target: "attribute_1"
+        asserts:
+          sample_final:
+            type: "value"
+            expected: 15
+
+      - step: "Assert second attribute sample_final"
+        action: "assert"
+        target: "attribute_2"
+        asserts:
+          sample_final:
+            type: "value"
+            expected: 12
+
+      - step: "Assert worksheet sample_actual = max(sample_final) = 15"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          sample_actual:
+            type: "value"
+            expected: 15
+
+  # ------------------------------------------------------------------
+  # 9. action_compute_deviation - conclusion effective (cuer <= aro)
+  # ------------------------------------------------------------------
+  - name: "Attribute e3f4a5b - action_compute_deviation, conclusion effective"
+    steps:
+      - step: "Create worksheet with 20-item population"
+        action: "create"
+        model: "general_audit_ws_e3f4a5b"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+          data_mode: "gl"
+          general_ledger_id: "REC: gl.id"
+
+      - step: "Create attribute with aro 10"
+        action: "create"
+        model: "general_audit_ws_e3f4a5b.attribute"
+        save_as: "attribute"
+        as_user: "base.user_admin"
+        values:
+          worksheet_id: "REC: worksheet.id"
+          name: "Otorisasi"
+          eper: 0.0
+          tdr: 5
+          aro: "10"
+          # 25 filled rows, 0 deviations -> CUER (10% table, n=25, k=0) = 8.8
+          sample_data: |
+            Seq,Deviation
+            1,FALSE
+            2,FALSE
+            3,FALSE
+            4,FALSE
+            5,FALSE
+            6,FALSE
+            7,FALSE
+            8,FALSE
+            9,FALSE
+            10,FALSE
+            11,FALSE
+            12,FALSE
+            13,FALSE
+            14,FALSE
+            15,FALSE
+            16,FALSE
+            17,FALSE
+            18,FALSE
+            19,FALSE
+            20,FALSE
+            21,FALSE
+            22,FALSE
+            23,FALSE
+            24,FALSE
+            25,FALSE
+
+      - step: "Call action_compute_deviation"
+        action: "call"
+        target: "attribute"
+        method: "action_compute_deviation"
+        as_user: "base.user_admin"
+
+      - step: "Assert deviation counted as zero and conclusion effective"
+        action: "assert"
+        target: "attribute"
+        asserts:
+          sample_actual:
+            type: "value"
+            expected: 25
+          deviation_count:
+            type: "value"
+            expected: 0
+          deviation_rate_sample:
+            type: "value"
+            expected: 0.0
+          # aro = "10" -> cuer = cuer_10pct = _CUER_10PCT[25][k=0] = 8.8
+          cuer:
+            type: "value"
+            expected: 8.8
+          conclusion:
+            type: "value"
+            expected: "effective"
+
+  # ------------------------------------------------------------------
+  # 10. action_compute_deviation - conclusion not_effective (cuer > aro)
+  # ------------------------------------------------------------------
+  - name: "Attribute e3f4a5b - action_compute_deviation, conclusion not_effective"
+    steps:
+      - step: "Create worksheet with 20-item population"
+        action: "create"
+        model: "general_audit_ws_e3f4a5b"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+          data_mode: "gl"
+          general_ledger_id: "REC: gl.id"
+
+      - step: "Create attribute with aro 5"
+        action: "create"
+        model: "general_audit_ws_e3f4a5b.attribute"
+        save_as: "attribute"
+        as_user: "base.user_admin"
+        values:
+          worksheet_id: "REC: worksheet.id"
+          name: "Otorisasi"
+          eper: 0.0
+          tdr: 5
+          aro: "5"
+          # 25 filled rows, 1 deviation -> CUER (5% table, n=25, k=1) = 17.6
+          sample_data: |
+            Seq,Deviation
+            1,TRUE
+            2,FALSE
+            3,FALSE
+            4,FALSE
+            5,FALSE
+            6,FALSE
+            7,FALSE
+            8,FALSE
+            9,FALSE
+            10,FALSE
+            11,FALSE
+            12,FALSE
+            13,FALSE
+            14,FALSE
+            15,FALSE
+            16,FALSE
+            17,FALSE
+            18,FALSE
+            19,FALSE
+            20,FALSE
+            21,FALSE
+            22,FALSE
+            23,FALSE
+            24,FALSE
+            25,FALSE
+
+      - step: "Call action_compute_deviation"
+        action: "call"
+        target: "attribute"
+        method: "action_compute_deviation"
+        as_user: "base.user_admin"
+
+      - step: "Assert one deviation counted and conclusion not_effective"
+        action: "assert"
+        target: "attribute"
+        asserts:
+          sample_actual:
+            type: "value"
+            expected: 25
+          deviation_count:
+            type: "value"
+            expected: 1
+          deviation_rate_sample:
+            type: "value"
+            expected: 4.0
+          # aro = "5" -> cuer = cuer_5pct = _CUER_5PCT[25][k=1] = 17.6
+          cuer:
+            type: "value"
+            expected: 17.6
+          conclusion:
+            type: "value"
+            expected: "not_effective"
+
+  # ------------------------------------------------------------------
+  # 11. action_compute_deviation - sample_data kosong -> sample_actual 0, conclusion falsy
+  # ------------------------------------------------------------------
+  - name: "Attribute e3f4a5b - action_compute_deviation, sample_data kosong"
+    steps:
+      - step: "Create worksheet with 20-item population"
+        action: "create"
+        model: "general_audit_ws_e3f4a5b"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+          data_mode: "gl"
+          general_ledger_id: "REC: gl.id"
+
+      - step: "Create attribute without sample_data"
+        action: "create"
+        model: "general_audit_ws_e3f4a5b.attribute"
+        save_as: "attribute"
+        as_user: "base.user_admin"
+        values:
+          worksheet_id: "REC: worksheet.id"
+          name: "Otorisasi"
+          eper: 0.0
+          tdr: 5
+          aro: "5"
+
+      - step: "Call action_compute_deviation on empty sample_data"
+        action: "call"
+        target: "attribute"
+        method: "action_compute_deviation"
+        as_user: "base.user_admin"
+
+      - step: "Assert sample_actual zero and conclusion falsy"
+        action: "assert"
+        target: "attribute"
+        asserts:
+          sample_actual:
+            type: "value"
+            expected: 0
+          deviation_count:
+            type: "value"
+            expected: 0
+          conclusion:
+            type: "value"
+            operator: "is_falsy"
+
+  # ------------------------------------------------------------------
+  # 12. action_generate_sample - sukses: sample_data kosong sebelum, terisi (+ cascade) sesudah
+  #     TIDAK assert isi baris (random.sample) - hanya truthy/falsy dan struktur.
+  # ------------------------------------------------------------------
+  - name: "WS e3f4a5b - action_generate_sample sukses (cascade ke attribute)"
+    steps:
+      - step: "Create worksheet with 20-item population"
+        action: "create"
+        model: "general_audit_ws_e3f4a5b"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+          data_mode: "gl"
+          general_ledger_id: "REC: gl.id"
+          ref_col_number: 1
+          note_col_number: 2
+
+      - step: "Create attribute so sample_actual > 0"
+        action: "create"
+        model: "general_audit_ws_e3f4a5b.attribute"
+        save_as: "attribute"
+        as_user: "base.user_admin"
+        values:
+          worksheet_id: "REC: worksheet.id"
+          name: "Otorisasi"
+          eper: 0.0
+          tdr: 5
+          aro: "5"
+
+      - step: "Assert worksheet sample_data is empty before generating"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          sample_data:
+            type: "value"
+            operator: "is_falsy"
+
+      - step: "Call action_generate_sample"
+        action: "call"
+        target: "worksheet"
+        method: "action_generate_sample"
+        as_user: "base.user_admin"
+
+      - step: "Assert worksheet sample_data filled (no assertion on random row content)"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          sample_data:
+            type: "value"
+            operator: "is_truthy"
+
+      - step: "Assert cascaded attribute sample_data filled"
+        action: "assert"
+        target: "attribute"
+        asserts:
+          sample_data:
+            type: "value"
+            operator: "is_truthy"
+
+  # ------------------------------------------------------------------
+  # 13. action_generate_sample - UserError bila raw_data kosong
+  # ------------------------------------------------------------------
+  - name: "WS e3f4a5b - action_generate_sample gagal tanpa raw_data (UserError)"
+    steps:
+      - step: "Create worksheet without data_mode/general_ledger_id (raw_data falsy)"
+        action: "create"
+        model: "general_audit_ws_e3f4a5b"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+
+      - step: "Create attribute so sample_actual > 0"
+        action: "create"
+        model: "general_audit_ws_e3f4a5b.attribute"
+        save_as: "attribute"
+        as_user: "base.user_admin"
+        values:
+          worksheet_id: "REC: worksheet.id"
+          name: "Otorisasi"
+          eper: 0.0
+          tdr: 5
+          aro: "5"
+
+      - step: "action_generate_sample must raise UserError (no raw data)"
+        action: "call"
+        target: "worksheet"
+        method: "action_generate_sample"
+        as_user: "base.user_admin"
+        expect_error:
+          type: "UserError"
+          message_contains: "No raw data available"
+
+  # ------------------------------------------------------------------
+  # 14. onchange_account_type_id - triggered by general_audit_id
+  #
+  # `general_audit_id` is only Form-editable in state "draft" (states={"draft":
+  # [("readonly", False)]}), while `account_type_id` is only Form-editable in
+  # state "open" (states={"open": [("readonly", False)]}) - the two fields are
+  # never simultaneously editable through the Form/view layer. To still
+  # exercise the onchange itself, `account_type_id` is pre-set with a direct
+  # `write` (ORM-level, bypasses the view-only readonly restriction) while the
+  # worksheet is still in draft, then `action: form` is used only to touch
+  # `general_audit_id` (legitimately editable in draft) and observe the clear.
+  # ------------------------------------------------------------------
+  - name: "WS e3f4a5b - Onchange general_audit_id mengosongkan account_type_id"
+    steps:
+      - step: "Create worksheet in draft"
+        action: "create"
+        model: "general_audit_ws_e3f4a5b"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+
+      - step: "Pre-set account_type_id directly (bypasses view readonly)"
+        action: "write"
+        target: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          account_type_id: "REC: account_type.id"
+
+      - step: "Re-assign general_audit_id via form to trigger the onchange"
+        action: "form"
+        target: "worksheet"
+        as_user: "base.user_admin"
+        save: false
+        ops:
+          - set: {general_audit_id: "REC: audit"}
+          - assert:
+              account_type_id:
+                type: "value"
+                operator: "is_falsy"
+
+  # ------------------------------------------------------------------
+  # 15. onchange_account_id - triggered by account_type_id
+  # `account_id` and `account_type_id` are both Form-editable in state "open" -
+  # open the worksheet first, then exercise both through the same form step.
+  # ------------------------------------------------------------------
+  - name: "WS e3f4a5b - Onchange account_type_id mengosongkan account_id"
+    steps:
+      - step: "Create worksheet"
+        action: "create"
+        model: "general_audit_ws_e3f4a5b"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+
+      - step: "Open worksheet (account_id/account_type_id become editable)"
+        action: "call"
+        target: "worksheet"
+        method: "action_open"
+        as_user: "base.user_admin"
+
+      - step: "Set account_id then change account_type_id via form"
+        action: "form"
+        target: "worksheet"
+        as_user: "base.user_admin"
+        save: false
+        ops:
+          - set: {account_id: "REC: account"}
+          - set: {account_type_id: "REC: account_type"}
+          - assert:
+              account_id:
+                type: "value"
+                operator: "is_falsy"
+
+  # ------------------------------------------------------------------
+  # 16. onchange_general_ledger_id - triggered by data_mode/account_type_id/account_id
+  # ------------------------------------------------------------------
+  - name: "WS e3f4a5b - Onchange data_mode mengosongkan general_ledger_id"
+    steps:
+      - step: "Create worksheet"
+        action: "create"
+        model: "general_audit_ws_e3f4a5b"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+
+      - step: "Open worksheet (data_mode/general_ledger_id become editable)"
+        action: "call"
+        target: "worksheet"
+        method: "action_open"
+        as_user: "base.user_admin"
+
+      - step: "Set general_ledger_id then change data_mode via form"
+        action: "form"
+        target: "worksheet"
+        as_user: "base.user_admin"
+        save: false
+        ops:
+          - set: {general_ledger_id: "REC: gl"}
+          - set: {data_mode: "gl"}
+          - assert:
+              general_ledger_id:
+                type: "value"
+                operator: "is_falsy"
+
+  # ------------------------------------------------------------------
+  # 17. onchange_subledger_id - triggered by data_mode/account_type_id/account_id
+  # ------------------------------------------------------------------
+  - name: "WS e3f4a5b - Onchange data_mode mengosongkan subledger_id"
+    steps:
+      - step: "Create worksheet"
+        action: "create"
+        model: "general_audit_ws_e3f4a5b"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+
+      - step: "Open worksheet (data_mode/subledger_id become editable)"
+        action: "call"
+        target: "worksheet"
+        method: "action_open"
+        as_user: "base.user_admin"
+
+      - step: "Set subledger_id then change data_mode via form"
+        action: "form"
+        target: "worksheet"
+        as_user: "base.user_admin"
+        save: false
+        ops:
+          - set: {subledger_id: "REC: subledger"}
+          - set: {data_mode: "subledger"}
+          - assert:
+              subledger_id:
+                type: "value"
+                operator: "is_falsy"
+
+  # ------------------------------------------------------------------
+  # 18. onchange_parent_type_id (mixin) - triggered by type_id
+  # ------------------------------------------------------------------
+  - name: "WS e3f4a5b - Onchange type_id mengisi parent_type_id (mixin)"
+    steps:
+      - step: "Set type_id via form and check parent_type_id follows it"
+        action: "form"
+        model: "general_audit_ws_e3f4a5b"
+        save: false
+        ops:
+          - set: {type_id: "REC: ws_type"}
+          - assert:
+              parent_type_id:
+                type: "value"
+                expected: "REC: ws_type"
+
+  # ------------------------------------------------------------------
+  # 19. action_open_attributes - returns act_window domain restricted to this worksheet
+  # ------------------------------------------------------------------
+  - name: "WS e3f4a5b - action_open_attributes returns correct domain"
+    steps:
+      - step: "Create worksheet"
+        action: "create"
+        model: "general_audit_ws_e3f4a5b"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+
+      - step: "Call action_open_attributes"
+        action: "call"
+        target: "worksheet"
+        method: "action_open_attributes"
+        as_user: "base.user_admin"
