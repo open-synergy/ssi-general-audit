@@ -1,0 +1,687 @@
+setup:
+  steps:
+    - step: "Get config parameter model"
+      action: "search"
+      model: "ir.config_parameter"
+      domain: []
+      save_as: "config_parameter"
+      limit: 1
+
+    - step: "Allow enough CPA licenses for this scenario"
+      action: "call"
+      target: "config_parameter"
+      method: "set_param"
+      args:
+        - "ssi_general_audit.max_number_of_cpa_license"
+        - "100"
+
+    - step: "Create client partner"
+      action: "create"
+      model: "res.partner"
+      save_as: "client"
+      as_user: "base.user_admin"
+      values:
+        name: "Test Audit Client - Population"
+        is_company: true
+
+    - step: "Create accountant partner"
+      action: "create"
+      model: "res.partner"
+      save_as: "accountant"
+      as_user: "base.user_admin"
+      values:
+        name: "Test Audit Accountant - Population"
+
+    - step: "Get CPA license id category"
+      action: "ref"
+      xml_id: "ssi_partner_identification_cpa_license.partner_identification_accountant_cpa_license"
+      save_as: "cpa_category"
+
+    - step: "Grant accountant a CPA license"
+      action: "create"
+      model: "res.partner.id_number"
+      save_as: "cpa_license"
+      as_user: "base.user_admin"
+      values:
+        partner_id: "REC: accountant.id"
+        category_id: "REC: cpa_category.id"
+        name: "CPA-POPULATION-0001"
+
+    - step: "Create account type set"
+      action: "create"
+      model: "client_account_type_set"
+      save_as: "account_type_set"
+      as_user: "base.user_admin"
+      values:
+        name: "Test Account Type Set - Population"
+        code: "/"
+
+    - step: "Create financial accounting standard"
+      action: "create"
+      model: "accountant.financial_accounting_standard"
+      save_as: "standard"
+      as_user: "base.user_admin"
+      values:
+        name: "Test Financial Accounting Standard - Population"
+        code: "/"
+
+    - step: "Create general audit"
+      action: "create"
+      model: "general_audit"
+      save_as: "audit"
+      as_user: "base.user_admin"
+      values:
+        title: "Test General Audit - Population"
+        partner_id: "REC: client.id"
+        accountant_id: "REC: accountant.id"
+        account_type_set_id: "REC: account_type_set.id"
+        financial_accounting_standard_id: "REC: standard.id"
+        date_start: 2026-01-01
+        date_end: 2026-12-31
+        need_interim: false
+        need_previous: false
+        num_of_consecutive_audit_firm: 1
+        num_of_consecutive_audit_accountant: 1
+
+    - step: "Open general audit"
+      action: "call"
+      target: "audit"
+      method: "action_open"
+      as_user: "base.user_admin"
+
+    - step: "Invalidate cache after opening general audit"
+      action: "call"
+      target: "audit"
+      method: "invalidate_cache"
+
+    - step: "Assert general audit open"
+      action: "assert"
+      target: "audit"
+      asserts:
+        state:
+          type: "value"
+          expected: "open"
+
+    - step: "Create population type"
+      action: "create"
+      model: "general_audit_population_type"
+      save_as: "population_type"
+      as_user: "base.user_admin"
+      values:
+        name: "Test Population Type - Fixture"
+        code: "/"
+
+    - step: "Get worksheet type a01723b"
+      action: "ref"
+      xml_id: "ssi_general_audit_worksheet_population.worksheet_type_a01723b"
+      save_as: "ws_type_a01723b"
+
+    - step: "Create conclusion for worksheet type a01723b"
+      action: "create"
+      model: "general_audit_worksheet_conclusion"
+      save_as: "conclusion"
+      as_user: "base.user_admin"
+      values:
+        name: "Test Conclusion - Population"
+        code: "/"
+        type_id: "REC: ws_type_a01723b.id"
+
+scenarios:
+  # ------------------------------------------------------------------
+  # Create worksheet a01723b (also covers raw_data_count compute for
+  # the "not set" / falsy case: raw_data is never written, so it stays
+  # False and the compute's `if rec.raw_data:` guard yields count 0).
+  # ------------------------------------------------------------------
+  - name: "Create worksheet a01723b in draft"
+    steps:
+      - step: "Create worksheet a01723b"
+        action: "create"
+        model: "general_audit_ws_a01723b"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_a01723b.id"
+          population_type_id: "REC: population_type.id"
+
+      - step: "Assert worksheet created in draft with population_type_id set"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          id:
+            type: "value"
+            operator: "is_truthy"
+          state:
+            type: "value"
+            expected: "draft"
+          population_type_id:
+            type: "m2o"
+            expected: "REC: population_type"
+          raw_data_count:
+            type: "value"
+            expected: 0
+
+  # ------------------------------------------------------------------
+  # Onchange type_id -> parent_type_id (general_audit_worksheet_mixin,
+  # onchange_parent_type_id). type_id is defaulted via _default_type_id
+  # (resolves _type_xml_id) and rendered read-only outside "draft", so a
+  # brand-new, unsaved Form is the only place the default -- and the
+  # onchange it triggers -- can be observed. Per this repo's current
+  # unit test standard (odoo-development-unit-test skill, odoo-yaml-test
+  # >= 0.4.0), this is expressed as a YAML `action: form` scenario
+  # instead of a separate Python Form API method.
+  # ------------------------------------------------------------------
+  - name: "Onchange type_id sets parent_type_id on new record"
+    steps:
+      - step: "Load a new worksheet form and assert the default type_id propagated"
+        action: "form"
+        model: "general_audit_ws_a01723b"
+        save: false
+        asserts:
+          type_id:
+            type: "m2o"
+            expected: "REC: ws_type_a01723b"
+          parent_type_id:
+            type: "m2o"
+            expected: "REC: ws_type_a01723b"
+
+  # ------------------------------------------------------------------
+  # _compute_raw_data_count / _compute_raw_data_preview - normal CSV
+  # (1 header row + 3 data rows)
+  # ------------------------------------------------------------------
+  - name: "Compute raw_data_count and raw_data_preview - normal CSV"
+    steps:
+      - step: "Create worksheet a01723b"
+        action: "create"
+        model: "general_audit_ws_a01723b"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_a01723b.id"
+          population_type_id: "REC: population_type.id"
+
+      - step: "Open worksheet (raw_data is only writable in open)"
+        action: "call"
+        target: "worksheet"
+        method: "action_open"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after opening worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Write raw_data with header + 3 data rows"
+        action: "write"
+        target: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          raw_data: |
+            no,description,amount
+            1,Sales Invoice 001,1500000
+            2,Sales Invoice 002,2500000
+            3,Sales Invoice 003,3200000
+
+      - step: "Assert raw_data_count is 3 (4 rows minus header)"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          raw_data_count:
+            type: "value"
+            expected: 3
+
+      - step: "Assert raw_data_preview is a github-style markdown table with the header"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          raw_data_preview:
+            type: "value"
+            operator: "contains"
+            expected: "description"
+
+  # ------------------------------------------------------------------
+  # _compute_raw_data_count - header-only CSV (zero data rows)
+  # max(0, len(rows) - 1) with len(rows) == 1 -> 0
+  # ------------------------------------------------------------------
+  - name: "Compute raw_data_count - header-only CSV"
+    steps:
+      - step: "Create worksheet a01723b"
+        action: "create"
+        model: "general_audit_ws_a01723b"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_a01723b.id"
+          population_type_id: "REC: population_type.id"
+
+      - step: "Open worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_open"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after opening worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Write raw_data with header row only"
+        action: "write"
+        target: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          raw_data: "no,description,amount"
+
+      - step: "Assert raw_data_count is 0"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          raw_data_count:
+            type: "value"
+            expected: 0
+
+  # ------------------------------------------------------------------
+  # _compute_raw_data_count - empty string raw_data
+  # ------------------------------------------------------------------
+  - name: "Compute raw_data_count - empty string raw_data"
+    steps:
+      - step: "Create worksheet a01723b"
+        action: "create"
+        model: "general_audit_ws_a01723b"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_a01723b.id"
+          population_type_id: "REC: population_type.id"
+
+      - step: "Open worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_open"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after opening worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Write raw_data as empty string"
+        action: "write"
+        target: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          raw_data: ""
+
+      - step: "Assert raw_data_count is 0"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          raw_data_count:
+            type: "value"
+            expected: 0
+
+  # ------------------------------------------------------------------
+  # _compute_raw_data_preview - no raw_data at all (draft, never
+  # written) -> exact fallback text "(No data available)"
+  # ------------------------------------------------------------------
+  - name: "Compute raw_data_preview - no raw_data"
+    steps:
+      - step: "Create worksheet a01723b without raw_data"
+        action: "create"
+        model: "general_audit_ws_a01723b"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_a01723b.id"
+          population_type_id: "REC: population_type.id"
+
+      - step: "Assert raw_data_preview is the exact '(No data available)' fallback"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          raw_data_preview:
+            type: "value"
+            expected: "(No data available)"
+
+  # ------------------------------------------------------------------
+  # _compute_raw_data_count / _compute_raw_data_preview - more than 50
+  # rows (55 data rows): raw_data_count counts ALL data rows (55), while
+  # raw_data_preview truncates the table at limit_rows = 50 and appends
+  # the "showing first 50 rows" note.
+  # ------------------------------------------------------------------
+  - name: "Compute raw_data_count and raw_data_preview - more than 50 rows"
+    steps:
+      - step: "Create worksheet a01723b"
+        action: "create"
+        model: "general_audit_ws_a01723b"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_a01723b.id"
+          population_type_id: "REC: population_type.id"
+
+      - step: "Open worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_open"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after opening worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Write raw_data with header + 55 data rows"
+        action: "write"
+        target: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          raw_data: |
+            no,description,amount
+            1,Line item 1,1000
+            2,Line item 2,2000
+            3,Line item 3,3000
+            4,Line item 4,4000
+            5,Line item 5,5000
+            6,Line item 6,6000
+            7,Line item 7,7000
+            8,Line item 8,8000
+            9,Line item 9,9000
+            10,Line item 10,10000
+            11,Line item 11,11000
+            12,Line item 12,12000
+            13,Line item 13,13000
+            14,Line item 14,14000
+            15,Line item 15,15000
+            16,Line item 16,16000
+            17,Line item 17,17000
+            18,Line item 18,18000
+            19,Line item 19,19000
+            20,Line item 20,20000
+            21,Line item 21,21000
+            22,Line item 22,22000
+            23,Line item 23,23000
+            24,Line item 24,24000
+            25,Line item 25,25000
+            26,Line item 26,26000
+            27,Line item 27,27000
+            28,Line item 28,28000
+            29,Line item 29,29000
+            30,Line item 30,30000
+            31,Line item 31,31000
+            32,Line item 32,32000
+            33,Line item 33,33000
+            34,Line item 34,34000
+            35,Line item 35,35000
+            36,Line item 36,36000
+            37,Line item 37,37000
+            38,Line item 38,38000
+            39,Line item 39,39000
+            40,Line item 40,40000
+            41,Line item 41,41000
+            42,Line item 42,42000
+            43,Line item 43,43000
+            44,Line item 44,44000
+            45,Line item 45,45000
+            46,Line item 46,46000
+            47,Line item 47,47000
+            48,Line item 48,48000
+            49,Line item 49,49000
+            50,Line item 50,50000
+            51,Line item 51,51000
+            52,Line item 52,52000
+            53,Line item 53,53000
+            54,Line item 54,54000
+            55,Line item 55,55000
+
+      - step: "Assert raw_data_count counts all 55 data rows"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          raw_data_count:
+            type: "value"
+            expected: 55
+
+      - step: "Assert raw_data_preview notes it is showing only the first 50 rows"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          raw_data_preview:
+            type: "value"
+            operator: "contains"
+            expected: "showing first 50 rows"
+
+  # ------------------------------------------------------------------
+  # _compute_raw_data_count / _compute_raw_data_preview - malformed-
+  # looking CSV (unbalanced quote). This LOCKS IN the actual (verified)
+  # behaviour rather than the naive assumption that "broken CSV" raises:
+  # Python's stdlib `csv` module is extremely tolerant -- an unterminated
+  # quote does not raise, it just absorbs everything up to EOF (including
+  # the embedded comma and trailing newline) into that one field. Both
+  # computes' `except Exception` fallback branches are therefore NOT
+  # exercised by this input; see this module's unit-test task summary for
+  # why a genuinely-raising input (a single CSV field exceeding Python's
+  # `csv.field_size_limit()`) is impractical to assert here: Odoo's own
+  # `odoo/cli/server.py::main()` raises that global limit to 500 MiB at
+  # server start (every test run goes through it), so triggering the
+  # `except Exception` branch would require embedding a ~500 MB field in
+  # this fixture.
+  # ------------------------------------------------------------------
+  - name:
+      "raw_data with an unbalanced quote does not raise (locked-in current behaviour)"
+    steps:
+      - step: "Create worksheet a01723b"
+        action: "create"
+        model: "general_audit_ws_a01723b"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_a01723b.id"
+          population_type_id: "REC: population_type.id"
+
+      - step: "Open worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_open"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after opening worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Write raw_data with an unterminated quote"
+        action: "write"
+        target: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          raw_data: |
+            no,description,amount
+            1,"Unterminated quote,100
+
+      - step: "Assert raw_data_count is 1 (the whole rest of the text became one field)"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          raw_data_count:
+            type: "value"
+            expected: 1
+
+      - step:
+          "Assert raw_data_preview rendered the absorbed field, not a parse-failure
+          message"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          raw_data_preview:
+            type: "value"
+            operator: "contains"
+            expected: "Unterminated quote,100"
+
+  # ------------------------------------------------------------------
+  # Workflow: draft -> open -> confirm -> done
+  # ------------------------------------------------------------------
+  - name: "Workflow a01723b - draft to done"
+    steps:
+      - step: "Create worksheet a01723b"
+        action: "create"
+        model: "general_audit_ws_a01723b"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_a01723b.id"
+          population_type_id: "REC: population_type.id"
+
+      - step: "Assert worksheet created in draft"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          state:
+            type: "value"
+            expected: "draft"
+
+      - step: "Open worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_open"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after opening worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Assert worksheet open"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          state:
+            type: "value"
+            expected: "open"
+
+      - step: "Fill required conclusion fields before confirm"
+        action: "write"
+        target: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          conclusion_id: "REC: conclusion.id"
+          conclusion: "Population raw data reviewed and adequately addressed."
+
+      - step: "Confirm worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_confirm"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after confirming worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Assert worksheet confirmed"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          state:
+            type: "value"
+            expected: "confirm"
+
+      - step: "Approve worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_approve_approval"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after approving worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Assert worksheet done"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          state:
+            type: "value"
+            expected: "done"
+
+  # ------------------------------------------------------------------
+  # Cancel & restart: draft -> open -> cancel -> restart -> draft
+  # (action_restart is only valid from "cancel", never called directly
+  # from "open")
+  # ------------------------------------------------------------------
+  - name: "Cancel and restart worksheet a01723b"
+    steps:
+      - step: "Create worksheet a01723b"
+        action: "create"
+        model: "general_audit_ws_a01723b"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_a01723b.id"
+          population_type_id: "REC: population_type.id"
+
+      - step: "Open worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_open"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after opening worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Assert worksheet open"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          state:
+            type: "value"
+            expected: "open"
+
+      - step: "Cancel worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_cancel"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after cancelling worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Assert worksheet cancelled"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          state:
+            type: "value"
+            expected: "cancel"
+
+      - step: "Restart worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_restart"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after restarting worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Assert worksheet back to draft"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          state:
+            type: "value"
+            expected: "draft"

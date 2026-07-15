@@ -1,0 +1,91 @@
+scenarios:
+  # ------------------------------------------------------------------
+  # general_audit_population_type - Create
+  # ------------------------------------------------------------------
+  - name: "Create population type"
+    steps:
+      - step: "Create population type"
+        action: "create"
+        model: "general_audit_population_type"
+        save_as: "population_type"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Population Type"
+          code: "TPT"
+
+      - step: "Assert population type created"
+        action: "assert"
+        target: "population_type"
+        asserts:
+          id:
+            type: "value"
+            operator: "is_truthy"
+          name:
+            type: "value"
+            expected: "Test Population Type"
+          code:
+            type: "value"
+            expected: "TPT"
+
+  # ------------------------------------------------------------------
+  # general_audit_population_type - Edit
+  #
+  # Uses code "/" (not a literal like "TPT") because scenarios in this
+  # file are NOT rolled back from each other -- only the whole test
+  # method is rolled back at the end -- and mixin.master_data's
+  # `_check_duplicate_code` constraint rejects two records sharing the
+  # same non-"/" code. "/" is explicitly excluded from that check, which
+  # is why every other master-data fixture in this repo defaults to it.
+  # ------------------------------------------------------------------
+  - name: "Edit population type"
+    steps:
+      - step: "Create population type"
+        action: "create"
+        model: "general_audit_population_type"
+        save_as: "population_type"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Population Type"
+          code: "/"
+
+      - step: "Write new name"
+        action: "write"
+        target: "population_type"
+        as_user: "base.user_admin"
+        values:
+          name: "Updated Population Type"
+
+      - step: "Assert name updated"
+        action: "assert"
+        target: "population_type"
+        asserts:
+          name:
+            type: "value"
+            expected: "Updated Population Type"
+
+  # ------------------------------------------------------------------
+  # general_audit_population_type - Delete
+  # ------------------------------------------------------------------
+  - name: "Delete population type"
+    steps:
+      - step: "Create population type"
+        action: "create"
+        model: "general_audit_population_type"
+        save_as: "population_type"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Population Type"
+          code: "/"
+
+      - step: "Delete population type"
+        action: "unlink"
+        target: "population_type"
+        as_user: "base.user_admin"
+
+      - step: "Verify population type deleted"
+        action: "search"
+        model: "general_audit_population_type"
+        domain:
+          - ["id", "=", "REC: population_type.id"]
+        save_as: "result"
+        expect_count: 0
