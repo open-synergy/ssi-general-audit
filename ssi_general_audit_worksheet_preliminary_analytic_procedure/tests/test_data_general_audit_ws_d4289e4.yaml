@@ -303,7 +303,7 @@ scenarios:
           - [
               "financial_ratio_id",
               "=",
-              "ssi_general_audit.client_financial_ratio_1_f0ab3e10",
+              "REF: ssi_general_audit.client_financial_ratio_1_f0ab3e10",
             ]
         save_as: "current_ratio_line"
         expect_count: 1
@@ -390,7 +390,7 @@ scenarios:
           - [
               "financial_ratio_id",
               "=",
-              "ssi_general_audit.client_financial_ratio_1_f0ab3e10",
+              "REF: ssi_general_audit.client_financial_ratio_1_f0ab3e10",
             ]
         save_as: "current_ratio_line"
         expect_count: 1
@@ -583,6 +583,7 @@ scenarios:
         as_user: "base.user_admin"
         values:
           name: "Salah input worksheet rasio"
+          code: "CANCEL-D4289E4"
       - step: "Cancel worksheet via cancel reason wizard"
         action: "wizard"
         model: "base.select_cancel_reason"
