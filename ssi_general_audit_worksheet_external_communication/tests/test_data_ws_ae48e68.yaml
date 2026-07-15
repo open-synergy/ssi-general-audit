@@ -102,6 +102,14 @@ setup:
           type: "value"
           expected: "open"
 
+    - step: "Create shared checklist option set"
+      action: "create"
+      model: "checklist.option_set"
+      save_as: "option_set"
+      as_user: "base.user_admin"
+      values:
+        name: "Test Option Set - ae48e68"
+
     - step: "Get worksheet type ae48e68"
       action: "ref"
       xml_id: "ssi_general_audit_worksheet_external_communication.worksheet_type_ae48e68"
@@ -126,6 +134,7 @@ scenarios:
         values:
           name: "Konfirmasi Bank"
           code: "/"
+          option_set_id: "REC: option_set.id"
 
       - step: "Assert item created"
         action: "assert"
@@ -265,6 +274,7 @@ scenarios:
         values:
           name: "Custom Checklist Item 1 - ae48e68 Populate"
           code: "/"
+          option_set_id: "REC: option_set.id"
 
       - step: "Create custom checklist item 2"
         action: "create"
@@ -274,6 +284,7 @@ scenarios:
         values:
           name: "Custom Checklist Item 2 - ae48e68 Populate"
           code: "/"
+          option_set_id: "REC: option_set.id"
 
       - step: "Create worksheet ae48e68"
         action: "create"
@@ -590,6 +601,7 @@ scenarios:
         values:
           name: "Custom Checklist Item - ae48e68 Cascade Delete"
           code: "/"
+          option_set_id: "REC: option_set.id"
 
       - step: "Create worksheet ae48e68"
         action: "create"
