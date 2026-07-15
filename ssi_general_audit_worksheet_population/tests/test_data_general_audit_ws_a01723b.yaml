@@ -173,10 +173,19 @@ scenarios:
   # ------------------------------------------------------------------
   - name: "Onchange type_id sets parent_type_id on new record"
     steps:
-      - step: "Load a new worksheet form and assert the default type_id propagated"
+      - step: "Open new worksheet form with default type_id"
         action: "form"
         model: "general_audit_ws_a01723b"
-        save: false
+        save_as: "onchange_worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          population_type_id: "REC: population_type.id"
+        save: true
+
+      - step: "Assert default type_id propagated to parent_type_id via onchange"
+        action: "assert"
+        target: "onchange_worksheet"
         asserts:
           type_id:
             type: "m2o"
