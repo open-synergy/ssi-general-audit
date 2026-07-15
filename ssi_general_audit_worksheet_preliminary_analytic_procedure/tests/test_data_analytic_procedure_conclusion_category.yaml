@@ -1,0 +1,94 @@
+scenarios:
+  - name: "Create Analytic Procedure Conclusion Category"
+    steps:
+      - step: "Create category"
+        action: "create"
+        model: "analytic_procedure_conclusion_category"
+        save_as: "category"
+        values:
+          name: "Revenue and Cost of Sales"
+          code: "PAPCAT001"
+          sequence: 10
+      - step: "Assert created"
+        action: "assert"
+        target: "category"
+        asserts:
+          id:
+            type: "value"
+            operator: "is_truthy"
+          name:
+            type: "value"
+            expected: "Revenue and Cost of Sales"
+          sequence:
+            type: "value"
+            expected: 10
+
+  - name: "Edit Analytic Procedure Conclusion Category Name"
+    steps:
+      - step: "Create category"
+        action: "create"
+        model: "analytic_procedure_conclusion_category"
+        save_as: "category"
+        values:
+          name: "Liquidity Position"
+          code: "PAPCAT002"
+          sequence: 10
+      - step: "Write new name"
+        action: "write"
+        target: "category"
+        values:
+          name: "Liquidity Position (Updated)"
+      - step: "Assert name updated"
+        action: "assert"
+        target: "category"
+        asserts:
+          name:
+            type: "value"
+            expected: "Liquidity Position (Updated)"
+
+  - name: "Delete Analytic Procedure Conclusion Category"
+    steps:
+      - step: "Create category"
+        action: "create"
+        model: "analytic_procedure_conclusion_category"
+        save_as: "category"
+        values:
+          name: "Going Concern Indicators"
+          code: "PAPCAT003"
+          sequence: 10
+      - step: "Delete category"
+        action: "unlink"
+        target: "category"
+      - step: "Verify deleted"
+        action: "search"
+        model: "analytic_procedure_conclusion_category"
+        domain: [["code", "=", "PAPCAT003"]]
+        save_as: "result"
+        expect_count: 0
+
+  - name: "Category With Parent"
+    steps:
+      - step: "Create parent category"
+        action: "create"
+        model: "analytic_procedure_conclusion_category"
+        save_as: "parent"
+        values:
+          name: "Revenue and Cost of Sales"
+          code: "PAPCAT004"
+          sequence: 10
+      - step: "Create child category"
+        action: "create"
+        model: "analytic_procedure_conclusion_category"
+        save_as: "child"
+        values:
+          name: "Net Revenue Trend"
+          code: "PAPCAT005"
+          sequence: 20
+          parent_id: "REC: parent.id"
+      - step: "Assert parent linked"
+        action: "assert"
+        target: "child"
+        asserts:
+          parent_id:
+            type: "m2o"
+            expected: "REC: parent"
