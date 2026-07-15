@@ -1,0 +1,1144 @@
+setup:
+  steps:
+    - step: "Get config parameter model"
+      action: "search"
+      model: "ir.config_parameter"
+      domain: []
+      save_as: "config_parameter"
+      limit: 1
+
+    - step: "Allow enough CPA licenses for this scenario"
+      action: "call"
+      target: "config_parameter"
+      method: "set_param"
+      args:
+        - "ssi_general_audit.max_number_of_cpa_license"
+        - "100"
+
+    - step: "Create client partner"
+      action: "create"
+      model: "res.partner"
+      save_as: "client"
+      as_user: "base.user_admin"
+      values:
+        name: "Test Audit Client - Communication"
+        is_company: true
+
+    - step: "Create accountant partner"
+      action: "create"
+      model: "res.partner"
+      save_as: "accountant"
+      as_user: "base.user_admin"
+      values:
+        name: "Test Audit Accountant - Communication"
+
+    - step: "Get CPA license id category"
+      action: "ref"
+      xml_id: "ssi_partner_identification_cpa_license.partner_identification_accountant_cpa_license"
+      save_as: "cpa_category"
+
+    - step: "Grant accountant a CPA license"
+      action: "create"
+      model: "res.partner.id_number"
+      save_as: "cpa_license"
+      as_user: "base.user_admin"
+      values:
+        partner_id: "REC: accountant.id"
+        category_id: "REC: cpa_category.id"
+        name: "CPA-COMM-0001"
+
+    - step: "Create account type set"
+      action: "create"
+      model: "client_account_type_set"
+      save_as: "account_type_set"
+      as_user: "base.user_admin"
+      values:
+        name: "Test Account Type Set - Communication"
+        code: "/"
+
+    - step: "Create financial accounting standard"
+      action: "create"
+      model: "accountant.financial_accounting_standard"
+      save_as: "standard"
+      as_user: "base.user_admin"
+      values:
+        name: "Test Financial Accounting Standard - Communication"
+        code: "/"
+
+    - step: "Create general audit"
+      action: "create"
+      model: "general_audit"
+      save_as: "audit"
+      as_user: "base.user_admin"
+      values:
+        title: "Test General Audit - Communication"
+        partner_id: "REC: client.id"
+        accountant_id: "REC: accountant.id"
+        account_type_set_id: "REC: account_type_set.id"
+        financial_accounting_standard_id: "REC: standard.id"
+        date_start: 2026-01-01
+        date_end: 2026-12-31
+        need_interim: false
+        need_previous: false
+        num_of_consecutive_audit_firm: 1
+        num_of_consecutive_audit_accountant: 1
+
+    - step: "Open general audit"
+      action: "call"
+      target: "audit"
+      method: "action_open"
+      as_user: "base.user_admin"
+
+    - step: "Invalidate cache after opening general audit"
+      action: "call"
+      target: "audit"
+      method: "invalidate_cache"
+
+    - step: "Assert general audit open"
+      action: "assert"
+      target: "audit"
+      asserts:
+        state:
+          type: "value"
+          expected: "open"
+
+    - step: "Create shared checklist option set"
+      action: "create"
+      model: "checklist.option_set"
+      save_as: "option_set"
+      as_user: "base.user_admin"
+      values:
+        name: "Test Option Set - Communication"
+
+    - step: "Get worksheet type b3ff42f"
+      action: "ref"
+      xml_id: "ssi_general_audit_worksheet_external_communication.worksheet_type_b3ff42f"
+      save_as: "ws_type_b3ff42f"
+
+    - step: "Get worksheet type c94e287"
+      action: "ref"
+      xml_id: "ssi_general_audit_worksheet_external_communication.worksheet_type_c94e287"
+      save_as: "ws_type_c94e287"
+
+    - step: "Get worksheet type d133f46"
+      action: "ref"
+      xml_id: "ssi_general_audit_worksheet_external_communication.worksheet_type_d133f46"
+      save_as: "ws_type_d133f46"
+
+    - step: "Get seeded conclusion 'adequate' for b3ff42f"
+      action: "ref"
+      xml_id: "ssi_general_audit_worksheet_external_communication.general_audit_worksheet_conclusion_131_ffadb459"
+      save_as: "conclusion_b3ff42f"
+
+    - step: "Get seeded conclusion 'adequate' for c94e287"
+      action: "ref"
+      xml_id: "ssi_general_audit_worksheet_external_communication.general_audit_worksheet_conclusion_133_e3113a9a"
+      save_as: "conclusion_c94e287"
+
+    - step: "Get seeded conclusion for d133f46"
+      action: "ref"
+      xml_id: "ssi_general_audit_worksheet_external_communication.general_audit_worksheet_conclusion_136_35c1a521"
+      save_as: "conclusion_d133f46"
+
+scenarios:
+  # ==================================================================
+  # b3ff42f - Communication With Management
+  # ==================================================================
+
+  # ------------------------------------------------------------------
+  # general_audit_ws_b3ff42f.item - CRUD, with required communication_type
+  # ------------------------------------------------------------------
+  - name: "Item master b3ff42f - Create, write, delete (communication_type required)"
+    steps:
+      - step: "Create checklist item with communication_type"
+        action: "create"
+        model: "general_audit_ws_b3ff42f.item"
+        save_as: "item"
+        as_user: "base.user_admin"
+        values:
+          name: "Understanding With Management"
+          code: "/"
+          option_set_id: "REC: option_set.id"
+          communication_type: "understanding"
+
+      - step: "Assert item created with communication_type"
+        action: "assert"
+        target: "item"
+        asserts:
+          id:
+            type: "value"
+            operator: "is_truthy"
+          communication_type:
+            type: "value"
+            expected: "understanding"
+
+      - step: "Write communication_type to a different value"
+        action: "write"
+        target: "item"
+        as_user: "base.user_admin"
+        values:
+          communication_type: "significant_findings"
+
+      - step: "Assert communication_type updated"
+        action: "assert"
+        target: "item"
+        asserts:
+          communication_type:
+            type: "value"
+            expected: "significant_findings"
+
+      - step: "Delete item"
+        action: "unlink"
+        target: "item"
+        as_user: "base.user_admin"
+
+      - step: "Verify item deleted"
+        action: "search"
+        model: "general_audit_ws_b3ff42f.item"
+        domain:
+          - ["id", "=", "REC: item.id"]
+        save_as: "result"
+        expect_count: 0
+
+  # ------------------------------------------------------------------
+  # action_populate_checklist + related communication_type on the
+  # checklist line. Uses scoped-domain assertions (worksheet_id +
+  # specific item_id), NOT a total row count, since this module ships
+  # 17 seeded b3ff42f.item records (data/master/
+  # general_audit_ws_b3ff42f_item.xml).
+  # ------------------------------------------------------------------
+  - name: "Checklist b3ff42f - action_populate_checklist and related communication_type"
+    steps:
+      - step: "Create item with communication_type 'understanding'"
+        action: "create"
+        model: "general_audit_ws_b3ff42f.item"
+        save_as: "item_understanding"
+        as_user: "base.user_admin"
+        values:
+          name: "Custom Item Understanding - b3ff42f Populate"
+          code: "/"
+          option_set_id: "REC: option_set.id"
+          communication_type: "understanding"
+
+      - step: "Create item with communication_type 'audit_info'"
+        action: "create"
+        model: "general_audit_ws_b3ff42f.item"
+        save_as: "item_audit_info"
+        as_user: "base.user_admin"
+        values:
+          name: "Custom Item Audit Info - b3ff42f Populate"
+          code: "/"
+          option_set_id: "REC: option_set.id"
+          communication_type: "audit_info"
+
+      - step: "Create worksheet b3ff42f"
+        action: "create"
+        model: "general_audit_ws_b3ff42f"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_b3ff42f.id"
+
+      - step: "Open worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_open"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after opening worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Verify no checklist line for item_understanding before populate"
+        action: "search"
+        model: "general_audit_ws_b3ff42f.checklist"
+        domain:
+          - ["worksheet_id", "=", "REC: worksheet.id"]
+          - ["item_id", "=", "REC: item_understanding.id"]
+        save_as: "before_understanding"
+        expect_count: 0
+
+      - step: "Call action_populate_checklist"
+        action: "call"
+        target: "worksheet"
+        method: "action_populate_checklist"
+        as_user: "base.user_admin"
+
+      - step: "Find checklist line for item_understanding"
+        action: "search"
+        model: "general_audit_ws_b3ff42f.checklist"
+        domain:
+          - ["worksheet_id", "=", "REC: worksheet.id"]
+          - ["item_id", "=", "REC: item_understanding.id"]
+        save_as: "line_understanding"
+        expect_count: 1
+
+      - step: "Assert related communication_type mirrors item_understanding"
+        action: "assert"
+        target: "line_understanding"
+        asserts:
+          communication_type:
+            type: "value"
+            expected: "understanding"
+
+      - step: "Find checklist line for item_audit_info"
+        action: "search"
+        model: "general_audit_ws_b3ff42f.checklist"
+        domain:
+          - ["worksheet_id", "=", "REC: worksheet.id"]
+          - ["item_id", "=", "REC: item_audit_info.id"]
+        save_as: "line_audit_info"
+        expect_count: 1
+
+      - step: "Assert related communication_type mirrors item_audit_info"
+        action: "assert"
+        target: "line_audit_info"
+        asserts:
+          communication_type:
+            type: "value"
+            expected: "audit_info"
+
+      - step: "Call action_populate_checklist a second time"
+        action: "call"
+        target: "worksheet"
+        method: "action_populate_checklist"
+        as_user: "base.user_admin"
+
+      - step: "Verify checklist line for item_understanding was not duplicated"
+        action: "search"
+        model: "general_audit_ws_b3ff42f.checklist"
+        domain:
+          - ["worksheet_id", "=", "REC: worksheet.id"]
+          - ["item_id", "=", "REC: item_understanding.id"]
+        save_as: "idempotent_understanding"
+        expect_count: 1
+
+  # ------------------------------------------------------------------
+  # Workflow draft -> open -> confirm -> done
+  # ------------------------------------------------------------------
+  - name: "Workflow b3ff42f - draft to done"
+    steps:
+      - step: "Create worksheet b3ff42f"
+        action: "create"
+        model: "general_audit_ws_b3ff42f"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_b3ff42f.id"
+
+      - step: "Assert worksheet created in draft"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          id:
+            type: "value"
+            operator: "is_truthy"
+          state:
+            type: "value"
+            expected: "draft"
+
+      - step: "Open worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_open"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after opening worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Assert worksheet open"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          state:
+            type: "value"
+            expected: "open"
+
+      - step: "Fill required conclusion fields before confirm"
+        action: "write"
+        target: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          conclusion_id: "REC: conclusion_b3ff42f.id"
+          conclusion: "Communication with management reviewed and adequately addressed."
+
+      - step: "Confirm worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_confirm"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after confirming worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Assert worksheet confirmed"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          state:
+            type: "value"
+            expected: "confirm"
+
+      - step: "Approve worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_approve_approval"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after approving worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Assert worksheet done"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          state:
+            type: "value"
+            expected: "done"
+
+  # ------------------------------------------------------------------
+  # Cancel and restart
+  # ------------------------------------------------------------------
+  - name: "Worksheet b3ff42f - Cancel and restart"
+    steps:
+      - step: "Create worksheet b3ff42f"
+        action: "create"
+        model: "general_audit_ws_b3ff42f"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_b3ff42f.id"
+
+      - step: "Open worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_open"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after opening worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Assert worksheet open"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          state:
+            type: "value"
+            expected: "open"
+
+      - step: "Cancel worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_cancel"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after cancelling worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Assert worksheet cancelled"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          state:
+            type: "value"
+            expected: "cancel"
+
+      - step: "Restart worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_restart"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after restarting worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Assert worksheet back to draft"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          state:
+            type: "value"
+            expected: "draft"
+
+  # ==================================================================
+  # c94e287 - Communication With TCWG
+  # ==================================================================
+
+  # ------------------------------------------------------------------
+  # general_audit_ws_c94e287.item - CRUD, with required communication_type
+  # ------------------------------------------------------------------
+  - name: "Item master c94e287 - Create, write, delete (communication_type required)"
+    steps:
+      - step: "Create checklist item with communication_type"
+        action: "create"
+        model: "general_audit_ws_c94e287.item"
+        save_as: "item"
+        as_user: "base.user_admin"
+        values:
+          name: "Understanding With TCWG"
+          code: "/"
+          option_set_id: "REC: option_set.id"
+          communication_type: "understanding"
+
+      - step: "Assert item created with communication_type"
+        action: "assert"
+        target: "item"
+        asserts:
+          id:
+            type: "value"
+            operator: "is_truthy"
+          communication_type:
+            type: "value"
+            expected: "understanding"
+
+      - step: "Write communication_type to a different value"
+        action: "write"
+        target: "item"
+        as_user: "base.user_admin"
+        values:
+          communication_type: "expected_info"
+
+      - step: "Assert communication_type updated"
+        action: "assert"
+        target: "item"
+        asserts:
+          communication_type:
+            type: "value"
+            expected: "expected_info"
+
+      - step: "Delete item"
+        action: "unlink"
+        target: "item"
+        as_user: "base.user_admin"
+
+      - step: "Verify item deleted"
+        action: "search"
+        model: "general_audit_ws_c94e287.item"
+        domain:
+          - ["id", "=", "REC: item.id"]
+        save_as: "result"
+        expect_count: 0
+
+  # ------------------------------------------------------------------
+  # action_populate_checklist + related communication_type on the
+  # checklist line. Uses scoped-domain assertions since this module
+  # ships 17 seeded c94e287.item records.
+  # ------------------------------------------------------------------
+  - name: "Checklist c94e287 - action_populate_checklist and related communication_type"
+    steps:
+      - step: "Create item with communication_type 'audit_info'"
+        action: "create"
+        model: "general_audit_ws_c94e287.item"
+        save_as: "item_audit_info"
+        as_user: "base.user_admin"
+        values:
+          name: "Custom Item Audit Info - c94e287 Populate"
+          code: "/"
+          option_set_id: "REC: option_set.id"
+          communication_type: "audit_info"
+
+      - step: "Create item with communication_type 'significant_findings'"
+        action: "create"
+        model: "general_audit_ws_c94e287.item"
+        save_as: "item_significant"
+        as_user: "base.user_admin"
+        values:
+          name: "Custom Item Significant Findings - c94e287 Populate"
+          code: "/"
+          option_set_id: "REC: option_set.id"
+          communication_type: "significant_findings"
+
+      - step: "Create worksheet c94e287"
+        action: "create"
+        model: "general_audit_ws_c94e287"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_c94e287.id"
+
+      - step: "Open worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_open"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after opening worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Verify no checklist line for item_audit_info before populate"
+        action: "search"
+        model: "general_audit_ws_c94e287.checklist"
+        domain:
+          - ["worksheet_id", "=", "REC: worksheet.id"]
+          - ["item_id", "=", "REC: item_audit_info.id"]
+        save_as: "before_audit_info"
+        expect_count: 0
+
+      - step: "Call action_populate_checklist"
+        action: "call"
+        target: "worksheet"
+        method: "action_populate_checklist"
+        as_user: "base.user_admin"
+
+      - step: "Find checklist line for item_audit_info"
+        action: "search"
+        model: "general_audit_ws_c94e287.checklist"
+        domain:
+          - ["worksheet_id", "=", "REC: worksheet.id"]
+          - ["item_id", "=", "REC: item_audit_info.id"]
+        save_as: "line_audit_info"
+        expect_count: 1
+
+      - step: "Assert related communication_type mirrors item_audit_info"
+        action: "assert"
+        target: "line_audit_info"
+        asserts:
+          communication_type:
+            type: "value"
+            expected: "audit_info"
+
+      - step: "Find checklist line for item_significant"
+        action: "search"
+        model: "general_audit_ws_c94e287.checklist"
+        domain:
+          - ["worksheet_id", "=", "REC: worksheet.id"]
+          - ["item_id", "=", "REC: item_significant.id"]
+        save_as: "line_significant"
+        expect_count: 1
+
+      - step: "Assert related communication_type mirrors item_significant"
+        action: "assert"
+        target: "line_significant"
+        asserts:
+          communication_type:
+            type: "value"
+            expected: "significant_findings"
+
+      - step: "Call action_populate_checklist a second time"
+        action: "call"
+        target: "worksheet"
+        method: "action_populate_checklist"
+        as_user: "base.user_admin"
+
+      - step: "Verify checklist line for item_audit_info was not duplicated"
+        action: "search"
+        model: "general_audit_ws_c94e287.checklist"
+        domain:
+          - ["worksheet_id", "=", "REC: worksheet.id"]
+          - ["item_id", "=", "REC: item_audit_info.id"]
+        save_as: "idempotent_audit_info"
+        expect_count: 1
+
+  # ------------------------------------------------------------------
+  # Workflow draft -> open -> confirm -> done
+  # ------------------------------------------------------------------
+  - name: "Workflow c94e287 - draft to done"
+    steps:
+      - step: "Create worksheet c94e287"
+        action: "create"
+        model: "general_audit_ws_c94e287"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_c94e287.id"
+
+      - step: "Assert worksheet created in draft"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          id:
+            type: "value"
+            operator: "is_truthy"
+          state:
+            type: "value"
+            expected: "draft"
+
+      - step: "Open worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_open"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after opening worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Assert worksheet open"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          state:
+            type: "value"
+            expected: "open"
+
+      - step: "Fill required conclusion fields before confirm"
+        action: "write"
+        target: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          conclusion_id: "REC: conclusion_c94e287.id"
+          conclusion: "Communication with TCWG reviewed and adequately addressed."
+
+      - step: "Confirm worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_confirm"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after confirming worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Assert worksheet confirmed"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          state:
+            type: "value"
+            expected: "confirm"
+
+      - step: "Approve worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_approve_approval"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after approving worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Assert worksheet done"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          state:
+            type: "value"
+            expected: "done"
+
+  # ------------------------------------------------------------------
+  # Cancel and restart
+  # ------------------------------------------------------------------
+  - name: "Worksheet c94e287 - Cancel and restart"
+    steps:
+      - step: "Create worksheet c94e287"
+        action: "create"
+        model: "general_audit_ws_c94e287"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_c94e287.id"
+
+      - step: "Open worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_open"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after opening worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Assert worksheet open"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          state:
+            type: "value"
+            expected: "open"
+
+      - step: "Cancel worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_cancel"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after cancelling worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Assert worksheet cancelled"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          state:
+            type: "value"
+            expected: "cancel"
+
+      - step: "Restart worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_restart"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after restarting worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Assert worksheet back to draft"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          state:
+            type: "value"
+            expected: "draft"
+
+  # ==================================================================
+  # d133f46 - Use of Internal Auditor's Work Results
+  # ==================================================================
+
+  # ------------------------------------------------------------------
+  # general_audit_ws_d133f46.item - CRUD, with required communication_type
+  # ------------------------------------------------------------------
+  - name: "Item master d133f46 - Create, write, delete (communication_type required)"
+    steps:
+      - step: "Create checklist item with communication_type"
+        action: "create"
+        model: "general_audit_ws_d133f46.item"
+        save_as: "item"
+        as_user: "base.user_admin"
+        values:
+          name: "Objectivity of Internal Audit"
+          code: "/"
+          option_set_id: "REC: option_set.id"
+          communication_type: "objectivity"
+
+      - step: "Assert item created with communication_type"
+        action: "assert"
+        target: "item"
+        asserts:
+          id:
+            type: "value"
+            operator: "is_truthy"
+          communication_type:
+            type: "value"
+            expected: "objectivity"
+
+      - step: "Write communication_type to a different value"
+        action: "write"
+        target: "item"
+        as_user: "base.user_admin"
+        values:
+          communication_type: "professional"
+
+      - step: "Assert communication_type updated"
+        action: "assert"
+        target: "item"
+        asserts:
+          communication_type:
+            type: "value"
+            expected: "professional"
+
+      - step: "Delete item"
+        action: "unlink"
+        target: "item"
+        as_user: "base.user_admin"
+
+      - step: "Verify item deleted"
+        action: "search"
+        model: "general_audit_ws_d133f46.item"
+        domain:
+          - ["id", "=", "REC: item.id"]
+        save_as: "result"
+        expect_count: 0
+
+  # ------------------------------------------------------------------
+  # action_populate_checklist + related communication_type on the
+  # checklist line. Uses scoped-domain assertions since this module
+  # ships 14 seeded d133f46.item records.
+  # ------------------------------------------------------------------
+  - name: "Checklist d133f46 - action_populate_checklist and related communication_type"
+    steps:
+      - step: "Create item with communication_type 'objectivity'"
+        action: "create"
+        model: "general_audit_ws_d133f46.item"
+        save_as: "item_objectivity"
+        as_user: "base.user_admin"
+        values:
+          name: "Custom Item Objectivity - d133f46 Populate"
+          code: "/"
+          option_set_id: "REC: option_set.id"
+          communication_type: "objectivity"
+
+      - step: "Create item with communication_type 'technical'"
+        action: "create"
+        model: "general_audit_ws_d133f46.item"
+        save_as: "item_technical"
+        as_user: "base.user_admin"
+        values:
+          name: "Custom Item Technical Competence - d133f46 Populate"
+          code: "/"
+          option_set_id: "REC: option_set.id"
+          communication_type: "technical"
+
+      - step: "Create worksheet d133f46"
+        action: "create"
+        model: "general_audit_ws_d133f46"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_d133f46.id"
+
+      - step: "Open worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_open"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after opening worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Verify no checklist line for item_objectivity before populate"
+        action: "search"
+        model: "general_audit_ws_d133f46.checklist"
+        domain:
+          - ["worksheet_id", "=", "REC: worksheet.id"]
+          - ["item_id", "=", "REC: item_objectivity.id"]
+        save_as: "before_objectivity"
+        expect_count: 0
+
+      - step: "Call action_populate_checklist"
+        action: "call"
+        target: "worksheet"
+        method: "action_populate_checklist"
+        as_user: "base.user_admin"
+
+      - step: "Find checklist line for item_objectivity"
+        action: "search"
+        model: "general_audit_ws_d133f46.checklist"
+        domain:
+          - ["worksheet_id", "=", "REC: worksheet.id"]
+          - ["item_id", "=", "REC: item_objectivity.id"]
+        save_as: "line_objectivity"
+        expect_count: 1
+
+      - step: "Assert related communication_type mirrors item_objectivity"
+        action: "assert"
+        target: "line_objectivity"
+        asserts:
+          communication_type:
+            type: "value"
+            expected: "objectivity"
+
+      - step: "Find checklist line for item_technical"
+        action: "search"
+        model: "general_audit_ws_d133f46.checklist"
+        domain:
+          - ["worksheet_id", "=", "REC: worksheet.id"]
+          - ["item_id", "=", "REC: item_technical.id"]
+        save_as: "line_technical"
+        expect_count: 1
+
+      - step: "Assert related communication_type mirrors item_technical"
+        action: "assert"
+        target: "line_technical"
+        asserts:
+          communication_type:
+            type: "value"
+            expected: "technical"
+
+      - step: "Call action_populate_checklist a second time"
+        action: "call"
+        target: "worksheet"
+        method: "action_populate_checklist"
+        as_user: "base.user_admin"
+
+      - step: "Verify checklist line for item_objectivity was not duplicated"
+        action: "search"
+        model: "general_audit_ws_d133f46.checklist"
+        domain:
+          - ["worksheet_id", "=", "REC: worksheet.id"]
+          - ["item_id", "=", "REC: item_objectivity.id"]
+        save_as: "idempotent_objectivity"
+        expect_count: 1
+
+  # ------------------------------------------------------------------
+  # Workflow draft -> open -> confirm -> done
+  # ------------------------------------------------------------------
+  - name: "Workflow d133f46 - draft to done"
+    steps:
+      - step: "Create worksheet d133f46"
+        action: "create"
+        model: "general_audit_ws_d133f46"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_d133f46.id"
+
+      - step: "Assert worksheet created in draft"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          id:
+            type: "value"
+            operator: "is_truthy"
+          state:
+            type: "value"
+            expected: "draft"
+
+      - step: "Open worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_open"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after opening worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Assert worksheet open"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          state:
+            type: "value"
+            expected: "open"
+
+      - step: "Fill required conclusion fields before confirm"
+        action: "write"
+        target: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          conclusion_id: "REC: conclusion_d133f46.id"
+          conclusion:
+            "Internal auditor's work results reviewed and adequately addressed."
+
+      - step: "Confirm worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_confirm"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after confirming worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Assert worksheet confirmed"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          state:
+            type: "value"
+            expected: "confirm"
+
+      - step: "Approve worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_approve_approval"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after approving worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Assert worksheet done"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          state:
+            type: "value"
+            expected: "done"
+
+  # ------------------------------------------------------------------
+  # Cancel and restart
+  # ------------------------------------------------------------------
+  - name: "Worksheet d133f46 - Cancel and restart"
+    steps:
+      - step: "Create worksheet d133f46"
+        action: "create"
+        model: "general_audit_ws_d133f46"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_d133f46.id"
+
+      - step: "Open worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_open"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after opening worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Assert worksheet open"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          state:
+            type: "value"
+            expected: "open"
+
+      - step: "Cancel worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_cancel"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after cancelling worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Assert worksheet cancelled"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          state:
+            type: "value"
+            expected: "cancel"
+
+      - step: "Restart worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_restart"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after restarting worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Assert worksheet back to draft"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          state:
+            type: "value"
+            expected: "draft"
