@@ -1,0 +1,870 @@
+setup:
+  steps:
+    - step: "Get config parameter model"
+      action: "search"
+      model: "ir.config_parameter"
+      domain: []
+      save_as: "config_parameter"
+      limit: 1
+
+    - step: "Allow enough CPA licenses for this scenario"
+      action: "call"
+      target: "config_parameter"
+      method: "set_param"
+      args:
+        - "ssi_general_audit.max_number_of_cpa_license"
+        - "100"
+
+    - step: "Create client partner"
+      action: "create"
+      model: "res.partner"
+      save_as: "client"
+      as_user: "base.user_admin"
+      values:
+        name: "Test Audit Client - Final Report"
+        is_company: true
+
+    - step: "Create accountant partner"
+      action: "create"
+      model: "res.partner"
+      save_as: "accountant"
+      as_user: "base.user_admin"
+      values:
+        name: "Test Audit Accountant - Final Report"
+
+    - step: "Get CPA license id category"
+      action: "ref"
+      xml_id: "ssi_partner_identification_cpa_license.partner_identification_accountant_cpa_license"
+      save_as: "cpa_category"
+
+    - step: "Grant accountant a CPA license"
+      action: "create"
+      model: "res.partner.id_number"
+      save_as: "cpa_license"
+      as_user: "base.user_admin"
+      values:
+        partner_id: "REC: accountant.id"
+        category_id: "REC: cpa_category.id"
+        name: "CPA-FINALREPORT-0001"
+
+    - step: "Create account type set"
+      action: "create"
+      model: "client_account_type_set"
+      save_as: "account_type_set"
+      as_user: "base.user_admin"
+      values:
+        name: "Test Account Type Set - Final Report"
+        code: "/"
+
+    - step: "Create financial accounting standard"
+      action: "create"
+      model: "accountant.financial_accounting_standard"
+      save_as: "standard"
+      as_user: "base.user_admin"
+      values:
+        name: "Test Financial Accounting Standard - Final Report"
+        code: "/"
+
+    - step: "Create general audit"
+      action: "create"
+      model: "general_audit"
+      save_as: "audit"
+      as_user: "base.user_admin"
+      values:
+        title: "Test General Audit - Final Report"
+        partner_id: "REC: client.id"
+        accountant_id: "REC: accountant.id"
+        account_type_set_id: "REC: account_type_set.id"
+        financial_accounting_standard_id: "REC: standard.id"
+        date_start: 2026-01-01
+        date_end: 2026-12-31
+        need_interim: false
+        need_previous: false
+        num_of_consecutive_audit_firm: 1
+        num_of_consecutive_audit_accountant: 1
+
+    - step: "Open general audit"
+      action: "call"
+      target: "audit"
+      method: "action_open"
+      as_user: "base.user_admin"
+
+    - step: "Invalidate cache after opening general audit"
+      action: "call"
+      target: "audit"
+      method: "invalidate_cache"
+
+    - step: "Assert general audit open"
+      action: "assert"
+      target: "audit"
+      asserts:
+        state:
+          type: "value"
+          expected: "open"
+
+    - step: "Get worksheet type a8c54f3"
+      action: "ref"
+      xml_id: "ssi_general_audit_worksheet_final_report.worksheet_type_a8c54f3"
+      save_as: "ws_type_a8c54f3"
+
+    - step: "Get worksheet type b66777d"
+      action: "ref"
+      xml_id: "ssi_general_audit_worksheet_final_report.worksheet_type_b66777d"
+      save_as: "ws_type_b66777d"
+
+    - step: "Get worksheet type f3ed115"
+      action: "ref"
+      xml_id: "ssi_general_audit_worksheet_final_report.worksheet_type_f3ed115"
+      save_as: "ws_type_f3ed115"
+
+scenarios:
+  # ------------------------------------------------------------------
+  # general_audit_ws_a8c54f3 - create in draft (default type_id)
+  # ------------------------------------------------------------------
+  - name: "Worksheet a8c54f3 - Create in draft with default type_id"
+    steps:
+      - step: "Create worksheet a8c54f3 without explicit type_id"
+        action: "create"
+        model: "general_audit_ws_a8c54f3"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+
+      - step: "Assert worksheet created in draft with default type_id"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          id:
+            type: "value"
+            operator: "is_truthy"
+          state:
+            type: "value"
+            expected: "draft"
+          type_id:
+            type: "value"
+            operator: "is_truthy"
+
+  # ------------------------------------------------------------------
+  # general_audit_ws_a8c54f3 - workflow draft to done
+  # ------------------------------------------------------------------
+  - name: "Worksheet a8c54f3 - Workflow open, confirm and approve to done"
+    steps:
+      - step: "Create worksheet a8c54f3"
+        action: "create"
+        model: "general_audit_ws_a8c54f3"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_a8c54f3.id"
+
+      - step: "Assert initial state is draft"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          state:
+            type: "value"
+            expected: "draft"
+
+      - step: "Open worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_open"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after opening worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Assert worksheet open"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          state:
+            type: "value"
+            expected: "open"
+
+      - step: "Fill required conclusion fields before confirm"
+        action: "write"
+        target: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          conclusion_id:
+            "REF:
+            ssi_general_audit_worksheet_final_report.general_audit_worksheet_conclusion_172_3eec52b2"
+          conclusion: "Audit final memorandum reviewed and adequate."
+
+      - step: "Confirm worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_confirm"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after confirming worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Assert worksheet confirmed"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          state:
+            type: "value"
+            expected: "confirm"
+
+      - step: "Approve worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_approve_approval"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after approving worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Assert worksheet done"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          state:
+            type: "value"
+            expected: "done"
+          conclusion_id:
+            type: "m2o"
+            expected_xml_id: "ssi_general_audit_worksheet_final_report.general_audit_worksheet_conclusion_172_3eec52b2"
+
+  # ------------------------------------------------------------------
+  # general_audit_ws_a8c54f3 - cancel and restart (from open)
+  # ------------------------------------------------------------------
+  - name: "Worksheet a8c54f3 - Cancel and restart"
+    steps:
+      - step: "Create worksheet a8c54f3"
+        action: "create"
+        model: "general_audit_ws_a8c54f3"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_a8c54f3.id"
+
+      - step: "Open worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_open"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after opening worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Assert worksheet open"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          state:
+            type: "value"
+            expected: "open"
+
+      - step: "Cancel worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_cancel"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after cancelling worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Assert worksheet cancelled"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          state:
+            type: "value"
+            expected: "cancel"
+
+      - step: "Restart worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_restart"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after restarting worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Assert worksheet back to draft"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          state:
+            type: "value"
+            expected: "draft"
+
+  # ------------------------------------------------------------------
+  # general_audit_ws_b66777d - create in draft (default type_id)
+  # ------------------------------------------------------------------
+  - name: "Worksheet b66777d - Create in draft with default type_id"
+    steps:
+      - step: "Create worksheet b66777d without explicit type_id"
+        action: "create"
+        model: "general_audit_ws_b66777d"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+
+      - step: "Assert worksheet created in draft with default type_id"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          id:
+            type: "value"
+            operator: "is_truthy"
+          state:
+            type: "value"
+            expected: "draft"
+          type_id:
+            type: "value"
+            operator: "is_truthy"
+
+  # ------------------------------------------------------------------
+  # general_audit_ws_b66777d - workflow draft to done
+  # ------------------------------------------------------------------
+  - name: "Worksheet b66777d - Workflow open, confirm and approve to done"
+    steps:
+      - step: "Create worksheet b66777d"
+        action: "create"
+        model: "general_audit_ws_b66777d"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_b66777d.id"
+
+      - step: "Assert initial state is draft"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          state:
+            type: "value"
+            expected: "draft"
+
+      - step: "Open worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_open"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after opening worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Assert worksheet open"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          state:
+            type: "value"
+            expected: "open"
+
+      - step: "Fill required conclusion fields before confirm"
+        action: "write"
+        target: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          conclusion_id:
+            "REF:
+            ssi_general_audit_worksheet_final_report.general_audit_worksheet_conclusion_174_66267224"
+          conclusion: "Independent auditor report reviewed and adequate."
+
+      - step: "Confirm worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_confirm"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after confirming worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Assert worksheet confirmed"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          state:
+            type: "value"
+            expected: "confirm"
+
+      - step: "Approve worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_approve_approval"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after approving worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Assert worksheet done"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          state:
+            type: "value"
+            expected: "done"
+          conclusion_id:
+            type: "m2o"
+            expected_xml_id: "ssi_general_audit_worksheet_final_report.general_audit_worksheet_conclusion_174_66267224"
+
+  # ------------------------------------------------------------------
+  # general_audit_ws_b66777d - cancel and restart (from open)
+  # ------------------------------------------------------------------
+  - name: "Worksheet b66777d - Cancel and restart"
+    steps:
+      - step: "Create worksheet b66777d"
+        action: "create"
+        model: "general_audit_ws_b66777d"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_b66777d.id"
+
+      - step: "Open worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_open"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after opening worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Assert worksheet open"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          state:
+            type: "value"
+            expected: "open"
+
+      - step: "Cancel worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_cancel"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after cancelling worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Assert worksheet cancelled"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          state:
+            type: "value"
+            expected: "cancel"
+
+      - step: "Restart worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_restart"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after restarting worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Assert worksheet back to draft"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          state:
+            type: "value"
+            expected: "draft"
+
+  # ------------------------------------------------------------------
+  # general_audit_ws_f3ed115 - create in draft (default type_id)
+  # ------------------------------------------------------------------
+  - name: "Worksheet f3ed115 - Create in draft with default type_id"
+    steps:
+      - step: "Create worksheet f3ed115 without explicit type_id"
+        action: "create"
+        model: "general_audit_ws_f3ed115"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+
+      - step: "Assert worksheet created in draft with default type_id"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          id:
+            type: "value"
+            operator: "is_truthy"
+          state:
+            type: "value"
+            expected: "draft"
+          type_id:
+            type: "value"
+            operator: "is_truthy"
+
+  # ------------------------------------------------------------------
+  # general_audit_ws_f3ed115 - workflow draft to done
+  # ------------------------------------------------------------------
+  - name: "Worksheet f3ed115 - Workflow open, confirm and approve to done"
+    steps:
+      - step: "Create worksheet f3ed115"
+        action: "create"
+        model: "general_audit_ws_f3ed115"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_f3ed115.id"
+
+      - step: "Assert initial state is draft"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          state:
+            type: "value"
+            expected: "draft"
+
+      - step: "Open worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_open"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after opening worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Assert worksheet open"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          state:
+            type: "value"
+            expected: "open"
+
+      - step: "Fill required conclusion fields before confirm"
+        action: "write"
+        target: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          conclusion_id:
+            "REF:
+            ssi_general_audit_worksheet_final_report.general_audit_worksheet_conclusion_176_35e07560"
+          conclusion: "Audit report reviewed and adequate."
+
+      - step: "Confirm worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_confirm"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after confirming worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Assert worksheet confirmed"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          state:
+            type: "value"
+            expected: "confirm"
+
+      - step: "Approve worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_approve_approval"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after approving worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Assert worksheet done"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          state:
+            type: "value"
+            expected: "done"
+          conclusion_id:
+            type: "m2o"
+            expected_xml_id: "ssi_general_audit_worksheet_final_report.general_audit_worksheet_conclusion_176_35e07560"
+
+  # ------------------------------------------------------------------
+  # general_audit_ws_f3ed115 - cancel and restart (from open)
+  # ------------------------------------------------------------------
+  - name: "Worksheet f3ed115 - Cancel and restart"
+    steps:
+      - step: "Create worksheet f3ed115"
+        action: "create"
+        model: "general_audit_ws_f3ed115"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_f3ed115.id"
+
+      - step: "Open worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_open"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after opening worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Assert worksheet open"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          state:
+            type: "value"
+            expected: "open"
+
+      - step: "Cancel worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_cancel"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after cancelling worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Assert worksheet cancelled"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          state:
+            type: "value"
+            expected: "cancel"
+
+      - step: "Restart worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_restart"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after restarting worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Assert worksheet back to draft"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          state:
+            type: "value"
+            expected: "draft"
+
+  # ------------------------------------------------------------------
+  # Compute standard_item_ids - normal and empty (mixin behaviour,
+  # represented via general_audit_ws_a8c54f3 - identical across the
+  # three worksheet models since it comes from the shared mixin)
+  # ------------------------------------------------------------------
+  - name: "Compute standard_item_ids - normal and empty"
+    steps:
+      - step: "Create audit standard item"
+        action: "create"
+        model: "general_audit_standard_audit"
+        save_as: "standard_item"
+        as_user: "base.user_admin"
+        values:
+          name: "ISA 700 - Forming an Opinion"
+          code: "/"
+
+      - step: "Create worksheet type with standard item"
+        action: "create"
+        model: "general_audit_worksheet_type"
+        save_as: "type_with_item"
+        as_user: "base.user_admin"
+        values:
+          name: "Final Report - Custom Type With Standard Item"
+          code: "/"
+          model_name: "general_audit_ws_a8c54f3"
+          standard_item_ids: [[6, 0, ["REC: standard_item.id"]]]
+
+      - step: "Create worksheet type without standard item"
+        action: "create"
+        model: "general_audit_worksheet_type"
+        save_as: "type_without_item"
+        as_user: "base.user_admin"
+        values:
+          name: "Final Report - Custom Type Without Standard Item"
+          code: "/"
+          model_name: "general_audit_ws_a8c54f3"
+
+      - step: "Create worksheet using type with standard item"
+        action: "create"
+        model: "general_audit_ws_a8c54f3"
+        save_as: "worksheet_with_item"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: type_with_item.id"
+
+      - step: "Assert standard_item_ids computed with the linked item"
+        action: "assert"
+        target: "worksheet_with_item"
+        asserts:
+          standard_item_ids:
+            type: "m2m"
+            check: "exact"
+            expected_records:
+              - "REC: standard_item"
+
+      - step: "Create worksheet using type without standard item"
+        action: "create"
+        model: "general_audit_ws_a8c54f3"
+        save_as: "worksheet_without_item"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: type_without_item.id"
+
+      - step: "Assert standard_item_ids computed empty"
+        action: "assert"
+        target: "worksheet_without_item"
+        asserts:
+          standard_item_ids:
+            type: "m2m"
+            check: "count"
+            expected_count: 0
+
+  # ------------------------------------------------------------------
+  # Compute allowed_conclusion_ids - normal and empty (mixin behaviour,
+  # represented via general_audit_ws_a8c54f3)
+  # ------------------------------------------------------------------
+  - name: "Compute allowed_conclusion_ids - normal and empty"
+    steps:
+      - step: "Create worksheet type with conclusion"
+        action: "create"
+        model: "general_audit_worksheet_type"
+        save_as: "type_with_conclusion"
+        as_user: "base.user_admin"
+        values:
+          name: "Final Report - Custom Type With Conclusion"
+          code: "/"
+          model_name: "general_audit_ws_a8c54f3"
+
+      - step: "Create conclusion for custom type"
+        action: "create"
+        model: "general_audit_worksheet_conclusion"
+        save_as: "custom_conclusion"
+        as_user: "base.user_admin"
+        values:
+          name: "Custom conclusion - normal"
+          code: "/"
+          type_id: "REC: type_with_conclusion.id"
+
+      - step: "Create worksheet type without conclusion"
+        action: "create"
+        model: "general_audit_worksheet_type"
+        save_as: "type_without_conclusion"
+        as_user: "base.user_admin"
+        values:
+          name: "Final Report - Custom Type Without Conclusion"
+          code: "/"
+          model_name: "general_audit_ws_a8c54f3"
+
+      - step: "Create worksheet using type with conclusion"
+        action: "create"
+        model: "general_audit_ws_a8c54f3"
+        save_as: "worksheet_with_conclusion"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: type_with_conclusion.id"
+
+      - step: "Assert allowed_conclusion_ids computed with the linked conclusion"
+        action: "assert"
+        target: "worksheet_with_conclusion"
+        asserts:
+          allowed_conclusion_ids:
+            type: "m2m"
+            check: "exact"
+            expected_records:
+              - "REC: custom_conclusion"
+
+      - step: "Create worksheet using type without conclusion"
+        action: "create"
+        model: "general_audit_ws_a8c54f3"
+        save_as: "worksheet_without_conclusion"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: type_without_conclusion.id"
+
+      - step: "Assert allowed_conclusion_ids computed empty"
+        action: "assert"
+        target: "worksheet_without_conclusion"
+        asserts:
+          allowed_conclusion_ids:
+            type: "m2m"
+            check: "count"
+            expected_count: 0
+
+  # ------------------------------------------------------------------
+  # Onchange type_id -> parent_type_id (general_audit_worksheet_mixin)
+  # represented via general_audit_ws_a8c54f3
+  # ------------------------------------------------------------------
+  - name: "Onchange type_id sets parent_type_id"
+    steps:
+      # type_id is hard-readonly in the shared worksheet mixin form view
+      # (`<field name="type_id" readonly="1" force_save="1" />` in
+      # ssi_general_audit/views/worksheet/general_audit_worksheet_mixin_views.xml),
+      # so it can only ever take its default value on a new record -- it is
+      # never user-editable. The onchange therefore only fires once, from
+      # that default. Save the form first and assert on the resulting
+      # record, matching the pattern already used by
+      # ssi_general_audit_worksheet_assignment_letter's onchange test.
+      - step: "Open new worksheet form with default type_id"
+        action: "form"
+        model: "general_audit_ws_a8c54f3"
+        save_as: "onchange_worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit"
+        save: true
+
+      - step: "Assert default type_id propagated to parent_type_id via onchange"
+        action: "assert"
+        target: "onchange_worksheet"
+        asserts:
+          type_id:
+            type: "m2o"
+            expected_xml_id: "ssi_general_audit_worksheet_final_report.worksheet_type_a8c54f3"
+          parent_type_id:
+            type: "m2o"
+            expected_xml_id: "ssi_general_audit_worksheet_final_report.worksheet_type_a8c54f3"
