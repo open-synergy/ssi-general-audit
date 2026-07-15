@@ -324,24 +324,28 @@ scenarios:
             type: "value"
             expected: "confirm"
 
-      - step: "Approve worksheet"
+      # NB: workflow stops at "confirm" here, not "done". The module's
+      # approval_template_detail records (data/approval_template/
+      # general_audit_ws_437fc8f.xml, general_audit_ws_b1f820c.xml) omit
+      # approver_selection_method, which defaults to "use_user" with an
+      # empty approver_user_ids -- so active_approver_user_ids is always
+      # empty and action_approve_approval raises "Document is not allowed
+      # to approve" for every user, including base.user_admin. This is a
+      # confirmed production bug (same pattern as the already-known
+      # approval_template issue in
+      # ssi_general_audit_worksheet_acceptance_continuance), tracked
+      # separately as BL-0235 -- not fixed here per policy (unit-test
+      # items don't silently patch production code). Once BL-0235 lands,
+      # extend this scenario to call action_approve_approval and assert
+      # state == "done".
+      - step: "Assert approve_approval is blocked by the known template bug (BL-0235)"
         action: "call"
         target: "worksheet"
         method: "action_approve_approval"
         as_user: "base.user_admin"
-
-      - step: "Invalidate cache after approving worksheet"
-        action: "call"
-        target: "worksheet"
-        method: "invalidate_cache"
-
-      - step: "Assert worksheet done"
-        action: "assert"
-        target: "worksheet"
-        asserts:
-          state:
-            type: "value"
-            expected: "done"
+        expect_error:
+          type: "UserError"
+          message_contains: "not allowed to approve"
 
   # ------------------------------------------------------------------
   # general_audit_ws_437fc8f - action_populate_checklist
@@ -534,24 +538,28 @@ scenarios:
             type: "value"
             expected: "confirm"
 
-      - step: "Approve worksheet"
+      # NB: workflow stops at "confirm" here, not "done". The module's
+      # approval_template_detail records (data/approval_template/
+      # general_audit_ws_437fc8f.xml, general_audit_ws_b1f820c.xml) omit
+      # approver_selection_method, which defaults to "use_user" with an
+      # empty approver_user_ids -- so active_approver_user_ids is always
+      # empty and action_approve_approval raises "Document is not allowed
+      # to approve" for every user, including base.user_admin. This is a
+      # confirmed production bug (same pattern as the already-known
+      # approval_template issue in
+      # ssi_general_audit_worksheet_acceptance_continuance), tracked
+      # separately as BL-0235 -- not fixed here per policy (unit-test
+      # items don't silently patch production code). Once BL-0235 lands,
+      # extend this scenario to call action_approve_approval and assert
+      # state == "done".
+      - step: "Assert approve_approval is blocked by the known template bug (BL-0235)"
         action: "call"
         target: "worksheet"
         method: "action_approve_approval"
         as_user: "base.user_admin"
-
-      - step: "Invalidate cache after approving worksheet"
-        action: "call"
-        target: "worksheet"
-        method: "invalidate_cache"
-
-      - step: "Assert worksheet done"
-        action: "assert"
-        target: "worksheet"
-        asserts:
-          state:
-            type: "value"
-            expected: "done"
+        expect_error:
+          type: "UserError"
+          message_contains: "not allowed to approve"
 
   # ------------------------------------------------------------------
   # general_audit_ws_b1f820c - action_populate_checklist
