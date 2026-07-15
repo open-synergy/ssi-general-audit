@@ -1,0 +1,610 @@
+# Shared fixture: a `general_audit` in state `open`, replayed before every
+# scenario (see ssi_general_audit/tests/README_FIXTURE.md for the recipe this
+# is copied from).
+setup:
+  steps:
+    - step: "Get config parameter model"
+      action: "search"
+      model: "ir.config_parameter"
+      domain: []
+      save_as: "config_parameter"
+      limit: 1
+
+    - step: "Allow enough CPA licenses for this scenario"
+      action: "call"
+      target: "config_parameter"
+      method: "set_param"
+      args:
+        - "ssi_general_audit.max_number_of_cpa_license"
+        - "100"
+
+    - step: "Create client partner"
+      action: "create"
+      model: "res.partner"
+      save_as: "client"
+      as_user: "base.user_admin"
+      values:
+        name: "Test Audit Client - PAP D4289E4"
+        is_company: true
+
+    - step: "Create accountant partner"
+      action: "create"
+      model: "res.partner"
+      save_as: "accountant"
+      as_user: "base.user_admin"
+      values:
+        name: "Test Audit Accountant - PAP D4289E4"
+
+    - step: "Get CPA license id category"
+      action: "ref"
+      xml_id: "ssi_partner_identification_cpa_license.partner_identification_accountant_cpa_license"
+      save_as: "cpa_category"
+
+    - step: "Grant accountant a CPA license"
+      action: "create"
+      model: "res.partner.id_number"
+      save_as: "cpa_license"
+      as_user: "base.user_admin"
+      values:
+        partner_id: "REC: accountant.id"
+        category_id: "REC: cpa_category.id"
+        name: "CPA-PAP-D4289E4"
+
+    - step: "Create account type set"
+      action: "create"
+      model: "client_account_type_set"
+      save_as: "account_type_set"
+      as_user: "base.user_admin"
+      values:
+        name: "Test Account Type Set - PAP D4289E4"
+        code: "/"
+
+    - step: "Create financial accounting standard"
+      action: "create"
+      model: "accountant.financial_accounting_standard"
+      save_as: "standard"
+      as_user: "base.user_admin"
+      values:
+        name: "Test Financial Accounting Standard - PAP D4289E4"
+        code: "/"
+
+    - step: "Create general audit"
+      action: "create"
+      model: "general_audit"
+      save_as: "audit"
+      as_user: "base.user_admin"
+      values:
+        title: "Test General Audit - PAP D4289E4"
+        partner_id: "REC: client.id"
+        accountant_id: "REC: accountant.id"
+        account_type_set_id: "REC: account_type_set.id"
+        financial_accounting_standard_id: "REC: standard.id"
+        date_start: 2026-01-01
+        date_end: 2026-12-31
+        need_interim: false
+        need_previous: false
+        num_of_consecutive_audit_firm: 1
+        num_of_consecutive_audit_accountant: 1
+
+    - step: "Open general audit"
+      action: "call"
+      target: "audit"
+      method: "action_open"
+      as_user: "base.user_admin"
+
+    - step: "Invalidate cache after opening general audit"
+      action: "call"
+      target: "audit"
+      method: "invalidate_cache"
+
+    - step: "Assert general audit open"
+      action: "assert"
+      target: "audit"
+      asserts:
+        state:
+          type: "value"
+          expected: "open"
+
+scenarios:
+  - name: "Create worksheet d4289e4 in draft state"
+    steps:
+      - step: "Create worksheet"
+        action: "create"
+        model: "general_audit_ws_d4289e4"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "ssi_general_audit_worksheet_preliminary_analytic_procedure.worksheet_type_d4289e4"
+      - step: "Assert draft state"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          id:
+            type: "value"
+            operator: "is_truthy"
+          state:
+            type: "value"
+            expected: "draft"
+          base_amount_source:
+            type: "value"
+            operator: "is_falsy"
+
+  - name: >
+      action_reload_ratio populates ratio_ids and the four category-filtered o2m fields
+      from the client_financial_ratio master (production master data shipped by
+      ssi_general_audit: 3 liquidity, 9 activity, 3 solvency, 4 profitability -- 19
+      total)
+    steps:
+      - step: "Create worksheet"
+        action: "create"
+        model: "general_audit_ws_d4289e4"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "ssi_general_audit_worksheet_preliminary_analytic_procedure.worksheet_type_d4289e4"
+      - step: "Open worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_open"
+        as_user: "base.user_admin"
+      - step: "Invalidate cache after open"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+      - step: "Set balance type to extrapolation"
+        action: "write"
+        target: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          base_amount_source: "extrapolation"
+      - step: "Assert ratio_ids empty before reload"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          ratio_ids:
+            type: "o2m"
+            check: "count"
+            expected_count: 0
+      - step: "Call action_reload_ratio"
+        action: "call"
+        target: "worksheet"
+        method: "action_reload_ratio"
+        as_user: "base.user_admin"
+      - step: "Assert ratio_ids and category-filtered o2m fields are populated"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          ratio_ids:
+            type: "o2m"
+            check: "count"
+            expected_count: 19
+          liquidity_ratio_ids:
+            type: "o2m"
+            check: "count"
+            expected_count: 3
+          activity_ratio_ids:
+            type: "o2m"
+            check: "count"
+            expected_count: 9
+          solvency_ratio_ids:
+            type: "o2m"
+            check: "count"
+            expected_count: 3
+          profitability_ratio_ids:
+            type: "o2m"
+            check: "count"
+            expected_count: 4
+
+  - name: >
+      action_compute_ratio computes current_amount from the "Current Ratio" master
+      formula (Current Asset / Short Term Liability) - normal, nonzero divisor
+    steps:
+      - step: "Create client account type for Current Asset (T001)"
+        action: "create"
+        model: "client_account_type"
+        save_as: "type_t001"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Type - Current Asset N"
+          code: "PAPD1-T001-N"
+          group_id: "ssi_general_audit.client_account_group_1_885ef902"
+          normal_balance: "dr"
+          python_code: "result = 400.0"
+      - step: "Create client account type for Short Term Liability (T003)"
+        action: "create"
+        model: "client_account_type"
+        save_as: "type_t003"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Type - Short Term Liability N"
+          code: "PAPD1-T003-N"
+          group_id: "ssi_general_audit.client_account_group_3_8f77474a"
+          normal_balance: "cr"
+          python_code: "result = 200.0"
+      - step: "Create standard detail for Current Asset"
+        action: "create"
+        model: "general_audit.standard_detail"
+        save_as: "standard_detail_t001"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: type_t001.id"
+      - step: "Create standard detail for Short Term Liability"
+        action: "create"
+        model: "general_audit.standard_detail"
+        save_as: "standard_detail_t003"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: type_t003.id"
+      - step: "Create group detail for Current Asset group"
+        action: "create"
+        model: "general_audit.group_detail"
+        save_as: "group_detail_t001"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          group_id: "ssi_general_audit.client_account_group_1_885ef902"
+      - step: "Create group detail for Short Term Liability group"
+        action: "create"
+        model: "general_audit.group_detail"
+        save_as: "group_detail_t003"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          group_id: "ssi_general_audit.client_account_group_3_8f77474a"
+      - step: "Assert group detail extrapolation balances aggregated correctly"
+        action: "assert"
+        target: "group_detail_t001"
+        asserts:
+          extrapolation_balance:
+            type: "value"
+            expected: 400.0
+      - step: "Create worksheet"
+        action: "create"
+        model: "general_audit_ws_d4289e4"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "ssi_general_audit_worksheet_preliminary_analytic_procedure.worksheet_type_d4289e4"
+      - step: "Open worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_open"
+        as_user: "base.user_admin"
+      - step: "Invalidate cache after open"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+      - step: "Set balance type to extrapolation"
+        action: "write"
+        target: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          base_amount_source: "extrapolation"
+      - step: "Reload ratio lines"
+        action: "call"
+        target: "worksheet"
+        method: "action_reload_ratio"
+        as_user: "base.user_admin"
+      - step: "Compute ratio amounts"
+        action: "call"
+        target: "worksheet"
+        method: "action_compute_ratio"
+        as_user: "base.user_admin"
+      - step: "Find the Current Ratio line"
+        action: "search"
+        model: "general_audit_ws_d4289e4.ratio"
+        domain:
+          - ["worksheet_id", "=", "REC: worksheet.id"]
+          - [
+              "financial_ratio_id",
+              "=",
+              "REF: ssi_general_audit.client_financial_ratio_1_f0ab3e10",
+            ]
+        save_as: "current_ratio_line"
+        expect_count: 1
+      - step: "Assert current_amount is Current Asset / Short Term Liability = 2.0"
+        action: "assert"
+        target: "current_ratio_line"
+        asserts:
+          current_amount:
+            type: "value"
+            expected: 2.0
+          extrapolation_amount:
+            type: "value"
+            expected: 2.0
+
+  - name: >
+      action_compute_ratio guards division when the divisor (Short Term Liability /
+      T003) has no data - result stays 0.0, no raise
+    steps:
+      - step: "Create client account type for Current Asset (T001) only"
+        action: "create"
+        model: "client_account_type"
+        save_as: "type_t001"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Type - Current Asset Z"
+          code: "PAPD1-T001-Z"
+          group_id: "ssi_general_audit.client_account_group_1_885ef902"
+          normal_balance: "dr"
+          python_code: "result = 400.0"
+      - step: "Create standard detail for Current Asset"
+        action: "create"
+        model: "general_audit.standard_detail"
+        save_as: "standard_detail_t001"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: type_t001.id"
+      - step: "Create group detail for Current Asset group only"
+        action: "create"
+        model: "general_audit.group_detail"
+        save_as: "group_detail_t001"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          group_id: "ssi_general_audit.client_account_group_1_885ef902"
+      - step: "Create worksheet"
+        action: "create"
+        model: "general_audit_ws_d4289e4"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "ssi_general_audit_worksheet_preliminary_analytic_procedure.worksheet_type_d4289e4"
+      - step: "Open worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_open"
+        as_user: "base.user_admin"
+      - step: "Invalidate cache after open"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+      - step: "Set balance type to extrapolation"
+        action: "write"
+        target: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          base_amount_source: "extrapolation"
+      - step: "Reload ratio lines"
+        action: "call"
+        target: "worksheet"
+        method: "action_reload_ratio"
+        as_user: "base.user_admin"
+      - step: "Compute ratio amounts - must not raise ZeroDivisionError"
+        action: "call"
+        target: "worksheet"
+        method: "action_compute_ratio"
+        as_user: "base.user_admin"
+      - step: "Find the Current Ratio line"
+        action: "search"
+        model: "general_audit_ws_d4289e4.ratio"
+        domain:
+          - ["worksheet_id", "=", "REC: worksheet.id"]
+          - [
+              "financial_ratio_id",
+              "=",
+              "REF: ssi_general_audit.client_financial_ratio_1_f0ab3e10",
+            ]
+        save_as: "current_ratio_line"
+        expect_count: 1
+      - step: "Assert current_amount stays 0.0 (guarded division)"
+        action: "assert"
+        target: "current_ratio_line"
+        asserts:
+          current_amount:
+            type: "value"
+            expected: 0.0
+          extrapolation_amount:
+            type: "value"
+            expected: 0.0
+
+  - name: "Guard _10_check_balance_type rejects duplicate balance type on confirm"
+    steps:
+      - step: "Create first worksheet"
+        action: "create"
+        model: "general_audit_ws_d4289e4"
+        save_as: "worksheet_1"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "ssi_general_audit_worksheet_preliminary_analytic_procedure.worksheet_type_d4289e4"
+      - step: "Open first worksheet"
+        action: "call"
+        target: "worksheet_1"
+        method: "action_open"
+        as_user: "base.user_admin"
+      - step: "Invalidate cache after opening first worksheet"
+        action: "call"
+        target: "worksheet_1"
+        method: "invalidate_cache"
+      - step: "Set balance type on first worksheet"
+        action: "write"
+        target: "worksheet_1"
+        as_user: "base.user_admin"
+        values:
+          base_amount_source: "extrapolation"
+      - step: "Create second worksheet with the same type and general audit"
+        action: "create"
+        model: "general_audit_ws_d4289e4"
+        save_as: "worksheet_2"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "ssi_general_audit_worksheet_preliminary_analytic_procedure.worksheet_type_d4289e4"
+      - step: "Open second worksheet"
+        action: "call"
+        target: "worksheet_2"
+        method: "action_open"
+        as_user: "base.user_admin"
+      - step: "Invalidate cache after opening second worksheet"
+        action: "call"
+        target: "worksheet_2"
+        method: "invalidate_cache"
+      - step: "Set the same balance type on second worksheet"
+        action: "write"
+        target: "worksheet_2"
+        as_user: "base.user_admin"
+        values:
+          base_amount_source: "extrapolation"
+      - step: "Confirm second worksheet must be rejected (duplicate balance type)"
+        action: "call"
+        target: "worksheet_2"
+        method: "action_confirm"
+        as_user: "base.user_admin"
+        expect_error:
+          type: "ValidationError"
+          message_contains: "already used"
+
+  - name: "Workflow draft to done"
+    steps:
+      - step: "Create worksheet"
+        action: "create"
+        model: "general_audit_ws_d4289e4"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "ssi_general_audit_worksheet_preliminary_analytic_procedure.worksheet_type_d4289e4"
+      - step: "Assert initial draft state"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          state:
+            type: "value"
+            expected: "draft"
+      - step: "Open worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_open"
+        as_user: "base.user_admin"
+      - step: "Invalidate cache after open"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+      - step: "Assert open state"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          state:
+            type: "value"
+            expected: "open"
+      - step: "Set balance type required before confirm"
+        action: "write"
+        target: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          base_amount_source: "extrapolation"
+      - step: "Create conclusion required before confirm"
+        action: "create"
+        model: "general_audit_worksheet_conclusion"
+        save_as: "conclusion"
+        as_user: "base.user_admin"
+        values:
+          name: "Ratio analysis indicates no unusual fluctuation."
+          code: "/"
+          type_id: "ssi_general_audit_worksheet_preliminary_analytic_procedure.worksheet_type_d4289e4"
+      - step: "Fill conclusion fields required by _get_fields_required_before_confirm"
+        action: "write"
+        target: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          conclusion_id: "REC: conclusion.id"
+          conclusion: "No significant unusual ratio variance identified."
+      - step: "Confirm worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_confirm"
+        as_user: "base.user_admin"
+      - step: "Invalidate cache after confirm"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+      - step: "Assert confirm state"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          state:
+            type: "value"
+            expected: "confirm"
+      - step: "Approve worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_approve_approval"
+        as_user: "base.user_admin"
+      - step: "Invalidate cache after approve"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+      - step: "Assert done state"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          state:
+            type: "value"
+            expected: "done"
+
+  - name: "Workflow open to cancel to restart"
+    steps:
+      - step: "Create worksheet"
+        action: "create"
+        model: "general_audit_ws_d4289e4"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "ssi_general_audit_worksheet_preliminary_analytic_procedure.worksheet_type_d4289e4"
+      - step: "Open worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_open"
+        as_user: "base.user_admin"
+      - step: "Invalidate cache after open"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+      - step: "Assert open state"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          state:
+            type: "value"
+            expected: "open"
+      - step: "Cancel worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_cancel"
+        as_user: "base.user_admin"
+      - step: "Invalidate cache after cancel"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+      - step: "Assert cancelled state"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          state:
+            type: "value"
+            expected: "cancel"
+      - step: "Restart worksheet from cancel"
+        action: "call"
+        target: "worksheet"
+        method: "action_restart"
+        as_user: "base.user_admin"
+      - step: "Invalidate cache after restart"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+      - step: "Assert draft state after restart"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          state:
+            type: "value"
+            expected: "draft"

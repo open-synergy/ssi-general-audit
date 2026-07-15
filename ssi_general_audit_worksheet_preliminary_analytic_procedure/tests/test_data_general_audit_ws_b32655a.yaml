@@ -1,0 +1,750 @@
+# Shared fixture: a `general_audit` in state `open`, replayed before every
+# scenario (see ssi_general_audit/tests/README_FIXTURE.md for the recipe this
+# is copied from). `need_interim`/`need_previous` are false so the audit
+# never needs a real trial balance -- which also means every
+# `general_audit.standard_detail` created below will always resolve
+# `home_statement_balance` / `interim_balance` / `previous_balance` to 0.0
+# (those are `related` fields through a trial-balance chain that is never
+# populated in this fixture). Only `extrapolation_balance` (driven by
+# `client_account_type.python_code`) is directly controllable, which shapes
+# which "normal" vs "zero" sub-cases are actually reachable below.
+setup:
+  steps:
+    - step: "Get config parameter model"
+      action: "search"
+      model: "ir.config_parameter"
+      domain: []
+      save_as: "config_parameter"
+      limit: 1
+
+    - step: "Allow enough CPA licenses for this scenario"
+      action: "call"
+      target: "config_parameter"
+      method: "set_param"
+      args:
+        - "ssi_general_audit.max_number_of_cpa_license"
+        - "100"
+
+    - step: "Create client partner"
+      action: "create"
+      model: "res.partner"
+      save_as: "client"
+      as_user: "base.user_admin"
+      values:
+        name: "Test Audit Client - PAP B32655A"
+        is_company: true
+
+    - step: "Create accountant partner"
+      action: "create"
+      model: "res.partner"
+      save_as: "accountant"
+      as_user: "base.user_admin"
+      values:
+        name: "Test Audit Accountant - PAP B32655A"
+
+    - step: "Get CPA license id category"
+      action: "ref"
+      xml_id: "ssi_partner_identification_cpa_license.partner_identification_accountant_cpa_license"
+      save_as: "cpa_category"
+
+    - step: "Grant accountant a CPA license"
+      action: "create"
+      model: "res.partner.id_number"
+      save_as: "cpa_license"
+      as_user: "base.user_admin"
+      values:
+        partner_id: "REC: accountant.id"
+        category_id: "REC: cpa_category.id"
+        name: "CPA-PAP-B32655A"
+
+    - step: "Create account type set"
+      action: "create"
+      model: "client_account_type_set"
+      save_as: "account_type_set"
+      as_user: "base.user_admin"
+      values:
+        name: "Test Account Type Set - PAP B32655A"
+        code: "/"
+
+    - step: "Create financial accounting standard"
+      action: "create"
+      model: "accountant.financial_accounting_standard"
+      save_as: "standard"
+      as_user: "base.user_admin"
+      values:
+        name: "Test Financial Accounting Standard - PAP B32655A"
+        code: "/"
+
+    - step: "Create general audit"
+      action: "create"
+      model: "general_audit"
+      save_as: "audit"
+      as_user: "base.user_admin"
+      values:
+        title: "Test General Audit - PAP B32655A"
+        partner_id: "REC: client.id"
+        accountant_id: "REC: accountant.id"
+        account_type_set_id: "REC: account_type_set.id"
+        financial_accounting_standard_id: "REC: standard.id"
+        date_start: 2026-01-01
+        date_end: 2026-12-31
+        need_interim: false
+        need_previous: false
+        num_of_consecutive_audit_firm: 1
+        num_of_consecutive_audit_accountant: 1
+
+    - step: "Open general audit"
+      action: "call"
+      target: "audit"
+      method: "action_open"
+      as_user: "base.user_admin"
+
+    - step: "Invalidate cache after opening general audit"
+      action: "call"
+      target: "audit"
+      method: "invalidate_cache"
+
+    - step: "Assert general audit open"
+      action: "assert"
+      target: "audit"
+      asserts:
+        state:
+          type: "value"
+          expected: "open"
+
+scenarios:
+  - name: "Create worksheet b32655a in draft state"
+    steps:
+      - step: "Create worksheet"
+        action: "create"
+        model: "general_audit_ws_b32655a"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "ssi_general_audit_worksheet_preliminary_analytic_procedure.worksheet_type_b32655a"
+      - step: "Assert draft state and default balance type"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          id:
+            type: "value"
+            operator: "is_truthy"
+          state:
+            type: "value"
+            expected: "draft"
+          base_amount_source:
+            type: "value"
+            expected: "extrapolation"
+
+  - name: "Compute total_asset and total_revenue - normal values"
+    steps:
+      - step: "Create general audit computation for Total Asset item"
+        action: "create"
+        model: "general_audit.computation"
+        save_as: "computation_ta"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          computation_item_id: "ssi_general_audit.trial_balance_computation_item_1_d0b0cb3e"
+          extrapolation_amount: 1000.0
+      - step: "Create general audit computation for Total Revenue item"
+        action: "create"
+        model: "general_audit.computation"
+        save_as: "computation_tr"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          computation_item_id: "ssi_general_audit.trial_balance_computation_item_5_2a8e8641"
+          extrapolation_amount: 2000.0
+      - step: "Create worksheet with extrapolation balance type"
+        action: "create"
+        model: "general_audit_ws_b32655a"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "ssi_general_audit_worksheet_preliminary_analytic_procedure.worksheet_type_b32655a"
+          base_amount_source: "extrapolation"
+      - step: "Assert total_asset and total_revenue computed"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          total_asset:
+            type: "value"
+            expected: 1000.0
+          total_revenue:
+            type: "value"
+            expected: 2000.0
+
+  - name: "Compute total_asset and total_revenue - empty (no matching computation)"
+    steps:
+      - step: "Create worksheet without any general_audit.computation"
+        action: "create"
+        model: "general_audit_ws_b32655a"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "ssi_general_audit_worksheet_preliminary_analytic_procedure.worksheet_type_b32655a"
+          base_amount_source: "extrapolation"
+      - step: "Assert total_asset and total_revenue are zero"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          total_asset:
+            type: "value"
+            expected: 0.0
+          total_revenue:
+            type: "value"
+            expected: 0.0
+
+  - name: "action_reload_analysis_ids populates lines from standard details"
+    steps:
+      - step: "Create client account type for reload scenario"
+        action: "create"
+        model: "client_account_type"
+        save_as: "account_type"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Type - Reload B32655A"
+          code: "PAPB1-TYPE-RELOAD"
+          group_id: "ssi_general_audit.client_account_group_1_885ef902"
+          normal_balance: "dr"
+          python_code: "result = 0.0"
+      - step: "Create standard detail on the audit"
+        action: "create"
+        model: "general_audit.standard_detail"
+        save_as: "standard_detail"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: account_type.id"
+      - step: "Create worksheet"
+        action: "create"
+        model: "general_audit_ws_b32655a"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "ssi_general_audit_worksheet_preliminary_analytic_procedure.worksheet_type_b32655a"
+      - step: "Open worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_open"
+        as_user: "base.user_admin"
+      - step: "Invalidate cache after open"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+      - step: "Assert analysis_ids empty before reload"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          analysis_ids:
+            type: "o2m"
+            check: "count"
+            expected_count: 0
+      - step: "Call action_reload_analysis_ids"
+        action: "call"
+        target: "worksheet"
+        method: "action_reload_analysis_ids"
+        as_user: "base.user_admin"
+      - step: "Assert one analysis line created per standard detail"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          analysis_ids:
+            type: "o2m"
+            check: "count"
+            expected_count: 1
+      - step: "Find the created analysis line"
+        action: "search"
+        model: "general_audit_ws_b32655a.vertical_horizontal_analysis"
+        domain: [["worksheet_id", "=", "REC: worksheet.id"]]
+        save_as: "analysis_line"
+        expect_count: 1
+      - step: "Assert the line references the standard detail"
+        action: "assert"
+        target: "analysis_line"
+        asserts:
+          standard_detail_id:
+            type: "m2o"
+            expected: "REC: standard_detail"
+
+  - name:
+      "Compute extrapolation_balance, vertical and horizontal analysis - normal values"
+    steps:
+      - step: "Create computation item for the base figure"
+        action: "create"
+        model: "trial_balance_computation_item"
+        save_as: "computation_item"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Computation Item - Vertical Normal"
+          code: "PAPB1-CI-VERT-N"
+          category: "summary"
+          python_code: "result = 0.0"
+      - step: "Create client account type linked to the computation item"
+        action: "create"
+        model: "client_account_type"
+        save_as: "account_type"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Type - Vertical Normal"
+          code: "PAPB1-TYPE-VERT-N"
+          group_id: "ssi_general_audit.client_account_group_1_885ef902"
+          normal_balance: "dr"
+          analytic_procedure_computation_item_id: "REC: computation_item.id"
+          python_code: "result = 250.0"
+      - step: "Create standard detail on the audit"
+        action: "create"
+        model: "general_audit.standard_detail"
+        save_as: "standard_detail"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: account_type.id"
+      - step: "Create general audit computation for the base figure"
+        action: "create"
+        model: "general_audit.computation"
+        save_as: "computation"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          computation_item_id: "REC: computation_item.id"
+          extrapolation_amount: 500.0
+      - step: "Create worksheet"
+        action: "create"
+        model: "general_audit_ws_b32655a"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "ssi_general_audit_worksheet_preliminary_analytic_procedure.worksheet_type_b32655a"
+          base_amount_source: "extrapolation"
+      - step: "Open worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_open"
+        as_user: "base.user_admin"
+      - step: "Invalidate cache after open"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+      - step: "Create analysis line"
+        action: "create"
+        model: "general_audit_ws_b32655a.vertical_horizontal_analysis"
+        save_as: "line"
+        as_user: "base.user_admin"
+        values:
+          worksheet_id: "REC: worksheet.id"
+          standard_detail_id: "REC: standard_detail.id"
+      - step: >
+          Assert extrapolation_balance (250.0), extrapolation_vertical_analysis (250.0 /
+          500.0 * 100 = 50.0), and horizontal figures. previous_balance is always 0.0 in
+          this fixture (no real prior-period trial balance), so extrapolation_change
+          equals extrapolation_balance and both change-percent fields stay 0.0 via the
+          previous_balance != 0.0 guard -- this exercises the same "previous_balance =
+          0" guarded branch the backlog's "normal" and "zero" horizontal scenarios both
+          reduce to under this fixture.
+        action: "assert"
+        target: "line"
+        asserts:
+          extrapolation_balance:
+            type: "value"
+            expected: 250.0
+          extrapolation_base_figure:
+            type: "value"
+            expected: 500.0
+          extrapolation_vertical_analysis:
+            type: "value"
+            expected: 50.0
+          interim_vertical_analysis:
+            type: "value"
+            expected: 0.0
+          previous_vertical_analysis:
+            type: "value"
+            expected: 0.0
+          extrapolation_change:
+            type: "value"
+            expected: 250.0
+          extrapolation_change_percent:
+            type: "value"
+            expected: 0.0
+          interim_change:
+            type: "value"
+            expected: 0.0
+          interim_change_percent:
+            type: "value"
+            expected: 0.0
+
+  - name: "Compute vertical analysis - division guard when base figure is zero"
+    steps:
+      - step: "Create client account type with a balance but no computation item link"
+        action: "create"
+        model: "client_account_type"
+        save_as: "account_type_no_base"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Type - Vertical Zero Base"
+          code: "PAPB1-TYPE-VERT-ZB"
+          group_id: "ssi_general_audit.client_account_group_1_885ef902"
+          normal_balance: "dr"
+          python_code: "result = 300.0"
+      - step:
+          "Create client account type with zero balance and no computation item link"
+        action: "create"
+        model: "client_account_type"
+        save_as: "account_type_all_zero"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Type - Vertical All Zero"
+          code: "PAPB1-TYPE-VERT-Z0"
+          group_id: "ssi_general_audit.client_account_group_1_885ef902"
+          normal_balance: "dr"
+          python_code: "result = 0.0"
+      - step: "Create standard detail with nonzero balance"
+        action: "create"
+        model: "general_audit.standard_detail"
+        save_as: "standard_detail_no_base"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: account_type_no_base.id"
+      - step: "Create standard detail with zero balance"
+        action: "create"
+        model: "general_audit.standard_detail"
+        save_as: "standard_detail_all_zero"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: account_type_all_zero.id"
+      - step: "Create worksheet"
+        action: "create"
+        model: "general_audit_ws_b32655a"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "ssi_general_audit_worksheet_preliminary_analytic_procedure.worksheet_type_b32655a"
+          base_amount_source: "extrapolation"
+      - step: "Open worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_open"
+        as_user: "base.user_admin"
+      - step: "Invalidate cache after open"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+      - step: "Create analysis line with nonzero balance but zero base figure"
+        action: "create"
+        model: "general_audit_ws_b32655a.vertical_horizontal_analysis"
+        save_as: "line_no_base"
+        as_user: "base.user_admin"
+        values:
+          worksheet_id: "REC: worksheet.id"
+          standard_detail_id: "REC: standard_detail_no_base.id"
+      - step: "Create analysis line with zero balance and zero base figure"
+        action: "create"
+        model: "general_audit_ws_b32655a.vertical_horizontal_analysis"
+        save_as: "line_all_zero"
+        as_user: "base.user_admin"
+        values:
+          worksheet_id: "REC: worksheet.id"
+          standard_detail_id: "REC: standard_detail_all_zero.id"
+      - step: >
+          Assert the divisor guard returns 0.0 (not a ZeroDivisionError) even when the
+          numerator (extrapolation_balance) is nonzero -- this is the real "pembagi nol"
+          case, since extrapolation_base_figure is 0.0 whenever the account type has no
+          analytic_procedure_computation_item_id.
+        action: "assert"
+        target: "line_no_base"
+        asserts:
+          extrapolation_balance:
+            type: "value"
+            expected: 300.0
+          extrapolation_base_figure:
+            type: "value"
+            expected: 0.0
+          extrapolation_vertical_analysis:
+            type: "value"
+            expected: 0.0
+          interim_vertical_analysis:
+            type: "value"
+            expected: 0.0
+          previous_vertical_analysis:
+            type: "value"
+            expected: 0.0
+      - step: "Assert the fully-empty line also stays 0.0 without raising"
+        action: "assert"
+        target: "line_all_zero"
+        asserts:
+          extrapolation_balance:
+            type: "value"
+            expected: 0.0
+          extrapolation_vertical_analysis:
+            type: "value"
+            expected: 0.0
+
+  - name: "Guard _10_check_balance_type rejects duplicate balance type on confirm"
+    steps:
+      - step: "Create first worksheet"
+        action: "create"
+        model: "general_audit_ws_b32655a"
+        save_as: "worksheet_1"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "ssi_general_audit_worksheet_preliminary_analytic_procedure.worksheet_type_b32655a"
+      - step: "Open first worksheet"
+        action: "call"
+        target: "worksheet_1"
+        method: "action_open"
+        as_user: "base.user_admin"
+      - step: "Invalidate cache after opening first worksheet"
+        action: "call"
+        target: "worksheet_1"
+        method: "invalidate_cache"
+      - step: "Create second worksheet with the same type and general audit"
+        action: "create"
+        model: "general_audit_ws_b32655a"
+        save_as: "worksheet_2"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "ssi_general_audit_worksheet_preliminary_analytic_procedure.worksheet_type_b32655a"
+      - step: "Open second worksheet"
+        action: "call"
+        target: "worksheet_2"
+        method: "action_open"
+        as_user: "base.user_admin"
+      - step: "Invalidate cache after opening second worksheet"
+        action: "call"
+        target: "worksheet_2"
+        method: "invalidate_cache"
+      - step: "Confirm second worksheet must be rejected (duplicate balance type)"
+        action: "call"
+        target: "worksheet_2"
+        method: "action_confirm"
+        as_user: "base.user_admin"
+        expect_error:
+          type: "ValidationError"
+          message_contains: "already used"
+
+  - name: "Workflow draft to done"
+    steps:
+      - step: "Create worksheet"
+        action: "create"
+        model: "general_audit_ws_b32655a"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "ssi_general_audit_worksheet_preliminary_analytic_procedure.worksheet_type_b32655a"
+      - step: "Assert initial draft state"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          state:
+            type: "value"
+            expected: "draft"
+      - step: "Open worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_open"
+        as_user: "base.user_admin"
+      - step: "Invalidate cache after open"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+      - step: "Assert open state"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          state:
+            type: "value"
+            expected: "open"
+      - step: "Create conclusion required before confirm"
+        action: "create"
+        model: "general_audit_worksheet_conclusion"
+        save_as: "conclusion"
+        as_user: "base.user_admin"
+        values:
+          name: "Vertical and horizontal analysis indicates no unusual fluctuation."
+          code: "/"
+          type_id: "ssi_general_audit_worksheet_preliminary_analytic_procedure.worksheet_type_b32655a"
+      - step: "Fill conclusion fields required by _get_fields_required_before_confirm"
+        action: "write"
+        target: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          conclusion_id: "REC: conclusion.id"
+          conclusion:
+            "No significant unusual variance identified during preliminary analytical
+            procedures."
+      - step: "Confirm worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_confirm"
+        as_user: "base.user_admin"
+      - step: "Invalidate cache after confirm"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+      - step: "Assert confirm state"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          state:
+            type: "value"
+            expected: "confirm"
+      - step: "Approve worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_approve_approval"
+        as_user: "base.user_admin"
+      - step: "Invalidate cache after approve"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+      - step: "Assert done state"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          state:
+            type: "value"
+            expected: "done"
+
+  - name: "Workflow open to cancel to restart"
+    steps:
+      - step: "Create worksheet"
+        action: "create"
+        model: "general_audit_ws_b32655a"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "ssi_general_audit_worksheet_preliminary_analytic_procedure.worksheet_type_b32655a"
+      - step: "Open worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_open"
+        as_user: "base.user_admin"
+      - step: "Invalidate cache after open"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+      - step: "Assert open state"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          state:
+            type: "value"
+            expected: "open"
+      - step: "Cancel worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_cancel"
+        as_user: "base.user_admin"
+      - step: "Invalidate cache after cancel"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+      - step: "Assert cancelled state"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          state:
+            type: "value"
+            expected: "cancel"
+      - step: "Restart worksheet from cancel"
+        action: "call"
+        target: "worksheet"
+        method: "action_restart"
+        as_user: "base.user_admin"
+      - step: "Invalidate cache after restart"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+      - step: "Assert draft state after restart"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          state:
+            type: "value"
+            expected: "draft"
+
+  - name:
+      "Onchange general_audit_id populates analysis_ids and default type sets
+      parent_type_id"
+    steps:
+      - step: "Create first client account type for onchange scenario"
+        action: "create"
+        model: "client_account_type"
+        save_as: "account_type_1"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Type - Onchange 1"
+          code: "PAPB1-TYPE-OC1"
+          group_id: "ssi_general_audit.client_account_group_1_885ef902"
+          normal_balance: "dr"
+          python_code: "result = 0.0"
+      - step: "Create second client account type for onchange scenario"
+        action: "create"
+        model: "client_account_type"
+        save_as: "account_type_2"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Type - Onchange 2"
+          code: "PAPB1-TYPE-OC2"
+          group_id: "ssi_general_audit.client_account_group_1_885ef902"
+          normal_balance: "dr"
+          python_code: "result = 0.0"
+      - step: "Create first standard detail"
+        action: "create"
+        model: "general_audit.standard_detail"
+        save_as: "standard_detail_1"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: account_type_1.id"
+      - step: "Create second standard detail"
+        action: "create"
+        model: "general_audit.standard_detail"
+        save_as: "standard_detail_2"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: account_type_2.id"
+      - step: "Fill the form by setting general_audit_id"
+        action: "form"
+        model: "general_audit_ws_b32655a"
+        save_as: "form_worksheet"
+        save: true
+        values:
+          general_audit_id: "REC: audit"
+      - step: >
+          Assert onchange_analysis_ids populated one line per standard detail, and
+          onchange_parent_type_id (from the mixin) followed the default type_id -- both
+          onchange methods fire while the Form applies field defaults/assignments,
+          before this save.
+        action: "assert"
+        target: "form_worksheet"
+        asserts:
+          analysis_ids:
+            type: "o2m"
+            check: "count"
+            expected_count: 2
+          parent_type_id:
+            type: "m2o"
+            expected_xml_id: "ssi_general_audit_worksheet_preliminary_analytic_procedure.worksheet_type_b32655a"
+
+  # NB: an "explicit mid-form type_id change" scenario was intentionally not
+  # added here: type_id is `readonly="1" force_save="1"` in the worksheet
+  # mixin's shared form view, so Form.__setattr__ rejects any attempt to
+  # change it after the initial default (AssertionError: "can't write on
+  # readonly field type_id"). The default-value path (type_id set once via
+  # _default_type_id, which then propagates to parent_type_id through
+  # onchange_parent_type_id) is already covered by the scenario above.
