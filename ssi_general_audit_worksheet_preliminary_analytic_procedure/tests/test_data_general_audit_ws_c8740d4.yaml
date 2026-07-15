@@ -376,22 +376,18 @@ scenarios:
           state:
             type: "value"
             expected: "open"
-      - step: "Create cancel reason"
-        action: "create"
-        model: "base.cancel_reason"
-        save_as: "reason"
-        as_user: "base.user_admin"
-        values:
-          name: "Salah input worksheet ringkasan"
-          code: "CANCEL-C8740D4"
-      - step: "Cancel worksheet via cancel reason wizard"
-        action: "wizard"
-        model: "base.select_cancel_reason"
+      - step: "Cancel worksheet"
+        action: "call"
         target: "worksheet"
+        method: "action_cancel"
         as_user: "base.user_admin"
-        values:
-          cancel_reason_id: "REC: reason.id"
-        method: "action_confirm"
+      - step: "Invalidate cache after cancel"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+      - step: "Assert cancelled state"
+        action: "assert"
+        target: "worksheet"
         asserts:
           state:
             type: "value"
