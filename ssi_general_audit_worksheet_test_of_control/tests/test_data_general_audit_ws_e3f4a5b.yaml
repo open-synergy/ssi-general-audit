@@ -936,53 +936,17 @@ scenarios:
   #
   # `general_audit_id` is only Form-editable in state "draft" (states={"draft":
   # [("readonly", False)]}), while `account_type_id` is only Form-editable in
-  # state "open" (states={"open": [("readonly", False)]}) - the two fields are
-  # never simultaneously editable through the Form/view layer. To still
-  # exercise the onchange itself, `account_type_id` is pre-set with a direct
-  # `write` (ORM-level, bypasses the view-only readonly restriction) while the
-  # worksheet is still in draft, then `action: form` is used only to touch
-  # `general_audit_id` (legitimately editable in draft) and observe the clear.
+  # state "open" (states={"open": [("readonly", False)]}) - the two conditions
+  # never overlap on the same record, so this cannot be driven through
+  # `action: form` at all (setting account_type_id on a draft-state Form
+  # raises, and even a bypassed value would not survive Form.save() since it
+  # never persists readonly fields). This is the same pre-existing limitation
+  # already documented and fixed for the sibling `general_audit_ws_b4f7d9c`
+  # worksheet in `ssi_general_audit_worksheet_audit_procedure_vouching` - see
+  # `test_onchange_general_audit_id_clears_account_type` in
+  # `test_general_audit_ws_e3f4a5b.py` for the Python-only equivalent (calls
+  # `onchange_account_type_id()` directly instead of through Form).
   # ------------------------------------------------------------------
-  - name: "WS e3f4a5b - Onchange general_audit_id mengosongkan account_type_id"
-    steps:
-      - step: "Create worksheet in draft"
-        action: "create"
-        model: "general_audit_ws_e3f4a5b"
-        save_as: "worksheet"
-        as_user: "base.user_admin"
-        values:
-          general_audit_id: "REC: audit.id"
-          type_id: "REC: ws_type.id"
-
-      - step: "Pre-set account_type_id directly (bypasses view readonly)"
-        action: "write"
-        target: "worksheet"
-        as_user: "base.user_admin"
-        values:
-          account_type_id: "REC: account_type.id"
-
-      - step: "Re-assign general_audit_id via form to trigger the onchange"
-        action: "form"
-        target: "worksheet"
-        as_user: "base.user_admin"
-        save: true
-        ops:
-          - set: {general_audit_id: "REC: audit"}
-
-      # Asserted on the saved record (not inline inside the form `ops:` block):
-      # asserting a falsy many2one from within `ops: [..., {assert: ...}]`
-      # crashes odoo-yaml-test with `AssertionError: __len__ was not found in
-      # the view` (the library's form-field read helper mis-forwards __len__
-      # lookups on an empty many2one to the underlying Form's field resolver).
-      # Reading the persisted value through a normal top-level `action: assert`
-      # avoids that code path entirely and still proves the onchange fired.
-      - step: "Assert account_type_id was cleared by the onchange"
-        action: "assert"
-        target: "worksheet"
-        asserts:
-          account_type_id:
-            type: "value"
-            operator: "is_falsy"
 
   # ------------------------------------------------------------------
   # 15. onchange_account_id - triggered by account_type_id
@@ -1102,19 +1066,36 @@ scenarios:
 
   # ------------------------------------------------------------------
   # 18. onchange_parent_type_id (mixin) - triggered by type_id
+  #
+  # `type_id` is hard-readonly (readonly="1" force_save="1") in the shared
+  # worksheet mixin form view and only ever takes its default value on a new
+  # record - it can never be re-assigned via Form.set() regardless of state,
+  # so the onchange only fires once from that default. Save the form and
+  # assert on the resulting record instead, matching the proven pattern used
+  # by `ssi_general_audit_worksheet_lead_schedule` for its own
+  # "Onchange type_id sets parent_type_id" scenario.
   # ------------------------------------------------------------------
   - name: "WS e3f4a5b - Onchange type_id mengisi parent_type_id (mixin)"
     steps:
-      - step: "Set type_id via form and check parent_type_id follows it"
+      - step: "Open new worksheet form with default type_id"
         action: "form"
         model: "general_audit_ws_e3f4a5b"
-        save: false
-        ops:
-          - set: {type_id: "REC: ws_type"}
-          - assert:
-              parent_type_id:
-                type: "value"
-                expected: "REC: ws_type"
+        save_as: "onchange_worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit"
+        save: true
+
+      - step: "Assert default type_id propagated to parent_type_id via onchange"
+        action: "assert"
+        target: "onchange_worksheet"
+        asserts:
+          type_id:
+            type: "m2o"
+            expected_xml_id: "ssi_general_audit_worksheet_test_of_control.worksheet_type_e3f4a5b"
+          parent_type_id:
+            type: "m2o"
+            expected_xml_id: "ssi_general_audit_worksheet_test_of_control.worksheet_type_e3f4a5b"
 
   # ------------------------------------------------------------------
   # 19. action_open_attributes - returns act_window domain restricted to this worksheet
