@@ -1,0 +1,552 @@
+setup:
+  steps:
+    - step: "Get config parameter model"
+      action: "search"
+      model: "ir.config_parameter"
+      domain: []
+      save_as: "config_parameter"
+      limit: 1
+
+    - step: "Allow enough CPA licenses for this scenario"
+      action: "call"
+      target: "config_parameter"
+      method: "set_param"
+      args:
+        - "ssi_general_audit.max_number_of_cpa_license"
+        - "100"
+
+    - step: "Create client partner"
+      action: "create"
+      model: "res.partner"
+      save_as: "client"
+      as_user: "base.user_admin"
+      values:
+        name: "Test Audit Client - Sample Determination"
+        is_company: true
+
+    - step: "Create accountant partner"
+      action: "create"
+      model: "res.partner"
+      save_as: "accountant"
+      as_user: "base.user_admin"
+      values:
+        name: "Test Audit Accountant - Sample Determination"
+
+    - step: "Get CPA license id category"
+      action: "ref"
+      xml_id: "ssi_partner_identification_cpa_license.partner_identification_accountant_cpa_license"
+      save_as: "cpa_category"
+
+    - step: "Grant accountant a CPA license"
+      action: "create"
+      model: "res.partner.id_number"
+      save_as: "cpa_license"
+      as_user: "base.user_admin"
+      values:
+        partner_id: "REC: accountant.id"
+        category_id: "REC: cpa_category.id"
+        name: "CPA-B4F8E1A-0001"
+
+    - step: "Create account type set"
+      action: "create"
+      model: "client_account_type_set"
+      save_as: "account_type_set"
+      as_user: "base.user_admin"
+      values:
+        name: "Test Account Type Set - Sample Determination"
+        code: "/"
+
+    - step: "Create financial accounting standard"
+      action: "create"
+      model: "accountant.financial_accounting_standard"
+      save_as: "standard"
+      as_user: "base.user_admin"
+      values:
+        name: "Test Financial Accounting Standard - Sample Determination"
+        code: "/"
+
+    - step: "Create general audit"
+      action: "create"
+      model: "general_audit"
+      save_as: "audit"
+      as_user: "base.user_admin"
+      values:
+        title: "Test General Audit - Sample Determination"
+        partner_id: "REC: client.id"
+        accountant_id: "REC: accountant.id"
+        account_type_set_id: "REC: account_type_set.id"
+        financial_accounting_standard_id: "REC: standard.id"
+        date_start: 2026-01-01
+        date_end: 2026-12-31
+        need_interim: false
+        need_previous: false
+        num_of_consecutive_audit_firm: 1
+        num_of_consecutive_audit_accountant: 1
+
+    - step: "Open general audit"
+      action: "call"
+      target: "audit"
+      method: "action_open"
+      as_user: "base.user_admin"
+
+    - step: "Invalidate cache after opening general audit"
+      action: "call"
+      target: "audit"
+      method: "invalidate_cache"
+
+    - step: "Get worksheet type b4f8e1a"
+      action: "ref"
+      xml_id: "ssi_general_audit_worksheet_sample_determination.worksheet_type_b4f8e1a"
+      save_as: "ws_type"
+
+scenarios:
+  # ------------------------------------------------------------------
+  # general_audit_ws_b4f8e1a - Create in draft
+  # ------------------------------------------------------------------
+  - name: "Worksheet b4f8e1a - Create in draft"
+    steps:
+      - step: "Assert general audit is open"
+        action: "assert"
+        target: "audit"
+        asserts:
+          state:
+            type: "value"
+            expected: "open"
+
+      - step: "Create worksheet b4f8e1a"
+        action: "create"
+        model: "general_audit_ws_b4f8e1a"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+
+      - step: "Assert worksheet created in draft"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          id:
+            type: "value"
+            operator: "is_truthy"
+          state:
+            type: "value"
+            expected: "draft"
+          name:
+            type: "value"
+            operator: "is_truthy"
+          general_audit_id:
+            type: "m2o"
+            expected: "REC: audit"
+          type_id:
+            type: "m2o"
+            expected: "REC: ws_type"
+
+  # ------------------------------------------------------------------
+  # general_audit_ws_b4f8e1a - Workflow open assigns sequence name
+  # ------------------------------------------------------------------
+  - name: "Worksheet b4f8e1a - Workflow open assigns sequence name"
+    steps:
+      - step: "Create worksheet b4f8e1a"
+        action: "create"
+        model: "general_audit_ws_b4f8e1a"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+
+      - step: "Open worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_open"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after opening worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Assert worksheet open with sequence assigned"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          state:
+            type: "value"
+            expected: "open"
+          name:
+            type: "value"
+            operator: "not_equals"
+            expected: "/"
+
+  # ------------------------------------------------------------------
+  # general_audit_ws_b4f8e1a - Workflow confirm to done
+  # ------------------------------------------------------------------
+  - name: "Worksheet b4f8e1a - Workflow confirm to done"
+    steps:
+      - step: "Create worksheet b4f8e1a"
+        action: "create"
+        model: "general_audit_ws_b4f8e1a"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+
+      - step: "Open worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_open"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after opening worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Create conclusion for this worksheet type"
+        action: "create"
+        model: "general_audit_worksheet_conclusion"
+        save_as: "conclusion"
+        as_user: "base.user_admin"
+        values:
+          name: "Sample size and method are appropriate"
+          code: "/"
+          type_id: "REC: ws_type.id"
+
+      - step: "Fill required conclusion fields before confirm"
+        action: "write"
+        target: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          conclusion_id: "REC: conclusion.id"
+          conclusion: "Sample determination has been reviewed and is adequate."
+
+      - step: "Confirm worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_confirm"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after confirming worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Assert worksheet confirmed"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          state:
+            type: "value"
+            expected: "confirm"
+
+      - step: "Approve worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_approve_approval"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after approving worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Assert worksheet done"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          state:
+            type: "value"
+            expected: "done"
+
+  # ------------------------------------------------------------------
+  # general_audit_ws_b4f8e1a - Confirm without conclusion fields is rejected
+  # ------------------------------------------------------------------
+  - name: "Worksheet b4f8e1a - Confirm without conclusion fields is rejected"
+    steps:
+      - step: "Create worksheet b4f8e1a"
+        action: "create"
+        model: "general_audit_ws_b4f8e1a"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+
+      - step: "Open worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_open"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after opening worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Confirm without conclusion_id/conclusion must be rejected"
+        action: "call"
+        target: "worksheet"
+        method: "action_confirm"
+        as_user: "base.user_admin"
+        expect_error:
+          type: "ValidationError"
+
+  # ------------------------------------------------------------------
+  # general_audit_ws_b4f8e1a - Cancel and restart (from open)
+  # ------------------------------------------------------------------
+  - name: "Worksheet b4f8e1a - Cancel and restart"
+    steps:
+      - step: "Create worksheet b4f8e1a"
+        action: "create"
+        model: "general_audit_ws_b4f8e1a"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+
+      - step: "Open worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_open"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after opening worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Assert worksheet open"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          state:
+            type: "value"
+            expected: "open"
+
+      - step: "Cancel worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_cancel"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after cancelling worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Assert worksheet cancelled"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          state:
+            type: "value"
+            expected: "cancel"
+
+      - step: "Restart worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_restart"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after restarting worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Assert worksheet back to draft"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          state:
+            type: "value"
+            expected: "draft"
+
+  # ------------------------------------------------------------------
+  # standard_item_ids - inherited compute from general_audit_worksheet_mixin
+  # ------------------------------------------------------------------
+  - name: "Worksheet b4f8e1a - Compute standard_item_ids normal"
+    steps:
+      - step: "Create standard audit item"
+        action: "create"
+        model: "general_audit_standard_audit"
+        save_as: "std_item"
+        values:
+          name: "ISA 530 - Audit Sampling"
+          code: "/"
+
+      - step: "Create worksheet type carrying the standard item"
+        action: "create"
+        model: "general_audit_worksheet_type"
+        save_as: "type_with_item"
+        values:
+          name: "Ad-hoc Type With Standard Item"
+          code: "/"
+          model_name: "general_audit_ws_b4f8e1a"
+          standard_item_ids:
+            - - 6
+              - 0
+              - - "REC: std_item.id"
+
+      - step: "Create worksheet using that type"
+        action: "create"
+        model: "general_audit_ws_b4f8e1a"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: type_with_item.id"
+
+      - step: "Assert standard_item_ids contains the standard item"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          standard_item_ids:
+            type: "m2m"
+            check: "contains"
+            expected_records:
+              - "REC: std_item"
+
+  - name: "Worksheet b4f8e1a - Compute standard_item_ids kosong"
+    steps:
+      - step: "Create worksheet using the production type without any standard item"
+        action: "create"
+        model: "general_audit_ws_b4f8e1a"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+
+      - step: "Assert standard_item_ids is empty"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          standard_item_ids:
+            type: "m2m"
+            check: "count"
+            expected_count: 0
+
+  # ------------------------------------------------------------------
+  # allowed_conclusion_ids - inherited compute from general_audit_worksheet_mixin
+  # ------------------------------------------------------------------
+  - name: "Worksheet b4f8e1a - Compute allowed_conclusion_ids normal"
+    steps:
+      - step: "Create conclusion for the production worksheet type"
+        action: "create"
+        model: "general_audit_worksheet_conclusion"
+        save_as: "conclusion"
+        values:
+          name: "Sample is representative of the population"
+          code: "/"
+          type_id: "REC: ws_type.id"
+
+      - step: "Create worksheet using the production type"
+        action: "create"
+        model: "general_audit_ws_b4f8e1a"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+
+      - step: "Assert allowed_conclusion_ids contains the conclusion"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          allowed_conclusion_ids:
+            type: "m2m"
+            check: "contains"
+            expected_records:
+              - "REC: conclusion"
+
+  - name: "Worksheet b4f8e1a - Compute allowed_conclusion_ids kosong"
+    steps:
+      - step: "Create worksheet type without any conclusion"
+        action: "create"
+        model: "general_audit_worksheet_type"
+        save_as: "type_no_conclusion"
+        values:
+          name: "Ad-hoc Type Without Conclusion"
+          code: "/"
+          model_name: "general_audit_ws_b4f8e1a"
+
+      - step: "Create worksheet using that type"
+        action: "create"
+        model: "general_audit_ws_b4f8e1a"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: type_no_conclusion.id"
+
+      - step: "Assert allowed_conclusion_ids is empty"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          allowed_conclusion_ids:
+            type: "m2m"
+            check: "count"
+            expected_count: 0
+
+  # ------------------------------------------------------------------
+  # onchange_parent_type_id - inherited from general_audit_worksheet_mixin
+  # ------------------------------------------------------------------
+  - name: "Worksheet b4f8e1a - Onchange type_id sets parent_type_id"
+    steps:
+      # type_id is hard-readonly in the form view
+      # (`<field name="type_id" readonly="1" force_save="1" />` in
+      # ssi_general_audit/views/worksheet/general_audit_worksheet_mixin_views.xml),
+      # so it can only ever take its default value on a new record -- it is
+      # never user-editable. The onchange therefore only fires once, from
+      # that default. Asserting directly on the live Form object trips a
+      # library/Form interaction bug (`hasattr(form, "__len__")` raises
+      # AssertionError instead of returning False), so save the form first
+      # and assert on the resulting record instead.
+      - step: "Open new worksheet form with default type_id"
+        action: "form"
+        model: "general_audit_ws_b4f8e1a"
+        save_as: "onchange_worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit"
+        save: true
+
+      - step: "Assert default type_id propagated to parent_type_id via onchange"
+        action: "assert"
+        target: "onchange_worksheet"
+        asserts:
+          type_id:
+            type: "m2o"
+            expected_xml_id: "ssi_general_audit_worksheet_sample_determination.worksheet_type_b4f8e1a"
+          parent_type_id:
+            type: "m2o"
+            expected_xml_id: "ssi_general_audit_worksheet_sample_determination.worksheet_type_b4f8e1a"
+
+  # ------------------------------------------------------------------
+  # general_audit_ws_b4f8e1a - Delete in draft
+  # ------------------------------------------------------------------
+  - name: "Worksheet b4f8e1a - Delete in draft"
+    steps:
+      - step: "Create worksheet b4f8e1a"
+        action: "create"
+        model: "general_audit_ws_b4f8e1a"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+
+      - step: "Delete the worksheet"
+        action: "unlink"
+        target: "worksheet"
+
+      - step: "Verify worksheet deleted"
+        action: "search"
+        model: "general_audit_ws_b4f8e1a"
+        domain:
+          - ["id", "=", "REC: worksheet.id"]
+        save_as: "result"
+        expect_count: 0
