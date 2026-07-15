@@ -1,0 +1,817 @@
+scenarios:
+  # ------------------------------------------------------------------
+  # accounting_application - CRUD
+  # ------------------------------------------------------------------
+  - name: "Accounting Application - Create, write, delete"
+    steps:
+      - step: "Create accounting application"
+        action: "create"
+        model: "accounting_application"
+        save_as: "record"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Accounting Application"
+          code: "TAA001"
+
+      - step: "Assert accounting application created"
+        action: "assert"
+        target: "record"
+        asserts:
+          id:
+            type: "value"
+            operator: "is_truthy"
+          name:
+            type: "value"
+            expected: "Test Accounting Application"
+          code:
+            type: "value"
+            expected: "TAA001"
+
+      - step: "Write new name"
+        action: "write"
+        target: "record"
+        as_user: "base.user_admin"
+        values:
+          name: "Updated Accounting Application"
+
+      - step: "Assert name updated"
+        action: "assert"
+        target: "record"
+        asserts:
+          name:
+            type: "value"
+            expected: "Updated Accounting Application"
+
+      - step: "Delete accounting application"
+        action: "unlink"
+        target: "record"
+        as_user: "base.user_admin"
+
+      - step: "Verify accounting application deleted"
+        action: "search"
+        model: "accounting_application"
+        domain:
+          - ["id", "=", "REC: record.id"]
+        save_as: "result"
+        expect_count: 0
+
+  # ------------------------------------------------------------------
+  # general_audit_business_document - CRUD
+  # ------------------------------------------------------------------
+  - name: "Business Document - Create, write, delete"
+    steps:
+      - step: "Create business document"
+        action: "create"
+        model: "general_audit_business_document"
+        save_as: "record"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Business Document"
+          code: "TBD001"
+          sequence: 10
+
+      - step: "Assert business document created"
+        action: "assert"
+        target: "record"
+        asserts:
+          id:
+            type: "value"
+            operator: "is_truthy"
+          name:
+            type: "value"
+            expected: "Test Business Document"
+          code:
+            type: "value"
+            expected: "TBD001"
+
+      - step: "Write new name"
+        action: "write"
+        target: "record"
+        as_user: "base.user_admin"
+        values:
+          name: "Updated Business Document"
+
+      - step: "Assert name updated"
+        action: "assert"
+        target: "record"
+        asserts:
+          name:
+            type: "value"
+            expected: "Updated Business Document"
+
+      - step: "Delete business document"
+        action: "unlink"
+        target: "record"
+        as_user: "base.user_admin"
+
+      - step: "Verify business document deleted"
+        action: "search"
+        model: "general_audit_business_document"
+        domain:
+          - ["id", "=", "REC: record.id"]
+        save_as: "result"
+        expect_count: 0
+
+  # ------------------------------------------------------------------
+  # general_audit_business_function - CRUD
+  # class_transaction_id is required=True -- needs a class-of-transaction
+  # prerequisite (created with code "/" so it never collides with the
+  # dedicated general_audit_class_transaction scenario below, which runs
+  # in the same un-rolled-back transaction).
+  # ------------------------------------------------------------------
+  - name: "Business Function - Create, write, delete"
+    steps:
+      - step: "Create class of transaction prerequisite"
+        action: "create"
+        model: "general_audit_class_transaction"
+        save_as: "class_transaction"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Class of Transaction - Business Function CRUD"
+          code: "/"
+
+      - step: "Create business function"
+        action: "create"
+        model: "general_audit_business_function"
+        save_as: "record"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Business Function"
+          code: "TBF001"
+          sequence: 10
+          class_transaction_id: "REC: class_transaction.id"
+
+      - step: "Assert business function created"
+        action: "assert"
+        target: "record"
+        asserts:
+          id:
+            type: "value"
+            operator: "is_truthy"
+          name:
+            type: "value"
+            expected: "Test Business Function"
+          code:
+            type: "value"
+            expected: "TBF001"
+          class_transaction_id:
+            type: "m2o"
+            expected: "REC: class_transaction"
+
+      - step: "Write new name"
+        action: "write"
+        target: "record"
+        as_user: "base.user_admin"
+        values:
+          name: "Updated Business Function"
+
+      - step: "Assert name updated"
+        action: "assert"
+        target: "record"
+        asserts:
+          name:
+            type: "value"
+            expected: "Updated Business Function"
+
+      - step: "Delete business function"
+        action: "unlink"
+        target: "record"
+        as_user: "base.user_admin"
+
+      - step: "Verify business function deleted"
+        action: "search"
+        model: "general_audit_business_function"
+        domain:
+          - ["id", "=", "REC: record.id"]
+        save_as: "result"
+        expect_count: 0
+
+  # ------------------------------------------------------------------
+  # general_audit_class_transaction - CRUD
+  # ------------------------------------------------------------------
+  - name: "Class of Transaction - Create, write, delete"
+    steps:
+      - step: "Create class of transaction"
+        action: "create"
+        model: "general_audit_class_transaction"
+        save_as: "record"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Class of Transaction"
+          code: "TCT001"
+          sequence: 10
+
+      - step: "Assert class of transaction created"
+        action: "assert"
+        target: "record"
+        asserts:
+          id:
+            type: "value"
+            operator: "is_truthy"
+          name:
+            type: "value"
+            expected: "Test Class of Transaction"
+          code:
+            type: "value"
+            expected: "TCT001"
+
+      - step: "Write new name"
+        action: "write"
+        target: "record"
+        as_user: "base.user_admin"
+        values:
+          name: "Updated Class of Transaction"
+
+      - step: "Assert name updated"
+        action: "assert"
+        target: "record"
+        asserts:
+          name:
+            type: "value"
+            expected: "Updated Class of Transaction"
+
+      - step: "Delete class of transaction"
+        action: "unlink"
+        target: "record"
+        as_user: "base.user_admin"
+
+      - step: "Verify class of transaction deleted"
+        action: "search"
+        model: "general_audit_class_transaction"
+        domain:
+          - ["id", "=", "REC: record.id"]
+        save_as: "result"
+        expect_count: 0
+
+  # ------------------------------------------------------------------
+  # general_audit_expert_type - CRUD
+  # ------------------------------------------------------------------
+  - name: "Expert Type - Create, write, delete"
+    steps:
+      - step: "Create expert type"
+        action: "create"
+        model: "general_audit_expert_type"
+        save_as: "record"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Expert Type"
+          code: "TET001"
+          sequence: 10
+
+      - step: "Assert expert type created"
+        action: "assert"
+        target: "record"
+        asserts:
+          id:
+            type: "value"
+            operator: "is_truthy"
+          name:
+            type: "value"
+            expected: "Test Expert Type"
+          code:
+            type: "value"
+            expected: "TET001"
+
+      - step: "Write new name"
+        action: "write"
+        target: "record"
+        as_user: "base.user_admin"
+        values:
+          name: "Updated Expert Type"
+
+      - step: "Assert name updated"
+        action: "assert"
+        target: "record"
+        asserts:
+          name:
+            type: "value"
+            expected: "Updated Expert Type"
+
+      - step: "Delete expert type"
+        action: "unlink"
+        target: "record"
+        as_user: "base.user_admin"
+
+      - step: "Verify expert type deleted"
+        action: "search"
+        model: "general_audit_expert_type"
+        domain:
+          - ["id", "=", "REC: record.id"]
+        save_as: "result"
+        expect_count: 0
+
+  # ------------------------------------------------------------------
+  # general_audit_fraud_factor - CRUD
+  # category_id is required=True -- needs a fraud-factor-category
+  # prerequisite (created with code "/" so it never collides with the
+  # dedicated general_audit_fraud_factor_category scenario below).
+  # ------------------------------------------------------------------
+  - name: "Fraud Factor - Create, write, delete"
+    steps:
+      - step: "Create fraud factor category prerequisite"
+        action: "create"
+        model: "general_audit_fraud_factor_category"
+        save_as: "category"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Fraud Factor Category - Fraud Factor CRUD"
+          code: "/"
+
+      - step: "Create fraud factor"
+        action: "create"
+        model: "general_audit_fraud_factor"
+        save_as: "record"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Fraud Factor"
+          code: "TFF001"
+          sequence: 10
+          category_id: "REC: category.id"
+
+      - step: "Assert fraud factor created"
+        action: "assert"
+        target: "record"
+        asserts:
+          id:
+            type: "value"
+            operator: "is_truthy"
+          name:
+            type: "value"
+            expected: "Test Fraud Factor"
+          code:
+            type: "value"
+            expected: "TFF001"
+          category_id:
+            type: "m2o"
+            expected: "REC: category"
+
+      - step: "Write new name"
+        action: "write"
+        target: "record"
+        as_user: "base.user_admin"
+        values:
+          name: "Updated Fraud Factor"
+
+      - step: "Assert name updated"
+        action: "assert"
+        target: "record"
+        asserts:
+          name:
+            type: "value"
+            expected: "Updated Fraud Factor"
+
+      - step: "Delete fraud factor"
+        action: "unlink"
+        target: "record"
+        as_user: "base.user_admin"
+
+      - step: "Verify fraud factor deleted"
+        action: "search"
+        model: "general_audit_fraud_factor"
+        domain:
+          - ["id", "=", "REC: record.id"]
+        save_as: "result"
+        expect_count: 0
+
+  # ------------------------------------------------------------------
+  # general_audit_fraud_factor_category - CRUD
+  # ------------------------------------------------------------------
+  - name: "Fraud Factor Category - Create, write, delete"
+    steps:
+      - step: "Create fraud factor category"
+        action: "create"
+        model: "general_audit_fraud_factor_category"
+        save_as: "record"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Fraud Factor Category"
+          code: "TFC001"
+          sequence: 10
+
+      - step: "Assert fraud factor category created"
+        action: "assert"
+        target: "record"
+        asserts:
+          id:
+            type: "value"
+            operator: "is_truthy"
+          name:
+            type: "value"
+            expected: "Test Fraud Factor Category"
+          code:
+            type: "value"
+            expected: "TFC001"
+
+      - step: "Write new name"
+        action: "write"
+        target: "record"
+        as_user: "base.user_admin"
+        values:
+          name: "Updated Fraud Factor Category"
+
+      - step: "Assert name updated"
+        action: "assert"
+        target: "record"
+        asserts:
+          name:
+            type: "value"
+            expected: "Updated Fraud Factor Category"
+
+      - step: "Delete fraud factor category"
+        action: "unlink"
+        target: "record"
+        as_user: "base.user_admin"
+
+      - step: "Verify fraud factor category deleted"
+        action: "search"
+        model: "general_audit_fraud_factor_category"
+        domain:
+          - ["id", "=", "REC: record.id"]
+        save_as: "result"
+        expect_count: 0
+
+  # ------------------------------------------------------------------
+  # general_audit_fraud_factor_indicator - CRUD
+  # factor_id is required=True, and factor_id itself needs category_id
+  # -- two-level prerequisite chain, both created with code "/" so they
+  # never collide with their own dedicated scenarios above.
+  # ------------------------------------------------------------------
+  - name: "Fraud Factor Indicator - Create, write, delete"
+    steps:
+      - step: "Create fraud factor category prerequisite"
+        action: "create"
+        model: "general_audit_fraud_factor_category"
+        save_as: "category"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Category - Fraud Factor Indicator CRUD"
+          code: "/"
+
+      - step: "Create fraud factor prerequisite"
+        action: "create"
+        model: "general_audit_fraud_factor"
+        save_as: "factor"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Fraud Factor - Indicator CRUD"
+          code: "/"
+          category_id: "REC: category.id"
+
+      - step: "Create fraud factor indicator"
+        action: "create"
+        model: "general_audit_fraud_factor_indicator"
+        save_as: "record"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Fraud Factor Indicator"
+          code: "TFI001"
+          sequence: 10
+          factor_id: "REC: factor.id"
+
+      - step: "Assert fraud factor indicator created"
+        action: "assert"
+        target: "record"
+        asserts:
+          id:
+            type: "value"
+            operator: "is_truthy"
+          name:
+            type: "value"
+            expected: "Test Fraud Factor Indicator"
+          code:
+            type: "value"
+            expected: "TFI001"
+          factor_id:
+            type: "m2o"
+            expected: "REC: factor"
+          category_id:
+            type: "m2o"
+            expected: "REC: category"
+
+      - step: "Write new name"
+        action: "write"
+        target: "record"
+        as_user: "base.user_admin"
+        values:
+          name: "Updated Fraud Factor Indicator"
+
+      - step: "Assert name updated"
+        action: "assert"
+        target: "record"
+        asserts:
+          name:
+            type: "value"
+            expected: "Updated Fraud Factor Indicator"
+
+      - step: "Delete fraud factor indicator"
+        action: "unlink"
+        target: "record"
+        as_user: "base.user_admin"
+
+      - step: "Verify fraud factor indicator deleted"
+        action: "search"
+        model: "general_audit_fraud_factor_indicator"
+        domain:
+          - ["id", "=", "REC: record.id"]
+        save_as: "result"
+        expect_count: 0
+
+  # ------------------------------------------------------------------
+  # general_audit_fs_preparation_step - CRUD
+  # ------------------------------------------------------------------
+  - name: "FS Preparation Step - Create, write, delete"
+    steps:
+      - step: "Create FS preparation step"
+        action: "create"
+        model: "general_audit_fs_preparation_step"
+        save_as: "record"
+        as_user: "base.user_admin"
+        values:
+          name: "Test FS Preparation Step"
+          code: "TPS001"
+          sequence: 10
+
+      - step: "Assert FS preparation step created"
+        action: "assert"
+        target: "record"
+        asserts:
+          id:
+            type: "value"
+            operator: "is_truthy"
+          name:
+            type: "value"
+            expected: "Test FS Preparation Step"
+          code:
+            type: "value"
+            expected: "TPS001"
+
+      - step: "Write new name"
+        action: "write"
+        target: "record"
+        as_user: "base.user_admin"
+        values:
+          name: "Updated FS Preparation Step"
+
+      - step: "Assert name updated"
+        action: "assert"
+        target: "record"
+        asserts:
+          name:
+            type: "value"
+            expected: "Updated FS Preparation Step"
+
+      - step: "Delete FS preparation step"
+        action: "unlink"
+        target: "record"
+        as_user: "base.user_admin"
+
+      - step: "Verify FS preparation step deleted"
+        action: "search"
+        model: "general_audit_fs_preparation_step"
+        domain:
+          - ["id", "=", "REC: record.id"]
+        save_as: "result"
+        expect_count: 0
+
+  # ------------------------------------------------------------------
+  # general_audit_going_concern - CRUD
+  # category_id is required=True -- needs a going-concern-category
+  # prerequisite (created with code "/" so it never collides with the
+  # dedicated general_audit_going_concern_category scenario below).
+  # ------------------------------------------------------------------
+  - name: "Going Concern - Create, write, delete"
+    steps:
+      - step: "Create going concern category prerequisite"
+        action: "create"
+        model: "general_audit_going_concern_category"
+        save_as: "category"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Going Concern Category - Going Concern CRUD"
+          code: "/"
+
+      - step: "Create going concern"
+        action: "create"
+        model: "general_audit_going_concern"
+        save_as: "record"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Going Concern"
+          code: "TGC001"
+          sequence: 10
+          category_id: "REC: category.id"
+
+      - step: "Assert going concern created"
+        action: "assert"
+        target: "record"
+        asserts:
+          id:
+            type: "value"
+            operator: "is_truthy"
+          name:
+            type: "value"
+            expected: "Test Going Concern"
+          code:
+            type: "value"
+            expected: "TGC001"
+          category_id:
+            type: "m2o"
+            expected: "REC: category"
+
+      - step: "Write new name"
+        action: "write"
+        target: "record"
+        as_user: "base.user_admin"
+        values:
+          name: "Updated Going Concern"
+
+      - step: "Assert name updated"
+        action: "assert"
+        target: "record"
+        asserts:
+          name:
+            type: "value"
+            expected: "Updated Going Concern"
+
+      - step: "Delete going concern"
+        action: "unlink"
+        target: "record"
+        as_user: "base.user_admin"
+
+      - step: "Verify going concern deleted"
+        action: "search"
+        model: "general_audit_going_concern"
+        domain:
+          - ["id", "=", "REC: record.id"]
+        save_as: "result"
+        expect_count: 0
+
+  # ------------------------------------------------------------------
+  # general_audit_going_concern_category - CRUD
+  # ------------------------------------------------------------------
+  - name: "Going Concern Category - Create, write, delete"
+    steps:
+      - step: "Create going concern category"
+        action: "create"
+        model: "general_audit_going_concern_category"
+        save_as: "record"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Going Concern Category"
+          code: "TGCC001"
+          sequence: 10
+
+      - step: "Assert going concern category created"
+        action: "assert"
+        target: "record"
+        asserts:
+          id:
+            type: "value"
+            operator: "is_truthy"
+          name:
+            type: "value"
+            expected: "Test Going Concern Category"
+          code:
+            type: "value"
+            expected: "TGCC001"
+
+      - step: "Write new name"
+        action: "write"
+        target: "record"
+        as_user: "base.user_admin"
+        values:
+          name: "Updated Going Concern Category"
+
+      - step: "Assert name updated"
+        action: "assert"
+        target: "record"
+        asserts:
+          name:
+            type: "value"
+            expected: "Updated Going Concern Category"
+
+      - step: "Delete going concern category"
+        action: "unlink"
+        target: "record"
+        as_user: "base.user_admin"
+
+      - step: "Verify going concern category deleted"
+        action: "search"
+        model: "general_audit_going_concern_category"
+        domain:
+          - ["id", "=", "REC: record.id"]
+        save_as: "result"
+        expect_count: 0
+
+  # ------------------------------------------------------------------
+  # general_audit_other_report - CRUD
+  # ------------------------------------------------------------------
+  - name: "Other Report - Create, write, delete"
+    steps:
+      - step: "Create other report"
+        action: "create"
+        model: "general_audit_other_report"
+        save_as: "record"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Other Report"
+          code: "TOR001"
+          sequence: 10
+
+      - step: "Assert other report created"
+        action: "assert"
+        target: "record"
+        asserts:
+          id:
+            type: "value"
+            operator: "is_truthy"
+          name:
+            type: "value"
+            expected: "Test Other Report"
+          code:
+            type: "value"
+            expected: "TOR001"
+
+      - step: "Write new name"
+        action: "write"
+        target: "record"
+        as_user: "base.user_admin"
+        values:
+          name: "Updated Other Report"
+
+      - step: "Assert name updated"
+        action: "assert"
+        target: "record"
+        asserts:
+          name:
+            type: "value"
+            expected: "Updated Other Report"
+
+      - step: "Delete other report"
+        action: "unlink"
+        target: "record"
+        as_user: "base.user_admin"
+
+      - step: "Verify other report deleted"
+        action: "search"
+        model: "general_audit_other_report"
+        domain:
+          - ["id", "=", "REC: record.id"]
+        save_as: "result"
+        expect_count: 0
+
+  # ------------------------------------------------------------------
+  # ownership_location - CRUD
+  # ------------------------------------------------------------------
+  - name: "Ownership Location - Create, write, delete"
+    steps:
+      - step: "Create ownership location"
+        action: "create"
+        model: "ownership_location"
+        save_as: "record"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Ownership Location"
+          code: "TOL001"
+
+      - step: "Assert ownership location created"
+        action: "assert"
+        target: "record"
+        asserts:
+          id:
+            type: "value"
+            operator: "is_truthy"
+          name:
+            type: "value"
+            expected: "Test Ownership Location"
+          code:
+            type: "value"
+            expected: "TOL001"
+
+      - step: "Write new name"
+        action: "write"
+        target: "record"
+        as_user: "base.user_admin"
+        values:
+          name: "Updated Ownership Location"
+
+      - step: "Assert name updated"
+        action: "assert"
+        target: "record"
+        asserts:
+          name:
+            type: "value"
+            expected: "Updated Ownership Location"
+
+      - step: "Delete ownership location"
+        action: "unlink"
+        target: "record"
+        as_user: "base.user_admin"
+
+      - step: "Verify ownership location deleted"
+        action: "search"
+        model: "ownership_location"
+        domain:
+          - ["id", "=", "REC: record.id"]
+        save_as: "result"
+        expect_count: 0

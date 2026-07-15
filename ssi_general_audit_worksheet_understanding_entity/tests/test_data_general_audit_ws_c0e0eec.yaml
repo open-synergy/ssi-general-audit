@@ -1,0 +1,546 @@
+setup:
+  steps:
+    - step: "Get config parameter model"
+      action: "search"
+      model: "ir.config_parameter"
+      domain: []
+      save_as: "config_parameter"
+      limit: 1
+
+    - step: "Allow enough CPA licenses for this scenario"
+      action: "call"
+      target: "config_parameter"
+      method: "set_param"
+      args:
+        - "ssi_general_audit.max_number_of_cpa_license"
+        - "100"
+
+    - step: "Create client partner"
+      action: "create"
+      model: "res.partner"
+      save_as: "client"
+      as_user: "base.user_admin"
+      values:
+        name: "Test Audit Client - c0e0eec"
+        is_company: true
+
+    - step: "Create accountant partner"
+      action: "create"
+      model: "res.partner"
+      save_as: "accountant"
+      as_user: "base.user_admin"
+      values:
+        name: "Test Audit Accountant - c0e0eec"
+
+    - step: "Get CPA license id category"
+      action: "ref"
+      xml_id: "ssi_partner_identification_cpa_license.partner_identification_accountant_cpa_license"
+      save_as: "cpa_category"
+
+    - step: "Grant accountant a CPA license"
+      action: "create"
+      model: "res.partner.id_number"
+      save_as: "cpa_license"
+      as_user: "base.user_admin"
+      values:
+        partner_id: "REC: accountant.id"
+        category_id: "REC: cpa_category.id"
+        name: "CPA-C0E0EEC-0001"
+
+    - step: "Create account type set"
+      action: "create"
+      model: "client_account_type_set"
+      save_as: "account_type_set"
+      as_user: "base.user_admin"
+      values:
+        name: "Test Account Type Set - c0e0eec"
+        code: "/"
+
+    - step: "Create financial accounting standard"
+      action: "create"
+      model: "accountant.financial_accounting_standard"
+      save_as: "standard"
+      as_user: "base.user_admin"
+      values:
+        name: "Test Financial Accounting Standard - c0e0eec"
+        code: "/"
+
+    - step: "Create general audit"
+      action: "create"
+      model: "general_audit"
+      save_as: "audit"
+      as_user: "base.user_admin"
+      values:
+        title: "Test General Audit - WS c0e0eec"
+        partner_id: "REC: client.id"
+        accountant_id: "REC: accountant.id"
+        account_type_set_id: "REC: account_type_set.id"
+        financial_accounting_standard_id: "REC: standard.id"
+        date_start: 2026-01-01
+        date_end: 2026-12-31
+        need_interim: false
+        need_previous: false
+        num_of_consecutive_audit_firm: 1
+        num_of_consecutive_audit_accountant: 1
+
+    - step: "Open general audit"
+      action: "call"
+      target: "audit"
+      method: "action_open"
+      as_user: "base.user_admin"
+
+    - step: "Invalidate cache after opening general audit"
+      action: "call"
+      target: "audit"
+      method: "invalidate_cache"
+
+    - step: "Get worksheet type c0e0eec"
+      action: "ref"
+      xml_id: "ssi_general_audit_worksheet_understanding_entity.worksheet_type_c0e0eec"
+      save_as: "ws_type"
+
+    - step: "Create fraud factor category"
+      action: "create"
+      model: "general_audit_fraud_factor_category"
+      save_as: "category"
+      as_user: "base.user_admin"
+      values:
+        name: "Test Fraud Factor Category"
+        code: "/"
+
+    - step: "Create fraud factor"
+      action: "create"
+      model: "general_audit_fraud_factor"
+      save_as: "factor"
+      as_user: "base.user_admin"
+      values:
+        name: "Test Fraud Factor"
+        code: "/"
+        category_id: "REC: category.id"
+
+scenarios:
+  # ------------------------------------------------------------------
+  # Create - draft
+  # ------------------------------------------------------------------
+  - name: "Worksheet c0e0eec - Create in draft with empty detail_ids"
+    steps:
+      - step: "Create worksheet c0e0eec"
+        action: "create"
+        model: "general_audit_ws_c0e0eec"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+
+      - step: "Assert worksheet created in draft with no detail lines"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          id:
+            type: "value"
+            operator: "is_truthy"
+          state:
+            type: "value"
+            expected: "draft"
+          general_audit_id:
+            type: "m2o"
+            expected: "REC: audit"
+          detail_ids:
+            type: "o2m"
+            check: "count"
+            expected_count: 0
+
+  # ------------------------------------------------------------------
+  # action_populate - creates a detail line per active fraud factor
+  # indicator, and does not duplicate lines on a second call.
+  #
+  # NOTE: general_audit_fraud_factor_indicator also ships production seed
+  # data (data/master/general_audit_fraud_factor_indicator.xml), so
+  # detail_ids on the worksheet is NOT scoped to only the two indicators
+  # created below - action_populate() creates one detail line for every
+  # active indicator in the database. Assertions below are therefore
+  # scoped by domain (worksheet_id + indicator_id) instead of asserting
+  # an absolute detail_ids count.
+  # ------------------------------------------------------------------
+  - name:
+      "Worksheet c0e0eec - action_populate creates detail lines for fraud indicators"
+    steps:
+      - step: "Create indicator A"
+        action: "create"
+        model: "general_audit_fraud_factor_indicator"
+        save_as: "indicator_a"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Indicator A"
+          code: "/"
+          factor_id: "REC: factor.id"
+
+      - step: "Create indicator B"
+        action: "create"
+        model: "general_audit_fraud_factor_indicator"
+        save_as: "indicator_b"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Indicator B"
+          code: "/"
+          factor_id: "REC: factor.id"
+
+      - step: "Create worksheet c0e0eec"
+        action: "create"
+        model: "general_audit_ws_c0e0eec"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+
+      - step: "Assert detail_ids is empty before populate"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          detail_ids:
+            type: "o2m"
+            check: "count"
+            expected_count: 0
+
+      - step: "Call action_populate"
+        action: "call"
+        target: "worksheet"
+        method: "action_populate"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after populate"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Detail line for indicator A was created"
+        action: "search"
+        model: "general_audit_ws_c0e0eec.detail"
+        domain:
+          - ["worksheet_id", "=", "REC: worksheet.id"]
+          - ["indicator_id", "=", "REC: indicator_a.id"]
+        save_as: "detail_a"
+        expect_count: 1
+
+      - step: "Detail line for indicator B was created"
+        action: "search"
+        model: "general_audit_ws_c0e0eec.detail"
+        domain:
+          - ["worksheet_id", "=", "REC: worksheet.id"]
+          - ["indicator_id", "=", "REC: indicator_b.id"]
+        save_as: "detail_b"
+        expect_count: 1
+
+      - step: "Call action_populate a second time (idempotency)"
+        action: "call"
+        target: "worksheet"
+        method: "action_populate"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after second populate"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Detail line for indicator A is still exactly one after second populate"
+        action: "search"
+        model: "general_audit_ws_c0e0eec.detail"
+        domain:
+          - ["worksheet_id", "=", "REC: worksheet.id"]
+          - ["indicator_id", "=", "REC: indicator_a.id"]
+        save_as: "detail_a_again"
+        expect_count: 1
+
+      - step: "Detail line for indicator B is still exactly one after second populate"
+        action: "search"
+        model: "general_audit_ws_c0e0eec.detail"
+        domain:
+          - ["worksheet_id", "=", "REC: worksheet.id"]
+          - ["indicator_id", "=", "REC: indicator_b.id"]
+        save_as: "detail_b_again"
+        expect_count: 1
+
+  # ------------------------------------------------------------------
+  # action_populate - removes a stale detail line once its indicator is
+  # no longer returned by Indicator.search([]).
+  #
+  # `_populate()` (models/ga_c0e0eec/general_audit_ws_c0e0eec.py) computes
+  # `indicator_ids = Indicator.search([])` and unlinks any detail whose
+  # `indicator_id` is not in that recordset. `search([])` implicitly
+  # excludes archived (active=False) records, so archiving the indicator
+  # - not deleting it - is what actually exercises this removal branch.
+  # See the next scenario for what happens if the master indicator is
+  # unlinked (hard-deleted) instead.
+  # ------------------------------------------------------------------
+  - name:
+      "Worksheet c0e0eec - action_populate removes stale detail when indicator is
+      archived"
+    steps:
+      - step: "Create indicator to be archived"
+        action: "create"
+        model: "general_audit_fraud_factor_indicator"
+        save_as: "indicator_c"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Indicator C"
+          code: "/"
+          factor_id: "REC: factor.id"
+
+      - step: "Create worksheet c0e0eec"
+        action: "create"
+        model: "general_audit_ws_c0e0eec"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+
+      - step: "Populate to create detail line for indicator C"
+        action: "call"
+        target: "worksheet"
+        method: "action_populate"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after populate"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Detail line for indicator C exists"
+        action: "search"
+        model: "general_audit_ws_c0e0eec.detail"
+        domain:
+          - ["worksheet_id", "=", "REC: worksheet.id"]
+          - ["indicator_id", "=", "REC: indicator_c.id"]
+        save_as: "detail_c"
+        expect_count: 1
+
+      - step: "Archive indicator C so it is excluded from Indicator.search([])"
+        action: "write"
+        target: "indicator_c"
+        as_user: "base.user_admin"
+        values:
+          active: false
+
+      - step: "Populate again after archiving indicator C"
+        action: "call"
+        target: "worksheet"
+        method: "action_populate"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after second populate"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Detail line for the now-archived indicator C was removed"
+        action: "search"
+        model: "general_audit_ws_c0e0eec.detail"
+        domain:
+          - ["worksheet_id", "=", "REC: worksheet.id"]
+          - ["indicator_id", "=", "REC: indicator_c.id"]
+        save_as: "detail_c_after"
+        expect_count: 0
+
+  # ------------------------------------------------------------------
+  # Documents real behaviour: unlinking (hard-delete) a master indicator
+  # that is still referenced by a detail line is rejected by the
+  # database, because `indicator_id` on general_audit_ws_c0e0eec.detail
+  # is declared `ondelete="restrict"`. This is why the previous scenario
+  # exercises the stale-row removal via archiving instead of deletion -
+  # see the finding reported alongside this test.
+  # ------------------------------------------------------------------
+  - name:
+      "Worksheet c0e0eec - unlinking a master indicator still referenced by a detail
+      line is rejected"
+    steps:
+      - step: "Create indicator to be referenced then unlinked"
+        action: "create"
+        model: "general_audit_fraud_factor_indicator"
+        save_as: "indicator_d"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Indicator D"
+          code: "/"
+          factor_id: "REC: factor.id"
+
+      - step: "Create worksheet c0e0eec"
+        action: "create"
+        model: "general_audit_ws_c0e0eec"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+
+      - step: "Populate to create detail line referencing indicator D"
+        action: "call"
+        target: "worksheet"
+        method: "action_populate"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after populate"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Detail line referencing indicator D exists"
+        action: "search"
+        model: "general_audit_ws_c0e0eec.detail"
+        domain:
+          - ["worksheet_id", "=", "REC: worksheet.id"]
+          - ["indicator_id", "=", "REC: indicator_d.id"]
+        save_as: "detail_d"
+        expect_count: 1
+
+      - step:
+          "Unlinking indicator D while still referenced by a detail line is rejected"
+        action: "unlink"
+        target: "indicator_d"
+        as_user: "base.user_admin"
+        expect_error:
+          type: "UserError"
+
+  # ------------------------------------------------------------------
+  # Full workflow: draft -> open -> confirm -> done, then cancel and
+  # restart (restart is only valid from state cancel).
+  #
+  # general_audit_worksheet_mixin._get_fields_required_before_confirm()
+  # requires conclusion_id and conclusion to be filled before the
+  # worksheet can move to state confirm - both are only writable while
+  # the worksheet is in state open, so they are set right after
+  # action_open below.
+  # ------------------------------------------------------------------
+  - name: "Worksheet c0e0eec - Full workflow draft to done, then cancel and restart"
+    steps:
+      - step: "Create worksheet c0e0eec"
+        action: "create"
+        model: "general_audit_ws_c0e0eec"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+
+      - step: "Assert worksheet created in draft"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          state:
+            type: "value"
+            expected: "draft"
+
+      - step: "Open worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_open"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after opening worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Assert worksheet open"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          state:
+            type: "value"
+            expected: "open"
+
+      - step: "Create conclusion for worksheet type c0e0eec"
+        action: "create"
+        model: "general_audit_worksheet_conclusion"
+        save_as: "conclusion"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Conclusion c0e0eec"
+          code: "/"
+          type_id: "REC: ws_type.id"
+
+      - step: "Fill conclusion fields required before confirm"
+        action: "write"
+        target: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          conclusion_id: "REC: conclusion.id"
+          conclusion: "Sufficient audit evidence obtained on fraud risk indicators."
+
+      - step: "Confirm worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_confirm"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after confirming worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Assert worksheet confirmed"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          state:
+            type: "value"
+            expected: "confirm"
+
+      - step: "Approve worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_approve_approval"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after approving worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Assert worksheet done"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          state:
+            type: "value"
+            expected: "done"
+
+      - step: "Cancel worksheet directly (not via wizard)"
+        action: "call"
+        target: "worksheet"
+        method: "action_cancel"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after cancelling worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Assert worksheet cancelled"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          state:
+            type: "value"
+            expected: "cancel"
+
+      - step: "Restart worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_restart"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after restarting worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Assert worksheet back to draft"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          state:
+            type: "value"
+            expected: "draft"

@@ -1,0 +1,1106 @@
+# Copyright 2026 OpenSynergy Indonesia
+# Copyright 2026 PT. Simetri Sinergi Indonesia
+# License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
+#
+# Scope of this file (BL-0174, last slice of
+# ssi_general_audit_worksheet_understanding_entity):
+#
+# - Create scenarios (+ assert state = draft) for the 6 worksheets not
+#   covered by sibling test files: general_audit_ws_a13a30e, bdcdfc5, f6a227,
+#   c0d0898, e78a3c6, ae11f7e.
+# - `_compute_standard_detail_ids` on 3 detail models (a13a30e.detail,
+#   bdcdfc5.detail, f6a227.detail) — chosen because they belong to worksheets
+#   in THIS file's scope; general_audit_ws_c0e0eec.detail and
+#   general_audit_ws_a604795.detail are already the scope of sibling test
+#   files (test_data_general_audit_ws_c0e0eec.yaml /
+#   test_data_general_audit_ws_a604795.yaml) and are skipped here to avoid
+#   duplicate coverage.
+# - The 8 `*_impacted_account_type_ids` computes on `general_audit`
+#   (models/general_audit.py) — tested by writing the boolean `*_impacted`
+#   field directly on a `general_audit.standard_detail` record (these
+#   booleans are themselves stored computes derived from the worksheet
+#   detail M2M relations, e.g. `bdcdfc5_detail_ids`; writing them directly
+#   here isolates the general_audit-level compute from the worksheet-detail
+#   compute already covered above/elsewhere, and Odoo's dependency tracking
+#   still fires `general_audit`'s recompute on a direct ORM write, not just
+#   when the value arrives via its own compute chain).
+# - `_compute_expert_type_ids` on `general_audit` (from
+#   general_audit_ws_ae11f7e.expert rows).
+# - `organtization_structure_ids` (typo is production code, kept as-is) on
+#   general_audit_ws_e78a3c6.
+# - `onchange_partner_name` on general_audit_ws_ae11f7e.other_evidence.
+# - Full workflow (draft -> open -> confirm -> approve -> done -> cancel ->
+#   restart) for general_audit_ws_ae11f7e — the worksheet named for this in
+#   the backlog's "Skenario Uji" #24; it needs no extra required-before-confirm
+#   fields (unlike a604795's ws_cbbbaf4_id) and no post_open_action side
+#   effects (unlike c0d0898's auto-reload of detail_ids), so it is the
+#   simplest worksheet in this file's scope to drive end-to-end.
+#
+# NOTE on Many2many fields inside `action: form`: Odoo's real Form test
+# helper (`odoo/tests/common.py`) explicitly asserts
+# `descr['type'] not in ('many2many', 'one2many')` in `Form.__setattr__`, and
+# `M2MProxy` (unlike `O2MProxy`) has no `.new()`/`.edit()` — so a many2many
+# field can only be populated in a form via `.add()`, which this repo's
+# odoo-yaml-test library does not expose as a form op (`set`/`new`/`edit`/
+# `remove`/`assert` only). The onchange scenarios below therefore leave
+# `related_account_type_ids` unset when creating `other_evidence` via
+# `action: form` — harmless here because Odoo's ORM does not enforce
+# `required=True` on x2many fields at all (only the web client's view layer
+# does), so `form.save()` succeeds regardless.
+#
+# NOTE on typo fields kept as-is (production code, not "fixed" here):
+# `business_environmeny_impacted` (general_audit.standard_detail) and
+# `organtization_structure_ids` (general_audit_ws_e78a3c6).
+
+setup:
+  steps:
+    - step: "Get config parameter model"
+      action: "search"
+      model: "ir.config_parameter"
+      domain: []
+      save_as: "config_parameter"
+      limit: 1
+
+    - step: "Allow enough CPA licenses for this scenario"
+      action: "call"
+      target: "config_parameter"
+      method: "set_param"
+      args:
+        - "ssi_general_audit.max_number_of_cpa_license"
+        - "100"
+
+    - step: "Create client partner"
+      action: "create"
+      model: "res.partner"
+      save_as: "client"
+      as_user: "base.user_admin"
+      values:
+        name: "Test Audit Client - WS Impact"
+        is_company: true
+
+    - step: "Create accountant partner"
+      action: "create"
+      model: "res.partner"
+      save_as: "accountant"
+      as_user: "base.user_admin"
+      values:
+        name: "Test Audit Accountant - WS Impact"
+
+    - step: "Get CPA license id category"
+      action: "ref"
+      xml_id: "ssi_partner_identification_cpa_license.partner_identification_accountant_cpa_license"
+      save_as: "cpa_category"
+
+    - step: "Grant accountant a CPA license"
+      action: "create"
+      model: "res.partner.id_number"
+      save_as: "cpa_license"
+      as_user: "base.user_admin"
+      values:
+        partner_id: "REC: accountant.id"
+        category_id: "REC: cpa_category.id"
+        name: "CPA-WSIMPACT-0001"
+
+    - step: "Create client account group"
+      action: "create"
+      model: "client_account_group"
+      save_as: "account_group"
+      as_user: "base.user_admin"
+      values:
+        name: "Test Account Group - WS Impact"
+        code: "/"
+
+    - step: "Create client account type 1 with a safe extrapolation python_code"
+      action: "create"
+      model: "client_account_type"
+      save_as: "account_type_1"
+      as_user: "base.user_admin"
+      values:
+        name: "Test Account Type 1 - WS Impact"
+        code: "/"
+        group_id: "REC: account_group.id"
+        python_code: "result = 0.0"
+
+    - step: "Create client account type 2 with a safe extrapolation python_code"
+      action: "create"
+      model: "client_account_type"
+      save_as: "account_type_2"
+      as_user: "base.user_admin"
+      values:
+        name: "Test Account Type 2 - WS Impact"
+        code: "/"
+        group_id: "REC: account_group.id"
+        python_code: "result = 0.0"
+
+    - step: "Create account type set"
+      action: "create"
+      model: "client_account_type_set"
+      save_as: "account_type_set"
+      as_user: "base.user_admin"
+      values:
+        name: "Test Account Type Set - WS Impact"
+        code: "/"
+
+    - step: "Create financial accounting standard"
+      action: "create"
+      model: "accountant.financial_accounting_standard"
+      save_as: "standard"
+      as_user: "base.user_admin"
+      values:
+        name: "Test Financial Accounting Standard - WS Impact"
+        code: "/"
+
+    - step: "Create general audit"
+      action: "create"
+      model: "general_audit"
+      save_as: "audit"
+      as_user: "base.user_admin"
+      values:
+        title: "Test General Audit - WS Impact"
+        partner_id: "REC: client.id"
+        accountant_id: "REC: accountant.id"
+        account_type_set_id: "REC: account_type_set.id"
+        financial_accounting_standard_id: "REC: standard.id"
+        date_start: 2026-01-01
+        date_end: 2026-12-31
+        need_interim: false
+        need_previous: false
+        num_of_consecutive_audit_firm: 1
+        num_of_consecutive_audit_accountant: 1
+
+    - step: "Open general audit"
+      action: "call"
+      target: "audit"
+      method: "action_open"
+      as_user: "base.user_admin"
+
+    - step: "Invalidate cache after opening general audit"
+      action: "call"
+      target: "audit"
+      method: "invalidate_cache"
+
+    - step: "Get worksheet type a13a30e"
+      action: "ref"
+      xml_id: "ssi_general_audit_worksheet_understanding_entity.worksheet_type_a13a30e"
+      save_as: "ws_type_a13a30e"
+
+    - step: "Get worksheet type bdcdfc5"
+      action: "ref"
+      xml_id: "ssi_general_audit_worksheet_understanding_entity.worksheet_type_bdcdfc5"
+      save_as: "ws_type_bdcdfc5"
+
+    - step: "Get worksheet type f6a227"
+      action: "ref"
+      xml_id: "ssi_general_audit_worksheet_understanding_entity.worksheet_type_f6a227"
+      save_as: "ws_type_f6a227"
+
+    - step: "Get worksheet type c0d0898"
+      action: "ref"
+      xml_id: "ssi_general_audit_worksheet_understanding_entity.worksheet_type_c0d0898"
+      save_as: "ws_type_c0d0898"
+
+    - step: "Get worksheet type e78a3c6"
+      action: "ref"
+      xml_id: "ssi_general_audit_worksheet_understanding_entity.worksheet_type_e78a3c6"
+      save_as: "ws_type_e78a3c6"
+
+    - step: "Get worksheet type ae11f7e"
+      action: "ref"
+      xml_id: "ssi_general_audit_worksheet_understanding_entity.worksheet_type_ae11f7e"
+      save_as: "ws_type_ae11f7e"
+
+    - step: "Get conclusion for ae11f7e worksheet type"
+      action: "ref"
+      xml_id: "ssi_general_audit_worksheet_understanding_entity.general_audit_worksheet_conclusion_54_87806302"
+      save_as: "conclusion_ae11f7e"
+
+scenarios:
+  # ==================================================================
+  # Create - draft, for the 6 worksheets in this file's scope
+  # ==================================================================
+  - name: "Worksheet a13a30e - Create in draft"
+    steps:
+      - step: "Create worksheet a13a30e"
+        action: "create"
+        model: "general_audit_ws_a13a30e"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_a13a30e.id"
+
+      - step: "Assert worksheet created in draft"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          id:
+            type: "value"
+            operator: "is_truthy"
+          state:
+            type: "value"
+            expected: "draft"
+          general_audit_id:
+            type: "m2o"
+            expected: "REC: audit"
+
+  - name: "Worksheet bdcdfc5 - Create in draft"
+    steps:
+      - step: "Create worksheet bdcdfc5"
+        action: "create"
+        model: "general_audit_ws_bdcdfc5"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_bdcdfc5.id"
+
+      - step: "Assert worksheet created in draft"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          id:
+            type: "value"
+            operator: "is_truthy"
+          state:
+            type: "value"
+            expected: "draft"
+
+  - name: "Worksheet f6a227 - Create in draft"
+    steps:
+      - step: "Create worksheet f6a227"
+        action: "create"
+        model: "general_audit_ws_f6a227"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_f6a227.id"
+
+      - step: "Assert worksheet created in draft"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          id:
+            type: "value"
+            operator: "is_truthy"
+          state:
+            type: "value"
+            expected: "draft"
+
+  - name: "Worksheet c0d0898 - Create in draft"
+    steps:
+      - step: "Create worksheet c0d0898"
+        action: "create"
+        model: "general_audit_ws_c0d0898"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_c0d0898.id"
+
+      - step: "Assert worksheet created in draft"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          id:
+            type: "value"
+            operator: "is_truthy"
+          state:
+            type: "value"
+            expected: "draft"
+
+  - name: "Worksheet e78a3c6 - Create in draft"
+    steps:
+      - step: "Create worksheet e78a3c6"
+        action: "create"
+        model: "general_audit_ws_e78a3c6"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_e78a3c6.id"
+
+      - step: "Assert worksheet created in draft"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          id:
+            type: "value"
+            operator: "is_truthy"
+          state:
+            type: "value"
+            expected: "draft"
+
+  - name: "Worksheet ae11f7e - Create in draft"
+    steps:
+      - step: "Create worksheet ae11f7e"
+        action: "create"
+        model: "general_audit_ws_ae11f7e"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_ae11f7e.id"
+
+      - step: "Assert worksheet created in draft"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          id:
+            type: "value"
+            operator: "is_truthy"
+          state:
+            type: "value"
+            expected: "draft"
+
+  # ==================================================================
+  # _compute_standard_detail_ids - general_audit_ws_a13a30e.detail
+  # ==================================================================
+  - name: "Detail a13a30e - Compute standard_detail_ids (normal)"
+    steps:
+      - step: "Add a standard detail for account_type_1 to the audit"
+        action: "create"
+        model: "general_audit.standard_detail"
+        save_as: "standard_detail"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: account_type_1.id"
+
+      - step: "Create worksheet a13a30e"
+        action: "create"
+        model: "general_audit_ws_a13a30e"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_a13a30e.id"
+
+      - step: "Create relevant regulation"
+        action: "create"
+        model: "general_audit_relevant_regulation"
+        save_as: "regulation"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Relevant Regulation - a13a30e"
+          code: "/"
+
+      - step: "Create regulation item"
+        action: "create"
+        model: "general_audit_relevant_regulation.item"
+        save_as: "regulation_item"
+        as_user: "base.user_admin"
+        values:
+          regulation_id: "REC: regulation.id"
+          name: "Test Regulation Item - a13a30e"
+
+      - step: "Create a13a30e detail line related to account_type_1"
+        action: "create"
+        model: "general_audit_ws_a13a30e.detail"
+        save_as: "detail"
+        as_user: "base.user_admin"
+        values:
+          worksheet_id: "REC: worksheet.id"
+          regulation_id: "REC: regulation.id"
+          item_id: "REC: regulation_item.id"
+          related_account_type_ids: [[6, 0, ["REC: account_type_1.id"]]]
+
+      - step: "Assert standard_detail_ids contains the matching standard detail"
+        action: "assert"
+        target: "detail"
+        asserts:
+          standard_detail_ids:
+            type: "m2m"
+            check: "exact"
+            expected_records:
+              - "REC: standard_detail"
+
+  - name: "Detail a13a30e - Compute standard_detail_ids (kosong)"
+    steps:
+      - step: "Create worksheet a13a30e"
+        action: "create"
+        model: "general_audit_ws_a13a30e"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_a13a30e.id"
+
+      - step: "Create relevant regulation"
+        action: "create"
+        model: "general_audit_relevant_regulation"
+        save_as: "regulation"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Relevant Regulation - a13a30e kosong"
+          code: "/"
+
+      - step: "Create regulation item"
+        action: "create"
+        model: "general_audit_relevant_regulation.item"
+        save_as: "regulation_item"
+        as_user: "base.user_admin"
+        values:
+          regulation_id: "REC: regulation.id"
+          name: "Test Regulation Item - a13a30e kosong"
+
+      - step:
+          "Create a13a30e detail line related to account_type_2 (no matching standard
+          detail)"
+        action: "create"
+        model: "general_audit_ws_a13a30e.detail"
+        save_as: "detail"
+        as_user: "base.user_admin"
+        values:
+          worksheet_id: "REC: worksheet.id"
+          regulation_id: "REC: regulation.id"
+          item_id: "REC: regulation_item.id"
+          related_account_type_ids: [[6, 0, ["REC: account_type_2.id"]]]
+
+      - step: "Assert standard_detail_ids is empty"
+        action: "assert"
+        target: "detail"
+        asserts:
+          standard_detail_ids:
+            type: "m2m"
+            check: "count"
+            expected_count: 0
+
+  # ==================================================================
+  # _compute_standard_detail_ids - general_audit_ws_bdcdfc5.detail
+  # ==================================================================
+  - name: "Detail bdcdfc5 - Compute standard_detail_ids (normal)"
+    steps:
+      - step: "Add a standard detail for account_type_1 to the audit"
+        action: "create"
+        model: "general_audit.standard_detail"
+        save_as: "standard_detail"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: account_type_1.id"
+
+      - step: "Create worksheet bdcdfc5"
+        action: "create"
+        model: "general_audit_ws_bdcdfc5"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_bdcdfc5.id"
+
+      - step: "Create bdcdfc5 detail line related to account_type_1"
+        action: "create"
+        model: "general_audit_ws_bdcdfc5.detail"
+        save_as: "detail"
+        as_user: "base.user_admin"
+        values:
+          worksheet_id: "REC: worksheet.id"
+          understanding_result: "Understanding result - bdcdfc5"
+          impact_to_financial_report: "Impact to financial report - bdcdfc5"
+          related_account_type_ids: [[6, 0, ["REC: account_type_1.id"]]]
+
+      - step: "Assert standard_detail_ids contains the matching standard detail"
+        action: "assert"
+        target: "detail"
+        asserts:
+          standard_detail_ids:
+            type: "m2m"
+            check: "exact"
+            expected_records:
+              - "REC: standard_detail"
+
+  - name: "Detail bdcdfc5 - Compute standard_detail_ids (kosong)"
+    steps:
+      - step: "Create worksheet bdcdfc5"
+        action: "create"
+        model: "general_audit_ws_bdcdfc5"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_bdcdfc5.id"
+
+      - step:
+          "Create bdcdfc5 detail line related to account_type_2 (no matching standard
+          detail)"
+        action: "create"
+        model: "general_audit_ws_bdcdfc5.detail"
+        save_as: "detail"
+        as_user: "base.user_admin"
+        values:
+          worksheet_id: "REC: worksheet.id"
+          understanding_result: "Understanding result - bdcdfc5 kosong"
+          impact_to_financial_report: "Impact to financial report - bdcdfc5 kosong"
+          related_account_type_ids: [[6, 0, ["REC: account_type_2.id"]]]
+
+      - step: "Assert standard_detail_ids is empty"
+        action: "assert"
+        target: "detail"
+        asserts:
+          standard_detail_ids:
+            type: "m2m"
+            check: "count"
+            expected_count: 0
+
+  # ==================================================================
+  # _compute_standard_detail_ids - general_audit_ws_f6a227.detail
+  # ==================================================================
+  - name: "Detail f6a227 - Compute standard_detail_ids (normal)"
+    steps:
+      - step: "Add a standard detail for account_type_1 to the audit"
+        action: "create"
+        model: "general_audit.standard_detail"
+        save_as: "standard_detail"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: account_type_1.id"
+
+      - step: "Create FS preparation step"
+        action: "create"
+        model: "general_audit_fs_preparation_step"
+        save_as: "step"
+        as_user: "base.user_admin"
+        values:
+          name: "Test FS Preparation Step - f6a227"
+          code: "/"
+
+      - step: "Create worksheet f6a227"
+        action: "create"
+        model: "general_audit_ws_f6a227"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_f6a227.id"
+
+      - step: "Create f6a227 detail line related to account_type_1"
+        action: "create"
+        model: "general_audit_ws_f6a227.detail"
+        save_as: "detail"
+        as_user: "base.user_admin"
+        values:
+          worksheet_id: "REC: worksheet.id"
+          step_id: "REC: step.id"
+          description: "Understanding result - f6a227"
+          control_activity: "Control activity - f6a227"
+          audit_relevancy: "Audit relevancy - f6a227"
+          misstatement_identification: "Misstatement identification - f6a227"
+          related_account_type_ids: [[6, 0, ["REC: account_type_1.id"]]]
+
+      - step: "Assert standard_detail_ids contains the matching standard detail"
+        action: "assert"
+        target: "detail"
+        asserts:
+          standard_detail_ids:
+            type: "m2m"
+            check: "exact"
+            expected_records:
+              - "REC: standard_detail"
+
+  - name: "Detail f6a227 - Compute standard_detail_ids (kosong)"
+    steps:
+      - step: "Create FS preparation step"
+        action: "create"
+        model: "general_audit_fs_preparation_step"
+        save_as: "step"
+        as_user: "base.user_admin"
+        values:
+          name: "Test FS Preparation Step - f6a227 kosong"
+          code: "/"
+
+      - step: "Create worksheet f6a227"
+        action: "create"
+        model: "general_audit_ws_f6a227"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_f6a227.id"
+
+      - step:
+          "Create f6a227 detail line related to account_type_2 (no matching standard
+          detail)"
+        action: "create"
+        model: "general_audit_ws_f6a227.detail"
+        save_as: "detail"
+        as_user: "base.user_admin"
+        values:
+          worksheet_id: "REC: worksheet.id"
+          step_id: "REC: step.id"
+          description: "Understanding result - f6a227 kosong"
+          control_activity: "Control activity - f6a227 kosong"
+          audit_relevancy: "Audit relevancy - f6a227 kosong"
+          misstatement_identification: "Misstatement identification - f6a227 kosong"
+          related_account_type_ids: [[6, 0, ["REC: account_type_2.id"]]]
+
+      - step: "Assert standard_detail_ids is empty"
+        action: "assert"
+        target: "detail"
+        asserts:
+          standard_detail_ids:
+            type: "m2m"
+            check: "count"
+            expected_count: 0
+
+  # ==================================================================
+  # general_audit._compute_fraud_impacted_account_types
+  #
+  # `fraud_impacted` on general_audit.standard_detail is itself a stored
+  # compute derived from `c0e0eec_detail_ids` (populated via the reverse M2M
+  # from general_audit_ws_c0e0eec.detail.standard_detail_ids, out of scope
+  # for this file). Writing it directly here isolates and exercises only the
+  # general_audit-level compute; Odoo still recomputes
+  # `fraud_impacted_account_type_ids` because the dependency is declared on
+  # the field itself (`standard_detail_ids.fraud_impacted`), regardless of
+  # whether the value arrived via compute or a direct ORM write.
+  # ==================================================================
+  - name: "General audit - Compute fraud_impacted_account_type_ids (normal)"
+    steps:
+      - step: "Add a standard detail for account_type_1 to the audit"
+        action: "create"
+        model: "general_audit.standard_detail"
+        save_as: "standard_detail"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: account_type_1.id"
+
+      - step: "Mark the standard detail as fraud impacted"
+        action: "write"
+        target: "standard_detail"
+        as_user: "base.user_admin"
+        values:
+          fraud_impacted: true
+
+      - step: "Assert fraud_impacted_account_type_ids contains account_type_1"
+        action: "assert"
+        target: "audit"
+        asserts:
+          fraud_impacted_account_type_ids:
+            type: "m2m"
+            check: "exact"
+            expected_records:
+              - "REC: account_type_1"
+
+  - name: "General audit - Compute fraud_impacted_account_type_ids (kosong)"
+    steps:
+      - step: "Add a standard detail for account_type_1, not marked fraud impacted"
+        action: "create"
+        model: "general_audit.standard_detail"
+        save_as: "standard_detail"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: account_type_1.id"
+
+      - step: "Assert fraud_impacted_account_type_ids is empty"
+        action: "assert"
+        target: "audit"
+        asserts:
+          fraud_impacted_account_type_ids:
+            type: "m2m"
+            check: "count"
+            expected_count: 0
+
+  # ==================================================================
+  # general_audit._compute_business_environment_impacted_account_types
+  #
+  # Source field on general_audit.standard_detail is the TYPO'D
+  # `business_environmeny_impacted` (production code, kept as-is); the
+  # RESULT field on general_audit is correctly spelled
+  # `business_environment_impacted_account_type_ids`.
+  # ==================================================================
+  - name:
+      "General audit - Compute business_environment_impacted_account_type_ids (normal)"
+    steps:
+      - step: "Add a standard detail for account_type_1 to the audit"
+        action: "create"
+        model: "general_audit.standard_detail"
+        save_as: "standard_detail"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: account_type_1.id"
+
+      - step: "Mark the standard detail as business environment impacted (typo field)"
+        action: "write"
+        target: "standard_detail"
+        as_user: "base.user_admin"
+        values:
+          business_environmeny_impacted: true
+
+      - step:
+          "Assert business_environment_impacted_account_type_ids contains account_type_1"
+        action: "assert"
+        target: "audit"
+        asserts:
+          business_environment_impacted_account_type_ids:
+            type: "m2m"
+            check: "exact"
+            expected_records:
+              - "REC: account_type_1"
+
+  - name:
+      "General audit - Compute business_environment_impacted_account_type_ids (kosong)"
+    steps:
+      - step: "Add a standard detail for account_type_1, not marked impacted"
+        action: "create"
+        model: "general_audit.standard_detail"
+        save_as: "standard_detail"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: account_type_1.id"
+
+      - step: "Assert business_environment_impacted_account_type_ids is empty"
+        action: "assert"
+        target: "audit"
+        asserts:
+          business_environment_impacted_account_type_ids:
+            type: "m2m"
+            check: "count"
+            expected_count: 0
+
+  # ==================================================================
+  # general_audit._compute_expert_type_ids (from ws_ae11f7e_expert_ids)
+  # ==================================================================
+  - name: "General audit - Compute expert_type_ids (normal)"
+    steps:
+      - step: "Create expert type"
+        action: "create"
+        model: "general_audit_expert_type"
+        save_as: "expert_type"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Expert Type - WS Impact"
+          code: "/"
+
+      - step: "Create worksheet ae11f7e"
+        action: "create"
+        model: "general_audit_ws_ae11f7e"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_ae11f7e.id"
+
+      - step: "Create expert line with the expert type"
+        action: "create"
+        model: "general_audit_ws_ae11f7e.expert"
+        save_as: "expert_line"
+        as_user: "base.user_admin"
+        values:
+          worksheet_id: "REC: worksheet.id"
+          name: "Test Expert - WS Impact"
+          type_id: "REC: expert_type.id"
+          related_account_type_ids: [[6, 0, ["REC: account_type_1.id"]]]
+
+      - step: "Assert expert_type_ids contains the expert type"
+        action: "assert"
+        target: "audit"
+        asserts:
+          expert_type_ids:
+            type: "m2m"
+            check: "exact"
+            expected_records:
+              - "REC: expert_type"
+
+  - name: "General audit - Compute expert_type_ids (kosong)"
+    steps:
+      - step: "Create worksheet ae11f7e without any expert line"
+        action: "create"
+        model: "general_audit_ws_ae11f7e"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_ae11f7e.id"
+
+      - step: "Assert expert_type_ids is empty"
+        action: "assert"
+        target: "audit"
+        asserts:
+          expert_type_ids:
+            type: "m2m"
+            check: "count"
+            expected_count: 0
+
+  # ==================================================================
+  # organtization_structure_ids (typo is production code, kept as-is)
+  # ==================================================================
+  - name: "Worksheet e78a3c6 - organtization_structure_ids populated"
+    steps:
+      - step: "Create worksheet e78a3c6"
+        action: "create"
+        model: "general_audit_ws_e78a3c6"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_e78a3c6.id"
+
+      - step: "Create organization structure line"
+        action: "create"
+        model: "general_audit_ws_e78a3c6.organization_structure"
+        save_as: "org_structure_line"
+        as_user: "base.user_admin"
+        values:
+          worksheet_id: "REC: worksheet.id"
+          name: "Finance Division"
+          responsibility: "Manages financial reporting and internal controls."
+
+      - step: "Assert organtization_structure_ids contains the new line"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          organtization_structure_ids:
+            type: "o2m"
+            check: "contains"
+            expected_records:
+              - "REC: org_structure_line"
+
+  # ==================================================================
+  # Onchange partner_id -> partner_name
+  # (general_audit_ws_ae11f7e.other_evidence.onchange_partner_name)
+  # ==================================================================
+  - name: "OtherEvidence ae11f7e - Onchange partner_id fills partner_name"
+    steps:
+      - step: "Create worksheet ae11f7e"
+        action: "create"
+        model: "general_audit_ws_ae11f7e"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_ae11f7e.id"
+
+      - step: "Create evidence type"
+        action: "create"
+        model: "general_audit_evidence"
+        save_as: "evidence"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Evidence Type - Onchange"
+
+      - step: "Create partner for the onchange"
+        action: "create"
+        model: "res.partner"
+        save_as: "evidence_partner"
+        as_user: "base.user_admin"
+        values:
+          name: "Onchange Other Evidence Partner"
+
+      - step: "Open other_evidence form and set partner_id"
+        action: "form"
+        model: "general_audit_ws_ae11f7e.other_evidence"
+        save_as: "other_evidence"
+        as_user: "base.user_admin"
+        values:
+          worksheet_id: "REC: worksheet"
+          evidence_id: "REC: evidence"
+          summary: "Other evidence summary - onchange fills"
+          partner_id: "REC: evidence_partner"
+        save: true
+
+      - step: "Assert partner_name filled from partner via onchange"
+        action: "assert"
+        target: "other_evidence"
+        asserts:
+          partner_name:
+            type: "value"
+            expected: "Onchange Other Evidence Partner"
+
+  - name:
+      "OtherEvidence ae11f7e - Onchange partner_id clears partner_name when partner
+      removed"
+    steps:
+      - step: "Create worksheet ae11f7e"
+        action: "create"
+        model: "general_audit_ws_ae11f7e"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_ae11f7e.id"
+
+      - step: "Create evidence type"
+        action: "create"
+        model: "general_audit_evidence"
+        save_as: "evidence"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Evidence Type - Onchange Clear"
+
+      - step: "Create partner for the onchange"
+        action: "create"
+        model: "res.partner"
+        save_as: "evidence_partner"
+        as_user: "base.user_admin"
+        values:
+          name: "Onchange Other Evidence Partner To Clear"
+
+      - step: "Open other_evidence form and set partner_id"
+        action: "form"
+        model: "general_audit_ws_ae11f7e.other_evidence"
+        save_as: "other_evidence"
+        as_user: "base.user_admin"
+        values:
+          worksheet_id: "REC: worksheet"
+          evidence_id: "REC: evidence"
+          summary: "Other evidence summary - onchange clears"
+          partner_id: "REC: evidence_partner"
+        save: true
+
+      - step: "Assert partner_name filled before clearing partner_id"
+        action: "assert"
+        target: "other_evidence"
+        asserts:
+          partner_name:
+            type: "value"
+            operator: "is_truthy"
+
+      - step: "Re-open other_evidence form and clear partner_id"
+        action: "form"
+        target: "other_evidence"
+        as_user: "base.user_admin"
+        save: true
+        ops:
+          - set: {partner_id: "EVAL: env['res.partner']"}
+
+      - step: "Assert partner_name cleared by onchange"
+        action: "assert"
+        target: "other_evidence"
+        asserts:
+          partner_name:
+            type: "value"
+            expected: ""
+
+  # ==================================================================
+  # Full workflow: draft -> open -> confirm -> approve -> done, then
+  # cancel -> restart, for general_audit_ws_ae11f7e (simplest worksheet in
+  # this file's scope: no extra required-before-confirm fields, no
+  # post_open_action side effects).
+  # ==================================================================
+  - name: "Worksheet ae11f7e - Full workflow draft to done, then cancel and restart"
+    steps:
+      - step: "Create worksheet ae11f7e"
+        action: "create"
+        model: "general_audit_ws_ae11f7e"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_ae11f7e.id"
+
+      - step: "Assert worksheet created in draft"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          state:
+            type: "value"
+            expected: "draft"
+
+      - step: "Open worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_open"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after opening worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Assert worksheet open"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          state:
+            type: "value"
+            expected: "open"
+
+      - step: "Fill required conclusion fields before confirm"
+        action: "write"
+        target: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          conclusion_id: "REC: conclusion_ae11f7e.id"
+          conclusion: "Main business activity processes understood and documented."
+
+      - step: "Confirm worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_confirm"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after confirming worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Assert worksheet confirmed"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          state:
+            type: "value"
+            expected: "confirm"
+
+      - step: "Approve worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_approve_approval"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after approving worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Assert worksheet done"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          state:
+            type: "value"
+            expected: "done"
+
+      - step: "Cancel worksheet directly (not via wizard)"
+        action: "call"
+        target: "worksheet"
+        method: "action_cancel"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after cancelling worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Assert worksheet cancelled"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          state:
+            type: "value"
+            expected: "cancel"
+
+      - step: "Restart worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_restart"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after restarting worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Assert worksheet back to draft"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          state:
+            type: "value"
+            expected: "draft"
