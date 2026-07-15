@@ -612,22 +612,14 @@ scenarios:
           general_audit_id: "REC: audit.id"
           type_id: "REC: ws_type_ae48e68.id"
 
-      - step: "Open worksheet"
-        action: "call"
-        target: "worksheet"
-        method: "action_open"
+      - step: "Create checklist line while worksheet is still draft"
+        action: "create"
+        model: "general_audit_ws_ae48e68.checklist"
+        save_as: "checklist_line"
         as_user: "base.user_admin"
-
-      - step: "Invalidate cache after opening worksheet"
-        action: "call"
-        target: "worksheet"
-        method: "invalidate_cache"
-
-      - step: "Populate checklist from master items"
-        action: "call"
-        target: "worksheet"
-        method: "action_populate_checklist"
-        as_user: "base.user_admin"
+        values:
+          worksheet_id: "REC: worksheet.id"
+          item_id: "REC: item.id"
 
       - step: "Verify the scoped checklist line exists before unlink"
         action: "search"
@@ -638,24 +630,7 @@ scenarios:
         save_as: "line_before_unlink"
         expect_count: 1
 
-      - step: "Cancel worksheet before delete"
-        action: "call"
-        target: "worksheet"
-        method: "action_cancel"
-        as_user: "base.user_admin"
-
-      - step: "Restart worksheet back to draft"
-        action: "call"
-        target: "worksheet"
-        method: "action_restart"
-        as_user: "base.user_admin"
-
-      - step: "Invalidate cache after restarting worksheet"
-        action: "call"
-        target: "worksheet"
-        method: "invalidate_cache"
-
-      - step: "Delete the worksheet"
+      - step: "Delete the worksheet while still draft"
         action: "unlink"
         target: "worksheet"
         as_user: "base.user_admin"
