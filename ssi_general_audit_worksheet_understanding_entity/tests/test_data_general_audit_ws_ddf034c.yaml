@@ -1,0 +1,685 @@
+setup:
+  steps:
+    - step: "Get config parameter model"
+      action: "search"
+      model: "ir.config_parameter"
+      domain: []
+      save_as: "config_parameter"
+      limit: 1
+
+    - step: "Allow enough CPA licenses for this scenario"
+      action: "call"
+      target: "config_parameter"
+      method: "set_param"
+      args:
+        - "ssi_general_audit.max_number_of_cpa_license"
+        - "100"
+
+    - step: "Create client partner"
+      action: "create"
+      model: "res.partner"
+      save_as: "client"
+      as_user: "base.user_admin"
+      values:
+        name: "Test Audit Client"
+        is_company: true
+
+    - step: "Create accountant partner"
+      action: "create"
+      model: "res.partner"
+      save_as: "accountant"
+      as_user: "base.user_admin"
+      values:
+        name: "Test Audit Accountant"
+
+    - step: "Get CPA license id category"
+      action: "ref"
+      xml_id: "ssi_partner_identification_cpa_license.partner_identification_accountant_cpa_license"
+      save_as: "cpa_category"
+
+    - step: "Grant accountant a CPA license"
+      action: "create"
+      model: "res.partner.id_number"
+      save_as: "cpa_license"
+      as_user: "base.user_admin"
+      values:
+        partner_id: "REC: accountant.id"
+        category_id: "REC: cpa_category.id"
+        name: "CPA-DDF034C-0001"
+
+    - step: "Create account type set"
+      action: "create"
+      model: "client_account_type_set"
+      save_as: "account_type_set"
+      as_user: "base.user_admin"
+      values:
+        name: "Test Account Type Set"
+        code: "/"
+
+    - step: "Create financial accounting standard"
+      action: "create"
+      model: "accountant.financial_accounting_standard"
+      save_as: "standard"
+      as_user: "base.user_admin"
+      values:
+        name: "Test Financial Accounting Standard"
+        code: "/"
+
+    - step: "Create general audit"
+      action: "create"
+      model: "general_audit"
+      save_as: "audit"
+      as_user: "base.user_admin"
+      values:
+        title: "Test General Audit - WS ddf034c"
+        partner_id: "REC: client.id"
+        accountant_id: "REC: accountant.id"
+        account_type_set_id: "REC: account_type_set.id"
+        financial_accounting_standard_id: "REC: standard.id"
+        date_start: 2026-01-01
+        date_end: 2026-12-31
+        need_interim: false
+        need_previous: false
+        num_of_consecutive_audit_firm: 1
+        num_of_consecutive_audit_accountant: 1
+
+    - step: "Open general audit"
+      action: "call"
+      target: "audit"
+      method: "action_open"
+      as_user: "base.user_admin"
+
+    - step: "Invalidate cache after opening general audit"
+      action: "call"
+      target: "audit"
+      method: "invalidate_cache"
+
+    - step: "Get worksheet type ddf034c"
+      action: "ref"
+      xml_id: "ssi_general_audit_worksheet_understanding_entity.worksheet_type_ddf034c"
+      save_as: "ws_type"
+
+    - step: "Create client contact person (individual, child of client)"
+      action: "create"
+      model: "res.partner"
+      save_as: "contact_partner"
+      as_user: "base.user_admin"
+      values:
+        name: "Onchange Contact Person"
+        is_company: false
+        parent_id: "REC: client.id"
+        function: "Finance Manager"
+        phone: "021-5551234"
+        mobile: "0812-3456-7890"
+        email: "contact@example.com"
+
+scenarios:
+  # ------------------------------------------------------------------
+  # Create - draft
+  # ------------------------------------------------------------------
+  - name: "Worksheet ddf034c - Create in draft"
+    steps:
+      - step: "Create worksheet ddf034c"
+        action: "create"
+        model: "general_audit_ws_ddf034c"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+
+      - step: "Assert worksheet created in draft"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          id:
+            type: "value"
+            operator: "is_truthy"
+          state:
+            type: "value"
+            expected: "draft"
+          general_audit_id:
+            type: "m2o"
+            expected: "REC: audit"
+
+  # ------------------------------------------------------------------
+  # _compute_est_authorized_value
+  # ------------------------------------------------------------------
+  - name: "Worksheet ddf034c - Compute est_authorized_value (normal)"
+    steps:
+      - step: "Create worksheet with est authorized amount and number"
+        action: "create"
+        model: "general_audit_ws_ddf034c"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+          est_authorized_amount: 1250.5
+          est_authorized_number: 200
+
+      - step: "Assert est_authorized_value is amount x number"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          est_authorized_value:
+            type: "value"
+            expected: 250100.0
+
+  - name: "Worksheet ddf034c - Compute est_authorized_value (zero)"
+    steps:
+      - step: "Create worksheet with est authorized amount and number both zero"
+        action: "create"
+        model: "general_audit_ws_ddf034c"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+          est_authorized_amount: 0.0
+          est_authorized_number: 0
+
+      - step: "Assert est_authorized_value is zero"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          est_authorized_value:
+            type: "value"
+            expected: 0.0
+
+  # ------------------------------------------------------------------
+  # _compute_est_paid_value
+  # ------------------------------------------------------------------
+  - name: "Worksheet ddf034c - Compute est_paid_value (normal)"
+    steps:
+      - step: "Create worksheet with est paid amount and number"
+        action: "create"
+        model: "general_audit_ws_ddf034c"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+          est_paid_amount: 675.25
+          est_paid_number: 40
+
+      - step: "Assert est_paid_value is amount x number"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          est_paid_value:
+            type: "value"
+            expected: 27010.0
+
+  - name: "Worksheet ddf034c - Compute est_paid_value (zero)"
+    steps:
+      - step: "Create worksheet with est paid amount and number both zero"
+        action: "create"
+        model: "general_audit_ws_ddf034c"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+          est_paid_amount: 0.0
+          est_paid_number: 0
+
+      - step: "Assert est_paid_value is zero"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          est_paid_value:
+            type: "value"
+            expected: 0.0
+
+  # ------------------------------------------------------------------
+  # _compute_adm_authorized_value
+  # ------------------------------------------------------------------
+  - name: "Worksheet ddf034c - Compute adm_authorized_value (normal)"
+    steps:
+      - step: "Create worksheet with adm authorized amount and number"
+        action: "create"
+        model: "general_audit_ws_ddf034c"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+          adm_authorized_amount: 980.0
+          adm_authorized_number: 150
+
+      - step: "Assert adm_authorized_value is amount x number"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          adm_authorized_value:
+            type: "value"
+            expected: 147000.0
+
+  - name: "Worksheet ddf034c - Compute adm_authorized_value (zero)"
+    steps:
+      - step: "Create worksheet with adm authorized amount and number both zero"
+        action: "create"
+        model: "general_audit_ws_ddf034c"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+          adm_authorized_amount: 0.0
+          adm_authorized_number: 0
+
+      - step: "Assert adm_authorized_value is zero"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          adm_authorized_value:
+            type: "value"
+            expected: 0.0
+
+  # ------------------------------------------------------------------
+  # _compute_adm_paid_value
+  # ------------------------------------------------------------------
+  - name: "Worksheet ddf034c - Compute adm_paid_value (normal)"
+    steps:
+      - step: "Create worksheet with adm paid amount and number"
+        action: "create"
+        model: "general_audit_ws_ddf034c"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+          adm_paid_amount: 450.75
+          adm_paid_number: 60
+
+      - step: "Assert adm_paid_value is amount x number"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          adm_paid_value:
+            type: "value"
+            expected: 27045.0
+
+  - name: "Worksheet ddf034c - Compute adm_paid_value (zero)"
+    steps:
+      - step: "Create worksheet with adm paid amount and number both zero"
+        action: "create"
+        model: "general_audit_ws_ddf034c"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+          adm_paid_amount: 0.0
+          adm_paid_number: 0
+
+      - step: "Assert adm_paid_value is zero"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          adm_paid_value:
+            type: "value"
+            expected: 0.0
+
+  # ------------------------------------------------------------------
+  # One2many lines - client_contact_ids / ownership_status_ids /
+  # est_shareholding_ids / est_composition_ids / adm_shareholding_ids /
+  # adm_composition_ids
+  # ------------------------------------------------------------------
+  - name: "Worksheet ddf034c - O2M lines are populated"
+    steps:
+      - step: "Create worksheet ddf034c"
+        action: "create"
+        model: "general_audit_ws_ddf034c"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+
+      - step: "Create client contact line"
+        action: "create"
+        model: "general_audit_ws_ddf034c.contact"
+        save_as: "contact_line"
+        as_user: "base.user_admin"
+        values:
+          worksheet_id: "REC: worksheet.id"
+          contact_name: "O2M Contact"
+
+      - step: "Create ownership status line"
+        action: "create"
+        model: "general_audit_ws_ddf034c.ownership"
+        save_as: "ownership_line"
+        as_user: "base.user_admin"
+        values:
+          worksheet_id: "REC: worksheet.id"
+          ownership_state: "owned"
+
+      - step: "Create est shareholding line"
+        action: "create"
+        model: "general_audit_ws_ddf034c.est_shareholding"
+        save_as: "est_shareholding_line"
+        as_user: "base.user_admin"
+        values:
+          worksheet_id: "REC: worksheet.id"
+          shareholder_name: "Investor A"
+          shareholder_number: 100
+
+      - step: "Create est composition line"
+        action: "create"
+        model: "general_audit_ws_ddf034c.est_composition"
+        save_as: "est_composition_line"
+        as_user: "base.user_admin"
+        values:
+          worksheet_id: "REC: worksheet.id"
+          admin_name: "Director A"
+          admin_position: "Director"
+
+      - step: "Create adm shareholding line"
+        action: "create"
+        model: "general_audit_ws_ddf034c.adm_shareholding"
+        save_as: "adm_shareholding_line"
+        as_user: "base.user_admin"
+        values:
+          worksheet_id: "REC: worksheet.id"
+          shareholder_name: "Investor B"
+          shareholder_number: 200
+
+      - step: "Create adm composition line"
+        action: "create"
+        model: "general_audit_ws_ddf034c.adm_composition"
+        save_as: "adm_composition_line"
+        as_user: "base.user_admin"
+        values:
+          worksheet_id: "REC: worksheet.id"
+          admin_name: "Commissioner B"
+          admin_position: "Commissioner"
+
+      - step: "Assert all O2M lines are attached to the worksheet"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          client_contact_ids:
+            type: "o2m"
+            check: "contains"
+            expected_records:
+              - "REC: contact_line"
+          ownership_status_ids:
+            type: "o2m"
+            check: "contains"
+            expected_records:
+              - "REC: ownership_line"
+          est_shareholding_ids:
+            type: "o2m"
+            check: "contains"
+            expected_records:
+              - "REC: est_shareholding_line"
+          est_composition_ids:
+            type: "o2m"
+            check: "contains"
+            expected_records:
+              - "REC: est_composition_line"
+          adm_shareholding_ids:
+            type: "o2m"
+            check: "contains"
+            expected_records:
+              - "REC: adm_shareholding_line"
+          adm_composition_ids:
+            type: "o2m"
+            check: "contains"
+            expected_records:
+              - "REC: adm_composition_line"
+
+  # ------------------------------------------------------------------
+  # Full workflow: draft -> open -> confirm -> done -> cancel -> draft
+  # ------------------------------------------------------------------
+  - name:
+      "Worksheet ddf034c - Workflow draft to confirm, approve blocked by known bug
+      (BL-0237)"
+    steps:
+      - step: "Create worksheet ddf034c"
+        action: "create"
+        model: "general_audit_ws_ddf034c"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+
+      - step: "Assert worksheet created in draft"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          state:
+            type: "value"
+            expected: "draft"
+
+      - step: "Open worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_open"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after opening worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Assert worksheet open"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          state:
+            type: "value"
+            expected: "open"
+
+      - step: "Fill required conclusion fields before confirm"
+        action: "write"
+        target: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          conclusion_id:
+            "REF:
+            ssi_general_audit_worksheet_understanding_entity.general_audit_worksheet_conclusion_51_35fd6e3e"
+          conclusion: "General information and legal aspects reviewed and adequate."
+
+      - step: "Confirm worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_confirm"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after confirming worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Assert worksheet confirmed"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          state:
+            type: "value"
+            expected: "confirm"
+
+      # NB: approve_approval always fails here -- see BL-0237 (this
+      # module's approval_template_detail records omit
+      # approver_selection_method, so active_approver_user_ids is
+      # always empty). Confirmed production bug, tracked separately,
+      # not fixed in this test-only PR.
+      - step: "Assert approve_approval is blocked by the known template bug (BL-0237)"
+        action: "call"
+        target: "worksheet"
+        method: "action_approve_approval"
+        as_user: "base.user_admin"
+        expect_error:
+          type: "UserError"
+          message_contains: "not allowed to approve"
+
+  - name: "Worksheet ddf034c - Cancel and restart from open"
+    steps:
+      - step: "Create worksheet ddf034c"
+        action: "create"
+        model: "general_audit_ws_ddf034c"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+
+      - step: "Open worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_open"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after opening worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Cancel worksheet directly (not via wizard)"
+        action: "call"
+        target: "worksheet"
+        method: "action_cancel"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after cancelling worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Assert worksheet cancelled"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          state:
+            type: "value"
+            expected: "cancel"
+
+      - step: "Restart worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_restart"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after restarting worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Assert worksheet back to draft"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          state:
+            type: "value"
+            expected: "draft"
+
+  # ------------------------------------------------------------------
+  # Onchange partner_id (general_audit_ws_ddf034c.contact) - fills fields
+  # Covers onchange_contact_name / onchange_contact_position /
+  # onchange_contact_phone / onchange_contact_mobile / onchange_contact_email
+  # ------------------------------------------------------------------
+  - name: "Contact ddf034c - Onchange partner_id fills contact fields"
+    steps:
+      - step: "Create worksheet ddf034c"
+        action: "create"
+        model: "general_audit_ws_ddf034c"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+
+      - step: "Open contact form and set partner_id"
+        action: "form"
+        model: "general_audit_ws_ddf034c.contact"
+        save_as: "contact_line"
+        as_user: "base.user_admin"
+        values:
+          worksheet_id: "REC: worksheet"
+          partner_id: "REC: contact_partner"
+        save: true
+
+      - step: "Assert contact fields filled from partner via onchange"
+        action: "assert"
+        target: "contact_line"
+        asserts:
+          contact_name:
+            type: "value"
+            expected: "Onchange Contact Person"
+          contact_position:
+            type: "value"
+            expected: "Finance Manager"
+          contact_phone:
+            type: "value"
+            expected: "021-5551234"
+          contact_mobile:
+            type: "value"
+            expected: "0812-3456-7890"
+          contact_email:
+            type: "value"
+            expected: "contact@example.com"
+
+  # ------------------------------------------------------------------
+  # Onchange partner_id (general_audit_ws_ddf034c.contact) - clears fields
+  # ------------------------------------------------------------------
+  - name:
+      "Contact ddf034c - Onchange partner_id clears contact fields when partner removed"
+    steps:
+      - step: "Create worksheet ddf034c"
+        action: "create"
+        model: "general_audit_ws_ddf034c"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+
+      - step: "Open contact form and set partner_id"
+        action: "form"
+        model: "general_audit_ws_ddf034c.contact"
+        save_as: "contact_line"
+        as_user: "base.user_admin"
+        values:
+          worksheet_id: "REC: worksheet"
+          partner_id: "REC: contact_partner"
+        save: true
+
+      - step: "Assert contact fields filled before clearing partner_id"
+        action: "assert"
+        target: "contact_line"
+        asserts:
+          contact_name:
+            type: "value"
+            operator: "is_truthy"
+
+      - step: "Re-open contact form and clear partner_id"
+        action: "form"
+        target: "contact_line"
+        as_user: "base.user_admin"
+        save: true
+        ops:
+          - set: {partner_id: "EVAL: env['res.partner']"}
+
+      - step: "Assert contact fields cleared by onchange"
+        action: "assert"
+        target: "contact_line"
+        asserts:
+          contact_name:
+            type: "value"
+            operator: "is_falsy"
+          contact_position:
+            type: "value"
+            operator: "is_falsy"
+          contact_phone:
+            type: "value"
+            operator: "is_falsy"
+          contact_mobile:
+            type: "value"
+            operator: "is_falsy"
+          contact_email:
+            type: "value"
+            operator: "is_falsy"

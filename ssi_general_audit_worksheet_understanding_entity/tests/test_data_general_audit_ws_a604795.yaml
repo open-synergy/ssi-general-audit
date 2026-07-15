@@ -1,0 +1,688 @@
+# Copyright 2026 OpenSynergy Indonesia
+# Copyright 2026 PT. Simetri Sinergi Indonesia
+# License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
+#
+# Worksheet general_audit_ws_a604795 (Business Cycle Summaries).
+#
+# `_get_fields_required_before_confirm` on this model adds `ws_cbbbaf4_id` on
+# top of the mixin default `["conclusion_id", "conclusion"]`
+# (models/ga_a604795/general_audit_ws_a604795.py). `ws_cbbbaf4_id` only needs
+# to point at *any* `general_audit_ws_cbbbaf4` record (its own state is
+# irrelevant to this requirement) -- so the workflow fixture below creates one
+# and leaves it in `draft`.
+#
+# `@ssi_decorator.pre_confirm_check() _10_check_business_process` rejects
+# `action_confirm` only when ANOTHER `general_audit_ws_a604795` record already
+# exists with the *same* (general_audit_id, type_id, business_process_id).
+# `business_process_id` itself is NOT in `_get_fields_required_before_confirm`,
+# so it is optional: a worksheet with `business_process_id` left empty never
+# collides with anything and `action_confirm` succeeds without any
+# `client_business_process` fixture at all. The full workflow scenario below
+# therefore reaches `done` with no extra business-process setup. The
+# `_10_check_business_process` guard itself is still exercised directly, in
+# the last scenario, by giving two worksheets the same `business_process_id`.
+
+setup:
+  steps:
+    - step: "Get config parameter model"
+      action: "search"
+      model: "ir.config_parameter"
+      domain: []
+      save_as: "config_parameter"
+      limit: 1
+
+    - step: "Allow enough CPA licenses for this scenario"
+      action: "call"
+      target: "config_parameter"
+      method: "set_param"
+      args:
+        - "ssi_general_audit.max_number_of_cpa_license"
+        - "100"
+
+    - step: "Create client partner"
+      action: "create"
+      model: "res.partner"
+      save_as: "client"
+      as_user: "base.user_admin"
+      values:
+        name: "Test Audit Client - WS a604795"
+        is_company: true
+
+    - step: "Create accountant partner"
+      action: "create"
+      model: "res.partner"
+      save_as: "accountant"
+      as_user: "base.user_admin"
+      values:
+        name: "Test Audit Accountant - WS a604795"
+
+    - step: "Get CPA license id category"
+      action: "ref"
+      xml_id: "ssi_partner_identification_cpa_license.partner_identification_accountant_cpa_license"
+      save_as: "cpa_category"
+
+    - step: "Grant accountant a CPA license"
+      action: "create"
+      model: "res.partner.id_number"
+      save_as: "cpa_license"
+      as_user: "base.user_admin"
+      values:
+        partner_id: "REC: accountant.id"
+        category_id: "REC: cpa_category.id"
+        name: "CPA-A604795-0001"
+
+    - step: "Create account type set"
+      action: "create"
+      model: "client_account_type_set"
+      save_as: "account_type_set"
+      as_user: "base.user_admin"
+      values:
+        name: "Test Account Type Set - WS a604795"
+        code: "/"
+
+    - step: "Create financial accounting standard"
+      action: "create"
+      model: "accountant.financial_accounting_standard"
+      save_as: "standard"
+      as_user: "base.user_admin"
+      values:
+        name: "Test Financial Accounting Standard - WS a604795"
+        code: "/"
+
+    - step: "Create general audit"
+      action: "create"
+      model: "general_audit"
+      save_as: "audit"
+      as_user: "base.user_admin"
+      values:
+        title: "Test General Audit - WS a604795"
+        partner_id: "REC: client.id"
+        accountant_id: "REC: accountant.id"
+        account_type_set_id: "REC: account_type_set.id"
+        financial_accounting_standard_id: "REC: standard.id"
+        date_start: 2026-01-01
+        date_end: 2026-12-31
+        need_interim: false
+        need_previous: false
+        num_of_consecutive_audit_firm: 1
+        num_of_consecutive_audit_accountant: 1
+
+    - step: "Open general audit"
+      action: "call"
+      target: "audit"
+      method: "action_open"
+      as_user: "base.user_admin"
+
+    - step: "Invalidate cache after opening general audit"
+      action: "call"
+      target: "audit"
+      method: "invalidate_cache"
+
+    - step: "Get worksheet type a604795"
+      action: "ref"
+      xml_id: "ssi_general_audit_worksheet_understanding_entity.worksheet_type_a604795"
+      save_as: "ws_type"
+
+    - step: "Get worksheet type cbbbaf4"
+      action: "ref"
+      xml_id: "ssi_general_audit_worksheet_audit_working_plan.worksheet_type_cbbbaf4"
+      save_as: "ws_type_cbbbaf4"
+
+    - step: "Get conclusion for a604795 worksheet type"
+      action: "ref"
+      xml_id: "ssi_general_audit_worksheet_understanding_entity.general_audit_worksheet_conclusion_56_773e1eca"
+      save_as: "conclusion"
+
+scenarios:
+  # ------------------------------------------------------------------
+  # Create - draft
+  # ------------------------------------------------------------------
+  - name: "Worksheet a604795 - Create in draft"
+    steps:
+      - step: "Create worksheet a604795"
+        action: "create"
+        model: "general_audit_ws_a604795"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+
+      - step: "Assert worksheet created in draft"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          id:
+            type: "value"
+            operator: "is_truthy"
+          state:
+            type: "value"
+            expected: "draft"
+          general_audit_id:
+            type: "m2o"
+            expected: "REC: audit"
+
+  # ------------------------------------------------------------------
+  # _compute_allowed_ws_cbbbaf4_ids - normal
+  #
+  # allowed_ws_cbbbaf4_ids only picks up general_audit_ws_cbbbaf4 records on
+  # the SAME general_audit_id whose state is "open" or "done" -- see
+  # `_compute_allowed_ws_cbbbaf4_ids` in
+  # models/ga_a604795/general_audit_ws_a604795.py.
+  # ------------------------------------------------------------------
+  - name: "Worksheet a604795 - Compute allowed_ws_cbbbaf4_ids (normal)"
+    steps:
+      - step: "Create worksheet cbbbaf4 for the same audit"
+        action: "create"
+        model: "general_audit_ws_cbbbaf4"
+        save_as: "ws_cbbbaf4"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_cbbbaf4.id"
+
+      - step: "Open worksheet cbbbaf4 so its state qualifies (open/done)"
+        action: "call"
+        target: "ws_cbbbaf4"
+        method: "action_open"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after opening worksheet cbbbaf4"
+        action: "call"
+        target: "ws_cbbbaf4"
+        method: "invalidate_cache"
+
+      - step: "Create worksheet a604795 on the same audit"
+        action: "create"
+        model: "general_audit_ws_a604795"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+
+      - step: "Invalidate cache so allowed_ws_cbbbaf4_ids recomputes"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Assert allowed_ws_cbbbaf4_ids contains the open cbbbaf4 worksheet"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          allowed_ws_cbbbaf4_ids:
+            type: "m2m"
+            check: "exact"
+            expected_records:
+              - "REC: ws_cbbbaf4"
+
+  # ------------------------------------------------------------------
+  # _compute_allowed_ws_cbbbaf4_ids - kosong
+  #
+  # `setup:` never creates a general_audit_ws_cbbbaf4 itself (only the
+  # scenario above does, to its own fresh `audit`), so this scenario's
+  # `audit` genuinely has none.
+  # ------------------------------------------------------------------
+  - name: "Worksheet a604795 - Compute allowed_ws_cbbbaf4_ids (kosong)"
+    steps:
+      - step: "Create worksheet a604795 on an audit without any cbbbaf4"
+        action: "create"
+        model: "general_audit_ws_a604795"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+
+      - step: "Assert allowed_ws_cbbbaf4_ids is empty"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          allowed_ws_cbbbaf4_ids:
+            type: "m2m"
+            check: "count"
+            expected_count: 0
+
+  # ------------------------------------------------------------------
+  # _compute_allowed_team_member_ids - normal
+  #
+  # allowed_team_member_ids = ws_cbbbaf4_id.team_allocation_ids.team_id --
+  # see `_compute_allowed_team_member_ids`. team_allocation_ids lines are
+  # created directly against `general_audit_ws_cbbbaf4.team_allocation`
+  # (mirrors the pattern used by
+  # ssi_general_audit_worksheet_audit_working_plan/tests/test_data_ws_cbbbaf4.yaml);
+  # the parent cbbbaf4 worksheet does not need to be opened for this.
+  # ------------------------------------------------------------------
+  - name: "Worksheet a604795 - Compute allowed_team_member_ids (normal)"
+    steps:
+      - step: "Create worksheet cbbbaf4 for the audit"
+        action: "create"
+        model: "general_audit_ws_cbbbaf4"
+        save_as: "ws_cbbbaf4"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_cbbbaf4.id"
+
+      - step: "Create a team member employee"
+        action: "create"
+        model: "hr.employee"
+        save_as: "employee"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Team Member - a604795"
+
+      - step: "Allocate the employee to worksheet cbbbaf4's team"
+        action: "create"
+        model: "general_audit_ws_cbbbaf4.team_allocation"
+        save_as: "allocation"
+        as_user: "base.user_admin"
+        values:
+          worksheet_id: "REC: ws_cbbbaf4.id"
+          team_id: "REC: employee.id"
+
+      - step: "Create worksheet a604795 pointing at worksheet cbbbaf4"
+        action: "create"
+        model: "general_audit_ws_a604795"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+          ws_cbbbaf4_id: "REC: ws_cbbbaf4.id"
+
+      - step: "Invalidate cache so allowed_team_member_ids recomputes"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Assert allowed_team_member_ids contains the allocated employee"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          allowed_team_member_ids:
+            type: "m2m"
+            check: "exact"
+            expected_records:
+              - "REC: employee"
+
+  # ------------------------------------------------------------------
+  # _compute_allowed_team_member_ids - kosong (no ws_cbbbaf4_id)
+  # ------------------------------------------------------------------
+  - name: "Worksheet a604795 - Compute allowed_team_member_ids (kosong)"
+    steps:
+      - step: "Create worksheet a604795 without ws_cbbbaf4_id"
+        action: "create"
+        model: "general_audit_ws_a604795"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+
+      - step: "Assert allowed_team_member_ids is empty"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          allowed_team_member_ids:
+            type: "m2m"
+            check: "count"
+            expected_count: 0
+
+  # ------------------------------------------------------------------
+  # _compute_member_initials - normal
+  #
+  # `initials` on hr.employee (opnsynid-hr `ssi_hr`) is auto-computed from
+  # `name` unless manually overridden -- "Andi Rahman" -> "AR",
+  # "Budi Santoso" -> "BS" (see `_generate_initials` in
+  # ssi_hr/models/hr_employee.py: first letter of each word in the name,
+  # uppercased). hr.employee's default `_order = "name"` also happens to sort
+  # "Andi Rahman" before "Budi Santoso", so `assigned_team_member_ids`
+  # iterates in that order and `_compute_member_initials`
+  # (`", ".join(rec.assigned_team_member_ids.mapped("initials"))`) yields
+  # "AR, BS" deterministically.
+  # ------------------------------------------------------------------
+  - name: "Worksheet a604795 - Compute member_initials (normal)"
+    steps:
+      - step: "Create team member employee 1 (initials auto-computed to AR)"
+        action: "create"
+        model: "hr.employee"
+        save_as: "employee_ar"
+        as_user: "base.user_admin"
+        values:
+          name: "Andi Rahman"
+
+      - step: "Create team member employee 2 (initials auto-computed to BS)"
+        action: "create"
+        model: "hr.employee"
+        save_as: "employee_bs"
+        as_user: "base.user_admin"
+        values:
+          name: "Budi Santoso"
+
+      - step: "Sanity-check auto-computed initials before relying on them"
+        action: "assert"
+        target: "employee_ar"
+        asserts:
+          initials:
+            type: "value"
+            expected: "AR"
+
+      - step: "Sanity-check auto-computed initials before relying on them (2)"
+        action: "assert"
+        target: "employee_bs"
+        asserts:
+          initials:
+            type: "value"
+            expected: "BS"
+
+      - step: "Create worksheet a604795 with both employees assigned"
+        action: "create"
+        model: "general_audit_ws_a604795"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+          assigned_team_member_ids:
+            [[6, 0, ["REC: employee_ar.id", "REC: employee_bs.id"]]]
+
+      - step: "Assert member_initials joins both initials with ', '"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          member_initials:
+            type: "value"
+            expected: "AR, BS"
+
+  # ------------------------------------------------------------------
+  # _compute_member_initials - kosong
+  # ------------------------------------------------------------------
+  - name: "Worksheet a604795 - Compute member_initials (kosong)"
+    steps:
+      - step: "Create worksheet a604795 without assigned_team_member_ids"
+        action: "create"
+        model: "general_audit_ws_a604795"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+
+      - step: "Assert member_initials is an empty string"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          member_initials:
+            type: "value"
+            expected: ""
+
+  # ------------------------------------------------------------------
+  # Workflow draft -> open -> confirm -> approve -> done, then cancel/restart
+  #
+  # `_get_fields_required_before_confirm` requires `conclusion_id`,
+  # `conclusion` (mixin default) and `ws_cbbbaf4_id` (added by this model).
+  # `business_process_id` is left empty on purpose -- it is NOT in the
+  # required-before-confirm list, and `_10_check_business_process` only
+  # rejects confirm on a DUPLICATE (general_audit_id, type_id,
+  # business_process_id); with it empty there is only ever one such
+  # worksheet in this scenario, so the pre_confirm_check passes without any
+  # client_business_process fixture. Cancel is called directly (not via the
+  # `base.select_cancel_reason` wizard), mirroring the established pattern
+  # for this same state transition in the sibling
+  # test_data_general_audit_ws_ddf034c.yaml of this module.
+  # ------------------------------------------------------------------
+  - name:
+      "Worksheet a604795 - Workflow draft to confirm, approve blocked by known bug
+      (BL-0237)"
+    steps:
+      - step: "Create worksheet cbbbaf4 to satisfy ws_cbbbaf4_id requirement"
+        action: "create"
+        model: "general_audit_ws_cbbbaf4"
+        save_as: "ws_cbbbaf4"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_cbbbaf4.id"
+
+      - step: "Create worksheet a604795"
+        action: "create"
+        model: "general_audit_ws_a604795"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+
+      - step: "Open worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_open"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after opening worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Assert worksheet open"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          state:
+            type: "value"
+            expected: "open"
+
+      - step: "Fill required fields before confirm (conclusion + ws_cbbbaf4_id)"
+        action: "write"
+        target: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          conclusion_id: "REC: conclusion.id"
+          conclusion: "Business cycles understood and documented."
+          ws_cbbbaf4_id: "REC: ws_cbbbaf4.id"
+
+      - step: "Confirm worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_confirm"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after confirming worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Assert worksheet confirmed"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          state:
+            type: "value"
+            expected: "confirm"
+
+      # NB: approve_approval always fails here -- see BL-0237 (this
+      # module's approval_template_detail records omit
+      # approver_selection_method, so active_approver_user_ids is
+      # always empty). Confirmed production bug, tracked separately,
+      # not fixed in this test-only PR.
+      - step: "Assert approve_approval is blocked by the known template bug (BL-0237)"
+        action: "call"
+        target: "worksheet"
+        method: "action_approve_approval"
+        as_user: "base.user_admin"
+        expect_error:
+          type: "UserError"
+          message_contains: "not allowed to approve"
+
+  - name: "Worksheet a604795 - Cancel and restart from open"
+    steps:
+      - step: "Create worksheet a604795"
+        action: "create"
+        model: "general_audit_ws_a604795"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+
+      - step: "Open worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_open"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after opening worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Cancel worksheet directly (not via wizard)"
+        action: "call"
+        target: "worksheet"
+        method: "action_cancel"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after cancelling worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Assert worksheet cancelled"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          state:
+            type: "value"
+            expected: "cancel"
+
+      - step: "Restart worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_restart"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after restarting worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Assert worksheet back to draft"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          state:
+            type: "value"
+            expected: "draft"
+
+  # ------------------------------------------------------------------
+  # pre_confirm_check _10_check_business_process - rejects duplicate
+  # business_process_id within the same (general_audit_id, type_id)
+  # ------------------------------------------------------------------
+  - name: "Worksheet a604795 - Pre-confirm check rejects duplicate business_process_id"
+    steps:
+      - step: "Create worksheet cbbbaf4 to satisfy ws_cbbbaf4_id requirement"
+        action: "create"
+        model: "general_audit_ws_cbbbaf4"
+        save_as: "ws_cbbbaf4"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_cbbbaf4.id"
+
+      - step: "Create a business cycle master record"
+        action: "create"
+        model: "client_business_process"
+        save_as: "business_process"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Business Cycle - a604795"
+          code: "/"
+
+      - step: "Create first worksheet a604795 with the business cycle"
+        action: "create"
+        model: "general_audit_ws_a604795"
+        save_as: "worksheet_1"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+          business_process_id: "REC: business_process.id"
+          ws_cbbbaf4_id: "REC: ws_cbbbaf4.id"
+
+      - step: "Open first worksheet"
+        action: "call"
+        target: "worksheet_1"
+        method: "action_open"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after opening first worksheet"
+        action: "call"
+        target: "worksheet_1"
+        method: "invalidate_cache"
+
+      - step: "Fill required fields before confirm on first worksheet"
+        action: "write"
+        target: "worksheet_1"
+        as_user: "base.user_admin"
+        values:
+          conclusion_id: "REC: conclusion.id"
+          conclusion: "First worksheet for this business cycle."
+
+      - step: "Confirm first worksheet - succeeds (no duplicate yet)"
+        action: "call"
+        target: "worksheet_1"
+        method: "action_confirm"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after confirming first worksheet"
+        action: "call"
+        target: "worksheet_1"
+        method: "invalidate_cache"
+
+      - step: "Assert first worksheet confirmed"
+        action: "assert"
+        target: "worksheet_1"
+        asserts:
+          state:
+            type: "value"
+            expected: "confirm"
+
+      - step: "Create second worksheet a604795 with the SAME business cycle"
+        action: "create"
+        model: "general_audit_ws_a604795"
+        save_as: "worksheet_2"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+          business_process_id: "REC: business_process.id"
+          ws_cbbbaf4_id: "REC: ws_cbbbaf4.id"
+
+      - step: "Open second worksheet"
+        action: "call"
+        target: "worksheet_2"
+        method: "action_open"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after opening second worksheet"
+        action: "call"
+        target: "worksheet_2"
+        method: "invalidate_cache"
+
+      - step: "Fill required fields before confirm on second worksheet"
+        action: "write"
+        target: "worksheet_2"
+        as_user: "base.user_admin"
+        values:
+          conclusion_id: "REC: conclusion.id"
+          conclusion: "Second worksheet for the same business cycle."
+
+      - step: "Confirm second worksheet - rejected by _10_check_business_process"
+        action: "call"
+        target: "worksheet_2"
+        method: "action_confirm"
+        as_user: "base.user_admin"
+        expect_error:
+          type: "ValidationError"
+          message_contains: "already used"
