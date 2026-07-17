@@ -101,6 +101,22 @@ setup:
 
 scenarios:
   # ------------------------------------------------------------------
+  # worksheet_type_c7d5f2b - sequence aligned with AURA_SWR (BL-0317)
+  # ------------------------------------------------------------------
+  - name: "Worksheet type c7d5f2b - sequence aligned with AURA_SWR"
+    steps:
+      - step: "Assert worksheet type sequence and code"
+        action: "assert"
+        target: "ws_type"
+        asserts:
+          code:
+            type: "value"
+            expected: "C7D5F2B"
+          sequence:
+            type: "value"
+            expected: 472
+
+  # ------------------------------------------------------------------
   # general_audit_ws_c7d5f2b - Create in draft
   # ------------------------------------------------------------------
   - name: "Worksheet c7d5f2b - Create in draft"
