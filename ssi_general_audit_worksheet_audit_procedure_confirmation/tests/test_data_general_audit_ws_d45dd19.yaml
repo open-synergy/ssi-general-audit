@@ -227,6 +227,19 @@ scenarios:
             expected: "REC: ws_type"
 
   # ------------------------------------------------------------------
+  # 1b. Worksheet type sequence matches AURA_SWR reference (BL-0319)
+  # ------------------------------------------------------------------
+  - name: "Worksheet type d45dd19 - sequence matches AURA_SWR reference"
+    steps:
+      - step: "Assert worksheet type sequence is 474"
+        action: "assert"
+        target: "ws_type"
+        asserts:
+          sequence:
+            type: "value"
+            expected: 474
+
+  # ------------------------------------------------------------------
   # 2. Workflow draft -> open -> confirm -> done
   # ------------------------------------------------------------------
   - name: "Worksheet d45dd19 - Workflow confirm to done"
