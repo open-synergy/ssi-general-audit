@@ -99,6 +99,17 @@ setup:
       xml_id: "ssi_general_audit_worksheet_audit_procedure_analytic.worksheet_type_aa899baf"
       save_as: "ws_type"
 
+    - step: "Assert ws_type sequence matches AURA_SWR reference (477)"
+      action: "assert"
+      target: "ws_type"
+      asserts:
+        code:
+          type: "value"
+          expected: "AA899BAF"
+        sequence:
+          type: "value"
+          expected: 477
+
     - step: "Get worksheet type e51bb1c"
       action: "ref"
       xml_id: "ssi_general_audit_worksheet_lead_schedule.worksheet_type_e51bb1c"
