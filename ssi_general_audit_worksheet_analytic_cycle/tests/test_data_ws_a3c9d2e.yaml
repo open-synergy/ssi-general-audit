@@ -113,6 +113,17 @@ scenarios:
             type: "value"
             expected: "open"
 
+      - step: "Assert worksheet type sequence aligned with AURA_SWR (BL-0311)"
+        action: "assert"
+        target: "ws_type"
+        asserts:
+          code:
+            type: "value"
+            expected: "A3C9D2E"
+          sequence:
+            type: "value"
+            expected: 461
+
       - step: "Create worksheet a3c9d2e"
         action: "create"
         model: "general_audit_ws_a3c9d2e"
