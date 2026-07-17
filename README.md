@@ -149,7 +149,7 @@ addon | version | maintainers | summary
 [ssi_general_audit_worksheet_analytic_cycle](ssi_general_audit_worksheet_analytic_cycle/) | 14.0.1.2.0 |  | General Audit Worksheet - Analytical Procedures – Cycle
 [ssi_general_audit_worksheet_assignment_letter](ssi_general_audit_worksheet_assignment_letter/) | 14.0.1.0.2 |  | General Audit Worksheet - Assignment Letter
 [ssi_general_audit_worksheet_audit_procedure_analytic](ssi_general_audit_worksheet_audit_procedure_analytic/) | 14.0.1.1.0 |  | General Audit Worksheet - Observation Audit Procedure
-[ssi_general_audit_worksheet_audit_procedure_confirmation](ssi_general_audit_worksheet_audit_procedure_confirmation/) | 14.0.1.1.0 |  | General Audit Worksheet - Reperformance Audit Procedure
+[ssi_general_audit_worksheet_audit_procedure_confirmation](ssi_general_audit_worksheet_audit_procedure_confirmation/) | 14.0.1.2.0 |  | General Audit Worksheet - Reperformance Audit Procedure
 [ssi_general_audit_worksheet_audit_procedure_inquiry](ssi_general_audit_worksheet_audit_procedure_inquiry/) | 14.0.1.1.0 |  | General Audit Worksheet - Inquiry Audit Procedure
 [ssi_general_audit_worksheet_audit_procedure_observation](ssi_general_audit_worksheet_audit_procedure_observation/) | 14.0.1.2.0 |  | General Audit Worksheet - Observation Audit Procedure
 [ssi_general_audit_worksheet_audit_procedure_recompute](ssi_general_audit_worksheet_audit_procedure_recompute/) | 14.0.1.1.0 |  | General Audit Worksheet - Recompute Audit Procedure
