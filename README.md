@@ -161,7 +161,7 @@ addon | version | maintainers | summary
 [ssi_general_audit_worksheet_control_risk](ssi_general_audit_worksheet_control_risk/) | 14.0.2.5.0 |  | General Audit Worksheet - Control Risk
 [ssi_general_audit_worksheet_draft_reporting](ssi_general_audit_worksheet_draft_reporting/) | 14.0.1.1.0 |  | General Audit Worksheet - Draft Reporting
 [ssi_general_audit_worksheet_engagement_letter_checklist](ssi_general_audit_worksheet_engagement_letter_checklist/) | 14.0.1.2.0 |  | General Audit Worksheet - Engagement Letter Checklist
-[ssi_general_audit_worksheet_expert](ssi_general_audit_worksheet_expert/) | 14.0.1.1.0 |  | General Audit Worksheet - Expert
+[ssi_general_audit_worksheet_expert](ssi_general_audit_worksheet_expert/) | 14.0.1.2.0 |  | General Audit Worksheet - Expert
 [ssi_general_audit_worksheet_external_communication](ssi_general_audit_worksheet_external_communication/) | 14.0.1.2.0 |  | General Audit Worksheet - External Communication
 [ssi_general_audit_worksheet_final_materiality](ssi_general_audit_worksheet_final_materiality/) | 14.0.1.1.0 |  | General Audit Worksheet - Final Materiality & Analytical Procedures
 [ssi_general_audit_worksheet_final_report](ssi_general_audit_worksheet_final_report/) | 14.0.1.1.0 |  | General Audit Worksheet - Final Report
