@@ -143,9 +143,9 @@ Available addons
 ----------------
 addon | version | maintainers | summary
 --- | --- | --- | ---
-[ssi_general_audit](ssi_general_audit/) | 14.0.4.0.2 |  | General Audit
+[ssi_general_audit](ssi_general_audit/) | 14.0.4.0.3 |  | General Audit
 [ssi_general_audit_core](ssi_general_audit_core/) | 14.0.1.0.2 |  | General Audit - Core
-[ssi_general_audit_worksheet_acceptance_continuance](ssi_general_audit_worksheet_acceptance_continuance/) | 14.0.1.0.2 |  | General Audit Worksheet - Acceptance and Continuance
+[ssi_general_audit_worksheet_acceptance_continuance](ssi_general_audit_worksheet_acceptance_continuance/) | 14.0.1.0.3 |  | General Audit Worksheet - Acceptance and Continuance
 [ssi_general_audit_worksheet_analytic_cycle](ssi_general_audit_worksheet_analytic_cycle/) | 14.0.1.2.0 |  | General Audit Worksheet - Analytical Procedures – Cycle
 [ssi_general_audit_worksheet_assignment_letter](ssi_general_audit_worksheet_assignment_letter/) | 14.0.1.0.2 |  | General Audit Worksheet - Assignment Letter
 [ssi_general_audit_worksheet_audit_procedure_analytic](ssi_general_audit_worksheet_audit_procedure_analytic/) | 14.0.1.2.0 |  | General Audit Worksheet - Observation Audit Procedure
@@ -177,12 +177,12 @@ addon | version | maintainers | summary
 [ssi_general_audit_worksheet_romm](ssi_general_audit_worksheet_romm/) | 14.0.1.3.0 |  | General Audit Worksheet - ROMM
 [ssi_general_audit_worksheet_sample_determination](ssi_general_audit_worksheet_sample_determination/) | 14.0.1.2.0 |  | General Audit Worksheet - Sample Determination
 [ssi_general_audit_worksheet_specific_procedure](ssi_general_audit_worksheet_specific_procedure/) | 14.0.1.2.0 |  | General Audit Worksheet - Specific Procedures
-[ssi_general_audit_worksheet_team_communication](ssi_general_audit_worksheet_team_communication/) | 14.0.1.2.0 |  | General Audit Worksheet - Team Communication
+[ssi_general_audit_worksheet_team_communication](ssi_general_audit_worksheet_team_communication/) | 14.0.1.2.1 |  | General Audit Worksheet - Team Communication
 [ssi_general_audit_worksheet_test_of_control](ssi_general_audit_worksheet_test_of_control/) | 14.0.1.2.0 |  | General Audit Worksheet - Test of Control
 [ssi_general_audit_worksheet_test_of_detail](ssi_general_audit_worksheet_test_of_detail/) | 14.0.1.3.0 |  | General Audit Worksheet - Test of Detail
 [ssi_general_audit_worksheet_test_planning](ssi_general_audit_worksheet_test_planning/) | 14.0.1.2.0 |  | General Audit Worksheet - Test Planning
 [ssi_general_audit_worksheet_trial_balance](ssi_general_audit_worksheet_trial_balance/) | 14.0.1.0.2 |  | General Audit Worksheet - Trial Balance
-[ssi_general_audit_worksheet_understanding_entity](ssi_general_audit_worksheet_understanding_entity/) | 14.0.1.12.0 |  | General Audit Worksheet - Understanding Entity and It's Environment
+[ssi_general_audit_worksheet_understanding_entity](ssi_general_audit_worksheet_understanding_entity/) | 14.0.1.12.1 |  | General Audit Worksheet - Understanding Entity and It's Environment
 
 [//]: # (end addons)
 
