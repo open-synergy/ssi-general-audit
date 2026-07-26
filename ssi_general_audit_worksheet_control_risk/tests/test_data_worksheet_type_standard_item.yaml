@@ -1,0 +1,202 @@
+scenarios:
+  # ------------------------------------------------------------------
+  # Installed data - worksheet_type_a58e29c.standard_item_ids
+  # ------------------------------------------------------------------
+  - name: "Worksheet type A58E29C (Control Risk) - standard_item_ids installed data"
+    steps:
+      - step: "Get worksheet type A58E29C"
+        action: "ref"
+        xml_id: "ssi_general_audit_worksheet_control_risk.worksheet_type_a58e29c"
+        save_as: "type_a58e29c"
+
+      - step: "Assert standard_item_ids is exactly ISA 265, ISA 315"
+        action: "assert"
+        target: "type_a58e29c"
+        asserts:
+          standard_item_ids:
+            type: "m2m"
+            check: "exact_xml_ids"
+            expected_xml_ids:
+              - "ssi_general_audit.general_audit_standard_audit_8_7b4a749d"
+              - "ssi_general_audit.general_audit_standard_audit_11_81c669bd"
+
+      - step: "Verify unrelated audit standard ISA 240 is not linked to A58E29C"
+        action: "search"
+        model: "general_audit_worksheet_type"
+        domain:
+          [
+            ["id", "=", "REC: type_a58e29c.id"],
+            ["standard_item_ids.code", "=", "ISA 240"],
+          ]
+        save_as: "unrelated_standard_link_result_a58e29c"
+        expect_count: 0
+
+  # ------------------------------------------------------------------
+  # Installed data - worksheet_type_b59b886.standard_item_ids
+  # ------------------------------------------------------------------
+  - name:
+      "Worksheet type B59B886 (Control Risk - Entity Level) - standard_item_ids
+      installed data"
+    steps:
+      - step: "Get worksheet type B59B886"
+        action: "ref"
+        xml_id: "ssi_general_audit_worksheet_control_risk.worksheet_type_b59b886"
+        save_as: "type_b59b886"
+
+      - step: "Assert standard_item_ids is exactly ISA 265, ISA 315"
+        action: "assert"
+        target: "type_b59b886"
+        asserts:
+          standard_item_ids:
+            type: "m2m"
+            check: "exact_xml_ids"
+            expected_xml_ids:
+              - "ssi_general_audit.general_audit_standard_audit_8_7b4a749d"
+              - "ssi_general_audit.general_audit_standard_audit_11_81c669bd"
+
+      - step: "Verify unrelated audit standard ISA 240 is not linked to B59B886"
+        action: "search"
+        model: "general_audit_worksheet_type"
+        domain:
+          [
+            ["id", "=", "REC: type_b59b886.id"],
+            ["standard_item_ids.code", "=", "ISA 240"],
+          ]
+        save_as: "unrelated_standard_link_result_b59b886"
+        expect_count: 0
+
+  # ------------------------------------------------------------------
+  # Installed data - worksheet_type_d3d2719.standard_item_ids
+  # ------------------------------------------------------------------
+  - name:
+      "Worksheet type D3D2719 (General Control Evaluation) - standard_item_ids installed
+      data"
+    steps:
+      - step: "Get worksheet type D3D2719"
+        action: "ref"
+        xml_id: "ssi_general_audit_worksheet_control_risk.worksheet_type_d3d2719"
+        save_as: "type_d3d2719"
+
+      - step: "Assert standard_item_ids is exactly ISA 265, ISA 315"
+        action: "assert"
+        target: "type_d3d2719"
+        asserts:
+          standard_item_ids:
+            type: "m2m"
+            check: "exact_xml_ids"
+            expected_xml_ids:
+              - "ssi_general_audit.general_audit_standard_audit_8_7b4a749d"
+              - "ssi_general_audit.general_audit_standard_audit_11_81c669bd"
+
+      - step: "Verify unrelated audit standard ISA 240 is not linked to D3D2719"
+        action: "search"
+        model: "general_audit_worksheet_type"
+        domain:
+          [
+            ["id", "=", "REC: type_d3d2719.id"],
+            ["standard_item_ids.code", "=", "ISA 240"],
+          ]
+        save_as: "unrelated_standard_link_result_d3d2719"
+        expect_count: 0
+
+  # ------------------------------------------------------------------
+  # Installed data - worksheet_type_f63f569.standard_item_ids
+  # ------------------------------------------------------------------
+  - name:
+      "Worksheet type F63F569 (IT Control Evaluation) - standard_item_ids installed data"
+    steps:
+      - step: "Get worksheet type F63F569"
+        action: "ref"
+        xml_id: "ssi_general_audit_worksheet_control_risk.worksheet_type_f63f569"
+        save_as: "type_f63f569"
+
+      - step: "Assert standard_item_ids is exactly ISA 240, ISA 265, ISA 315"
+        action: "assert"
+        target: "type_f63f569"
+        asserts:
+          standard_item_ids:
+            type: "m2m"
+            check: "exact_xml_ids"
+            expected_xml_ids:
+              - "ssi_general_audit.general_audit_standard_audit_5_0f238e08"
+              - "ssi_general_audit.general_audit_standard_audit_8_7b4a749d"
+              - "ssi_general_audit.general_audit_standard_audit_11_81c669bd"
+
+      - step: "Verify unrelated audit standard ISA 210 is not linked to F63F569"
+        action: "search"
+        model: "general_audit_worksheet_type"
+        domain:
+          [
+            ["id", "=", "REC: type_f63f569.id"],
+            ["standard_item_ids.code", "=", "ISA 210"],
+          ]
+        save_as: "unrelated_standard_link_result_f63f569"
+        expect_count: 0
+
+  # ------------------------------------------------------------------
+  # Installed data - worksheet_type_eabdaad.standard_item_ids
+  # ------------------------------------------------------------------
+  - name:
+      "Worksheet type EABDAAD (Control Risk - Cycle Level) - standard_item_ids installed
+      data"
+    steps:
+      - step: "Get worksheet type EABDAAD"
+        action: "ref"
+        xml_id: "ssi_general_audit_worksheet_control_risk.worksheet_type_eabdaad"
+        save_as: "type_eabdaad"
+
+      - step: "Assert standard_item_ids is exactly ISA 265, ISA 315"
+        action: "assert"
+        target: "type_eabdaad"
+        asserts:
+          standard_item_ids:
+            type: "m2m"
+            check: "exact_xml_ids"
+            expected_xml_ids:
+              - "ssi_general_audit.general_audit_standard_audit_8_7b4a749d"
+              - "ssi_general_audit.general_audit_standard_audit_11_81c669bd"
+
+      - step: "Verify unrelated audit standard ISA 240 is not linked to EABDAAD"
+        action: "search"
+        model: "general_audit_worksheet_type"
+        domain:
+          [
+            ["id", "=", "REC: type_eabdaad.id"],
+            ["standard_item_ids.code", "=", "ISA 240"],
+          ]
+        save_as: "unrelated_standard_link_result_eabdaad"
+        expect_count: 0
+
+  # ------------------------------------------------------------------
+  # Installed data - worksheet_type_ba9b2f0.standard_item_ids
+  # ------------------------------------------------------------------
+  - name:
+      "Worksheet type BA9B2F0 (Significant Account Internal Control) - standard_item_ids
+      installed data"
+    steps:
+      - step: "Get worksheet type BA9B2F0"
+        action: "ref"
+        xml_id: "ssi_general_audit_worksheet_control_risk.worksheet_type_ba9b2f0"
+        save_as: "type_ba9b2f0"
+
+      - step: "Assert standard_item_ids is exactly ISA 265, ISA 315"
+        action: "assert"
+        target: "type_ba9b2f0"
+        asserts:
+          standard_item_ids:
+            type: "m2m"
+            check: "exact_xml_ids"
+            expected_xml_ids:
+              - "ssi_general_audit.general_audit_standard_audit_8_7b4a749d"
+              - "ssi_general_audit.general_audit_standard_audit_11_81c669bd"
+
+      - step: "Verify unrelated audit standard ISA 240 is not linked to BA9B2F0"
+        action: "search"
+        model: "general_audit_worksheet_type"
+        domain:
+          [
+            ["id", "=", "REC: type_ba9b2f0.id"],
+            ["standard_item_ids.code", "=", "ISA 240"],
+          ]
+        save_as: "unrelated_standard_link_result_ba9b2f0"
+        expect_count: 0

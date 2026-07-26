@@ -1,0 +1,59 @@
+setup:
+  steps:
+    - step: "Get worksheet type BAB9D32 (Auditor Expert)"
+      action: "ref"
+      xml_id: "ssi_general_audit_worksheet_expert.worksheet_type_bab9d32"
+      save_as: "type_bab9d32"
+
+    - step: "Get worksheet type CDA3A68 (Management Expert)"
+      action: "ref"
+      xml_id: "ssi_general_audit_worksheet_expert.worksheet_type_cda3a68"
+      save_as: "type_cda3a68"
+
+    - step: "Get audit standard ISA 620 - Using the Work of an Auditor's Expert"
+      action: "ref"
+      xml_id: "ssi_general_audit.general_audit_standard_audit_29_6f3a24e2"
+      save_as: "isa_620"
+
+    - step: "Get audit standard ISA 500 - Audit Evidence"
+      action: "ref"
+      xml_id: "ssi_general_audit.general_audit_standard_audit_16_4129643e"
+      save_as: "isa_500"
+
+scenarios:
+  # ------------------------------------------------------------------
+  # worksheet_type_bab9d32 (Auditor Expert) - standard_item_ids installed
+  # data must be exactly {ISA 620}: positive (contains ISA 620) and
+  # negative (does not carry ISA 500, which belongs to CDA3A68) in one
+  # assertion, since an "exact" m2m check fails on any extra member.
+  # ------------------------------------------------------------------
+  - name: "Worksheet type BAB9D32 - standard_item_ids is exactly ISA 620"
+    steps:
+      - step: "Assert BAB9D32 standard_item_ids contains only ISA 620"
+        action: "assert"
+        target: "type_bab9d32"
+        asserts:
+          standard_item_ids:
+            type: "m2m"
+            check: "exact"
+            expected_records:
+              - "REC: isa_620"
+
+  # ------------------------------------------------------------------
+  # worksheet_type_cda3a68 (Management Expert) - standard_item_ids
+  # installed data must be exactly {ISA 500}: positive (contains
+  # ISA 500) and negative (does not carry ISA 620, which belongs to
+  # BAB9D32) in one assertion, since an "exact" m2m check fails on any
+  # extra member.
+  # ------------------------------------------------------------------
+  - name: "Worksheet type CDA3A68 - standard_item_ids is exactly ISA 500"
+    steps:
+      - step: "Assert CDA3A68 standard_item_ids contains only ISA 500"
+        action: "assert"
+        target: "type_cda3a68"
+        asserts:
+          standard_item_ids:
+            type: "m2m"
+            check: "exact"
+            expected_records:
+              - "REC: isa_500"
