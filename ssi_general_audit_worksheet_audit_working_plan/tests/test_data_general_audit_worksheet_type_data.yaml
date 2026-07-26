@@ -1,0 +1,30 @@
+scenarios:
+  # ------------------------------------------------------------------
+  # worksheet_type_cbbbaf4 (Audit Working Plan) - standard_item_ids
+  # installed data must reference exactly the audit standards decided
+  # for this worksheet type: ISQC 1 and Peraturan Pengurus IAPI No.2
+  # Thn 2016. `check: "exact_xml_ids"` proves both the positive case
+  # (the set is present in full) and the negative case (no other
+  # general_audit_standard_audit record - e.g. one used by another
+  # worksheet type in this same module, or any other ISA/PMK code
+  # from ssi_general_audit - leaks in) in a single assertion.
+  # ------------------------------------------------------------------
+  - name: "Worksheet type CBBBAF4 (Audit Working Plan) - standard_item_ids exact set"
+    steps:
+      - step: "Get worksheet type CBBBAF4 (Audit Working Plan)"
+        action: "ref"
+        xml_id: "ssi_general_audit_worksheet_audit_working_plan.worksheet_type_cbbbaf4"
+        save_as: "ws_type_cbbbaf4"
+
+      - step:
+          "Assert standard_item_ids is exactly ISQC 1 + Peraturan Pengurus IAPI No.2 Thn
+          2016"
+        action: "assert"
+        target: "ws_type_cbbbaf4"
+        asserts:
+          standard_item_ids:
+            type: "m2m"
+            check: "exact_xml_ids"
+            expected_xml_ids:
+              - "ssi_general_audit.general_audit_standard_audit_39_4ec6443c"
+              - "ssi_general_audit.general_audit_standard_audit_42_1fb0ad61"
