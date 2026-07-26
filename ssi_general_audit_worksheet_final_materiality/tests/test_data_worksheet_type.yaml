@@ -1,0 +1,76 @@
+scenarios:
+  # ------------------------------------------------------------------
+  # general_audit_worksheet_type.standard_item_ids - installation data
+  #
+  # `exact_xml_ids` asserts the m2m recordset contains exactly the
+  # expected xml ids - not more, not less - so each scenario below
+  # covers both the positive case (the relevant ISA code is present)
+  # and the negative case (no other module's standard item, e.g. the
+  # ISA 520 used by the other worksheet types in this same module,
+  # leaks into a record that should only carry ISA 320).
+  # ------------------------------------------------------------------
+  - name: "worksheet_type_bb33b94 - standard_item_ids is exactly ISA 320"
+    steps:
+      - step: "Get Final Materiality worksheet type"
+        action: "ref"
+        xml_id: "ssi_general_audit_worksheet_final_materiality.worksheet_type_bb33b94"
+        save_as: "record"
+      - step: "Assert standard_item_ids"
+        action: "assert"
+        target: "record"
+        asserts:
+          standard_item_ids:
+            type: "m2m"
+            check: "exact_xml_ids"
+            expected_xml_ids:
+              - "ssi_general_audit.general_audit_standard_audit_12_eb50d330"
+
+  - name: "worksheet_type_c2375d8 - standard_item_ids is exactly ISA 520"
+    steps:
+      - step: "Get Final Analytical Procedures worksheet type"
+        action: "ref"
+        xml_id: "ssi_general_audit_worksheet_final_materiality.worksheet_type_c2375d8"
+        save_as: "record"
+      - step: "Assert standard_item_ids"
+        action: "assert"
+        target: "record"
+        asserts:
+          standard_item_ids:
+            type: "m2m"
+            check: "exact_xml_ids"
+            expected_xml_ids:
+              - "ssi_general_audit.general_audit_standard_audit_20_29207a3e"
+
+  - name: "worksheet_type_e1f2d98 - standard_item_ids is exactly ISA 520"
+    steps:
+      - step:
+          "Get Final Analytical Procedures - Vertical and Horisontal Analysis worksheet
+          type"
+        action: "ref"
+        xml_id: "ssi_general_audit_worksheet_final_materiality.worksheet_type_e1f2d98"
+        save_as: "record"
+      - step: "Assert standard_item_ids"
+        action: "assert"
+        target: "record"
+        asserts:
+          standard_item_ids:
+            type: "m2m"
+            check: "exact_xml_ids"
+            expected_xml_ids:
+              - "ssi_general_audit.general_audit_standard_audit_20_29207a3e"
+
+  - name: "worksheet_type_f3a78de - standard_item_ids is exactly ISA 520"
+    steps:
+      - step: "Get Final Analytical Procedures - Ratio Analysis worksheet type"
+        action: "ref"
+        xml_id: "ssi_general_audit_worksheet_final_materiality.worksheet_type_f3a78de"
+        save_as: "record"
+      - step: "Assert standard_item_ids"
+        action: "assert"
+        target: "record"
+        asserts:
+          standard_item_ids:
+            type: "m2m"
+            check: "exact_xml_ids"
+            expected_xml_ids:
+              - "ssi_general_audit.general_audit_standard_audit_20_29207a3e"
