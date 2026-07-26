@@ -817,3 +817,37 @@ scenarios:
           parent_type_id:
             type: "m2o"
             expected_xml_id: "ssi_general_audit_worksheet_assignment_letter.worksheet_type_c435bcd"
+
+  # ------------------------------------------------------------------
+  # Installed data - worksheet_type_c435bcd.standard_item_ids
+  # ------------------------------------------------------------------
+  - name: "Worksheet type C435BCD - standard_item_ids installed data"
+    steps:
+      - step: "Get worksheet type C435BCD"
+        action: "ref"
+        xml_id: "ssi_general_audit_worksheet_assignment_letter.worksheet_type_c435bcd"
+        save_as: "type_c435bcd"
+
+      - step: "Assert standard_item_ids is exactly ISA 220, ISA 300, ISQC 1"
+        action: "assert"
+        target: "type_c435bcd"
+        asserts:
+          standard_item_ids:
+            type: "m2m"
+            check: "exact_xml_ids"
+            expected_xml_ids:
+              - "ssi_general_audit.general_audit_standard_audit_3_f4f0eb9d"
+              - "ssi_general_audit.general_audit_standard_audit_10_b78a64b0"
+              - "ssi_general_audit.general_audit_standard_audit_39_4ec6443c"
+
+      - step:
+          "Verify unrelated audit standards (ISA 315, ISA 240) are not linked to C435BCD"
+        action: "search"
+        model: "general_audit_worksheet_type"
+        domain:
+          [
+            ["id", "=", "REC: type_c435bcd.id"],
+            ["standard_item_ids.code", "in", ["ISA 315", "ISA 240"]],
+          ]
+        save_as: "unrelated_standard_link_result"
+        expect_count: 0
