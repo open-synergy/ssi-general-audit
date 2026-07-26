@@ -728,3 +728,35 @@ scenarios:
           state:
             type: "value"
             expected: "draft"
+
+  # ------------------------------------------------------------------
+  # Installed data - worksheet_type_b59b886.standard_item_ids
+  # ------------------------------------------------------------------
+  - name: "Worksheet type B59B886 - standard_item_ids installed data"
+    steps:
+      - step: "Get worksheet type B59B886"
+        action: "ref"
+        xml_id: "ssi_general_audit_worksheet_control_risk.worksheet_type_b59b886"
+        save_as: "type_b59b886"
+
+      - step: "Assert standard_item_ids is exactly ISA 265, ISA 315"
+        action: "assert"
+        target: "type_b59b886"
+        asserts:
+          standard_item_ids:
+            type: "m2m"
+            check: "exact_xml_ids"
+            expected_xml_ids:
+              - "ssi_general_audit.general_audit_standard_audit_8_7b4a749d"
+              - "ssi_general_audit.general_audit_standard_audit_11_81c669bd"
+
+      - step: "Verify unrelated audit standard ISA 240 is not linked to B59B886"
+        action: "search"
+        model: "general_audit_worksheet_type"
+        domain:
+          [
+            ["id", "=", "REC: type_b59b886.id"],
+            ["standard_item_ids.code", "=", "ISA 240"],
+          ]
+        save_as: "unrelated_standard_link_result_b59b886"
+        expect_count: 0
