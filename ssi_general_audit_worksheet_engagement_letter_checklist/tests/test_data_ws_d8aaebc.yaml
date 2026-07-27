@@ -732,3 +732,35 @@ scenarios:
           parent_type_id:
             type: "m2o"
             expected_xml_id: "ssi_general_audit_worksheet_engagement_letter_checklist.worksheet_type_d8aaebc"
+
+  # ------------------------------------------------------------------
+  # Installed data - worksheet_type_d8aaebc.standard_item_ids
+  # ------------------------------------------------------------------
+  - name: "Worksheet type D8AAEBC - standard_item_ids installed data"
+    steps:
+      - step: "Get worksheet type D8AAEBC"
+        action: "ref"
+        xml_id: "ssi_general_audit_worksheet_engagement_letter_checklist.worksheet_type_d8aaebc"
+        save_as: "type_d8aaebc"
+
+      - step: "Assert standard_item_ids is exactly ISA 210, ISQC 1"
+        action: "assert"
+        target: "type_d8aaebc"
+        asserts:
+          standard_item_ids:
+            type: "m2m"
+            check: "exact_xml_ids"
+            expected_xml_ids:
+              - "ssi_general_audit.general_audit_standard_audit_2_bc892752"
+              - "ssi_general_audit.general_audit_standard_audit_39_4ec6443c"
+
+      - step: "Verify unrelated audit standard ISA 240 is not linked to D8AAEBC"
+        action: "search"
+        model: "general_audit_worksheet_type"
+        domain:
+          [
+            ["id", "=", "REC: type_d8aaebc.id"],
+            ["standard_item_ids.code", "=", "ISA 240"],
+          ]
+        save_as: "unrelated_standard_link_result_d8aaebc"
+        expect_count: 0
