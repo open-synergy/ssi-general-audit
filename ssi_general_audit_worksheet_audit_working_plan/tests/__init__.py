@@ -2,5 +2,6 @@
 # Copyright 2026 PT. Simetri Sinergi Indonesia
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 
+from . import test_general_audit_worksheet_type_data
 from . import test_master_data
 from . import test_ws_cbbbaf4
