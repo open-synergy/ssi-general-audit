@@ -1,0 +1,350 @@
+scenarios:
+  # ------------------------------------------------------------------
+  # Installed data - worksheet_type_f87b2e1.standard_item_ids
+  # ------------------------------------------------------------------
+  - name:
+      "Worksheet type F87B2E1 (Understanding of The Entity and it's Environment) -
+      standard_item_ids installed data"
+    steps:
+      - step: "Get worksheet type F87B2E1"
+        action: "ref"
+        xml_id: "ssi_general_audit_worksheet_understanding_entity.worksheet_type_f87b2e1"
+        save_as: "type_f87b2e1"
+
+      - step: "Assert standard_item_ids is exactly ISA 315"
+        action: "assert"
+        target: "type_f87b2e1"
+        asserts:
+          standard_item_ids:
+            type: "m2m"
+            check: "exact_xml_ids"
+            expected_xml_ids:
+              - "ssi_general_audit.general_audit_standard_audit_11_81c669bd"
+
+      - step:
+          "Verify unrelated audit standards (ISA 240, ISA 570) from sibling records are
+          not linked to F87B2E1"
+        action: "search"
+        model: "general_audit_worksheet_type"
+        domain:
+          [
+            ["id", "=", "REC: type_f87b2e1.id"],
+            ["standard_item_ids.code", "in", ["ISA 240", "ISA 570"]],
+          ]
+        save_as: "unrelated_standard_link_f87b2e1"
+        expect_count: 0
+
+  # ------------------------------------------------------------------
+  # Installed data - worksheet_type_ddf034c.standard_item_ids
+  # ------------------------------------------------------------------
+  - name:
+      "Worksheet type DDF034C (General Information and Legal Aspec) - standard_item_ids
+      installed data"
+    steps:
+      - step: "Get worksheet type DDF034C"
+        action: "ref"
+        xml_id: "ssi_general_audit_worksheet_understanding_entity.worksheet_type_ddf034c"
+        save_as: "type_ddf034c"
+
+      - step: "Assert standard_item_ids is exactly ISA 315"
+        action: "assert"
+        target: "type_ddf034c"
+        asserts:
+          standard_item_ids:
+            type: "m2m"
+            check: "exact_xml_ids"
+            expected_xml_ids:
+              - "ssi_general_audit.general_audit_standard_audit_11_81c669bd"
+
+      - step:
+          "Verify unrelated audit standards (ISA 240, ISA 570) from sibling records are
+          not linked to DDF034C"
+        action: "search"
+        model: "general_audit_worksheet_type"
+        domain:
+          [
+            ["id", "=", "REC: type_ddf034c.id"],
+            ["standard_item_ids.code", "in", ["ISA 240", "ISA 570"]],
+          ]
+        save_as: "unrelated_standard_link_ddf034c"
+        expect_count: 0
+
+  # ------------------------------------------------------------------
+  # Installed data - worksheet_type_e78a3c6.standard_item_ids
+  # ------------------------------------------------------------------
+  - name:
+      "Worksheet type E78A3C6 (Structure Organization and Responsibilities) -
+      standard_item_ids installed data"
+    steps:
+      - step: "Get worksheet type E78A3C6"
+        action: "ref"
+        xml_id: "ssi_general_audit_worksheet_understanding_entity.worksheet_type_e78a3c6"
+        save_as: "type_e78a3c6"
+
+      - step: "Assert standard_item_ids is exactly ISA 315"
+        action: "assert"
+        target: "type_e78a3c6"
+        asserts:
+          standard_item_ids:
+            type: "m2m"
+            check: "exact_xml_ids"
+            expected_xml_ids:
+              - "ssi_general_audit.general_audit_standard_audit_11_81c669bd"
+
+      - step:
+          "Verify unrelated audit standards (ISA 240, ISA 570) from sibling records are
+          not linked to E78A3C6"
+        action: "search"
+        model: "general_audit_worksheet_type"
+        domain:
+          [
+            ["id", "=", "REC: type_e78a3c6.id"],
+            ["standard_item_ids.code", "in", ["ISA 240", "ISA 570"]],
+          ]
+        save_as: "unrelated_standard_link_e78a3c6"
+        expect_count: 0
+
+  # ------------------------------------------------------------------
+  # Installed data - worksheet_type_ae11f7e.standard_item_ids
+  # ------------------------------------------------------------------
+  - name:
+      "Worksheet type AE11F7E (Main Business Activity Processes) - standard_item_ids
+      installed data"
+    steps:
+      - step: "Get worksheet type AE11F7E"
+        action: "ref"
+        xml_id: "ssi_general_audit_worksheet_understanding_entity.worksheet_type_ae11f7e"
+        save_as: "type_ae11f7e"
+
+      - step: "Assert standard_item_ids is exactly ISA 315"
+        action: "assert"
+        target: "type_ae11f7e"
+        asserts:
+          standard_item_ids:
+            type: "m2m"
+            check: "exact_xml_ids"
+            expected_xml_ids:
+              - "ssi_general_audit.general_audit_standard_audit_11_81c669bd"
+
+      - step:
+          "Verify unrelated audit standards (ISA 240, ISA 570) from sibling records are
+          not linked to AE11F7E"
+        action: "search"
+        model: "general_audit_worksheet_type"
+        domain:
+          [
+            ["id", "=", "REC: type_ae11f7e.id"],
+            ["standard_item_ids.code", "in", ["ISA 240", "ISA 570"]],
+          ]
+        save_as: "unrelated_standard_link_ae11f7e"
+        expect_count: 0
+
+  # ------------------------------------------------------------------
+  # Installed data - worksheet_type_a604795.standard_item_ids
+  # ------------------------------------------------------------------
+  - name:
+      "Worksheet type A604795 (Business Cycle Summaries) - standard_item_ids installed
+      data"
+    steps:
+      - step: "Get worksheet type A604795"
+        action: "ref"
+        xml_id: "ssi_general_audit_worksheet_understanding_entity.worksheet_type_a604795"
+        save_as: "type_a604795"
+
+      - step: "Assert standard_item_ids is exactly ISA 315"
+        action: "assert"
+        target: "type_a604795"
+        asserts:
+          standard_item_ids:
+            type: "m2m"
+            check: "exact_xml_ids"
+            expected_xml_ids:
+              - "ssi_general_audit.general_audit_standard_audit_11_81c669bd"
+
+      - step:
+          "Verify unrelated audit standards (ISA 240, ISA 570) from sibling records are
+          not linked to A604795"
+        action: "search"
+        model: "general_audit_worksheet_type"
+        domain:
+          [
+            ["id", "=", "REC: type_a604795.id"],
+            ["standard_item_ids.code", "in", ["ISA 240", "ISA 570"]],
+          ]
+        save_as: "unrelated_standard_link_a604795"
+        expect_count: 0
+
+  # ------------------------------------------------------------------
+  # Installed data - worksheet_type_a13a30e.standard_item_ids
+  # ------------------------------------------------------------------
+  - name:
+      "Worksheet type A13A30E (Understanding of Relevant Regulations) -
+      standard_item_ids installed data"
+    steps:
+      - step: "Get worksheet type A13A30E"
+        action: "ref"
+        xml_id: "ssi_general_audit_worksheet_understanding_entity.worksheet_type_a13a30e"
+        save_as: "type_a13a30e"
+
+      - step: "Assert standard_item_ids is exactly ISA 315"
+        action: "assert"
+        target: "type_a13a30e"
+        asserts:
+          standard_item_ids:
+            type: "m2m"
+            check: "exact_xml_ids"
+            expected_xml_ids:
+              - "ssi_general_audit.general_audit_standard_audit_11_81c669bd"
+
+      - step:
+          "Verify unrelated audit standards (ISA 240, ISA 570) from sibling records are
+          not linked to A13A30E"
+        action: "search"
+        model: "general_audit_worksheet_type"
+        domain:
+          [
+            ["id", "=", "REC: type_a13a30e.id"],
+            ["standard_item_ids.code", "in", ["ISA 240", "ISA 570"]],
+          ]
+        save_as: "unrelated_standard_link_a13a30e"
+        expect_count: 0
+
+  # ------------------------------------------------------------------
+  # Installed data - worksheet_type_bdcdfc5.standard_item_ids
+  # ------------------------------------------------------------------
+  - name:
+      "Worksheet type BDCDFC5 (Understanding of the Business Environment) -
+      standard_item_ids installed data"
+    steps:
+      - step: "Get worksheet type BDCDFC5"
+        action: "ref"
+        xml_id: "ssi_general_audit_worksheet_understanding_entity.worksheet_type_bdcdfc5"
+        save_as: "type_bdcdfc5"
+
+      - step: "Assert standard_item_ids is exactly ISA 315"
+        action: "assert"
+        target: "type_bdcdfc5"
+        asserts:
+          standard_item_ids:
+            type: "m2m"
+            check: "exact_xml_ids"
+            expected_xml_ids:
+              - "ssi_general_audit.general_audit_standard_audit_11_81c669bd"
+
+      - step:
+          "Verify unrelated audit standards (ISA 240, ISA 570) from sibling records are
+          not linked to BDCDFC5"
+        action: "search"
+        model: "general_audit_worksheet_type"
+        domain:
+          [
+            ["id", "=", "REC: type_bdcdfc5.id"],
+            ["standard_item_ids.code", "in", ["ISA 240", "ISA 570"]],
+          ]
+        save_as: "unrelated_standard_link_bdcdfc5"
+        expect_count: 0
+
+  # ------------------------------------------------------------------
+  # Installed data - worksheet_type_c0d0898.standard_item_ids
+  # ------------------------------------------------------------------
+  - name:
+      "Worksheet type C0D0898 (Going Concern Analysis) - standard_item_ids installed
+      data"
+    steps:
+      - step: "Get worksheet type C0D0898"
+        action: "ref"
+        xml_id: "ssi_general_audit_worksheet_understanding_entity.worksheet_type_c0d0898"
+        save_as: "type_c0d0898"
+
+      - step: "Assert standard_item_ids is exactly ISA 315, ISA 570"
+        action: "assert"
+        target: "type_c0d0898"
+        asserts:
+          standard_item_ids:
+            type: "m2m"
+            check: "exact_xml_ids"
+            expected_xml_ids:
+              - "ssi_general_audit.general_audit_standard_audit_11_81c669bd"
+              - "ssi_general_audit.general_audit_standard_audit_25_fc28b019"
+
+      - step:
+          "Verify unrelated audit standard (ISA 240) from a sibling record is not linked
+          to C0D0898"
+        action: "search"
+        model: "general_audit_worksheet_type"
+        domain:
+          [
+            ["id", "=", "REC: type_c0d0898.id"],
+            ["standard_item_ids.code", "in", ["ISA 240"]],
+          ]
+        save_as: "unrelated_standard_link_c0d0898"
+        expect_count: 0
+
+  # ------------------------------------------------------------------
+  # Installed data - worksheet_type_f6a227.standard_item_ids
+  # ------------------------------------------------------------------
+  - name:
+      "Worksheet type F6A227 (Understanding of Preparation of Financial Statements) -
+      standard_item_ids installed data"
+    steps:
+      - step: "Get worksheet type F6A227"
+        action: "ref"
+        xml_id: "ssi_general_audit_worksheet_understanding_entity.worksheet_type_f6a227"
+        save_as: "type_f6a227"
+
+      - step: "Assert standard_item_ids is exactly ISA 315"
+        action: "assert"
+        target: "type_f6a227"
+        asserts:
+          standard_item_ids:
+            type: "m2m"
+            check: "exact_xml_ids"
+            expected_xml_ids:
+              - "ssi_general_audit.general_audit_standard_audit_11_81c669bd"
+
+      - step:
+          "Verify unrelated audit standards (ISA 240, ISA 570) from sibling records are
+          not linked to F6A227"
+        action: "search"
+        model: "general_audit_worksheet_type"
+        domain:
+          [
+            ["id", "=", "REC: type_f6a227.id"],
+            ["standard_item_ids.code", "in", ["ISA 240", "ISA 570"]],
+          ]
+        save_as: "unrelated_standard_link_f6a227"
+        expect_count: 0
+
+  # ------------------------------------------------------------------
+  # Installed data - worksheet_type_c0e0eec.standard_item_ids
+  # ------------------------------------------------------------------
+  - name:
+      "Worksheet type C0E0EEC (Fraud Factor Analysis) - standard_item_ids installed data"
+    steps:
+      - step: "Get worksheet type C0E0EEC"
+        action: "ref"
+        xml_id: "ssi_general_audit_worksheet_understanding_entity.worksheet_type_c0e0eec"
+        save_as: "type_c0e0eec"
+
+      - step: "Assert standard_item_ids is exactly ISA 240"
+        action: "assert"
+        target: "type_c0e0eec"
+        asserts:
+          standard_item_ids:
+            type: "m2m"
+            check: "exact_xml_ids"
+            expected_xml_ids:
+              - "ssi_general_audit.general_audit_standard_audit_5_0f238e08"
+
+      - step:
+          "Verify unrelated audit standards (ISA 315, ISA 570) from sibling records are
+          not linked to C0E0EEC"
+        action: "search"
+        model: "general_audit_worksheet_type"
+        domain:
+          [
+            ["id", "=", "REC: type_c0e0eec.id"],
+            ["standard_item_ids.code", "in", ["ISA 315", "ISA 570"]],
+          ]
+        save_as: "unrelated_standard_link_c0e0eec"
+        expect_count: 0
