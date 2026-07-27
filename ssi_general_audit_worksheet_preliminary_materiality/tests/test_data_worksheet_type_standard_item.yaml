@@ -1,0 +1,69 @@
+scenarios:
+  # ------------------------------------------------------------------
+  # general_audit_worksheet_type.standard_item_ids - installed data
+  #
+  # Each ``exact_xml_ids`` check is simultaneously the positive and the
+  # negative scenario required by issue #198: it fails if
+  # ``standard_item_ids`` is missing any of the expected standard audit
+  # items (positive) AND it fails if the field carries any extra item
+  # that belongs to another worksheet type in this module (negative) -
+  # "exact" enforces a closed set, not just a subset.
+  # ------------------------------------------------------------------
+  - name:
+      "Worksheet Type 1D9338D (Preliminary Materiality) - standard_item_ids is exactly
+      ISA 320"
+    steps:
+      - step: "Load worksheet type 1D9338D"
+        action: "ref"
+        xml_id: "ssi_general_audit_worksheet_preliminary_materiality.worksheet_type_1d9338d"
+        save_as: "ws_type"
+
+      - step: "Assert standard_item_ids is exactly ISA 320"
+        action: "assert"
+        target: "ws_type"
+        asserts:
+          standard_item_ids:
+            type: "m2m"
+            check: "exact_xml_ids"
+            expected_xml_ids:
+              - "ssi_general_audit.general_audit_standard_audit_12_eb50d330"
+
+  - name:
+      "Worksheet Type D9D2B44 (Materiality Computation) - standard_item_ids is exactly
+      ISA 320"
+    steps:
+      - step: "Load worksheet type D9D2B44"
+        action: "ref"
+        xml_id: "ssi_general_audit_worksheet_preliminary_materiality.worksheet_type_d9d2b44"
+        save_as: "ws_type"
+
+      - step: "Assert standard_item_ids is exactly ISA 320"
+        action: "assert"
+        target: "ws_type"
+        asserts:
+          standard_item_ids:
+            type: "m2m"
+            check: "exact_xml_ids"
+            expected_xml_ids:
+              - "ssi_general_audit.general_audit_standard_audit_12_eb50d330"
+
+  - name:
+      "Worksheet Type 6DCDA0E (Specific Materiality) - standard_item_ids is exactly ISA
+      240 + ISA 315 + ISA 320"
+    steps:
+      - step: "Load worksheet type 6DCDA0E"
+        action: "ref"
+        xml_id: "ssi_general_audit_worksheet_preliminary_materiality.worksheet_type_6dcda0e"
+        save_as: "ws_type"
+
+      - step: "Assert standard_item_ids is exactly ISA 240, ISA 315 and ISA 320"
+        action: "assert"
+        target: "ws_type"
+        asserts:
+          standard_item_ids:
+            type: "m2m"
+            check: "exact_xml_ids"
+            expected_xml_ids:
+              - "ssi_general_audit.general_audit_standard_audit_5_0f238e08"
+              - "ssi_general_audit.general_audit_standard_audit_11_81c669bd"
+              - "ssi_general_audit.general_audit_standard_audit_12_eb50d330"
