@@ -1,0 +1,276 @@
+scenarios:
+  # ------------------------------------------------------------------
+  # Installed data - worksheet_type_806c4e1.standard_item_ids
+  # ------------------------------------------------------------------
+  - name:
+      "Worksheet type 806C4E1 (Acceptance and Continuance of Client Relationships
+      Analysis) - standard_item_ids installed data"
+    steps:
+      - step: "Get worksheet type 806C4E1"
+        action: "ref"
+        xml_id: "ssi_general_audit_worksheet_acceptance_continuance.worksheet_type_806c4e1"
+        save_as: "type_806c4e1"
+
+      - step: "Assert standard_item_ids is exactly ISA 210, ISA 220, ISA 300, ISQC 1"
+        action: "assert"
+        target: "type_806c4e1"
+        asserts:
+          standard_item_ids:
+            type: "m2m"
+            check: "exact_xml_ids"
+            expected_xml_ids:
+              - "ssi_general_audit.general_audit_standard_audit_2_bc892752"
+              - "ssi_general_audit.general_audit_standard_audit_3_f4f0eb9d"
+              - "ssi_general_audit.general_audit_standard_audit_10_b78a64b0"
+              - "ssi_general_audit.general_audit_standard_audit_39_4ec6443c"
+
+      - step:
+          "Verify unrelated audit standards (ISA 510, PMK NO.55/PMK.01/2017) from
+          sibling records are not linked to 806C4E1"
+        action: "search"
+        model: "general_audit_worksheet_type"
+        domain:
+          [
+            ["id", "=", "REC: type_806c4e1.id"],
+            ["standard_item_ids.code", "in", ["ISA 510", "PMK NO.55/PMK.01/2017"]],
+          ]
+        save_as: "unrelated_standard_link_806c4e1"
+        expect_count: 0
+
+  # ------------------------------------------------------------------
+  # Installed data - worksheet_type_369c5a5.standard_item_ids
+  # ------------------------------------------------------------------
+  - name:
+      "Worksheet type 369C5A5 (Previous Financial Reporting Issues) - standard_item_ids
+      installed data"
+    steps:
+      - step: "Get worksheet type 369C5A5"
+        action: "ref"
+        xml_id: "ssi_general_audit_worksheet_acceptance_continuance.worksheet_type_369c5a5"
+        save_as: "type_369c5a5"
+
+      - step: "Assert standard_item_ids is exactly ISA 210, ISA 220, ISA 300, ISQC 1"
+        action: "assert"
+        target: "type_369c5a5"
+        asserts:
+          standard_item_ids:
+            type: "m2m"
+            check: "exact_xml_ids"
+            expected_xml_ids:
+              - "ssi_general_audit.general_audit_standard_audit_2_bc892752"
+              - "ssi_general_audit.general_audit_standard_audit_3_f4f0eb9d"
+              - "ssi_general_audit.general_audit_standard_audit_10_b78a64b0"
+              - "ssi_general_audit.general_audit_standard_audit_39_4ec6443c"
+
+      - step:
+          "Verify unrelated audit standards (ISA 510, PMK NO.55/PMK.01/2017) from
+          sibling records are not linked to 369C5A5"
+        action: "search"
+        model: "general_audit_worksheet_type"
+        domain:
+          [
+            ["id", "=", "REC: type_369c5a5.id"],
+            ["standard_item_ids.code", "in", ["ISA 510", "PMK NO.55/PMK.01/2017"]],
+          ]
+        save_as: "unrelated_standard_link_369c5a5"
+        expect_count: 0
+
+  # ------------------------------------------------------------------
+  # Installed data - worksheet_type_f5e7049.standard_item_ids
+  # ------------------------------------------------------------------
+  - name:
+      "Worksheet type F5E7049 (Management Integrity) - standard_item_ids installed data"
+    steps:
+      - step: "Get worksheet type F5E7049"
+        action: "ref"
+        xml_id: "ssi_general_audit_worksheet_acceptance_continuance.worksheet_type_f5e7049"
+        save_as: "type_f5e7049"
+
+      - step: "Assert standard_item_ids is exactly ISA 210, ISA 220, ISA 300, ISQC 1"
+        action: "assert"
+        target: "type_f5e7049"
+        asserts:
+          standard_item_ids:
+            type: "m2m"
+            check: "exact_xml_ids"
+            expected_xml_ids:
+              - "ssi_general_audit.general_audit_standard_audit_2_bc892752"
+              - "ssi_general_audit.general_audit_standard_audit_3_f4f0eb9d"
+              - "ssi_general_audit.general_audit_standard_audit_10_b78a64b0"
+              - "ssi_general_audit.general_audit_standard_audit_39_4ec6443c"
+
+      - step:
+          "Verify unrelated audit standards (ISA 510, PMK NO.55/PMK.01/2017) from
+          sibling records are not linked to F5E7049"
+        action: "search"
+        model: "general_audit_worksheet_type"
+        domain:
+          [
+            ["id", "=", "REC: type_f5e7049.id"],
+            ["standard_item_ids.code", "in", ["ISA 510", "PMK NO.55/PMK.01/2017"]],
+          ]
+        save_as: "unrelated_standard_link_f5e7049"
+        expect_count: 0
+
+  # ------------------------------------------------------------------
+  # Installed data - worksheet_type_842f0d6.standard_item_ids
+  # ------------------------------------------------------------------
+  - name:
+      "Worksheet type 842F0D6 (Money Laundring Issues) - standard_item_ids installed
+      data"
+    steps:
+      - step: "Get worksheet type 842F0D6"
+        action: "ref"
+        xml_id: "ssi_general_audit_worksheet_acceptance_continuance.worksheet_type_842f0d6"
+        save_as: "type_842f0d6"
+
+      - step:
+          "Assert standard_item_ids is exactly ISA 210, ISA 220, ISA 300, ISQC 1, PMK
+          NO.55/PMK.01/2017, PMK NO.155/PMK.01/2017"
+        action: "assert"
+        target: "type_842f0d6"
+        asserts:
+          standard_item_ids:
+            type: "m2m"
+            check: "exact_xml_ids"
+            expected_xml_ids:
+              - "ssi_general_audit.general_audit_standard_audit_2_bc892752"
+              - "ssi_general_audit.general_audit_standard_audit_3_f4f0eb9d"
+              - "ssi_general_audit.general_audit_standard_audit_10_b78a64b0"
+              - "ssi_general_audit.general_audit_standard_audit_39_4ec6443c"
+              - "ssi_general_audit.general_audit_standard_audit_40_dd4e5675"
+              - "ssi_general_audit.general_audit_standard_audit_41_2e630763"
+
+      - step:
+          "Verify unrelated audit standard (ISA 510) from a sibling record is not linked
+          to 842F0D6"
+        action: "search"
+        model: "general_audit_worksheet_type"
+        domain:
+          [
+            ["id", "=", "REC: type_842f0d6.id"],
+            ["standard_item_ids.code", "in", ["ISA 510"]],
+          ]
+        save_as: "unrelated_standard_link_842f0d6"
+        expect_count: 0
+
+  # ------------------------------------------------------------------
+  # Installed data - worksheet_type_805d4d5.standard_item_ids
+  # ------------------------------------------------------------------
+  - name:
+      "Worksheet type 805D4D5 (Know Your Customer Principles) - standard_item_ids
+      installed data"
+    steps:
+      - step: "Get worksheet type 805D4D5"
+        action: "ref"
+        xml_id: "ssi_general_audit_worksheet_acceptance_continuance.worksheet_type_805d4d5"
+        save_as: "type_805d4d5"
+
+      - step:
+          "Assert standard_item_ids is exactly PMK NO.55/PMK.01/2017, PMK
+          NO.155/PMK.01/2017"
+        action: "assert"
+        target: "type_805d4d5"
+        asserts:
+          standard_item_ids:
+            type: "m2m"
+            check: "exact_xml_ids"
+            expected_xml_ids:
+              - "ssi_general_audit.general_audit_standard_audit_40_dd4e5675"
+              - "ssi_general_audit.general_audit_standard_audit_41_2e630763"
+
+      - step:
+          "Verify unrelated audit standards (ISA 210, ISA 220, ISA 300, ISQC 1) from
+          sibling records are not linked to 805D4D5"
+        action: "search"
+        model: "general_audit_worksheet_type"
+        domain:
+          [
+            ["id", "=", "REC: type_805d4d5.id"],
+            [
+              "standard_item_ids.code",
+              "in",
+              ["ISA 210", "ISA 220", "ISA 300", "ISQC 1"],
+            ],
+          ]
+        save_as: "unrelated_standard_link_805d4d5"
+        expect_count: 0
+
+  # ------------------------------------------------------------------
+  # Installed data - worksheet_type_b9d8a5c.standard_item_ids
+  # ------------------------------------------------------------------
+  - name:
+      "Worksheet type B9D8A5C (Competency, Availability and Independency Of Assignment
+      Team) - standard_item_ids installed data"
+    steps:
+      - step: "Get worksheet type B9D8A5C"
+        action: "ref"
+        xml_id: "ssi_general_audit_worksheet_acceptance_continuance.worksheet_type_b9d8a5c"
+        save_as: "type_b9d8a5c"
+
+      - step: "Assert standard_item_ids is exactly ISA 210, ISA 220, ISA 300, ISQC 1"
+        action: "assert"
+        target: "type_b9d8a5c"
+        asserts:
+          standard_item_ids:
+            type: "m2m"
+            check: "exact_xml_ids"
+            expected_xml_ids:
+              - "ssi_general_audit.general_audit_standard_audit_2_bc892752"
+              - "ssi_general_audit.general_audit_standard_audit_3_f4f0eb9d"
+              - "ssi_general_audit.general_audit_standard_audit_10_b78a64b0"
+              - "ssi_general_audit.general_audit_standard_audit_39_4ec6443c"
+
+      - step:
+          "Verify unrelated audit standards (ISA 510, PMK NO.55/PMK.01/2017) from
+          sibling records are not linked to B9D8A5C"
+        action: "search"
+        model: "general_audit_worksheet_type"
+        domain:
+          [
+            ["id", "=", "REC: type_b9d8a5c.id"],
+            ["standard_item_ids.code", "in", ["ISA 510", "PMK NO.55/PMK.01/2017"]],
+          ]
+        save_as: "unrelated_standard_link_b9d8a5c"
+        expect_count: 0
+
+  # ------------------------------------------------------------------
+  # Installed data - worksheet_type_0427d28.standard_item_ids
+  # ------------------------------------------------------------------
+  - name:
+      "Worksheet type 0427D28 (Communication With Previous Auditor) - standard_item_ids
+      installed data"
+    steps:
+      - step: "Get worksheet type 0427D28"
+        action: "ref"
+        xml_id: "ssi_general_audit_worksheet_acceptance_continuance.worksheet_type_0427d28"
+        save_as: "type_0427d28"
+
+      - step:
+          "Assert standard_item_ids is exactly ISA 210, ISA 220, ISA 300, ISA 510, ISQC
+          1"
+        action: "assert"
+        target: "type_0427d28"
+        asserts:
+          standard_item_ids:
+            type: "m2m"
+            check: "exact_xml_ids"
+            expected_xml_ids:
+              - "ssi_general_audit.general_audit_standard_audit_2_bc892752"
+              - "ssi_general_audit.general_audit_standard_audit_3_f4f0eb9d"
+              - "ssi_general_audit.general_audit_standard_audit_10_b78a64b0"
+              - "ssi_general_audit.general_audit_standard_audit_19_093b0392"
+              - "ssi_general_audit.general_audit_standard_audit_39_4ec6443c"
+
+      - step:
+          "Verify unrelated audit standard (PMK NO.55/PMK.01/2017) from a sibling record
+          is not linked to 0427D28"
+        action: "search"
+        model: "general_audit_worksheet_type"
+        domain:
+          [
+            ["id", "=", "REC: type_0427d28.id"],
+            ["standard_item_ids.code", "in", ["PMK NO.55/PMK.01/2017"]],
+          ]
+        save_as: "unrelated_standard_link_0427d28"
+        expect_count: 0
