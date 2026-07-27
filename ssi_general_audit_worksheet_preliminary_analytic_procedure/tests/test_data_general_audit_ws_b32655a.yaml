@@ -748,3 +748,33 @@ scenarios:
   # readonly field type_id"). The default-value path (type_id set once via
   # _default_type_id, which then propagates to parent_type_id through
   # onchange_parent_type_id) is already covered by the scenario above.
+
+  # ------------------------------------------------------------------
+  # Installed data - worksheet_type_b32655a.standard_item_ids
+  # (data/general_audit_worksheet_type_data.xml)
+  # ------------------------------------------------------------------
+  - name: "Worksheet type b32655a - standard_item_ids installed data"
+    steps:
+      - step: "Get worksheet type b32655a"
+        action: "ref"
+        xml_id: "ssi_general_audit_worksheet_preliminary_analytic_procedure.worksheet_type_b32655a"
+        save_as: "ws_type_b32655a"
+
+      - step: "Get ISA 520 standard audit item"
+        action: "ref"
+        xml_id: "ssi_general_audit.general_audit_standard_audit_20_29207a3e"
+        save_as: "isa_520"
+
+      # "check: exact" proves both directions in a single assertion: the
+      # recordset must contain ISA 520 (positive) and MUST NOT contain
+      # anything else (negative) - "exact" fails on both missing and extra
+      # records.
+      - step: "standard_item_ids is exactly ISA 520 - no more, no less"
+        action: "assert"
+        target: "ws_type_b32655a"
+        asserts:
+          standard_item_ids:
+            type: "m2m"
+            check: "exact"
+            expected_records:
+              - "REC: isa_520"

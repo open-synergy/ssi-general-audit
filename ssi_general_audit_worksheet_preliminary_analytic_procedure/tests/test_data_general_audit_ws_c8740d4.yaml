@@ -408,3 +408,33 @@ scenarios:
           state:
             type: "value"
             expected: "draft"
+
+  # ------------------------------------------------------------------
+  # Installed data - worksheet_type_c8740d4.standard_item_ids
+  # (data/general_audit_worksheet_type_data.xml)
+  # ------------------------------------------------------------------
+  - name: "Worksheet type c8740d4 - standard_item_ids installed data"
+    steps:
+      - step: "Get worksheet type c8740d4"
+        action: "ref"
+        xml_id: "ssi_general_audit_worksheet_preliminary_analytic_procedure.worksheet_type_c8740d4"
+        save_as: "ws_type_c8740d4"
+
+      - step: "Get ISA 520 standard audit item"
+        action: "ref"
+        xml_id: "ssi_general_audit.general_audit_standard_audit_20_29207a3e"
+        save_as: "isa_520"
+
+      # "check: exact" proves both directions in a single assertion: the
+      # recordset must contain ISA 520 (positive) and MUST NOT contain
+      # anything else (negative) - "exact" fails on both missing and extra
+      # records.
+      - step: "standard_item_ids is exactly ISA 520 - no more, no less"
+        action: "assert"
+        target: "ws_type_c8740d4"
+        asserts:
+          standard_item_ids:
+            type: "m2m"
+            check: "exact"
+            expected_records:
+              - "REC: isa_520"
