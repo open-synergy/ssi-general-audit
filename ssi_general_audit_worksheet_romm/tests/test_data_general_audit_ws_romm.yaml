@@ -663,6 +663,56 @@ scenarios:
         expect_count: 1
 
   # ------------------------------------------------------------------
+  # Worksheet type standard_item_ids - installation data (BL-0194)
+  #
+  # Verifies the standard_item_ids seeded on each of this module's 3
+  # general_audit_worksheet_type records via
+  # data/general_audit_worksheet_type_data.xml. Uses "exact_xml_ids" so
+  # each assertion doubles as the negative check from the issue's test
+  # scenarios: a record whose set is only ISA 315 is proven to NOT also
+  # carry ISA 240 (or any other standard item) that belongs to a
+  # different worksheet type in this module.
+  # ------------------------------------------------------------------
+  - name: "Worksheet type de417a6 (ROMM) - standard_item_ids exact ISA 240 + ISA 315"
+    steps:
+      - step: "Assert standard_item_ids on worksheet type de417a6"
+        action: "assert"
+        target: "ws_type_de417a6"
+        asserts:
+          standard_item_ids:
+            type: "m2m"
+            check: "exact_xml_ids"
+            expected_xml_ids:
+              - "ssi_general_audit.general_audit_standard_audit_5_0f238e08"
+              - "ssi_general_audit.general_audit_standard_audit_11_81c669bd"
+
+  - name:
+      "Worksheet type c165170 (Financial Level ROMM) - standard_item_ids exact ISA 315"
+    steps:
+      - step: "Assert standard_item_ids on worksheet type c165170"
+        action: "assert"
+        target: "ws_type_c165170"
+        asserts:
+          standard_item_ids:
+            type: "m2m"
+            check: "exact_xml_ids"
+            expected_xml_ids:
+              - "ssi_general_audit.general_audit_standard_audit_11_81c669bd"
+
+  - name:
+      "Worksheet type d66d87a (Account Level ROMM) - standard_item_ids exact ISA 315"
+    steps:
+      - step: "Assert standard_item_ids on worksheet type d66d87a"
+        action: "assert"
+        target: "ws_type_d66d87a"
+        asserts:
+          standard_item_ids:
+            type: "m2m"
+            check: "exact_xml_ids"
+            expected_xml_ids:
+              - "ssi_general_audit.general_audit_standard_audit_11_81c669bd"
+
+  # ------------------------------------------------------------------
   # de417a6 - Workflow draft to done
   # ------------------------------------------------------------------
   - name: "WS de417a6 - Workflow draft to done"
