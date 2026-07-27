@@ -1,0 +1,72 @@
+scenarios:
+  # ------------------------------------------------------------------
+  # Installed data - worksheet_type_a753ab9.standard_item_ids
+  # ------------------------------------------------------------------
+  - name:
+      "Worksheet type A753AB9 (Audit Planning Memorandum) - standard_item_ids installed
+      data"
+    steps:
+      - step: "Get worksheet type A753AB9"
+        action: "ref"
+        xml_id: "ssi_general_audit_worksheet_planning_memorandum.worksheet_type_a753ab9"
+        save_as: "type_a753ab9"
+
+      - step: "Assert standard_item_ids is exactly ISA 210, ISA 300, ISQC 1"
+        action: "assert"
+        target: "type_a753ab9"
+        asserts:
+          standard_item_ids:
+            type: "m2m"
+            check: "exact_xml_ids"
+            expected_xml_ids:
+              - "ssi_general_audit.general_audit_standard_audit_2_bc892752"
+              - "ssi_general_audit.general_audit_standard_audit_10_b78a64b0"
+              - "ssi_general_audit.general_audit_standard_audit_39_4ec6443c"
+
+      - step:
+          "Verify unrelated audit standards (ISA 315, ISA 240) are not linked to A753AB9"
+        action: "search"
+        model: "general_audit_worksheet_type"
+        domain:
+          [
+            ["id", "=", "REC: type_a753ab9.id"],
+            ["standard_item_ids.code", "in", ["ISA 315", "ISA 240"]],
+          ]
+        save_as: "unrelated_standard_link_a753ab9"
+        expect_count: 0
+
+  # ------------------------------------------------------------------
+  # Installed data - worksheet_type_fbbe0f8.standard_item_ids
+  # ------------------------------------------------------------------
+  - name:
+      "Worksheet type FBBE0F8 (Audit Planning Memorandum - Detail) - standard_item_ids
+      installed data"
+    steps:
+      - step: "Get worksheet type FBBE0F8"
+        action: "ref"
+        xml_id: "ssi_general_audit_worksheet_planning_memorandum.worksheet_type_fbbe0f8"
+        save_as: "type_fbbe0f8"
+
+      - step: "Assert standard_item_ids is exactly ISA 210, ISA 300, ISQC 1"
+        action: "assert"
+        target: "type_fbbe0f8"
+        asserts:
+          standard_item_ids:
+            type: "m2m"
+            check: "exact_xml_ids"
+            expected_xml_ids:
+              - "ssi_general_audit.general_audit_standard_audit_2_bc892752"
+              - "ssi_general_audit.general_audit_standard_audit_10_b78a64b0"
+              - "ssi_general_audit.general_audit_standard_audit_39_4ec6443c"
+
+      - step:
+          "Verify unrelated audit standards (ISA 315, ISA 240) are not linked to FBBE0F8"
+        action: "search"
+        model: "general_audit_worksheet_type"
+        domain:
+          [
+            ["id", "=", "REC: type_fbbe0f8.id"],
+            ["standard_item_ids.code", "in", ["ISA 315", "ISA 240"]],
+          ]
+        save_as: "unrelated_standard_link_fbbe0f8"
+        expect_count: 0
