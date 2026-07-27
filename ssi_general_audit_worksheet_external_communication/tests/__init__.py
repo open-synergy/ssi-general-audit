@@ -4,3 +4,4 @@
 
 from . import test_ws_ae48e68
 from . import test_ws_communication
+from . import test_worksheet_type_data

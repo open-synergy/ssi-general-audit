@@ -1,0 +1,146 @@
+scenarios:
+  # ------------------------------------------------------------------
+  # Installed data - worksheet_type_ae48e68.standard_item_ids
+  # ------------------------------------------------------------------
+  - name:
+      "Worksheet type AE48E68 (External Communication) - standard_item_ids installed
+      data"
+    steps:
+      - step: "Get worksheet type AE48E68"
+        action: "ref"
+        xml_id: "ssi_general_audit_worksheet_external_communication.worksheet_type_ae48e68"
+        save_as: "type_ae48e68"
+
+      - step: "Assert standard_item_ids is exactly ISA 240, ISA 260, ISA 265, ISA 450"
+        action: "assert"
+        target: "type_ae48e68"
+        asserts:
+          standard_item_ids:
+            type: "m2m"
+            check: "exact_xml_ids"
+            expected_xml_ids:
+              - "ssi_general_audit.general_audit_standard_audit_5_0f238e08"
+              - "ssi_general_audit.general_audit_standard_audit_7_6a0ce80e"
+              - "ssi_general_audit.general_audit_standard_audit_8_7b4a749d"
+              - "ssi_general_audit.general_audit_standard_audit_15_591f4528"
+
+      - step:
+          "Verify unrelated audit standards (ISA 300, ISA 610) are not linked to AE48E68"
+        action: "search"
+        model: "general_audit_worksheet_type"
+        domain:
+          [
+            ["id", "=", "REC: type_ae48e68.id"],
+            ["standard_item_ids.code", "in", ["ISA 300", "ISA 610"]],
+          ]
+        save_as: "unrelated_standard_link_ae48e68"
+        expect_count: 0
+
+  # ------------------------------------------------------------------
+  # Installed data - worksheet_type_b3ff42f.standard_item_ids
+  # ------------------------------------------------------------------
+  - name:
+      "Worksheet type B3FF42F (Communication With Management) - standard_item_ids
+      installed data"
+    steps:
+      - step: "Get worksheet type B3FF42F"
+        action: "ref"
+        xml_id: "ssi_general_audit_worksheet_external_communication.worksheet_type_b3ff42f"
+        save_as: "type_b3ff42f"
+
+      - step: "Assert standard_item_ids is exactly ISA 240, ISA 300, ISA 315"
+        action: "assert"
+        target: "type_b3ff42f"
+        asserts:
+          standard_item_ids:
+            type: "m2m"
+            check: "exact_xml_ids"
+            expected_xml_ids:
+              - "ssi_general_audit.general_audit_standard_audit_5_0f238e08"
+              - "ssi_general_audit.general_audit_standard_audit_10_b78a64b0"
+              - "ssi_general_audit.general_audit_standard_audit_11_81c669bd"
+
+      - step:
+          "Verify unrelated audit standards (ISA 260, ISA 610) are not linked to B3FF42F"
+        action: "search"
+        model: "general_audit_worksheet_type"
+        domain:
+          [
+            ["id", "=", "REC: type_b3ff42f.id"],
+            ["standard_item_ids.code", "in", ["ISA 260", "ISA 610"]],
+          ]
+        save_as: "unrelated_standard_link_b3ff42f"
+        expect_count: 0
+
+  # ------------------------------------------------------------------
+  # Installed data - worksheet_type_c94e287.standard_item_ids
+  # ------------------------------------------------------------------
+  - name:
+      "Worksheet type C94E287 (Communication With TCWG) - standard_item_ids installed
+      data"
+    steps:
+      - step: "Get worksheet type C94E287"
+        action: "ref"
+        xml_id: "ssi_general_audit_worksheet_external_communication.worksheet_type_c94e287"
+        save_as: "type_c94e287"
+
+      - step: "Assert standard_item_ids is exactly ISA 240, ISA 300, ISA 315"
+        action: "assert"
+        target: "type_c94e287"
+        asserts:
+          standard_item_ids:
+            type: "m2m"
+            check: "exact_xml_ids"
+            expected_xml_ids:
+              - "ssi_general_audit.general_audit_standard_audit_5_0f238e08"
+              - "ssi_general_audit.general_audit_standard_audit_10_b78a64b0"
+              - "ssi_general_audit.general_audit_standard_audit_11_81c669bd"
+
+      - step:
+          "Verify unrelated audit standards (ISA 265, ISA 610) are not linked to C94E287"
+        action: "search"
+        model: "general_audit_worksheet_type"
+        domain:
+          [
+            ["id", "=", "REC: type_c94e287.id"],
+            ["standard_item_ids.code", "in", ["ISA 265", "ISA 610"]],
+          ]
+        save_as: "unrelated_standard_link_c94e287"
+        expect_count: 0
+
+  # ------------------------------------------------------------------
+  # Installed data - worksheet_type_d133f46.standard_item_ids
+  # ------------------------------------------------------------------
+  - name:
+      "Worksheet type D133F46 (Use of Internal Auditor's Work Results) -
+      standard_item_ids installed data"
+    steps:
+      - step: "Get worksheet type D133F46"
+        action: "ref"
+        xml_id: "ssi_general_audit_worksheet_external_communication.worksheet_type_d133f46"
+        save_as: "type_d133f46"
+
+      - step: "Assert standard_item_ids is exactly ISA 240, ISA 300, ISA 315, ISA 610"
+        action: "assert"
+        target: "type_d133f46"
+        asserts:
+          standard_item_ids:
+            type: "m2m"
+            check: "exact_xml_ids"
+            expected_xml_ids:
+              - "ssi_general_audit.general_audit_standard_audit_5_0f238e08"
+              - "ssi_general_audit.general_audit_standard_audit_10_b78a64b0"
+              - "ssi_general_audit.general_audit_standard_audit_11_81c669bd"
+              - "ssi_general_audit.general_audit_standard_audit_28_519edd39"
+
+      - step:
+          "Verify unrelated audit standards (ISA 260, ISA 450) are not linked to D133F46"
+        action: "search"
+        model: "general_audit_worksheet_type"
+        domain:
+          [
+            ["id", "=", "REC: type_d133f46.id"],
+            ["standard_item_ids.code", "in", ["ISA 260", "ISA 450"]],
+          ]
+        save_as: "unrelated_standard_link_d133f46"
+        expect_count: 0
