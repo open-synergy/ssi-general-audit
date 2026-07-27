@@ -868,3 +868,43 @@ scenarios:
           parent_type_id:
             type: "m2o"
             expected_xml_id: "ssi_general_audit_worksheet_final_report.worksheet_type_a8c54f3"
+
+  # ------------------------------------------------------------------
+  # Installed data - worksheet_type_b66777d.standard_item_ids
+  # (data/general_audit_worksheet_type_data.xml)
+  # ------------------------------------------------------------------
+  - name: "Worksheet type b66777d - standard_item_ids installed data"
+    steps:
+      - step: "Get ISA 700 standard audit item"
+        action: "ref"
+        xml_id: "ssi_general_audit.general_audit_standard_audit_30_baa66728"
+        save_as: "isa_700"
+
+      - step: "Get ISA 705 standard audit item"
+        action: "ref"
+        xml_id: "ssi_general_audit.general_audit_standard_audit_32_7a114bca"
+        save_as: "isa_705"
+
+      - step: "Get ISA 706 standard audit item"
+        action: "ref"
+        xml_id: "ssi_general_audit.general_audit_standard_audit_33_e41f3db4"
+        save_as: "isa_706"
+
+      # "check: exact" proves both directions in a single assertion: the
+      # recordset must contain ISA 700/705/706 (positive) and MUST NOT
+      # contain anything else - e.g. the adjacent ISA 701, or codes such as
+      # ISA 240 that belong to other worksheet types in this module
+      # (negative) - because "exact" fails on both missing and extra
+      # records.
+      - step:
+          "standard_item_ids is exactly ISA 700, ISA 705, ISA 706 - no more, no less"
+        action: "assert"
+        target: "ws_type_b66777d"
+        asserts:
+          standard_item_ids:
+            type: "m2m"
+            check: "exact"
+            expected_records:
+              - "REC: isa_700"
+              - "REC: isa_705"
+              - "REC: isa_706"
