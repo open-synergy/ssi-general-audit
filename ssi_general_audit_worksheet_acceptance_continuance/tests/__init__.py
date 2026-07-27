@@ -8,3 +8,4 @@ from . import test_ws_806c4e1
 from . import test_ws_842f0d6
 from . import test_ws_b9d8a5c
 from . import test_ws_f5e7049
+from . import test_worksheet_type_data
