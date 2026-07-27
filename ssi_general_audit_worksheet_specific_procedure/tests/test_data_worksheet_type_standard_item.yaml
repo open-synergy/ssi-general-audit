@@ -1,0 +1,104 @@
+scenarios:
+  # ------------------------------------------------------------------
+  # general_audit_worksheet_type.standard_item_ids - installed data
+  #
+  # Each ``exact_xml_ids`` check is simultaneously the positive and the
+  # negative scenario required by issue #195: it fails if
+  # ``standard_item_ids`` is missing any of the expected standard audit
+  # items (positive) AND it fails if the field carries any extra item
+  # that belongs to another worksheet type in this module (negative) -
+  # "exact" enforces a closed set, not just a subset.
+  # ------------------------------------------------------------------
+  - name:
+      "Worksheet Type A8F4D88 (Accounting Estimation) - standard_item_ids is exactly ISA
+      540"
+    steps:
+      - step: "Load worksheet type A8F4D88"
+        action: "ref"
+        xml_id: "ssi_general_audit_worksheet_specific_procedure.worksheet_type_a8f4d88"
+        save_as: "ws_type"
+
+      - step: "Assert standard_item_ids is exactly ISA 540"
+        action: "assert"
+        target: "ws_type"
+        asserts:
+          standard_item_ids:
+            type: "m2m"
+            check: "exact_xml_ids"
+            expected_xml_ids:
+              - "ssi_general_audit.general_audit_standard_audit_22_60c87f93"
+
+  - name:
+      "Worksheet Type C40CFD9 (Related Party Transaction) - standard_item_ids is exactly
+      ISA 550"
+    steps:
+      - step: "Load worksheet type C40CFD9"
+        action: "ref"
+        xml_id: "ssi_general_audit_worksheet_specific_procedure.worksheet_type_c40cfd9"
+        save_as: "ws_type"
+
+      - step: "Assert standard_item_ids is exactly ISA 550"
+        action: "assert"
+        target: "ws_type"
+        asserts:
+          standard_item_ids:
+            type: "m2m"
+            check: "exact_xml_ids"
+            expected_xml_ids:
+              - "ssi_general_audit.general_audit_standard_audit_23_9244e2be"
+
+  - name:
+      "Worksheet Type CB82C5F (Subsequent Event) - standard_item_ids is exactly ISA 560"
+    steps:
+      - step: "Load worksheet type CB82C5F"
+        action: "ref"
+        xml_id: "ssi_general_audit_worksheet_specific_procedure.worksheet_type_cb82c5f"
+        save_as: "ws_type"
+
+      - step: "Assert standard_item_ids is exactly ISA 560"
+        action: "assert"
+        target: "ws_type"
+        asserts:
+          standard_item_ids:
+            type: "m2m"
+            check: "exact_xml_ids"
+            expected_xml_ids:
+              - "ssi_general_audit.general_audit_standard_audit_24_e261cd06"
+
+  - name:
+      "Worksheet Type FBF57EE (Going Concern) - standard_item_ids is exactly ISA 570"
+    steps:
+      - step: "Load worksheet type FBF57EE"
+        action: "ref"
+        xml_id: "ssi_general_audit_worksheet_specific_procedure.worksheet_type_fbf57ee"
+        save_as: "ws_type"
+
+      - step: "Assert standard_item_ids is exactly ISA 570"
+        action: "assert"
+        target: "ws_type"
+        asserts:
+          standard_item_ids:
+            type: "m2m"
+            check: "exact_xml_ids"
+            expected_xml_ids:
+              - "ssi_general_audit.general_audit_standard_audit_25_fc28b019"
+
+  - name:
+      "Worksheet Type EE819AE (Commitment and Contingent) - standard_item_ids is exactly
+      ISA 330 + ISA 560"
+    steps:
+      - step: "Load worksheet type EE819AE"
+        action: "ref"
+        xml_id: "ssi_general_audit_worksheet_specific_procedure.worksheet_type_ee819ae"
+        save_as: "ws_type"
+
+      - step: "Assert standard_item_ids is exactly ISA 330 and ISA 560"
+        action: "assert"
+        target: "ws_type"
+        asserts:
+          standard_item_ids:
+            type: "m2m"
+            check: "exact_xml_ids"
+            expected_xml_ids:
+              - "ssi_general_audit.general_audit_standard_audit_13_5ae8aa63"
+              - "ssi_general_audit.general_audit_standard_audit_24_e261cd06"
