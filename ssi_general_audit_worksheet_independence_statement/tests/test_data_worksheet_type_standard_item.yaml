@@ -1,0 +1,32 @@
+scenarios:
+  # ------------------------------------------------------------------
+  # general_audit_worksheet_type.standard_item_ids - installed data
+  #
+  # The ``exact_xml_ids`` check is simultaneously the positive and the
+  # negative scenario required by issue #202: it fails if
+  # ``standard_item_ids`` is missing any of the expected standard audit
+  # items (positive - ISA 220, ISA 300, ISQC 1) AND it fails if the field
+  # carries any extra item that belongs to another worksheet type record
+  # in this module or elsewhere (negative) - "exact" enforces a closed
+  # set, not just a subset.
+  # ------------------------------------------------------------------
+  - name:
+      "Worksheet Type 09253FE (Independence Statement) - standard_item_ids is exactly
+      ISA 220, ISA 300, ISQC 1"
+    steps:
+      - step: "Load worksheet type 09253FE"
+        action: "ref"
+        xml_id: "ssi_general_audit_worksheet_independence_statement.worksheet_type_09253fe"
+        save_as: "ws_type"
+
+      - step: "Assert standard_item_ids is exactly ISA 220, ISA 300, ISQC 1"
+        action: "assert"
+        target: "ws_type"
+        asserts:
+          standard_item_ids:
+            type: "m2m"
+            check: "exact_xml_ids"
+            expected_xml_ids:
+              - "ssi_general_audit.general_audit_standard_audit_3_f4f0eb9d"
+              - "ssi_general_audit.general_audit_standard_audit_10_b78a64b0"
+              - "ssi_general_audit.general_audit_standard_audit_39_4ec6443c"
