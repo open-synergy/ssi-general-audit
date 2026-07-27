@@ -1,0 +1,68 @@
+scenarios:
+  # ------------------------------------------------------------------
+  # Installed data - worksheet_type_437fc8f.standard_item_ids
+  # ------------------------------------------------------------------
+  - name:
+      "Worksheet type 437FC8F (Team Communication - Pre-Engagement) - standard_item_ids
+      installed data"
+    steps:
+      - step: "Get worksheet type 437FC8F"
+        action: "ref"
+        xml_id: "ssi_general_audit_worksheet_team_communication.worksheet_type_437fc8f"
+        save_as: "type_437fc8f"
+
+      - step: "Assert standard_item_ids is exactly ISA 300"
+        action: "assert"
+        target: "type_437fc8f"
+        asserts:
+          standard_item_ids:
+            type: "m2m"
+            check: "exact_xml_ids"
+            expected_xml_ids:
+              - "ssi_general_audit.general_audit_standard_audit_10_b78a64b0"
+
+      - step:
+          "Verify unrelated audit standards (ISA 315, ISA 240) are not linked to 437FC8F"
+        action: "search"
+        model: "general_audit_worksheet_type"
+        domain:
+          [
+            ["id", "=", "REC: type_437fc8f.id"],
+            ["standard_item_ids.code", "in", ["ISA 315", "ISA 240"]],
+          ]
+        save_as: "unrelated_standard_link_437fc8f"
+        expect_count: 0
+
+  # ------------------------------------------------------------------
+  # Installed data - worksheet_type_b1f820c.standard_item_ids
+  # ------------------------------------------------------------------
+  - name:
+      "Worksheet type B1F820C (Team Communication - Risk Assessment) - standard_item_ids
+      installed data"
+    steps:
+      - step: "Get worksheet type B1F820C"
+        action: "ref"
+        xml_id: "ssi_general_audit_worksheet_team_communication.worksheet_type_b1f820c"
+        save_as: "type_b1f820c"
+
+      - step: "Assert standard_item_ids is exactly ISA 300"
+        action: "assert"
+        target: "type_b1f820c"
+        asserts:
+          standard_item_ids:
+            type: "m2m"
+            check: "exact_xml_ids"
+            expected_xml_ids:
+              - "ssi_general_audit.general_audit_standard_audit_10_b78a64b0"
+
+      - step:
+          "Verify unrelated audit standards (ISA 315, ISA 240) are not linked to B1F820C"
+        action: "search"
+        model: "general_audit_worksheet_type"
+        domain:
+          [
+            ["id", "=", "REC: type_b1f820c.id"],
+            ["standard_item_ids.code", "in", ["ISA 315", "ISA 240"]],
+          ]
+        save_as: "unrelated_standard_link_b1f820c"
+        expect_count: 0
