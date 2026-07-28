@@ -32,6 +32,13 @@ class GeneralAuditWSb9d8a5cSummary(models.Model):
         "Of Assignment Team (b9d8a5c) - summary"
     )
     _order = "sequence, id"
+    _sql_constraints = [
+        (
+            "unique_worksheet_employee",
+            "unique(worksheet_id, employee_id)",
+            "Employee must be unique per worksheet.",
+        ),
+    ]
 
     worksheet_id = fields.Many2one(
         string="# Worksheet",

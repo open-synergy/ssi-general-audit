@@ -410,6 +410,259 @@ scenarios:
             expected_count: 0
 
   # ------------------------------------------------------------------
+  # action_create_summary - 3 proposed employees, no duplicate rows
+  # (regression for issue #110 - Yosi Purnamasari duplication, WS 75)
+  # ------------------------------------------------------------------
+  - name:
+      "Worksheet b9d8a5c - action_create_summary with 3 proposed employees produces
+      exactly one row each"
+    steps:
+      - step: "Create worksheet b9d8a5c"
+        action: "create"
+        model: "general_audit_ws_b9d8a5c"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+
+      - step: "Create first candidate employee"
+        action: "create"
+        model: "hr.employee"
+        save_as: "employee_a"
+        values:
+          name: "Test Auditor Eight A"
+          job_id: "REC: job.id"
+          audit_ok: true
+
+      - step: "Create second candidate employee"
+        action: "create"
+        model: "hr.employee"
+        save_as: "employee_b"
+        values:
+          name: "Test Auditor Eight B"
+          job_id: "REC: job.id"
+          audit_ok: true
+
+      - step: "Create third candidate employee"
+        action: "create"
+        model: "hr.employee"
+        save_as: "employee_c"
+        values:
+          name: "Test Auditor Eight C"
+          job_id: "REC: job.id"
+          audit_ok: true
+
+      - step: "Propose first employee as team"
+        action: "create"
+        model: "general_audit_ws_b9d8a5c.personnel"
+        save_as: "personnel_a"
+        values:
+          worksheet_id: "REC: worksheet.id"
+          employee_id: "REC: employee_a.id"
+          job_id: "REC: job.id"
+          proposed: "yes"
+
+      - step: "Propose second employee as team"
+        action: "create"
+        model: "general_audit_ws_b9d8a5c.personnel"
+        save_as: "personnel_b"
+        values:
+          worksheet_id: "REC: worksheet.id"
+          employee_id: "REC: employee_b.id"
+          job_id: "REC: job.id"
+          proposed: "yes"
+
+      - step: "Propose third employee as team"
+        action: "create"
+        model: "general_audit_ws_b9d8a5c.personnel"
+        save_as: "personnel_c"
+        values:
+          worksheet_id: "REC: worksheet.id"
+          employee_id: "REC: employee_c.id"
+          job_id: "REC: job.id"
+          proposed: "yes"
+
+      - step: "Create summary for all 3 proposed employees"
+        action: "call"
+        target: "worksheet"
+        method: "action_create_summary"
+
+      - step: "Assert exactly 3 rows per analysis table"
+        action: "assert"
+        target: "worksheet"
+        refresh: true
+        asserts:
+          competency_analysis_ids:
+            type: "o2m"
+            check: "count"
+            expected_count: 3
+          availability_analysis_ids:
+            type: "o2m"
+            check: "count"
+            expected_count: 3
+          independency_analysis_ids:
+            type: "o2m"
+            check: "count"
+            expected_count: 3
+          summary_ids:
+            type: "o2m"
+            check: "count"
+            expected_count: 3
+
+      - step: "Assert first employee has exactly one competency row"
+        action: "search"
+        model: "general_audit_ws_b9d8a5c.competency"
+        domain:
+          - ["worksheet_id", "=", "REC: worksheet.id"]
+          - ["employee_id", "=", "REC: employee_a.id"]
+        save_as: "competency_a"
+        expect_count: 1
+
+      - step: "Assert second employee has exactly one competency row"
+        action: "search"
+        model: "general_audit_ws_b9d8a5c.competency"
+        domain:
+          - ["worksheet_id", "=", "REC: worksheet.id"]
+          - ["employee_id", "=", "REC: employee_b.id"]
+        save_as: "competency_b"
+        expect_count: 1
+
+      - step: "Assert third employee has exactly one competency row"
+        action: "search"
+        model: "general_audit_ws_b9d8a5c.competency"
+        domain:
+          - ["worksheet_id", "=", "REC: worksheet.id"]
+          - ["employee_id", "=", "REC: employee_c.id"]
+        save_as: "competency_c"
+        expect_count: 1
+
+  # ------------------------------------------------------------------
+  # action_create_summary - un-proposing one employee keeps the others
+  # (cleanup regression must not remove unrelated employees' rows)
+  # ------------------------------------------------------------------
+  - name:
+      "Worksheet b9d8a5c - action_create_summary removes only the un-proposed employee's
+      rows"
+    steps:
+      - step: "Create worksheet b9d8a5c"
+        action: "create"
+        model: "general_audit_ws_b9d8a5c"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+
+      - step: "Create first candidate employee"
+        action: "create"
+        model: "hr.employee"
+        save_as: "employee_x"
+        values:
+          name: "Test Auditor Nine X"
+          job_id: "REC: job.id"
+          audit_ok: true
+
+      - step: "Create second candidate employee"
+        action: "create"
+        model: "hr.employee"
+        save_as: "employee_y"
+        values:
+          name: "Test Auditor Nine Y"
+          job_id: "REC: job.id"
+          audit_ok: true
+
+      - step: "Propose first employee as team"
+        action: "create"
+        model: "general_audit_ws_b9d8a5c.personnel"
+        save_as: "personnel_x"
+        values:
+          worksheet_id: "REC: worksheet.id"
+          employee_id: "REC: employee_x.id"
+          job_id: "REC: job.id"
+          proposed: "yes"
+
+      - step: "Propose second employee as team"
+        action: "create"
+        model: "general_audit_ws_b9d8a5c.personnel"
+        save_as: "personnel_y"
+        values:
+          worksheet_id: "REC: worksheet.id"
+          employee_id: "REC: employee_y.id"
+          job_id: "REC: job.id"
+          proposed: "yes"
+
+      - step: "Create summary for both proposed employees"
+        action: "call"
+        target: "worksheet"
+        method: "action_create_summary"
+
+      - step: "Assert 2 rows per analysis table before un-propose"
+        action: "assert"
+        target: "worksheet"
+        refresh: true
+        asserts:
+          competency_analysis_ids:
+            type: "o2m"
+            check: "count"
+            expected_count: 2
+          summary_ids:
+            type: "o2m"
+            check: "count"
+            expected_count: 2
+
+      - step: "Un-propose first employee only"
+        action: "write"
+        target: "personnel_x"
+        values:
+          proposed: "no"
+
+      - step: "Re-create summary after un-proposing first employee"
+        action: "call"
+        target: "worksheet"
+        method: "action_create_summary"
+
+      - step: "Assert only the un-proposed employee's rows are removed"
+        action: "assert"
+        target: "worksheet"
+        refresh: true
+        asserts:
+          competency_analysis_ids:
+            type: "o2m"
+            check: "count"
+            expected_count: 1
+          availability_analysis_ids:
+            type: "o2m"
+            check: "count"
+            expected_count: 1
+          independency_analysis_ids:
+            type: "o2m"
+            check: "count"
+            expected_count: 1
+          summary_ids:
+            type: "o2m"
+            check: "count"
+            expected_count: 1
+
+      - step: "Assert second employee's competency row still exists"
+        action: "search"
+        model: "general_audit_ws_b9d8a5c.competency"
+        domain:
+          - ["worksheet_id", "=", "REC: worksheet.id"]
+          - ["employee_id", "=", "REC: employee_y.id"]
+        save_as: "competency_y"
+        expect_count: 1
+
+      - step: "Assert first employee's competency row is gone"
+        action: "search"
+        model: "general_audit_ws_b9d8a5c.competency"
+        domain:
+          - ["worksheet_id", "=", "REC: worksheet.id"]
+          - ["employee_id", "=", "REC: employee_x.id"]
+        save_as: "competency_x"
+        expect_count: 0
+
+  # ------------------------------------------------------------------
   # year_experience - general_audit_ws_b9d8a5c.competency compute
   # ------------------------------------------------------------------
   - name: "Competency b9d8a5c - Compute year_experience (normal)"
