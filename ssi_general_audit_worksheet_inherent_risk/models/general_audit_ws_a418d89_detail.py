@@ -26,8 +26,8 @@ class GeneralAuditWSA418D89Detail(models.Model):
 
     ``inherent_risk`` and ``significant_risk`` are computed from the
     above inputs and written back to the parent
-    ``general_audit.standard_detail`` via the inverse method, keeping
-    the canonical standard detail in sync.
+    ``general_audit.standard_detail`` from within the compute method
+    itself, keeping the canonical standard detail in sync.
 
     Child of ``general_audit_ws_a418d89``.  Cascades on parent delete.
     """
@@ -130,11 +130,11 @@ class GeneralAuditWSA418D89Detail(models.Model):
         string="Significant Risk",
         compute="_compute_risk",
         compute_sudo=True,
-        inverse="_inverse_to_standard_detail",
         store=True,
         help=(
             "Derived flag indicating significant risk. "
-            "Updates the linked standard detail on change."
+            "Propagated to the linked standard detail whenever "
+            "``_compute_risk`` recomputes it."
         ),
     )
     other_significant_risk_factor = fields.Boolean(
@@ -155,6 +155,15 @@ class GeneralAuditWSA418D89Detail(models.Model):
         "other_significant_risk_factor",
     )
     def _compute_risk(self):
+        """Compute ``inherent_risk``/``significant_risk`` and propagate.
+
+        ``inverse=`` on a computed field only fires when the field is
+        written externally (form/onchange) — never when this compute
+        method assigns it internally. Since these two fields only ever
+        change through this compute (triggered by the ``@api.depends``
+        list above), the propagation to ``standard_detail_id`` must be
+        triggered explicitly here, not left to ``inverse=``.
+        """
         for record in self:
             inherent_risk = significant_risk = False
             if record.likelihood_risk_occuring == "high":
@@ -174,12 +183,20 @@ class GeneralAuditWSA418D89Detail(models.Model):
                     inherent_risk = "low"
             record.inherent_risk = inherent_risk
             record.significant_risk = significant_risk
+            record._inverse_to_standard_detail()
 
     def _inverse_to_standard_detail(self):
+        """Propagate risk values to the linked standard detail.
+
+        Called explicitly from ``_compute_risk()`` for each ``record``
+        (see its docstring) rather than relying on ``inverse=``, so it
+        must use ``record.x``, not ``self.x``, to stay correct when
+        invoked on a recordset with more than one record.
+        """
         for record in self:
             record.standard_detail_id.write(
                 {
-                    "inherent_risk": self.inherent_risk,
-                    "significant_risk": self.significant_risk,
+                    "inherent_risk": record.inherent_risk,
+                    "significant_risk": record.significant_risk,
                 }
             )
