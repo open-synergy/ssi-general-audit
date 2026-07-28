@@ -208,6 +208,20 @@ scenarios:
   # ------------------------------------------------------------------
   - name: "f3a78de - action_reload_ratio (add, archive-remove, idempotent)"
     steps:
+      # Preliminary ratio line for ratio_rx only. ratio_ry deliberately has NO
+      # preliminary counterpart so the fallback branch (0.0 / False) is covered
+      # by the same reload call.
+      - step: "Create preliminary d4289e4 ratio line for ratio_rx"
+        action: "create"
+        model: "general_audit_ws_d4289e4.ratio"
+        save_as: "prelim_line_rx"
+        as_user: "base.user_admin"
+        values:
+          worksheet_id: "REC: ws_d4289e4.id"
+          financial_ratio_id: "REC: ratio_rx.id"
+          industry_average: 12.5
+          analysis: "Above industry average"
+
       - step: "Create worksheet f3a78de"
         action: "create"
         model: "general_audit_ws_f3a78de"
@@ -259,6 +273,31 @@ scenarios:
         save_as: "line_ry"
         expect_count: 1
 
+      - step:
+          "Assert industry_average and analysis were copied from the preliminary d4289e4
+          ratio line"
+        action: "assert"
+        target: "line_rx"
+        asserts:
+          industry_average:
+            type: "value"
+            expected: 12.5
+          analysis:
+            type: "value"
+            expected: "Above industry average"
+
+      - step:
+          "Assert ratio_ry line falls back to 0.0 / empty (no matching preliminary line)"
+        action: "assert"
+        target: "line_ry"
+        asserts:
+          industry_average:
+            type: "value"
+            expected: 0.0
+          analysis:
+            type: "value"
+            operator: "is_falsy"
+
       - step: "Archive ratio_ry"
         action: "write"
         target: "ratio_ry"
@@ -304,6 +343,96 @@ scenarios:
           - ["financial_ratio_id", "=", "REC: ratio_rx.id"]
         save_as: "line_rx_idempotent"
         expect_count: 1
+
+  # ------------------------------------------------------------------
+  # action_reload_ratio - baris preliminary ada tapi untuk financial_ratio_id
+  # yang berbeda, sehingga ratio_rx tetap jatuh ke nilai fallback
+  # ------------------------------------------------------------------
+  - name: "f3a78de - action_reload_ratio with non-matching preliminary line"
+    steps:
+      - step: "Create preliminary d4289e4 ratio line for ratio_ry only"
+        action: "create"
+        model: "general_audit_ws_d4289e4.ratio"
+        save_as: "prelim_line_ry"
+        as_user: "base.user_admin"
+        values:
+          worksheet_id: "REC: ws_d4289e4.id"
+          financial_ratio_id: "REC: ratio_ry.id"
+          industry_average: 33.75
+          analysis: "Below industry average"
+
+      - step: "Create worksheet f3a78de"
+        action: "create"
+        model: "general_audit_ws_f3a78de"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_f3a78de.id"
+
+      - step: "Open worksheet f3a78de"
+        action: "call"
+        target: "worksheet"
+        method: "action_open"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after opening worksheet f3a78de"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Set ws_d4289e4_id"
+        action: "write"
+        target: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          ws_d4289e4_id: "REC: ws_d4289e4.id"
+
+      - step: "Call action_reload_ratio"
+        action: "call"
+        target: "worksheet"
+        method: "action_reload_ratio"
+        as_user: "base.user_admin"
+
+      - step: "Get ratio_rx line (no preliminary counterpart)"
+        action: "search"
+        model: "general_audit_ws_f3a78de.ratio"
+        domain:
+          - ["worksheet_id", "=", "REC: worksheet.id"]
+          - ["financial_ratio_id", "=", "REC: ratio_rx.id"]
+        save_as: "line_rx"
+        expect_count: 1
+
+      - step: "Assert ratio_rx line keeps the fallback values"
+        action: "assert"
+        target: "line_rx"
+        asserts:
+          industry_average:
+            type: "value"
+            expected: 0.0
+          analysis:
+            type: "value"
+            operator: "is_falsy"
+
+      - step: "Get ratio_ry line (has a preliminary counterpart)"
+        action: "search"
+        model: "general_audit_ws_f3a78de.ratio"
+        domain:
+          - ["worksheet_id", "=", "REC: worksheet.id"]
+          - ["financial_ratio_id", "=", "REC: ratio_ry.id"]
+        save_as: "line_ry"
+        expect_count: 1
+
+      - step: "Assert ratio_ry line copied the preliminary values"
+        action: "assert"
+        target: "line_ry"
+        asserts:
+          industry_average:
+            type: "value"
+            expected: 33.75
+          analysis:
+            type: "value"
+            expected: "Below industry average"
 
   # ------------------------------------------------------------------
   # action_compute_ratio dan post_confirm_action _recompute_computation
