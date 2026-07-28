@@ -14,6 +14,10 @@
         "ssi_general_audit_worksheet_inherent_risk",
         "ssi_general_audit_worksheet_preliminary_materiality",
         "ssi_general_audit_worksheet_team_communication",
+        "ssi_general_audit_worksheet_control_risk",
+        "ssi_general_audit_worksheet_acceptance_continuance",
+        "ssi_general_audit_worksheet_external_communication",
+        "ssi_general_audit_worksheet_audit_working_plan",
     ],
     "data": [
         "views/assets.xml",
