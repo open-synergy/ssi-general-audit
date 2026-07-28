@@ -71,9 +71,9 @@ class GeneralAuditWSfbf57eeComputation(models.Model):
             result = 0.0
             if record.general_audit_computation_id:
                 if balance_type == "end_period":
-                    result = record.general_audit_computation_id.home_balance
+                    result = record.general_audit_computation_id.home_amount
                 else:
-                    result = record.general_audit_computation_id.interim_balance
+                    result = record.general_audit_computation_id.interim_amount
 
             record.current_amount = result
 

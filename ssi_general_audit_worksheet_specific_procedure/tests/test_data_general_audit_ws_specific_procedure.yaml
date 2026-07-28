@@ -263,28 +263,17 @@ scenarios:
   # ------------------------------------------------------------------
   # fbf57ee - action_load_computation
   #
-  # PRODUCTION BUG (documented, NOT patched -- see BL-0168 task summary):
-  # general_audit_ws_fbf57ee_computation.py's _compute_current_amount
-  # (models/fbf57ee/general_audit_ws_fbf57ee_computation.py) reads
-  # `general_audit_computation_id.home_balance` / `.interim_balance`, but
-  # `general_audit.computation` (ssi_general_audit/models/general_audit/
-  # general_audit_computation.py) only defines `home_amount` /
-  # `interim_amount` -- there is no `home_balance` or `interim_balance`
-  # field anywhere in that model's class hierarchy (verified: no module in
-  # this repo extends general_audit.computation with those names). Every
-  # creation of a general_audit_ws_fbf57ee.computation row -- whether via
-  # action_load_computation or a direct `create` -- crashes with
-  # AttributeError as soon as the stored, `@api.depends`-driven
-  # `current_amount` field is computed (Odoo computes stored fields
-  # synchronously as part of `create()`). This scenario locks in the
-  # ACTUAL (buggy) behaviour per BL-0168 instructions. It blocks testing
-  # the Z-Score solvent / grey_area / unsolvent categories with real
-  # computation data (scenario "z_score with no computation lines" below
-  # covers the only Z-Score case reachable without hitting this bug).
+  # Regression coverage for the fix in _compute_current_amount
+  # (models/fbf57ee/general_audit_ws_fbf57ee_computation.py): it now reads
+  # `general_audit_computation_id.home_amount` / `.interim_amount` (the
+  # fields that actually exist on `general_audit.computation`) instead of
+  # the non-existent `home_balance` / `interim_balance`. This scenario
+  # feeds a real home + interim trial balance computation and proves both
+  # branches of `balance_type` resolve to the correct amount, and that
+  # `result` (current_amount x coefficient) is computed correctly, with no
+  # AttributeError raised.
   # ------------------------------------------------------------------
-  - name:
-      "WS fbf57ee - action_load_computation (production bug:
-      home_balance/interim_balance)"
+  - name: "WS fbf57ee - action_load_computation (real amounts, end_period and interim)"
     steps:
       - step: "Create computation item flagged for going concern"
         action: "create"
@@ -296,6 +285,45 @@ scenarios:
           code: "/"
           going_concern_ok: true
 
+      - step: "Create home trial balance for the audit"
+        action: "create"
+        model: "client_trial_balance"
+        save_as: "tb_home"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          trial_balance_type: "home"
+
+      - step: "Create home trial balance computation line (real home_amount source)"
+        action: "create"
+        model: "client_trial_balance.computation"
+        save_as: "tb_computation_home"
+        as_user: "base.user_admin"
+        values:
+          trial_balance_id: "REC: tb_home.id"
+          computation_item_id: "REC: gc_computation_item.id"
+          amount: 100000.0
+
+      - step: "Create interim trial balance for the audit"
+        action: "create"
+        model: "client_trial_balance"
+        save_as: "tb_interim"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          trial_balance_type: "interim"
+
+      - step:
+          "Create interim trial balance computation line (real interim_amount source)"
+        action: "create"
+        model: "client_trial_balance.computation"
+        save_as: "tb_computation_interim"
+        as_user: "base.user_admin"
+        values:
+          trial_balance_id: "REC: tb_interim.id"
+          computation_item_id: "REC: gc_computation_item.id"
+          amount: 80000.0
+
       - step: "Create general_audit.computation row for the audit"
         action: "create"
         model: "general_audit.computation"
@@ -304,7 +332,17 @@ scenarios:
         values:
           general_audit_id: "REC: audit.id"
           computation_item_id: "REC: gc_computation_item.id"
-          extrapolation_amount: 100.0
+
+      - step: "Assert general_audit.computation resolved real home/interim amounts"
+        action: "assert"
+        target: "audit_computation"
+        asserts:
+          home_amount:
+            type: "value"
+            expected: 100000.0
+          interim_amount:
+            type: "value"
+            expected: 80000.0
 
       - step: "Create z-score coefficient set with a coefficient for the item"
         action: "create"
@@ -320,10 +358,10 @@ scenarios:
               - computation_item_id: "REC: gc_computation_item.id"
                 coefficient: 2.0
 
-      - step: "Create worksheet fbf57ee"
+      - step: "Create worksheet fbf57ee (balance_type = end_period)"
         action: "create"
         model: "general_audit_ws_fbf57ee"
-        save_as: "worksheet"
+        save_as: "worksheet_end_period"
         as_user: "base.user_admin"
         values:
           general_audit_id: "REC: audit.id"
@@ -331,22 +369,86 @@ scenarios:
           balance_type: "end_period"
           z_score_coefficient_set_id: "REC: coefficient_set.id"
 
-      - step: "Verify no computation lines before loading"
+      - step: "Verify no computation lines before loading (end_period worksheet)"
         action: "search"
         model: "general_audit_ws_fbf57ee.computation"
         domain:
-          - ["worksheet_id", "=", "REC: worksheet.id"]
-        save_as: "lines_before"
+          - ["worksheet_id", "=", "REC: worksheet_end_period.id"]
+        save_as: "lines_before_end_period"
         expect_count: 0
 
-      - step: "Call action_load_computation -- crashes on the production bug"
+      - step: "Call action_load_computation on the end_period worksheet"
         action: "call"
-        target: "worksheet"
+        target: "worksheet_end_period"
         method: "action_load_computation"
         as_user: "base.user_admin"
-        expect_error:
-          type: "AttributeError"
-          message_contains: "home_balance"
+
+      - step: "Verify the computation line was loaded (end_period worksheet)"
+        action: "search"
+        model: "general_audit_ws_fbf57ee.computation"
+        domain:
+          - ["worksheet_id", "=", "REC: worksheet_end_period.id"]
+        save_as: "line_end_period"
+        expect_count: 1
+
+      - step: "Assert end_period current_amount, coefficient and result"
+        action: "assert"
+        target: "line_end_period"
+        asserts:
+          current_amount:
+            type: "value"
+            expected: 100000.0
+          coefficient:
+            type: "value"
+            expected: 2.0
+          result:
+            type: "value"
+            expected: 200000.0
+
+      - step:
+          "Unlink worksheet_end_period (a general_audit may only have one worksheet per
+          type_id; cascades to line_end_period)"
+        action: "unlink"
+        target: "worksheet_end_period"
+
+      - step: "Create worksheet fbf57ee (balance_type = interim)"
+        action: "create"
+        model: "general_audit_ws_fbf57ee"
+        save_as: "worksheet_interim"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_fbf57ee.id"
+          balance_type: "interim"
+          z_score_coefficient_set_id: "REC: coefficient_set.id"
+
+      - step: "Call action_load_computation on the interim worksheet"
+        action: "call"
+        target: "worksheet_interim"
+        method: "action_load_computation"
+        as_user: "base.user_admin"
+
+      - step: "Verify the computation line was loaded (interim worksheet)"
+        action: "search"
+        model: "general_audit_ws_fbf57ee.computation"
+        domain:
+          - ["worksheet_id", "=", "REC: worksheet_interim.id"]
+        save_as: "line_interim"
+        expect_count: 1
+
+      - step: "Assert interim current_amount, coefficient and result"
+        action: "assert"
+        target: "line_interim"
+        asserts:
+          current_amount:
+            type: "value"
+            expected: 80000.0
+          coefficient:
+            type: "value"
+            expected: 2.0
+          result:
+            type: "value"
+            expected: 160000.0
 
   # ------------------------------------------------------------------
   # fbf57ee - z_score with no computation lines (only Z-Score case
@@ -386,6 +488,303 @@ scenarios:
           z_score:
             type: "value"
             expected: 0.0
+          z_score_category:
+            type: "value"
+            expected: "unsolvent"
+
+  # ------------------------------------------------------------------
+  # fbf57ee - Z-Score category "solvent" with real computation data
+  #
+  # _compute_z_score categorizes total_z_score >= 2.90 as "solvent"
+  # (models/fbf57ee/general_audit_ws_fbf57ee.py). A single computation
+  # line with current_amount = 1.0 (real home_amount, via a real trial
+  # balance computation) and coefficient = 3.0 yields result = z_score =
+  # 3.0, which is >= 2.90.
+  # ------------------------------------------------------------------
+  - name: "WS fbf57ee - Z-Score category solvent (real data)"
+    steps:
+      - step: "Create computation item for the solvent scenario"
+        action: "create"
+        model: "trial_balance_computation_item"
+        save_as: "comp_item_solvent"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Computation Item - fbf57ee Solvent"
+          code: "/"
+
+      - step: "Create home trial balance for the solvent scenario"
+        action: "create"
+        model: "client_trial_balance"
+        save_as: "tb_home_solvent"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          trial_balance_type: "home"
+
+      - step: "Create home trial balance computation line (amount = 1.0)"
+        action: "create"
+        model: "client_trial_balance.computation"
+        save_as: "tb_computation_solvent"
+        as_user: "base.user_admin"
+        values:
+          trial_balance_id: "REC: tb_home_solvent.id"
+          computation_item_id: "REC: comp_item_solvent.id"
+          amount: 1.0
+
+      - step: "Create general_audit.computation row for the solvent scenario"
+        action: "create"
+        model: "general_audit.computation"
+        save_as: "computation_solvent"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          computation_item_id: "REC: comp_item_solvent.id"
+
+      - step: "Create z-score coefficient set (unused, required before open)"
+        action: "create"
+        model: "general_audit_going_concern_z_score_coeficient_set"
+        save_as: "coefficient_set_solvent"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Z-Score Coefficient Set - fbf57ee Solvent"
+          code: "/"
+
+      - step: "Create worksheet fbf57ee for the solvent scenario"
+        action: "create"
+        model: "general_audit_ws_fbf57ee"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_fbf57ee.id"
+          balance_type: "end_period"
+          z_score_coefficient_set_id: "REC: coefficient_set_solvent.id"
+
+      - step: "Create computation line with coefficient 3.0 (z_score = 3.0)"
+        action: "create"
+        model: "general_audit_ws_fbf57ee.computation"
+        save_as: "line_solvent"
+        as_user: "base.user_admin"
+        values:
+          worksheet_id: "REC: worksheet.id"
+          general_audit_computation_id: "REC: computation_solvent.id"
+          coefficient: 3.0
+
+      - step: "Assert computation line current_amount and result"
+        action: "assert"
+        target: "line_solvent"
+        asserts:
+          current_amount:
+            type: "value"
+            expected: 1.0
+          result:
+            type: "value"
+            expected: 3.0
+
+      - step: "Assert z_score is 3.0 and category is solvent"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          z_score:
+            type: "value"
+            expected: 3.0
+          z_score_category:
+            type: "value"
+            expected: "solvent"
+
+  # ------------------------------------------------------------------
+  # fbf57ee - Z-Score category "grey_area" with real computation data
+  #
+  # _compute_z_score categorizes 1.23 <= total_z_score < 2.90 as
+  # "grey_area". A single computation line with current_amount = 1.0 and
+  # coefficient = 2.0 yields result = z_score = 2.0, which falls in that
+  # range.
+  # ------------------------------------------------------------------
+  - name: "WS fbf57ee - Z-Score category grey_area (real data)"
+    steps:
+      - step: "Create computation item for the grey_area scenario"
+        action: "create"
+        model: "trial_balance_computation_item"
+        save_as: "comp_item_grey_area"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Computation Item - fbf57ee Grey Area"
+          code: "/"
+
+      - step: "Create home trial balance for the grey_area scenario"
+        action: "create"
+        model: "client_trial_balance"
+        save_as: "tb_home_grey_area"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          trial_balance_type: "home"
+
+      - step: "Create home trial balance computation line (amount = 1.0)"
+        action: "create"
+        model: "client_trial_balance.computation"
+        save_as: "tb_computation_grey_area"
+        as_user: "base.user_admin"
+        values:
+          trial_balance_id: "REC: tb_home_grey_area.id"
+          computation_item_id: "REC: comp_item_grey_area.id"
+          amount: 1.0
+
+      - step: "Create general_audit.computation row for the grey_area scenario"
+        action: "create"
+        model: "general_audit.computation"
+        save_as: "computation_grey_area"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          computation_item_id: "REC: comp_item_grey_area.id"
+
+      - step: "Create z-score coefficient set (unused, required before open)"
+        action: "create"
+        model: "general_audit_going_concern_z_score_coeficient_set"
+        save_as: "coefficient_set_grey_area"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Z-Score Coefficient Set - fbf57ee Grey Area"
+          code: "/"
+
+      - step: "Create worksheet fbf57ee for the grey_area scenario"
+        action: "create"
+        model: "general_audit_ws_fbf57ee"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_fbf57ee.id"
+          balance_type: "end_period"
+          z_score_coefficient_set_id: "REC: coefficient_set_grey_area.id"
+
+      - step: "Create computation line with coefficient 2.0 (z_score = 2.0)"
+        action: "create"
+        model: "general_audit_ws_fbf57ee.computation"
+        save_as: "line_grey_area"
+        as_user: "base.user_admin"
+        values:
+          worksheet_id: "REC: worksheet.id"
+          general_audit_computation_id: "REC: computation_grey_area.id"
+          coefficient: 2.0
+
+      - step: "Assert computation line current_amount and result"
+        action: "assert"
+        target: "line_grey_area"
+        asserts:
+          current_amount:
+            type: "value"
+            expected: 1.0
+          result:
+            type: "value"
+            expected: 2.0
+
+      - step: "Assert z_score is 2.0 and category is grey_area"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          z_score:
+            type: "value"
+            expected: 2.0
+          z_score_category:
+            type: "value"
+            expected: "grey_area"
+
+  # ------------------------------------------------------------------
+  # fbf57ee - Z-Score category "unsolvent" with real computation data
+  #
+  # _compute_z_score categorizes total_z_score < 1.23 as "unsolvent". A
+  # single computation line with current_amount = 1.0 and coefficient =
+  # 1.0 yields result = z_score = 1.0, which is below the threshold.
+  # ------------------------------------------------------------------
+  - name: "WS fbf57ee - Z-Score category unsolvent (real data)"
+    steps:
+      - step: "Create computation item for the unsolvent scenario"
+        action: "create"
+        model: "trial_balance_computation_item"
+        save_as: "comp_item_unsolvent"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Computation Item - fbf57ee Unsolvent"
+          code: "/"
+
+      - step: "Create home trial balance for the unsolvent scenario"
+        action: "create"
+        model: "client_trial_balance"
+        save_as: "tb_home_unsolvent"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          trial_balance_type: "home"
+
+      - step: "Create home trial balance computation line (amount = 1.0)"
+        action: "create"
+        model: "client_trial_balance.computation"
+        save_as: "tb_computation_unsolvent"
+        as_user: "base.user_admin"
+        values:
+          trial_balance_id: "REC: tb_home_unsolvent.id"
+          computation_item_id: "REC: comp_item_unsolvent.id"
+          amount: 1.0
+
+      - step: "Create general_audit.computation row for the unsolvent scenario"
+        action: "create"
+        model: "general_audit.computation"
+        save_as: "computation_unsolvent"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          computation_item_id: "REC: comp_item_unsolvent.id"
+
+      - step: "Create z-score coefficient set (unused, required before open)"
+        action: "create"
+        model: "general_audit_going_concern_z_score_coeficient_set"
+        save_as: "coefficient_set_unsolvent"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Z-Score Coefficient Set - fbf57ee Unsolvent"
+          code: "/"
+
+      - step: "Create worksheet fbf57ee for the unsolvent scenario"
+        action: "create"
+        model: "general_audit_ws_fbf57ee"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_fbf57ee.id"
+          balance_type: "end_period"
+          z_score_coefficient_set_id: "REC: coefficient_set_unsolvent.id"
+
+      - step: "Create computation line with coefficient 1.0 (z_score = 1.0)"
+        action: "create"
+        model: "general_audit_ws_fbf57ee.computation"
+        save_as: "line_unsolvent"
+        as_user: "base.user_admin"
+        values:
+          worksheet_id: "REC: worksheet.id"
+          general_audit_computation_id: "REC: computation_unsolvent.id"
+          coefficient: 1.0
+
+      - step: "Assert computation line current_amount and result"
+        action: "assert"
+        target: "line_unsolvent"
+        asserts:
+          current_amount:
+            type: "value"
+            expected: 1.0
+          result:
+            type: "value"
+            expected: 1.0
+
+      - step: "Assert z_score is 1.0 and category is unsolvent"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          z_score:
+            type: "value"
+            expected: 1.0
           z_score_category:
             type: "value"
             expected: "unsolvent"
