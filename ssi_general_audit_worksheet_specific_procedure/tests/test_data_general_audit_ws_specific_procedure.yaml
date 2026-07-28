@@ -405,6 +405,12 @@ scenarios:
             type: "value"
             expected: 200000.0
 
+      - step:
+          "Unlink worksheet_end_period (a general_audit may only have one worksheet per
+          type_id; cascades to line_end_period)"
+        action: "unlink"
+        target: "worksheet_end_period"
+
       - step: "Create worksheet fbf57ee (balance_type = interim)"
         action: "create"
         model: "general_audit_ws_fbf57ee"
