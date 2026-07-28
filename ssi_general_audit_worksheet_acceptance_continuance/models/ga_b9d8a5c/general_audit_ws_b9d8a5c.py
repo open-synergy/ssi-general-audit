@@ -93,6 +93,17 @@ class GeneralAuditWSb9d8a5c(models.Model):
             record._populate_personnel()
 
     def action_create_summary(self):
+        """Generate/re-sync the competency, availability, independency and
+        summary lines from the currently proposed personnel.
+
+        Safe to call repeatedly: it is both idempotent (re-running does not
+        add extra lines for personnel that already have one) and
+        self-healing (any pre-existing duplicate line for the same
+        ``employee_id`` on this worksheet is cleaned up, keeping the line
+        with the smallest ``id``).
+
+        :return: None
+        """
         for record in self.sudo():
             record._create_competency_team()
             record._create_availability_team()
@@ -138,66 +149,118 @@ class GeneralAuditWSb9d8a5c(models.Model):
         }
         return data
 
-    def _create_competency_team(self):
+    def _sync_team_lines(self, line_field, comodel_name):
+        """Synchronise a team analysis/summary O2M with proposed personnel.
+
+        Shared by ``_create_competency_team``, ``_create_availability_team``,
+        ``_create_independency_team`` and ``_create_summary`` so the
+        de-duplication logic is written once.
+
+        Builds the set of currently *proposed* (``proposed == "yes"``)
+        personnel, de-duplicated by ``employee_id`` (a single employee is
+        never processed twice even if ``personnel_ids`` itself contains a
+        duplicate). For each proposed employee without an existing line, a
+        new line is created and the in-memory mapping is updated
+        immediately, so the newly created line is visible to the rest of
+        this same loop iteration and a second create for the same employee
+        can never happen within one run.
+
+        Any line whose ``employee_id`` is no longer proposed is removed.
+        Any *excess* line for an ``employee_id`` that already has a line
+        (i.e. pre-existing duplicates left over from before this fix) is
+        also removed, keeping only the line with the smallest ``id`` — this
+        is what allows re-running ``action_create_summary`` to self-heal
+        worksheets that already accumulated duplicate rows.
+
+        :param str line_field: field name on this worksheet holding the
+            O2M to the analysis/summary model (e.g.
+            ``competency_analysis_ids``).
+        :param str comodel_name: technical model name of the
+            analysis/summary model (e.g.
+            ``general_audit_ws_b9d8a5c.competency``).
+        :return: None
+        """
         self.ensure_one()
-        Competency = self.env["general_audit_ws_b9d8a5c.competency"]
+        Model = self.env[comodel_name]
         personnels = self.personnel_ids.filtered(lambda x: x.proposed == "yes")
-        emps = self.personnel_ids.filtered(lambda x: x.proposed == "yes").mapped(
-            "employee_id"
-        )
-        mapping = {chk.employee_id.id: chk for chk in self.competency_analysis_ids}
+        proposed_emp_ids = set(personnels.mapped("employee_id").ids)
+
+        # Keep only the oldest (smallest id) line per employee_id; queue any
+        # extra existing duplicate for removal.
+        mapping = {}
+        to_unlink = Model.browse()
+        for line in self[line_field].sorted("id"):
+            emp_id = line.employee_id.id
+            if emp_id in mapping:
+                to_unlink |= line
+            else:
+                mapping[emp_id] = line
+
+        # Create missing lines, updating `mapping` inside the loop so a
+        # duplicated employee_id in `personnels` cannot create a second line.
+        seen_emp_ids = set()
         for personnel in personnels:
-            if personnel.employee_id.id not in mapping:
-                Competency.create(self._prepare_team_data(personnel))
-        emp_ids = set(emps.ids)
-        for chk in self.competency_analysis_ids:
-            if chk.employee_id.id not in emp_ids:
-                chk.unlink()
+            emp_id = personnel.employee_id.id
+            if emp_id in seen_emp_ids:
+                continue
+            seen_emp_ids.add(emp_id)
+            if emp_id not in mapping:
+                mapping[emp_id] = Model.create(self._prepare_team_data(personnel))
+
+        # Lines whose employee is no longer proposed are stale, remove them.
+        for emp_id, line in mapping.items():
+            if emp_id not in proposed_emp_ids:
+                to_unlink |= line
+
+        if to_unlink:
+            to_unlink.unlink()
+
+    def _create_competency_team(self):
+        """Sync ``competency_analysis_ids`` with the proposed personnel.
+
+        Delegates to ``_sync_team_lines`` — see its docstring for the
+        create/de-duplicate/cleanup contract.
+
+        :return: None
+        """
+        self.ensure_one()
+        self._sync_team_lines(
+            "competency_analysis_ids", "general_audit_ws_b9d8a5c.competency"
+        )
 
     def _create_availability_team(self):
+        """Sync ``availability_analysis_ids`` with the proposed personnel.
+
+        Delegates to ``_sync_team_lines`` — see its docstring for the
+        create/de-duplicate/cleanup contract.
+
+        :return: None
+        """
         self.ensure_one()
-        Availability = self.env["general_audit_ws_b9d8a5c.availability"]
-        personnels = self.personnel_ids.filtered(lambda x: x.proposed == "yes")
-        emps = self.personnel_ids.filtered(lambda x: x.proposed == "yes").mapped(
-            "employee_id"
+        self._sync_team_lines(
+            "availability_analysis_ids", "general_audit_ws_b9d8a5c.availability"
         )
-        mapping = {chk.employee_id.id: chk for chk in self.availability_analysis_ids}
-        for personnel in personnels:
-            if personnel.employee_id.id not in mapping:
-                Availability.create(self._prepare_team_data(personnel))
-        emp_ids = set(emps.ids)
-        for chk in self.availability_analysis_ids:
-            if chk.employee_id.id not in emp_ids:
-                chk.unlink()
 
     def _create_independency_team(self):
+        """Sync ``independency_analysis_ids`` with the proposed personnel.
+
+        Delegates to ``_sync_team_lines`` — see its docstring for the
+        create/de-duplicate/cleanup contract.
+
+        :return: None
+        """
         self.ensure_one()
-        Independency = self.env["general_audit_ws_b9d8a5c.independency"]
-        personnels = self.personnel_ids.filtered(lambda x: x.proposed == "yes")
-        emps = self.personnel_ids.filtered(lambda x: x.proposed == "yes").mapped(
-            "employee_id"
+        self._sync_team_lines(
+            "independency_analysis_ids", "general_audit_ws_b9d8a5c.independency"
         )
-        mapping = {chk.employee_id.id: chk for chk in self.independency_analysis_ids}
-        for personnel in personnels:
-            if personnel.employee_id.id not in mapping:
-                Independency.create(self._prepare_team_data(personnel))
-        emp_ids = set(emps.ids)
-        for chk in self.independency_analysis_ids:
-            if chk.employee_id.id not in emp_ids:
-                chk.unlink()
 
     def _create_summary(self):
+        """Sync ``summary_ids`` with the proposed personnel.
+
+        Delegates to ``_sync_team_lines`` — see its docstring for the
+        create/de-duplicate/cleanup contract.
+
+        :return: None
+        """
         self.ensure_one()
-        Summary = self.env["general_audit_ws_b9d8a5c.summary"]
-        personnels = self.personnel_ids.filtered(lambda x: x.proposed == "yes")
-        emps = self.personnel_ids.filtered(lambda x: x.proposed == "yes").mapped(
-            "employee_id"
-        )
-        mapping = {chk.employee_id.id: chk for chk in self.summary_ids}
-        for personnel in personnels:
-            if personnel.employee_id.id not in mapping:
-                Summary.create(self._prepare_team_data(personnel))
-        emp_ids = set(emps.ids)
-        for chk in self.summary_ids:
-            if chk.employee_id.id not in emp_ids:
-                chk.unlink()
+        self._sync_team_lines("summary_ids", "general_audit_ws_b9d8a5c.summary")
