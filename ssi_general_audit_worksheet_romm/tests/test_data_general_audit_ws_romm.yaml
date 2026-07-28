@@ -245,21 +245,18 @@ scenarios:
             expected: "done"
 
   # ------------------------------------------------------------------
-  # d66d87a - action_load_detail (initial empty, populate, idempotent)
+  # d66d87a - action_load_detail (initial empty, populate, idempotent,
+  # scoped to general_audit_id)
   #
-  # Combined into a single scenario on purpose: general_audit_ws_d66d87a
-  # ._load_detail() calls ``general_audit.standard_detail.search([])``
-  # with NO ``general_audit_id`` filter (a pre-existing production
-  # behaviour, out of scope for this test item -- see BL-0166 notes), so
-  # every ``general_audit.standard_detail`` created anywhere in this YAML
-  # file's shared transaction is visible to every call of
-  # ``action_load_detail``. Keeping "initial empty" / "populate" /
-  # "idempotent" as one scenario (instead of three) guarantees this is
-  # the only place in the whole file that creates
-  # ``general_audit.standard_detail`` records, so the expected counts
-  # below are not polluted by any other scenario.
+  # Also proves the BL-0176 fix: _load_detail() now filters
+  # ``general_audit.standard_detail.search()`` by this worksheet's own
+  # ``general_audit_id``, so a standard detail that belongs to a
+  # *different* general_audit engagement (``audit_other`` below) is
+  # never loaded into this worksheet -- before the fix, the unscoped
+  # ``search([])`` would have pulled it in too, expecting 3 lines
+  # instead of 2.
   # ------------------------------------------------------------------
-  - name: "WS d66d87a - action_load_detail (initial, populate, idempotent)"
+  - name: "WS d66d87a - action_load_detail (initial, populate, idempotent, scoped)"
     steps:
       - step: "Create worksheet d66d87a"
         action: "create"
@@ -332,19 +329,83 @@ scenarios:
           general_audit_id: "REC: audit.id"
           type_id: "REC: account_type_2.id"
 
+      - step: "Create a second, unrelated general audit engagement"
+        action: "create"
+        model: "general_audit"
+        save_as: "audit_other"
+        as_user: "base.user_admin"
+        values:
+          title: "Test General Audit - ROMM (Other Engagement)"
+          partner_id: "REC: client.id"
+          accountant_id: "REC: accountant.id"
+          account_type_set_id: "REC: account_type_set.id"
+          financial_accounting_standard_id: "REC: standard.id"
+          date_start: 2026-01-01
+          date_end: 2026-12-31
+          need_interim: false
+          need_previous: false
+          num_of_consecutive_audit_firm: 1
+          num_of_consecutive_audit_accountant: 1
+
+      - step: "Open the other general audit"
+        action: "call"
+        target: "audit_other"
+        method: "action_open"
+        as_user: "base.user_admin"
+
+      - step:
+          "Create a standard detail for the other engagement (reuses account_type_1)"
+        action: "create"
+        model: "general_audit.standard_detail"
+        save_as: "standard_detail_other"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit_other.id"
+          type_id: "REC: account_type_1.id"
+
       - step: "Call action_load_detail the first time"
         action: "call"
         target: "worksheet"
         method: "action_load_detail"
         as_user: "base.user_admin"
 
-      - step: "Verify 2 detail lines were populated"
+      - step:
+          "Verify 2 detail lines were populated (not 3 -- other engagement excluded)"
         action: "search"
         model: "general_audit_ws_d66d87a.detail"
         domain:
           - ["worksheet_id", "=", "REC: worksheet.id"]
         save_as: "details_after"
         expect_count: 2
+
+      - step: "Verify detail line for standard_detail_1 was loaded"
+        action: "search"
+        model: "general_audit_ws_d66d87a.detail"
+        domain:
+          - ["worksheet_id", "=", "REC: worksheet.id"]
+          - ["standard_detail_id", "=", "REC: standard_detail_1.id"]
+        save_as: "detail_line_1"
+        expect_count: 1
+
+      - step: "Verify detail line for standard_detail_2 was loaded"
+        action: "search"
+        model: "general_audit_ws_d66d87a.detail"
+        domain:
+          - ["worksheet_id", "=", "REC: worksheet.id"]
+          - ["standard_detail_id", "=", "REC: standard_detail_2.id"]
+        save_as: "detail_line_2"
+        expect_count: 1
+
+      - step:
+          "Verify the other engagement's standard detail was NOT loaded into this
+          worksheet"
+        action: "search"
+        model: "general_audit_ws_d66d87a.detail"
+        domain:
+          - ["worksheet_id", "=", "REC: worksheet.id"]
+          - ["standard_detail_id", "=", "REC: standard_detail_other.id"]
+        save_as: "detail_line_other"
+        expect_count: 0
 
       - step: "Call action_load_detail a second time"
         action: "call"

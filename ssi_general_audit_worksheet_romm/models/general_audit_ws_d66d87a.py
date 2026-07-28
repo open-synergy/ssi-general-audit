@@ -53,15 +53,33 @@ class GeneralAuditWSd66d87a(models.Model):
     )
 
     def action_load_detail(self):
+        """
+        Populate ``detail_ids`` from the standard details of this
+        worksheet's engagement.
+
+        Triggers :meth:`_load_detail` (wrapped in ``sudo()``) for every
+        record in the current recordset.
+        """
         for record in self.sudo():
             record._load_detail()
 
     def _load_detail(self):
+        """
+        Rebuild ``detail_ids`` from ``general_audit.standard_detail``.
+
+        Existing lines are removed, then one line is created for each
+        standard detail that belongs to this worksheet's
+        ``general_audit_id`` — the search is scoped so that standard
+        details from other audit engagements are never loaded here.
+        """
         self.ensure_one()
         self.detail_ids.unlink()
         StandardDetail = self.env["general_audit.standard_detail"]
         Detail = self.env["general_audit_ws_d66d87a.detail"]
-        for standard_detail in StandardDetail.search([]):
+        criteria = [
+            ("general_audit_id", "=", self.general_audit_id.id),
+        ]
+        for standard_detail in StandardDetail.search(criteria):
             data = {
                 "worksheet_id": self.id,
                 "standard_detail_id": standard_detail.id,
