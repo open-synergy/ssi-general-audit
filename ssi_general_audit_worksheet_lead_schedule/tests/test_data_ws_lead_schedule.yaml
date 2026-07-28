@@ -602,22 +602,12 @@ scenarios:
           current_balance:
             type: "value"
             expected: 1000000.0
-          # PRODUCTION BUG (asserting actual behavior, not fixed here -- see
-          # PR description): _compute_adjusted_balance compares
-          # record.account_id.normal_balance == "debit", but
-          # client_account_type.normal_balance's actual selection values are
-          # "dr"/"cr" (see models/client_account/client_account_type.py),
-          # never the literal string "debit". That comparison is therefore
-          # always False, so EVERY account -- debit-normal or credit-normal
-          # -- unconditionally takes the "else" branch
-          # (current - dr + cr), never the "if" branch (current + dr - cr).
-          # account_a is debit-normal, so the docstring/intended formula is
-          # current + dr - cr = 1,000,000 + 50,000 - 20,000 = 1,030,000, but
-          # the actual (buggy) result below is current - dr + cr =
-          # 1,000,000 - 50,000 + 20,000 = 970,000.
+          # account_a is debit-normal (normal_balance = "dr"), so
+          # adjusted_balance = current + adjustment_dr - adjustment_cr
+          # = 1,000,000 + 50,000 - 20,000 = 1,030,000.
           adjusted_balance:
             type: "value"
-            expected: 970000.0
+            expected: 1030000.0
 
       - step: "Assert current_balance/adjusted_balance (credit account) at end_period"
         action: "assert"
@@ -626,8 +616,9 @@ scenarios:
           current_balance:
             type: "value"
             expected: 1000000.0
-          # normal_balance = credit -> adjusted = current - dr + cr
-          # = 1,000,000 - 15,000 + 45,000
+          # account_b is credit-normal (normal_balance = "cr"), so
+          # adjusted_balance = current - adjustment_dr + adjustment_cr
+          # = 1,000,000 - 15,000 + 45,000 = 1,030,000.
           adjusted_balance:
             type: "value"
             expected: 1030000.0
@@ -656,12 +647,12 @@ scenarios:
           current_balance:
             type: "value"
             expected: 800000.0
-          # Same production bug as at end_period above (always the "else"
-          # branch): actual = 800,000 - 50,000 + 20,000 = 770,000, not the
-          # intended-for-debit 800,000 + 50,000 - 20,000 = 830,000.
+          # account_a is debit-normal (normal_balance = "dr"), so
+          # adjusted_balance = current + adjustment_dr - adjustment_cr
+          # = 800,000 + 50,000 - 20,000 = 830,000.
           adjusted_balance:
             type: "value"
-            expected: 770000.0
+            expected: 830000.0
 
       - step: "Assert current_balance/adjusted_balance (credit account) at interim"
         action: "assert"
@@ -670,6 +661,9 @@ scenarios:
           current_balance:
             type: "value"
             expected: 800000.0
+          # account_b is credit-normal (normal_balance = "cr"), so
+          # adjusted_balance = current - adjustment_dr + adjustment_cr
+          # = 800,000 - 15,000 + 45,000 = 830,000.
           adjusted_balance:
             type: "value"
             expected: 830000.0

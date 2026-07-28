@@ -138,7 +138,7 @@ class GeneralAuditWSf9f3299Detail(models.Model):
         for record in self:
             record.adjusted_balance = 0.0
             if record.account_id:
-                if record.account_id.normal_balance == "debit":
+                if record.account_id.normal_balance == "dr":
                     record.adjusted_balance = (
                         record.current_balance
                         + record.adjustment_dr
