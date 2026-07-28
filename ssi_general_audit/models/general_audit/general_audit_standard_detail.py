@@ -2,10 +2,12 @@
 # Copyright 2022 PT. Simetri Sinergi Indonesia
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl-3.0-standalone.html).
 
+import logging
 
 from odoo import api, fields, models
-from odoo.exceptions import ValidationError
 from odoo.tools.safe_eval import safe_eval as eval  # pylint: disable=redefined-builtin
+
+_logger = logging.getLogger(__name__)
 
 
 class GeneralAuditStandardDetail(models.Model):
@@ -212,6 +214,23 @@ class GeneralAuditStandardDetail(models.Model):
         "type_id",
     )
     def _compute_extrapolation_balance(self):
+        """
+        Compute the extrapolated balance from ``type_id.python_code``.
+
+        ``client_account_type.python_code`` defaults to
+        ``"result = document.balance"``, written for the
+        ``client_trial_balance.standard_detail`` context (which has a
+        ``balance`` field). ``general_audit.standard_detail`` (``document``
+        here) has no such field, so that default expression raises
+        ``AttributeError`` for any account type whose code was never
+        overridden. Any evaluation failure is therefore caught and logged,
+        falling back to ``0.0`` instead of propagating as a blocking
+        error, consistent with the fallback already used by
+        ``client_trial_balance.computation._compute_amount`` for its own
+        ``python_code`` eval.
+
+        :return: None (writes ``extrapolation_balance`` on each record)
+        """
         for record in self:
             balance = 0.0
             if record.type_id:
@@ -226,14 +245,14 @@ class GeneralAuditStandardDetail(models.Model):
                     )
                     balance = localdict["result"]
                 except Exception as e:
-                    err_msg = """
-                    Type: %s
-                    Error: %s
-                    """ % (
+                    _logger.warning(
+                        "Failed to evaluate python_code of account type "
+                        "'%s' for general_audit.standard_detail id %s: %s",
                         record.type_id.name,
+                        record.id,
                         e,
                     )
-                    raise ValidationError(err_msg)
+                    balance = 0.0
             record.extrapolation_balance = balance
 
     extrapolation_balance = fields.Monetary(

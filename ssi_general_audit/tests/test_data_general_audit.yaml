@@ -465,3 +465,147 @@ scenarios:
           state:
             type: "value"
             expected: "draft"
+
+  # ------------------------------------------------------------------
+  # general_audit.standard_detail - _compute_extrapolation_balance must
+  # not crash for a client_account_type that still uses the field's
+  # own default python_code ("result = document.balance"). That default
+  # is written for client_trial_balance.standard_detail (which has a
+  # "balance" field); general_audit.standard_detail has none, so the
+  # eval must fall back to 0.0 instead of raising. Regression for #106.
+  # ------------------------------------------------------------------
+  - name:
+      "general_audit.standard_detail - extrapolation_balance falls back to 0.0 for
+      default python_code"
+    steps:
+      - step: "Get config parameter model"
+        action: "search"
+        model: "ir.config_parameter"
+        domain: []
+        save_as: "config_parameter"
+        limit: 1
+
+      - step: "Allow enough CPA licenses for this scenario"
+        action: "call"
+        target: "config_parameter"
+        method: "set_param"
+        args:
+          - "ssi_general_audit.max_number_of_cpa_license"
+          - "100"
+
+      - step: "Create client partner"
+        action: "create"
+        model: "res.partner"
+        save_as: "client"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Audit Client - Extrapolation"
+          is_company: true
+
+      - step: "Create accountant partner"
+        action: "create"
+        model: "res.partner"
+        save_as: "accountant"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Audit Accountant - Extrapolation"
+
+      - step: "Get CPA license id category"
+        action: "ref"
+        xml_id: "ssi_partner_identification_cpa_license.partner_identification_accountant_cpa_license"
+        save_as: "cpa_category"
+
+      - step: "Grant accountant a CPA license"
+        action: "create"
+        model: "res.partner.id_number"
+        save_as: "cpa_license"
+        as_user: "base.user_admin"
+        values:
+          partner_id: "EVAL: registry['accountant'].id"
+          category_id: "EVAL: registry['cpa_category'].id"
+          name: "CPA-EXTRAPOLATION-0001"
+
+      - step: "Create account type set"
+        action: "create"
+        model: "client_account_type_set"
+        save_as: "account_type_set"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Account Type Set - Extrapolation"
+          code: "/"
+
+      - step: "Create financial accounting standard"
+        action: "create"
+        model: "accountant.financial_accounting_standard"
+        save_as: "standard"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Financial Accounting Standard - Extrapolation"
+          code: "/"
+
+      - step: "Create general audit"
+        action: "create"
+        model: "general_audit"
+        save_as: "audit"
+        as_user: "base.user_admin"
+        values:
+          title: "Test General Audit Extrapolation"
+          partner_id: "EVAL: registry['client'].id"
+          accountant_id: "EVAL: registry['accountant'].id"
+          account_type_set_id: "EVAL: registry['account_type_set'].id"
+          financial_accounting_standard_id: "EVAL: registry['standard'].id"
+          date_start: 2026-01-01
+          date_end: 2026-12-31
+          need_interim: false
+          need_previous: false
+          num_of_consecutive_audit_firm: 1
+          num_of_consecutive_audit_accountant: 1
+
+      - step: "Create client account group"
+        action: "create"
+        model: "client_account_group"
+        save_as: "account_group"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Account Group - Extrapolation"
+          code: "/"
+
+      - step:
+          "Create client account type without overriding python_code (keeps the field
+          default)"
+        action: "create"
+        model: "client_account_type"
+        save_as: "account_type"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Account Type - Extrapolation"
+          code: "/"
+          group_id: "EVAL: registry['account_group'].id"
+
+      - step: "Assert the type kept the field's default python_code"
+        action: "assert"
+        target: "account_type"
+        asserts:
+          python_code:
+            type: "value"
+            expected: "result = document.balance"
+
+      - step: "Add the type to the audit's standard detail -- must not raise"
+        action: "create"
+        model: "general_audit.standard_detail"
+        save_as: "standard_detail"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "EVAL: registry['audit'].id"
+          type_id: "EVAL: registry['account_type'].id"
+
+      - step: "Assert extrapolation_balance falls back to 0.0 instead of crashing"
+        action: "assert"
+        target: "standard_detail"
+        asserts:
+          id:
+            type: "value"
+            operator: "is_truthy"
+          extrapolation_balance:
+            type: "value"
+            expected: 0.0
