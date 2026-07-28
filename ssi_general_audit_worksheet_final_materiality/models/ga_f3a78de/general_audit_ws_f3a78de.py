@@ -71,6 +71,18 @@ class GeneralAuditWSf3a78de(models.Model):
             record._recompute_computation()
 
     def _reload_ratio(self):
+        """Synchronize ratio lines with the financial ratio master.
+
+        Ratio lines whose ``client_financial_ratio`` is no longer active
+        are removed, and a line is created for every active ratio that is
+        not represented yet.  Newly created lines inherit
+        ``industry_average`` and ``analysis`` from the matching ratio line
+        of the linked Preliminary Analytic Procedure - Ratio Analysis
+        worksheet (``general_audit_ws_d4289e4``) when such a line exists;
+        otherwise the values fall back to ``0.0`` and ``False``.
+
+        :return: None
+        """
         self.ensure_one()
         all_ratios = self.env["client_financial_ratio"].search([])
         existing_ratios = self.ratio_ids.mapped("financial_ratio_id")
@@ -88,7 +100,7 @@ class GeneralAuditWSf3a78de(models.Model):
                 ("financial_ratio_id", "=", ratio.id),
             ]
             prelim_detail = False
-            prelim_details = self.env["general_audit_ws_f3a78de.ratio"].search(criteria)
+            prelim_details = self.env["general_audit_ws_d4289e4.ratio"].search(criteria)
             if len(prelim_details) > 0:
                 prelim_detail = prelim_details[0]
 
