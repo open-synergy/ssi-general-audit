@@ -79,7 +79,7 @@ class GeneralAuditWSd66d87aDetail(models.Model):
     pr_assersion_type_ids = fields.Many2many(
         string="Assersion Types on Presentation and Disclosure",
         related="standard_detail_id.pr_assersion_type_ids",
-        inverse="_inverse_to_standard_detail",
+        readonly=False,
         help=(
             "Presentation & Disclosure (P&D) assertion types inherited from the "
             "standard detail. Changes here will be synchronized back to the standard detail."
@@ -97,7 +97,6 @@ class GeneralAuditWSd66d87aDetail(models.Model):
     )
     planned_response_toc = fields.Boolean(
         string="Planned Response TOC",
-        default=False,
         related="standard_detail_id.planned_response_toc",
         readonly=False,
         store=True,
@@ -107,7 +106,6 @@ class GeneralAuditWSd66d87aDetail(models.Model):
     )
     planned_response_analytic_procedure = fields.Boolean(
         string="Planned Response Analytic Procedure",
-        default=False,
         related="standard_detail_id.planned_response_analytic_procedure",
         readonly=False,
         store=True,
@@ -117,7 +115,6 @@ class GeneralAuditWSd66d87aDetail(models.Model):
     )
     planned_response_tod = fields.Boolean(
         string="Planned Response ToD",
-        default=False,
         related="standard_detail_id.planned_response_tod",
         readonly=False,
         store=True,
@@ -127,7 +124,6 @@ class GeneralAuditWSd66d87aDetail(models.Model):
     )
     planned_response_interim = fields.Boolean(
         string="Planned Response on Interim",
-        default=False,
         related="standard_detail_id.planned_response_interim",
         readonly=False,
         store=True,
@@ -135,17 +131,8 @@ class GeneralAuditWSd66d87aDetail(models.Model):
     )
     planned_response_ye = fields.Boolean(
         string="Planned Response on Year End",
-        default=False,
         related="standard_detail_id.planned_response_ye",
         readonly=False,
         store=True,
         help=("Planned timing includes year-end procedures."),
     )
-
-    def _inverse_to_standard_detail(self):
-        for record in self:
-            record.standard_detail_id.write(
-                {
-                    "pr_assersion_type_ids": [(6, 0, record.pr_assersion_type_ids.ids)],
-                }
-            )

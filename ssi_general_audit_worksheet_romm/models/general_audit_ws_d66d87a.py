@@ -71,8 +71,16 @@ class GeneralAuditWSd66d87a(models.Model):
         standard detail that belongs to this worksheet's
         ``general_audit_id`` — the search is scoped so that standard
         details from other audit engagements are never loaded here.
+
+        :meth:`_resync_inherent_risk` runs first so that ``action_load_detail``
+        also repairs any standard detail whose ``inherent_risk`` was never
+        propagated from the Account Level Inherent Risk worksheet — the
+        new lines created below read ``standard_detail_id.inherent_risk``
+        (via the related/stored ``inherent_risk`` field on the detail
+        model) at creation time, so they must see the corrected value.
         """
         self.ensure_one()
+        self._resync_inherent_risk()
         self.detail_ids.unlink()
         StandardDetail = self.env["general_audit.standard_detail"]
         Detail = self.env["general_audit_ws_d66d87a.detail"]
@@ -85,3 +93,25 @@ class GeneralAuditWSd66d87a(models.Model):
                 "standard_detail_id": standard_detail.id,
             }
             Detail.create(data)
+
+    def _resync_inherent_risk(self):
+        """
+        Re-propagate Inherent Risk from the Account Level Inherent Risk
+        worksheet(s) (``general_audit_ws_a418d89``) onto
+        ``general_audit.standard_detail`` for this worksheet's engagement.
+
+        ``general_audit_ws_a418d89.detail.inherent_risk`` is a stored
+        compute field that writes itself back to
+        ``standard_detail_id.inherent_risk`` via ``_inverse_to_standard_detail``
+        whenever the compute runs. If that propagation never fired for a
+        line (e.g. it was created/updated outside the normal form/compute
+        flow), the standard detail — and therefore this worksheet's
+        related ``inherent_risk`` mirror — is left blank even though the
+        Inherent Risk worksheet itself already holds the assessed value.
+        Re-running the inverse here, scoped to this engagement, lets users
+        fix that gap simply by clicking "Load Detail" again.
+        """
+        inherent_risk_worksheets = self.env["general_audit_ws_a418d89"].search(
+            [("general_audit_id", "=", self.general_audit_id.id)]
+        )
+        inherent_risk_worksheets.mapped("detail_ids")._inverse_to_standard_detail()

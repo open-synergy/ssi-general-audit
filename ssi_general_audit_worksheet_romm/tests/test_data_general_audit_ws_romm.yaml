@@ -99,6 +99,11 @@ setup:
       xml_id: "ssi_general_audit_worksheet_romm.worksheet_type_d66d87a"
       save_as: "ws_type_d66d87a"
 
+    - step: "Get worksheet type a418d89 (Account Level Inherent Risk)"
+      action: "ref"
+      xml_id: "ssi_general_audit_worksheet_inherent_risk.worksheet_type_a418d89"
+      save_as: "ws_type_a418d89"
+
     - step: "Get worksheet type c165170"
       action: "ref"
       xml_id: "ssi_general_audit_worksheet_romm.worksheet_type_c165170"
@@ -420,6 +425,381 @@ scenarios:
           - ["worksheet_id", "=", "REC: worksheet.id"]
         save_as: "details_idempotent"
         expect_count: 2
+
+  # ------------------------------------------------------------------
+  # d66d87a - action_load_detail also resyncs inherent_risk from a418d89
+  #
+  # Reproduces the drift found in production: a418d89.detail already holds
+  # a computed inherent_risk ("high"), but standard_detail.inherent_risk
+  # ends up blank because the inverse propagation never ran for that line
+  # (e.g. data loaded outside the normal form/compute flow). Simulated
+  # here by writing the standard detail back to blank directly after the
+  # normal a418d89 flow already set it correctly. action_load_detail on
+  # the ROMM worksheet must repair it before rebuilding its own lines.
+  # ------------------------------------------------------------------
+  - name: "WS d66d87a - action_load_detail resyncs inherent_risk from a418d89"
+    steps:
+      - step: "Create client account group"
+        action: "create"
+        model: "client_account_group"
+        save_as: "account_group"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Account Group - ROMM Resync"
+          code: "/"
+
+      - step: "Create client account type"
+        action: "create"
+        model: "client_account_type"
+        save_as: "account_type"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Account Type - ROMM Resync"
+          code: "/"
+          group_id: "REC: account_group.id"
+          python_code: "result = 0.0"
+
+      - step: "Create standard detail for the audit"
+        action: "create"
+        model: "general_audit.standard_detail"
+        save_as: "standard_detail"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: account_type.id"
+
+      - step: "Create worksheet a418d89 (Account Level Inherent Risk)"
+        action: "create"
+        model: "general_audit_ws_a418d89"
+        save_as: "ws_inherent_risk"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_a418d89.id"
+
+      - step: "Create a418d89 detail line assessing high inherent risk"
+        action: "create"
+        model: "general_audit_ws_a418d89.detail"
+        save_as: "inherent_risk_detail"
+        as_user: "base.user_admin"
+        values:
+          worksheet_id: "REC: ws_inherent_risk.id"
+          standard_detail_id: "REC: standard_detail.id"
+          likelihood_risk_occuring: "high"
+          impact_of_risk: "high"
+
+      - step:
+          "Read inherent_risk on the new line -- stored compute fields are computed
+          lazily on first access, so this forces _compute_risk() (and its internal
+          _inverse_to_standard_detail() write) to actually run before the next step
+          checks standard_detail"
+        action: "assert"
+        target: "inherent_risk_detail"
+        asserts:
+          inherent_risk:
+            type: "value"
+            expected: "high"
+
+      - step: "Assert the normal flow already propagated inherent_risk"
+        action: "assert"
+        target: "standard_detail"
+        asserts:
+          inherent_risk:
+            type: "value"
+            expected: "high"
+
+      - step: "Simulate the drift: blank out the standard detail directly"
+        action: "write"
+        target: "standard_detail"
+        as_user: "base.user_admin"
+        values:
+          inherent_risk: false
+
+      - step: "Confirm the drift is in place before the fix runs"
+        action: "assert"
+        target: "standard_detail"
+        asserts:
+          inherent_risk:
+            type: "value"
+            operator: "is_falsy"
+
+      - step: "Create worksheet d66d87a"
+        action: "create"
+        model: "general_audit_ws_d66d87a"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_d66d87a.id"
+
+      - step: "Call action_load_detail to populate and repair inherent_risk"
+        action: "call"
+        target: "worksheet"
+        method: "action_load_detail"
+        as_user: "base.user_admin"
+
+      - step: "Assert the standard detail was repaired"
+        action: "assert"
+        target: "standard_detail"
+        asserts:
+          inherent_risk:
+            type: "value"
+            expected: "high"
+
+      - step: "Search the ROMM detail line for the repaired standard detail"
+        action: "search"
+        model: "general_audit_ws_d66d87a.detail"
+        domain:
+          - ["worksheet_id", "=", "REC: worksheet.id"]
+          - ["standard_detail_id", "=", "REC: standard_detail.id"]
+        save_as: "romm_detail_line"
+        expect_count: 1
+
+      - step: "Assert the ROMM detail line's inherent_risk mirror reflects the fix"
+        action: "assert"
+        target: "romm_detail_line"
+        asserts:
+          inherent_risk:
+            type: "value"
+            expected: "high"
+
+  # ------------------------------------------------------------------
+  # d66d87a - action_load_detail must not reset ROMM's own input fields
+  #
+  # romm/planned_response_* are related+store+readonly=False fields whose
+  # ONLY writer is this worksheet itself (unlike inherent_risk, which is
+  # sourced from a418d89). A stray ``default=False`` on the
+  # planned_response_* field definitions used to make Odoo treat them as
+  # explicitly provided on every ``Detail.create()`` call inside
+  # _load_detail() -- silently overwriting the value already stored on
+  # standard_detail instead of letting the related-field compute read it
+  # back. That forced auditors to redo their planned-response ticks every
+  # time someone clicked "Load Detail". romm has no such default and was
+  # never affected; asserted here too as a control.
+  # ------------------------------------------------------------------
+  - name: "WS d66d87a - action_load_detail preserves romm/planned_response_*"
+    steps:
+      - step: "Create client account group"
+        action: "create"
+        model: "client_account_group"
+        save_as: "account_group"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Account Group - ROMM Preserve"
+          code: "/"
+
+      - step: "Create client account type"
+        action: "create"
+        model: "client_account_type"
+        save_as: "account_type"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Account Type - ROMM Preserve"
+          code: "/"
+          group_id: "REC: account_group.id"
+          python_code: "result = 0.0"
+
+      - step: "Create standard detail for the audit"
+        action: "create"
+        model: "general_audit.standard_detail"
+        save_as: "standard_detail"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: account_type.id"
+
+      - step: "Create worksheet d66d87a"
+        action: "create"
+        model: "general_audit_ws_d66d87a"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_d66d87a.id"
+
+      - step: "Call action_load_detail the first time"
+        action: "call"
+        target: "worksheet"
+        method: "action_load_detail"
+        as_user: "base.user_admin"
+
+      - step: "Search the ROMM detail line for the standard detail"
+        action: "search"
+        model: "general_audit_ws_d66d87a.detail"
+        domain:
+          - ["worksheet_id", "=", "REC: worksheet.id"]
+          - ["standard_detail_id", "=", "REC: standard_detail.id"]
+        save_as: "romm_detail_line"
+        expect_count: 1
+
+      - step: "Auditor fills in ROMM and planned response on the line"
+        action: "write"
+        target: "romm_detail_line"
+        as_user: "base.user_admin"
+        values:
+          romm: "high"
+          planned_response_toc: true
+          planned_response_analytic_procedure: true
+          planned_response_tod: true
+          planned_response_interim: true
+          planned_response_ye: true
+
+      - step: "Call action_load_detail a second time (reload)"
+        action: "call"
+        target: "worksheet"
+        method: "action_load_detail"
+        as_user: "base.user_admin"
+
+      - step: "Search the ROMM detail line again after reload"
+        action: "search"
+        model: "general_audit_ws_d66d87a.detail"
+        domain:
+          - ["worksheet_id", "=", "REC: worksheet.id"]
+          - ["standard_detail_id", "=", "REC: standard_detail.id"]
+        save_as: "romm_detail_line_after_reload"
+        expect_count: 1
+
+      - step: "Assert romm and all planned_response_* flags survived the reload"
+        action: "assert"
+        target: "romm_detail_line_after_reload"
+        asserts:
+          romm:
+            type: "value"
+            expected: "high"
+          planned_response_toc:
+            type: "value"
+            expected: true
+          planned_response_analytic_procedure:
+            type: "value"
+            expected: true
+          planned_response_tod:
+            type: "value"
+            expected: true
+          planned_response_interim:
+            type: "value"
+            expected: true
+          planned_response_ye:
+            type: "value"
+            expected: true
+
+  # ------------------------------------------------------------------
+  # d66d87a.detail - pr_assersion_type_ids must actually be writable
+  #
+  # ``related`` fields default to ``readonly=True`` in Odoo core
+  # (odoo/fields.py: "if attrs.get('related'): attrs['readonly'] =
+  # attrs.get('readonly', True)") UNLESS ``readonly=False`` is explicitly
+  # passed -- providing a custom ``inverse=`` does NOT clear that default
+  # (that shortcut only applies to plain ``compute=`` fields, a different
+  # code path). ``pr_assersion_type_ids`` had ``related=`` + a custom
+  # ``inverse=`` but no ``readonly=False``, so it was silently readonly at
+  # the model level the whole time -- edits looked fine in the UI but were
+  # dropped on save. Fixed by adding ``readonly=False`` (which also makes
+  # Odoo wire its own equivalent built-in inverse, so the now-redundant
+  # custom ``_inverse_to_standard_detail`` method was removed).
+  # ------------------------------------------------------------------
+  - name: "WS d66d87a.detail - pr_assersion_type_ids is writable and survives reload"
+    steps:
+      - step: "Create client account group"
+        action: "create"
+        model: "client_account_group"
+        save_as: "account_group"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Account Group - ROMM Assersion Types"
+          code: "/"
+
+      - step: "Create client account type"
+        action: "create"
+        model: "client_account_type"
+        save_as: "account_type"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Account Type - ROMM Assersion Types"
+          code: "/"
+          group_id: "REC: account_group.id"
+          python_code: "result = 0.0"
+
+      - step: "Create standard detail for the audit"
+        action: "create"
+        model: "general_audit.standard_detail"
+        save_as: "standard_detail"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: account_type.id"
+
+      - step: "Create an assersion type to link"
+        action: "create"
+        model: "general_audit_assersion_type"
+        save_as: "assersion_type"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Assersion Type - ROMM"
+          code: "/"
+
+      - step: "Create worksheet d66d87a"
+        action: "create"
+        model: "general_audit_ws_d66d87a"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_d66d87a.id"
+
+      - step: "Call action_load_detail to populate the line"
+        action: "call"
+        target: "worksheet"
+        method: "action_load_detail"
+        as_user: "base.user_admin"
+
+      - step: "Search the ROMM detail line for the standard detail"
+        action: "search"
+        model: "general_audit_ws_d66d87a.detail"
+        domain:
+          - ["worksheet_id", "=", "REC: worksheet.id"]
+          - ["standard_detail_id", "=", "REC: standard_detail.id"]
+        save_as: "romm_detail_line"
+        expect_count: 1
+
+      - step: "Auditor sets the assersion type on the line"
+        action: "write"
+        target: "romm_detail_line"
+        as_user: "base.user_admin"
+        values:
+          pr_assersion_type_ids: [[6, 0, ["REC: assersion_type.id"]]]
+
+      - step: "Assert it synced to the standard detail"
+        action: "assert"
+        target: "standard_detail"
+        asserts:
+          pr_assersion_type_ids:
+            type: "m2m"
+            check: "count"
+            expected_count: 1
+
+      - step: "Call action_load_detail again (reload)"
+        action: "call"
+        target: "worksheet"
+        method: "action_load_detail"
+        as_user: "base.user_admin"
+
+      - step: "Search the ROMM detail line again after reload"
+        action: "search"
+        model: "general_audit_ws_d66d87a.detail"
+        domain:
+          - ["worksheet_id", "=", "REC: worksheet.id"]
+          - ["standard_detail_id", "=", "REC: standard_detail.id"]
+        save_as: "romm_detail_line_after_reload"
+        expect_count: 1
+
+      - step: "Assert the assersion type survived the reload"
+        action: "assert"
+        target: "romm_detail_line_after_reload"
+        asserts:
+          pr_assersion_type_ids:
+            type: "m2m"
+            check: "count"
+            expected_count: 1
 
   # ------------------------------------------------------------------
   # d66d87a.detail - sync back to general_audit.standard_detail
