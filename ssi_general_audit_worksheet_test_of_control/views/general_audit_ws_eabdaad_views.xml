@@ -1,0 +1,44 @@
+<?xml version="1.0" ?>
+<!-- Copyright 2025 OpenSynergy Indonesia
+     Copyright 2025 PT. Simetri Sinergi Indonesia
+     License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl-3.0-standalone.html). -->
+<odoo>
+
+    <record id="general_audit_ws_eabdaad_view_form_toc_attribute" model="ir.ui.view">
+        <field name="name">general_audit_ws_eabdaad form - ToC Attribute</field>
+        <field name="model">general_audit_ws_eabdaad</field>
+        <field name="mode">extension</field>
+        <field
+            name="inherit_id"
+            ref="ssi_general_audit_worksheet_control_risk.general_audit_ws_eabdaad_view_form"
+        />
+        <field name="arch" type="xml">
+            <data>
+                <xpath expr="//group[@name='detail_1']" position="inside">
+                    <field name="general_audit_id" invisible="1" />
+                </xpath>
+                <xpath
+                    expr="//field[@name='detail_ids']/tree/field[@name='toc_analysis']"
+                    position="before"
+                >
+                    <field
+                        name="toc_attribute_id"
+                        domain="[('worksheet_id.general_audit_id','=',parent.general_audit_id),('worksheet_id.cycle_id','=',parent.business_cycle_id)]"
+                        options="{'no_create': True}"
+                    />
+                </xpath>
+                <xpath
+                    expr="//field[@name='detail_ids']/form//field[@name='toc_analysis']"
+                    position="before"
+                >
+                    <field
+                        name="toc_attribute_id"
+                        domain="[('worksheet_id.general_audit_id','=',parent.general_audit_id),('worksheet_id.cycle_id','=',parent.business_cycle_id)]"
+                        options="{'no_create': True}"
+                    />
+                </xpath>
+            </data>
+        </field>
+    </record>
+
+</odoo>

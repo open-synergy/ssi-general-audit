@@ -27,6 +27,7 @@
         "data/approval_template/general_audit_ws_e3f4a5b.xml",
         "data/general_audit_worksheet_type/general_audit_ws_e3f4a5b.xml",
         "views/general_audit_ws_e3f4a5b.xml",
+        "views/general_audit_ws_eabdaad_views.xml",
     ],
     "demo": [],
 }

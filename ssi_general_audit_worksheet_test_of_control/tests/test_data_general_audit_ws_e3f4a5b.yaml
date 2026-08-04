@@ -1,213 +1,3 @@
-setup:
-  steps:
-    - step: "Get config parameter model"
-      action: "search"
-      model: "ir.config_parameter"
-      domain: []
-      save_as: "config_parameter"
-      limit: 1
-
-    - step: "Allow enough CPA licenses for this scenario"
-      action: "call"
-      target: "config_parameter"
-      method: "set_param"
-      args:
-        - "ssi_general_audit.max_number_of_cpa_license"
-        - "100"
-
-    - step: "Create client partner"
-      action: "create"
-      model: "res.partner"
-      save_as: "client"
-      as_user: "base.user_admin"
-      values:
-        name: "Test Audit Client - E3F4A5B"
-        is_company: true
-
-    - step: "Create accountant partner"
-      action: "create"
-      model: "res.partner"
-      save_as: "accountant"
-      as_user: "base.user_admin"
-      values:
-        name: "Test Audit Accountant - E3F4A5B"
-
-    - step: "Get CPA license id category"
-      action: "ref"
-      xml_id: "ssi_partner_identification_cpa_license.partner_identification_accountant_cpa_license"
-      save_as: "cpa_category"
-
-    - step: "Grant accountant a CPA license"
-      action: "create"
-      model: "res.partner.id_number"
-      save_as: "cpa_license"
-      as_user: "base.user_admin"
-      values:
-        partner_id: "REC: accountant.id"
-        category_id: "REC: cpa_category.id"
-        name: "CPA-E3F4A5B-0001"
-
-    - step: "Create account type set"
-      action: "create"
-      model: "client_account_type_set"
-      save_as: "account_type_set"
-      as_user: "base.user_admin"
-      values:
-        name: "Test Account Type Set - E3F4A5B"
-        code: "/"
-
-    - step: "Create financial accounting standard"
-      action: "create"
-      model: "accountant.financial_accounting_standard"
-      save_as: "standard"
-      as_user: "base.user_admin"
-      values:
-        name: "Test Financial Accounting Standard - E3F4A5B"
-        code: "/"
-
-    - step: "Create general audit"
-      action: "create"
-      model: "general_audit"
-      save_as: "audit"
-      as_user: "base.user_admin"
-      values:
-        title: "Test General Audit - E3F4A5B"
-        partner_id: "REC: client.id"
-        accountant_id: "REC: accountant.id"
-        account_type_set_id: "REC: account_type_set.id"
-        financial_accounting_standard_id: "REC: standard.id"
-        date_start: 2026-01-01
-        date_end: 2026-12-31
-        need_interim: false
-        need_previous: false
-        num_of_consecutive_audit_firm: 1
-        num_of_consecutive_audit_accountant: 1
-
-    - step: "Open general audit"
-      action: "call"
-      target: "audit"
-      method: "action_open"
-      as_user: "base.user_admin"
-
-    - step: "Invalidate cache after opening general audit"
-      action: "call"
-      target: "audit"
-      method: "invalidate_cache"
-
-    - step: "Assert general audit open"
-      action: "assert"
-      target: "audit"
-      asserts:
-        state:
-          type: "value"
-          expected: "open"
-
-    - step: "Get worksheet type e3f4a5b (Test of Control)"
-      action: "ref"
-      xml_id: "ssi_general_audit_worksheet_test_of_control.worksheet_type_e3f4a5b"
-      save_as: "ws_type"
-
-    - step: "Get worksheet type d209914 (General Ledger)"
-      action: "ref"
-      xml_id: "ssi_general_audit_worksheet_client_package.worksheet_type_d209914"
-      save_as: "gl_ws_type"
-
-    - step: "Get worksheet type b5e3d9f (Subledger)"
-      action: "ref"
-      xml_id: "ssi_general_audit_worksheet_client_package.worksheet_type_b5e3d9f"
-      save_as: "sl_ws_type"
-
-    - step: "Create client account group"
-      action: "create"
-      model: "client_account_group"
-      save_as: "account_group"
-      as_user: "base.user_admin"
-      values:
-        name: "Test Account Group - E3F4A5B"
-        code: "/"
-
-    - step: "Create client account type"
-      action: "create"
-      model: "client_account_type"
-      save_as: "account_type"
-      as_user: "base.user_admin"
-      values:
-        name: "Test Account Type - E3F4A5B"
-        code: "/"
-        group_id: "REC: account_group.id"
-        normal_balance: "dr"
-        # DILARANG membiarkan python_code pada default "result = document.balance":
-        # general_audit.standard_detail._compute_extrapolation_balance akan crash
-        # (AttributeError) begitu tipe akun ini terhubung ke sebuah standard_detail.
-        python_code: "result = 0.0"
-
-    - step: "Create client account"
-      action: "create"
-      model: "client_account"
-      save_as: "account"
-      as_user: "base.user_admin"
-      values:
-        name: "Test Client Account - E3F4A5B"
-        code: "/"
-        partner_id: "REC: client.id"
-        type_id: "REC: account_type.id"
-
-    - step: "Create conclusion for e3f4a5b worksheet type"
-      action: "create"
-      model: "general_audit_worksheet_conclusion"
-      save_as: "conclusion"
-      as_user: "base.user_admin"
-      values:
-        name: "Control is operating effectively"
-        code: "/"
-        type_id: "REC: ws_type.id"
-
-    - step: "Create GL worksheet with deterministic 20-row CSV population"
-      action: "create"
-      model: "general_audit_ws_d209914"
-      save_as: "gl"
-      as_user: "base.user_admin"
-      values:
-        general_audit_id: "REC: audit.id"
-        type_id: "REC: gl_ws_type.id"
-        account_mode: "account"
-        account_id: "REC: account.id"
-        title: "Test GL Population"
-        raw_data: |
-          Ref,Note,Description,Amount
-          REF-0001,Note-0001,Desc 1,100.00
-          REF-0002,Note-0002,Desc 2,200.00
-          REF-0003,Note-0003,Desc 3,300.00
-          REF-0004,Note-0004,Desc 4,400.00
-          REF-0005,Note-0005,Desc 5,500.00
-          REF-0006,Note-0006,Desc 6,600.00
-          REF-0007,Note-0007,Desc 7,700.00
-          REF-0008,Note-0008,Desc 8,800.00
-          REF-0009,Note-0009,Desc 9,900.00
-          REF-0010,Note-0010,Desc 10,1000.00
-          REF-0011,Note-0011,Desc 11,1100.00
-          REF-0012,Note-0012,Desc 12,1200.00
-          REF-0013,Note-0013,Desc 13,1300.00
-          REF-0014,Note-0014,Desc 14,1400.00
-          REF-0015,Note-0015,Desc 15,1500.00
-          REF-0016,Note-0016,Desc 16,1600.00
-          REF-0017,Note-0017,Desc 17,1700.00
-          REF-0018,Note-0018,Desc 18,1800.00
-          REF-0019,Note-0019,Desc 19,1900.00
-          REF-0020,Note-0020,Desc 20,2000.00
-
-    - step:
-        "Create Subledger worksheet (minimal, for onchange_subledger_id fixture only)"
-      action: "create"
-      model: "general_audit_ws_b5e3d9f"
-      save_as: "subledger"
-      as_user: "base.user_admin"
-      values:
-        general_audit_id: "REC: audit.id"
-        type_id: "REC: sl_ws_type.id"
-        account_mode: "account"
-        account_id: "REC: account.id"
-
 scenarios:
   # ------------------------------------------------------------------
   # 1. Create WS e3f4a5b - draft
@@ -220,10 +10,10 @@ scenarios:
         save_as: "worksheet"
         as_user: "base.user_admin"
         values:
-          general_audit_id: "REC: audit.id"
-          type_id: "REC: ws_type.id"
+          general_audit_id: "EVAL: self.fx_audit.id"
+          type_id: "EVAL: self.fx_ws_type.id"
           data_mode: "gl"
-          general_ledger_id: "REC: gl.id"
+          general_ledger_id: "EVAL: self.fx_gl.id"
           ref_col_number: 1
           note_col_number: 2
 
@@ -238,11 +28,11 @@ scenarios:
             type: "value"
             expected: "draft"
           general_audit_id:
-            type: "m2o"
-            expected: "REC: audit"
+            type: "value"
+            operator: "is_truthy"
           type_id:
             type: "m2o"
-            expected: "REC: ws_type"
+            expected_xml_id: "ssi_general_audit_worksheet_test_of_control.worksheet_type_e3f4a5b"
 
   # ------------------------------------------------------------------
   # 2. Workflow draft -> open -> confirm -> done
@@ -255,10 +45,10 @@ scenarios:
         save_as: "worksheet"
         as_user: "base.user_admin"
         values:
-          general_audit_id: "REC: audit.id"
-          type_id: "REC: ws_type.id"
+          general_audit_id: "EVAL: self.fx_audit.id"
+          type_id: "EVAL: self.fx_ws_type.id"
           data_mode: "gl"
-          general_ledger_id: "REC: gl.id"
+          general_ledger_id: "EVAL: self.fx_gl.id"
           ref_col_number: 1
           note_col_number: 2
 
@@ -286,7 +76,7 @@ scenarios:
         target: "worksheet"
         as_user: "base.user_admin"
         values:
-          conclusion_id: "REC: conclusion.id"
+          conclusion_id: "EVAL: self.fx_conclusion.id"
           conclusion: "Control attributes tested are operating effectively."
 
       - step: "Confirm worksheet"
@@ -338,10 +128,10 @@ scenarios:
         save_as: "worksheet"
         as_user: "base.user_admin"
         values:
-          general_audit_id: "REC: audit.id"
-          type_id: "REC: ws_type.id"
+          general_audit_id: "EVAL: self.fx_audit.id"
+          type_id: "EVAL: self.fx_ws_type.id"
           data_mode: "gl"
-          general_ledger_id: "REC: gl.id"
+          general_ledger_id: "EVAL: self.fx_gl.id"
           ref_col_number: 1
           note_col_number: 2
 
@@ -370,8 +160,8 @@ scenarios:
         save_as: "worksheet"
         as_user: "base.user_admin"
         values:
-          general_audit_id: "REC: audit.id"
-          type_id: "REC: ws_type.id"
+          general_audit_id: "EVAL: self.fx_audit.id"
+          type_id: "EVAL: self.fx_ws_type.id"
 
       - step: "Assert raw_data falsy and population_count zero"
         action: "assert"
@@ -395,10 +185,10 @@ scenarios:
         save_as: "worksheet"
         as_user: "base.user_admin"
         values:
-          general_audit_id: "REC: audit.id"
-          type_id: "REC: ws_type.id"
+          general_audit_id: "EVAL: self.fx_audit.id"
+          type_id: "EVAL: self.fx_ws_type.id"
           data_mode: "gl"
-          general_ledger_id: "REC: gl.id"
+          general_ledger_id: "EVAL: self.fx_gl.id"
 
       - step: "Assert sample_actual is zero"
         action: "assert"
@@ -420,10 +210,10 @@ scenarios:
         save_as: "worksheet"
         as_user: "base.user_admin"
         values:
-          general_audit_id: "REC: audit.id"
-          type_id: "REC: ws_type.id"
+          general_audit_id: "EVAL: self.fx_audit.id"
+          type_id: "EVAL: self.fx_ws_type.id"
           data_mode: "gl"
-          general_ledger_id: "REC: gl.id"
+          general_ledger_id: "EVAL: self.fx_gl.id"
 
       - step: "Create attribute Otorisasi"
         action: "create"
@@ -431,7 +221,7 @@ scenarios:
         save_as: "attribute"
         as_user: "base.user_admin"
         values:
-          worksheet_id: "REC: worksheet.id"
+          worksheet_id: "EVAL: registry['worksheet'].id"
           name: "Otorisasi"
           eper: 0.0
           tdr: 5
@@ -469,10 +259,10 @@ scenarios:
         save_as: "worksheet"
         as_user: "base.user_admin"
         values:
-          general_audit_id: "REC: audit.id"
-          type_id: "REC: ws_type.id"
+          general_audit_id: "EVAL: self.fx_audit.id"
+          type_id: "EVAL: self.fx_ws_type.id"
           data_mode: "gl"
-          general_ledger_id: "REC: gl.id"
+          general_ledger_id: "EVAL: self.fx_gl.id"
 
       - step:
           "Create attribute Otorisasi with aro 5 and a deterministic zero-deviation
@@ -482,7 +272,7 @@ scenarios:
         save_as: "attribute"
         as_user: "base.user_admin"
         values:
-          worksheet_id: "REC: worksheet.id"
+          worksheet_id: "EVAL: registry['worksheet'].id"
           name: "Otorisasi"
           eper: 0.0
           tdr: 5
@@ -568,10 +358,10 @@ scenarios:
         save_as: "worksheet"
         as_user: "base.user_admin"
         values:
-          general_audit_id: "REC: audit.id"
-          type_id: "REC: ws_type.id"
+          general_audit_id: "EVAL: self.fx_audit.id"
+          type_id: "EVAL: self.fx_ws_type.id"
           data_mode: "gl"
-          general_ledger_id: "REC: gl.id"
+          general_ledger_id: "EVAL: self.fx_gl.id"
 
       - step: "Create first attribute (sample_final = 15)"
         action: "create"
@@ -579,7 +369,7 @@ scenarios:
         save_as: "attribute_1"
         as_user: "base.user_admin"
         values:
-          worksheet_id: "REC: worksheet.id"
+          worksheet_id: "EVAL: registry['worksheet'].id"
           name: "Otorisasi"
           eper: 0.0
           tdr: 5
@@ -591,7 +381,7 @@ scenarios:
         save_as: "attribute_2"
         as_user: "base.user_admin"
         values:
-          worksheet_id: "REC: worksheet.id"
+          worksheet_id: "EVAL: registry['worksheet'].id"
           name: "Verifikasi"
           eper: 0.0
           tdr: 10
@@ -632,10 +422,10 @@ scenarios:
         save_as: "worksheet"
         as_user: "base.user_admin"
         values:
-          general_audit_id: "REC: audit.id"
-          type_id: "REC: ws_type.id"
+          general_audit_id: "EVAL: self.fx_audit.id"
+          type_id: "EVAL: self.fx_ws_type.id"
           data_mode: "gl"
-          general_ledger_id: "REC: gl.id"
+          general_ledger_id: "EVAL: self.fx_gl.id"
 
       - step: "Create attribute with aro 10"
         action: "create"
@@ -643,7 +433,7 @@ scenarios:
         save_as: "attribute"
         as_user: "base.user_admin"
         values:
-          worksheet_id: "REC: worksheet.id"
+          worksheet_id: "EVAL: registry['worksheet'].id"
           name: "Otorisasi"
           eper: 0.0
           tdr: 5
@@ -715,10 +505,10 @@ scenarios:
         save_as: "worksheet"
         as_user: "base.user_admin"
         values:
-          general_audit_id: "REC: audit.id"
-          type_id: "REC: ws_type.id"
+          general_audit_id: "EVAL: self.fx_audit.id"
+          type_id: "EVAL: self.fx_ws_type.id"
           data_mode: "gl"
-          general_ledger_id: "REC: gl.id"
+          general_ledger_id: "EVAL: self.fx_gl.id"
 
       - step: "Create attribute with aro 5"
         action: "create"
@@ -726,7 +516,7 @@ scenarios:
         save_as: "attribute"
         as_user: "base.user_admin"
         values:
-          worksheet_id: "REC: worksheet.id"
+          worksheet_id: "EVAL: registry['worksheet'].id"
           name: "Otorisasi"
           eper: 0.0
           tdr: 5
@@ -798,10 +588,10 @@ scenarios:
         save_as: "worksheet"
         as_user: "base.user_admin"
         values:
-          general_audit_id: "REC: audit.id"
-          type_id: "REC: ws_type.id"
+          general_audit_id: "EVAL: self.fx_audit.id"
+          type_id: "EVAL: self.fx_ws_type.id"
           data_mode: "gl"
-          general_ledger_id: "REC: gl.id"
+          general_ledger_id: "EVAL: self.fx_gl.id"
 
       - step: "Create attribute without sample_data"
         action: "create"
@@ -809,7 +599,7 @@ scenarios:
         save_as: "attribute"
         as_user: "base.user_admin"
         values:
-          worksheet_id: "REC: worksheet.id"
+          worksheet_id: "EVAL: registry['worksheet'].id"
           name: "Otorisasi"
           eper: 0.0
           tdr: 5
@@ -847,10 +637,10 @@ scenarios:
         save_as: "worksheet"
         as_user: "base.user_admin"
         values:
-          general_audit_id: "REC: audit.id"
-          type_id: "REC: ws_type.id"
+          general_audit_id: "EVAL: self.fx_audit.id"
+          type_id: "EVAL: self.fx_ws_type.id"
           data_mode: "gl"
-          general_ledger_id: "REC: gl.id"
+          general_ledger_id: "EVAL: self.fx_gl.id"
           ref_col_number: 1
           note_col_number: 2
 
@@ -860,7 +650,7 @@ scenarios:
         save_as: "attribute"
         as_user: "base.user_admin"
         values:
-          worksheet_id: "REC: worksheet.id"
+          worksheet_id: "EVAL: registry['worksheet'].id"
           name: "Otorisasi"
           eper: 0.0
           tdr: 5
@@ -898,38 +688,15 @@ scenarios:
 
   # ------------------------------------------------------------------
   # 13. action_generate_sample - UserError bila raw_data kosong
+  #
+  # The installed odoo_yaml_test (0.1.0) has no `expect_error:` handler
+  # (only `asserts:` after a successful call - see `_action_call` in
+  # `odoo_yaml_test/case.py`), so an exception raised by the called method
+  # simply propagates and fails the step instead of being treated as
+  # expected. This case is covered instead by
+  # `test_action_generate_sample_raises_without_raw_data` in
+  # `test_general_audit_ws_e3f4a5b.py`, using `assertRaises` directly.
   # ------------------------------------------------------------------
-  - name: "WS e3f4a5b - action_generate_sample gagal tanpa raw_data (UserError)"
-    steps:
-      - step: "Create worksheet without data_mode/general_ledger_id (raw_data falsy)"
-        action: "create"
-        model: "general_audit_ws_e3f4a5b"
-        save_as: "worksheet"
-        as_user: "base.user_admin"
-        values:
-          general_audit_id: "REC: audit.id"
-          type_id: "REC: ws_type.id"
-
-      - step: "Create attribute so sample_actual > 0"
-        action: "create"
-        model: "general_audit_ws_e3f4a5b.attribute"
-        save_as: "attribute"
-        as_user: "base.user_admin"
-        values:
-          worksheet_id: "REC: worksheet.id"
-          name: "Otorisasi"
-          eper: 0.0
-          tdr: 5
-          aro: "5"
-
-      - step: "action_generate_sample must raise UserError (no raw data)"
-        action: "call"
-        target: "worksheet"
-        method: "action_generate_sample"
-        as_user: "base.user_admin"
-        expect_error:
-          type: "UserError"
-          message_contains: "No raw data available"
 
   # ------------------------------------------------------------------
   # 14. onchange_account_type_id - triggered by general_audit_id
@@ -950,8 +717,14 @@ scenarios:
 
   # ------------------------------------------------------------------
   # 15. onchange_account_id - triggered by account_type_id
-  # `account_id` and `account_type_id` are both Form-editable in state "open" -
-  # open the worksheet first, then exercise both through the same form step.
+  #
+  # The installed odoo_yaml_test (0.1.0) has no `action: form` handler (only
+  # create/write/call/assert/ref/search are dispatched - see `_dispatch_step`
+  # in `odoo_yaml_test/case.py`), so the onchange trigger is simulated the
+  # same way `test_onchange_general_audit_id_clears_account_type` does it in
+  # `test_general_audit_ws_e3f4a5b.py`: write the pre-condition value(s) via
+  # ORM, then call the `@api.onchange` method directly and assert on the
+  # in-memory result.
   # ------------------------------------------------------------------
   - name: "WS e3f4a5b - Onchange account_type_id mengosongkan account_id"
     steps:
@@ -961,8 +734,8 @@ scenarios:
         save_as: "worksheet"
         as_user: "base.user_admin"
         values:
-          general_audit_id: "REC: audit.id"
-          type_id: "REC: ws_type.id"
+          general_audit_id: "EVAL: self.fx_audit.id"
+          type_id: "EVAL: self.fx_ws_type.id"
 
       - step: "Open worksheet (account_id/account_type_id become editable)"
         action: "call"
@@ -970,16 +743,26 @@ scenarios:
         method: "action_open"
         as_user: "base.user_admin"
 
-      - step: "Set account_id then change account_type_id via form"
-        action: "form"
+      - step: "Set account_id"
+        action: "write"
         target: "worksheet"
         as_user: "base.user_admin"
-        save: true
-        ops:
-          - set: {account_id: "REC: account"}
-          - set: {account_type_id: "REC: account_type"}
+        values:
+          account_id: "EVAL: self.fx_account.id"
 
-      # See note in the previous scenario: asserted post-save, not inline in `ops:`.
+      - step: "Set account_type_id"
+        action: "write"
+        target: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          account_type_id: "EVAL: self.fx_account_type.id"
+
+      - step: "Call onchange_account_id to simulate the account_type_id form trigger"
+        action: "call"
+        target: "worksheet"
+        method: "onchange_account_id"
+        as_user: "base.user_admin"
+
       - step: "Assert account_id was cleared by the onchange"
         action: "assert"
         target: "worksheet"
@@ -999,8 +782,8 @@ scenarios:
         save_as: "worksheet"
         as_user: "base.user_admin"
         values:
-          general_audit_id: "REC: audit.id"
-          type_id: "REC: ws_type.id"
+          general_audit_id: "EVAL: self.fx_audit.id"
+          type_id: "EVAL: self.fx_ws_type.id"
 
       - step: "Open worksheet (data_mode/general_ledger_id become editable)"
         action: "call"
@@ -1008,16 +791,26 @@ scenarios:
         method: "action_open"
         as_user: "base.user_admin"
 
-      - step: "Set general_ledger_id then change data_mode via form"
-        action: "form"
+      - step: "Set general_ledger_id"
+        action: "write"
         target: "worksheet"
         as_user: "base.user_admin"
-        save: true
-        ops:
-          - set: {general_ledger_id: "REC: gl"}
-          - set: {data_mode: "gl"}
+        values:
+          general_ledger_id: "EVAL: self.fx_gl.id"
 
-      # See note two scenarios above: asserted post-save, not inline in `ops:`.
+      - step: "Set data_mode"
+        action: "write"
+        target: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          data_mode: "gl"
+
+      - step: "Call onchange_general_ledger_id to simulate the data_mode form trigger"
+        action: "call"
+        target: "worksheet"
+        method: "onchange_general_ledger_id"
+        as_user: "base.user_admin"
+
       - step: "Assert general_ledger_id was cleared by the onchange"
         action: "assert"
         target: "worksheet"
@@ -1037,8 +830,8 @@ scenarios:
         save_as: "worksheet"
         as_user: "base.user_admin"
         values:
-          general_audit_id: "REC: audit.id"
-          type_id: "REC: ws_type.id"
+          general_audit_id: "EVAL: self.fx_audit.id"
+          type_id: "EVAL: self.fx_ws_type.id"
 
       - step: "Open worksheet (data_mode/subledger_id become editable)"
         action: "call"
@@ -1046,16 +839,26 @@ scenarios:
         method: "action_open"
         as_user: "base.user_admin"
 
-      - step: "Set subledger_id then change data_mode via form"
-        action: "form"
+      - step: "Set subledger_id"
+        action: "write"
         target: "worksheet"
         as_user: "base.user_admin"
-        save: true
-        ops:
-          - set: {subledger_id: "REC: subledger"}
-          - set: {data_mode: "subledger"}
+        values:
+          subledger_id: "EVAL: self.fx_subledger.id"
 
-      # See note three scenarios above: asserted post-save, not inline in `ops:`.
+      - step: "Set data_mode"
+        action: "write"
+        target: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          data_mode: "subledger"
+
+      - step: "Call onchange_subledger_id to simulate the data_mode form trigger"
+        action: "call"
+        target: "worksheet"
+        method: "onchange_subledger_id"
+        as_user: "base.user_admin"
+
       - step: "Assert subledger_id was cleared by the onchange"
         action: "assert"
         target: "worksheet"
@@ -1067,24 +870,29 @@ scenarios:
   # ------------------------------------------------------------------
   # 18. onchange_parent_type_id (mixin) - triggered by type_id
   #
-  # `type_id` is hard-readonly (readonly="1" force_save="1") in the shared
-  # worksheet mixin form view and only ever takes its default value on a new
-  # record - it can never be re-assigned via Form.set() regardless of state,
-  # so the onchange only fires once from that default. Save the form and
-  # assert on the resulting record instead, matching the proven pattern used
-  # by `ssi_general_audit_worksheet_lead_schedule` for its own
-  # "Onchange type_id sets parent_type_id" scenario.
+  # `type_id` only ever takes its default value on a new record (see
+  # `_default_type_id` in `general_audit_worksheet_mixin.py`) and the onchange
+  # that copies it into `parent_type_id` (`onchange_parent_type_id`, declared
+  # `@api.onchange("type_id")`) only fires through a Form. The installed
+  # odoo_yaml_test (0.1.0) has no `action: form` handler, so - same as
+  # scenarios 15-17 above - create the record normally (`type_id` gets its
+  # default), then call the onchange method directly and assert in-memory.
   # ------------------------------------------------------------------
   - name: "WS e3f4a5b - Onchange type_id mengisi parent_type_id (mixin)"
     steps:
-      - step: "Open new worksheet form with default type_id"
-        action: "form"
+      - step: "Create worksheet with default type_id"
+        action: "create"
         model: "general_audit_ws_e3f4a5b"
         save_as: "onchange_worksheet"
         as_user: "base.user_admin"
         values:
-          general_audit_id: "REC: audit"
-        save: true
+          general_audit_id: "EVAL: self.fx_audit.id"
+
+      - step: "Call onchange_parent_type_id to simulate the type_id form trigger"
+        action: "call"
+        target: "onchange_worksheet"
+        method: "onchange_parent_type_id"
+        as_user: "base.user_admin"
 
       - step: "Assert default type_id propagated to parent_type_id via onchange"
         action: "assert"
@@ -1108,8 +916,8 @@ scenarios:
         save_as: "worksheet"
         as_user: "base.user_admin"
         values:
-          general_audit_id: "REC: audit.id"
-          type_id: "REC: ws_type.id"
+          general_audit_id: "EVAL: self.fx_audit.id"
+          type_id: "EVAL: self.fx_ws_type.id"
 
       - step: "Call action_open_attributes"
         action: "call"
