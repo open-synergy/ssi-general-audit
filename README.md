@@ -158,7 +158,7 @@ addon | version | maintainers | summary
 [ssi_general_audit_worksheet_audit_result](ssi_general_audit_worksheet_audit_result/) | 14.0.1.1.1 |  | General Audit Worksheet - Audit Result
 [ssi_general_audit_worksheet_audit_working_plan](ssi_general_audit_worksheet_audit_working_plan/) | 14.0.1.4.1 |  | General Audit Worksheet - Audit Working Plan
 [ssi_general_audit_worksheet_client_package](ssi_general_audit_worksheet_client_package/) | 14.0.1.2.0 |  | General Audit Worksheet - Client Assistance Package
-[ssi_general_audit_worksheet_control_risk](ssi_general_audit_worksheet_control_risk/) | 14.0.2.5.1 |  | General Audit Worksheet - Control Risk
+[ssi_general_audit_worksheet_control_risk](ssi_general_audit_worksheet_control_risk/) | 14.0.2.6.0 |  | General Audit Worksheet - Control Risk
 [ssi_general_audit_worksheet_draft_reporting](ssi_general_audit_worksheet_draft_reporting/) | 14.0.1.1.2 |  | General Audit Worksheet - Draft Reporting
 [ssi_general_audit_worksheet_engagement_letter_checklist](ssi_general_audit_worksheet_engagement_letter_checklist/) | 14.0.1.2.1 |  | General Audit Worksheet - Engagement Letter Checklist
 [ssi_general_audit_worksheet_expert](ssi_general_audit_worksheet_expert/) | 14.0.1.2.1 |  | General Audit Worksheet - Expert
@@ -178,7 +178,7 @@ addon | version | maintainers | summary
 [ssi_general_audit_worksheet_sample_determination](ssi_general_audit_worksheet_sample_determination/) | 14.0.1.2.0 |  | General Audit Worksheet - Sample Determination
 [ssi_general_audit_worksheet_specific_procedure](ssi_general_audit_worksheet_specific_procedure/) | 14.0.1.2.2 |  | General Audit Worksheet - Specific Procedures
 [ssi_general_audit_worksheet_team_communication](ssi_general_audit_worksheet_team_communication/) | 14.0.1.2.2 |  | General Audit Worksheet - Team Communication
-[ssi_general_audit_worksheet_test_of_control](ssi_general_audit_worksheet_test_of_control/) | 14.0.1.2.0 |  | General Audit Worksheet - Test of Control
+[ssi_general_audit_worksheet_test_of_control](ssi_general_audit_worksheet_test_of_control/) | 14.0.1.3.0 |  | General Audit Worksheet - Test of Control
 [ssi_general_audit_worksheet_test_of_detail](ssi_general_audit_worksheet_test_of_detail/) | 14.0.1.3.0 |  | General Audit Worksheet - Test of Detail
 [ssi_general_audit_worksheet_test_planning](ssi_general_audit_worksheet_test_planning/) | 14.0.1.2.0 |  | General Audit Worksheet - Test Planning
 [ssi_general_audit_worksheet_trial_balance](ssi_general_audit_worksheet_trial_balance/) | 14.0.1.0.2 |  | General Audit Worksheet - Trial Balance
