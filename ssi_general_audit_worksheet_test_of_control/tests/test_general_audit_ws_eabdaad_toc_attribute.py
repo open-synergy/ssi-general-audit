@@ -215,6 +215,12 @@ class TestGeneralAuditWSeabdaadTocAttribute(TransactionCase):
         self.assertEqual(
             self.detail.toc_reference, self.toc_attribute.worksheet_id.name
         )
+        # rely_on_control == "yes" (see setUp) + toc_analysis == "effective"
+        # (via the link above) -> _compute_result's "low" branch. This is the
+        # branch ssi_general_audit_worksheet_control_risk's own
+        # test_data_ws_internal_control.yaml can no longer reach on its own
+        # now that toc_analysis is related+readonly - covered here instead.
+        self.assertEqual(self.detail.result, "low")
 
     def test_toc_analysis_recomputes_when_attribute_conclusion_changes(self):
         self.detail.write({"toc_attribute_id": self.toc_attribute.id})
