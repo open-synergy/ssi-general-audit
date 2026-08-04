@@ -488,6 +488,18 @@ scenarios:
           likelihood_risk_occuring: "high"
           impact_of_risk: "high"
 
+      - step:
+          "Read inherent_risk on the new line -- stored compute fields are computed
+          lazily on first access, so this forces _compute_risk() (and its internal
+          _inverse_to_standard_detail() write) to actually run before the next step
+          checks standard_detail"
+        action: "assert"
+        target: "inherent_risk_detail"
+        asserts:
+          inherent_risk:
+            type: "value"
+            expected: "high"
+
       - step: "Assert the normal flow already propagated inherent_risk"
         action: "assert"
         target: "standard_detail"
