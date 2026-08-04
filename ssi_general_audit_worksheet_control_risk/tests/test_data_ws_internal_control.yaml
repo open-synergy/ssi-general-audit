@@ -210,7 +210,6 @@ scenarios:
                 frequency: "Monthly"
                 related_account_type_ids: [[6, 0, ["REC: account_type.id"]]]
                 rely_on_control: "yes"
-                toc_analysis: "effective"
                 risk_identification_ids:
                   - - 0
                     - 0
@@ -226,7 +225,6 @@ scenarios:
                 frequency: "Weekly"
                 related_account_type_ids: [[6, 0, ["REC: account_type.id"]]]
                 rely_on_control: "no"
-                toc_analysis: "not_effective"
 
       - step: "Assert 2 detail lines were created"
         action: "assert"
@@ -237,23 +235,34 @@ scenarios:
             check: "count"
             expected_count: 2
 
-      - step: "Fetch the detail line relying on the control (result should be low)"
+      - step: "Fetch the detail line relying on the control (standard_detail_ids check)"
         action: "search"
         model: "general_audit_ws_eabdaad.detail"
         domain:
           - ["worksheet_id", "=", "REC: worksheet.id"]
           - ["rely_on_control", "=", "yes"]
-        save_as: "detail_low"
+        save_as: "detail_relying"
         limit: 1
         expect_count: 1
 
-      - step: "Assert result is low and standard_detail_ids matches the fixture"
+      # `toc_analysis` can no longer be set inline here: since
+      # ssi_general_audit_worksheet_test_of_control's _inherit turns it into a
+      # related+readonly field pulled from a linked
+      # general_audit_ws_e3f4a5b.attribute (toc_attribute_id), it stays falsy
+      # for a control_risk-only fixture - so `rely_on_control == "yes"` alone
+      # is no longer enough to reach `result == "low"` (see `_compute_result`
+      # in general_audit_ws_eabdaad_detail.py). The "low" branch is covered
+      # instead in that module's own
+      # test_general_audit_ws_eabdaad_toc_attribute.py, where toc_attribute_id
+      # is actually linked. This scenario keeps asserting `standard_detail_ids`
+      # (unaffected by that change - driven by related_account_type_ids only).
+      - step: "Assert result is high and standard_detail_ids matches the fixture"
         action: "assert"
-        target: "detail_low"
+        target: "detail_relying"
         asserts:
           result:
             type: "value"
-            expected: "low"
+            expected: "high"
           standard_detail_ids:
             type: "m2m"
             check: "exact"
@@ -311,7 +320,6 @@ scenarios:
                 frequency: "Monthly"
                 related_account_type_ids: [[6, 0, ["REC: account_type_no_std.id"]]]
                 rely_on_control: "no"
-                toc_analysis: "na"
 
       - step: "Fetch the detail line"
         action: "search"
