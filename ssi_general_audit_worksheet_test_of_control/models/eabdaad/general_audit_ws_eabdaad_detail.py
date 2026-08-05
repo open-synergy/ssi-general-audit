@@ -47,3 +47,20 @@ class GeneralAuditWSeABDAADDetail(models.Model):
         """
         if self.rely_on_control != "yes":
             self.toc_attribute_id = False
+
+    def write(self, vals):
+        """Force-clear ``toc_attribute_id`` when ``rely_on_control`` leaves "yes".
+
+        ``toc_attribute_id`` is ``attrs``-readonly in the view whenever
+        ``rely_on_control != "yes"``. Odoo's web client drops fields that are
+        readonly in the record's *final* state from the write payload
+        entirely - so the moment "Rely on Control" is switched to "No", the
+        onchange-computed clear-to-False for ``toc_attribute_id`` (and the
+        related ``toc_analysis``/``toc_reference`` that depend on it) is
+        silently discarded on save and the old link reappears. Enforcing the
+        clear here, independent of what the client actually sends, is the
+        only way it survives the round trip.
+        """
+        if vals.get("rely_on_control") not in (None, "yes"):
+            vals = dict(vals, toc_attribute_id=False)
+        return super().write(vals)
