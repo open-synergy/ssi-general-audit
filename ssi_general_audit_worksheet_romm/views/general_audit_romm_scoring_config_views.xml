@@ -1,0 +1,121 @@
+<?xml version="1.0" ?>
+<!-- Copyright 2026 OpenSynergy Indonesia
+     Copyright 2026 PT. Simetri Sinergi Indonesia
+     License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl-3.0-standalone.html). -->
+<odoo>
+
+    <record id="general_audit_romm_scoring_config_view_tree" model="ir.ui.view">
+        <field name="name">general_audit_romm_scoring_config - tree</field>
+        <field name="model">general_audit_romm_scoring_config</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="name" />
+            </tree>
+        </field>
+    </record>
+
+    <record id="general_audit_romm_scoring_config_view_form" model="ir.ui.view">
+        <field name="name">general_audit_romm_scoring_config - form</field>
+        <field name="model">general_audit_romm_scoring_config</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <group name="name" colspan="4" col="2">
+                        <field name="name" />
+                    </group>
+                    <notebook>
+                        <page name="romm_risk_initial" string="ROMM Risk Initial">
+                            <p class="text-muted">
+                                Inherent Risk x Control Risk
+                            </p>
+                            <group col="2">
+                                <group string="Inherent Risk Weight" col="2">
+                                    <field name="ir_weight_high" string="High" />
+                                    <field name="ir_weight_medium" string="Medium" />
+                                    <field name="ir_weight_low" string="Low" />
+                                </group>
+                                <group string="Control Risk Weight" col="2">
+                                    <field name="cr_weight_high" string="High" />
+                                    <field name="cr_weight_medium" string="Medium" />
+                                    <field name="cr_weight_low" string="Low" />
+                                </group>
+                                <group string="Threshold" col="2">
+                                    <field
+                                        name="romm_risk_initial_threshold_upper"
+                                        string="Upper"
+                                    />
+                                    <field
+                                        name="romm_risk_initial_threshold_lower"
+                                        string="Lower"
+                                    />
+                                </group>
+                            </group>
+                        </page>
+                        <page name="romm_risk_further" string="ROMM Risk Further">
+                            <p class="text-muted">
+                                Fraud Risk x Significant Risk x ROMM Risk Initial
+                            </p>
+                            <group col="2">
+                                <group string="Fraud Risk Weight" col="2">
+                                    <field name="fr_weight_high" string="High" />
+                                    <field name="fr_weight_medium" string="Medium" />
+                                </group>
+                                <group string="Significant Risk Weight" col="2">
+                                    <field
+                                        name="significant_risk_weight_high"
+                                        string="High"
+                                    />
+                                    <field
+                                        name="significant_risk_weight_medium"
+                                        string="Medium"
+                                    />
+                                </group>
+                                <group string="ROMM Risk Initial Weight" col="2">
+                                    <field
+                                        name="romm_risk_initial_weight_high"
+                                        string="High"
+                                    />
+                                    <field
+                                        name="romm_risk_initial_weight_medium"
+                                        string="Medium"
+                                    />
+                                    <field
+                                        name="romm_risk_initial_weight_low"
+                                        string="Low"
+                                    />
+                                </group>
+                                <group string="Threshold" col="2">
+                                    <field
+                                        name="romm_risk_further_threshold_upper"
+                                        string="Upper"
+                                    />
+                                    <field
+                                        name="romm_risk_further_threshold_lower"
+                                        string="Lower"
+                                    />
+                                </group>
+                            </group>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="general_audit_romm_scoring_config_action" model="ir.actions.act_window">
+        <field name="name">Risk Configuration</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">general_audit_romm_scoring_config</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+    <menuitem
+        id="general_audit_romm_scoring_config_menu"
+        name="Risk Configuration"
+        parent="ssi_general_audit.menu_configuration_risk_control"
+        action="general_audit_romm_scoring_config_action"
+        sequence="520"
+        groups="general_audit_romm_scoring_config_group"
+    />
+
+</odoo>

@@ -566,16 +566,22 @@ scenarios:
   # ------------------------------------------------------------------
   # d66d87a - action_load_detail must not reset ROMM's own input fields
   #
-  # romm/planned_response_* are related+store+readonly=False fields whose
-  # ONLY writer is this worksheet itself (unlike inherent_risk, which is
+  # planned_response_* are related+store+readonly=False fields whose ONLY
+  # writer is this worksheet itself (unlike inherent_risk, which is
   # sourced from a418d89). A stray ``default=False`` on the
   # planned_response_* field definitions used to make Odoo treat them as
   # explicitly provided on every ``Detail.create()`` call inside
   # _load_detail() -- silently overwriting the value already stored on
   # standard_detail instead of letting the related-field compute read it
   # back. That forced auditors to redo their planned-response ticks every
-  # time someone clicked "Load Detail". romm has no such default and was
-  # never affected; asserted here too as a control.
+  # time someone clicked "Load Detail".
+  #
+  # romm used to be asserted here too (as a related+readonly=False field
+  # with no such default), but it is now a full compute (Fase 3b - Matrix
+  # A/B via general_audit_romm_scoring_config) and can no longer be set by
+  # a manual write() here at all. Its own recompute-on-reload behavior is
+  # covered by test_general_audit_ws_d66d87a_romm_compute.py
+  # (test_romm_recomputes_on_load_detail_after_ir_change).
   # ------------------------------------------------------------------
   - name: "WS d66d87a - action_load_detail preserves romm/planned_response_*"
     steps:
@@ -632,12 +638,11 @@ scenarios:
         save_as: "romm_detail_line"
         expect_count: 1
 
-      - step: "Auditor fills in ROMM and planned response on the line"
+      - step: "Auditor fills in planned response on the line"
         action: "write"
         target: "romm_detail_line"
         as_user: "base.user_admin"
         values:
-          romm: "high"
           planned_response_toc: true
           planned_response_analytic_procedure: true
           planned_response_tod: true
@@ -659,13 +664,10 @@ scenarios:
         save_as: "romm_detail_line_after_reload"
         expect_count: 1
 
-      - step: "Assert romm and all planned_response_* flags survived the reload"
+      - step: "Assert all planned_response_* flags survived the reload"
         action: "assert"
         target: "romm_detail_line_after_reload"
         asserts:
-          romm:
-            type: "value"
-            expected: "high"
           planned_response_toc:
             type: "value"
             expected: true
@@ -858,12 +860,11 @@ scenarios:
           worksheet_id: "REC: worksheet.id"
           standard_detail_id: "REC: standard_detail.id"
 
-      - step: "Write ROMM assessment fields on the worksheet detail line"
+      - step: "Write planned response fields on the worksheet detail line"
         action: "write"
         target: "detail_line"
         as_user: "base.user_admin"
         values:
-          romm: "high"
           planned_response_toc: true
           planned_response_tod: true
 
@@ -871,9 +872,6 @@ scenarios:
         action: "assert"
         target: "standard_detail"
         asserts:
-          romm:
-            type: "value"
-            expected: "high"
           planned_response_toc:
             type: "value"
             expected: true
