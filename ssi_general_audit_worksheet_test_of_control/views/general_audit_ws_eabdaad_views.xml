@@ -25,6 +25,7 @@
                         name="toc_attribute_id"
                         domain="[('worksheet_id.general_audit_id','=',parent.general_audit_id),('worksheet_id.cycle_id','=',parent.business_cycle_id)]"
                         options="{'no_create': True}"
+                        attrs="{'readonly': [('rely_on_control', '!=', 'yes')]}"
                     />
                 </xpath>
                 <xpath
@@ -35,6 +36,7 @@
                         name="toc_attribute_id"
                         domain="[('worksheet_id.general_audit_id','=',parent.general_audit_id),('worksheet_id.cycle_id','=',parent.business_cycle_id)]"
                         options="{'no_create': True}"
+                        attrs="{'readonly': [('rely_on_control', '!=', 'yes')]}"
                     />
                 </xpath>
             </data>

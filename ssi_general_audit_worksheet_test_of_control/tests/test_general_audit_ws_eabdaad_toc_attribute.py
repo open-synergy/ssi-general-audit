@@ -2,7 +2,7 @@
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl-3.0-standalone.html).
 
 from odoo.tests import tagged
-from odoo.tests.common import TransactionCase
+from odoo.tests.common import Form, TransactionCase
 
 
 @tagged("post_install", "-at_install")
@@ -212,9 +212,9 @@ class TestGeneralAuditWSeabdaadTocAttribute(TransactionCase):
 
         self.assertEqual(self.detail.toc_analysis, self.toc_attribute.conclusion)
         self.assertEqual(self.detail.toc_analysis, "effective")
-        self.assertEqual(
-            self.detail.toc_reference, self.toc_attribute.worksheet_id.name
-        )
+        # toc_reference is Many2one (HT/26/000631: made clickable in the UI
+        # instead of a plain text document number).
+        self.assertEqual(self.detail.toc_reference, self.toc_attribute.worksheet_id)
         # rely_on_control == "yes" (see setUp) + toc_analysis == "effective"
         # (via the link above) -> _compute_result's "low" branch. This is the
         # branch ssi_general_audit_worksheet_control_risk's own
@@ -259,3 +259,75 @@ class TestGeneralAuditWSeabdaadTocAttribute(TransactionCase):
 
         self.assertIn(self.toc_attribute, candidates)
         self.assertNotIn(self.other_cycle_attribute, candidates)
+
+    def test_onchange_rely_on_control_no_clears_toc_link(self):
+        """HT/26/000631: ToC Attribute/Reference/Analysis must not stay
+        filled once "Rely on Control" is switched to "No" - clearing
+        toc_attribute_id also cascades to toc_analysis/toc_reference since
+        both are related to it.
+
+        No dedicated form view is registered for
+        ``general_audit_ws_eabdaad.detail`` (only an inline ``<form>``
+        embedded in the parent's one2many), so ``Form()`` cannot target it
+        directly - the onchange method is invoked directly instead, same as
+        Odoo's onchange dispatch would do after ``rely_on_control`` changes.
+        """
+        self.detail.write({"toc_attribute_id": self.toc_attribute.id})
+        self.assertEqual(self.detail.toc_analysis, "effective")
+        self.assertEqual(self.detail.toc_reference, self.toc_attribute.worksheet_id)
+
+        self.detail.rely_on_control = "no"
+        self.detail.onchange_rely_on_control()
+
+        self.assertFalse(self.detail.toc_attribute_id)
+        self.assertFalse(self.detail.toc_analysis)
+        self.assertFalse(self.detail.toc_reference)
+
+    def test_onchange_rely_on_control_yes_keeps_toc_link(self):
+        """Switching (or staying) on "Yes" must not clear an already-picked
+        ToC Attribute."""
+        self.detail.write({"toc_attribute_id": self.toc_attribute.id})
+
+        self.detail.rely_on_control = "yes"
+        self.detail.onchange_rely_on_control()
+
+        self.assertEqual(self.detail.toc_attribute_id, self.toc_attribute)
+
+    def test_switching_to_no_and_saving_actually_clears_toc_link(self):
+        """HT/26/000631 follow-up: the onchange-computed clear must survive
+        a real save through the UI's form/one2many machinery, not just an
+        in-memory/direct-write check.
+
+        ``toc_attribute_id`` is ``attrs``-readonly whenever
+        ``rely_on_control != "yes"``. Odoo's web client (and ``Form()``,
+        which mirrors it) drops fields that are readonly in the record's
+        *final* state from the write payload entirely - so without the
+        ``write()`` override, switching to "No" and saving would silently
+        keep the OLD ``toc_attribute_id``/``toc_analysis``/``toc_reference``
+        in the database even though the form showed them blank right before
+        saving. Reproduced and confirmed against the pre-fix code via
+        ``odoo shell`` before adding the ``write()`` override.
+        """
+        worksheet = self.detail.worksheet_id
+        worksheet.with_user(self.admin).action_open()
+
+        with Form(worksheet.with_user(self.admin)) as worksheet_form:
+            with worksheet_form.detail_ids.edit(0) as line:
+                line.toc_attribute_id = self.toc_attribute
+
+        self.detail.invalidate_cache()
+        self.assertEqual(self.detail.toc_attribute_id, self.toc_attribute)
+        self.assertEqual(self.detail.toc_analysis, "effective")
+
+        with Form(worksheet.with_user(self.admin)) as worksheet_form:
+            with worksheet_form.detail_ids.edit(0) as line:
+                line.rely_on_control = "no"
+
+        self.detail.invalidate_cache()
+        self.assertFalse(
+            self.detail.toc_attribute_id,
+            "toc_attribute_id must stay cleared after save, not silently "
+            "revert to the value it had before switching to 'No'.",
+        )
+        self.assertFalse(self.detail.toc_analysis)
+        self.assertFalse(self.detail.toc_reference)
