@@ -77,6 +77,11 @@ msgid "Account Level ROMM (d66d87a)"
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_romm
+#: model:ir.model,name:ssi_general_audit_worksheet_romm.model_general_audit_romm_scoring_config
+msgid "Account Level ROMM - Risk Configuration"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_romm
 #: model:general_audit_worksheet_conclusion,name:ssi_general_audit_worksheet_romm.general_audit_worksheet_conclusion_89_96f5ae79
 msgid "Account Level ROMM determination completed"
 msgstr ""
@@ -280,13 +285,6 @@ msgid "Assersion Types on Presentation and Disclosure"
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_romm
-#: model:ir.model.fields,help:ssi_general_audit_worksheet_romm.field_general_audit_ws_d66d87a_detail__romm
-msgid ""
-"Assessed ROMM for this standard detail and assertion; editable here and "
-"stored on the standard detail."
-msgstr ""
-
-#. module: ssi_general_audit_worksheet_romm
 #: model:ir.model.fields,help:ssi_general_audit_worksheet_romm.field_general_audit_standard_detail__romm
 msgid ""
 "Assessed risk of material misstatement (ROMM) for this standard detail at "
@@ -332,6 +330,11 @@ msgstr ""
 #. module: ssi_general_audit_worksheet_romm
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_romm.field_general_audit_ws_c165170__auditor_respons
 msgid "Auditor Respons"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_romm
+#: model:ir.model,name:ssi_general_audit_worksheet_romm.model_general_audit_ws_eabdaad
+msgid "Business Cycle Internal Control (eabdaad)"
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_romm
@@ -498,6 +501,11 @@ msgid "Conclusions allowed for the selected worksheet type."
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_romm
+#: model:ir.model,name:ssi_general_audit_worksheet_romm.model_res_config_settings
+msgid "Config Settings"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_romm
 #: model:ir.model.fields,help:ssi_general_audit_worksheet_romm.field_general_audit_ws_c165170__confirm_ok
 #: model:ir.model.fields,help:ssi_general_audit_worksheet_romm.field_general_audit_ws_d66d87a__confirm_ok
 #: model:ir.model.fields,help:ssi_general_audit_worksheet_romm.field_general_audit_ws_de417a6__confirm_ok
@@ -508,11 +516,46 @@ msgid ""
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_romm
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_romm.field_general_audit_ws_d66d87a_detail__control_risk
+#: model_terms:ir.ui.view,arch_db:ssi_general_audit_worksheet_romm.general_audit_ws_d66d87a_view_form
+msgid "Control Risk"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_romm
 #: model_terms:ir.ui.view,arch_db:ssi_general_audit_worksheet_romm.general_audit_ws_c165170_view_form
 msgid "Control Risk - Entity Level"
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_romm
+#: model_terms:ir.ui.view,arch_db:ssi_general_audit_worksheet_romm.general_audit_romm_scoring_config_view_form
+msgid "Control Risk Weight"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_romm
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_romm.field_general_audit_romm_scoring_config__cr_weight_high
+msgid "Control Risk Weight - High"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_romm
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_romm.field_general_audit_romm_scoring_config__cr_weight_low
+msgid "Control Risk Weight - Low"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_romm
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_romm.field_general_audit_romm_scoring_config__cr_weight_medium
+msgid "Control Risk Weight - Medium"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_romm
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_romm.field_general_audit_ws_d66d87a_detail__control_risk
+msgid ""
+"Control risk for this account, looked up from the Significant Account "
+"(ba9b2f0) worksheet's Risk field if available, otherwise from the Business "
+"Cycle Internal Control (eabdaad) worksheet covering this account's type."
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_romm
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_romm.field_general_audit_romm_scoring_config__create_uid
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_romm.field_general_audit_ws_c165170__create_uid
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_romm.field_general_audit_ws_d66d87a__create_uid
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_romm.field_general_audit_ws_d66d87a_detail__create_uid
@@ -523,6 +566,7 @@ msgid "Created by"
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_romm
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_romm.field_general_audit_romm_scoring_config__create_date
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_romm.field_general_audit_ws_c165170__create_date
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_romm.field_general_audit_ws_d66d87a__create_date
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_romm.field_general_audit_ws_d66d87a_detail__create_date
@@ -616,13 +660,17 @@ msgid ""
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_romm
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_romm.field_general_audit_romm_scoring_config__display_name
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_romm.field_general_audit_standard_detail__display_name
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_romm.field_general_audit_ws_ba9b2f0__display_name
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_romm.field_general_audit_ws_c165170__display_name
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_romm.field_general_audit_ws_d66d87a__display_name
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_romm.field_general_audit_ws_d66d87a_detail__display_name
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_romm.field_general_audit_ws_de417a6__display_name
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_romm.field_general_audit_ws_de417a6_checklist__display_name
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_romm.field_general_audit_ws_de417a6_item__display_name
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_romm.field_general_audit_ws_eabdaad__display_name
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_romm.field_res_config_settings__display_name
 msgid "Display Name"
 msgstr ""
 
@@ -755,6 +803,31 @@ msgid "Fraud Factor Analysis"
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_romm
+#: model_terms:ir.ui.view,arch_db:ssi_general_audit_worksheet_romm.general_audit_romm_scoring_config_view_form
+msgid "Fraud Risk Weight"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_romm
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_romm.field_general_audit_romm_scoring_config__fr_weight_high
+msgid "Fraud Risk Weight - High"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_romm
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_romm.field_general_audit_romm_scoring_config__fr_weight_medium
+msgid "Fraud Risk Weight - Medium"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_romm
+#: model_terms:ir.ui.view,arch_db:ssi_general_audit_worksheet_romm.general_audit_romm_scoring_config_view_form
+msgid "Fraud Risk x Significant Risk x ROMM Risk Initial"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_romm
+#: model_terms:ir.ui.view,arch_db:ssi_general_audit_worksheet_romm.res_config_settings_view_form
+msgid "General Audit"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_romm
 #: model:ir.model.fields,help:ssi_general_audit_worksheet_romm.field_general_audit_ws_c165170__general_audit_id
 #: model:ir.model.fields,help:ssi_general_audit_worksheet_romm.field_general_audit_ws_d66d87a__general_audit_id
 #: model:ir.model.fields,help:ssi_general_audit_worksheet_romm.field_general_audit_ws_de417a6__general_audit_id
@@ -764,17 +837,25 @@ msgstr ""
 #. module: ssi_general_audit_worksheet_romm
 #: model:ir.model.fields.selection,name:ssi_general_audit_worksheet_romm.selection__general_audit_standard_detail__romm__high
 #: model:ir.model.fields.selection,name:ssi_general_audit_worksheet_romm.selection__general_audit_ws_c165170__risk_material_missstatement__high
+#: model:ir.model.fields.selection,name:ssi_general_audit_worksheet_romm.selection__general_audit_ws_d66d87a_detail__control_risk__high
+#: model:ir.model.fields.selection,name:ssi_general_audit_worksheet_romm.selection__general_audit_ws_d66d87a_detail__romm__high
+#: model:ir.model.fields.selection,name:ssi_general_audit_worksheet_romm.selection__general_audit_ws_d66d87a_detail__romm_risk_initial__high
+#: model_terms:ir.ui.view,arch_db:ssi_general_audit_worksheet_romm.general_audit_romm_scoring_config_view_form
 msgid "High"
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_romm
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_romm.field_general_audit_romm_scoring_config__id
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_romm.field_general_audit_standard_detail__id
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_romm.field_general_audit_ws_ba9b2f0__id
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_romm.field_general_audit_ws_c165170__id
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_romm.field_general_audit_ws_d66d87a__id
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_romm.field_general_audit_ws_d66d87a_detail__id
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_romm.field_general_audit_ws_de417a6__id
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_romm.field_general_audit_ws_de417a6_checklist__id
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_romm.field_general_audit_ws_de417a6_item__id
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_romm.field_general_audit_ws_eabdaad__id
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_romm.field_res_config_settings__id
 msgid "ID"
 msgstr ""
 
@@ -818,6 +899,13 @@ msgstr ""
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_romm.field_general_audit_ws_d66d87a_detail__fraud_impacted
 #: model_terms:ir.ui.view,arch_db:ssi_general_audit_worksheet_romm.general_audit_ws_d66d87a_view_form
 msgid "Impacted By Fraud"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_romm
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_romm.field_general_audit_ws_d66d87a_detail__significant_risk
+msgid ""
+"Indicates if the standard detail is flagged as a significant risk account "
+"(set on the Account Level Inherent Risk worksheet)."
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_romm
@@ -866,6 +954,31 @@ msgid "Inherent Risk"
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_romm
+#: model_terms:ir.ui.view,arch_db:ssi_general_audit_worksheet_romm.general_audit_romm_scoring_config_view_form
+msgid "Inherent Risk Weight"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_romm
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_romm.field_general_audit_romm_scoring_config__ir_weight_high
+msgid "Inherent Risk Weight - High"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_romm
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_romm.field_general_audit_romm_scoring_config__ir_weight_low
+msgid "Inherent Risk Weight - Low"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_romm
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_romm.field_general_audit_romm_scoring_config__ir_weight_medium
+msgid "Inherent Risk Weight - Medium"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_romm
+#: model_terms:ir.ui.view,arch_db:ssi_general_audit_worksheet_romm.general_audit_romm_scoring_config_view_form
+msgid "Inherent Risk x Control Risk"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_romm
 #: model:ir.model.fields,help:ssi_general_audit_worksheet_romm.field_general_audit_ws_d66d87a_detail__inherent_risk
 msgid "Inherent risk level inherited from the standard detail."
 msgstr ""
@@ -890,6 +1003,14 @@ msgid "Interim Start Date"
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_romm
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_romm.field_general_audit_ws_d66d87a_detail__romm_risk_initial
+msgid ""
+"Intermediate result (Inherent Risk x Control Risk), classified using the "
+"weights/thresholds in the Risk Configuration. Shown for transparency; feeds "
+"into ROMM Risk Further (romm) below."
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_romm
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_romm.field_general_audit_ws_c165170__message_is_follower
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_romm.field_general_audit_ws_d66d87a__message_is_follower
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_romm.field_general_audit_ws_de417a6__message_is_follower
@@ -903,17 +1024,27 @@ msgid "Item"
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_romm
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_romm.field_general_audit_romm_scoring_config__name
+msgid "Label for this configuration record."
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_romm
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_romm.field_general_audit_romm_scoring_config____last_update
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_romm.field_general_audit_standard_detail____last_update
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_romm.field_general_audit_ws_ba9b2f0____last_update
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_romm.field_general_audit_ws_c165170____last_update
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_romm.field_general_audit_ws_d66d87a____last_update
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_romm.field_general_audit_ws_d66d87a_detail____last_update
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_romm.field_general_audit_ws_de417a6____last_update
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_romm.field_general_audit_ws_de417a6_checklist____last_update
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_romm.field_general_audit_ws_de417a6_item____last_update
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_romm.field_general_audit_ws_eabdaad____last_update
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_romm.field_res_config_settings____last_update
 msgid "Last Modified on"
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_romm
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_romm.field_general_audit_romm_scoring_config__write_uid
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_romm.field_general_audit_ws_c165170__write_uid
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_romm.field_general_audit_ws_d66d87a__write_uid
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_romm.field_general_audit_ws_d66d87a_detail__write_uid
@@ -924,6 +1055,7 @@ msgid "Last Updated by"
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_romm
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_romm.field_general_audit_romm_scoring_config__write_date
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_romm.field_general_audit_ws_c165170__write_date
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_romm.field_general_audit_ws_d66d87a__write_date
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_romm.field_general_audit_ws_d66d87a_detail__write_date
@@ -958,7 +1090,16 @@ msgstr ""
 #. module: ssi_general_audit_worksheet_romm
 #: model:ir.model.fields.selection,name:ssi_general_audit_worksheet_romm.selection__general_audit_standard_detail__romm__low
 #: model:ir.model.fields.selection,name:ssi_general_audit_worksheet_romm.selection__general_audit_ws_c165170__risk_material_missstatement__low
+#: model:ir.model.fields.selection,name:ssi_general_audit_worksheet_romm.selection__general_audit_ws_d66d87a_detail__control_risk__low
+#: model:ir.model.fields.selection,name:ssi_general_audit_worksheet_romm.selection__general_audit_ws_d66d87a_detail__romm__low
+#: model:ir.model.fields.selection,name:ssi_general_audit_worksheet_romm.selection__general_audit_ws_d66d87a_detail__romm_risk_initial__low
+#: model_terms:ir.ui.view,arch_db:ssi_general_audit_worksheet_romm.general_audit_romm_scoring_config_view_form
 msgid "Low"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_romm
+#: model_terms:ir.ui.view,arch_db:ssi_general_audit_worksheet_romm.general_audit_romm_scoring_config_view_form
+msgid "Lower"
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_romm
@@ -992,7 +1133,13 @@ msgstr ""
 
 #. module: ssi_general_audit_worksheet_romm
 #: model:ir.model.fields.selection,name:ssi_general_audit_worksheet_romm.selection__general_audit_standard_detail__romm__medium
+#: model:ir.model.fields.selection,name:ssi_general_audit_worksheet_romm.selection__general_audit_ws_ba9b2f0__risk__medium
 #: model:ir.model.fields.selection,name:ssi_general_audit_worksheet_romm.selection__general_audit_ws_c165170__risk_material_missstatement__medium
+#: model:ir.model.fields.selection,name:ssi_general_audit_worksheet_romm.selection__general_audit_ws_d66d87a_detail__control_risk__medium
+#: model:ir.model.fields.selection,name:ssi_general_audit_worksheet_romm.selection__general_audit_ws_d66d87a_detail__romm__medium
+#: model:ir.model.fields.selection,name:ssi_general_audit_worksheet_romm.selection__general_audit_ws_d66d87a_detail__romm_risk_initial__medium
+#: model:ir.model.fields.selection,name:ssi_general_audit_worksheet_romm.selection__general_audit_ws_eabdaad__risk__medium
+#: model_terms:ir.ui.view,arch_db:ssi_general_audit_worksheet_romm.general_audit_romm_scoring_config_view_form
 msgid "Medium"
 msgstr ""
 
@@ -1013,6 +1160,26 @@ msgid "Messages"
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_romm
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_romm.field_general_audit_romm_scoring_config__romm_risk_further_threshold_upper
+msgid ""
+"Minimum score (FR weight x Significant Risk weight x ROMM Risk Initial "
+"weight) classified as High."
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_romm
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_romm.field_general_audit_romm_scoring_config__romm_risk_initial_threshold_upper
+msgid ""
+"Minimum score (IR weight x CR weight) classified as High. Scores between the"
+" lower and upper threshold are Medium."
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_romm
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_romm.field_general_audit_romm_scoring_config__romm_risk_further_threshold_lower
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_romm.field_general_audit_romm_scoring_config__romm_risk_initial_threshold_lower
+msgid "Minimum score classified as Medium; below this is Low."
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_romm
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_romm.field_general_audit_ws_c165170__my_activity_date_deadline
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_romm.field_general_audit_ws_d66d87a__my_activity_date_deadline
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_romm.field_general_audit_ws_de417a6__my_activity_date_deadline
@@ -1021,6 +1188,7 @@ msgid "My Activity Deadline"
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_romm
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_romm.field_general_audit_romm_scoring_config__name
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_romm.field_general_audit_ws_de417a6_item__name
 msgid "Name"
 msgstr ""
@@ -1179,6 +1347,15 @@ msgid "Ordering number controlling the display order (lower comes first)."
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_romm
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_romm.field_general_audit_ws_d66d87a_detail__romm
+msgid ""
+"Overall ROMM (\"ROMM Risk Further\"), computed from ROMM Risk Initial "
+"(Inherent Risk x Control Risk) and Fraud Risk x Significant Risk x ROMM Risk"
+" Initial using the Risk Configuration. Read-only; written back to the "
+"standard detail."
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_romm
 #: model_terms:ir.ui.view,arch_db:ssi_general_audit_worksheet_romm.general_audit_ws_d66d87a_view_form
 msgid "Overall Risk Assessment"
 msgstr ""
@@ -1188,6 +1365,14 @@ msgstr ""
 msgid ""
 "Overall financial statement-level risk of material misstatement (ROMM) "
 "assessment for this worksheet."
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_romm
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_romm.field_general_audit_ws_ba9b2f0__risk
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_romm.field_general_audit_ws_eabdaad__risk
+msgid ""
+"Overall risk assessment for this worksheet based on the checklist "
+"evaluation."
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_romm
@@ -1314,7 +1499,7 @@ msgstr ""
 #: model:ir.actions.act_window,name:ssi_general_audit_worksheet_romm.general_audit_ws_de417a6_action
 #: model:ir.ui.menu,name:ssi_general_audit_worksheet_romm.general_audit_ws_de417a6_menu
 #: model_terms:ir.ui.view,arch_db:ssi_general_audit_worksheet_romm.general_audit_ws_c165170_view_form
-#: model_terms:ir.ui.view,arch_db:ssi_general_audit_worksheet_romm.general_audit_ws_d66d87a_view_form
+#: model_terms:ir.ui.view,arch_db:ssi_general_audit_worksheet_romm.res_config_settings_view_form
 msgid "ROMM"
 msgstr ""
 
@@ -1355,6 +1540,58 @@ msgstr ""
 #. module: ssi_general_audit_worksheet_romm
 #: model:ir.actions.act_window,name:ssi_general_audit_worksheet_romm.general_audit_ws_de417a6_item_action
 msgid "ROMM Checklists"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_romm
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_romm.field_general_audit_ws_d66d87a_detail__romm
+#: model_terms:ir.ui.view,arch_db:ssi_general_audit_worksheet_romm.general_audit_romm_scoring_config_view_form
+msgid "ROMM Risk Further"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_romm
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_romm.field_general_audit_romm_scoring_config__romm_risk_further_threshold_lower
+msgid "ROMM Risk Further Threshold - Lower"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_romm
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_romm.field_general_audit_romm_scoring_config__romm_risk_further_threshold_upper
+msgid "ROMM Risk Further Threshold - Upper"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_romm
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_romm.field_general_audit_ws_d66d87a_detail__romm_risk_initial
+#: model_terms:ir.ui.view,arch_db:ssi_general_audit_worksheet_romm.general_audit_romm_scoring_config_view_form
+msgid "ROMM Risk Initial"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_romm
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_romm.field_general_audit_romm_scoring_config__romm_risk_initial_weight_high
+msgid "ROMM Risk Initial Result Weight - High"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_romm
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_romm.field_general_audit_romm_scoring_config__romm_risk_initial_weight_low
+msgid "ROMM Risk Initial Result Weight - Low"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_romm
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_romm.field_general_audit_romm_scoring_config__romm_risk_initial_weight_medium
+msgid "ROMM Risk Initial Result Weight - Medium"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_romm
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_romm.field_general_audit_romm_scoring_config__romm_risk_initial_threshold_lower
+msgid "ROMM Risk Initial Threshold - Lower"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_romm
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_romm.field_general_audit_romm_scoring_config__romm_risk_initial_threshold_upper
+msgid "ROMM Risk Initial Threshold - Upper"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_romm
+#: model_terms:ir.ui.view,arch_db:ssi_general_audit_worksheet_romm.general_audit_romm_scoring_config_view_form
+msgid "ROMM Risk Initial Weight"
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_romm
@@ -1532,9 +1769,56 @@ msgid "Reviewer"
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_romm
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_romm.field_general_audit_ws_ba9b2f0__risk
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_romm.field_general_audit_ws_eabdaad__risk
+msgid "Risk"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_romm
+#: model:ir.actions.act_window,name:ssi_general_audit_worksheet_romm.general_audit_romm_scoring_config_action
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_romm.field_general_audit_ws_d66d87a__romm_scoring_config_id
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_romm.field_res_config_settings__romm_scoring_config_id
+#: model:ir.ui.menu,name:ssi_general_audit_worksheet_romm.general_audit_romm_scoring_config_menu
+#: model:res.groups,name:ssi_general_audit_worksheet_romm.general_audit_romm_scoring_config_group
+msgid "Risk Configuration"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_romm
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_romm.field_general_audit_ws_d66d87a__romm_scoring_config_id
+msgid ""
+"Risk Configuration pinned to this worksheet at creation time (defaults to "
+"the one active in Settings then). All ROMM computations on this worksheet's "
+"lines use this record, not whatever is currently active in Settings - so "
+"historical worksheets stay reproducible even if the active Risk "
+"Configuration is changed or replaced later."
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_romm
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_romm.field_res_config_settings__romm_scoring_config_id
+msgid ""
+"Risk Configuration record used to compute the Account Level ROMM "
+"(weights/thresholds for ROMM Risk Initial and ROMM Risk Further). If left "
+"empty, the first available Risk Configuration record is used."
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_romm
+#: model_terms:ir.ui.view,arch_db:ssi_general_audit_worksheet_romm.res_config_settings_view_form
+msgid "Risk Configuration used to compute the Account Level ROMM"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_romm
+#: model_terms:ir.ui.view,arch_db:ssi_general_audit_worksheet_romm.general_audit_ws_d66d87a_view_form
+msgid "Risk Further"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_romm
+#: model_terms:ir.ui.view,arch_db:ssi_general_audit_worksheet_romm.general_audit_ws_d66d87a_view_form
+msgid "Risk Initial"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_romm
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_romm.field_general_audit_standard_detail__romm
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_romm.field_general_audit_ws_c165170__risk_material_missstatement
-#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_romm.field_general_audit_ws_d66d87a_detail__romm
 msgid "Risk Material Misstatement"
 msgstr ""
 
@@ -1566,6 +1850,32 @@ msgstr ""
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_romm.field_general_audit_ws_de417a6_checklist__sequence
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_romm.field_general_audit_ws_de417a6_item__sequence
 msgid "Sequence"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_romm
+#: model:ir.model,name:ssi_general_audit_worksheet_romm.model_general_audit_ws_ba9b2f0
+msgid "Significant Account Internal Control (ba9b2f0)"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_romm
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_romm.field_general_audit_ws_d66d87a_detail__significant_risk
+#: model_terms:ir.ui.view,arch_db:ssi_general_audit_worksheet_romm.general_audit_ws_d66d87a_view_form
+msgid "Significant Risk"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_romm
+#: model_terms:ir.ui.view,arch_db:ssi_general_audit_worksheet_romm.general_audit_romm_scoring_config_view_form
+msgid "Significant Risk Weight"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_romm
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_romm.field_general_audit_romm_scoring_config__significant_risk_weight_high
+msgid "Significant Risk Weight - High"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_romm
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_romm.field_general_audit_romm_scoring_config__significant_risk_weight_medium
+msgid "Significant Risk Weight - Medium"
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_romm
@@ -1633,6 +1943,11 @@ msgstr ""
 msgid ""
 "Summary of the auditor's planned overall responses at the financial "
 "statement level to address the assessed ROMM."
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_romm
+#: model_terms:ir.ui.view,arch_db:ssi_general_audit_worksheet_romm.general_audit_romm_scoring_config_view_form
+msgid "Threshold"
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_romm
@@ -1737,6 +2052,11 @@ msgid "Unread Messages Counter"
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_romm
+#: model_terms:ir.ui.view,arch_db:ssi_general_audit_worksheet_romm.general_audit_romm_scoring_config_view_form
+msgid "Upper"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_romm
 #: model:res.groups,name:ssi_general_audit_worksheet_romm.general_audit_ws_c165170_user_group
 #: model:res.groups,name:ssi_general_audit_worksheet_romm.general_audit_ws_d66d87a_user_group
 #: model:res.groups,name:ssi_general_audit_worksheet_romm.general_audit_ws_de417a6_user_group
@@ -1784,6 +2104,71 @@ msgstr ""
 #: model:res.groups,name:ssi_general_audit_worksheet_romm.general_audit_ws_d66d87a_viewer_group
 #: model:res.groups,name:ssi_general_audit_worksheet_romm.general_audit_ws_de417a6_viewer_group
 msgid "Viewer"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_romm
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_romm.field_general_audit_romm_scoring_config__cr_weight_high
+msgid "Weight applied when Control Risk is High."
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_romm
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_romm.field_general_audit_romm_scoring_config__cr_weight_low
+msgid "Weight applied when Control Risk is Low."
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_romm
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_romm.field_general_audit_romm_scoring_config__cr_weight_medium
+msgid "Weight applied when Control Risk is Medium."
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_romm
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_romm.field_general_audit_romm_scoring_config__ir_weight_high
+msgid "Weight applied when Inherent Risk is High."
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_romm
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_romm.field_general_audit_romm_scoring_config__ir_weight_low
+msgid "Weight applied when Inherent Risk is Low."
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_romm
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_romm.field_general_audit_romm_scoring_config__ir_weight_medium
+msgid "Weight applied when Inherent Risk is Medium."
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_romm
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_romm.field_general_audit_romm_scoring_config__romm_risk_initial_weight_high
+msgid "Weight applied when the ROMM Risk Initial result is High."
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_romm
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_romm.field_general_audit_romm_scoring_config__romm_risk_initial_weight_low
+msgid "Weight applied when the ROMM Risk Initial result is Low."
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_romm
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_romm.field_general_audit_romm_scoring_config__romm_risk_initial_weight_medium
+msgid "Weight applied when the ROMM Risk Initial result is Medium."
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_romm
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_romm.field_general_audit_romm_scoring_config__significant_risk_weight_high
+msgid "Weight applied when the account is flagged as a significant risk."
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_romm
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_romm.field_general_audit_romm_scoring_config__fr_weight_high
+msgid "Weight applied when the account is impacted by fraud risk."
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_romm
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_romm.field_general_audit_romm_scoring_config__significant_risk_weight_medium
+msgid "Weight applied when the account is not flagged as a significant risk."
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_romm
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_romm.field_general_audit_romm_scoring_config__fr_weight_medium
+msgid "Weight applied when the account is not impacted by fraud risk."
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_romm
