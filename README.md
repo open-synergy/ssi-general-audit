@@ -178,7 +178,7 @@ addon | version | maintainers | summary
 [ssi_general_audit_worksheet_sample_determination](ssi_general_audit_worksheet_sample_determination/) | 14.0.1.2.0 |  | General Audit Worksheet - Sample Determination
 [ssi_general_audit_worksheet_specific_procedure](ssi_general_audit_worksheet_specific_procedure/) | 14.0.1.2.2 |  | General Audit Worksheet - Specific Procedures
 [ssi_general_audit_worksheet_team_communication](ssi_general_audit_worksheet_team_communication/) | 14.0.1.2.2 |  | General Audit Worksheet - Team Communication
-[ssi_general_audit_worksheet_test_of_control](ssi_general_audit_worksheet_test_of_control/) | 14.0.1.3.0 |  | General Audit Worksheet - Test of Control
+[ssi_general_audit_worksheet_test_of_control](ssi_general_audit_worksheet_test_of_control/) | 14.0.1.4.0 |  | General Audit Worksheet - Test of Control
 [ssi_general_audit_worksheet_test_of_detail](ssi_general_audit_worksheet_test_of_detail/) | 14.0.1.3.0 |  | General Audit Worksheet - Test of Detail
 [ssi_general_audit_worksheet_test_planning](ssi_general_audit_worksheet_test_planning/) | 14.0.1.2.0 |  | General Audit Worksheet - Test Planning
 [ssi_general_audit_worksheet_trial_balance](ssi_general_audit_worksheet_trial_balance/) | 14.0.1.0.2 |  | General Audit Worksheet - Trial Balance
