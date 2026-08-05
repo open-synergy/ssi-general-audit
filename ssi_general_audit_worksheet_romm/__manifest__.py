@@ -16,6 +16,7 @@
     ],
     "data": [
         "security/ir_module_category_data.xml",
+        "security/res_group_data.xml",
         "security/res_group/general_audit_ws_c165170.xml",
         "security/res_group/general_audit_ws_d66d87a.xml",
         "security/res_group/general_audit_ws_de417a6.xml",
@@ -40,6 +41,9 @@
         "data/general_audit_worksheet_type_data.xml",
         "data/master/general_audit_worksheet_conclusion.xml",
         "data/master/general_audit_ws_de417a6_item.xml",
+        "data/master/general_audit_romm_scoring_config.xml",
+        "views/general_audit_romm_scoring_config_views.xml",
+        "views/res_config_settings_views.xml",
         "views/general_audit_ws_c165170_views.xml",
         "views/general_audit_ws_d66d87a_views.xml",
         "views/general_audit_standard_detail_views.xml",

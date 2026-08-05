@@ -36,6 +36,27 @@ class GeneralAuditWSd66d87a(models.Model):
     ]
     _type_xml_id = "ssi_general_audit_worksheet_romm." "worksheet_type_d66d87a"
 
+    romm_scoring_config_id = fields.Many2one(
+        string="Risk Configuration",
+        comodel_name="general_audit_romm_scoring_config",
+        default=lambda self: self.env[
+            "general_audit_romm_scoring_config"
+        ]._get_config(),
+        readonly=True,
+        states={
+            "open": [
+                ("readonly", False),
+            ],
+        },
+        help=(
+            "Risk Configuration pinned to this worksheet at creation time "
+            "(defaults to the one active in Settings then). All ROMM "
+            "computations on this worksheet's lines use this record, not "
+            "whatever is currently active in Settings - so historical "
+            "worksheets stay reproducible even if the active Risk "
+            "Configuration is changed or replaced later."
+        ),
+    )
     detail_ids = fields.One2many(
         string="Details",
         comodel_name="general_audit_ws_d66d87a.detail",
