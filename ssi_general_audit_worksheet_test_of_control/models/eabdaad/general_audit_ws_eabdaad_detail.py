@@ -2,7 +2,7 @@
 # Copyright 2025 PT. Simetri Sinergi Indonesia
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl-3.0-standalone.html).
 
-from odoo import fields, models
+from odoo import api, fields, models
 
 
 class GeneralAuditWSeABDAADDetail(models.Model):
@@ -29,9 +29,21 @@ class GeneralAuditWSeABDAADDetail(models.Model):
         required=False,
         help="Assessment result pulled directly from the linked Test of Control attribute.",
     )
-    toc_reference = fields.Char(
-        related="toc_attribute_id.worksheet_id.name",
+    toc_reference = fields.Many2one(
+        string="ToC Reference",
+        comodel_name="general_audit_ws_e3f4a5b",
+        related="toc_attribute_id.worksheet_id",
         store=True,
         readonly=True,
-        help="Document reference of the linked Test of Control worksheet.",
+        help="Test of Control worksheet linked via the selected attribute; clickable.",
     )
+
+    @api.onchange("rely_on_control")
+    def onchange_rely_on_control(self):
+        """Clear the ToC link when the control is no longer relied upon.
+
+        ``toc_analysis``/``toc_reference`` cascade-clear on their own since
+        they are ``related`` to ``toc_attribute_id``.
+        """
+        if self.rely_on_control != "yes":
+            self.toc_attribute_id = False

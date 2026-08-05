@@ -25,7 +25,16 @@
                         name="toc_attribute_id"
                         domain="[('worksheet_id.general_audit_id','=',parent.general_audit_id),('worksheet_id.cycle_id','=',parent.business_cycle_id)]"
                         options="{'no_create': True}"
+                        attrs="{'invisible': [('rely_on_control', '!=', 'yes')]}"
                     />
+                </xpath>
+                <xpath
+                    expr="//field[@name='detail_ids']/tree/field[@name='toc_analysis']"
+                    position="attributes"
+                >
+                    <attribute
+                        name="attrs"
+                    >{'invisible': [('rely_on_control', '!=', 'yes')]}</attribute>
                 </xpath>
                 <xpath
                     expr="//field[@name='detail_ids']/form//field[@name='toc_reference']"
@@ -35,7 +44,24 @@
                         name="toc_attribute_id"
                         domain="[('worksheet_id.general_audit_id','=',parent.general_audit_id),('worksheet_id.cycle_id','=',parent.business_cycle_id)]"
                         options="{'no_create': True}"
+                        attrs="{'invisible': [('rely_on_control', '!=', 'yes')]}"
                     />
+                </xpath>
+                <xpath
+                    expr="//field[@name='detail_ids']/form//field[@name='toc_reference']"
+                    position="attributes"
+                >
+                    <attribute
+                        name="attrs"
+                    >{'invisible': [('rely_on_control', '!=', 'yes')]}</attribute>
+                </xpath>
+                <xpath
+                    expr="//field[@name='detail_ids']/form//field[@name='toc_analysis']"
+                    position="attributes"
+                >
+                    <attribute
+                        name="attrs"
+                    >{'invisible': [('rely_on_control', '!=', 'yes')]}</attribute>
                 </xpath>
             </data>
         </field>

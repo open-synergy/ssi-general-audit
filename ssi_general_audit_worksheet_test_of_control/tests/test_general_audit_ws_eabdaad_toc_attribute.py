@@ -212,9 +212,9 @@ class TestGeneralAuditWSeabdaadTocAttribute(TransactionCase):
 
         self.assertEqual(self.detail.toc_analysis, self.toc_attribute.conclusion)
         self.assertEqual(self.detail.toc_analysis, "effective")
-        self.assertEqual(
-            self.detail.toc_reference, self.toc_attribute.worksheet_id.name
-        )
+        # toc_reference is Many2one (HT/26/000631: made clickable in the UI
+        # instead of a plain text document number).
+        self.assertEqual(self.detail.toc_reference, self.toc_attribute.worksheet_id)
         # rely_on_control == "yes" (see setUp) + toc_analysis == "effective"
         # (via the link above) -> _compute_result's "low" branch. This is the
         # branch ssi_general_audit_worksheet_control_risk's own
@@ -259,3 +259,36 @@ class TestGeneralAuditWSeabdaadTocAttribute(TransactionCase):
 
         self.assertIn(self.toc_attribute, candidates)
         self.assertNotIn(self.other_cycle_attribute, candidates)
+
+    def test_onchange_rely_on_control_no_clears_toc_link(self):
+        """HT/26/000631: ToC Attribute/Reference/Analysis must not stay
+        filled once "Rely on Control" is switched to "No" - clearing
+        toc_attribute_id also cascades to toc_analysis/toc_reference since
+        both are related to it.
+
+        No dedicated form view is registered for
+        ``general_audit_ws_eabdaad.detail`` (only an inline ``<form>``
+        embedded in the parent's one2many), so ``Form()`` cannot target it
+        directly - the onchange method is invoked directly instead, same as
+        Odoo's onchange dispatch would do after ``rely_on_control`` changes.
+        """
+        self.detail.write({"toc_attribute_id": self.toc_attribute.id})
+        self.assertEqual(self.detail.toc_analysis, "effective")
+        self.assertEqual(self.detail.toc_reference, self.toc_attribute.worksheet_id)
+
+        self.detail.rely_on_control = "no"
+        self.detail.onchange_rely_on_control()
+
+        self.assertFalse(self.detail.toc_attribute_id)
+        self.assertFalse(self.detail.toc_analysis)
+        self.assertFalse(self.detail.toc_reference)
+
+    def test_onchange_rely_on_control_yes_keeps_toc_link(self):
+        """Switching (or staying) on "Yes" must not clear an already-picked
+        ToC Attribute."""
+        self.detail.write({"toc_attribute_id": self.toc_attribute.id})
+
+        self.detail.rely_on_control = "yes"
+        self.detail.onchange_rely_on_control()
+
+        self.assertEqual(self.detail.toc_attribute_id, self.toc_attribute)
