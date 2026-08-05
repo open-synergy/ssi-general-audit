@@ -297,6 +297,122 @@ scenarios:
         expect_count: 2
 
   # ------------------------------------------------------------------
+  # a418d89 - action_load_detail must not wipe already-entered assessment
+  # data on lines whose standard_detail still belongs to the engagement
+  # (HT/26/000630 - clicking "Detail" was erasing filled-in data).
+  # ------------------------------------------------------------------
+  - name: "Worksheet a418d89 - Load detail preserves already-entered data"
+    steps:
+      - step: "Create worksheet a418d89"
+        action: "create"
+        model: "general_audit_ws_a418d89"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_a418d89.id"
+
+      - step: "Load detail first time"
+        action: "call"
+        target: "worksheet"
+        method: "action_load_detail"
+        as_user: "base.user_admin"
+
+      - step: "Fetch the line for standard detail 1"
+        action: "search"
+        model: "general_audit_ws_a418d89.detail"
+        domain:
+          - ["worksheet_id", "=", "REC: worksheet.id"]
+          - ["standard_detail_id", "=", "REC: standard_detail_1.id"]
+        save_as: "line_1"
+        expect_count: 1
+
+      - step: "Fill in the auditor's assessment on that line"
+        action: "write"
+        target: "line_1"
+        as_user: "base.user_admin"
+        values:
+          likelihood_risk_occuring: "high"
+          impact_of_risk: "high"
+          other_significant_risk_factor: true
+          note: "Filled in before reload - must survive Load Detail"
+          inherent_risk_factor_with_impact_ids: [[6, 0, ["REC: factor_with_impact.id"]]]
+
+      - step: "Invalidate cache after filling in the assessment"
+        action: "call"
+        target: "line_1"
+        method: "invalidate_cache"
+
+      - step: "Assert the assessment computed as expected before reload"
+        action: "assert"
+        target: "line_1"
+        asserts:
+          inherent_risk:
+            type: "value"
+            expected: "high"
+          significant_risk:
+            type: "value"
+            expected: true
+
+      - step: "Click 'Load Detail' again (action_load_detail)"
+        action: "call"
+        target: "worksheet"
+        method: "action_load_detail"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after reloading detail"
+        action: "call"
+        target: "line_1"
+        method: "invalidate_cache"
+
+      - step: "Assert detail count still 2, no duplicates and no data loss"
+        action: "search"
+        model: "general_audit_ws_a418d89.detail"
+        domain:
+          - ["worksheet_id", "=", "REC: worksheet.id"]
+        save_as: "after_reload"
+        expect_count: 2
+
+      - step: "Assert the same line (same id) still holds the filled-in data"
+        action: "assert"
+        target: "line_1"
+        asserts:
+          likelihood_risk_occuring:
+            type: "value"
+            expected: "high"
+          impact_of_risk:
+            type: "value"
+            expected: "high"
+          other_significant_risk_factor:
+            type: "value"
+            expected: true
+          note:
+            type: "value"
+            expected: "Filled in before reload - must survive Load Detail"
+          inherent_risk:
+            type: "value"
+            expected: "high"
+          significant_risk:
+            type: "value"
+            expected: true
+          inherent_risk_factor_with_impact_ids:
+            type: "m2m"
+            check: "exact"
+            expected_records:
+              - "REC: factor_with_impact"
+
+      - step: "Assert standard detail 1 still holds the propagated risk"
+        action: "assert"
+        target: "standard_detail_1"
+        asserts:
+          inherent_risk:
+            type: "value"
+            expected: "high"
+          significant_risk:
+            type: "value"
+            expected: true
+
+  # ------------------------------------------------------------------
   # a418d89.detail - _compute_risk: likelihood high, impact high -> high
   # ------------------------------------------------------------------
   - name: "Worksheet a418d89 - Compute risk (likelihood high, impact high -> high)"

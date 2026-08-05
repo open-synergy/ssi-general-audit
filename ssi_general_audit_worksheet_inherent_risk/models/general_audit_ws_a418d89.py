@@ -88,11 +88,39 @@ class GeneralAuditWSA418D89(models.Model):
             record._load_detail()
 
     def _load_detail(self):
-        self.detail_ids.unlink()
+        """
+        Reconcile ``detail_ids`` with ``general_audit_id.standard_detail_ids``.
+
+        Only creates lines for standard details that don't have one yet
+        and only unlinks lines whose standard detail is no longer part of
+        the engagement. Existing (still-matching) lines are left
+        untouched so that the auditor's risk assessment inputs
+        (``inherent_risk_factor_*_ids``, ``likelihood_risk_occuring``,
+        ``impact_of_risk``, ``other_significant_risk_factor``, ``note``)
+        survive repeated clicks of "Load Detail" -- these fields have no
+        other storage location, so wiping the line would destroy the
+        data permanently (unlike e.g. ``general_audit_ws_d66d87a``, whose
+        mirrored fields are recoverable from ``standard_detail_id``).
+        """
+        self.ensure_one()
         Detail = self.env["general_audit_ws_a418d89.detail"]
-        for detail in self.general_audit_id.standard_detail_ids:
-            data = {
-                "worksheet_id": self.id,
-                "standard_detail_id": detail.id,
-            }
-            Detail.create(data)
+
+        all_standard_details = self.general_audit_id.standard_detail_ids
+        existing_standard_details = self.detail_ids.mapped("standard_detail_id")
+
+        standard_details_to_add = all_standard_details - existing_standard_details
+        standard_details_to_remove = existing_standard_details - all_standard_details
+
+        for standard_detail in standard_details_to_add:
+            Detail.create(
+                {
+                    "worksheet_id": self.id,
+                    "standard_detail_id": standard_detail.id,
+                }
+            )
+
+        details_to_remove = self.detail_ids.filtered(
+            lambda d: d.standard_detail_id in standard_details_to_remove
+        )
+        if details_to_remove:
+            details_to_remove.unlink()
