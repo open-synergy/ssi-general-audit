@@ -174,7 +174,7 @@ addon | version | maintainers | summary
 [ssi_general_audit_worksheet_preliminary_analytic_procedure](ssi_general_audit_worksheet_preliminary_analytic_procedure/) | 14.0.1.2.0 |  | General Audit Worksheet - Preliminary Analytic Procedure
 [ssi_general_audit_worksheet_preliminary_materiality](ssi_general_audit_worksheet_preliminary_materiality/) | 14.0.1.3.0 |  | General Audit Worksheet - Preliminary Materiality
 [ssi_general_audit_worksheet_review](ssi_general_audit_worksheet_review/) | 14.0.1.1.1 |  | General Audit Worksheet - Review
-[ssi_general_audit_worksheet_romm](ssi_general_audit_worksheet_romm/) | 14.0.1.5.0 |  | General Audit Worksheet - ROMM
+[ssi_general_audit_worksheet_romm](ssi_general_audit_worksheet_romm/) | 14.0.1.5.1 |  | General Audit Worksheet - ROMM
 [ssi_general_audit_worksheet_sample_determination](ssi_general_audit_worksheet_sample_determination/) | 14.0.1.2.0 |  | General Audit Worksheet - Sample Determination
 [ssi_general_audit_worksheet_specific_procedure](ssi_general_audit_worksheet_specific_procedure/) | 14.0.1.2.2 |  | General Audit Worksheet - Specific Procedures
 [ssi_general_audit_worksheet_team_communication](ssi_general_audit_worksheet_team_communication/) | 14.0.1.2.2 |  | General Audit Worksheet - Team Communication
