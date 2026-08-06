@@ -216,6 +216,13 @@ class GeneralAuditWSd66d87aDetail(models.Model):
         )
         for record in self:
             config = record.worksheet_id.romm_scoring_config_id or fallback_config
+            if not config:
+                # No Risk Configuration exists at all (e.g. every record was
+                # deleted) - leave ROMM blank rather than erroring out.
+                record.romm_risk_initial = False
+                record.romm = False
+                record.standard_detail_id.write({"romm": False})
+                continue
             romm_risk_initial = config.get_romm_risk_initial(
                 record.inherent_risk, record.control_risk
             )

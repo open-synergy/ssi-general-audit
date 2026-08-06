@@ -143,8 +143,14 @@ class GeneralAuditRommScoringConfig(models.Model):
         (``res.config.settings.romm_scoring_config_id``, stored as
         ``ir.config_parameter``) takes precedence. If that setting is
         empty or points to a deleted record, falls back to the first
-        available record (auto-creating one with defaults if none exists),
-        so ROMM still computes correctly before anyone visits Settings.
+        available record. Returns an empty recordset if none exists yet
+        (e.g. the brief window during a fresh module install/upgrade
+        before this module's own seed data has loaded) - deliberately does
+        NOT auto-create one here, since that used to race the seed data
+        and leave behind a duplicate, xml_id-less config record. Callers
+        (the ``romm_scoring_config_id`` default on
+        ``general_audit_ws_d66d87a``, ``_compute_romm``) already treat an
+        empty result as "leave it blank".
         """
         param = (
             self.env["ir.config_parameter"]
@@ -156,10 +162,7 @@ class GeneralAuditRommScoringConfig(models.Model):
             if config:
                 return config
 
-        config = self.search([], limit=1)
-        if not config:
-            config = self.create({})
-        return config
+        return self.search([], limit=1)
 
     def _weight(self, prefix, level):
         self.ensure_one()

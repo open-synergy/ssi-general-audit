@@ -50,11 +50,11 @@ class GeneralAuditWSd66d87a(models.Model):
         },
         help=(
             "Risk Configuration pinned to this worksheet at creation time "
-            "(defaults to the one active in Settings then). All ROMM "
-            "computations on this worksheet's lines use this record, not "
-            "whatever is currently active in Settings - so historical "
-            "worksheets stay reproducible even if the active Risk "
-            "Configuration is changed or replaced later."
+            "(defaults to the one active in Settings then, left blank if "
+            "none exists yet). All ROMM computations on this worksheet's "
+            "lines use this record, not whatever is currently active in "
+            "Settings - so historical worksheets stay reproducible even if "
+            "the active Risk Configuration is changed or replaced later."
         ),
     )
     detail_ids = fields.One2many(

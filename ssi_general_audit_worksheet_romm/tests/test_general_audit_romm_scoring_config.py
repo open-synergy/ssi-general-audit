@@ -15,11 +15,16 @@ class TestGeneralAuditRommScoringConfig(TransactionCase):
     def test_get_config_returns_seeded_record(self):
         self.assertEqual(self.config._get_config(), self.config)
 
-    def test_get_config_creates_record_when_none_exists(self):
+    def test_get_config_returns_empty_when_none_exists(self):
+        # Deliberately does NOT auto-create a replacement here - doing so
+        # used to race this module's own seed data during a fresh
+        # install/upgrade (the backfill of general_audit_ws_d66d87a
+        # .romm_scoring_config_id's default ran before the seed XML had
+        # loaded, so the table was briefly empty) and left a duplicate,
+        # xml_id-less config record behind alongside the real seeded one.
         self.env["general_audit_romm_scoring_config"].search([]).unlink()
         config = self.env["general_audit_romm_scoring_config"]._get_config()
-        self.assertTrue(config)
-        self.assertEqual(config.ir_weight_high, 0.90)
+        self.assertFalse(config)
 
     def test_get_config_respects_settings_parameter(self):
         # Settings > General Audit > Risk Configuration (res.config.settings

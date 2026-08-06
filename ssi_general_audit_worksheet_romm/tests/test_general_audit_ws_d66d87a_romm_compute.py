@@ -273,6 +273,49 @@ class TestGeneralAuditWSd66d87aRommCompute(TransactionCase):
         # The older worksheet from setUp is unaffected.
         self.assertEqual(self.d66d87a_worksheet.romm_scoring_config_id, self.config)
 
+    def test_new_worksheet_config_blank_when_none_exists(self):
+        # Simulates the brief window during a fresh install/upgrade where
+        # this module's seed Risk Configuration has not loaded yet: the
+        # default must resolve to blank, never auto-create a stray record
+        # (that auto-create used to race the seed data and leave a
+        # duplicate, xml_id-less config behind).
+        self.env["general_audit_romm_scoring_config"].search([]).unlink()
+        d66d87a_ws_type = self.env.ref(
+            "ssi_general_audit_worksheet_romm.worksheet_type_d66d87a"
+        )
+        new_worksheet = (
+            self.env["general_audit_ws_d66d87a"]
+            .with_user(self.admin)
+            .new(
+                {
+                    "general_audit_id": self.audit.id,
+                    "type_id": d66d87a_ws_type.id,
+                }
+            )
+        )
+        self.assertFalse(new_worksheet.romm_scoring_config_id)
+        self.assertEqual(
+            self.env["general_audit_romm_scoring_config"].search_count([]), 0
+        )
+
+    def test_romm_blank_when_no_config_exists_at_all(self):
+        detail = self._get_detail()
+        self.assertEqual(detail.romm_risk_initial, "high")
+
+        # Clear the pinned reference first so unlinking every config record
+        # below doesn't hit a foreign key violation.
+        self.d66d87a_worksheet.romm_scoring_config_id = False
+        self.env["general_audit_romm_scoring_config"].search([]).unlink()
+
+        # Called directly (rather than relying on @api.depends timing) so
+        # the "no config exists at all" branch in _compute_romm runs with
+        # both preconditions - pinned config cleared AND fallback empty -
+        # deterministically in place.
+        detail._compute_romm()
+        self.assertFalse(detail.romm_risk_initial)
+        self.assertFalse(detail.romm)
+        self.assertFalse(self.standard_detail.romm)
+
     def test_manually_repinning_worksheet_config_changes_romm(self):
         detail = self._get_detail()
         self.assertEqual(detail.romm_risk_initial, "high")
