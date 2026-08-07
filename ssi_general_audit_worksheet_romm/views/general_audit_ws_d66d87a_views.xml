@@ -83,16 +83,20 @@
                                 />
                                 <field
                                     name="romm_risk_initial"
-                                    string="Risk Initial"
+                                    string="ROMM Initial"
                                     optional="hide"
                                 />
-                                <field name="romm" string="Risk Further" />
+                                <field name="romm" string="ROMM Further" />
                                 <field
                                     name="pr_assersion_type_ids"
                                     widget="many2many_tags"
                                     string="Assersion Types"
                                 />
-                                <field name="planned_response_toc" string="ToC" />
+                                <field
+                                    name="planned_response_toc"
+                                    string="ToC"
+                                    invisible="1"
+                                />
                                 <field
                                     name="planned_response_analytic_procedure"
                                     string="Analytic Procedure"
@@ -126,9 +130,9 @@
                                     <field name="control_risk" string="Control Risk" />
                                     <field
                                         name="romm_risk_initial"
-                                        string="Risk Initial"
+                                        string="ROMM Initial"
                                     />
-                                    <field name="romm" string="Risk Further" />
+                                    <field name="romm" string="ROMM Further" />
                                 </group>
                                 <group name="detail_1" colspan="4" col="2">
                                     <field name="standard_detail_id" invisible="1" />
@@ -140,7 +144,11 @@
                                         readonly="0"
                                     />
                                     <separator string="Nature / Timing" />
-                                    <field name="planned_response_toc" string="ToC" />
+                                    <field
+                                        name="planned_response_toc"
+                                        string="ToC"
+                                        invisible="1"
+                                    />
                                     <field
                                         name="planned_response_analytic_procedure"
                                         string="Analytic Procedure"

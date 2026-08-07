@@ -9,10 +9,11 @@ from odoo.tests.common import TransactionCase
 @tagged("post_install", "-at_install")
 class TestGeneralAuditWSd66d87aControlRisk(TransactionCase):
     """Covers ``general_audit_ws_d66d87a.detail.control_risk`` (computed
-    lookup, ba9b2f0 takes precedence over eabdaad) and ``significant_risk``
-    (related mirror of ``standard_detail_id.significant_risk``) - both
-    displayed next to ``inherent_risk`` per the user's request, ahead of
-    wiring the full ROMM formula (still manual ``romm`` at this point).
+    lookup, ba9b2f0 takes precedence over eabdaad, defaults to "high" when
+    neither has data) and ``significant_risk`` (related mirror of
+    ``standard_detail_id.significant_risk``) - both displayed next to
+    ``inherent_risk`` per the user's request, ahead of wiring the full ROMM
+    formula (still manual ``romm`` at this point).
     """
 
     def setUp(self):
@@ -179,8 +180,11 @@ class TestGeneralAuditWSd66d87aControlRisk(TransactionCase):
             )
         )
 
-    def test_control_risk_blank_when_no_source(self):
-        self.assertFalse(self.detail.control_risk)
+    def test_control_risk_defaults_high_when_no_source(self):
+        # HT/26/000629 revisi 07 Agustus 2026: default to "high" (not blank)
+        # when neither ba9b2f0 nor eabdaad ("Control Risk - Cycle Level")
+        # has data for this account.
+        self.assertEqual(self.detail.control_risk, "high")
 
     def test_control_risk_falls_back_to_eabdaad(self):
         self._create_eabdaad("high")
