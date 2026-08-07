@@ -101,8 +101,15 @@ class GeneralAuditWSA418D89(models.Model):
         other storage location, so wiping the line would destroy the
         data permanently (unlike e.g. ``general_audit_ws_d66d87a``, whose
         mirrored fields are recoverable from ``standard_detail_id``).
+
+        :meth:`_resync_fraud_risk` runs first so that ``action_load_detail``
+        also repairs any standard detail whose ``fraud_impacted`` was never
+        recomputed after the account stopped matching the Fraud Factor
+        Analysis worksheet -- since existing lines are otherwise never
+        revisited by this method.
         """
         self.ensure_one()
+        self._resync_fraud_risk()
         Detail = self.env["general_audit_ws_a418d89.detail"]
 
         all_standard_details = self.general_audit_id.standard_detail_ids
@@ -124,3 +131,64 @@ class GeneralAuditWSA418D89(models.Model):
         )
         if details_to_remove:
             details_to_remove.unlink()
+
+    def _resync_fraud_risk(self):
+        """
+        Repair the Fraud Factor Analysis -> standard detail propagation
+        chain for this worksheet's engagement, so ``fraud_risk`` (related+
+        stored from ``standard_detail_id.fraud_impacted``) reflects reality
+        again before (re)loading detail lines.
+
+        Two stored compute fields sit on this chain:
+        ``general_audit_ws_c0e0eec.detail.standard_detail_ids`` (Many2many,
+        depends on ``related_account_type_ids``) and
+        ``general_audit.standard_detail.fraud_impacted`` (Boolean, depends
+        on the reverse ``c0e0eec_detail_ids``). Both were confirmed (via
+        direct testing against production data, ticket HT/26/000630 revisi
+        07 Agustus 2026) to get stuck at their old value whenever the
+        freshly computed value becomes *empty*: a genuine ``write()`` on
+        ``related_account_type_ids`` clearing it to ``[]`` leaves the
+        previously-linked ``standard_detail_ids`` untouched, even though
+        the same field correctly picks up an *added* link. Odoo's
+        automatic recompute of a stored-compute field simply does not
+        reliably persist an emptied result.
+
+        Calling the private ``_compute_*`` methods directly does not
+        work around this either: ``Field.__set__`` only routes a plain
+        attribute assignment on a store-without-inverse field through the
+        real ``write()`` path when the record is "protected" (i.e.
+        genuinely running inside Odoo's own ``env.protecting()`` recompute
+        cycle) -- invoked directly like this, outside that cycle, the
+        assignment is silently dropped and nothing is persisted.
+
+        The only path proven to reliably persist a change is an explicit
+        ``record.write({...})`` with a freshly re-derived value (the same
+        technique already used by ``_inverse_to_standard_detail`` on this
+        worksheet's own detail model) -- so that is what both layers use
+        below, each re-derived from a live search rather than from
+        (possibly still-stale) cached relation fields.
+        """
+        general_audit = self.general_audit_id
+        StandardDetail = self.env["general_audit.standard_detail"]
+        FraudDetail = self.env["general_audit_ws_c0e0eec.detail"]
+
+        fraud_worksheets = self.env["general_audit_ws_c0e0eec"].search(
+            [("general_audit_id", "=", general_audit.id)]
+        )
+        for detail in fraud_worksheets.mapped("detail_ids"):
+            criteria = [
+                ("general_audit_id", "=", general_audit.id),
+                ("type_id", "in", detail.related_account_type_ids.ids),
+            ]
+            ids = StandardDetail.search(criteria).ids
+            if set(ids) != set(detail.standard_detail_ids.ids):
+                detail.write({"standard_detail_ids": [(6, 0, ids)]})
+
+        for standard_detail in general_audit.standard_detail_ids:
+            impacted = bool(
+                FraudDetail.search_count(
+                    [("standard_detail_ids", "=", standard_detail.id)]
+                )
+            )
+            if standard_detail.fraud_impacted != impacted:
+                standard_detail.write({"fraud_impacted": impacted})
