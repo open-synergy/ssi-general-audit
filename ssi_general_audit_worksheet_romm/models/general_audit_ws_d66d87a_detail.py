@@ -107,8 +107,9 @@ class GeneralAuditWSd66d87aDetail(models.Model):
         help=(
             "Control risk for this account, looked up from the Significant "
             "Account (ba9b2f0) worksheet's Risk field if available, "
-            "otherwise from the Business Cycle Internal Control (eabdaad) "
-            "worksheet covering this account's type."
+            "otherwise from the Control Risk - Cycle Level (eabdaad) "
+            "worksheet covering this account's type. Defaults to High if "
+            "neither has data."
         ),
     )
 
@@ -243,9 +244,12 @@ class GeneralAuditWSd66d87aDetail(models.Model):
 
         The Significant Account (ba9b2f0) worksheet's Risk is checked
         first (more specific, one worksheet per account), falling back to
-        the Business Cycle Internal Control (eabdaad) worksheet whose
-        ``detail_ids.standard_detail_ids`` (matched by account type) covers
-        this account. Not tracked by ``@api.depends`` (cross-model search,
+        the Business Cycle Internal Control / "Control Risk - Cycle Level"
+        (eabdaad) worksheet whose ``detail_ids.standard_detail_ids``
+        (matched by account type) covers this account. If neither has
+        data, defaults to "high" (conservative default: unassessed
+        control risk is treated as maximum risk) rather than leaving the
+        field blank. Not tracked by ``@api.depends`` (cross-model search,
         not a relational field path) - re-running "Load Detail" on the
         worksheet re-triggers this on the recreated lines.
         """
@@ -274,4 +278,4 @@ class GeneralAuditWSd66d87aDetail(models.Model):
         if eabdaad_detail:
             return eabdaad_detail.worksheet_id.risk
 
-        return False
+        return "high"
