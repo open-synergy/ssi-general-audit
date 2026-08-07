@@ -997,3 +997,213 @@ scenarios:
           parent_type_id:
             type: "m2o"
             expected_xml_id: "ssi_general_audit_worksheet_inherent_risk.worksheet_type_a418d89"
+
+  # ------------------------------------------------------------------
+  # a418d89 - action_load_detail also resyncs stale fraud_risk from
+  # standard_detail.fraud_impacted (HT/26/000630, revisi 07 Agustus 2026).
+  #
+  # Confirmed against real production data (RA.150.8/250022 /
+  # RA.210.2/250023): a genuine write() clearing
+  # general_audit_ws_c0e0eec.detail.related_account_type_ids to [] does
+  # NOT clear the previously-computed standard_detail_ids on that same
+  # record (a stored-compute Many2many) -- Odoo's automatic recompute
+  # does not reliably persist an *emptied* result, even though it
+  # correctly persists an *added* one. No artificial drift injection is
+  # needed below: clearing related_account_type_ids for real already
+  # reproduces the staleness at both layers
+  # (general_audit_ws_c0e0eec.detail.standard_detail_ids and
+  # general_audit.standard_detail.fraud_impacted). _load_detail() never
+  # revisits existing lines, so clicking "Load Detail"/"Refresh" could
+  # never clear the stale flag on its own.
+  # ------------------------------------------------------------------
+  - name: "Worksheet a418d89 - Load detail resyncs stale fraud_risk"
+    steps:
+      - step: "Create fraud factor category"
+        action: "create"
+        model: "general_audit_fraud_factor_category"
+        save_as: "fraud_category"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Fraud Factor Category - a418d89 resync"
+          code: "/"
+
+      - step: "Create fraud factor"
+        action: "create"
+        model: "general_audit_fraud_factor"
+        save_as: "fraud_factor"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Fraud Factor - a418d89 resync"
+          code: "/"
+          category_id: "REC: fraud_category.id"
+
+      - step: "Create fraud factor indicator"
+        action: "create"
+        model: "general_audit_fraud_factor_indicator"
+        save_as: "fraud_indicator"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Fraud Factor Indicator - a418d89 resync"
+          code: "/"
+          factor_id: "REC: fraud_factor.id"
+
+      - step: "Get worksheet type c0e0eec (Fraud Factor Analysis)"
+        action: "ref"
+        xml_id: "ssi_general_audit_worksheet_understanding_entity.worksheet_type_c0e0eec"
+        save_as: "ws_type_c0e0eec"
+
+      - step: "Create worksheet c0e0eec"
+        action: "create"
+        model: "general_audit_ws_c0e0eec"
+        save_as: "ws_fraud"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_c0e0eec.id"
+
+      - step: "Call action_populate to create the indicator detail line"
+        action: "call"
+        target: "ws_fraud"
+        method: "action_populate"
+        as_user: "base.user_admin"
+
+      - step: "Fetch the populated detail line for the indicator"
+        action: "search"
+        model: "general_audit_ws_c0e0eec.detail"
+        domain:
+          - ["worksheet_id", "=", "REC: ws_fraud.id"]
+          - ["indicator_id", "=", "REC: fraud_indicator.id"]
+        save_as: "fraud_detail"
+        expect_count: 1
+
+      - step: "Flag account type 1 as related to the fraud indicator"
+        action: "write"
+        target: "fraud_detail"
+        as_user: "base.user_admin"
+        values:
+          related_account_type_ids: [[6, 0, ["REC: account_type_1.id"]]]
+
+      - step: "Invalidate cache after linking the fraud indicator to account type 1"
+        action: "call"
+        target: "standard_detail_1"
+        method: "invalidate_cache"
+
+      - step: "Assert standard detail 1 is now marked fraud impacted"
+        action: "assert"
+        target: "standard_detail_1"
+        asserts:
+          fraud_impacted:
+            type: "value"
+            expected: true
+
+      - step: "Create worksheet a418d89"
+        action: "create"
+        model: "general_audit_ws_a418d89"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_a418d89.id"
+
+      - step: "Load detail: line for standard detail 1 picks up fraud_risk True"
+        action: "call"
+        target: "worksheet"
+        method: "action_load_detail"
+        as_user: "base.user_admin"
+
+      - step: "Fetch the a418d89 line for standard detail 1"
+        action: "search"
+        model: "general_audit_ws_a418d89.detail"
+        domain:
+          - ["worksheet_id", "=", "REC: worksheet.id"]
+          - ["standard_detail_id", "=", "REC: standard_detail_1.id"]
+        save_as: "fraud_line"
+        expect_count: 1
+
+      - step: "Assert fraud_risk True right after the account was flagged"
+        action: "assert"
+        target: "fraud_line"
+        asserts:
+          fraud_risk:
+            type: "value"
+            expected: true
+
+      - step: "Un-flag account type 1: the account is no longer fraud (real write)"
+        action: "write"
+        target: "fraud_detail"
+        as_user: "base.user_admin"
+        values:
+          related_account_type_ids: [[6, 0, []]]
+
+      - step: "Invalidate cache after the real un-flag write"
+        action: "call"
+        target: "fraud_detail"
+        method: "invalidate_cache"
+
+      - step:
+          "Confirm the staleness reproduced for real: standard_detail_ids on the fraud
+          detail line did not follow related_account_type_ids to empty"
+        action: "assert"
+        target: "fraud_detail"
+        asserts:
+          standard_detail_ids:
+            type: "m2m"
+            check: "exact"
+            expected_records:
+              - "REC: standard_detail_1"
+
+      - step:
+          "Confirm the staleness cascaded: standard detail 1 is still marked fraud
+          impacted"
+        action: "assert"
+        target: "standard_detail_1"
+        asserts:
+          fraud_impacted:
+            type: "value"
+            expected: true
+
+      - step: "Click 'Load Detail' again to trigger the resync"
+        action: "call"
+        target: "worksheet"
+        method: "action_load_detail"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after reloading detail"
+        action: "call"
+        target: "standard_detail_1"
+        method: "invalidate_cache"
+
+      - step: "Invalidate cache on the fraud detail line too"
+        action: "call"
+        target: "fraud_detail"
+        method: "invalidate_cache"
+
+      - step: "Assert the fraud detail line's standard_detail_ids was repaired to empty"
+        action: "assert"
+        target: "fraud_detail"
+        asserts:
+          standard_detail_ids:
+            type: "m2m"
+            check: "count"
+            expected_count: 0
+
+      - step: "Assert standard detail 1's fraud_impacted was repaired to False"
+        action: "assert"
+        target: "standard_detail_1"
+        asserts:
+          fraud_impacted:
+            type: "value"
+            expected: false
+
+      - step: "Invalidate cache on the a418d89 detail line too"
+        action: "call"
+        target: "fraud_line"
+        method: "invalidate_cache"
+
+      - step: "Assert the a418d89 line's fraud_risk mirror was repaired to False"
+        action: "assert"
+        target: "fraud_line"
+        asserts:
+          fraud_risk:
+            type: "value"
+            expected: false
