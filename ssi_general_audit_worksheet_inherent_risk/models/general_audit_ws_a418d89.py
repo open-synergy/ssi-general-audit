@@ -132,12 +132,22 @@ class GeneralAuditWSA418D89(models.Model):
         if details_to_remove:
             details_to_remove.unlink()
 
-    def _resync_fraud_risk(self):
+    def _resync_fraud_risk(self, general_audit=None):
         """
         Repair the Fraud Factor Analysis -> standard detail propagation
-        chain for this worksheet's engagement, so ``fraud_risk`` (related+
-        stored from ``standard_detail_id.fraud_impacted``) reflects reality
-        again before (re)loading detail lines.
+        chain for an engagement, so ``fraud_risk`` (related+stored from
+        ``standard_detail_id.fraud_impacted``) reflects reality again
+        before (re)loading detail lines.
+
+        :param general_audit: engagement to repair; defaults to
+            ``self.general_audit_id`` so existing callers on a bound
+            ``general_audit_ws_a418d89`` record are unaffected. Other
+            worksheets (e.g. ``general_audit_ws_d66d87a``) can reuse this
+            repair without needing an Inherent Risk worksheet to exist
+            for the engagement by calling it on an empty recordset and
+            passing the engagement explicitly, e.g.
+            ``self.env["general_audit_ws_a418d89"]._resync_fraud_risk(
+            self.general_audit_id)``.
 
         Two stored compute fields sit on this chain:
         ``general_audit_ws_c0e0eec.detail.standard_detail_ids`` (Many2many,
@@ -168,7 +178,7 @@ class GeneralAuditWSA418D89(models.Model):
         below, each re-derived from a live search rather than from
         (possibly still-stale) cached relation fields.
         """
-        general_audit = self.general_audit_id
+        general_audit = general_audit or self.general_audit_id
         StandardDetail = self.env["general_audit.standard_detail"]
         FraudDetail = self.env["general_audit_ws_c0e0eec.detail"]
 
