@@ -93,15 +93,17 @@ class GeneralAuditWSd66d87a(models.Model):
         ``general_audit_id`` — the search is scoped so that standard
         details from other audit engagements are never loaded here.
 
-        :meth:`_resync_inherent_risk` runs first so that ``action_load_detail``
-        also repairs any standard detail whose ``inherent_risk`` was never
-        propagated from the Account Level Inherent Risk worksheet — the
-        new lines created below read ``standard_detail_id.inherent_risk``
-        (via the related/stored ``inherent_risk`` field on the detail
-        model) at creation time, so they must see the corrected value.
+        :meth:`_resync_inherent_risk` and :meth:`_resync_fraud_risk` run
+        first so that ``action_load_detail`` also repairs any standard
+        detail whose ``inherent_risk``/``fraud_impacted`` was never
+        propagated from the Account Level Inherent Risk worksheet and the
+        Fraud Factor Analysis worksheet — the new lines created below read
+        both fields (via the related/stored fields on the detail model)
+        at creation time, so they must see the corrected values.
         """
         self.ensure_one()
         self._resync_inherent_risk()
+        self._resync_fraud_risk()
         self.detail_ids.unlink()
         StandardDetail = self.env["general_audit.standard_detail"]
         Detail = self.env["general_audit_ws_d66d87a.detail"]
@@ -136,3 +138,24 @@ class GeneralAuditWSd66d87a(models.Model):
             [("general_audit_id", "=", self.general_audit_id.id)]
         )
         inherent_risk_worksheets.mapped("detail_ids")._inverse_to_standard_detail()
+
+    def _resync_fraud_risk(self):
+        """
+        Repair the Fraud Factor Analysis -> standard detail propagation
+        chain for this worksheet's engagement, so ``fraud_impacted``
+        (related+stored on this worksheet's detail lines) reflects
+        reality again before (re)loading detail lines.
+
+        ``general_audit.standard_detail.fraud_impacted`` is a stored
+        compute field that (per ticket HT/26/000630) does not reliably
+        persist once its freshly computed value becomes empty — e.g. an
+        account that had a linked Fraud Factor Analysis indicator and
+        then loses every such link keeps showing as impacted. The repair
+        logic already lives on ``general_audit_ws_a418d89._resync_fraud_risk``;
+        this reuses it (called on an empty recordset, engagement passed
+        explicitly) instead of duplicating it, so clicking "Load Detail"
+        on this worksheet fixes the same staleness that worksheet
+        already fixes on its own "Load Detail" — without requiring an
+        Inherent Risk worksheet to exist for this engagement.
+        """
+        self.env["general_audit_ws_a418d89"]._resync_fraud_risk(self.general_audit_id)

@@ -28,6 +28,21 @@ class TestGeneralAuditWSd66d87aRommCompute(TransactionCase):
     upstream source in a separate transaction - re-running
     ``action_load_detail()`` is required, exactly like the already-known
     ``control_risk`` limitation).
+
+    ``test_fraud_impacted_stale_true_repaired_by_load_detail`` (ticket
+    HT/26/000637) covers the companion staleness bug: a real write()
+    clearing ``general_audit_ws_c0e0eec.detail.related_account_type_ids``
+    to ``[]`` does not clear the previously-computed
+    ``standard_detail_ids`` on that record (a stored-compute Many2many),
+    which leaves ``general_audit.standard_detail.fraud_impacted`` (and
+    therefore this worksheet's related mirror) stuck at ``True`` -
+    Odoo's automatic recompute does not reliably persist an *emptied*
+    result even though it correctly persists an *added* one (already
+    confirmed against production data for the sibling worksheet,
+    ticket HT/26/000630). ``action_load_detail()`` now runs
+    ``_resync_fraud_risk()`` first (reusing
+    ``general_audit_ws_a418d89``'s repair method) so reloading this
+    worksheet repairs the same staleness.
     """
 
     def setUp(self):
@@ -377,3 +392,82 @@ class TestGeneralAuditWSd66d87aRommCompute(TransactionCase):
         self.assertEqual(detail.romm_risk_initial, "high")
         # FR high (1.2) x SigRisk medium (0.6) x Initial high (0.8) = 0.576 -> high
         self.assertEqual(detail.romm, "high")
+
+    def test_fraud_impacted_stale_true_repaired_by_load_detail(self):
+        """Reload the worksheet to repair a stale ``fraud_impacted``.
+
+        Reproduces HT/26/000637: once the only fraud-linked account is
+        unlinked from the Fraud Factor Analysis indicator (down to no
+        accounts at all, not swapped for another one), Odoo's stored
+        compute fails to persist the now-empty result on both
+        ``general_audit_ws_c0e0eec.detail.standard_detail_ids`` and
+        ``general_audit.standard_detail.fraud_impacted`` - the same
+        confirmed staleness already covered for the Account Level
+        Inherent Risk worksheet (HT/26/000630). Calling
+        ``action_load_detail()`` on this worksheet must repair it too,
+        since it now also runs ``_resync_fraud_risk()``.
+        """
+        env = self.env
+        c0e0eec_ws_type = env.ref(
+            "ssi_general_audit_worksheet_understanding_entity.worksheet_type_c0e0eec"
+        )
+        c0e0eec_worksheet = (
+            env["general_audit_ws_c0e0eec"]
+            .with_user(self.admin)
+            .create(
+                {
+                    "general_audit_id": self.audit.id,
+                    "type_id": c0e0eec_ws_type.id,
+                }
+            )
+        )
+        indicator = env.ref(
+            "ssi_general_audit_worksheet_understanding_entity"
+            ".general_audit_fraud_factor_indicator_1_19623fa0"
+        )
+        fraud_detail = (
+            env["general_audit_ws_c0e0eec.detail"]
+            .with_user(self.admin)
+            .create(
+                {
+                    "worksheet_id": c0e0eec_worksheet.id,
+                    "indicator_id": indicator.id,
+                    "related_account_type_ids": [(6, 0, [self.account_type.id])],
+                }
+            )
+        )
+        self.standard_detail.invalidate_cache()
+        self.assertTrue(self.standard_detail.fraud_impacted)
+
+        # Baseline through the worksheet, same as
+        # test_fraud_impacted_true_via_c0e0eec_changes_romm.
+        detail = self._get_detail()
+        self.assertTrue(detail.fraud_impacted)
+
+        # Real write clearing the link entirely (not swapping to another
+        # account type) - this is what fails to propagate.
+        fraud_detail.write({"related_account_type_ids": [(6, 0, [])]})
+        fraud_detail.invalidate_cache()
+
+        # Confirm the staleness reproduced for real before asserting the
+        # repair: standard_detail_ids on the fraud detail line did not
+        # follow related_account_type_ids to empty, and it cascaded onto
+        # standard_detail.fraud_impacted.
+        self.assertEqual(fraud_detail.standard_detail_ids, self.standard_detail)
+        self.standard_detail.invalidate_cache()
+        self.assertTrue(self.standard_detail.fraud_impacted)
+
+        # Reloading the ROMM - Account Level worksheet must repair both
+        # layers via the new _resync_fraud_risk() call.
+        self.d66d87a_worksheet.action_load_detail()
+        fraud_detail.invalidate_cache()
+        self.standard_detail.invalidate_cache()
+        self.assertFalse(fraud_detail.standard_detail_ids)
+        self.assertFalse(self.standard_detail.fraud_impacted)
+
+        detail = self.d66d87a_worksheet.detail_ids.filtered(
+            lambda d: d.standard_detail_id == self.standard_detail
+        )
+        self.assertFalse(detail.fraud_impacted)
+        # FR medium (0.8) x SigRisk medium (0.6) x Initial high (0.8) = 0.384 -> medium
+        self.assertEqual(detail.romm, "medium")
