@@ -151,14 +151,11 @@ class GeneralAuditWSd66d87a(models.Model):
         persist once its freshly computed value becomes empty — e.g. an
         account that had a linked Fraud Factor Analysis indicator and
         then loses every such link keeps showing as impacted. The repair
-        logic already lives on the Account Level Inherent Risk
-        worksheet's own ``_resync_fraud_risk`` method; this reuses it
-        instead of duplicating it, so clicking "Load Detail" on this
-        worksheet fixes the same staleness that worksheet already fixes
-        on its own "Load Detail".
+        logic already lives on ``general_audit_ws_a418d89._resync_fraud_risk``;
+        this reuses it (called on an empty recordset, engagement passed
+        explicitly) instead of duplicating it, so clicking "Load Detail"
+        on this worksheet fixes the same staleness that worksheet
+        already fixes on its own "Load Detail" — without requiring an
+        Inherent Risk worksheet to exist for this engagement.
         """
-        inherent_risk_worksheets = self.env["general_audit_ws_a418d89"].search(
-            [("general_audit_id", "=", self.general_audit_id.id)]
-        )
-        for worksheet in inherent_risk_worksheets:
-            worksheet._resync_fraud_risk()
+        self.env["general_audit_ws_a418d89"]._resync_fraud_risk(self.general_audit_id)
