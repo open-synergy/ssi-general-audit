@@ -920,6 +920,22 @@ class GeneralAudit(models.Model):
     def _reload_account(self):
         self.ensure_one()
 
+        old_detail_ids = self.detail_ids.ids
+
+        # Hapus dulu dependent records yang FK-nya required + restrict ke
+        # general_audit.detail -- pola sama seperti _reload_standard_account()
+        # -- kalau tidak, unlink() di bawah gagal kena constraint FK begitu
+        # engagement sudah punya worksheet Lead Schedule / Test Planning.
+        for model_name, field_name in [
+            ("general_audit_ws_b26d482.detail", "detail_id"),
+            ("general_audit_ws_f9f3299.detail", "detail_id"),
+            ("general_audit_ws_f9a2c3d.detail", "audit_detail_id"),
+        ]:
+            if model_name in self.env:
+                self.env[model_name].search(
+                    [(field_name, "in", old_detail_ids)]
+                ).unlink()
+
         self.detail_ids.unlink()
 
         if not self.account_mapping_id:
@@ -934,6 +950,21 @@ class GeneralAudit(models.Model):
                     "account_id": account.account_id.id,
                 }
             )
+
+        # Reload dependent worksheets supaya baris detail mereka ter-generate
+        # ulang dari general_audit.detail yang baru.
+        if "general_audit_ws_b26d482" in self.env:
+            self.env["general_audit_ws_b26d482"].search(
+                [("general_audit_id", "=", self.id)]
+            ).action_load_detail()
+        if "general_audit_ws_f9f3299" in self.env:
+            self.env["general_audit_ws_f9f3299"].search(
+                [("general_audit_id", "=", self.id)]
+            ).action_reload_account()
+        if "general_audit_ws_f9a2c3d" in self.env:
+            self.env["general_audit_ws_f9a2c3d"].search(
+                [("general_audit_id", "=", self.id)]
+            ).action_load_detail()
 
     def action_reload_standard_account(self):
         for record in self.sudo():
