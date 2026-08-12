@@ -26,6 +26,7 @@
         "data/general_audit_worksheet_type_data.xml",
         "data/master/general_audit_worksheet_conclusion.xml",
         "data/master/general_audit_competency_upgrade.xml",
+        "data/master/allocation_total_hour.xml",
         # "menu.xml",
         "views/res_company_views.xml",
         "views/general_audit_competency_upgrade_views.xml",
