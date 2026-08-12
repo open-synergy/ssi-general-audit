@@ -402,6 +402,14 @@ have been completed.""",
     @api.onchange(
         "partner_id",
     )
+    def onchange_field_industry_id(self):
+        self.field_industry_id = False
+        if self.partner_id:
+            self.field_industry_id = self.partner_id.industry_id
+
+    @api.onchange(
+        "partner_id",
+    )
     def onchange_npwp(self):
         self.npwp = ""
         if self.partner_id:
@@ -430,6 +438,19 @@ have been completed.""",
         self.location_address = ""
         if self.partner_id:
             self.location_address = self.partner_id.contact_address
+
+    def action_reload_entity_data(self):
+        for record in self.sudo():
+            record._reload_entity_data()
+
+    def _reload_entity_data(self):
+        self.ensure_one()
+        self.onchange_entity_type_id()
+        self.onchange_field_industry_id()
+        self.onchange_npwp()
+        self.onchange_phone()
+        self.onchange_legal_address()
+        self.onchange_location_address()
 
     def _get_fields_required_before_confirm(self):
         _super = super(GeneralAuditWS805d4d5, self)
