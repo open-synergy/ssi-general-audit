@@ -15,6 +15,7 @@
     "data": [
         "security/ir_module_category_data.xml",
         "security/res_group_data.xml",
+        "security/res_group/general_audit_entity_condition.xml",
         "security/ir_rule_data.xml",
         "data/ir_sequence_data.xml",
         "data/sequence_template_data.xml",
@@ -31,6 +32,8 @@
         # MASTER DATA
         "data/master/general_audit_worksheet_conclusion.xml",
         "data/master/general_audit_ws_1d9338d_item.xml",
+        "data/master/general_audit_entity_condition.xml",
+        "views/master/general_audit_entity_condition_views.xml",
         # 6dcda0e - Specific Materiality
         "views/ga_6dcda0e/general_audit_ws_6dcda0e_views.xml",
         # d9d2b44 - Materiality Computation

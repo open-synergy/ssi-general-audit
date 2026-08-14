@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!-- Copyright 2026 OpenSynergy Indonesia
+     Copyright 2026 PT. Simetri Sinergi Indonesia
+     License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl-3.0-standalone.html). -->
+<odoo>
+    <record
+        id="general_audit_entity_condition_profit_before_tax"
+        model="general_audit_entity_condition"
+    >
+        <field name="code">EC01</field>
+        <field name="name">Entity focuses on profit before tax</field>
+    </record>
+    <record
+        id="general_audit_entity_condition_ebitda"
+        model="general_audit_entity_condition"
+    >
+        <field name="code">EC02</field>
+        <field name="name">Entity focuses on EBITDA</field>
+    </record>
+    <record
+        id="general_audit_entity_condition_asset_liability"
+        model="general_audit_entity_condition"
+    >
+        <field name="code">EC03</field>
+        <field name="name">Entity focuses on assets/liabilities</field>
+    </record>
+    <record
+        id="general_audit_entity_condition_net_asset"
+        model="general_audit_entity_condition"
+    >
+        <field name="code">EC04</field>
+        <field name="name">Entity focuses on net assets</field>
+    </record>
+
+    <!-- Indonesian translations -->
+    <record
+        id="general_audit_entity_condition_profit_before_tax_id"
+        model="ir.translation"
+    >
+        <field name="name">general_audit_entity_condition,name</field>
+        <field name="lang">id_ID</field>
+        <field name="type">model</field>
+        <field name="res_id" ref="general_audit_entity_condition_profit_before_tax" />
+        <field name="value">Entitas fokus pada laba sebelum pajak</field>
+    </record>
+    <record id="general_audit_entity_condition_ebitda_id" model="ir.translation">
+        <field name="name">general_audit_entity_condition,name</field>
+        <field name="lang">id_ID</field>
+        <field name="type">model</field>
+        <field name="res_id" ref="general_audit_entity_condition_ebitda" />
+        <field name="value">Entitas fokus pada EBITDA</field>
+    </record>
+    <record
+        id="general_audit_entity_condition_asset_liability_id"
+        model="ir.translation"
+    >
+        <field name="name">general_audit_entity_condition,name</field>
+        <field name="lang">id_ID</field>
+        <field name="type">model</field>
+        <field name="res_id" ref="general_audit_entity_condition_asset_liability" />
+        <field name="value">Entitas fokus pada aset/liabilitas</field>
+    </record>
+    <record id="general_audit_entity_condition_net_asset_id" model="ir.translation">
+        <field name="name">general_audit_entity_condition,name</field>
+        <field name="lang">id_ID</field>
+        <field name="type">model</field>
+        <field name="res_id" ref="general_audit_entity_condition_net_asset" />
+        <field name="value">Entitas fokus pada aset bersih</field>
+    </record>
+</odoo>
