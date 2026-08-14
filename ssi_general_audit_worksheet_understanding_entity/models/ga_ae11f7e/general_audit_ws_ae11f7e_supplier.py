@@ -29,7 +29,7 @@ class GeneralAuditWSAE11F7ESupplier(models.Model):
         ),
     )
     name = fields.Char(
-        string="Supplier",
+        string="Primary Supplier",
         required=True,
         help="Supplier name.",
     )

@@ -29,7 +29,7 @@ class GeneralAuditWSAE11F7ECompetitor(models.Model):
         ),
     )
     name = fields.Char(
-        string="Competitor",
+        string="Primary Competitor",
         required=True,
         help="Competitor name.",
     )
