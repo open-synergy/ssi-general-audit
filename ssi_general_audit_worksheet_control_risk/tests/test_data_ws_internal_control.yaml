@@ -363,7 +363,6 @@ scenarios:
                 name: "Revenue cut-off control review"
                 frequency: "Monthly"
                 rely_on_control: "yes"
-                toc_analysis: "effective"
                 risk_identification_ids:
                   - - 0
                     - 0
@@ -378,7 +377,6 @@ scenarios:
                 name: "Credit approval control review"
                 frequency: "Weekly"
                 rely_on_control: "no"
-                toc_analysis: "not_effective"
 
       - step: "Assert 2 detail lines were created"
         action: "assert"
@@ -392,7 +390,7 @@ scenarios:
             type: "m2o"
             expected: "REC: standard_detail"
 
-      - step: "Fetch the detail line relying on the control (result should be low)"
+      - step: "Fetch the detail line relying on the control (standard_detail_id check)"
         action: "search"
         model: "general_audit_ws_ba9b2f0.detail"
         domain:
@@ -402,13 +400,23 @@ scenarios:
         limit: 1
         expect_count: 1
 
-      - step: "Assert result is low"
+      # `toc_analysis` can no longer be set inline here: since
+      # ssi_general_audit_worksheet_test_of_control's _inherit turns it into a
+      # related+readonly field pulled from a linked
+      # general_audit_ws_e3f4a5b.attribute (toc_attribute_id), it stays falsy
+      # for a control_risk-only fixture - so `rely_on_control == "yes"` alone
+      # is no longer enough to reach `result == "low"` (see `_compute_result`
+      # in general_audit_ws_ba9b2f0_detail.py). The "low" branch is covered
+      # instead in that module's own
+      # test_general_audit_ws_ba9b2f0_toc_attribute.py, where toc_attribute_id
+      # is actually linked.
+      - step: "Assert result is high"
         action: "assert"
         target: "detail_low"
         asserts:
           result:
             type: "value"
-            expected: "low"
+            expected: "high"
 
       - step: "Fetch the detail line not relying on the control (result should be high)"
         action: "search"
