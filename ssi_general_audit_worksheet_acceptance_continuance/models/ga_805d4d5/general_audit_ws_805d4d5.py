@@ -166,9 +166,9 @@ conducts its activities.""",
         string="Phone",
         help="Primary contact phone number of the entity.",
     )
-    fax = fields.Char(
-        string="Fax",
-        help="Fax number of the entity, if applicable.",
+    email = fields.Char(
+        string="Email",
+        help="Email address of the entity, if applicable.",
     )
     field_industry_id = fields.Many2one(
         string="Business Field #1",
