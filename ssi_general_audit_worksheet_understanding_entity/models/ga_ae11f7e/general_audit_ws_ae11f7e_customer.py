@@ -29,7 +29,7 @@ class GeneralAuditWSAE11F7ECustomer(models.Model):
         ),
     )
     name = fields.Char(
-        string="Customer",
+        string="Primary Customer",
         required=True,
         help="Customer name.",
     )
