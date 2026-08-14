@@ -1,8 +1,6 @@
 # Copyright 2022 OpenSynergy Indonesia
 # Copyright 2022 PT. Simetri Sinergi Indonesia
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl-3.0-standalone.html).
-from datetime import timedelta
-
 from odoo import _, api, fields, models
 from odoo.exceptions import ValidationError
 
@@ -115,28 +113,18 @@ class GeneralAuditWSCBBBAF4(models.Model):
         },
     )
 
-    @api.depends(
-        "engagement_date",
-        "reporting_date",
-    )
-    def _compute_effective_days(self):
-        for rec in self:
-            rec.effective_days = 0
-            if rec.engagement_date and rec.reporting_date:
-                start = rec.engagement_date
-                end = rec.reporting_date
-                day_count = 0
-                current = start
-                while current <= end:
-                    if current.weekday() < 5:  # 0=Monday, ..., 4=Friday
-                        day_count += 1
-                    current += timedelta(days=1)
-                rec.effective_days = day_count
-
     effective_days = fields.Integer(
         string="Number of Effective Days",
-        compute="_compute_effective_days",
-        compute_sudo=True,
+        required=False,
+        readonly=True,
+        states={
+            "open": [
+                ("readonly", False),
+                ("required", True),
+            ],
+        },
+        help="Number of effective working days on this engagement, entered "
+        "manually by the auditor.",
     )
 
     # MAN HOUR ALLOCATION

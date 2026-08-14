@@ -413,11 +413,11 @@ scenarios:
             expected: "draft"
 
   # ------------------------------------------------------------------
-  # _compute_effective_days - normal
+  # effective_days - manual input (normal)
   # ------------------------------------------------------------------
-  - name: "Worksheet cbbbaf4 - Compute effective_days (normal)"
+  - name: "Worksheet cbbbaf4 - effective_days is manual input (normal)"
     steps:
-      - step: "Create worksheet cbbbaf4 with engagement/reporting dates"
+      - step: "Create worksheet cbbbaf4 with effective_days entered manually"
         action: "create"
         model: "general_audit_ws_cbbbaf4"
         save_as: "worksheet"
@@ -427,21 +427,22 @@ scenarios:
           type_id: "REC: ws_type.id"
           engagement_date: 2024-08-01
           reporting_date: 2024-08-14
+          effective_days: 7
 
-      - step: "Assert effective_days counts Mon-Fri inclusive (10 working days)"
+      - step: "Assert effective_days keeps the manually entered value"
         action: "assert"
         target: "worksheet"
         asserts:
           effective_days:
             type: "value"
-            expected: 10
+            expected: 7
 
   # ------------------------------------------------------------------
-  # _compute_effective_days - kosong
+  # effective_days - manual input (kosong)
   # ------------------------------------------------------------------
-  - name: "Worksheet cbbbaf4 - Compute effective_days (kosong)"
+  - name: "Worksheet cbbbaf4 - effective_days is manual input (kosong)"
     steps:
-      - step: "Create worksheet cbbbaf4 without engagement/reporting dates"
+      - step: "Create worksheet cbbbaf4 without effective_days"
         action: "create"
         model: "general_audit_ws_cbbbaf4"
         save_as: "worksheet"
@@ -450,7 +451,7 @@ scenarios:
           general_audit_id: "REC: audit.id"
           type_id: "REC: ws_type.id"
 
-      - step: "Assert effective_days is zero"
+      - step: "Assert effective_days defaults to zero when not entered"
         action: "assert"
         target: "worksheet"
         asserts:
