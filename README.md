@@ -156,7 +156,7 @@ addon | version | maintainers | summary
 [ssi_general_audit_worksheet_audit_procedure_reperformance](ssi_general_audit_worksheet_audit_procedure_reperformance/) | 14.0.1.2.2 |  | General Audit Worksheet - Reperformance Audit Procedure
 [ssi_general_audit_worksheet_audit_procedure_vouching](ssi_general_audit_worksheet_audit_procedure_vouching/) | 14.0.1.2.0 |  | General Audit Worksheet - Vouching Audit Procedure
 [ssi_general_audit_worksheet_audit_result](ssi_general_audit_worksheet_audit_result/) | 14.0.1.1.1 |  | General Audit Worksheet - Audit Result
-[ssi_general_audit_worksheet_audit_working_plan](ssi_general_audit_worksheet_audit_working_plan/) | 14.0.1.5.0 |  | General Audit Worksheet - Audit Working Plan
+[ssi_general_audit_worksheet_audit_working_plan](ssi_general_audit_worksheet_audit_working_plan/) | 14.0.1.5.1 |  | General Audit Worksheet - Audit Working Plan
 [ssi_general_audit_worksheet_client_package](ssi_general_audit_worksheet_client_package/) | 14.0.1.2.2 |  | General Audit Worksheet - Client Assistance Package
 [ssi_general_audit_worksheet_control_risk](ssi_general_audit_worksheet_control_risk/) | 14.0.2.7.0 |  | General Audit Worksheet - Control Risk
 [ssi_general_audit_worksheet_draft_reporting](ssi_general_audit_worksheet_draft_reporting/) | 14.0.1.1.2 |  | General Audit Worksheet - Draft Reporting
