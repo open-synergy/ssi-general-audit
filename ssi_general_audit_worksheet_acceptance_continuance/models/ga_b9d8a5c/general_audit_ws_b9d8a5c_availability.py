@@ -60,7 +60,7 @@ class GeneralAuditWSb9d8a5cAvailability(models.Model):
     result = fields.Selection(
         string="Result",
         selection=[
-            ("sufficient", "Sufficient"),
+            ("sufficient", "There is no time constraint"),
             ("time_constraint", "There is time constraint"),
         ],
         readonly=True,
