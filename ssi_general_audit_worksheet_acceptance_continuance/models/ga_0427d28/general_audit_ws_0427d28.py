@@ -57,7 +57,7 @@ class GeneralAuditWS0427d28(models.Model):
             ("low", "Low"),
             ("medium", "Medium"),
             ("high", "High"),
-            ("tidak_relevan", "Tidak Relevan"),
+            ("tidak_relevan", "Not Relevant"),
         ],
         help="Risk assessment for the communication with the previous auditor,\n"
         "including the 'Not Relevant' option when applicable.",
