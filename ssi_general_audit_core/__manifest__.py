@@ -134,7 +134,6 @@
         "security/ir.model.access.csv",
         "data/ir_config_parameter.xml",
         "data/res_currency.xml",
-        "data/res_company.xml",
         "data/company_ownership_type.xml",
         "data/company_public_offering_type.xml",
         "data/cancel_reason.xml",
@@ -144,4 +143,5 @@
         "templates/auth_signup_fields.xml",
         "views/res_users.xml",
     ],
+    "post_init_hook": "post_init_hook",
 }
