@@ -40,6 +40,73 @@ class GeneralAuditWSd9d2b44(models.Model):
         "ssi_general_audit_worksheet_preliminary_materiality.worksheet_type_d9d2b44"
     )
 
+    entity_condition_id = fields.Many2one(
+        string="Entity Condition",
+        comodel_name="general_audit_entity_condition",
+        readonly=True,
+        states={
+            "open": [
+                ("readonly", False),
+            ],
+        },
+        help=(
+            "Entity condition that best represents the client's business "
+            "(e.g. profit before tax, EBITDA, assets/liabilities, net "
+            "assets), used to justify the benchmark selected for "
+            "materiality computation."
+        ),
+    )
+    worksheet_6dcda0e_ids = fields.One2many(
+        string="Specific Materiality Worksheets",
+        comodel_name="general_audit_ws_6dcda0e",
+        inverse_name="worksheet_d9d2b44_id",
+        help=(
+            "Specific Materiality (6dcda0e) worksheets that reference "
+            "this Materiality Computation as their base."
+        ),
+    )
+
+    @api.depends(
+        "worksheet_6dcda0e_ids",
+    )
+    def _compute_worksheet_6dcda0e_id(self):
+        """Auto-link the Specific Materiality worksheet, if any exists.
+
+        :return: nothing; assigns ``worksheet_6dcda0e_id``
+        """
+        for document in self:
+            result = False
+            if document.worksheet_6dcda0e_ids:
+                result = document.worksheet_6dcda0e_ids[0]
+            document.worksheet_6dcda0e_id = result
+
+    worksheet_6dcda0e_id = fields.Many2one(
+        string="# Specific Materiality Worksheet",
+        comodel_name="general_audit_ws_6dcda0e",
+        compute="_compute_worksheet_6dcda0e_id",
+        store=True,
+        compute_sudo=True,
+        help=(
+            "Cross-reference to the Specific Materiality (6dcda0e) "
+            "worksheet that maps individual account balances against "
+            "the thresholds computed here. Automatically linked from the "
+            "Specific Materiality worksheet that points back to this "
+            "Materiality Computation."
+        ),
+    )
+
+    def action_reload_worksheet_6dcda0e_id(self):
+        """Force a refresh of the linked Specific Materiality worksheet.
+
+        Recomputes ``worksheet_6dcda0e_id`` from the Specific Materiality
+        worksheets that currently point back to this Materiality
+        Computation, without waiting for a dependency-triggered
+        recomputation. Useful when the link was created before this
+        field existed on the record.
+        """
+        for record in self.sudo():
+            record._compute_worksheet_6dcda0e_id()
+
     @api.depends(
         "base_computation_amount",
         "other_base_amount",

@@ -47,6 +47,24 @@
                 <xpath expr="//page[1]" position="before">
                     <page name="materiality" string="Materiality">
                         <group
+                            name="materiality_0"
+                            colspan="4"
+                            col="2"
+                            string="Overview"
+                        >
+                            <field name="entity_condition_id" />
+                            <field name="worksheet_6dcda0e_id" />
+                        </group>
+                        <button
+                            name="action_reload_worksheet_6dcda0e_id"
+                            string="Reload"
+                            type="object"
+                            icon="fa-refresh"
+                            class="oe_highlight"
+                            style="margin-right:4px"
+                            attrs="{'invisible':[('state','not in',['open'])]}"
+                        />
+                        <group
                             name="materiality_1"
                             colspan="4"
                             col="2"
