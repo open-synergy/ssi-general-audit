@@ -42,7 +42,7 @@ class GeneralAuditWSabd82ed(models.Model):
     position = fields.Selection(
         string="Position",
         selection=[
-            ("current", "Current"),
+            ("current", "End Period"),
             ("interim", "Interim"),
         ],
         help=(
