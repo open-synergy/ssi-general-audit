@@ -44,6 +44,7 @@
         "data/master/ownership_location.xml",
         "data/master/general_audit_business_function.xml",
         "data/master/general_audit_business_document.xml",
+        "data/master/general_audit_other_report.xml",
         "menu.xml",
         "views/master/ownership_location_views.xml",
         "views/master/accounting_application_views.xml",
