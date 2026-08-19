@@ -62,6 +62,8 @@
         "data/master/client_account_type_computation_item.xml",
         "data/master/accountant_financial_accounting_standard.xml",
         "data/master/general_audit_standard_audit.xml",
+        "data/master/general_audit_evidence.xml",
+        "data/master/general_audit_relevant_regulation.xml",
         "menu.xml",
         "wizards/import_client_account.xml",
         "wizards/import_trial_balance_detail.xml",
