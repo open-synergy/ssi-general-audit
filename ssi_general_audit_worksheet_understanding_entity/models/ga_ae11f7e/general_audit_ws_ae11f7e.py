@@ -2,7 +2,7 @@
 # Copyright 2022 PT. Simetri Sinergi Indonesia
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl-3.0-standalone.html).
 
-from odoo import fields, models
+from odoo import api, fields, models
 
 
 class GeneralAuditWSae11f7e(models.Model):
@@ -67,6 +67,20 @@ class GeneralAuditWSae11f7e(models.Model):
         help=(
             "Business cycles applicable to the entity; synchronized with the General "
             "Audit record."
+        ),
+    )
+    business_cycle_summary_ids = fields.Many2many(
+        string="Business Cycle Summaries",
+        comodel_name="general_audit_ws_a604795",
+        compute="_compute_business_cycle_summary_ids",
+        compute_sudo=True,
+        store=False,
+        help=(
+            "Business Cycle Summaries (KKA RA.150.4) worksheets linked to the "
+            "business cycles above, matched by General Audit and business "
+            "process. Provided so downstream/client-built reports can "
+            "cross-reference this worksheet with its Business Cycle "
+            "Summaries."
         ),
     )
     # Other Parties and Funding
@@ -284,6 +298,44 @@ class GeneralAuditWSae11f7e(models.Model):
                     "business_cycle_ids": [(6, 0, self.business_cycle_ids.ids)],
                 }
             )
+
+    @api.depends(
+        "general_audit_id",
+        "business_cycle_ids",
+    )
+    def _compute_business_cycle_summary_ids(self):
+        """Cross-reference the business cycles to their KKA summaries.
+
+        Resolve, for each business cycle listed in ``business_cycle_ids``,
+        the corresponding "Business Cycle Summaries" (RA.150.4) worksheet
+        belonging to the same General Audit. Provided so client-built
+        reports can cross-reference this worksheet ("Main Business
+        Activity Process", RA.150.3) with its Business Cycle Summaries
+        without duplicating the lookup logic.
+
+        :return: nothing; assigns ``business_cycle_summary_ids``
+        """
+        Worksheet = self.env["general_audit_ws_a604795"]  # pylint: disable=invalid-name
+        for record in self:
+            result = []
+            if record.general_audit_id and record.business_cycle_ids:
+                criteria = record._get_business_cycle_summary_criteria()
+                result = Worksheet.search(criteria).ids
+            record.business_cycle_summary_ids = [(6, 0, result)]
+
+    def _get_business_cycle_summary_criteria(self):
+        """Build the domain selecting this worksheet's KKA summaries.
+
+        Extension point: override to narrow or widen which "Business
+        Cycle Summaries" (RA.150.4) worksheets are cross-referenced.
+
+        :return: an Odoo search domain
+        """
+        self.ensure_one()
+        return [
+            ("general_audit_id", "=", self.general_audit_id.id),
+            ("business_process_id", "in", self.business_cycle_ids.ids),
+        ]
 
     def _inverse_other_report_ids(self):
         for record in self:

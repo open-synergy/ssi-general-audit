@@ -44,6 +44,17 @@
                 <xpath expr="//page[1]" position="before">
                     <page name="business_cycle" string="Business Cycles">
                         <field name="business_cycle_ids" />
+                        <field name="business_cycle_summary_ids" readonly="1">
+                            <tree>
+                                <field name="name" string="# Document" />
+                                <field
+                                    name="business_process_id"
+                                    string="Business Cycle"
+                                />
+                                <field name="conclusion_id" string="Conclusion" />
+                                <field name="state" />
+                            </tree>
+                        </field>
                     </page>
                     <page name="other_party_fund" string="Other Parties and Funding">
                         <separator string="Related Parties" />
