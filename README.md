@@ -143,9 +143,9 @@ Available addons
 ----------------
 addon | version | maintainers | summary
 --- | --- | --- | ---
-[ssi_general_audit](ssi_general_audit/) | 14.0.4.0.5 |  | General Audit
+[ssi_general_audit](ssi_general_audit/) | 14.0.4.1.0 |  | General Audit
 [ssi_general_audit_core](ssi_general_audit_core/) | 14.0.1.1.0 |  | General Audit - Core
-[ssi_general_audit_worksheet_acceptance_continuance](ssi_general_audit_worksheet_acceptance_continuance/) | 14.0.1.3.2 |  | General Audit Worksheet - Acceptance and Continuance
+[ssi_general_audit_worksheet_acceptance_continuance](ssi_general_audit_worksheet_acceptance_continuance/) | 14.0.1.4.0 |  | General Audit Worksheet - Acceptance and Continuance
 [ssi_general_audit_worksheet_analytic_cycle](ssi_general_audit_worksheet_analytic_cycle/) | 14.0.1.2.0 |  | General Audit Worksheet - Analytical Procedures – Cycle
 [ssi_general_audit_worksheet_assignment_letter](ssi_general_audit_worksheet_assignment_letter/) | 14.0.1.0.3 |  | General Audit Worksheet - Assignment Letter
 [ssi_general_audit_worksheet_audit_procedure_analytic](ssi_general_audit_worksheet_audit_procedure_analytic/) | 14.0.1.2.2 |  | General Audit Worksheet - Observation Audit Procedure
@@ -182,7 +182,7 @@ addon | version | maintainers | summary
 [ssi_general_audit_worksheet_test_of_detail](ssi_general_audit_worksheet_test_of_detail/) | 14.0.1.3.0 |  | General Audit Worksheet - Test of Detail
 [ssi_general_audit_worksheet_test_planning](ssi_general_audit_worksheet_test_planning/) | 14.0.1.2.0 |  | General Audit Worksheet - Test Planning
 [ssi_general_audit_worksheet_trial_balance](ssi_general_audit_worksheet_trial_balance/) | 14.0.1.0.2 |  | General Audit Worksheet - Trial Balance
-[ssi_general_audit_worksheet_understanding_entity](ssi_general_audit_worksheet_understanding_entity/) | 14.0.1.13.2 |  | General Audit Worksheet - Understanding Entity and It's Environment
+[ssi_general_audit_worksheet_understanding_entity](ssi_general_audit_worksheet_understanding_entity/) | 14.0.1.14.0 |  | General Audit Worksheet - Understanding Entity and It's Environment
 
 [//]: # (end addons)
 
