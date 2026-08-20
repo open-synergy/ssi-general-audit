@@ -76,7 +76,7 @@ class GeneralAuditWSa604795(models.Model):
         comodel_name="general_audit_ws_ae11f7e",
         compute="_compute_main_business_activity_process_id",
         compute_sudo=True,
-        store=False,
+        store=True,
         help=(
             "Main Business Activity Process (KKA RA.150.3) worksheet for "
             "the same General Audit engagement. Provided so this "
