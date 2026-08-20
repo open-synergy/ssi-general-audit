@@ -1,7 +1,7 @@
 # Copyright 2022 OpenSynergy Indonesia
 # Copyright 2022 PT. Simetri Sinergi Indonesia
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl-3.0-standalone.html).
-from odoo import _, fields, models
+from odoo import _, api, fields, models
 from odoo.exceptions import ValidationError
 
 from odoo.addons.ssi_decorator import ssi_decorator
@@ -70,6 +70,43 @@ class GeneralAuditWSa604795(models.Model):
             "when the worksheet is Open."
         ),
     )
+
+    main_business_activity_process_id = fields.Many2one(
+        string="Main Business Activity Process",
+        comodel_name="general_audit_ws_ae11f7e",
+        compute="_compute_main_business_activity_process_id",
+        compute_sudo=True,
+        store=True,
+        help=(
+            "Main Business Activity Process (KKA RA.150.3) worksheet for "
+            "the same General Audit engagement. Provided so this "
+            "worksheet can be cross-referenced back to its Main Business "
+            "Activity Process without duplicating the lookup logic."
+        ),
+    )
+
+    @api.depends("general_audit_id")
+    def _compute_main_business_activity_process_id(self):
+        """Cross-reference this business cycle to its KKA RA.150.3.
+
+        Resolve the "Main Business Activity Process" (RA.150.3) worksheet
+        belonging to the same General Audit as this "Business Cycle
+        Summaries" (RA.150.4) worksheet. Mirrors, in reverse, the
+        ``business_cycle_summary_ids`` lookup on
+        ``general_audit_ws_ae11f7e``.
+
+        :return: nothing; assigns ``main_business_activity_process_id``
+        """
+        Worksheet = self.env["general_audit_ws_ae11f7e"]  # pylint: disable=invalid-name
+        for record in self:
+            result = False
+            if record.general_audit_id:
+                worksheet = Worksheet.search(
+                    [("general_audit_id", "=", record.general_audit_id.id)],
+                    limit=1,
+                )
+                result = worksheet.id if worksheet else False
+            record.main_business_activity_process_id = result
 
     def _compute_allowed_ws_cbbbaf4_ids(self):
         for record in self:
