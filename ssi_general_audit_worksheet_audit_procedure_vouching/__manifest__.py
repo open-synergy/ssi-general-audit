@@ -15,6 +15,9 @@
         "ssi_general_audit_worksheet_lead_schedule",
         "ssi_general_audit_worksheet_sample_determination",
     ],
+    "external_dependencies": {
+        "python": ["openupgradelib"],
+    },
     "data": [
         "security/ir_module_category/general_audit_ws_b4f7d9c.xml",
         "security/res_groups/general_audit_ws_b4f7d9c.xml",
