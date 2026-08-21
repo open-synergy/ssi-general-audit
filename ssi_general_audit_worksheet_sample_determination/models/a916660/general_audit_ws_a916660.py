@@ -15,12 +15,52 @@ RELIABILITY_FACTOR_TABLE = {
     "95": 3.00,
 }
 
+# Confidence-coefficient lookup table, keyed by each risk figure's own
+# percentage value. Both dicts encode the same 13-row reliability table
+# (Confidence Level / ARIA% / ARIR% / Coefficient); ARIA and ARIR are
+# looked up independently because a user may pick different percentages
+# for each, landing on different rows.
+ARIA_COEFFICIENT_TABLE = {
+    "0.5": 2.58,
+    "2.5": 1.96,
+    "5": 1.64,
+    "10": 1.28,
+    "12.5": 1.15,
+    "15": 1.04,
+    "20": 0.84,
+    "25": 0.67,
+    "30": 0.52,
+    "35": 0.39,
+    "40": 0.25,
+    "45": 0.13,
+    "50": 0.0,
+}
+ARIR_COEFFICIENT_TABLE = {
+    "1": 2.58,
+    "5": 1.96,
+    "10": 1.64,
+    "20": 1.28,
+    "25": 1.15,
+    "30": 1.04,
+    "40": 0.84,
+    "50": 0.67,
+    "60": 0.52,
+    "70": 0.39,
+    "80": 0.25,
+    "90": 0.13,
+    "100": 0.0,
+}
+ARIA_SELECTION = [(k, "{}%".format(k)) for k in ARIA_COEFFICIENT_TABLE]
+ARIR_SELECTION = [(k, "{}%".format(k)) for k in ARIR_COEFFICIENT_TABLE]
+
 
 class GeneralAuditWsA916660(models.Model):
     """
-    Sample Determination worksheet: computes Monetary Unit Sampling (MUS)
-    parameters from a General Ledger or Subledger population, and selects
-    the key items (100% examination) and MUS sample items to test.
+    Sample Determination worksheet: computes the sample size from a General
+    Ledger or Subledger population using one of three methods (Monetary
+    Unit Sampling, Classical Variable Sampling, or Non-Statistical
+    Sampling), and selects the key items (100% examination) and sample
+    items to test.
     """
 
     _name = "general_audit_ws_a916660"
@@ -171,11 +211,29 @@ class GeneralAuditWsA916660(models.Model):
         states={
             "open": [("readonly", False)],
         },
-        help="The result of Monetary Unit Sampling. "
-        "Contains key items (100%% examination) and MUS-selected sample items.",
+        help="The result of the sample determination. Contains key items "
+        "(100%% examination) and the selected sample items.",
     )
 
-    # --- MUS Parameters ---
+    # --- Method selection ---
+    method_type = fields.Selection(
+        string="Sampling Method",
+        selection=[
+            ("mus", "Monetary Unit Sampling"),
+            ("cvs", "Classical Variable Sampling"),
+            ("nss", "Non-Statistical Sampling"),
+        ],
+        required=True,
+        default="mus",
+        readonly=True,
+        states={
+            "open": [("readonly", False)],
+        },
+        help="Statistical method used to determine the sample size and "
+        "select the sample items.",
+    )
+
+    # --- MUS parameters (Monetary Unit Sampling) ---
     confidence_level = fields.Selection(
         string="Confidence Level",
         selection=[
@@ -216,12 +274,118 @@ class GeneralAuditWsA916660(models.Model):
         compute_sudo=True,
         help="Sampling interval = Tolerable Misstatement / Reliability Factor.",
     )
+
+    # --- CVS / NSS parameters (Classical Variable / Non-Statistical Sampling) ---
+    performance_materiality = fields.Monetary(
+        string="Performance Materiality",
+        currency_field="currency_id",
+        readonly=True,
+        states={
+            "open": [("readonly", False)],
+        },
+        help="Performance materiality for this account. Used to derive "
+        "``Tolerable Misstatement`` (= Performance Materiality x Risk "
+        "Factor) for Classical Variable / Non-Statistical Sampling.",
+    )
+    risk_factor = fields.Float(
+        string="Risk Factor",
+        digits=(3, 2),
+        readonly=True,
+        states={
+            "open": [("readonly", False)],
+        },
+        help="Combined audit risk factor for Classical Variable / "
+        "Non-Statistical Sampling.",
+    )
+    aria = fields.Selection(
+        string="ARIA (%)",
+        selection=ARIA_SELECTION,
+        readonly=True,
+        states={
+            "open": [("readonly", False)],
+        },
+        help="Acceptable Risk of Incorrect Acceptance, for Classical "
+        "Variable / Non-Statistical Sampling.",
+    )
+    arir = fields.Selection(
+        string="ARIR (%)",
+        selection=ARIR_SELECTION,
+        readonly=True,
+        states={
+            "open": [("readonly", False)],
+        },
+        help="Acceptable Risk of Incorrect Rejection, for Classical "
+        "Variable / Non-Statistical Sampling.",
+    )
+    aria_coefficient = fields.Float(
+        string="ARIA Coefficient",
+        compute="_compute_aria_coefficient",
+        store=True,
+        compute_sudo=True,
+        digits=(12, 4),
+    )
+    arir_coefficient = fields.Float(
+        string="ARIR Coefficient",
+        compute="_compute_arir_coefficient",
+        store=True,
+        compute_sudo=True,
+        digits=(12, 4),
+    )
+    estimate_misstatement_ratio = fields.Float(
+        string="Estimate Misstatement Ratio",
+        digits=(3, 2),
+        default=0.55,
+        readonly=True,
+        states={
+            "open": [("readonly", False)],
+        },
+        help="``Estimate Misstatement`` = Tolerable Misstatement x this "
+        "ratio, for Classical Variable / Non-Statistical Sampling.",
+    )
+    standard_deviation_ratio = fields.Float(
+        string="Standard Deviation Ratio",
+        digits=(5, 4),
+        default=0.013,
+        readonly=True,
+        states={
+            "open": [("readonly", False)],
+        },
+        help="``Standard Deviation Estimate`` = Estimate Misstatement x "
+        "this ratio, for Classical Variable / Non-Statistical Sampling.",
+    )
+    estimate_misstatement = fields.Monetary(
+        string="Estimate Misstatement",
+        currency_field="currency_id",
+        compute="_compute_estimate_misstatement",
+        store=True,
+        compute_sudo=True,
+    )
+    standard_deviation_estimate = fields.Monetary(
+        string="Standard Deviation Estimate",
+        currency_field="currency_id",
+        compute="_compute_standard_deviation_estimate",
+        store=True,
+        compute_sudo=True,
+    )
+    nss_final_sample_size = fields.Integer(
+        string="Final Sample Size (Judgment)",
+        readonly=True,
+        states={
+            "open": [("readonly", False)],
+        },
+        help="Optional manual override of the statistically computed "
+        "sample size, based on professional judgment. Non-Statistical "
+        "Sampling only; leave empty to use the computed size as-is.",
+    )
+
+    # --- Sampling output size ---
     computed_sample_size = fields.Integer(
-        string="MUS Sample Size",
+        string="Computed Sample Size",
         compute="_compute_computed_sample_size",
         store=True,
         compute_sudo=True,
-        help="Number of sample items to select from the sample pool using MUS.",
+        help="Number of sample items to select from the sample pool, "
+        "using the chosen sampling method.",
     )
 
     # --- Compute methods ---
@@ -441,21 +605,113 @@ class GeneralAuditWsA916660(models.Model):
             else:
                 record.sampling_interval = 0.0
 
-    @api.depends("sample_amount", "sampling_interval")
-    def _compute_computed_sample_size(self):
-        """Derive the number of MUS sample items to select from the pool.
+    @api.depends("aria")
+    def _compute_aria_coefficient(self):
+        """Look up the confidence coefficient for the chosen ARIA.
 
-        :return: sets ``computed_sample_size`` to ``ceil(sample_amount /
-            sampling_interval)``, or ``0`` when ``sampling_interval`` is not
-            positive.
+        :return: sets ``aria_coefficient`` from ``ARIA_COEFFICIENT_TABLE``,
+            or ``0.0`` when ``aria`` is unset.
         """
         for record in self:
-            if record.sampling_interval > 0:
-                record.computed_sample_size = math.ceil(
-                    record.sample_amount / record.sampling_interval
-                )
+            record.aria_coefficient = ARIA_COEFFICIENT_TABLE.get(record.aria, 0.0)
+
+    @api.depends("arir")
+    def _compute_arir_coefficient(self):
+        """Look up the confidence coefficient for the chosen ARIR.
+
+        :return: sets ``arir_coefficient`` from ``ARIR_COEFFICIENT_TABLE``,
+            or ``0.0`` when ``arir`` is unset.
+        """
+        for record in self:
+            record.arir_coefficient = ARIR_COEFFICIENT_TABLE.get(record.arir, 0.0)
+
+    @api.depends("tolerable_misstatement", "estimate_misstatement_ratio")
+    def _compute_estimate_misstatement(self):
+        """Derive the CVS/NSS estimate misstatement.
+
+        :return: sets ``estimate_misstatement`` to ``tolerable_misstatement
+            x estimate_misstatement_ratio``.
+        """
+        for record in self:
+            record.estimate_misstatement = (
+                record.tolerable_misstatement * record.estimate_misstatement_ratio
+            )
+
+    @api.depends("estimate_misstatement", "standard_deviation_ratio")
+    def _compute_standard_deviation_estimate(self):
+        """Derive the CVS/NSS standard deviation estimate.
+
+        :return: sets ``standard_deviation_estimate`` to
+            ``estimate_misstatement x standard_deviation_ratio``.
+        """
+        for record in self:
+            record.standard_deviation_estimate = (
+                record.estimate_misstatement * record.standard_deviation_ratio
+            )
+
+    @api.depends(
+        "method_type",
+        "sample_amount",
+        "sampling_interval",
+        "population_count",
+        "performance_materiality",
+        "estimate_misstatement",
+        "standard_deviation_estimate",
+        "aria_coefficient",
+        "arir_coefficient",
+        "nss_final_sample_size",
+    )
+    def _compute_computed_sample_size(self):
+        """Derive the number of sample items to select from the pool.
+
+        Branches by ``method_type``: MUS divides the sample pool amount by
+        the sampling interval; CVS/NSS use the classical variables
+        sampling size formula (see ``_compute_cvs_sample_size``). NSS additionally
+        lets ``nss_final_sample_size`` override the statistically computed
+        size with a professional-judgment figure.
+
+        :return: sets ``computed_sample_size``, or ``0`` when the method's
+            required inputs are incomplete.
+        """
+        for record in self:
+            if record.method_type == "mus":
+                if record.sampling_interval > 0:
+                    record.computed_sample_size = math.ceil(
+                        record.sample_amount / record.sampling_interval
+                    )
+                else:
+                    record.computed_sample_size = 0
+            elif record.method_type in ("cvs", "nss"):
+                statistical_size = record._compute_cvs_sample_size()
+                if record.method_type == "nss" and record.nss_final_sample_size:
+                    record.computed_sample_size = record.nss_final_sample_size
+                else:
+                    record.computed_sample_size = statistical_size
             else:
                 record.computed_sample_size = 0
+
+    def _compute_cvs_sample_size(self):
+        """Compute the Classical Variable Sampling sample size.
+
+        Formula: ``ROUNDUP(((StdDev x (ARIA_coef + ARIR_coef) x
+        PopulationCount) / (PerformanceMateriality - EstimateMisstatement))
+        ^ 2)``. Shared by CVS and NSS (NSS may override the result via
+        ``nss_final_sample_size``).
+
+        :return: the computed sample size, or ``0`` when
+            ``performance_materiality`` does not exceed
+            ``estimate_misstatement``, or ``population_count`` is 0.
+        """
+        self.ensure_one()
+        denominator = self.performance_materiality - self.estimate_misstatement
+        if denominator <= 0 or self.population_count <= 0:
+            return 0
+        ratio = (
+            self.standard_deviation_estimate
+            * (self.aria_coefficient + self.arir_coefficient)
+            * self.population_count
+        ) / denominator
+        return math.ceil(ratio**2)
 
     # --- Onchange methods ---
 
@@ -466,6 +722,13 @@ class GeneralAuditWsA916660(models.Model):
     @api.onchange("data_mode")
     def onchange_subledger_id(self):
         self.subledger_id = False
+
+    @api.onchange("performance_materiality", "risk_factor", "method_type")
+    def onchange_tolerable_misstatement(self):
+        if self.method_type in ("cvs", "nss"):
+            self.tolerable_misstatement = (
+                self.performance_materiality * self.risk_factor
+            )
 
     # --- Helper methods ---
 
@@ -530,7 +793,7 @@ class GeneralAuditWsA916660(models.Model):
     # --- Action methods ---
 
     def action_generate_sampling(self):
-        """Run Monetary Unit Sampling and store the result in ``sampling_data``.
+        """Run sample determination and store the result in ``sampling_data``.
 
         :return: ``None``. Delegates to ``_generate_sampling`` for each
             record, run with sudo rights.
@@ -635,16 +898,45 @@ class GeneralAuditWsA916660(models.Model):
                     break
         return sorted_by_amount, mus_selected_indices
 
+    def _perform_simple_random_sample(self, items, key_count, sample_size):
+        """Select an unweighted random sample from the pool.
+
+        Unlike Monetary Unit Sampling, Classical Variable and
+        Non-Statistical Sampling draw a plain random sample: every item
+        remaining after key items are removed has an equal chance of
+        selection, independent of its amount.
+
+        :param items: list of ``{"index", "cells", "amount"}`` dicts, as
+            produced by ``_build_items_from_csv``.
+        :param key_count: number of largest-amount items to treat as key
+            items (excluded from the random draw).
+        :param sample_size: number of items to randomly select from the
+            pool; capped to the pool size when larger.
+        :return: a ``(sorted_by_amount, selected_indices)`` tuple, in the
+            same shape as ``_perform_mus_sampling``'s return value.
+        """
+        sorted_by_amount = sorted(items, key=lambda x: x["amount"], reverse=True)
+        key_item_indices = {item["index"] for item in sorted_by_amount[:key_count]}
+        sample_pool = [item for item in items if item["index"] not in key_item_indices]
+        draw_size = min(sample_size, len(sample_pool))
+        selected_indices = set()
+        if draw_size > 0:
+            selected_items = random.sample(sample_pool, draw_size)
+            selected_indices = {item["index"] for item in selected_items}
+        return sorted_by_amount, selected_indices
+
     def _generate_sampling(self):
-        """Build ``sampling_data`` (key items + MUS sample) as a CSV string.
+        """Build ``sampling_data`` (key items + sample) as a CSV string.
 
         Reads the source raw data, extracts the configured columns, then
-        delegates the key item / MUS selection to ``_perform_mus_sampling``
-        and writes the result (key items first, tagged ``Key Item``, then
-        MUS-selected items tagged ``Sample``) to ``sampling_data``.
+        delegates item selection to ``_perform_mus_sampling`` (MUS) or
+        ``_perform_simple_random_sample`` (CVS/NSS) according to
+        ``method_type``, and writes the result (key items first, tagged
+        ``Key Item``, then selected items tagged ``Sample``) to
+        ``sampling_data``.
 
         :return: ``None``. Sets ``sampling_data`` to ``False`` when the
-            source, column configuration, or sampling interval is
+            source, column configuration, or method parameters are
             incomplete, or when parsing the source data fails.
         """
         self.ensure_one()
@@ -664,10 +956,14 @@ class GeneralAuditWsA916660(models.Model):
         if not unique_columns:
             self.sampling_data = False
             return
-        sample_interval = self.sampling_interval
-        if sample_interval <= 0:
-            self.sampling_data = False
-            return
+        if self.method_type == "mus":
+            if self.sampling_interval <= 0:
+                self.sampling_data = False
+                return
+        else:
+            if self.computed_sample_size <= 0:
+                self.sampling_data = False
+                return
         try:
             reader = csv.reader(io.StringIO(raw_data))
             all_rows = list(reader)
@@ -678,16 +974,21 @@ class GeneralAuditWsA916660(models.Model):
                 all_rows, unique_columns, monetary_col
             )
             key_count = self.key_item_count or 0
-            sorted_by_amount, mus_selected_indices = self._perform_mus_sampling(
-                items, key_count, sample_interval
-            )
+            if self.method_type == "mus":
+                sorted_by_amount, selected_indices = self._perform_mus_sampling(
+                    items, key_count, self.sampling_interval
+                )
+            else:
+                sorted_by_amount, selected_indices = self._perform_simple_random_sample(
+                    items, key_count, self.computed_sample_size
+                )
             output = io.StringIO()
             writer = csv.writer(output)
             writer.writerow(output_header)
             for item in sorted_by_amount[:key_count]:
                 writer.writerow([str(item["index"])] + item["cells"] + ["Key Item"])
             for item in items:
-                if item["index"] in mus_selected_indices:
+                if item["index"] in selected_indices:
                     writer.writerow([str(item["index"])] + item["cells"] + ["Sample"])
             self.sampling_data = output.getvalue()
         except Exception:

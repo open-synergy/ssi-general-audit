@@ -151,3 +151,45 @@ class TestGeneralAuditWSa916660(YamlTransactionCase):
         worksheet.onchange_subledger_id()
 
         self.assertFalse(worksheet.subledger_id)
+
+    def test_onchange_tolerable_misstatement_cvs(self):
+        """Pure Python -- trigger P12 (L-20), see
+        ``test_onchange_data_mode_clears_general_ledger_id`` for why this
+        onchange is verified by calling the method directly instead of
+        through ``Form``.
+        """
+        _admin, worksheet, _gl, _subledger = self._create_worksheet_fixture()
+
+        worksheet.sudo().write(
+            {
+                "method_type": "cvs",
+                "performance_materiality": 10000.0,
+                "risk_factor": 0.9,
+            }
+        )
+        self.assertEqual(worksheet.tolerable_misstatement, 0.0)
+
+        worksheet.onchange_tolerable_misstatement()
+
+        self.assertEqual(worksheet.tolerable_misstatement, 9000.0)
+
+    def test_onchange_tolerable_misstatement_mus_untouched(self):
+        """Pure Python -- trigger P12 (L-20), see
+        ``test_onchange_data_mode_clears_general_ledger_id`` for why this
+        onchange is verified by calling the method directly instead of
+        through ``Form``.
+        """
+        _admin, worksheet, _gl, _subledger = self._create_worksheet_fixture()
+
+        worksheet.sudo().write(
+            {
+                "method_type": "mus",
+                "performance_materiality": 10000.0,
+                "risk_factor": 0.9,
+                "tolerable_misstatement": 500.0,
+            }
+        )
+
+        worksheet.onchange_tolerable_misstatement()
+
+        self.assertEqual(worksheet.tolerable_misstatement, 500.0)

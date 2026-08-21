@@ -29,6 +29,7 @@
             <data>
                 <xpath expr="//field[@name='general_audit_id']" position="after">
                     <field name="data_mode" optional="hide" />
+                    <field name="method_type" optional="show" />
                     <field name="general_ledger_id" optional="hide" />
                     <field name="subledger_id" optional="hide" />
                 </xpath>
@@ -48,6 +49,7 @@
             <data>
                 <xpath expr="//group[@name='header_center']" position="inside">
                     <field name="data_mode" />
+                    <field name="method_type" />
                     <field name="allowed_general_ledger_ids" invisible="1" />
                     <field
                         name="general_ledger_id"
@@ -84,12 +86,36 @@
                                 name="data_1_2"
                                 colspan="1"
                                 col="2"
-                                string="MUS Parameters"
+                                string="Monetary Unit Sampling Parameters"
+                                attrs="{'invisible': [('method_type', '!=', 'mus')]}"
                             >
                                 <field name="confidence_level" />
                                 <field name="tolerable_misstatement" />
                                 <field name="reliability_factor" />
                                 <field name="sampling_interval" />
+                            </group>
+                            <group
+                                name="data_1_3"
+                                colspan="1"
+                                col="2"
+                                string="Classical Variable / Non-Statistical Sampling Parameters"
+                                attrs="{'invisible': [('method_type', 'not in', ['cvs', 'nss'])]}"
+                            >
+                                <field name="performance_materiality" />
+                                <field name="risk_factor" />
+                                <field name="tolerable_misstatement" />
+                                <field name="aria" />
+                                <field name="aria_coefficient" />
+                                <field name="arir" />
+                                <field name="arir_coefficient" />
+                                <field name="estimate_misstatement_ratio" />
+                                <field name="estimate_misstatement" />
+                                <field name="standard_deviation_ratio" />
+                                <field name="standard_deviation_estimate" />
+                                <field
+                                    name="nss_final_sample_size"
+                                    attrs="{'invisible': [('method_type', '!=', 'nss')]}"
+                                />
                             </group>
                         </group>
                         <group name="data_2" colspan="4" col="2">
@@ -126,7 +152,7 @@
                                 name="data_3_2"
                                 colspan="1"
                                 col="2"
-                                string="MUS Selection"
+                                string="Sample Size"
                             >
                                 <field name="computed_sample_size" />
                             </group>
