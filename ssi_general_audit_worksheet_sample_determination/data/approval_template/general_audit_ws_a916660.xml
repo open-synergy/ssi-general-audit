@@ -1,27 +1,30 @@
 <?xml version="1.0" encoding="utf-8" ?>
-<!-- Copyright 2026 OpenSynergy Indonesia
-     Copyright 2026 PT. Simetri Sinergi Indonesia
+<!-- Copyright 2025 OpenSynergy Indonesia
+     Copyright 2025 PT. Simetri Sinergi Indonesia
      License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl). -->
 <odoo>
-<record id="approval_template_general_audit_ws_b4f8e1a" model="approval.template">
+<record id="approval_template_general_audit_ws_a916660" model="approval.template">
     <field name="name">Standard</field>
-    <field name="model_id" ref="model_general_audit_ws_b4f8e1a" />
+    <field name="model_id" ref="model_general_audit_ws_a916660" />
     <field name="sequence" eval="100" />
     <field name="computation_method">use_python</field>
     <field name="python_code">result = True</field>
     <field name="validate_sequence" eval="1" />
 </record>
+
 <record
-        id="approval_template_detail_general_audit_ws_b4f8e1a"
+        id="approval_template_detail_general_audit_ws_a916660"
         model="approval.template_detail"
     >
-    <field name="template_id" ref="approval_template_general_audit_ws_b4f8e1a" />
+    <field name="template_id" ref="approval_template_general_audit_ws_a916660" />
     <field name="approver_selection_method">use_python</field>
     <field name="python_code">user = []
-user += env.ref('ssi_general_audit_worksheet_sample_determination.general_audit_ws_b4f8e1a_validator_group').users.ids
+user += env.ref('ssi_general_audit_worksheet_sample_determination.general_audit_ws_a916660_validator_group').users.ids
 user.append(rec.general_audit_id.user_id.id)
+
 if rec.reviewer_id:
     user.append(rec.reviewer_id.id)
+
 if rec.general_audit_id.reviewer_id:
     user.append(rec.general_audit_id.reviewer_id.id)
     </field>

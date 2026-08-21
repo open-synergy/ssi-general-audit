@@ -1,0 +1,971 @@
+# Copyright 2026 OpenSynergy Indonesia
+# Copyright 2026 PT. Simetri Sinergi Indonesia
+# License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl-3.0-standalone.html).
+
+# NOTE on the two `data_mode` onchanges (`onchange_general_ledger_id` /
+# `onchange_subledger_id`): the trigger field (`data_mode`) and both target
+# fields (`general_ledger_id`, `subledger_id`) share the exact same
+# `states={"open": [("readonly", False)]}` definition
+# (`models/a916660/general_audit_ws_a916660.py`) -- they overlap on state
+# `open`, unlike the sibling `general_audit_ws_c6c86fd` /
+# `general_audit_ws_b4f7d9c` cases. That state overlap is *not* the blocker
+# here, though: CI proved `action: form` on this model's form view fails
+# unconditionally with ``AssertionError: __len__ was not found in the
+# view`` regardless of which field is touched -- caused by the mixin-level
+# `allowed_general_ledger_ids` / `allowed_subledger_ids` Many2many fields
+# being declared `invisible="1"` in the view
+# (`views/general_audit_ws_a916660.xml`) with no sub-view/tree arch, which
+# the Form test helper cannot build editable metadata for. Production code
+# was left untouched per instructions; the two onchanges are verified by
+# calling the onchange methods directly in
+# ``tests/test_general_audit_ws_a916660.py`` instead.
+
+setup:
+  steps:
+    - step: "Get config parameter model"
+      action: "search"
+      model: "ir.config_parameter"
+      domain: []
+      save_as: "config_parameter"
+      limit: 1
+
+    - step: "Allow enough CPA licenses for this scenario"
+      action: "call"
+      target: "config_parameter"
+      method: "set_param"
+      args:
+        - "ssi_general_audit.max_number_of_cpa_license"
+        - "100"
+
+    - step: "Create client partner"
+      action: "create"
+      model: "res.partner"
+      save_as: "client"
+      as_user: "base.user_admin"
+      values:
+        name: "Test Audit Client - A916660"
+        is_company: true
+
+    - step: "Create accountant partner"
+      action: "create"
+      model: "res.partner"
+      save_as: "accountant"
+      as_user: "base.user_admin"
+      values:
+        name: "Test Audit Accountant - A916660"
+
+    - step: "Get CPA license id category"
+      action: "ref"
+      xml_id: "ssi_partner_identification_cpa_license.partner_identification_accountant_cpa_license"
+      save_as: "cpa_category"
+
+    - step: "Grant accountant a CPA license"
+      action: "create"
+      model: "res.partner.id_number"
+      save_as: "cpa_license"
+      as_user: "base.user_admin"
+      values:
+        partner_id: "REC: accountant.id"
+        category_id: "REC: cpa_category.id"
+        name: "CPA-A916660-0001"
+
+    - step: "Create account type set"
+      action: "create"
+      model: "client_account_type_set"
+      save_as: "account_type_set"
+      as_user: "base.user_admin"
+      values:
+        name: "Test Account Type Set - A916660"
+        code: "/"
+
+    - step: "Create financial accounting standard"
+      action: "create"
+      model: "accountant.financial_accounting_standard"
+      save_as: "standard"
+      as_user: "base.user_admin"
+      values:
+        name: "Test Financial Accounting Standard - A916660"
+        code: "/"
+
+    - step: "Create general audit"
+      action: "create"
+      model: "general_audit"
+      save_as: "audit"
+      as_user: "base.user_admin"
+      values:
+        title: "Test General Audit - A916660"
+        partner_id: "REC: client.id"
+        accountant_id: "REC: accountant.id"
+        account_type_set_id: "REC: account_type_set.id"
+        financial_accounting_standard_id: "REC: standard.id"
+        date_start: 2026-01-01
+        date_end: 2026-12-31
+        need_interim: false
+        need_previous: false
+        num_of_consecutive_audit_firm: 1
+        num_of_consecutive_audit_accountant: 1
+
+    - step: "Open general audit"
+      action: "call"
+      target: "audit"
+      method: "action_open"
+      as_user: "base.user_admin"
+
+    - step: "Invalidate cache after opening general audit"
+      action: "call"
+      target: "audit"
+      method: "invalidate_cache"
+
+    - step: "Create second general audit without any GL/Subledger linked"
+      action: "create"
+      model: "general_audit"
+      save_as: "audit_2"
+      as_user: "base.user_admin"
+      values:
+        title: "Test General Audit - A916660 (no GL/SL)"
+        partner_id: "REC: client.id"
+        accountant_id: "REC: accountant.id"
+        account_type_set_id: "REC: account_type_set.id"
+        financial_accounting_standard_id: "REC: standard.id"
+        date_start: 2026-01-01
+        date_end: 2026-12-31
+        need_interim: false
+        need_previous: false
+        num_of_consecutive_audit_firm: 1
+        num_of_consecutive_audit_accountant: 1
+
+    - step: "Get worksheet type a916660 (Sample Determination)"
+      action: "ref"
+      xml_id: "ssi_general_audit_worksheet_sample_determination.worksheet_type_a916660"
+      save_as: "ws_type"
+
+    - step: "Get worksheet type d209914 (General Ledger)"
+      action: "ref"
+      xml_id: "ssi_general_audit_worksheet_client_package.worksheet_type_d209914"
+      save_as: "ws_type_d209914"
+
+    - step: "Get worksheet type b5e3d9f (Subledger)"
+      action: "ref"
+      xml_id: "ssi_general_audit_worksheet_client_package.worksheet_type_b5e3d9f"
+      save_as: "ws_type_b5e3d9f"
+
+    - step: "Create General Ledger (d209914) fixture with 4-row raw_data"
+      action: "create"
+      model: "general_audit_ws_d209914"
+      save_as: "gl"
+      as_user: "base.user_admin"
+      values:
+        general_audit_id: "REC: audit.id"
+        type_id: "REC: ws_type_d209914.id"
+        thousand_separator: ","
+        decimal_separator: "."
+        raw_data: |
+          ref,amount,note
+          REF001,1000,Note 1
+          REF002,2000,Note 2
+          REF003,3000,Note 3
+          REF004,4000,Note 4
+
+    - step: "Create Subledger (b5e3d9f) fixture"
+      action: "create"
+      model: "general_audit_ws_b5e3d9f"
+      save_as: "subledger"
+      as_user: "base.user_admin"
+      values:
+        general_audit_id: "REC: audit.id"
+        type_id: "REC: ws_type_b5e3d9f.id"
+        thousand_separator: ","
+        decimal_separator: "."
+        raw_data: |
+          ref,amount,note
+          SUB001,500,Note A
+          SUB002,1500,Note B
+
+    - step: "Create conclusion master for worksheet type a916660"
+      action: "create"
+      model: "general_audit_worksheet_conclusion"
+      save_as: "conclusion"
+      as_user: "base.user_admin"
+      values:
+        name: "Sufficient appropriate audit evidence obtained"
+        code: "/"
+        type_id: "REC: ws_type.id"
+
+scenarios:
+  # ------------------------------------------------------------------
+  # 1. Create worksheet a916660 in draft
+  # ------------------------------------------------------------------
+  - name: "Create worksheet a916660"
+    steps:
+      - step: "Create worksheet a916660"
+        action: "create"
+        model: "general_audit_ws_a916660"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+
+      - step: "Assert worksheet created in draft"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          id:
+            type: "value"
+            operator: "is_truthy"
+          state:
+            type: "value"
+            expected: "draft"
+          general_audit_id:
+            type: "m2o"
+            expected: "REC: audit"
+          type_id:
+            type: "m2o"
+            expected: "REC: ws_type"
+
+  # ------------------------------------------------------------------
+  # 2. Compute allowed_general_ledger_ids
+  # ------------------------------------------------------------------
+  - name: "Compute allowed_general_ledger_ids - normal"
+    steps:
+      - step: "Create worksheet on audit that owns a GL"
+        action: "create"
+        model: "general_audit_ws_a916660"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+
+      - step: "Assert allowed_general_ledger_ids contains the GL fixture"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          allowed_general_ledger_ids:
+            type: "m2m"
+            check: "contains"
+            expected_records:
+              - "REC: gl"
+
+  - name: "Compute allowed_general_ledger_ids - empty (no GL on audit)"
+    steps:
+      - step: "Create worksheet on audit_2 (no GL linked)"
+        action: "create"
+        model: "general_audit_ws_a916660"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit_2.id"
+          type_id: "REC: ws_type.id"
+
+      - step: "Assert allowed_general_ledger_ids is empty"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          allowed_general_ledger_ids:
+            type: "m2m"
+            check: "count"
+            expected_count: 0
+
+  # ------------------------------------------------------------------
+  # 3. Compute allowed_subledger_ids
+  # ------------------------------------------------------------------
+  - name: "Compute allowed_subledger_ids - normal"
+    steps:
+      - step: "Create worksheet on audit that owns a Subledger"
+        action: "create"
+        model: "general_audit_ws_a916660"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+
+      - step: "Assert allowed_subledger_ids contains the Subledger fixture"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          allowed_subledger_ids:
+            type: "m2m"
+            check: "contains"
+            expected_records:
+              - "REC: subledger"
+
+  - name: "Compute allowed_subledger_ids - empty (no Subledger on audit)"
+    steps:
+      - step: "Create worksheet on audit_2 (no Subledger linked)"
+        action: "create"
+        model: "general_audit_ws_a916660"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit_2.id"
+          type_id: "REC: ws_type.id"
+
+      - step: "Assert allowed_subledger_ids is empty"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          allowed_subledger_ids:
+            type: "m2m"
+            check: "count"
+            expected_count: 0
+
+  # ------------------------------------------------------------------
+  # 4. Compute raw_data
+  # ------------------------------------------------------------------
+  - name: "Compute raw_data - gl mode returns GL raw_data"
+    steps:
+      - step: "Create worksheet with data_mode gl"
+        action: "create"
+        model: "general_audit_ws_a916660"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+          data_mode: "gl"
+          general_ledger_id: "REC: gl.id"
+
+      - step: "Assert raw_data equals GL raw_data"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          raw_data:
+            type: "value"
+            expected: "REC: gl.raw_data"
+
+  - name: "Compute raw_data - empty when data_mode not set"
+    steps:
+      - step: "Create worksheet without data_mode"
+        action: "create"
+        model: "general_audit_ws_a916660"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+
+      - step: "Assert raw_data is falsy"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          raw_data:
+            type: "value"
+            operator: "is_falsy"
+
+  # ------------------------------------------------------------------
+  # 5. Compute population_count
+  # ------------------------------------------------------------------
+  - name: "Compute population_count - normal (4 data rows)"
+    steps:
+      - step: "Create worksheet with GL data source"
+        action: "create"
+        model: "general_audit_ws_a916660"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+          data_mode: "gl"
+          general_ledger_id: "REC: gl.id"
+
+      - step: "Assert population_count is 4"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          population_count:
+            type: "value"
+            expected: 4
+
+  - name: "Compute population_count - empty (no data source)"
+    steps:
+      - step: "Create worksheet without data source"
+        action: "create"
+        model: "general_audit_ws_a916660"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+
+      - step: "Assert population_count is 0"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          population_count:
+            type: "value"
+            expected: 0
+
+  # ------------------------------------------------------------------
+  # 6. Compute population_amount
+  # ------------------------------------------------------------------
+  - name: "Compute population_amount - normal (monetary_col_number 2)"
+    steps:
+      - step: "Create worksheet with monetary_col_number 2"
+        action: "create"
+        model: "general_audit_ws_a916660"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+          data_mode: "gl"
+          general_ledger_id: "REC: gl.id"
+          monetary_col_number: 2
+
+      - step: "Assert population_amount is 10000.0"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          population_amount:
+            type: "value"
+            expected: 10000.0
+
+  - name: "Compute population_amount - zero when monetary_col_number is 0"
+    steps:
+      - step: "Create worksheet with monetary_col_number 0"
+        action: "create"
+        model: "general_audit_ws_a916660"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+          data_mode: "gl"
+          general_ledger_id: "REC: gl.id"
+          monetary_col_number: 0
+
+      - step: "Assert population_amount is 0.0"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          population_amount:
+            type: "value"
+            expected: 0.0
+
+  - name: "Compute population_amount - parses parenthesized negative values"
+    steps:
+      - step: "Create GL fixture with a parenthesized negative amount"
+        action: "create"
+        model: "general_audit_ws_d209914"
+        save_as: "gl_paren"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_d209914.id"
+          thousand_separator: ","
+          decimal_separator: "."
+          raw_data: |
+            ref,amount,note
+            REF001,1000,Note 1
+            REF002,(500),Note 2
+
+      - step: "Create worksheet using GL fixture with parenthesized value"
+        action: "create"
+        model: "general_audit_ws_a916660"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+          data_mode: "gl"
+          general_ledger_id: "REC: gl_paren.id"
+          monetary_col_number: 2
+
+      - step: "Assert population_amount is 500.0 (1000 - 500)"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          population_amount:
+            type: "value"
+            expected: 500.0
+
+  # ------------------------------------------------------------------
+  # 7. Compute key_item_amount
+  # ------------------------------------------------------------------
+  - name: "Compute key_item_amount - normal (top 2 amounts)"
+    steps:
+      - step: "Create worksheet with key_item_count 2"
+        action: "create"
+        model: "general_audit_ws_a916660"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+          data_mode: "gl"
+          general_ledger_id: "REC: gl.id"
+          monetary_col_number: 2
+          key_item_count: 2
+
+      - step: "Assert key_item_amount is 7000.0 (4000 + 3000)"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          key_item_amount:
+            type: "value"
+            expected: 7000.0
+
+  - name: "Compute key_item_amount - zero when key_item_count is 0"
+    steps:
+      - step: "Create worksheet with key_item_count 0"
+        action: "create"
+        model: "general_audit_ws_a916660"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+          data_mode: "gl"
+          general_ledger_id: "REC: gl.id"
+          monetary_col_number: 2
+          key_item_count: 0
+
+      - step: "Assert key_item_amount is 0.0"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          key_item_amount:
+            type: "value"
+            expected: 0.0
+
+  # ------------------------------------------------------------------
+  # 8. Compute sample_count
+  # ------------------------------------------------------------------
+  - name: "Compute sample_count - population 4 minus key items 2"
+    steps:
+      - step: "Create worksheet with population 4 and key_item_count 2"
+        action: "create"
+        model: "general_audit_ws_a916660"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+          data_mode: "gl"
+          general_ledger_id: "REC: gl.id"
+          monetary_col_number: 2
+          key_item_count: 2
+
+      - step: "Assert sample_count is 2"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          sample_count:
+            type: "value"
+            expected: 2
+
+  # ------------------------------------------------------------------
+  # 9. Compute sample_amount
+  # ------------------------------------------------------------------
+  - name: "Compute sample_amount - population amount minus key item amount"
+    steps:
+      - step: "Create worksheet with population_amount 10000 and key_item_amount 7000"
+        action: "create"
+        model: "general_audit_ws_a916660"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+          data_mode: "gl"
+          general_ledger_id: "REC: gl.id"
+          monetary_col_number: 2
+          key_item_count: 2
+
+      - step: "Assert sample_amount is 3000.0"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          sample_amount:
+            type: "value"
+            expected: 3000.0
+
+  # ------------------------------------------------------------------
+  # 10. Compute reliability_factor (RELIABILITY_FACTOR_TABLE)
+  # ------------------------------------------------------------------
+  - name: "Compute reliability_factor - confidence_level 95 -> 3.0"
+    steps:
+      - step: "Create worksheet with confidence_level 95"
+        action: "create"
+        model: "general_audit_ws_a916660"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+          confidence_level: "95"
+
+      - step: "Assert reliability_factor is 3.0"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          reliability_factor:
+            type: "value"
+            expected: 3.00
+
+  - name: "Compute reliability_factor - confidence_level 90 -> 2.31"
+    steps:
+      - step: "Create worksheet with confidence_level 90"
+        action: "create"
+        model: "general_audit_ws_a916660"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+          confidence_level: "90"
+
+      - step: "Assert reliability_factor is 2.31"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          reliability_factor:
+            type: "value"
+            expected: 2.31
+
+  - name: "Compute reliability_factor - confidence_level 80 -> 1.61"
+    steps:
+      - step: "Create worksheet with confidence_level 80"
+        action: "create"
+        model: "general_audit_ws_a916660"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+          confidence_level: "80"
+
+      - step: "Assert reliability_factor is 1.61"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          reliability_factor:
+            type: "value"
+            expected: 1.61
+
+  # ------------------------------------------------------------------
+  # 11. Compute sampling_interval
+  # ------------------------------------------------------------------
+  - name: "Compute sampling_interval - normal (tolerable 3000 / RF 3.0)"
+    steps:
+      - step: "Create worksheet with tolerable_misstatement 3000"
+        action: "create"
+        model: "general_audit_ws_a916660"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+          confidence_level: "95"
+          tolerable_misstatement: 3000.0
+
+      - step: "Assert sampling_interval is 1000.0"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          sampling_interval:
+            type: "value"
+            expected: 1000.0
+
+  - name: "Compute sampling_interval - zero when tolerable_misstatement is 0"
+    steps:
+      - step: "Create worksheet with tolerable_misstatement 0"
+        action: "create"
+        model: "general_audit_ws_a916660"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+          confidence_level: "95"
+          tolerable_misstatement: 0.0
+
+      - step: "Assert sampling_interval is 0.0"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          sampling_interval:
+            type: "value"
+            expected: 0.0
+
+  # ------------------------------------------------------------------
+  # 12. Compute computed_sample_size
+  # ------------------------------------------------------------------
+  - name: "Compute computed_sample_size - normal (3000 / 1000 -> 3)"
+    steps:
+      - step: "Create worksheet with sample_amount 3000 and sampling_interval 1000"
+        action: "create"
+        model: "general_audit_ws_a916660"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+          data_mode: "gl"
+          general_ledger_id: "REC: gl.id"
+          monetary_col_number: 2
+          key_item_count: 2
+          confidence_level: "95"
+          tolerable_misstatement: 3000.0
+
+      - step: "Assert computed_sample_size is 3"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          computed_sample_size:
+            type: "value"
+            expected: 3
+
+  - name: "Compute computed_sample_size - zero when sampling_interval is 0"
+    steps:
+      - step: "Create worksheet with sampling_interval 0"
+        action: "create"
+        model: "general_audit_ws_a916660"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+          data_mode: "gl"
+          general_ledger_id: "REC: gl.id"
+          monetary_col_number: 2
+          key_item_count: 2
+          confidence_level: "95"
+          tolerable_misstatement: 0.0
+
+      - step: "Assert computed_sample_size is 0"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          computed_sample_size:
+            type: "value"
+            expected: 0
+
+  # ------------------------------------------------------------------
+  # 13/14. Action generate sampling
+  # ------------------------------------------------------------------
+  - name: "Action generate sampling - positive (sampling_interval > 0)"
+    steps:
+      - step: "Create fully configured worksheet"
+        action: "create"
+        model: "general_audit_ws_a916660"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+          data_mode: "gl"
+          general_ledger_id: "REC: gl.id"
+          identifier_col_number: 1
+          monetary_col_number: 2
+          additional_info_col_number: 3
+          key_item_count: 1
+          confidence_level: "95"
+          tolerable_misstatement: 3000.0
+
+      - step: "Assert sampling_data is falsy before generating"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          sampling_data:
+            type: "value"
+            operator: "is_falsy"
+
+      - step: "Generate sampling"
+        action: "call"
+        target: "worksheet"
+        method: "action_generate_sampling"
+        as_user: "base.user_admin"
+
+      - step: "Assert sampling_data is truthy after generating"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          sampling_data:
+            type: "value"
+            operator: "is_truthy"
+
+  - name: "Action generate sampling - negative (sampling_interval = 0)"
+    steps:
+      - step: "Create worksheet with tolerable_misstatement 0 (interval = 0)"
+        action: "create"
+        model: "general_audit_ws_a916660"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+          data_mode: "gl"
+          general_ledger_id: "REC: gl.id"
+          identifier_col_number: 1
+          monetary_col_number: 2
+          additional_info_col_number: 3
+          key_item_count: 1
+          confidence_level: "95"
+          tolerable_misstatement: 0.0
+
+      - step: "Generate sampling"
+        action: "call"
+        target: "worksheet"
+        method: "action_generate_sampling"
+        as_user: "base.user_admin"
+
+      - step: "Assert sampling_data stays falsy"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          sampling_data:
+            type: "value"
+            operator: "is_falsy"
+
+  # ------------------------------------------------------------------
+  # 15. Workflow worksheet - draft -> open -> confirm -> approve -> done
+  # ------------------------------------------------------------------
+  - name: "Workflow worksheet - draft to done"
+    steps:
+      - step: "Create worksheet a916660"
+        action: "create"
+        model: "general_audit_ws_a916660"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+
+      - step: "Open worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_open"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after opening worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Assert worksheet open"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          state:
+            type: "value"
+            expected: "open"
+
+      - step: "Fill required conclusion fields before confirm"
+        action: "write"
+        target: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          conclusion_id: "REC: conclusion.id"
+          conclusion: "Sample tested, no misstatement found."
+
+      - step: "Confirm worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_confirm"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after confirming worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Assert worksheet confirmed"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          state:
+            type: "value"
+            expected: "confirm"
+
+      - step: "Approve worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_approve_approval"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after approving worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Assert worksheet done"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          state:
+            type: "value"
+            expected: "done"
+
+  # ------------------------------------------------------------------
+  # 16. Cancel & restart
+  # ------------------------------------------------------------------
+  - name: "Cancel and restart worksheet"
+    steps:
+      - step: "Create worksheet a916660"
+        action: "create"
+        model: "general_audit_ws_a916660"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+
+      - step: "Open worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_open"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after opening worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Assert worksheet open"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          state:
+            type: "value"
+            expected: "open"
+
+      - step: "Cancel worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_cancel"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after cancelling worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Assert worksheet cancelled"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          state:
+            type: "value"
+            expected: "cancel"
+
+      - step: "Restart worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_restart"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after restarting worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Assert worksheet back to draft"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          state:
+            type: "value"
+            expected: "draft"
