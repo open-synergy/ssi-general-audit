@@ -290,7 +290,7 @@ class GeneralAuditWSb4f7d9c(models.Model):
                 for idx, row in enumerate(sampling_rows):
                     if idx == 0:
                         continue
-                    if len(row) >= 2:
+                    if len(row) >= 2 and row[-1].strip() != "Candidate":
                         ref_values.add(row[1].strip())
                 raw_reader = csv.reader(io.StringIO(raw))
                 raw_rows = list(raw_reader)

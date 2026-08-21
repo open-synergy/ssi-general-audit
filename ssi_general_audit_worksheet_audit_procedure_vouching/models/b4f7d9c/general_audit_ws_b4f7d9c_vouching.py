@@ -85,7 +85,7 @@ class GeneralAuditWSb4f7d9cVouching(models.Model):
         for idx, row in enumerate(rows):
             if idx == 0:
                 continue
-            if len(row) >= 2:
+            if len(row) >= 2 and row[-1].strip() != "Candidate":
                 val = row[1].strip()
                 if val and val not in seen:
                     ref_values.append(val)
