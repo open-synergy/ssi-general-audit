@@ -212,7 +212,10 @@ class GeneralAuditWsA916660(models.Model):
             "open": [("readonly", False)],
         },
         help="The result of the sample determination. Contains key items "
-        "(100%% examination) and the selected sample items.",
+        "(100%% examination) and the selected sample items -- for "
+        "Non-Statistical Sampling, every remaining item is listed as a "
+        "'Candidate' instead: mark the ones actually tested by editing "
+        "the Type cell to 'Sample' in Table edit mode.",
     )
 
     # --- Method selection ---
@@ -901,10 +904,10 @@ class GeneralAuditWsA916660(models.Model):
     def _perform_simple_random_sample(self, items, key_count, sample_size):
         """Select an unweighted random sample from the pool.
 
-        Unlike Monetary Unit Sampling, Classical Variable and
-        Non-Statistical Sampling draw a plain random sample: every item
-        remaining after key items are removed has an equal chance of
-        selection, independent of its amount.
+        Unlike Monetary Unit Sampling, Classical Variable Sampling draws a
+        plain random sample: every item remaining after key items are
+        removed has an equal chance of selection, independent of its
+        amount.
 
         :param items: list of ``{"index", "cells", "amount"}`` dicts, as
             produced by ``_build_items_from_csv``.
@@ -925,15 +928,86 @@ class GeneralAuditWsA916660(models.Model):
             selected_indices = {item["index"] for item in selected_items}
         return sorted_by_amount, selected_indices
 
+    def _perform_nss_candidate_list(self, items, key_count):
+        """List every non-key item as a manual-selection candidate.
+
+        Non-Statistical Sampling does not select items automatically
+        (unlike MUS/CVS): the source spreadsheet marks each candidate row
+        by hand (a manually-typed ``Choose? = Yes`` column, not a
+        formula). This method mirrors that: every item remaining after key
+        items are removed is returned as a candidate, tagged
+        ``Candidate`` rather than ``Sample`` by the caller, for the
+        auditor to mark by professional judgment -- e.g. by retyping the
+        ``Type`` cell to ``Sample`` in the editable table view
+        (``ssi_web_widget_csv_table``, "Table" edit mode).
+
+        :param items: list of ``{"index", "cells", "amount"}`` dicts, as
+            produced by ``_build_items_from_csv``.
+        :param key_count: number of largest-amount items to treat as key
+            items (excluded from the candidate list).
+        :return: a ``(sorted_by_amount, candidate_indices)`` tuple, in the
+            same shape as ``_perform_mus_sampling``'s return value.
+        """
+        sorted_by_amount = sorted(items, key=lambda x: x["amount"], reverse=True)
+        key_item_indices = {item["index"] for item in sorted_by_amount[:key_count]}
+        candidate_indices = {
+            item["index"] for item in items if item["index"] not in key_item_indices
+        }
+        return sorted_by_amount, candidate_indices
+
+    def _is_sampling_ready(self):
+        """Check whether the current method's inputs allow item selection.
+
+        :return: ``True`` when MUS has a positive ``sampling_interval``,
+            CVS has a positive ``computed_sample_size``, or NSS has a
+            non-empty sample pool (``sample_count``). ``False`` otherwise.
+        """
+        self.ensure_one()
+        if self.method_type == "mus":
+            return self.sampling_interval > 0
+        if self.method_type == "cvs":
+            return self.computed_sample_size > 0
+        return self.sample_count > 0
+
+    def _select_sampling_items(self, items, key_count):
+        """Dispatch item selection to the method matching ``method_type``.
+
+        :param items: list of ``{"index", "cells", "amount"}`` dicts, as
+            produced by ``_build_items_from_csv``.
+        :param key_count: number of largest-amount items to treat as key
+            items.
+        :return: a ``(sorted_by_amount, selected_indices, selected_tag)``
+            tuple. ``selected_tag`` is ``"Sample"`` for MUS/CVS (items were
+            actually selected) or ``"Candidate"`` for NSS (nothing was
+            auto-selected; every pool item is listed for the auditor to
+            mark by hand).
+        """
+        self.ensure_one()
+        if self.method_type == "mus":
+            sorted_by_amount, selected_indices = self._perform_mus_sampling(
+                items, key_count, self.sampling_interval
+            )
+            return sorted_by_amount, selected_indices, "Sample"
+        if self.method_type == "cvs":
+            sorted_by_amount, selected_indices = self._perform_simple_random_sample(
+                items, key_count, self.computed_sample_size
+            )
+            return sorted_by_amount, selected_indices, "Sample"
+        sorted_by_amount, selected_indices = self._perform_nss_candidate_list(
+            items, key_count
+        )
+        return sorted_by_amount, selected_indices, "Candidate"
+
     def _generate_sampling(self):
         """Build ``sampling_data`` (key items + sample) as a CSV string.
 
         Reads the source raw data, extracts the configured columns, then
-        delegates item selection to ``_perform_mus_sampling`` (MUS) or
-        ``_perform_simple_random_sample`` (CVS/NSS) according to
-        ``method_type``, and writes the result (key items first, tagged
-        ``Key Item``, then selected items tagged ``Sample``) to
-        ``sampling_data``.
+        delegates item selection to ``_select_sampling_items`` according
+        to ``method_type``: MUS (size-weighted systematic selection), CVS
+        (unweighted random draw), or NSS (every pool item listed as a
+        ``Candidate`` for the auditor to mark by hand; nothing is
+        auto-selected). Key items are always written first, tagged
+        ``Key Item``.
 
         :return: ``None``. Sets ``sampling_data`` to ``False`` when the
             source, column configuration, or method parameters are
@@ -956,14 +1030,9 @@ class GeneralAuditWsA916660(models.Model):
         if not unique_columns:
             self.sampling_data = False
             return
-        if self.method_type == "mus":
-            if self.sampling_interval <= 0:
-                self.sampling_data = False
-                return
-        else:
-            if self.computed_sample_size <= 0:
-                self.sampling_data = False
-                return
+        if not self._is_sampling_ready():
+            self.sampling_data = False
+            return
         try:
             reader = csv.reader(io.StringIO(raw_data))
             all_rows = list(reader)
@@ -974,14 +1043,11 @@ class GeneralAuditWsA916660(models.Model):
                 all_rows, unique_columns, monetary_col
             )
             key_count = self.key_item_count or 0
-            if self.method_type == "mus":
-                sorted_by_amount, selected_indices = self._perform_mus_sampling(
-                    items, key_count, self.sampling_interval
-                )
-            else:
-                sorted_by_amount, selected_indices = self._perform_simple_random_sample(
-                    items, key_count, self.computed_sample_size
-                )
+            (
+                sorted_by_amount,
+                selected_indices,
+                selected_tag,
+            ) = self._select_sampling_items(items, key_count)
             output = io.StringIO()
             writer = csv.writer(output)
             writer.writerow(output_header)
@@ -989,7 +1055,9 @@ class GeneralAuditWsA916660(models.Model):
                 writer.writerow([str(item["index"])] + item["cells"] + ["Key Item"])
             for item in items:
                 if item["index"] in selected_indices:
-                    writer.writerow([str(item["index"])] + item["cells"] + ["Sample"])
+                    writer.writerow(
+                        [str(item["index"])] + item["cells"] + [selected_tag]
+                    )
             self.sampling_data = output.getvalue()
         except Exception:
             self.sampling_data = False

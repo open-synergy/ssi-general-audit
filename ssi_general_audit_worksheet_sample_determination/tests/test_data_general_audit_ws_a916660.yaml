@@ -1025,6 +1025,83 @@ scenarios:
             type: "value"
             operator: "is_falsy"
 
+  # NSS does not auto-select items (the source spreadsheet's "Choose?"
+  # column is a manually-typed "Yes", not a formula): every pool item is
+  # listed as a "Candidate" for the auditor to mark by hand, tagged
+  # "Candidate" rather than "Sample".
+  - name: "Action generate sampling - NSS lists every pool item as Candidate"
+    steps:
+      - step: "Create fully configured NSS worksheet"
+        action: "create"
+        model: "general_audit_ws_a916660"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+          data_mode: "gl"
+          general_ledger_id: "REC: gl.id"
+          identifier_col_number: 1
+          monetary_col_number: 2
+          additional_info_col_number: 3
+          key_item_count: 1
+          method_type: "nss"
+
+      - step: "Assert sampling_data is falsy before generating"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          sampling_data:
+            type: "value"
+            operator: "is_falsy"
+
+      - step: "Generate sampling"
+        action: "call"
+        target: "worksheet"
+        method: "action_generate_sampling"
+        as_user: "base.user_admin"
+
+      - step: "Assert sampling_data lists Candidate rows, not Sample rows"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          sampling_data:
+            type: "value"
+            operator: "contains"
+            expected: "Candidate"
+
+  - name: "Action generate sampling - NSS negative (empty sample pool)"
+    steps:
+      - step: "Create NSS worksheet where every item is a key item"
+        action: "create"
+        model: "general_audit_ws_a916660"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+          data_mode: "gl"
+          general_ledger_id: "REC: gl.id"
+          identifier_col_number: 1
+          monetary_col_number: 2
+          additional_info_col_number: 3
+          key_item_count: 4
+          method_type: "nss"
+
+      - step: "Generate sampling"
+        action: "call"
+        target: "worksheet"
+        method: "action_generate_sampling"
+        as_user: "base.user_admin"
+
+      - step: "Assert sampling_data stays falsy"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          sampling_data:
+            type: "value"
+            operator: "is_falsy"
+
   # ------------------------------------------------------------------
   # 15. Workflow worksheet - draft -> open -> confirm -> approve -> done
   # ------------------------------------------------------------------
