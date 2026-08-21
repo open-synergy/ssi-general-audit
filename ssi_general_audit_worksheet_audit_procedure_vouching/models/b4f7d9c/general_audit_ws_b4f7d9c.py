@@ -182,32 +182,32 @@ class GeneralAuditWSb4f7d9c(models.Model):
         compute_sudo=True,
         help="Raw CSV data from the selected General Ledger or Subledger.",
     )
-    # ── Test of Detail ───────────────────────────────────────────────────────
-    allowed_test_of_detail_ids = fields.Many2many(
+    # ── Sample Determination ─────────────────────────────────────────────────
+    allowed_sample_determination_ids = fields.Many2many(
         comodel_name="general_audit_ws_a916660",
-        string="Allowed Test of Detail",
-        compute="_compute_allowed_test_of_detail_ids",
+        string="Allowed Sample Determination",
+        compute="_compute_allowed_sample_determination_ids",
         store=False,
         compute_sudo=True,
-        help="Test of Detail worksheets whose data source matches the current "
+        help="Sample Determination worksheets whose data source matches the current "
         "data mode and selected ledger/subledger.",
     )
-    test_of_detail_id = fields.Many2one(
+    sample_determination_id = fields.Many2one(
         comodel_name="general_audit_ws_a916660",
-        string="# Test of Detail",
+        string="# Sample Determination",
         readonly=True,
         states={
             "open": [("readonly", False)],
         },
-        help="Reference to the Test of Detail worksheet whose sampling result "
+        help="Reference to the Sample Determination worksheet whose sampling result "
         "will be used as the list of items to vouch.",
     )
     sampling_data = fields.Text(
         string="Sampling Data",
-        related="test_of_detail_id.sampling_data",
+        related="sample_determination_id.sampling_data",
         store=True,
         compute_sudo=True,
-        help="Sampling data inherited from the referenced Test of Detail "
+        help="Sampling data inherited from the referenced Sample Determination "
         "worksheet, used as the list of items subject to vouching.",
     )
     reference_col_number = fields.Integer(
@@ -350,16 +350,23 @@ class GeneralAuditWSb4f7d9c(models.Model):
         "general_ledger_id",
         "subledger_id",
     )
-    def _compute_allowed_test_of_detail_ids(self):
-        TOD = self.env["general_audit_ws_a916660"]
+    def _compute_allowed_sample_determination_ids(self):
+        """Restrict the Sample Determination picker to the matching source.
+
+        :return: sets ``allowed_sample_determination_ids`` to the
+            ``general_audit_ws_a916660`` records sharing this record's
+            selected General Ledger or Subledger, or an empty recordset
+            when no source is selected.
+        """
+        SD = self.env["general_audit_ws_a916660"]
         for record in self:
-            record.allowed_test_of_detail_ids = False
+            record.allowed_sample_determination_ids = False
             if record.data_mode == "gl" and record.general_ledger_id:
-                record.allowed_test_of_detail_ids = TOD.search(
+                record.allowed_sample_determination_ids = SD.search(
                     [("general_ledger_id", "=", record.general_ledger_id.id)]
                 )
             elif record.data_mode == "subledger" and record.subledger_id:
-                record.allowed_test_of_detail_ids = TOD.search(
+                record.allowed_sample_determination_ids = SD.search(
                     [("subledger_id", "=", record.subledger_id.id)]
                 )
 
@@ -424,8 +431,8 @@ class GeneralAuditWSb4f7d9c(models.Model):
         self.subledger_id = False
 
     @api.onchange("data_mode", "general_ledger_id", "subledger_id")
-    def onchange_test_of_detail_id(self):
-        self.test_of_detail_id = False
+    def onchange_sample_determination_id(self):
+        self.sample_determination_id = False
 
     # ── Action methods ───────────────────────────────────────────────────────
 

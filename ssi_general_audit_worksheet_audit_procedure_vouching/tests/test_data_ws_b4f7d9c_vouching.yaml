@@ -104,9 +104,9 @@ setup:
       xml_id: "ssi_general_audit_worksheet_client_package.worksheet_type_d209914"
       save_as: "ws_type_d209914"
 
-    - step: "Get worksheet type a916660 (Test of Detail)"
+    - step: "Get worksheet type a916660 (Sample Determination)"
       action: "ref"
-      xml_id: "ssi_general_audit_worksheet_test_of_detail.worksheet_type_a916660"
+      xml_id: "ssi_general_audit_worksheet_sample_determination.worksheet_type_a916660"
       save_as: "ws_type_a916660"
 
     - step: "Create client account group"
@@ -255,10 +255,10 @@ scenarios:
           raw_data: "Ref,Amount\nREF1,1000\nREF2,2000\n"
           title: "GL Vouching Reference"
 
-      - step: "Create Test of Detail worksheet with sampling data"
+      - step: "Create Sample Determination worksheet with sampling data"
         action: "create"
         model: "general_audit_ws_a916660"
-        save_as: "tod"
+        save_as: "sd"
         as_user: "base.user_admin"
         values:
           general_audit_id: "REC: audit.id"
@@ -272,7 +272,7 @@ scenarios:
         values:
           data_mode: "gl"
           general_ledger_id: "REC: ref_gl.id"
-          test_of_detail_id: "REC: tod.id"
+          sample_determination_id: "REC: sd.id"
           reference_col_number: 1
 
       - step: "Create General Ledger worksheet holding the comparison raw data"
