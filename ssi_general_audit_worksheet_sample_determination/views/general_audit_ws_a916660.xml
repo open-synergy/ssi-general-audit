@@ -183,10 +183,46 @@
                             statistical basis. Only Non-Statistical Sampling
                             allows manual edits here.
                         </div>
+                        <div
+                            class="alert alert-warning"
+                            role="alert"
+                            attrs="{'invisible': [('method_type', '!=', 'nss')]}"
+                        >
+                            <strong>How to fill in the "Type" column for
+                            Non-Statistical Sampling:</strong>
+                            <ul class="mb-0">
+                                <li><strong>Key Item</strong> -- the item is
+                                already part of the 100% examination
+                                (populated automatically; do not change
+                                these rows).</li>
+                                <li><strong>Candidate</strong> -- every
+                                remaining population item, generated
+                                automatically after "Generate Sampling".
+                                Not yet tested: this is the starting point,
+                                not a decision.</li>
+                                <li><strong>Sample</strong> -- an item you
+                                have decided to test based on professional
+                                judgment. In the "Table" edit mode above,
+                                click the Type cell of that row and retype
+                                it as <code>Sample</code>.</li>
+                            </ul>
+                            <p class="mb-0 mt-2">
+                                Only rows marked <code>Key Item</code> or
+                                <code>Sample</code> are picked up by the
+                                Vouching worksheet; rows left as
+                                <code>Candidate</code> are treated as not
+                                tested. Because item selection here is
+                                judgment-based, findings on the items you
+                                mark <code>Sample</code> cannot be
+                                statistically projected onto the rest of
+                                the population the way MUS/CVS results can.
+                            </p>
+                        </div>
                         <field
                             name="sampling_data"
                             nolabel="1"
                             widget="csv_table"
+                            options="{'default_mode': 'table'}"
                             attrs="{'readonly': [('method_type', '!=', 'nss')]}"
                         />
                     </page>
