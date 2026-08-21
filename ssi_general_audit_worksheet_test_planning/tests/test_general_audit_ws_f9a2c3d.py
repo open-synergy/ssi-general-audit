@@ -218,7 +218,7 @@ class TestGeneralAuditWSf9a2c3d(YamlTransactionCase):
         Many2many fields with **no** tree sub-arch -- exactly the
         pre-existing pattern already found (and documented) for the sibling
         worksheet ``general_audit_ws_f9a2c3d``'s cousins in BL-0171
-        (``ssi_general_audit_worksheet_test_of_detail``/
+        (``ssi_general_audit_worksheet_sample_determination``/
         ``ssi_general_audit_worksheet_test_of_control``): ``Form()``/
         ``action: form`` fails for any model whose view contains an
         invisible Many2many with no sub-view arch, raising

@@ -9,7 +9,10 @@ from odoo.tests import tagged
 
 @tagged("post_install", "-at_install")
 class TestGeneralAuditWSa916660(YamlTransactionCase):
+    """Cover CRUD, compute, and onchange for ``general_audit_ws_a916660``."""
+
     def test_general_audit_ws_a916660(self):
+        """Run the YAML scenario covering this worksheet."""
         self.run_yaml_scenario("test_data_general_audit_ws_a916660.yaml")
 
     def _create_worksheet_fixture(self):
@@ -77,7 +80,7 @@ class TestGeneralAuditWSa916660(YamlTransactionCase):
         audit.with_user(admin).action_open()
 
         ws_type = env.ref(
-            "ssi_general_audit_worksheet_test_of_detail.worksheet_type_a916660"
+            "ssi_general_audit_worksheet_sample_determination.worksheet_type_a916660"
         )
         ws_type_d209914 = env.ref(
             "ssi_general_audit_worksheet_client_package.worksheet_type_d209914"
@@ -103,7 +106,11 @@ class TestGeneralAuditWSa916660(YamlTransactionCase):
         return admin, worksheet, gl, subledger
 
     def test_onchange_data_mode_clears_general_ledger_id(self):
-        """``onchange_general_ledger_id`` is declared
+        """Pure Python -- trigger P12 (L-20: ``Form`` only via
+        ``action: form``, no ``view`` key -- view-specific onchange
+        behaviour is unreachable from YAML).
+
+        ``onchange_general_ledger_id`` is declared
         ``@api.onchange("data_mode")``. Unlike the sibling
         ``general_audit_ws_c6c86fd`` / ``general_audit_ws_b4f7d9c`` cases,
         ``data_mode`` and ``general_ledger_id`` are *not* mutually exclusive
@@ -131,8 +138,9 @@ class TestGeneralAuditWSa916660(YamlTransactionCase):
         self.assertFalse(worksheet.general_ledger_id)
 
     def test_onchange_data_mode_clears_subledger_id(self):
-        """See ``test_onchange_data_mode_clears_general_ledger_id`` for why
-        this onchange is verified by calling the method directly instead of
+        """Pure Python -- trigger P12 (L-20), see
+        ``test_onchange_data_mode_clears_general_ledger_id`` for why this
+        onchange is verified by calling the method directly instead of
         through ``Form``.
         """
         _admin, worksheet, _gl, subledger = self._create_worksheet_fixture()
@@ -143,3 +151,45 @@ class TestGeneralAuditWSa916660(YamlTransactionCase):
         worksheet.onchange_subledger_id()
 
         self.assertFalse(worksheet.subledger_id)
+
+    def test_onchange_tolerable_misstatement_cvs(self):
+        """Pure Python -- trigger P12 (L-20), see
+        ``test_onchange_data_mode_clears_general_ledger_id`` for why this
+        onchange is verified by calling the method directly instead of
+        through ``Form``.
+        """
+        _admin, worksheet, _gl, _subledger = self._create_worksheet_fixture()
+
+        worksheet.sudo().write(
+            {
+                "method_type": "cvs",
+                "performance_materiality": 10000.0,
+                "risk_factor": 0.9,
+            }
+        )
+        self.assertEqual(worksheet.tolerable_misstatement, 0.0)
+
+        worksheet.onchange_tolerable_misstatement()
+
+        self.assertEqual(worksheet.tolerable_misstatement, 9000.0)
+
+    def test_onchange_tolerable_misstatement_mus_untouched(self):
+        """Pure Python -- trigger P12 (L-20), see
+        ``test_onchange_data_mode_clears_general_ledger_id`` for why this
+        onchange is verified by calling the method directly instead of
+        through ``Form``.
+        """
+        _admin, worksheet, _gl, _subledger = self._create_worksheet_fixture()
+
+        worksheet.sudo().write(
+            {
+                "method_type": "mus",
+                "performance_materiality": 10000.0,
+                "risk_factor": 0.9,
+                "tolerable_misstatement": 500.0,
+            }
+        )
+
+        worksheet.onchange_tolerable_misstatement()
+
+        self.assertEqual(worksheet.tolerable_misstatement, 500.0)

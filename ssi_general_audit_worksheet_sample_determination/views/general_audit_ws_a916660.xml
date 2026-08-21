@@ -29,6 +29,7 @@
             <data>
                 <xpath expr="//field[@name='general_audit_id']" position="after">
                     <field name="data_mode" optional="hide" />
+                    <field name="method_type" optional="show" />
                     <field name="general_ledger_id" optional="hide" />
                     <field name="subledger_id" optional="hide" />
                 </xpath>
@@ -48,6 +49,7 @@
             <data>
                 <xpath expr="//group[@name='header_center']" position="inside">
                     <field name="data_mode" />
+                    <field name="method_type" />
                     <field name="allowed_general_ledger_ids" invisible="1" />
                     <field
                         name="general_ledger_id"
@@ -84,12 +86,36 @@
                                 name="data_1_2"
                                 colspan="1"
                                 col="2"
-                                string="MUS Parameters"
+                                string="Monetary Unit Sampling Parameters"
+                                attrs="{'invisible': [('method_type', '!=', 'mus')]}"
                             >
                                 <field name="confidence_level" />
                                 <field name="tolerable_misstatement" />
                                 <field name="reliability_factor" />
                                 <field name="sampling_interval" />
+                            </group>
+                            <group
+                                name="data_1_3"
+                                colspan="1"
+                                col="2"
+                                string="Classical Variable / Non-Statistical Sampling Parameters"
+                                attrs="{'invisible': [('method_type', 'not in', ['cvs', 'nss'])]}"
+                            >
+                                <field name="performance_materiality" />
+                                <field name="risk_factor" />
+                                <field name="tolerable_misstatement" />
+                                <field name="aria" />
+                                <field name="aria_coefficient" />
+                                <field name="arir" />
+                                <field name="arir_coefficient" />
+                                <field name="estimate_misstatement_ratio" />
+                                <field name="estimate_misstatement" />
+                                <field name="standard_deviation_ratio" />
+                                <field name="standard_deviation_estimate" />
+                                <field
+                                    name="nss_final_sample_size"
+                                    attrs="{'invisible': [('method_type', '!=', 'nss')]}"
+                                />
                             </group>
                         </group>
                         <group name="data_2" colspan="4" col="2">
@@ -126,7 +152,7 @@
                                 name="data_3_2"
                                 colspan="1"
                                 col="2"
-                                string="MUS Selection"
+                                string="Sample Size"
                             >
                                 <field name="computed_sample_size" />
                             </group>
@@ -146,7 +172,59 @@
                         />
                     </page>
                     <page name="sampling_data" string="Sampling Data">
-                        <field name="sampling_data" nolabel="1" widget="csv_table" />
+                        <div
+                            class="alert alert-info"
+                            role="alert"
+                            attrs="{'invisible': [('method_type', '=', 'nss')]}"
+                        >
+                            This table is locked for Monetary Unit / Classical
+                            Variable Sampling: manually editing an
+                            algorithmically-selected sample invalidates its
+                            statistical basis. Only Non-Statistical Sampling
+                            allows manual edits here.
+                        </div>
+                        <div
+                            class="alert alert-warning"
+                            role="alert"
+                            attrs="{'invisible': [('method_type', '!=', 'nss')]}"
+                        >
+                            <strong>How to fill in the "Type" column for
+                            Non-Statistical Sampling:</strong>
+                            <ul class="mb-0">
+                                <li><strong>Key Item</strong> -- the item is
+                                already part of the 100% examination
+                                (populated automatically; do not change
+                                these rows).</li>
+                                <li><strong>Candidate</strong> -- every
+                                remaining population item, generated
+                                automatically after "Generate Sampling".
+                                Not yet tested: this is the starting point,
+                                not a decision.</li>
+                                <li><strong>Sample</strong> -- an item you
+                                have decided to test based on professional
+                                judgment. In the "Table" edit mode above,
+                                click the Type cell of that row and retype
+                                it as <code>Sample</code>.</li>
+                            </ul>
+                            <p class="mb-0 mt-2">
+                                Only rows marked <code>Key Item</code> or
+                                <code>Sample</code> are picked up by the
+                                Vouching worksheet; rows left as
+                                <code>Candidate</code> are treated as not
+                                tested. Because item selection here is
+                                judgment-based, findings on the items you
+                                mark <code>Sample</code> cannot be
+                                statistically projected onto the rest of
+                                the population the way MUS/CVS results can.
+                            </p>
+                        </div>
+                        <field
+                            name="sampling_data"
+                            nolabel="1"
+                            widget="csv_table"
+                            options="{'default_mode': 'table'}"
+                            attrs="{'readonly': [('method_type', '!=', 'nss')]}"
+                        />
                     </page>
                 </xpath>
             </data>
@@ -154,7 +232,7 @@
     </record>
 
     <record id="general_audit_ws_a916660_action" model="ir.actions.act_window">
-        <field name="name">Tests of Detail</field>
+        <field name="name">Sample Determination</field>
         <field name="type">ir.actions.act_window</field>
         <field name="res_model">general_audit_ws_a916660</field>
         <field name="view_mode">tree,form</field>
@@ -162,10 +240,10 @@
 
     <menuitem
         id="general_audit_ws_a916660_menu"
-        name="Test of Detail"
+        name="Sample Determination"
         parent="ssi_general_audit.menu_rr_substantive_test"
         action="general_audit_ws_a916660_action"
-        sequence="5"
+        sequence="4"
         groups="general_audit_ws_a916660_viewer_group"
     />
 </odoo>

@@ -134,9 +134,9 @@ setup:
         num_of_consecutive_audit_firm: 1
         num_of_consecutive_audit_accountant: 1
 
-    - step: "Get worksheet type a916660 (Test of Detail)"
+    - step: "Get worksheet type a916660 (Sample Determination)"
       action: "ref"
-      xml_id: "ssi_general_audit_worksheet_test_of_detail.worksheet_type_a916660"
+      xml_id: "ssi_general_audit_worksheet_sample_determination.worksheet_type_a916660"
       save_as: "ws_type"
 
     - step: "Get worksheet type d209914 (General Ledger)"
@@ -744,6 +744,125 @@ scenarios:
             expected: 0
 
   # ------------------------------------------------------------------
+  # 12b. Compute aria_coefficient / arir_coefficient / estimate_misstatement /
+  #      standard_deviation_estimate / computed_sample_size (CVS method)
+  #
+  # PM 10000 x Risk Factor 0.9 = Tolerable Misstatement 9000 (set directly:
+  # `onchange_tolerable_misstatement` is UI-only and not exercised by
+  # `create`, matching the `action: form` limitation documented at the top
+  # of this file -- it is covered separately as a Python escape hatch).
+  # Estimate Misstatement = 9000 x 0.9 = 8100. Standard Deviation Estimate
+  # = 8100 x 0.1 = 810. ARIA 0.5% -> coefficient 2.58, ARIR 1% -> 2.58.
+  # Sample size = ROUNDUP(((810 x (2.58+2.58) x 4) / (10000-8100))^2) = 78,
+  # verified against ``SD_akun_CVS_260821.ods`` cell ``Data!S14``.
+  # ------------------------------------------------------------------
+  - name: "Compute CVS sample size - full parameter chain"
+    steps:
+      - step: "Create CVS worksheet with performance materiality/risk/ARIA/ARIR"
+        action: "create"
+        model: "general_audit_ws_a916660"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+          data_mode: "gl"
+          general_ledger_id: "REC: gl.id"
+          monetary_col_number: 2
+          key_item_count: 0
+          method_type: "cvs"
+          performance_materiality: 10000.0
+          risk_factor: 0.9
+          tolerable_misstatement: 9000.0
+          aria: "0.5"
+          arir: "1"
+          estimate_misstatement_ratio: 0.9
+          standard_deviation_ratio: 0.1
+
+      - step: "Assert CVS parameter chain and computed_sample_size"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          aria_coefficient:
+            type: "value"
+            expected: 2.58
+          arir_coefficient:
+            type: "value"
+            expected: 2.58
+          estimate_misstatement:
+            type: "value"
+            expected: 8100.0
+          standard_deviation_estimate:
+            type: "value"
+            expected: 810.0
+          computed_sample_size:
+            type: "value"
+            expected: 78
+
+  - name: "Compute NSS sample size - same statistical formula as CVS"
+    steps:
+      - step: "Create NSS worksheet with the same parameters as CVS"
+        action: "create"
+        model: "general_audit_ws_a916660"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+          data_mode: "gl"
+          general_ledger_id: "REC: gl.id"
+          monetary_col_number: 2
+          key_item_count: 0
+          method_type: "nss"
+          performance_materiality: 10000.0
+          risk_factor: 0.9
+          tolerable_misstatement: 9000.0
+          aria: "0.5"
+          arir: "1"
+          estimate_misstatement_ratio: 0.9
+          standard_deviation_ratio: 0.1
+
+      - step: "Assert NSS computed_sample_size equals the CVS formula result"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          computed_sample_size:
+            type: "value"
+            expected: 78
+
+  - name: "Compute NSS sample size - nss_final_sample_size overrides the formula"
+    steps:
+      - step: "Create NSS worksheet with a manual final sample size"
+        action: "create"
+        model: "general_audit_ws_a916660"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+          data_mode: "gl"
+          general_ledger_id: "REC: gl.id"
+          monetary_col_number: 2
+          key_item_count: 0
+          method_type: "nss"
+          performance_materiality: 10000.0
+          risk_factor: 0.9
+          tolerable_misstatement: 9000.0
+          aria: "0.5"
+          arir: "1"
+          estimate_misstatement_ratio: 0.9
+          standard_deviation_ratio: 0.1
+          nss_final_sample_size: 50
+
+      - step: "Assert computed_sample_size uses the manual override (50)"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          computed_sample_size:
+            type: "value"
+            expected: 50
+
+  # ------------------------------------------------------------------
   # 13/14. Action generate sampling
   # ------------------------------------------------------------------
   - name: "Action generate sampling - positive (sampling_interval > 0)"
@@ -805,6 +924,169 @@ scenarios:
           key_item_count: 1
           confidence_level: "95"
           tolerable_misstatement: 0.0
+
+      - step: "Generate sampling"
+        action: "call"
+        target: "worksheet"
+        method: "action_generate_sampling"
+        as_user: "base.user_admin"
+
+      - step: "Assert sampling_data stays falsy"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          sampling_data:
+            type: "value"
+            operator: "is_falsy"
+
+  - name: "Action generate sampling - CVS method (simple random sample)"
+    steps:
+      - step: "Create fully configured CVS worksheet"
+        action: "create"
+        model: "general_audit_ws_a916660"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+          data_mode: "gl"
+          general_ledger_id: "REC: gl.id"
+          identifier_col_number: 1
+          monetary_col_number: 2
+          additional_info_col_number: 3
+          key_item_count: 1
+          method_type: "cvs"
+          performance_materiality: 10000.0
+          risk_factor: 0.9
+          tolerable_misstatement: 9000.0
+          aria: "0.5"
+          arir: "1"
+          estimate_misstatement_ratio: 0.9
+          standard_deviation_ratio: 0.1
+
+      - step: "Assert sampling_data is falsy before generating"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          sampling_data:
+            type: "value"
+            operator: "is_falsy"
+
+      - step: "Generate sampling"
+        action: "call"
+        target: "worksheet"
+        method: "action_generate_sampling"
+        as_user: "base.user_admin"
+
+      - step: "Assert sampling_data is truthy after generating"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          sampling_data:
+            type: "value"
+            operator: "is_truthy"
+
+  - name: "Action generate sampling - CVS negative (computed_sample_size = 0)"
+    steps:
+      - step: "Create CVS worksheet where PM does not exceed estimate misstatement"
+        action: "create"
+        model: "general_audit_ws_a916660"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+          data_mode: "gl"
+          general_ledger_id: "REC: gl.id"
+          identifier_col_number: 1
+          monetary_col_number: 2
+          additional_info_col_number: 3
+          key_item_count: 1
+          method_type: "cvs"
+          performance_materiality: 0.0
+          risk_factor: 0.9
+          tolerable_misstatement: 0.0
+          aria: "0.5"
+          arir: "1"
+          estimate_misstatement_ratio: 0.9
+          standard_deviation_ratio: 0.1
+
+      - step: "Generate sampling"
+        action: "call"
+        target: "worksheet"
+        method: "action_generate_sampling"
+        as_user: "base.user_admin"
+
+      - step: "Assert sampling_data stays falsy"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          sampling_data:
+            type: "value"
+            operator: "is_falsy"
+
+  # NSS does not auto-select items (the source spreadsheet's "Choose?"
+  # column is a manually-typed "Yes", not a formula): every pool item is
+  # listed as a "Candidate" for the auditor to mark by hand, tagged
+  # "Candidate" rather than "Sample".
+  - name: "Action generate sampling - NSS lists every pool item as Candidate"
+    steps:
+      - step: "Create fully configured NSS worksheet"
+        action: "create"
+        model: "general_audit_ws_a916660"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+          data_mode: "gl"
+          general_ledger_id: "REC: gl.id"
+          identifier_col_number: 1
+          monetary_col_number: 2
+          additional_info_col_number: 3
+          key_item_count: 1
+          method_type: "nss"
+
+      - step: "Assert sampling_data is falsy before generating"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          sampling_data:
+            type: "value"
+            operator: "is_falsy"
+
+      - step: "Generate sampling"
+        action: "call"
+        target: "worksheet"
+        method: "action_generate_sampling"
+        as_user: "base.user_admin"
+
+      - step: "Assert sampling_data lists Candidate rows, not Sample rows"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          sampling_data:
+            type: "value"
+            operator: "contains"
+            expected: "Candidate"
+
+  - name: "Action generate sampling - NSS negative (empty sample pool)"
+    steps:
+      - step: "Create NSS worksheet where every item is a key item"
+        action: "create"
+        model: "general_audit_ws_a916660"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+          data_mode: "gl"
+          general_ledger_id: "REC: gl.id"
+          identifier_col_number: 1
+          monetary_col_number: 2
+          additional_info_col_number: 3
+          key_item_count: 4
+          method_type: "nss"
 
       - step: "Generate sampling"
         action: "call"

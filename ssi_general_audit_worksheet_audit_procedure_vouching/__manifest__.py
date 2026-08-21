@@ -4,7 +4,7 @@
 # pylint: disable=locally-disabled, manifest-required-author
 {
     "name": "General Audit Worksheet - Vouching Audit Procedure",
-    "version": "14.0.1.2.0",
+    "version": "14.0.1.3.0",
     "website": "https://simetri-sinergi.id",
     "author": "OpenSynergy Indonesia, PT. Simetri Sinergi Indonesia",
     "license": "AGPL-3",
@@ -13,8 +13,11 @@
         "ssi_general_audit",
         "ssi_general_audit_worksheet_control_risk",
         "ssi_general_audit_worksheet_lead_schedule",
-        "ssi_general_audit_worksheet_test_of_detail",
+        "ssi_general_audit_worksheet_sample_determination",
     ],
+    "external_dependencies": {
+        "python": ["openupgradelib"],
+    },
     "data": [
         "security/ir_module_category/general_audit_ws_b4f7d9c.xml",
         "security/res_groups/general_audit_ws_b4f7d9c.xml",

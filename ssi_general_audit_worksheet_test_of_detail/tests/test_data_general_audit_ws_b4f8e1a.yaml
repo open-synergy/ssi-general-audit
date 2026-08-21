@@ -21,7 +21,7 @@ setup:
       save_as: "client"
       as_user: "base.user_admin"
       values:
-        name: "Test Audit Client - Sample Determination"
+        name: "Test Audit Client - Test of Detail"
         is_company: true
 
     - step: "Create accountant partner"
@@ -30,7 +30,7 @@ setup:
       save_as: "accountant"
       as_user: "base.user_admin"
       values:
-        name: "Test Audit Accountant - Sample Determination"
+        name: "Test Audit Accountant - Test of Detail"
 
     - step: "Get CPA license id category"
       action: "ref"
@@ -53,7 +53,7 @@ setup:
       save_as: "account_type_set"
       as_user: "base.user_admin"
       values:
-        name: "Test Account Type Set - Sample Determination"
+        name: "Test Account Type Set - Test of Detail"
         code: "/"
 
     - step: "Create financial accounting standard"
@@ -62,7 +62,7 @@ setup:
       save_as: "standard"
       as_user: "base.user_admin"
       values:
-        name: "Test Financial Accounting Standard - Sample Determination"
+        name: "Test Financial Accounting Standard - Test of Detail"
         code: "/"
 
     - step: "Create general audit"
@@ -71,7 +71,7 @@ setup:
       save_as: "audit"
       as_user: "base.user_admin"
       values:
-        title: "Test General Audit - Sample Determination"
+        title: "Test General Audit - Test of Detail"
         partner_id: "REC: client.id"
         accountant_id: "REC: accountant.id"
         account_type_set_id: "REC: account_type_set.id"
@@ -96,7 +96,7 @@ setup:
 
     - step: "Get worksheet type b4f8e1a"
       action: "ref"
-      xml_id: "ssi_general_audit_worksheet_sample_determination.worksheet_type_b4f8e1a"
+      xml_id: "ssi_general_audit_worksheet_test_of_detail.worksheet_type_b4f8e1a"
       save_as: "ws_type"
 
 scenarios:
@@ -210,7 +210,7 @@ scenarios:
         save_as: "conclusion"
         as_user: "base.user_admin"
         values:
-          name: "Sample size and method are appropriate"
+          name: "Test of detail results are appropriate"
           code: "/"
           type_id: "REC: ws_type.id"
 
@@ -220,7 +220,7 @@ scenarios:
         as_user: "base.user_admin"
         values:
           conclusion_id: "REC: conclusion.id"
-          conclusion: "Sample determination has been reviewed and is adequate."
+          conclusion: "Test of detail has been reviewed and is adequate."
 
       - step: "Confirm worksheet"
         action: "call"
@@ -520,10 +520,10 @@ scenarios:
         asserts:
           type_id:
             type: "m2o"
-            expected_xml_id: "ssi_general_audit_worksheet_sample_determination.worksheet_type_b4f8e1a"
+            expected_xml_id: "ssi_general_audit_worksheet_test_of_detail.worksheet_type_b4f8e1a"
           parent_type_id:
             type: "m2o"
-            expected_xml_id: "ssi_general_audit_worksheet_sample_determination.worksheet_type_b4f8e1a"
+            expected_xml_id: "ssi_general_audit_worksheet_test_of_detail.worksheet_type_b4f8e1a"
 
   # ------------------------------------------------------------------
   # general_audit_ws_b4f8e1a - Delete in draft

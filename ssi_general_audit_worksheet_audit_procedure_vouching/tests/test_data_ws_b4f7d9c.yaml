@@ -114,9 +114,9 @@ setup:
       xml_id: "ssi_general_audit_worksheet_client_package.worksheet_type_b5e3d9f"
       save_as: "ws_type_b5e3d9f"
 
-    - step: "Get worksheet type a916660 (Test of Detail)"
+    - step: "Get worksheet type a916660 (Sample Determination)"
       action: "ref"
-      xml_id: "ssi_general_audit_worksheet_test_of_detail.worksheet_type_a916660"
+      xml_id: "ssi_general_audit_worksheet_sample_determination.worksheet_type_a916660"
       save_as: "ws_type_a916660"
 
     - step: "Create client account group"
@@ -595,11 +595,11 @@ scenarios:
             operator: "is_falsy"
 
   # ------------------------------------------------------------------
-  # _compute_allowed_test_of_detail_ids / _compute_allowed_key_audit_procedure_ids
+  # _compute_allowed_sample_determination_ids / _compute_allowed_key_audit_procedure_ids
   # - normal
   # ------------------------------------------------------------------
   - name:
-      "Worksheet b4f7d9c - Compute allowed_test_of_detail_ids +
+      "Worksheet b4f7d9c - Compute allowed_sample_determination_ids +
       allowed_key_audit_procedure_ids (normal)"
     steps:
       - step: "Create General Ledger worksheet"
@@ -612,12 +612,12 @@ scenarios:
           type_id: "REC: ws_type_d209914.id"
           account_mode: "standard_account"
           account_type_id: "REC: account_type.id"
-          title: "GL for allowed_test_of_detail_ids"
+          title: "GL for allowed_sample_determination_ids"
 
-      - step: "Create Test of Detail worksheet pointing at the same GL"
+      - step: "Create Sample Determination worksheet pointing at the same GL"
         action: "create"
         model: "general_audit_ws_a916660"
-        save_as: "tod"
+        save_as: "sd"
         as_user: "base.user_admin"
         values:
           general_audit_id: "REC: audit.id"
@@ -638,15 +638,16 @@ scenarios:
           general_ledger_id: "REC: gl.id"
           ws_e51bb1c_id: "REC: ws_e51bb1c.id"
 
-      - step: "Assert allowed_test_of_detail_ids / allowed_key_audit_procedure_ids"
+      - step:
+          "Assert allowed_sample_determination_ids / allowed_key_audit_procedure_ids"
         action: "assert"
         target: "worksheet"
         asserts:
-          allowed_test_of_detail_ids:
+          allowed_sample_determination_ids:
             type: "m2m"
             check: "exact"
             expected_records:
-              - "REC: tod"
+              - "REC: sd"
           allowed_key_audit_procedure_ids:
             type: "m2m"
             check: "exact"
@@ -655,11 +656,11 @@ scenarios:
               - "REC: category_performed_2"
 
   # ------------------------------------------------------------------
-  # _compute_allowed_test_of_detail_ids / _compute_allowed_key_audit_procedure_ids
+  # _compute_allowed_sample_determination_ids / _compute_allowed_key_audit_procedure_ids
   # - kosong
   # ------------------------------------------------------------------
   - name:
-      "Worksheet b4f7d9c - Compute allowed_test_of_detail_ids +
+      "Worksheet b4f7d9c - Compute allowed_sample_determination_ids +
       allowed_key_audit_procedure_ids (kosong)"
     steps:
       - step: "Create worksheet b4f7d9c without data_mode/ws_e51bb1c_id"
@@ -672,11 +673,12 @@ scenarios:
           type_id: "REC: ws_type.id"
 
       - step:
-          "Assert allowed_test_of_detail_ids / allowed_key_audit_procedure_ids are empty"
+          "Assert allowed_sample_determination_ids / allowed_key_audit_procedure_ids are
+          empty"
         action: "assert"
         target: "worksheet"
         asserts:
-          allowed_test_of_detail_ids:
+          allowed_sample_determination_ids:
             type: "m2m"
             check: "count"
             expected_count: 0
@@ -762,10 +764,10 @@ scenarios:
           raw_data: "Ref,Amount\nREF1,1000\nREF2,2000\nREF3,3000\n"
           title: "GL Vouching Header"
 
-      - step: "Create Test of Detail worksheet with sampling data"
+      - step: "Create Sample Determination worksheet with sampling data"
         action: "create"
         model: "general_audit_ws_a916660"
-        save_as: "tod"
+        save_as: "sd"
         as_user: "base.user_admin"
         values:
           general_audit_id: "REC: audit.id"
@@ -782,7 +784,7 @@ scenarios:
           type_id: "REC: ws_type.id"
           data_mode: "gl"
           general_ledger_id: "REC: gl.id"
-          test_of_detail_id: "REC: tod.id"
+          sample_determination_id: "REC: sd.id"
           reference_col_number: 1
 
       - step: "Assert vouching_data contains only the sampled references"
@@ -810,7 +812,7 @@ scenarios:
     steps:
       - step:
           "Create worksheet b4f7d9c without
-          data_mode/test_of_detail_id/reference_col_number"
+          data_mode/sample_determination_id/reference_col_number"
         action: "create"
         model: "general_audit_ws_b4f7d9c"
         save_as: "worksheet"
@@ -1186,10 +1188,10 @@ scenarios:
             operator: "is_falsy"
 
   # ------------------------------------------------------------------
-  # Onchange test_of_detail_id clears
+  # Onchange sample_determination_id clears
   # (triggered by data_mode / general_ledger_id / subledger_id)
   # ------------------------------------------------------------------
-  - name: "Worksheet b4f7d9c - Onchange data_mode clears test_of_detail_id"
+  - name: "Worksheet b4f7d9c - Onchange data_mode clears sample_determination_id"
     steps:
       - step: "Create GL available to this general_audit"
         action: "create"
@@ -1201,10 +1203,10 @@ scenarios:
           type_id: "REC: ws_type_d209914.id"
           account_mode: "standard_account"
 
-      - step: "Create Test of Detail worksheet pointing at the GL"
+      - step: "Create Sample Determination worksheet pointing at the GL"
         action: "create"
         model: "general_audit_ws_a916660"
-        save_as: "tod"
+        save_as: "sd"
         as_user: "base.user_admin"
         values:
           general_audit_id: "REC: audit.id"
@@ -1221,7 +1223,7 @@ scenarios:
           type_id: "REC: ws_type.id"
 
       - step:
-          "Open worksheet (data_mode/general_ledger_id/test_of_detail_id become
+          "Open worksheet (data_mode/general_ledger_id/sample_determination_id become
           editable)"
         action: "call"
         target: "worksheet"
@@ -1233,7 +1235,7 @@ scenarios:
         target: "worksheet"
         method: "invalidate_cache"
 
-      - step: "Set data_mode/general_ledger_id/test_of_detail_id via Form"
+      - step: "Set data_mode/general_ledger_id/sample_determination_id via Form"
         action: "form"
         target: "worksheet"
         as_user: "base.user_admin"
@@ -1241,13 +1243,13 @@ scenarios:
         ops:
           - set: {data_mode: "gl"}
           - set: {general_ledger_id: "REC: gl"}
-          - set: {test_of_detail_id: "REC: tod"}
+          - set: {sample_determination_id: "REC: sd"}
 
-      - step: "Assert test_of_detail_id was actually persisted"
+      - step: "Assert sample_determination_id was actually persisted"
         action: "assert"
         target: "worksheet"
         asserts:
-          test_of_detail_id:
+          sample_determination_id:
             type: "value"
             operator: "is_truthy"
 
@@ -1259,11 +1261,11 @@ scenarios:
         ops:
           - set: {data_mode: "subledger"}
 
-      - step: "Assert test_of_detail_id was cleared by the onchange"
+      - step: "Assert sample_determination_id was cleared by the onchange"
         action: "assert"
         target: "worksheet"
         asserts:
-          test_of_detail_id:
+          sample_determination_id:
             type: "value"
             operator: "is_falsy"
 
