@@ -154,7 +154,7 @@ addon | version | maintainers | summary
 [ssi_general_audit_worksheet_audit_procedure_observation](ssi_general_audit_worksheet_audit_procedure_observation/) | 14.0.1.2.0 |  | General Audit Worksheet - Observation Audit Procedure
 [ssi_general_audit_worksheet_audit_procedure_recompute](ssi_general_audit_worksheet_audit_procedure_recompute/) | 14.0.1.2.2 |  | General Audit Worksheet - Recompute Audit Procedure
 [ssi_general_audit_worksheet_audit_procedure_reperformance](ssi_general_audit_worksheet_audit_procedure_reperformance/) | 14.0.1.2.2 |  | General Audit Worksheet - Reperformance Audit Procedure
-[ssi_general_audit_worksheet_audit_procedure_vouching](ssi_general_audit_worksheet_audit_procedure_vouching/) | 14.0.1.2.0 |  | General Audit Worksheet - Vouching Audit Procedure
+[ssi_general_audit_worksheet_audit_procedure_vouching](ssi_general_audit_worksheet_audit_procedure_vouching/) | 14.0.1.3.0 |  | General Audit Worksheet - Vouching Audit Procedure
 [ssi_general_audit_worksheet_audit_result](ssi_general_audit_worksheet_audit_result/) | 14.0.1.1.1 |  | General Audit Worksheet - Audit Result
 [ssi_general_audit_worksheet_audit_working_plan](ssi_general_audit_worksheet_audit_working_plan/) | 14.0.1.5.1 |  | General Audit Worksheet - Audit Working Plan
 [ssi_general_audit_worksheet_client_package](ssi_general_audit_worksheet_client_package/) | 14.0.1.2.3 |  | General Audit Worksheet - Client Assistance Package
@@ -175,11 +175,11 @@ addon | version | maintainers | summary
 [ssi_general_audit_worksheet_preliminary_materiality](ssi_general_audit_worksheet_preliminary_materiality/) | 14.0.1.4.0 |  | General Audit Worksheet - Preliminary Materiality
 [ssi_general_audit_worksheet_review](ssi_general_audit_worksheet_review/) | 14.0.1.1.1 |  | General Audit Worksheet - Review
 [ssi_general_audit_worksheet_romm](ssi_general_audit_worksheet_romm/) | 14.0.1.5.3 |  | General Audit Worksheet - ROMM
-[ssi_general_audit_worksheet_sample_determination](ssi_general_audit_worksheet_sample_determination/) | 14.0.1.2.0 |  | General Audit Worksheet - Sample Determination
+[ssi_general_audit_worksheet_sample_determination](ssi_general_audit_worksheet_sample_determination/) | 14.0.1.3.0 |  | General Audit Worksheet - Sample Determination
 [ssi_general_audit_worksheet_specific_procedure](ssi_general_audit_worksheet_specific_procedure/) | 14.0.1.2.2 |  | General Audit Worksheet - Specific Procedures
 [ssi_general_audit_worksheet_team_communication](ssi_general_audit_worksheet_team_communication/) | 14.0.1.2.2 |  | General Audit Worksheet - Team Communication
 [ssi_general_audit_worksheet_test_of_control](ssi_general_audit_worksheet_test_of_control/) | 14.0.1.5.0 |  | General Audit Worksheet - Test of Control
-[ssi_general_audit_worksheet_test_of_detail](ssi_general_audit_worksheet_test_of_detail/) | 14.0.1.3.0 |  | General Audit Worksheet - Test of Detail
+[ssi_general_audit_worksheet_test_of_detail](ssi_general_audit_worksheet_test_of_detail/) | 14.0.1.2.0 |  | General Audit Worksheet - Test of Detail
 [ssi_general_audit_worksheet_test_planning](ssi_general_audit_worksheet_test_planning/) | 14.0.1.2.0 |  | General Audit Worksheet - Test Planning
 [ssi_general_audit_worksheet_trial_balance](ssi_general_audit_worksheet_trial_balance/) | 14.0.1.0.2 |  | General Audit Worksheet - Trial Balance
 [ssi_general_audit_worksheet_understanding_entity](ssi_general_audit_worksheet_understanding_entity/) | 14.0.1.15.0 |  | General Audit Worksheet - Understanding Entity and It's Environment
