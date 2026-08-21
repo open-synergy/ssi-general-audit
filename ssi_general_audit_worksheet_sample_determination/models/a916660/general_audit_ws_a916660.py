@@ -330,6 +330,8 @@ class GeneralAuditWsA916660(models.Model):
         store=True,
         compute_sudo=True,
         digits=(12, 4),
+        help="Confidence coefficient looked up from the reliability table "
+        "for the chosen ARIA.",
     )
     arir_coefficient = fields.Float(
         string="ARIR Coefficient",
@@ -337,6 +339,8 @@ class GeneralAuditWsA916660(models.Model):
         store=True,
         compute_sudo=True,
         digits=(12, 4),
+        help="Confidence coefficient looked up from the reliability table "
+        "for the chosen ARIR.",
     )
     estimate_misstatement_ratio = fields.Float(
         string="Estimate Misstatement Ratio",
@@ -366,6 +370,8 @@ class GeneralAuditWsA916660(models.Model):
         compute="_compute_estimate_misstatement",
         store=True,
         compute_sudo=True,
+        help="Estimate Misstatement = Tolerable Misstatement x Estimate "
+        "Misstatement Ratio.",
     )
     standard_deviation_estimate = fields.Monetary(
         string="Standard Deviation Estimate",
@@ -373,6 +379,8 @@ class GeneralAuditWsA916660(models.Model):
         compute="_compute_standard_deviation_estimate",
         store=True,
         compute_sudo=True,
+        help="Standard Deviation Estimate = Estimate Misstatement x "
+        "Standard Deviation Ratio.",
     )
     nss_final_sample_size = fields.Integer(
         string="Final Sample Size (Judgment)",
@@ -681,21 +689,15 @@ class GeneralAuditWsA916660(models.Model):
             required inputs are incomplete.
         """
         for record in self:
+            result = 0
             if record.method_type == "mus":
                 if record.sampling_interval > 0:
-                    record.computed_sample_size = math.ceil(
-                        record.sample_amount / record.sampling_interval
-                    )
-                else:
-                    record.computed_sample_size = 0
+                    result = math.ceil(record.sample_amount / record.sampling_interval)
             elif record.method_type in ("cvs", "nss"):
-                statistical_size = record._compute_cvs_sample_size()
+                result = record._compute_cvs_sample_size()
                 if record.method_type == "nss" and record.nss_final_sample_size:
-                    record.computed_sample_size = record.nss_final_sample_size
-                else:
-                    record.computed_sample_size = statistical_size
-            else:
-                record.computed_sample_size = 0
+                    result = record.nss_final_sample_size
+            record.computed_sample_size = result
 
     def _compute_cvs_sample_size(self):
         """Compute the Classical Variable Sampling sample size.
