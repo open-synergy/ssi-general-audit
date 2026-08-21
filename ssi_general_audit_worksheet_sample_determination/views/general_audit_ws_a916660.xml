@@ -172,7 +172,23 @@
                         />
                     </page>
                     <page name="sampling_data" string="Sampling Data">
-                        <field name="sampling_data" nolabel="1" widget="csv_table" />
+                        <div
+                            class="alert alert-info"
+                            role="alert"
+                            attrs="{'invisible': [('method_type', '=', 'nss')]}"
+                        >
+                            This table is locked for Monetary Unit / Classical
+                            Variable Sampling: manually editing an
+                            algorithmically-selected sample invalidates its
+                            statistical basis. Only Non-Statistical Sampling
+                            allows manual edits here.
+                        </div>
+                        <field
+                            name="sampling_data"
+                            nolabel="1"
+                            widget="csv_table"
+                            attrs="{'readonly': [('method_type', '!=', 'nss')]}"
+                        />
                     </page>
                 </xpath>
             </data>

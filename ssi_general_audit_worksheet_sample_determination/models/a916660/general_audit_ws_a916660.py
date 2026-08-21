@@ -215,7 +215,11 @@ class GeneralAuditWsA916660(models.Model):
         "(100%% examination) and the selected sample items -- for "
         "Non-Statistical Sampling, every remaining item is listed as a "
         "'Candidate' instead: mark the ones actually tested by editing "
-        "the Type cell to 'Sample' in Table edit mode.",
+        "the Type cell to 'Sample' in Table edit mode. Editable only for "
+        "Non-Statistical Sampling: manually editing an "
+        "algorithmically-selected MUS/CVS sample invalidates its "
+        "statistical basis, so the view locks it read-only for those "
+        "methods.",
     )
 
     # --- Method selection ---
