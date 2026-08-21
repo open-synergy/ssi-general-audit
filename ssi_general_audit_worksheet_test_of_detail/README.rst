@@ -3,7 +3,7 @@
    :alt: License: AGPL-3
 
 =======================================================
-General Audit Worksheet - Reperformance Audit Procedure
+General Audit Worksheet - Test of Detail
 =======================================================
 
 
@@ -16,7 +16,7 @@ To install this module, you need to:
 2.  Add the path to this repository in your configuration (addons-path)
 3.  Update the module list (Must be on developer mode)
 4.  Go to menu *Apps -> Apps -> Main Apps*
-5.  Search For *General Audit Worksheet - Reperformance Audit Procedure*
+5.  Search For *General Audit Worksheet - Test of Detail*
 6.  Install the module
 
 Bug Tracker
