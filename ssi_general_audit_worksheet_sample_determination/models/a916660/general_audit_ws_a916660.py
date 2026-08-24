@@ -6,8 +6,21 @@ import csv
 import io
 import math
 import random
+import re
+import sqlite3
 
-from odoo import api, fields, models
+from odoo import _, api, fields, models
+from odoo.exceptions import UserError
+
+# Forbidden SQL keywords for `filter_where_clause` (mutating/DDL statements);
+# only a read-only WHERE clause against the in-memory candidate table is
+# allowed. Mirrors `general_audit_ws_d45dd19.confirmation._apply_where_clause`.
+_FORBIDDEN_SQL = re.compile(
+    r"\b(INSERT|UPDATE|DELETE|DROP|ALTER|CREATE|ATTACH|DETACH"
+    r"|REPLACE|PRAGMA|REINDEX|VACUUM|SAVEPOINT|RELEASE"
+    r"|BEGIN|COMMIT|ROLLBACK)\b",
+    re.IGNORECASE,
+)
 
 RELIABILITY_FACTOR_TABLE = {
     "80": 1.61,
@@ -208,18 +221,34 @@ class GeneralAuditWsA916660(models.Model):
     sampling_data = fields.Text(
         string="Sampling Data",
         readonly=True,
-        states={
-            "open": [("readonly", False)],
-        },
-        help="The result of the sample determination. Contains key items "
-        "(100%% examination) and the selected sample items -- for "
-        "Non-Statistical Sampling, every remaining item is listed as a "
-        "'Candidate' instead: mark the ones actually tested by editing "
-        "the Type cell to 'Sample' in Table edit mode. Editable only for "
-        "Non-Statistical Sampling: manually editing an "
-        "algorithmically-selected MUS/CVS sample invalidates its "
-        "statistical basis, so the view locks it read-only for those "
-        "methods.",
+        help="The final result of the sample determination: key items "
+        "(100%% examination) and the selected/chosen sample items. For "
+        "Non-Statistical Sampling, every remaining item starts out listed "
+        "as a 'Candidate'; use the 'Sampling Process' tab to choose which "
+        "candidates become 'Sample'. Always read-only here -- for NSS, "
+        "edit via 'Sampling Process' instead.",
+    )
+    sampling_process_filter = fields.Text(
+        string="Filter (WHERE clause)",
+        help="Optional SQL WHERE clause to narrow down the candidates shown "
+        "in 'Sampling Process' -- useful when the population is large. "
+        "Use column names from the table header; spaces and special "
+        "characters are replaced by underscores.\n"
+        "Example: Additional_Info LIKE '%%FRONT WALL%%'",
+    )
+    sampling_process_data = fields.Text(
+        string="Sampling Process Data",
+        compute="_compute_sampling_process_data",
+        inverse="_inverse_sampling_process_data",
+        store=False,
+        compute_sudo=True,
+        help="Non-Statistical Sampling only: the 'Candidate' rows of "
+        "``sampling_data`` (optionally narrowed by "
+        "``sampling_process_filter``), each with a 'Chose?' checkbox. "
+        "Check it to promote a candidate to 'Sample'; uncheck to send a "
+        "'Sample' back to 'Candidate'. Key items are not shown here -- "
+        "they are always chosen automatically and are not affected by "
+        "this tab.",
     )
 
     # --- Method selection ---
@@ -266,12 +295,14 @@ class GeneralAuditWsA916660(models.Model):
     )
     reliability_factor = fields.Float(
         string="Reliability Factor",
-        compute="_compute_reliability_factor",
-        store=True,
-        compute_sudo=True,
         digits=(12, 4),
+        readonly=True,
+        states={
+            "open": [("readonly", False)],
+        },
         help="Statistical reliability factor based on confidence level. "
-        "R = -ln(1 - confidence_level).",
+        "Auto-filled from Confidence Level when it changes, but can be "
+        "overridden.",
     )
     sampling_interval = fields.Monetary(
         string="Sampling Interval",
@@ -282,7 +313,7 @@ class GeneralAuditWsA916660(models.Model):
         help="Sampling interval = Tolerable Misstatement / Reliability Factor.",
     )
 
-    # --- CVS / NSS parameters (Classical Variable / Non-Statistical Sampling) ---
+    # --- Input Variabel: shared by all three sampling methods ---
     performance_materiality = fields.Monetary(
         string="Performance Materiality",
         currency_field="currency_id",
@@ -292,7 +323,7 @@ class GeneralAuditWsA916660(models.Model):
         },
         help="Performance materiality for this account. Used to derive "
         "``Tolerable Misstatement`` (= Performance Materiality x Risk "
-        "Factor) for Classical Variable / Non-Statistical Sampling.",
+        "Factor).",
     )
     risk_factor = fields.Float(
         string="Risk Factor",
@@ -301,9 +332,11 @@ class GeneralAuditWsA916660(models.Model):
         states={
             "open": [("readonly", False)],
         },
-        help="Combined audit risk factor for Classical Variable / "
-        "Non-Statistical Sampling.",
+        help="Combined audit risk factor, used to derive ``Tolerable "
+        "Misstatement``.",
     )
+
+    # --- CVS / NSS parameters (Classical Variable / Non-Statistical Sampling) ---
     aria = fields.Selection(
         string="ARIA (%)",
         selection=ARIA_SELECTION,
@@ -591,19 +624,6 @@ class GeneralAuditWsA916660(models.Model):
         for record in self:
             record.sample_amount = record.population_amount - record.key_item_amount
 
-    @api.depends("confidence_level")
-    def _compute_reliability_factor(self):
-        """Look up the MUS reliability factor for the chosen confidence level.
-
-        :return: sets ``reliability_factor`` from
-            ``RELIABILITY_FACTOR_TABLE``, or ``0.0`` when
-            ``confidence_level`` is unset.
-        """
-        for record in self:
-            record.reliability_factor = RELIABILITY_FACTOR_TABLE.get(
-                record.confidence_level, 0.0
-            )
-
     @api.depends("tolerable_misstatement", "reliability_factor")
     def _compute_sampling_interval(self):
         """Derive the MUS sampling interval.
@@ -732,11 +752,15 @@ class GeneralAuditWsA916660(models.Model):
     def onchange_subledger_id(self):
         self.subledger_id = False
 
-    @api.onchange("performance_materiality", "risk_factor", "method_type")
+    @api.onchange("performance_materiality", "risk_factor")
     def onchange_tolerable_misstatement(self):
-        if self.method_type in ("cvs", "nss"):
-            self.tolerable_misstatement = (
-                self.performance_materiality * self.risk_factor
+        self.tolerable_misstatement = self.performance_materiality * self.risk_factor
+
+    @api.onchange("confidence_level")
+    def onchange_reliability_factor(self):
+        if self.confidence_level:
+            self.reliability_factor = RELIABILITY_FACTOR_TABLE.get(
+                self.confidence_level, 0.0
             )
 
     # --- Helper methods ---
@@ -835,7 +859,8 @@ class GeneralAuditWsA916660(models.Model):
         :param monetary_col: 1-based monetary column number used to derive
             each item's amount.
         :return: a ``(output_header, items)`` tuple, where ``output_header``
-            is ``["Index", ...selected column labels..., "Type"]`` and
+            is ``["Index", ...selected column labels..., "Type"]`` (plus a
+            trailing ``"Chose?"`` column for Non-Statistical Sampling) and
             ``items`` is a list of ``{"index", "cells", "amount"}`` dicts,
             one per data row.
         """
@@ -847,6 +872,8 @@ class GeneralAuditWsA916660(models.Model):
             for col in unique_columns
         ]
         output_header = ["Index"] + output_header_parts + ["Type"]
+        if self.method_type == "nss":
+            output_header = output_header + ["Chose?"]
         items = []
         for idx, row in enumerate(source_data):
             selected = [
@@ -867,6 +894,15 @@ class GeneralAuditWsA916660(models.Model):
         key items (100% examination) removed from the sampling pool, then
         walks the remaining pool with a random-start systematic selection
         at ``sample_interval`` to pick the MUS sample.
+
+        The random start is drawn from ``[0, remainder)`` rather than the
+        full ``[0, sample_interval)`` range, where ``remainder`` is
+        ``total_sample_amount`` modulo ``sample_interval`` (or the full
+        interval when the amount is an exact multiple of it). This is the
+        sub-range of start values that walks to exactly ``sample_size``
+        hits, so "Realized to sampling" always matches "Total Plan
+        Examination" -- drawing from the full interval could land past the
+        last item's cumulative amount and silently drop the final hit.
 
         :param items: list of ``{"index", "cells", "amount"}`` dicts, as
             produced by ``_build_items_from_csv``.
@@ -889,7 +925,8 @@ class GeneralAuditWsA916660(models.Model):
         )
         mus_selected_indices = set()
         if sample_interval > 0 and sample_size > 0 and total_sample_amount > 0:
-            random_start = random.uniform(0, sample_interval)
+            remainder = total_sample_amount % sample_interval or sample_interval
+            random_start = random.uniform(0, remainder)
             thresholds = [
                 random_start + i * sample_interval for i in range(sample_size)
             ]
@@ -1054,16 +1091,183 @@ class GeneralAuditWsA916660(models.Model):
                 selected_indices,
                 selected_tag,
             ) = self._select_sampling_items(items, key_count)
+            is_nss = self.method_type == "nss"
             output = io.StringIO()
             writer = csv.writer(output)
             writer.writerow(output_header)
             for item in sorted_by_amount[:key_count]:
-                writer.writerow([str(item["index"])] + item["cells"] + ["Key Item"])
+                row = [str(item["index"])] + item["cells"] + ["Key Item"]
+                if is_nss:
+                    row = row + ["TRUE"]
+                writer.writerow(row)
             for item in items:
                 if item["index"] in selected_indices:
-                    writer.writerow(
-                        [str(item["index"])] + item["cells"] + [selected_tag]
-                    )
+                    row = [str(item["index"])] + item["cells"] + [selected_tag]
+                    if is_nss:
+                        row = row + ["TRUE" if selected_tag == "Sample" else "FALSE"]
+                    writer.writerow(row)
             self.sampling_data = output.getvalue()
         except Exception:
             self.sampling_data = False
+
+    @api.depends("sampling_data", "method_type", "sampling_process_filter")
+    def _compute_sampling_process_data(self):
+        """Derive the editable NSS "Sampling Process" table from ``sampling_data``.
+
+        :return: sets ``sampling_process_data`` to the ``Candidate``/
+            ``Sample`` rows of ``sampling_data`` (``Key Item`` rows
+            excluded), optionally narrowed by ``sampling_process_filter``,
+            for Non-Statistical Sampling, or ``False`` for other methods
+            or when ``sampling_data`` is empty/unparseable.
+        """
+        for record in self:
+            record.sampling_process_data = False
+            if record.method_type != "nss" or not record.sampling_data:
+                continue
+            try:
+                rows = list(csv.reader(io.StringIO(record.sampling_data)))
+            except Exception:
+                continue
+            if not rows or "Type" not in rows[0]:
+                continue
+            type_idx = rows[0].index("Type")
+            output = io.StringIO()
+            writer = csv.writer(output)
+            writer.writerow(rows[0])
+            for row in rows[1:]:
+                if len(row) > type_idx and row[type_idx] != "Key Item":
+                    writer.writerow(row)
+            candidate_csv = output.getvalue()
+            if record.sampling_process_filter:
+                candidate_csv = self._apply_where_clause(
+                    candidate_csv, record.sampling_process_filter
+                )
+            record.sampling_process_data = candidate_csv
+
+    @api.model
+    def _apply_where_clause(self, raw_csv, where_clause):
+        """Filter CSV data using a read-only SQL WHERE clause via SQLite.
+
+        :param raw_csv: CSV text with a header row.
+        :param where_clause: a SQL WHERE clause (without the ``WHERE``
+            keyword) referencing the header's sanitised column names.
+        :return: the filtered CSV text, or the original ``raw_csv``
+            unchanged when it is empty, ``where_clause`` is blank/contains
+            a forbidden keyword, or filtering fails for any reason.
+        """
+        where_clause = (where_clause or "").strip()
+        if not where_clause or not raw_csv:
+            return raw_csv
+        if _FORBIDDEN_SQL.search(where_clause):
+            return raw_csv
+
+        reader = csv.reader(io.StringIO(raw_csv))
+        headers = next(reader, None)
+        rows = list(reader)
+        if not headers or not rows:
+            return raw_csv
+
+        safe_cols = []
+        for h in headers:
+            col = re.sub(r"[^\w]", "_", h.strip())
+            if not col or col[0].isdigit():
+                col = "c_" + col
+            safe_cols.append(col)
+        col_defs = ", ".join('"{}" TEXT'.format(c) for c in safe_cols)
+        placeholders = ", ".join(["?"] * len(safe_cols))
+
+        try:
+            conn = sqlite3.connect(":memory:")
+            cur = conn.cursor()
+            cur.execute("CREATE TABLE data ({})".format(col_defs))
+            for row in rows:
+                padded = list(row) + [""] * (len(safe_cols) - len(row))
+                cur.execute(
+                    "INSERT INTO data VALUES ({})".format(placeholders),
+                    padded[: len(safe_cols)],
+                )
+            cur.execute("SELECT * FROM data WHERE {}".format(where_clause))
+            filtered = cur.fetchall()
+            conn.close()
+        except Exception:
+            return raw_csv
+
+        out = io.StringIO()
+        writer = csv.writer(out)
+        writer.writerow(headers)
+        writer.writerows(filtered)
+        return out.getvalue()
+
+    def _inverse_sampling_process_data(self):
+        """Write edited "Chose?"/Type values back into ``sampling_data``.
+
+        Re-derives each edited row's ``Type`` from its ``Chose?`` checkbox
+        (``TRUE`` -> ``Sample``, ``FALSE`` -> ``Candidate``), enforces that
+        the resulting Sample count does not exceed
+        ``computed_sample_size`` (already net of key items), then merges
+        the result back into ``sampling_data``; ``Key Item`` rows are left
+        untouched.
+
+        :raise UserError: when the number of rows chosen (``Chose? =
+            TRUE``) exceeds ``computed_sample_size``.
+        :return: ``None``.
+        """
+        for record in self:
+            if (
+                record.method_type != "nss"
+                or not record.sampling_process_data
+                or not record.sampling_data
+            ):
+                continue
+            try:
+                process_rows = list(
+                    csv.reader(io.StringIO(record.sampling_process_data))
+                )
+                full_rows = list(csv.reader(io.StringIO(record.sampling_data)))
+            except Exception:
+                continue
+            if not process_rows or not full_rows:
+                continue
+            header = full_rows[0]
+            if not {"Type", "Chose?", "Index"} <= set(header):
+                continue
+            type_idx = header.index("Type")
+            chose_idx = header.index("Chose?")
+            index_idx = header.index("Index")
+
+            edits = {}
+            chosen_count = 0
+            for row in process_rows[1:]:
+                if len(row) <= max(type_idx, chose_idx, index_idx):
+                    continue
+                row = list(row)
+                chosen = row[chose_idx].strip().upper() == "TRUE"
+                row[type_idx] = "Sample" if chosen else "Candidate"
+                row[chose_idx] = "TRUE" if chosen else "FALSE"
+                edits[row[index_idx]] = row
+                if chosen:
+                    chosen_count += 1
+
+            if chosen_count > record.computed_sample_size:
+                raise UserError(
+                    _(
+                        "You chose %(chosen)s sample item(s), which exceeds "
+                        "the Computed Sample Size of %(limit)s (already "
+                        "net of key items). Uncheck some candidates first."
+                    )
+                    % {
+                        "chosen": chosen_count,
+                        "limit": record.computed_sample_size,
+                    }
+                )
+
+            merged_rows = [
+                edits.get(row[index_idx], row) if len(row) > index_idx else row
+                for row in full_rows[1:]
+            ]
+
+            output = io.StringIO()
+            writer = csv.writer(output)
+            writer.writerow(header)
+            writer.writerows(merged_rows)
+            record.sampling_data = output.getvalue()

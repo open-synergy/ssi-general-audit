@@ -2,6 +2,8 @@
 # Copyright 2026 PT. Simetri Sinergi Indonesia
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl-3.0-standalone.html).
 
+import math
+
 from odoo_yaml_test import YamlTransactionCase
 
 from odoo.tests import tagged
@@ -173,11 +175,15 @@ class TestGeneralAuditWSa916660(YamlTransactionCase):
 
         self.assertEqual(worksheet.tolerable_misstatement, 9000.0)
 
-    def test_onchange_tolerable_misstatement_mus_untouched(self):
+    def test_onchange_tolerable_misstatement_mus(self):
         """Pure Python -- trigger P12 (L-20), see
         ``test_onchange_data_mode_clears_general_ledger_id`` for why this
         onchange is verified by calling the method directly instead of
         through ``Form``.
+
+        HT/26/000687: MUS now follows the same "Input Variabel" pattern as
+        CVS/NSS (Performance Materiality x Risk Factor -> Tolerable
+        Misstatement) instead of being left untouched.
         """
         _admin, worksheet, _gl, _subledger = self._create_worksheet_fixture()
 
@@ -192,4 +198,97 @@ class TestGeneralAuditWSa916660(YamlTransactionCase):
 
         worksheet.onchange_tolerable_misstatement()
 
-        self.assertEqual(worksheet.tolerable_misstatement, 500.0)
+        self.assertEqual(worksheet.tolerable_misstatement, 9000.0)
+
+    def test_onchange_reliability_factor(self):
+        """Pure Python -- trigger P12 (L-20), see
+        ``test_onchange_data_mode_clears_general_ledger_id`` for why this
+        onchange is verified by calling the method directly instead of
+        through ``Form``.
+
+        HT/26/000687: ``reliability_factor`` is now a plain editable field
+        (no longer a ``compute``); the ``RELIABILITY_FACTOR_TABLE`` lookup
+        only runs as a UI default suggestion via this onchange.
+        """
+        _admin, worksheet, _gl, _subledger = self._create_worksheet_fixture()
+
+        worksheet.sudo().write({"confidence_level": "90"})
+        self.assertEqual(worksheet.reliability_factor, 0.0)
+
+        worksheet.onchange_reliability_factor()
+
+        self.assertEqual(worksheet.reliability_factor, 2.31)
+
+    def test_mus_sampling_realized_matches_planned(self):
+        """Pure Python -- HT/26/000687: "Realized to sampling" must always
+        match "Total Plan Examination".
+
+        Before the fix, the random start was drawn from the full
+        ``[0, sample_interval)`` range: a start landing close to the
+        interval could walk past the last item's cumulative amount before
+        reaching the final threshold, silently realizing one fewer hit
+        than ``math.ceil(total / sample_interval)`` planned. Run many
+        trials since the random start is what triggers the bug.
+        """
+        _admin, worksheet, _gl, _subledger = self._create_worksheet_fixture()
+
+        items = [
+            {"index": i, "cells": [str(i)], "amount": amount}
+            for i, amount in enumerate(
+                [
+                    237000.0,
+                    154000.0,
+                    98000.0,
+                    61000.0,
+                    45000.0,
+                    33000.0,
+                    21000.0,
+                    15000.0,
+                ]
+            )
+        ]
+        sample_interval = 50000.0
+        total_amount = sum(item["amount"] for item in items)
+        expected_size = math.ceil(total_amount / sample_interval)
+
+        for _trial in range(50):
+            _sorted_items, selected_indices = worksheet._perform_mus_sampling(
+                items, key_count=0, sample_interval=sample_interval
+            )
+            self.assertEqual(len(selected_indices), expected_size)
+
+    def test_sampling_process_data_excludes_key_items(self):
+        """HT/26/000687: the "Sampling Process" tab (NSS) must only show
+        "Candidate" rows -- "Key Item" rows are chosen automatically and
+        are not part of the manual selection process.
+
+        Covered here in Python rather than YAML because the assertion
+        needs a substring *absence* check, which the YAML scenario
+        runner's ``_VALID_OPERATORS`` does not offer (only ``contains``,
+        no ``not_contains``).
+        """
+        _admin, worksheet, gl, _subledger = self._create_worksheet_fixture()
+        gl.sudo().write(
+            {
+                "raw_data": (
+                    "ref,amount,note\n" "REF001,1000,Note 1\n" "REF002,2000,Note 2\n"
+                )
+            }
+        )
+        worksheet.sudo().write(
+            {
+                "data_mode": "gl",
+                "general_ledger_id": gl.id,
+                "identifier_col_number": 1,
+                "monetary_col_number": 2,
+                "additional_info_col_number": 3,
+                "key_item_count": 1,
+                "method_type": "nss",
+            }
+        )
+
+        worksheet.action_generate_sampling()
+
+        self.assertIn("REF001", worksheet.sampling_process_data)
+        self.assertNotIn("REF002", worksheet.sampling_process_data)
+        self.assertNotIn("Key Item", worksheet.sampling_process_data)
