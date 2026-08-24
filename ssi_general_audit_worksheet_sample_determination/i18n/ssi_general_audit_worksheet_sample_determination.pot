@@ -34,6 +34,13 @@ msgid "0.5%"
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_sample_determination
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_sample_determination.field_general_audit_ws_a916660__beginning_to_sampling
+msgid ""
+"1-based row position where sampling begins in the descending-amount-sorted "
+"population: ``Key Item Count`` + 1 (the row right after the last key item)."
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_sample_determination
 #: model:ir.model.fields.selection,name:ssi_general_audit_worksheet_sample_determination.selection__general_audit_ws_a916660__aria__10
 #: model:ir.model.fields.selection,name:ssi_general_audit_worksheet_sample_determination.selection__general_audit_ws_a916660__arir__10
 msgid "10%"
@@ -111,55 +118,144 @@ msgstr ""
 
 #. module: ssi_general_audit_worksheet_sample_determination
 #: model:ir.model.fields.selection,name:ssi_general_audit_worksheet_sample_determination.selection__general_audit_ws_a916660__arir__80
-#: model:ir.model.fields.selection,name:ssi_general_audit_worksheet_sample_determination.selection__general_audit_ws_a916660__confidence_level__80
 msgid "80%"
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_sample_determination
 #: model:ir.model.fields.selection,name:ssi_general_audit_worksheet_sample_determination.selection__general_audit_ws_a916660__arir__90
-#: model:ir.model.fields.selection,name:ssi_general_audit_worksheet_sample_determination.selection__general_audit_ws_a916660__confidence_level__90
 msgid "90%"
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_sample_determination
-#: model:ir.model.fields.selection,name:ssi_general_audit_worksheet_sample_determination.selection__general_audit_ws_a916660__confidence_level__95
-msgid "95%"
+#: model_terms:ir.ui.view,arch_db:ssi_general_audit_worksheet_sample_determination.general_audit_ws_a916660_view_form
+msgid ""
+"<strong>ARIA</strong> and <strong>ARIR</strong> (Parameters) are picked from\n"
+"                                a dropdown; their <strong>Coefficient</strong>\n"
+"                                fields look up the matching value from the\n"
+"                                standard confidence table automatically."
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_sample_determination
 #: model_terms:ir.ui.view,arch_db:ssi_general_audit_worksheet_sample_determination.general_audit_ws_a916660_view_form
 msgid ""
-"<strong>Candidate</strong> -- every\n"
-"                                remaining population item, generated\n"
-"                                automatically after \"Generate Sampling\".\n"
-"                                Not yet tested: this is the starting point,\n"
-"                                not a decision."
+"<strong>Choosing samples for Non-Statistical\n"
+"                            Sampling:</strong>"
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_sample_determination
 #: model_terms:ir.ui.view,arch_db:ssi_general_audit_worksheet_sample_determination.general_audit_ws_a916660_view_form
 msgid ""
-"<strong>How to fill in the \"Type\" column for\n"
-"                            Non-Statistical Sampling:</strong>"
+"<strong>Confidence Factor</strong> (in\n"
+"                                Parameters) is also a manual input -- it\n"
+"                                is not looked up from any table, unlike\n"
+"                                Classical Variable / Non-Statistical\n"
+"                                Sampling's ARIA/ARIR."
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_sample_determination
 #: model_terms:ir.ui.view,arch_db:ssi_general_audit_worksheet_sample_determination.general_audit_ws_a916660_view_form
 msgid ""
-"<strong>Key Item</strong> -- the item is\n"
-"                                already part of the 100% examination\n"
-"                                (populated automatically; do not change\n"
-"                                these rows)."
+"<strong>Estimate Misstatement</strong>\n"
+"                                = Tolerable Misstatement x <strong>Estimate Misstatement Ratio</strong>, and\n"
+"                                <strong>Standard Deviation Estimate</strong>\n"
+"                                = Estimate Misstatement x <strong>Standard Deviation Ratio</strong> (both\n"
+"                                ratios are manual inputs in Parameters,\n"
+"                                defaulting to 0.55 and 0.013)."
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_sample_determination
 #: model_terms:ir.ui.view,arch_db:ssi_general_audit_worksheet_sample_determination.general_audit_ws_a916660_view_form
 msgid ""
-"<strong>Sample</strong> -- an item you\n"
-"                                have decided to test based on professional\n"
-"                                judgment. In the \"Table\" edit mode above,\n"
-"                                click the Type cell of that row and retype\n"
-"                                it as <code>Sample</code>."
+"<strong>Final Sample Size\n"
+"                                (Judgment)</strong> (Parameters) lets you\n"
+"                                override the computed pool size with your\n"
+"                                own figure -- leave it empty to use the\n"
+"                                formula as-is."
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_sample_determination
+#: model_terms:ir.ui.view,arch_db:ssi_general_audit_worksheet_sample_determination.general_audit_ws_a916660_view_form
+msgid ""
+"<strong>How Input Variabel and Parameters feed\n"
+"                            the Monetary Unit Sampling formula:</strong>"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_sample_determination
+#: model_terms:ir.ui.view,arch_db:ssi_general_audit_worksheet_sample_determination.general_audit_ws_a916660_view_form
+msgid ""
+"<strong>How Input Variabel and Parameters feed\n"
+"                            the sample size formula:</strong>"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_sample_determination
+#: model_terms:ir.ui.view,arch_db:ssi_general_audit_worksheet_sample_determination.general_audit_ws_a916660_view_form
+msgid ""
+"<strong>Multiplier Random</strong> is a\n"
+"                                manual input: the upper bound for\n"
+"                                <strong>Random</strong>, which is redrawn\n"
+"                                every time you click \"Generate Sampling\"\n"
+"                                and used as the walk's starting point --\n"
+"                                see Random's own help text for how it\n"
+"                                interacts with Sampling Interval to pick\n"
+"                                items."
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_sample_determination
+#: model_terms:ir.ui.view,arch_db:ssi_general_audit_worksheet_sample_determination.general_audit_ws_a916660_view_form
+msgid ""
+"<strong>Performance Materiality</strong>\n"
+"                                and <strong>Risk Factor</strong> are manual\n"
+"                                inputs (your professional judgment).\n"
+"                                <strong>Tolerable Misstatement</strong>\n"
+"                                auto-fills as Performance Materiality x\n"
+"                                Risk Factor when either changes, but you\n"
+"                                can still type over it directly."
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_sample_determination
+#: model_terms:ir.ui.view,arch_db:ssi_general_audit_worksheet_sample_determination.general_audit_ws_a916660_view_form
+msgid ""
+"<strong>Performance Materiality</strong>\n"
+"                                and <strong>Risk Factor</strong> are manual\n"
+"                                inputs. <strong>Tolerable\n"
+"                                Misstatement</strong> auto-fills as\n"
+"                                Performance Materiality x Risk Factor when\n"
+"                                either changes, but can still be typed\n"
+"                                over directly."
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_sample_determination
+#: model_terms:ir.ui.view,arch_db:ssi_general_audit_worksheet_sample_determination.general_audit_ws_a916660_view_form
+msgid ""
+"<strong>Sampling Interval</strong>\n"
+"                                computes automatically as Tolerable\n"
+"                                Misstatement / (Risk Factor / 30%) /\n"
+"                                Confidence Factor -- it decides how many\n"
+"                                items get selected (larger interval, fewer\n"
+"                                items) and is the threshold each item's\n"
+"                                cumulative amount is walked against."
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_sample_determination
+#: model_terms:ir.ui.view,arch_db:ssi_general_audit_worksheet_sample_determination.general_audit_ws_a916660_view_form
+msgid ""
+"<strong>Total Plan Examination</strong>\n"
+"                                (key items + sample, on the \"Sampling\n"
+"                                Data\" tab) = ROUNDUP(((Standard Deviation\n"
+"                                Estimate x (ARIA Coefficient + ARIR\n"
+"                                Coefficient) x Population Count) /\n"
+"                                (Performance Materiality - Estimate\n"
+"                                Misstatement))^2). <strong>Computed Sample\n"
+"                                Size</strong> is that total minus Key Item\n"
+"                                Count -- the number still to pick from the\n"
+"                                pool."
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_sample_determination
+#: model_terms:ir.ui.view,arch_db:ssi_general_audit_worksheet_sample_determination.general_audit_ws_a916660_view_form
+msgid ""
+"<strong>WHERE Clause Guide (optional\n"
+"                            filter):</strong>"
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_sample_determination
@@ -355,6 +451,11 @@ msgid "Audited client company."
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_sample_determination
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_sample_determination.field_general_audit_ws_a916660__beginning_to_sampling
+msgid "Beginning to Sampling"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_sample_determination
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_sample_determination.field_general_audit_ws_a916660__approve_ok
 msgid "Can Approve"
 msgstr ""
@@ -414,7 +515,11 @@ msgstr ""
 
 #. module: ssi_general_audit_worksheet_sample_determination
 #: model_terms:ir.ui.view,arch_db:ssi_general_audit_worksheet_sample_determination.general_audit_ws_a916660_view_form
-msgid "Classical Variable / Non-Statistical Sampling Parameters"
+msgid ""
+"Check <strong>Chose?</strong> to\n"
+"                                promote a candidate to\n"
+"                                <code>Sample</code>; uncheck to send it\n"
+"                                back to <code>Candidate</code>."
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_sample_determination
@@ -429,9 +534,7 @@ msgstr ""
 
 #. module: ssi_general_audit_worksheet_sample_determination
 #: model:ir.model.fields,help:ssi_general_audit_worksheet_sample_determination.field_general_audit_ws_a916660__risk_factor
-msgid ""
-"Combined audit risk factor for Classical Variable / Non-Statistical "
-"Sampling."
+msgid "Combined audit risk factor, used to derive ``Tolerable Misstatement``."
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_sample_determination
@@ -480,8 +583,8 @@ msgid "Conclusions allowed for the selected worksheet type."
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_sample_determination
-#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_sample_determination.field_general_audit_ws_a916660__confidence_level
-msgid "Confidence Level"
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_sample_determination.field_general_audit_ws_a916660__confidence_factor
+msgid "Confidence Factor"
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_sample_determination
@@ -499,8 +602,10 @@ msgid ""
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_sample_determination
-#: model:ir.model.fields,help:ssi_general_audit_worksheet_sample_determination.field_general_audit_ws_a916660__confidence_level
-msgid "Confidence level for Monetary Unit Sampling."
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_sample_determination.field_general_audit_ws_a916660__confidence_factor
+msgid ""
+"Confidence factor for Monetary Unit Sampling, a manual input based on "
+"professional judgment (e.g. 1.5). Used to derive ``Sampling Interval``."
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_sample_determination
@@ -509,6 +614,11 @@ msgid ""
 "Confirm policy\n"
 "\n"
 "* If active user can see and execute 'Confirm' button"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_sample_determination
+#: model_terms:ir.ui.view,arch_db:ssi_general_audit_worksheet_sample_determination.general_audit_ws_a916660_view_form
+msgid "Contains text: <code>Additional_Info LIKE '%FRONT WALL%'</code>"
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_sample_determination
@@ -542,6 +652,11 @@ msgid "Data Mode"
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_sample_determination
+#: model_terms:ir.ui.view,arch_db:ssi_general_audit_worksheet_sample_determination.general_audit_ws_a916660_view_form
+msgid "Data to Sampling"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_sample_determination
 #: model:ir.model.fields,help:ssi_general_audit_worksheet_sample_determination.field_general_audit_ws_a916660__preparation_date
 msgid "Date when the worksheet was prepared."
 msgstr ""
@@ -555,6 +670,11 @@ msgstr ""
 #: model:ir.model.fields,help:ssi_general_audit_worksheet_sample_determination.field_general_audit_ws_a916660__data_mode
 msgid ""
 "Determines whether to use General Ledger or Subledger data as population."
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_sample_determination
+#: model_terms:ir.ui.view,arch_db:ssi_general_audit_worksheet_sample_determination.general_audit_ws_a916660_view_form
+msgid "Direct Examination"
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_sample_determination
@@ -598,6 +718,11 @@ msgid "End date of the previous period."
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_sample_determination
+#: model_terms:ir.ui.view,arch_db:ssi_general_audit_worksheet_sample_determination.general_audit_ws_a916660_view_form
+msgid "Ending to Sampling"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_sample_determination
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_sample_determination.field_general_audit_ws_a916660__estimate_misstatement
 msgid "Estimate Misstatement"
 msgstr ""
@@ -612,6 +737,21 @@ msgstr ""
 #. module: ssi_general_audit_worksheet_sample_determination
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_sample_determination.field_general_audit_ws_a916660__estimate_misstatement_ratio
 msgid "Estimate Misstatement Ratio"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_sample_determination
+#: model_terms:ir.ui.view,arch_db:ssi_general_audit_worksheet_sample_determination.general_audit_ws_a916660_view_form
+msgid "Exact match: <code>Type = 'Candidate'</code>"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_sample_determination
+#: model_terms:ir.ui.view,arch_db:ssi_general_audit_worksheet_sample_determination.general_audit_ws_a916660_view_form
+msgid "Examination Plan"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_sample_determination
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_sample_determination.field_general_audit_ws_a916660__sampling_process_filter
+msgid "Filter (WHERE clause)"
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_sample_determination
@@ -656,6 +796,11 @@ msgid "Generate Sampling"
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_sample_determination
+#: model_terms:ir.ui.view,arch_db:ssi_general_audit_worksheet_sample_determination.general_audit_ws_a916660_view_form
+msgid "Greater / less than: <code>Amount &gt; 1000</code>"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_sample_determination
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_sample_determination.field_general_audit_ws_a916660__id
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_sample_determination.field_general_audit_ws_b7df2d5__id
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_sample_determination.field_general_audit_ws_b7df2d5_detail__id
@@ -691,6 +836,11 @@ msgstr ""
 #. module: ssi_general_audit_worksheet_sample_determination
 #: model:ir.model.fields,help:ssi_general_audit_worksheet_sample_determination.field_general_audit_ws_a916660__message_has_error
 msgid "If checked, some messages have a delivery error."
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_sample_determination
+#: model_terms:ir.ui.view,arch_db:ssi_general_audit_worksheet_sample_determination.general_audit_ws_a916660_view_form
+msgid "Input Variabel"
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_sample_determination
@@ -746,11 +896,24 @@ msgid "Main Attachment"
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_sample_determination
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_sample_determination.field_general_audit_ws_a916660__multiplier_random
+msgid ""
+"Manual input: upper bound for the ``Random`` draw (``Random = RAND() x "
+"Multiplier Random``) used to pick the MUS systematic-sampling start point. "
+"Not necessarily related to ``Sampling Interval`` -- see ``Random``'s help."
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_sample_determination
 #: model:ir.model.fields,help:ssi_general_audit_worksheet_sample_determination.field_general_audit_ws_a916660__manual_number_ok
 msgid ""
 "Manual number assignment policy\n"
 "\n"
 "* If active user can edit document number"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_sample_determination
+#: model_terms:ir.ui.view,arch_db:ssi_general_audit_worksheet_sample_determination.general_audit_ws_a916660_view_form
+msgid "Maximal to Sampling"
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_sample_determination
@@ -784,13 +947,18 @@ msgid "Monetary Unit Sampling"
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_sample_determination
-#: model_terms:ir.ui.view,arch_db:ssi_general_audit_worksheet_sample_determination.general_audit_ws_a916660_view_form
-msgid "Monetary Unit Sampling Parameters"
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_sample_determination.field_general_audit_ws_a916660__multiplier_random
+msgid "Multiplier Random"
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_sample_determination
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_sample_determination.field_general_audit_ws_a916660__my_activity_date_deadline
 msgid "My Activity Deadline"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_sample_determination
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_sample_determination.field_general_audit_ws_a916660__nss_candidate_pool
+msgid "NSS Candidate Pool"
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_sample_determination
@@ -829,6 +997,26 @@ msgid "Non-Statistical Sampling"
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_sample_determination
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_sample_determination.field_general_audit_ws_a916660__sampling_process_data
+msgid ""
+"Non-Statistical Sampling only: ``nss_candidate_pool``, optionally narrowed "
+"by ``sampling_process_filter``, each row with a 'Chose?' checkbox. Check it "
+"to promote a candidate to 'Sample'; uncheck to send a 'Sample' back to "
+"'Candidate'. Key items are not shown here -- they are always chosen "
+"automatically and are not affected by this tab."
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_sample_determination
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_sample_determination.field_general_audit_ws_a916660__nss_candidate_pool
+msgid ""
+"Non-Statistical Sampling only: every pool item (all items minus key items), "
+"each tagged 'Candidate' or 'Sample' with a 'Chose?' flag -- the full working"
+" set 'Sampling Process' choices are made against and merged back into. Not "
+"shown directly in any tab; kept separate from ``sampling_data`` so that "
+"field can stay 'key items + chosen samples only'."
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_sample_determination
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_sample_determination.field_general_audit_ws_a916660__note
 msgid "Note"
 msgstr ""
@@ -846,6 +1034,15 @@ msgstr ""
 #. module: ssi_general_audit_worksheet_sample_determination
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_sample_determination.field_general_audit_ws_a916660__message_has_error_counter
 msgid "Number of errors"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_sample_determination
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_sample_determination.field_general_audit_ws_a916660__realized_to_sampling
+msgid ""
+"Number of items actually marked as a hit (key items and MUS samples "
+"combined) the last time 'Generate Sampling' ran. Set by "
+"``_perform_mus_sampling``; expected to equal ``Total Plan Examination`` -- "
+"see ``Sampling Variance``."
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_sample_determination
@@ -873,15 +1070,10 @@ msgstr ""
 #. module: ssi_general_audit_worksheet_sample_determination
 #: model_terms:ir.ui.view,arch_db:ssi_general_audit_worksheet_sample_determination.general_audit_ws_a916660_view_form
 msgid ""
-"Only rows marked <code>Key Item</code> or\n"
-"                                <code>Sample</code> are picked up by the\n"
-"                                Vouching worksheet; rows left as\n"
-"                                <code>Candidate</code> are treated as not\n"
-"                                tested. Because item selection here is\n"
-"                                judgment-based, findings on the items you\n"
-"                                mark <code>Sample</code> cannot be\n"
-"                                statistically projected onto the rest of\n"
-"                                the population the way MUS/CVS results can."
+"Only <strong>Candidate</strong> rows\n"
+"                                (not yet tested) appear here. <strong>Key Item</strong> rows are chosen\n"
+"                                automatically (100% examination) and are\n"
+"                                not shown."
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_sample_determination
@@ -891,11 +1083,23 @@ msgid "Operating Unit"
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_sample_determination
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_sample_determination.field_general_audit_ws_a916660__sampling_process_filter
+msgid ""
+"Optional SQL WHERE clause to narrow down the candidates shown in 'Sampling Process' -- useful when the population is large. Use column names from the table header; spaces and special characters are replaced by underscores.\n"
+"Example: Additional_Info LIKE '%%FRONT WALL%%'"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_sample_determination
 #: model:ir.model.fields,help:ssi_general_audit_worksheet_sample_determination.field_general_audit_ws_a916660__nss_final_sample_size
 msgid ""
 "Optional manual override of the statistically computed sample size, based on"
 " professional judgment. Non-Statistical Sampling only; leave empty to use "
 "the computed size as-is."
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_sample_determination
+#: model_terms:ir.ui.view,arch_db:ssi_general_audit_worksheet_sample_determination.general_audit_ws_a916660_view_form
+msgid "Parameters"
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_sample_determination
@@ -922,8 +1126,7 @@ msgstr ""
 #: model:ir.model.fields,help:ssi_general_audit_worksheet_sample_determination.field_general_audit_ws_a916660__performance_materiality
 msgid ""
 "Performance materiality for this account. Used to derive ``Tolerable "
-"Misstatement`` (= Performance Materiality x Risk Factor) for Classical "
-"Variable / Non-Statistical Sampling."
+"Misstatement`` (= Performance Materiality x Risk Factor)."
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_sample_determination
@@ -947,6 +1150,11 @@ msgid "Population Count"
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_sample_determination
+#: model_terms:ir.ui.view,arch_db:ssi_general_audit_worksheet_sample_determination.general_audit_ws_a916660_view_form
+msgid "Population Size"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_sample_determination
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_sample_determination.field_general_audit_ws_a916660__preparation_date
 msgid "Preparation Date"
 msgstr ""
@@ -967,8 +1175,18 @@ msgid "Previous Start Date"
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_sample_determination
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_sample_determination.field_general_audit_ws_a916660__random_start
+msgid "Random"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_sample_determination
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_sample_determination.field_general_audit_ws_a916660__raw_data
 msgid "Raw Data"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_sample_determination
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_sample_determination.field_general_audit_ws_a916660__realized_to_sampling
+msgid "Realized to Sampling"
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_sample_determination
@@ -987,11 +1205,6 @@ msgstr ""
 #. module: ssi_general_audit_worksheet_sample_determination
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_sample_determination.field_general_audit_ws_a916660__standard_item_ids
 msgid "Relevant Audit Standard Items"
-msgstr ""
-
-#. module: ssi_general_audit_worksheet_sample_determination
-#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_sample_determination.field_general_audit_ws_a916660__reliability_factor
-msgid "Reliability Factor"
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_sample_determination
@@ -1086,6 +1299,11 @@ msgid "Sampling Data"
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_sample_determination
+#: model_terms:ir.ui.view,arch_db:ssi_general_audit_worksheet_sample_determination.general_audit_ws_a916660_view_form
+msgid "Sampling Examination"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_sample_determination
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_sample_determination.field_general_audit_ws_a916660__sampling_interval
 msgid "Sampling Interval"
 msgstr ""
@@ -1096,13 +1314,37 @@ msgid "Sampling Method"
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_sample_determination
+#: model_terms:ir.ui.view,arch_db:ssi_general_audit_worksheet_sample_determination.general_audit_ws_a916660_view_form
+msgid "Sampling Process"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_sample_determination
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_sample_determination.field_general_audit_ws_a916660__sampling_process_data
+msgid "Sampling Process Data"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_sample_determination
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_sample_determination.field_general_audit_ws_a916660__sampling_variance
+msgid "Sampling Variance"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_sample_determination
 #: model:ir.model.fields,help:ssi_general_audit_worksheet_sample_determination.field_general_audit_ws_a916660__sampling_interval
-msgid "Sampling interval = Tolerable Misstatement / Reliability Factor."
+msgid ""
+"Sampling interval = Tolerable Misstatement / (Risk Factor / 30%) / "
+"Confidence Factor."
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_sample_determination
 #: model:ir.model.fields,help:ssi_general_audit_worksheet_sample_determination.field_general_audit_ws_a916660__conclusion_id
 msgid "Selected conclusion summarizing the worksheet's assessment."
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_sample_determination
+#: model_terms:ir.ui.view,arch_db:ssi_general_audit_worksheet_sample_determination.general_audit_ws_a916660_view_form
+msgid ""
+"Spaces &amp; special characters in column names are replaced by "
+"<code>_</code> (e.g. \"Additional Info\" → <code>Additional_Info</code>)"
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_sample_determination
@@ -1158,13 +1400,6 @@ msgid ""
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_sample_determination
-#: model:ir.model.fields,help:ssi_general_audit_worksheet_sample_determination.field_general_audit_ws_a916660__reliability_factor
-msgid ""
-"Statistical reliability factor based on confidence level. R = -ln(1 - "
-"confidence_level)."
-msgstr ""
-
-#. module: ssi_general_audit_worksheet_sample_determination
 #: model:ir.model.fields,help:ssi_general_audit_worksheet_sample_determination.field_general_audit_ws_a916660__activity_state
 msgid ""
 "Status based on activities\n"
@@ -1195,6 +1430,33 @@ msgid "The additional information column number (1-based) in the raw data."
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_sample_determination
+#: model_terms:ir.ui.view,arch_db:ssi_general_audit_worksheet_sample_determination.general_audit_ws_a916660_view_form
+msgid ""
+"The final result of the sample determination:\n"
+"                            <code>Key Item</code> (100% examination) and\n"
+"                            <code>Sample</code> rows.\n"
+"                            <span attrs=\"{'invisible': [('method_type', '!=', 'nss')]}\">For Non-Statistical Sampling, choose which\n"
+"                            candidates become <code>Sample</code> in the\n"
+"                            \"Sampling Process\" tab -- unchosen\n"
+"                            <code>Candidate</code> rows are never listed\n"
+"                            here, and this table is read-only.</span>\n"
+"                            <span attrs=\"{'invisible': [('method_type', '=', 'nss')]}\">Read-only: manually editing an\n"
+"                            algorithmically-selected sample invalidates its\n"
+"                            statistical basis.</span>"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_sample_determination
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_sample_determination.field_general_audit_ws_a916660__sampling_data
+msgid ""
+"The final result of the sample determination: only key items (100%% "
+"examination) and the chosen sample items -- ``Candidate`` rows never appear "
+"here. For Non-Statistical Sampling, choose which candidates become 'Sample' "
+"in the 'Sampling Process' tab (``nss_candidate_pool``); this field is "
+"rebuilt from that choice every time it is saved. Always read-only here -- "
+"for NSS, edit via 'Sampling Process' instead."
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_sample_determination
 #: model:ir.model.fields,help:ssi_general_audit_worksheet_sample_determination.field_general_audit_ws_a916660__general_ledger_id
 msgid ""
 "The general ledger data used as population for this sample determination."
@@ -1211,6 +1473,14 @@ msgid "The monetary column number (1-based) in the raw data."
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_sample_determination
+#: model_terms:ir.ui.view,arch_db:ssi_general_audit_worksheet_sample_determination.general_audit_ws_a916660_view_form
+msgid ""
+"The number chosen cannot exceed\n"
+"                                <strong>Computed Sample Size</strong>\n"
+"                                (already net of key items)."
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_sample_determination
 #: model:ir.model.fields,help:ssi_general_audit_worksheet_sample_determination.field_general_audit_ws_a916660__sample_count
 msgid "The number of items in the sample pool (excluding key items)."
 msgstr ""
@@ -1221,15 +1491,14 @@ msgid "The number of key items selected for 100%% examination."
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_sample_determination
-#: model:ir.model.fields,help:ssi_general_audit_worksheet_sample_determination.field_general_audit_ws_a916660__sampling_data
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_sample_determination.field_general_audit_ws_a916660__random_start
 msgid ""
-"The result of the sample determination. Contains key items (100%% "
-"examination) and the selected sample items -- for Non-Statistical Sampling, "
-"every remaining item is listed as a 'Candidate' instead: mark the ones "
-"actually tested by editing the Type cell to 'Sample' in Table edit mode. "
-"Editable only for Non-Statistical Sampling: manually editing an "
-"algorithmically-selected MUS/CVS sample invalidates its statistical basis, "
-"so the view locks it read-only for those methods."
+"The random start point actually used the last time 'Generate Sampling' ran "
+"for Monetary Unit Sampling: a value drawn uniformly from ``[0, Multiplier "
+"Random)``. Not clamped to ``Sampling Interval`` -- it is often larger, which"
+" is expected (matches ``SD_akun_MUS_terbaru.ods`` cell ``Data!U2``); see "
+"``_perform_mus_sampling`` for how the walk still keeps 'Realized to "
+"sampling' capped at 'Total Plan Examination'."
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_sample_determination
@@ -1258,16 +1527,6 @@ msgid "The total number of items in the population."
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_sample_determination
-#: model_terms:ir.ui.view,arch_db:ssi_general_audit_worksheet_sample_determination.general_audit_ws_a916660_view_form
-msgid ""
-"This table is locked for Monetary Unit / Classical\n"
-"                            Variable Sampling: manually editing an\n"
-"                            algorithmically-selected sample invalidates its\n"
-"                            statistical basis. Only Non-Statistical Sampling\n"
-"                            allows manual edits here."
-msgstr ""
-
-#. module: ssi_general_audit_worksheet_sample_determination
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_sample_determination.field_general_audit_ws_a916660__title
 msgid "Title"
 msgstr ""
@@ -1280,6 +1539,24 @@ msgstr ""
 #. module: ssi_general_audit_worksheet_sample_determination
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_sample_determination.field_general_audit_ws_a916660__tolerable_misstatement
 msgid "Tolerable Misstatement"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_sample_determination
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_sample_determination.field_general_audit_ws_a916660__total_plan_examination
+msgid "Total Plan Examination"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_sample_determination
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_sample_determination.field_general_audit_ws_a916660__total_plan_examination
+msgid ""
+"Total Plan Examination = Total Plan Sample Examination (``Computed Sample "
+"Size``) + Key Item Count -- the full examination plan, sample and 100%% key "
+"items combined."
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_sample_determination
+#: model_terms:ir.ui.view,arch_db:ssi_general_audit_worksheet_sample_determination.general_audit_ws_a916660_view_form
+msgid "Total Plan Sample Examination"
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_sample_determination
@@ -1374,6 +1651,14 @@ msgid "Worksheet type that determines behavior, items, and conclusions."
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_sample_determination
+#: code:addons/ssi_general_audit_worksheet_sample_determination/models/a916660/general_audit_ws_a916660.py:0
+#, python-format
+msgid ""
+"You chose %(chosen)s sample item(s), which exceeds the Computed Sample Size "
+"of %(limit)s (already net of key items). Uncheck some candidates first."
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_sample_determination
 #: model:ir.model.fields,help:ssi_general_audit_worksheet_sample_determination.field_general_audit_ws_a916660__estimate_misstatement_ratio
 msgid ""
 "``Estimate Misstatement`` = Tolerable Misstatement x this ratio, for "
@@ -1385,4 +1670,13 @@ msgstr ""
 msgid ""
 "``Standard Deviation Estimate`` = Estimate Misstatement x this ratio, for "
 "Classical Variable / Non-Statistical Sampling."
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_sample_determination
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_sample_determination.field_general_audit_ws_a916660__sampling_variance
+msgid ""
+"``Total Plan Examination`` minus ``Realized to Sampling``. Expected to be 0;"
+" a nonzero value means the population did not have enough qualifying items "
+"to reach the planned examination count the last time 'Generate Sampling' "
+"ran."
 msgstr ""
