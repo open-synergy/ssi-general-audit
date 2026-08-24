@@ -65,21 +65,114 @@
                 </xpath>
                 <xpath expr="//page[1]" position="before">
                     <page name="data" string="Data">
+                        <button
+                            name="action_generate_sampling"
+                            type="object"
+                            string="Generate Sampling"
+                            class="oe_highlight"
+                            attrs="{'invisible': [('state', '!=', 'open')]}"
+                        />
+                        <div
+                            class="alert alert-info"
+                            role="alert"
+                            attrs="{'invisible': [('method_type', '!=', 'mus')]}"
+                        >
+                            <strong>How Input Variabel and Parameters feed
+                            the Monetary Unit Sampling formula:</strong>
+                            <ul class="mb-0">
+                                <li><strong>Performance Materiality</strong>
+                                and <strong>Risk Factor</strong> are manual
+                                inputs (your professional judgment).
+                                <strong>Tolerable Misstatement</strong>
+                                auto-fills as Performance Materiality x
+                                Risk Factor when either changes, but you
+                                can still type over it directly.</li>
+                                <li><strong>Confidence Factor</strong> (in
+                                Parameters) is also a manual input -- it
+                                is not looked up from any table, unlike
+                                Classical Variable / Non-Statistical
+                                Sampling's ARIA/ARIR.</li>
+                                <li><strong>Sampling Interval</strong>
+                                computes automatically as Tolerable
+                                Misstatement / (Risk Factor / 30%) /
+                                Confidence Factor -- it decides how many
+                                items get selected (larger interval, fewer
+                                items) and is the threshold each item's
+                                cumulative amount is walked against.</li>
+                                <li><strong>Multiplier Random</strong> is a
+                                manual input: the upper bound for
+                                <strong>Random</strong>, which is redrawn
+                                every time you click "Generate Sampling"
+                                and used as the walk's starting point --
+                                see Random's own help text for how it
+                                interacts with Sampling Interval to pick
+                                items.</li>
+                            </ul>
+                        </div>
+                        <div
+                            class="alert alert-info"
+                            role="alert"
+                            attrs="{'invisible': [('method_type', 'not in', ['cvs', 'nss'])]}"
+                        >
+                            <strong>How Input Variabel and Parameters feed
+                            the sample size formula:</strong>
+                            <ul class="mb-0">
+                                <li><strong>Performance Materiality</strong>
+                                and <strong>Risk Factor</strong> are manual
+                                inputs. <strong>Tolerable
+                                Misstatement</strong> auto-fills as
+                                Performance Materiality x Risk Factor when
+                                either changes, but can still be typed
+                                over directly.</li>
+                                <li><strong>Estimate Misstatement</strong>
+                                = Tolerable Misstatement x <strong
+                                    >Estimate Misstatement Ratio</strong>, and
+                                <strong>Standard Deviation Estimate</strong>
+                                = Estimate Misstatement x <strong
+                                    >Standard Deviation Ratio</strong> (both
+                                ratios are manual inputs in Parameters,
+                                defaulting to 0.55 and 0.013).</li>
+                                <li><strong>ARIA</strong> and <strong
+                                    >ARIR</strong> (Parameters) are picked from
+                                a dropdown; their <strong>Coefficient</strong>
+                                fields look up the matching value from the
+                                standard confidence table automatically.</li>
+                                <li><strong>Total Plan Examination</strong>
+                                (key items + sample, on the "Sampling
+                                Data" tab) = ROUNDUP(((Standard Deviation
+                                Estimate x (ARIA Coefficient + ARIR
+                                Coefficient) x Population Count) /
+                                (Performance Materiality - Estimate
+                                Misstatement))^2). <strong>Computed Sample
+                                Size</strong> is that total minus Key Item
+                                Count -- the number still to pick from the
+                                pool.</li>
+                                <li
+                                    attrs="{'invisible': [('method_type', '!=', 'nss')]}"
+                                ><strong>Final Sample Size
+                                (Judgment)</strong> (Parameters) lets you
+                                override the computed pool size with your
+                                own figure -- leave it empty to use the
+                                formula as-is.</li>
+                            </ul>
+                        </div>
                         <group name="data_1" colspan="4" col="2">
                             <group
                                 name="data_1_1"
                                 colspan="1"
                                 col="2"
-                                string="Col. Number"
+                                string="Input Variabel"
                             >
+                                <field name="performance_materiality" />
+                                <field name="risk_factor" />
+                                <field name="tolerable_misstatement" />
                                 <field
-                                    name="identifier_col_number"
-                                    string="Identifier"
+                                    name="estimate_misstatement"
+                                    attrs="{'invisible': [('method_type', '=', 'mus')]}"
                                 />
-                                <field name="monetary_col_number" string="Monetary" />
                                 <field
-                                    name="additional_info_col_number"
-                                    string="Additional Info"
+                                    name="standard_deviation_estimate"
+                                    attrs="{'invisible': [('method_type', '=', 'mus')]}"
                                 />
                             </group>
                             <group
@@ -89,15 +182,16 @@
                                 string="Parameters"
                                 attrs="{'invisible': [('method_type', '!=', 'mus')]}"
                             >
-                                <field name="confidence_level" />
-                                <field name="reliability_factor" />
+                                <field name="confidence_factor" />
                                 <field name="sampling_interval" />
+                                <field name="multiplier_random" />
+                                <field name="random_start" />
                             </group>
                             <group
                                 name="data_1_3"
                                 colspan="1"
                                 col="2"
-                                string="Classical Variable / Non-Statistical Sampling Parameters"
+                                string="Parameters"
                                 attrs="{'invisible': [('method_type', 'not in', ['cvs', 'nss'])]}"
                             >
                                 <field name="aria" />
@@ -105,24 +199,12 @@
                                 <field name="arir" />
                                 <field name="arir_coefficient" />
                                 <field name="estimate_misstatement_ratio" />
-                                <field name="estimate_misstatement" />
                                 <field name="standard_deviation_ratio" />
-                                <field name="standard_deviation_estimate" />
                                 <field
                                     name="nss_final_sample_size"
                                     attrs="{'invisible': [('method_type', '!=', 'nss')]}"
                                 />
                             </group>
-                        </group>
-                        <group
-                            name="data_1_bis"
-                            colspan="4"
-                            col="2"
-                            string="Input Variabel"
-                        >
-                            <field name="performance_materiality" />
-                            <field name="risk_factor" />
-                            <field name="tolerable_misstatement" />
                         </group>
                         <group name="data_2" colspan="4" col="2">
                             <group
@@ -163,13 +245,19 @@
                                 <field name="computed_sample_size" />
                             </group>
                         </group>
-                        <button
-                            name="action_generate_sampling"
-                            type="object"
-                            string="Generate Sampling"
-                            class="oe_highlight"
-                            attrs="{'invisible': [('state', '!=', 'open')]}"
-                        />
+                        <group
+                            name="data_1_bis"
+                            colspan="4"
+                            col="2"
+                            string="Col. Number"
+                        >
+                            <field name="identifier_col_number" string="Identifier" />
+                            <field name="monetary_col_number" string="Monetary" />
+                            <field
+                                name="additional_info_col_number"
+                                string="Additional Info"
+                            />
+                        </group>
                         <field
                             name="raw_data"
                             nolabel="1"
@@ -235,14 +323,89 @@
                                 attrs="{'invisible': [('method_type', '!=', 'nss')]}"
                             >For Non-Statistical Sampling, choose which
                             candidates become <code>Sample</code> in the
-                            "Sampling Process" tab -- this table is
-                            read-only.</span>
+                            "Sampling Process" tab -- unchosen
+                            <code>Candidate</code> rows are never listed
+                            here, and this table is read-only.</span>
                             <span
                                 attrs="{'invisible': [('method_type', '=', 'nss')]}"
                             >Read-only: manually editing an
                             algorithmically-selected sample invalidates its
                             statistical basis.</span>
                         </div>
+                        <group name="data_4" colspan="4" col="2">
+                            <group
+                                name="data_4_1"
+                                colspan="1"
+                                col="2"
+                                string="Examination Plan"
+                            >
+                                <!-- MUS: Data!S11:S14 are monetary amounts -->
+                                <field
+                                    name="population_amount"
+                                    string="Population Size"
+                                    attrs="{'invisible': [('method_type', '!=', 'mus')]}"
+                                />
+                                <field
+                                    name="key_item_amount"
+                                    string="Direct Examination"
+                                    attrs="{'invisible': [('method_type', '!=', 'mus')]}"
+                                />
+                                <field
+                                    name="sample_amount"
+                                    string="Sampling Examination"
+                                    attrs="{'invisible': [('method_type', '!=', 'mus')]}"
+                                />
+                                <field
+                                    name="computed_sample_size"
+                                    string="Total Plan Sample Examination"
+                                    attrs="{'invisible': [('method_type', '!=', 'mus')]}"
+                                />
+                                <!-- CVS/NSS: Data!S11:S13 are item counts, not amounts -->
+                                <field
+                                    name="population_count"
+                                    string="Population Size"
+                                    attrs="{'invisible': [('method_type', '=', 'mus')]}"
+                                />
+                                <field
+                                    name="key_item_count"
+                                    string="Direct Examination"
+                                    attrs="{'invisible': [('method_type', '=', 'mus')]}"
+                                />
+                                <field
+                                    name="computed_sample_size"
+                                    string="Sampling Examination"
+                                    attrs="{'invisible': [('method_type', '=', 'mus')]}"
+                                />
+                                <field name="total_plan_examination" />
+                            </group>
+                            <group
+                                name="data_4_2"
+                                colspan="1"
+                                col="2"
+                                string="Data to Sampling"
+                            >
+                                <field name="beginning_to_sampling" />
+                                <field
+                                    name="population_count"
+                                    string="Ending to Sampling"
+                                />
+                                <!-- Data!U13 "Maximal to sampling" reads the
+                                     pool-only figure for MUS but the
+                                     combined total for CVS/NSS -->
+                                <field
+                                    name="computed_sample_size"
+                                    string="Maximal to Sampling"
+                                    attrs="{'invisible': [('method_type', '!=', 'mus')]}"
+                                />
+                                <field
+                                    name="total_plan_examination"
+                                    string="Maximal to Sampling"
+                                    attrs="{'invisible': [('method_type', '=', 'mus')]}"
+                                />
+                                <field name="realized_to_sampling" />
+                                <field name="sampling_variance" />
+                            </group>
+                        </group>
                         <field
                             name="sampling_data"
                             nolabel="1"

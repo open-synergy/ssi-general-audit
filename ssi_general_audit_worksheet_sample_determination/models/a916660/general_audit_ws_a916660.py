@@ -22,12 +22,6 @@ _FORBIDDEN_SQL = re.compile(
     re.IGNORECASE,
 )
 
-RELIABILITY_FACTOR_TABLE = {
-    "80": 1.61,
-    "90": 2.31,
-    "95": 3.00,
-}
-
 # Confidence-coefficient lookup table, keyed by each risk figure's own
 # percentage value. Both dicts encode the same 13-row reliability table
 # (Confidence Level / ARIA% / ARIR% / Coefficient); ARIA and ARIR are
@@ -65,6 +59,20 @@ ARIR_COEFFICIENT_TABLE = {
 }
 ARIA_SELECTION = [(k, "{}%".format(k)) for k in ARIA_COEFFICIENT_TABLE]
 ARIR_SELECTION = [(k, "{}%".format(k)) for k in ARIR_COEFFICIENT_TABLE]
+
+
+def _round_half_up(value):
+    """Round a non-negative float like Excel's ``ROUND(value, 0)``.
+
+    Python's builtin ``round()`` uses round-half-to-even, which disagrees
+    with Excel's round-half-away-from-zero for ``.5`` boundaries. Sample
+    amounts are always non-negative here, so half-away-from-zero reduces
+    to half-up.
+
+    :param value: a non-negative float.
+    :return: ``value`` rounded to the nearest integer, ``.5`` rounding up.
+    """
+    return math.floor(value + 0.5)
 
 
 class GeneralAuditWsA916660(models.Model):
@@ -221,12 +229,23 @@ class GeneralAuditWsA916660(models.Model):
     sampling_data = fields.Text(
         string="Sampling Data",
         readonly=True,
-        help="The final result of the sample determination: key items "
-        "(100%% examination) and the selected/chosen sample items. For "
-        "Non-Statistical Sampling, every remaining item starts out listed "
-        "as a 'Candidate'; use the 'Sampling Process' tab to choose which "
-        "candidates become 'Sample'. Always read-only here -- for NSS, "
-        "edit via 'Sampling Process' instead.",
+        help="The final result of the sample determination: only key "
+        "items (100%% examination) and the chosen sample items -- "
+        "``Candidate`` rows never appear here. For Non-Statistical "
+        "Sampling, choose which candidates become 'Sample' in the "
+        "'Sampling Process' tab (``nss_candidate_pool``); this field is "
+        "rebuilt from that choice every time it is saved. Always "
+        "read-only here -- for NSS, edit via 'Sampling Process' instead.",
+    )
+    nss_candidate_pool = fields.Text(
+        string="NSS Candidate Pool",
+        readonly=True,
+        help="Non-Statistical Sampling only: every pool item (all items "
+        "minus key items), each tagged 'Candidate' or 'Sample' with a "
+        "'Chose?' flag -- the full working set 'Sampling Process' choices "
+        "are made against and merged back into. Not shown directly in any "
+        "tab; kept separate from ``sampling_data`` so that field can stay "
+        "'key items + chosen samples only'.",
     )
     sampling_process_filter = fields.Text(
         string="Filter (WHERE clause)",
@@ -242,13 +261,12 @@ class GeneralAuditWsA916660(models.Model):
         inverse="_inverse_sampling_process_data",
         store=False,
         compute_sudo=True,
-        help="Non-Statistical Sampling only: the 'Candidate' rows of "
-        "``sampling_data`` (optionally narrowed by "
-        "``sampling_process_filter``), each with a 'Chose?' checkbox. "
-        "Check it to promote a candidate to 'Sample'; uncheck to send a "
-        "'Sample' back to 'Candidate'. Key items are not shown here -- "
-        "they are always chosen automatically and are not affected by "
-        "this tab.",
+        help="Non-Statistical Sampling only: ``nss_candidate_pool``, "
+        "optionally narrowed by ``sampling_process_filter``, each row "
+        "with a 'Chose?' checkbox. Check it to promote a candidate to "
+        "'Sample'; uncheck to send a 'Sample' back to 'Candidate'. Key "
+        "items are not shown here -- they are always chosen "
+        "automatically and are not affected by this tab.",
     )
 
     # --- Method selection ---
@@ -270,20 +288,6 @@ class GeneralAuditWsA916660(models.Model):
     )
 
     # --- MUS parameters (Monetary Unit Sampling) ---
-    confidence_level = fields.Selection(
-        string="Confidence Level",
-        selection=[
-            ("80", "80%"),
-            ("90", "90%"),
-            ("95", "95%"),
-        ],
-        default="95",
-        readonly=True,
-        states={
-            "open": [("readonly", False)],
-        },
-        help="Confidence level for Monetary Unit Sampling.",
-    )
     tolerable_misstatement = fields.Monetary(
         string="Tolerable Misstatement",
         currency_field="currency_id",
@@ -293,16 +297,40 @@ class GeneralAuditWsA916660(models.Model):
         },
         help="Maximum monetary misstatement acceptable for this account.",
     )
-    reliability_factor = fields.Float(
-        string="Reliability Factor",
+    confidence_factor = fields.Float(
+        string="Confidence Factor",
         digits=(12, 4),
         readonly=True,
         states={
             "open": [("readonly", False)],
         },
-        help="Statistical reliability factor based on confidence level. "
-        "Auto-filled from Confidence Level when it changes, but can be "
-        "overridden.",
+        help="Confidence factor for Monetary Unit Sampling, a manual "
+        "input based on professional judgment (e.g. 1.5). Used to derive "
+        "``Sampling Interval``.",
+    )
+    multiplier_random = fields.Monetary(
+        string="Multiplier Random",
+        currency_field="currency_id",
+        readonly=True,
+        states={
+            "open": [("readonly", False)],
+        },
+        help="Manual input: upper bound for the ``Random`` draw (``Random "
+        "= RAND() x Multiplier Random``) used to pick the MUS "
+        "systematic-sampling start point. Not necessarily related to "
+        "``Sampling Interval`` -- see ``Random``'s help.",
+    )
+    random_start = fields.Monetary(
+        string="Random",
+        currency_field="currency_id",
+        readonly=True,
+        help="The random start point actually used the last time "
+        "'Generate Sampling' ran for Monetary Unit Sampling: a value "
+        "drawn uniformly from ``[0, Multiplier Random)``. Not clamped to "
+        "``Sampling Interval`` -- it is often larger, which is expected "
+        "(matches ``SD_akun_MUS_terbaru.ods`` cell ``Data!U2``); see "
+        "``_perform_mus_sampling`` for how the walk still keeps "
+        "'Realized to sampling' capped at 'Total Plan Examination'.",
     )
     sampling_interval = fields.Monetary(
         string="Sampling Interval",
@@ -310,7 +338,8 @@ class GeneralAuditWsA916660(models.Model):
         compute="_compute_sampling_interval",
         store=True,
         compute_sudo=True,
-        help="Sampling interval = Tolerable Misstatement / Reliability Factor.",
+        help="Sampling interval = Tolerable Misstatement / (Risk Factor / "
+        "30%) / Confidence Factor.",
     )
 
     # --- Input Variabel: shared by all three sampling methods ---
@@ -434,6 +463,43 @@ class GeneralAuditWsA916660(models.Model):
         compute_sudo=True,
         help="Number of sample items to select from the sample pool, "
         "using the chosen sampling method.",
+    )
+    total_plan_examination = fields.Integer(
+        string="Total Plan Examination",
+        compute="_compute_total_plan_examination",
+        store=True,
+        compute_sudo=True,
+        help="Total Plan Examination = Total Plan Sample Examination "
+        "(``Computed Sample Size``) + Key Item Count -- the full "
+        "examination plan, sample and 100%% key items combined.",
+    )
+
+    # --- Data to sampling (Monetary Unit Sampling only) ---
+    beginning_to_sampling = fields.Integer(
+        string="Beginning to Sampling",
+        compute="_compute_beginning_to_sampling",
+        store=True,
+        compute_sudo=True,
+        help="1-based row position where sampling begins in the "
+        "descending-amount-sorted population: ``Key Item Count`` + 1 "
+        "(the row right after the last key item).",
+    )
+    realized_to_sampling = fields.Integer(
+        string="Realized to Sampling",
+        readonly=True,
+        help="Number of items actually marked as a hit (key items and "
+        "MUS samples combined) the last time 'Generate Sampling' ran. "
+        "Set by ``_perform_mus_sampling``; expected to equal "
+        "``Total Plan Examination`` -- see ``Sampling Variance``.",
+    )
+    sampling_variance = fields.Integer(
+        string="Sampling Variance",
+        compute="_compute_sampling_variance",
+        compute_sudo=True,
+        help="``Total Plan Examination`` minus ``Realized to Sampling``. "
+        "Expected to be 0; a nonzero value means the population did not "
+        "have enough qualifying items to reach the planned examination "
+        "count the last time 'Generate Sampling' ran.",
     )
 
     # --- Compute methods ---
@@ -624,18 +690,24 @@ class GeneralAuditWsA916660(models.Model):
         for record in self:
             record.sample_amount = record.population_amount - record.key_item_amount
 
-    @api.depends("tolerable_misstatement", "reliability_factor")
+    @api.depends("tolerable_misstatement", "risk_factor", "confidence_factor")
     def _compute_sampling_interval(self):
         """Derive the MUS sampling interval.
 
-        :return: sets ``sampling_interval`` to ``tolerable_misstatement /
-            reliability_factor``, or ``0.0`` when ``reliability_factor`` is
-            not positive.
+        Formula (verified against ``SD_akun_MUS_terbaru.ods`` cell
+        ``Data!S6``): ``Tolerable Misstatement / (Risk Factor / 30%) /
+        Confidence Factor`` -- the ``30%`` is a fixed constant in the
+        source spreadsheet, not a configurable field.
+
+        :return: sets ``sampling_interval`` accordingly, or ``0.0`` when
+            ``risk_factor`` or ``confidence_factor`` is not positive.
         """
         for record in self:
-            if record.reliability_factor > 0:
+            if record.risk_factor > 0 and record.confidence_factor > 0:
                 record.sampling_interval = (
-                    record.tolerable_misstatement / record.reliability_factor
+                    record.tolerable_misstatement
+                    / (record.risk_factor / 0.30)
+                    / record.confidence_factor
                 )
             else:
                 record.sampling_interval = 0.0
@@ -697,13 +769,26 @@ class GeneralAuditWsA916660(models.Model):
         "nss_final_sample_size",
     )
     def _compute_computed_sample_size(self):
-        """Derive the number of sample items to select from the pool.
+        """Derive the number of sample items to select from the pool
+        (excludes key items -- see ``total_plan_examination`` for the
+        full plan including them).
 
-        Branches by ``method_type``: MUS divides the sample pool amount by
-        the sampling interval; CVS/NSS use the classical variables
-        sampling size formula (see ``_compute_cvs_sample_size``). NSS additionally
-        lets ``nss_final_sample_size`` override the statistically computed
-        size with a professional-judgment figure.
+        Branches by ``method_type``: MUS rounds the sample pool amount
+        divided by the sampling interval to the nearest integer (matching
+        ``ROUND(S13/S6,0)`` in ``SD_akun_MUS_terbaru.ods`` cell
+        ``Data!S14`` -- round-half-up, not round-down/up like CVS); CVS/NSS
+        use the classical variables sampling size formula (see
+        ``_compute_cvs_sample_size``), minus ``key_item_count`` -- that
+        formula's raw result is the *combined* key+sample total (matching
+        ``SD_akun_CVS_260821.ods`` cell ``Data!S14`` "Total Plan
+        Examination", verified there against ``Data!S13`` "Sampling
+        Examination" = ``S14-S12`` where ``S12`` is the key item count).
+        NSS additionally lets ``nss_final_sample_size`` override the
+        statistically computed pool size with a professional-judgment
+        figure (matching ``SD_akun_NSS_260821.ods`` cell ``Data!S15``
+        "Total Plan Examination (M)" -- a manual figure, distinct from
+        ``Data!S14``'s "(A)" automatic one); the override is the pool
+        size directly, not reduced by ``key_item_count`` again.
 
         :return: sets ``computed_sample_size``, or ``0`` when the method's
             required inputs are incomplete.
@@ -712,12 +797,53 @@ class GeneralAuditWsA916660(models.Model):
             result = 0
             if record.method_type == "mus":
                 if record.sampling_interval > 0:
-                    result = math.ceil(record.sample_amount / record.sampling_interval)
+                    result = _round_half_up(
+                        record.sample_amount / record.sampling_interval
+                    )
             elif record.method_type in ("cvs", "nss"):
-                result = record._compute_cvs_sample_size()
+                result = max(
+                    0,
+                    record._compute_cvs_sample_size() - (record.key_item_count or 0),
+                )
                 if record.method_type == "nss" and record.nss_final_sample_size:
                     result = record.nss_final_sample_size
             record.computed_sample_size = result
+
+    @api.depends("computed_sample_size", "key_item_count")
+    def _compute_total_plan_examination(self):
+        """Derive the full examination plan (sample + key items).
+
+        :return: sets ``total_plan_examination`` to ``computed_sample_size
+            + key_item_count`` (matching ``S15 = S14+L12`` in
+            ``SD_akun_MUS_terbaru.ods``).
+        """
+        for record in self:
+            record.total_plan_examination = record.computed_sample_size + (
+                record.key_item_count or 0
+            )
+
+    @api.depends("key_item_count")
+    def _compute_beginning_to_sampling(self):
+        """Derive the 1-based row where sampling begins.
+
+        :return: sets ``beginning_to_sampling`` to ``key_item_count + 1``
+            (matching ``U11 = L12+1`` in ``SD_akun_MUS_terbaru.ods``).
+        """
+        for record in self:
+            record.beginning_to_sampling = (record.key_item_count or 0) + 1
+
+    @api.depends("total_plan_examination", "realized_to_sampling")
+    def _compute_sampling_variance(self):
+        """Derive the gap between planned and realized examination counts.
+
+        :return: sets ``sampling_variance`` to ``total_plan_examination -
+            realized_to_sampling`` (matching ``U15 = S15-U14`` in
+            ``SD_akun_MUS_terbaru.ods``).
+        """
+        for record in self:
+            record.sampling_variance = (
+                record.total_plan_examination - record.realized_to_sampling
+            )
 
     def _compute_cvs_sample_size(self):
         """Compute the Classical Variable Sampling sample size.
@@ -755,13 +881,6 @@ class GeneralAuditWsA916660(models.Model):
     @api.onchange("performance_materiality", "risk_factor")
     def onchange_tolerable_misstatement(self):
         self.tolerable_misstatement = self.performance_materiality * self.risk_factor
-
-    @api.onchange("confidence_level")
-    def onchange_reliability_factor(self):
-        if self.confidence_level:
-            self.reliability_factor = RELIABILITY_FACTOR_TABLE.get(
-                self.confidence_level, 0.0
-            )
 
     # --- Helper methods ---
 
@@ -860,9 +979,10 @@ class GeneralAuditWsA916660(models.Model):
             each item's amount.
         :return: a ``(output_header, items)`` tuple, where ``output_header``
             is ``["Index", ...selected column labels..., "Type"]`` (plus a
-            trailing ``"Chose?"`` column for Non-Statistical Sampling) and
-            ``items`` is a list of ``{"index", "cells", "amount"}`` dicts,
-            one per data row.
+            trailing ``"Chose?"`` column for Non-Statistical Sampling, or
+            ``"From", "Up To"`` for Monetary Unit Sampling) and ``items``
+            is a list of ``{"index", "cells", "amount"}`` dicts, one per
+            data row.
         """
         source_header = all_rows[0]
         source_data = all_rows[1:]
@@ -874,6 +994,8 @@ class GeneralAuditWsA916660(models.Model):
         output_header = ["Index"] + output_header_parts + ["Type"]
         if self.method_type == "nss":
             output_header = output_header + ["Chose?"]
+        elif self.method_type == "mus":
+            output_header = output_header + ["From", "Up To"]
         items = []
         for idx, row in enumerate(source_data):
             selected = [
@@ -890,85 +1012,199 @@ class GeneralAuditWsA916660(models.Model):
     def _perform_mus_sampling(self, items, key_count, sample_interval):
         """Select key items and MUS sample items from the population items.
 
-        Sorts items by amount descending, treats the top ``key_count`` as
-        key items (100% examination) removed from the sampling pool, then
-        walks the remaining pool with a random-start systematic selection
-        at ``sample_interval`` to pick the MUS sample.
+        Faithfully replicates the row-by-row walk in
+        ``SD_akun_MUS_terbaru.ods`` (sheet ``Data``, columns ``Q18:AA2737``)
+        rather than a textbook cumulative-interval walk, per HT/26/000687:
+        Sets ``self.random_start`` to ``RAND() * Multiplier Random``
+        (``Data!U2``), drawn once for this run -- unlike a textbook
+        systematic sample, this is **not** clamped to ``[0,
+        sample_interval)``: it can (and typically does) exceed the
+        interval when ``Multiplier Random`` is set well above it. Also
+        sets ``self.realized_to_sampling`` to the total hit count (key
+        items and MUS samples combined; matches ``Data!U14 = V16``).
 
-        The random start is drawn from ``[0, remainder)`` rather than the
-        full ``[0, sample_interval)`` range, where ``remainder`` is
-        ``total_sample_amount`` modulo ``sample_interval`` (or the full
-        interval when the amount is an exact multiple of it). This is the
-        sub-range of start values that walks to exactly ``sample_size``
-        hits, so "Realized to sampling" always matches "Total Plan
-        Examination" -- drawing from the full interval could land past the
-        last item's cumulative amount and silently drop the final hit.
+        Identifies key items as the top ``key_count`` by amount
+        (``Data!J18:N2737``'s "Direct Examination" rows are amount-sorted
+        the same way), then walks key items (amount-descending) followed
+        by the sample pool in its *original* order -- ``Data!J18:N2737``
+        keeps the "Sample Examination" rows in the underlying
+        population's order, not re-sorted by amount. The walk maintains a
+        running cumulative position that starts at the random draw and
+        either keeps accumulating (``position += amount``) or resets back
+        to the random draw, exactly like ``Data!R18:R2737``:
+
+        - a "hit" is declared when ``amount + position - 1 >=
+          sample_interval`` (``Data!T18:T2737``);
+        - the position for the *next* item is the random draw again if
+          this item was a hit, otherwise this item's own ``amount +
+          position - 1`` (``Data!R19:R2737``) -- so once a hit occurs,
+          the next item is tested against the random draw alone, not
+          cumulative amount;
+        - a zero-amount item's own From/Up To are blank
+          (``Data!R_n = IF(M_n=0,"",...)``) and it can never be a hit;
+          the *next* item then inherits that blank as its From, and
+          ``amount + blank - 1`` errors in Excel, so ``IFERROR`` resets
+          Up To to 0 (``Data!S_n = IFERROR(M_n+R_n-1,0)``) -- this is
+          what lets genuine accumulation (a varying From) resume for
+          Sample items after a zero-amount row, rather than every item
+          latching onto ``random_start`` forever once one hit occurs;
+        - a running hit counter is capped at ``total_planned =
+          computed_sample_size + key_count`` (``Data!AA18:AA2737``
+          against ``$U$13+$U$11-1``): once that many hits have been
+          counted, no further item is marked, so "Realized to sampling"
+          never exceeds "Total Plan Examination" -- though when
+          ``Multiplier Random`` towers over ``sample_interval`` (so most
+          items hit immediately), it also means the walk degenerates to
+          "the first ``total_planned`` items in descending-amount order",
+          which is no longer probability-proportional-to-size the way a
+          classic MUS interval walk is. That degenerate behaviour is
+          inherited as-is from the source spreadsheet.
 
         :param items: list of ``{"index", "cells", "amount"}`` dicts, as
             produced by ``_build_items_from_csv``.
         :param key_count: number of largest-amount items to treat as key
-            items.
+            items; still walked (they consume the hit cap exactly like
+            the source sheet), but never added to the returned set.
         :param sample_interval: MUS sampling interval; must be positive for
             any sample item to be selected.
-        :return: a ``(sorted_by_amount, mus_selected_indices)`` tuple:
-            all items sorted by amount descending, and the set of item
-            ``index`` values selected as MUS samples (excluding key items).
+        :return: a ``(sorted_by_amount, mus_selected_indices, walk_trace)``
+            tuple: all items sorted by amount descending, the set of item
+            ``index`` values selected as MUS samples (excluding key
+            items), and ``walk_trace`` = ``{index: (from, up_to,
+            is_threshold_crossed)}`` for every walked item -- ``from``/
+            ``up_to`` are ``None`` (blank) for a zero-amount item.
         """
+        self.ensure_one()
         sorted_by_amount = sorted(items, key=lambda x: x["amount"], reverse=True)
-        key_item_indices = {item["index"] for item in sorted_by_amount[:key_count]}
-        sample_pool = [item for item in items if item["index"] not in key_item_indices]
-        total_sample_amount = sum(item["amount"] for item in sample_pool)
+        key_items_desc = sorted_by_amount[:key_count]
+        key_item_indices = {item["index"] for item in key_items_desc}
+        sample_pool_amount = sum(
+            item["amount"]
+            for item in sorted_by_amount
+            if item["index"] not in key_item_indices
+        )
         sample_size = (
-            math.ceil(total_sample_amount / sample_interval)
-            if total_sample_amount > 0
+            _round_half_up(sample_pool_amount / sample_interval)
+            if sample_interval > 0 and sample_pool_amount > 0
             else 0
         )
+        total_planned = sample_size + key_count
+
+        self.random_start = 0.0
+        if sample_interval > 0 and self.multiplier_random > 0:
+            self.random_start = random.uniform(0, self.multiplier_random)
+
+        # The walk order is key items (amount-descending, matching
+        # ``Data!J18:N2737``'s "Direct Examination" block) followed by the
+        # sample pool in its *original* input order, NOT amount-sorted --
+        # verified against the source spreadsheet: only its first 20
+        # (Direct Examination) rows are amount-sorted, the remaining
+        # "Sample Examination" rows keep the underlying population's
+        # order. Walking the pool in amount order instead (as an earlier
+        # version of this method did) suppresses the zero-amount reset
+        # mechanic above and makes "From" latch onto ``random_start`` for
+        # far more rows than the source spreadsheet does.
+        walk_sequence = key_items_desc + [
+            item for item in items if item["index"] not in key_item_indices
+        ]
+
         mus_selected_indices = set()
-        if sample_interval > 0 and sample_size > 0 and total_sample_amount > 0:
-            remainder = total_sample_amount % sample_interval or sample_interval
-            random_start = random.uniform(0, remainder)
-            thresholds = [
-                random_start + i * sample_interval for i in range(sample_size)
-            ]
-            cumulative = 0.0
-            threshold_idx = 0
-            for item in sample_pool:
-                cumulative += item["amount"]
-                while (
-                    threshold_idx < len(thresholds)
-                    and thresholds[threshold_idx] < cumulative
-                ):
-                    mus_selected_indices.add(item["index"])
-                    threshold_idx += 1
-                if threshold_idx >= len(thresholds):
-                    break
-        return sorted_by_amount, mus_selected_indices
+        walk_trace = {}
+        hit_count = 0
+        if sample_interval > 0 and total_planned > 0:
+            position = self.random_start
+            for item in walk_sequence:
+                amount = item["amount"]
+                if amount == 0:
+                    # `Data!R_n = IF(M_n=0,"",...)`: a zero-amount item's own
+                    # From/Up To are blank, and its ``crossed`` (T) is
+                    # forced False -- it can never itself be a hit.
+                    from_val = None
+                    up_to_val = None
+                    is_threshold_crossed = False
+                else:
+                    from_val = position
+                    if from_val is None:
+                        # `Data!S_n = IFERROR(M_n+R_n-1, 0)`: adding a
+                        # blank From (inherited from a prior zero-amount
+                        # item) errors in Excel, and IFERROR falls back to
+                        # 0 -- this is what lets accumulation genuinely
+                        # restart for Sample items instead of latching
+                        # onto ``random_start`` forever.
+                        up_to_val = 0.0
+                    else:
+                        up_to_val = amount + from_val - 1
+                    is_threshold_crossed = sample_interval <= up_to_val
+                walk_trace[item["index"]] = (from_val, up_to_val, is_threshold_crossed)
+                if is_threshold_crossed and hit_count < total_planned:
+                    hit_count += 1
+                    if item["index"] not in key_item_indices:
+                        mus_selected_indices.add(item["index"])
+                position = self.random_start if is_threshold_crossed else up_to_val
+        self.realized_to_sampling = hit_count
+        return sorted_by_amount, mus_selected_indices, walk_trace
 
-    def _perform_simple_random_sample(self, items, key_count, sample_size):
-        """Select an unweighted random sample from the pool.
+    def _perform_simple_random_sample(self, items, key_count, total_planned):
+        """Select a random sample from the pool for Classical Variable Sampling.
 
-        Unlike Monetary Unit Sampling, Classical Variable Sampling draws a
-        plain random sample: every item remaining after key items are
-        removed has an equal chance of selection, independent of its
-        amount.
+        Faithfully replicates ``SD_akun_CVS_260821.ods`` (sheet ``Data``,
+        columns ``Q18:V1017``) rather than a plain ``random.sample`` draw,
+        per HT/26/000687: walks key items (amount-descending, matching
+        ``Data!J18:N1017``'s "Direct Examination" rows) followed by the
+        sample pool in its *original* input order (matching "Sample
+        Examination" rows -- verified the same way as
+        ``_perform_mus_sampling``'s walk order). Key items are always
+        accepted (``Data!S_n = IF(Q_n<U$11, K_n, ...)``); each pool item
+        independently draws ``RANDBETWEEN(key_count+1, population_count)``
+        (``Data!R_n``) and is accepted only if that draw falls strictly
+        between ``key_count`` and ``total_planned`` (``Data!S_n``'s other
+        branch) -- unlike MUS, nothing here is weighted by amount, so
+        acceptance is a per-item coin flip, not a systematic walk. A
+        running hit counter capped at ``total_planned`` (``Data!AA18:AA1017``
+        against ``$U$13``, matching ``_perform_mus_sampling``'s cap) stops
+        accepting once the plan is filled -- but because each row's draw
+        is independent, running out of pool rows before enough draws land
+        in the acceptance window is possible (unlike MUS's amount-driven
+        walk), so "Realized to sampling" can fall short of the plan for a
+        small enough pool. That behaviour is inherited as-is from the
+        source spreadsheet.
 
         :param items: list of ``{"index", "cells", "amount"}`` dicts, as
             produced by ``_build_items_from_csv``.
         :param key_count: number of largest-amount items to treat as key
-            items (excluded from the random draw).
-        :param sample_size: number of items to randomly select from the
-            pool; capped to the pool size when larger.
+            items; always accepted, consuming the hit cap like the source
+            sheet, but never added to the returned set.
+        :param total_planned: the combined key+sample target (matches
+            ``total_plan_examination``, i.e. ``Data!S14``/``S15`` -- NOT
+            the pool-only ``computed_sample_size``).
         :return: a ``(sorted_by_amount, selected_indices)`` tuple, in the
-            same shape as ``_perform_mus_sampling``'s return value.
+            same shape as ``_perform_mus_sampling``'s return value. Also
+            sets ``self.realized_to_sampling`` to the total hit count.
         """
+        self.ensure_one()
         sorted_by_amount = sorted(items, key=lambda x: x["amount"], reverse=True)
-        key_item_indices = {item["index"] for item in sorted_by_amount[:key_count]}
-        sample_pool = [item for item in items if item["index"] not in key_item_indices]
-        draw_size = min(sample_size, len(sample_pool))
+        key_items_desc = sorted_by_amount[:key_count]
+        key_item_indices = {item["index"] for item in key_items_desc}
+        walk_sequence = key_items_desc + [
+            item for item in items if item["index"] not in key_item_indices
+        ]
+        population_count = len(items)
+
         selected_indices = set()
-        if draw_size > 0:
-            selected_items = random.sample(sample_pool, draw_size)
-            selected_indices = {item["index"] for item in selected_items}
+        hit_count = 0
+        for position, item in enumerate(walk_sequence, start=1):
+            if position <= key_count:
+                crossed = True
+            elif population_count >= key_count + 1:
+                draw = random.randint(key_count + 1, population_count)
+                crossed = key_count < draw < total_planned
+            else:
+                crossed = False
+            if crossed and hit_count < total_planned:
+                hit_count += 1
+                if item["index"] not in key_item_indices:
+                    selected_indices.add(item["index"])
+        self.realized_to_sampling = hit_count
         return sorted_by_amount, selected_indices
 
     def _perform_nss_candidate_list(self, items, key_count):
@@ -989,13 +1225,18 @@ class GeneralAuditWsA916660(models.Model):
         :param key_count: number of largest-amount items to treat as key
             items (excluded from the candidate list).
         :return: a ``(sorted_by_amount, candidate_indices)`` tuple, in the
-            same shape as ``_perform_mus_sampling``'s return value.
+            same shape as ``_perform_mus_sampling``'s return value. Also
+            sets ``self.realized_to_sampling`` to ``key_count`` -- nothing
+            is chosen yet at generation time; ``_inverse_sampling_process_data``
+            updates it again as the auditor checks "Chose?" boxes.
         """
+        self.ensure_one()
         sorted_by_amount = sorted(items, key=lambda x: x["amount"], reverse=True)
         key_item_indices = {item["index"] for item in sorted_by_amount[:key_count]}
         candidate_indices = {
             item["index"] for item in items if item["index"] not in key_item_indices
         }
+        self.realized_to_sampling = key_count
         return sorted_by_amount, candidate_indices
 
     def _is_sampling_ready(self):
@@ -1019,27 +1260,31 @@ class GeneralAuditWsA916660(models.Model):
             produced by ``_build_items_from_csv``.
         :param key_count: number of largest-amount items to treat as key
             items.
-        :return: a ``(sorted_by_amount, selected_indices, selected_tag)``
-            tuple. ``selected_tag`` is ``"Sample"`` for MUS/CVS (items were
-            actually selected) or ``"Candidate"`` for NSS (nothing was
-            auto-selected; every pool item is listed for the auditor to
-            mark by hand).
+        :return: a ``(sorted_by_amount, selected_indices, selected_tag,
+            walk_trace)`` tuple. ``selected_tag`` is ``"Sample"`` for
+            MUS/CVS (items were actually selected) or ``"Candidate"`` for
+            NSS (nothing was auto-selected; every pool item is listed for
+            the auditor to mark by hand). ``walk_trace`` is MUS's
+            ``{index: (from, up_to, is_threshold_crossed)}`` (see
+            ``_perform_mus_sampling``), or ``{}`` for CVS/NSS.
         """
         self.ensure_one()
         if self.method_type == "mus":
-            sorted_by_amount, selected_indices = self._perform_mus_sampling(
-                items, key_count, self.sampling_interval
-            )
-            return sorted_by_amount, selected_indices, "Sample"
+            (
+                sorted_by_amount,
+                selected_indices,
+                walk_trace,
+            ) = self._perform_mus_sampling(items, key_count, self.sampling_interval)
+            return sorted_by_amount, selected_indices, "Sample", walk_trace
         if self.method_type == "cvs":
             sorted_by_amount, selected_indices = self._perform_simple_random_sample(
-                items, key_count, self.computed_sample_size
+                items, key_count, self.total_plan_examination
             )
-            return sorted_by_amount, selected_indices, "Sample"
+            return sorted_by_amount, selected_indices, "Sample", {}
         sorted_by_amount, selected_indices = self._perform_nss_candidate_list(
             items, key_count
         )
-        return sorted_by_amount, selected_indices, "Candidate"
+        return sorted_by_amount, selected_indices, "Candidate", {}
 
     def _generate_sampling(self):
         """Build ``sampling_data`` (key items + sample) as a CSV string.
@@ -1048,39 +1293,35 @@ class GeneralAuditWsA916660(models.Model):
         delegates item selection to ``_select_sampling_items`` according
         to ``method_type``: MUS (size-weighted systematic selection), CVS
         (unweighted random draw), or NSS (every pool item listed as a
-        ``Candidate`` for the auditor to mark by hand; nothing is
-        auto-selected). Key items are always written first, tagged
-        ``Key Item``.
+        ``Candidate`` in ``nss_candidate_pool`` for the auditor to mark by
+        hand via the "Sampling Process" tab; nothing is auto-selected, so
+        ``sampling_data`` itself gets no Sample rows yet -- only Key Item
+        ones). Key items are always written first, tagged ``Key Item``.
 
-        :return: ``None``. Sets ``sampling_data`` to ``False`` when the
-            source, column configuration, or method parameters are
-            incomplete, or when parsing the source data fails.
+        :return: ``None``. Sets ``sampling_data`` (and ``nss_candidate_pool``
+            for NSS) to ``False`` when the source, column configuration, or
+            method parameters are incomplete, or when parsing fails.
         """
         self.ensure_one()
         raw_data = self._get_source_raw_data()
-        if not raw_data:
-            self.sampling_data = False
-            return
         monetary_col = self.monetary_col_number
-        identifier_col = self.identifier_col_number
-        info_col = self.additional_info_col_number
-        if not monetary_col:
-            self.sampling_data = False
-            return
         unique_columns = self._build_unique_columns(
-            identifier_col, monetary_col, info_col
+            self.identifier_col_number, monetary_col, self.additional_info_col_number
         )
-        if not unique_columns:
+        if (
+            not raw_data
+            or not monetary_col
+            or not unique_columns
+            or not self._is_sampling_ready()
+        ):
             self.sampling_data = False
-            return
-        if not self._is_sampling_ready():
-            self.sampling_data = False
+            self.nss_candidate_pool = False
             return
         try:
-            reader = csv.reader(io.StringIO(raw_data))
-            all_rows = list(reader)
+            all_rows = list(csv.reader(io.StringIO(raw_data)))
             if len(all_rows) < 2:
                 self.sampling_data = False
+                self.nss_candidate_pool = False
                 return
             output_header, items = self._build_items_from_csv(
                 all_rows, unique_columns, monetary_col
@@ -1090,54 +1331,86 @@ class GeneralAuditWsA916660(models.Model):
                 sorted_by_amount,
                 selected_indices,
                 selected_tag,
+                walk_trace,
             ) = self._select_sampling_items(items, key_count)
-            is_nss = self.method_type == "nss"
+
             output = io.StringIO()
             writer = csv.writer(output)
             writer.writerow(output_header)
             for item in sorted_by_amount[:key_count]:
                 row = [str(item["index"])] + item["cells"] + ["Key Item"]
-                if is_nss:
-                    row = row + ["TRUE"]
+                row += self._sampling_row_suffix(item["index"], "Key Item", walk_trace)
                 writer.writerow(row)
-            for item in items:
-                if item["index"] in selected_indices:
-                    row = [str(item["index"])] + item["cells"] + [selected_tag]
-                    if is_nss:
-                        row = row + ["TRUE" if selected_tag == "Sample" else "FALSE"]
-                    writer.writerow(row)
+
+            if self.method_type == "nss":
+                # Candidates go to the working pool, never to
+                # sampling_data -- see the "Sample data isn't clean"
+                # HT/26/000687 report: sampling_data must be "key items +
+                # chosen samples only".
+                pool_output = io.StringIO()
+                pool_writer = csv.writer(pool_output)
+                pool_writer.writerow(output_header)
+                for item in items:
+                    if item["index"] in selected_indices:
+                        pool_writer.writerow(
+                            [str(item["index"])]
+                            + item["cells"]
+                            + ["Candidate", "FALSE"]
+                        )
+                self.nss_candidate_pool = pool_output.getvalue()
+            else:
+                self.nss_candidate_pool = False
+                for item in items:
+                    if item["index"] in selected_indices:
+                        row = [str(item["index"])] + item["cells"] + [selected_tag]
+                        row += self._sampling_row_suffix(
+                            item["index"], selected_tag, walk_trace
+                        )
+                        writer.writerow(row)
             self.sampling_data = output.getvalue()
         except Exception:
             self.sampling_data = False
+            self.nss_candidate_pool = False
 
-    @api.depends("sampling_data", "method_type", "sampling_process_filter")
+    def _sampling_row_suffix(self, item_index, tag, walk_trace):
+        """Build the CSV columns appended after ``Type`` for one row.
+
+        :param item_index: the item's ``index`` (key into ``walk_trace``).
+        :param tag: the row's ``Type`` value (``"Key Item"`` or
+            ``selected_tag``); only used to derive NSS's ``Chose?``.
+        :param walk_trace: MUS's ``{index: (from, up_to,
+            is_threshold_crossed)}`` from ``_perform_mus_sampling``, or
+            ``{}`` for CVS/NSS.
+        :return: ``["Chose?" value]`` for NSS, ``[From, Up To]`` for MUS,
+            or ``[]`` for CVS.
+        """
+        if self.method_type == "nss":
+            return ["TRUE" if tag in ("Key Item", "Sample") else "FALSE"]
+        if self.method_type == "mus":
+            from_val, up_to_val, _crossed = walk_trace.get(
+                item_index, (0.0, 0.0, False)
+            )
+            return [
+                "" if from_val is None else str(round(from_val, 2)),
+                "" if up_to_val is None else str(round(up_to_val, 2)),
+            ]
+        return []
+
+    @api.depends("nss_candidate_pool", "method_type", "sampling_process_filter")
     def _compute_sampling_process_data(self):
-        """Derive the editable NSS "Sampling Process" table from ``sampling_data``.
+        """Derive the editable NSS "Sampling Process" table.
 
-        :return: sets ``sampling_process_data`` to the ``Candidate``/
-            ``Sample`` rows of ``sampling_data`` (``Key Item`` rows
-            excluded), optionally narrowed by ``sampling_process_filter``,
-            for Non-Statistical Sampling, or ``False`` for other methods
-            or when ``sampling_data`` is empty/unparseable.
+        :return: sets ``sampling_process_data`` to ``nss_candidate_pool``
+            (already Key-Item-free), optionally narrowed by
+            ``sampling_process_filter``, for Non-Statistical Sampling, or
+            ``False`` for other methods or when ``nss_candidate_pool`` is
+            empty.
         """
         for record in self:
             record.sampling_process_data = False
-            if record.method_type != "nss" or not record.sampling_data:
+            if record.method_type != "nss" or not record.nss_candidate_pool:
                 continue
-            try:
-                rows = list(csv.reader(io.StringIO(record.sampling_data)))
-            except Exception:
-                continue
-            if not rows or "Type" not in rows[0]:
-                continue
-            type_idx = rows[0].index("Type")
-            output = io.StringIO()
-            writer = csv.writer(output)
-            writer.writerow(rows[0])
-            for row in rows[1:]:
-                if len(row) > type_idx and row[type_idx] != "Key Item":
-                    writer.writerow(row)
-            candidate_csv = output.getvalue()
+            candidate_csv = record.nss_candidate_pool
             if record.sampling_process_filter:
                 candidate_csv = self._apply_where_clause(
                     candidate_csv, record.sampling_process_filter
@@ -1147,6 +1420,10 @@ class GeneralAuditWsA916660(models.Model):
     @api.model
     def _apply_where_clause(self, raw_csv, where_clause):
         """Filter CSV data using a read-only SQL WHERE clause via SQLite.
+
+        Columns whose values are entirely numeric (or blank) get NUMERIC
+        affinity so comparisons like ``Amount > 10000000`` are evaluated
+        by value, not lexicographically as strings.
 
         :param raw_csv: CSV text with a header row.
         :param where_clause: a SQL WHERE clause (without the ``WHERE``
@@ -1173,7 +1450,33 @@ class GeneralAuditWsA916660(models.Model):
             if not col or col[0].isdigit():
                 col = "c_" + col
             safe_cols.append(col)
-        col_defs = ", ".join('"{}" TEXT'.format(c) for c in safe_cols)
+
+        # A column declared TEXT gets TEXT affinity, so SQLite compares it
+        # lexicographically even against a bare numeric literal in the
+        # WHERE clause -- "4440000" > "10000000" is TRUE as strings (the
+        # leading "4" beats "1"), even though 4,440,000 < 10,000,000.
+        # Give a column that looks entirely numeric NUMERIC affinity
+        # instead, so ``Amount > 10000000``-style filters compare by
+        # value, not by leading digit.
+        def _looks_numeric(value):
+            value = (value or "").strip()
+            if not value:
+                return True
+            try:
+                float(value)
+                return True
+            except ValueError:
+                return False
+
+        col_types = []
+        for i in range(len(safe_cols)):
+            values = [row[i] for row in rows if len(row) > i]
+            numeric_col = bool(values) and all(_looks_numeric(v) for v in values)
+            col_types.append("NUMERIC" if numeric_col else "TEXT")
+
+        col_defs = ", ".join(
+            '"{}" {}'.format(c, t) for c, t in zip(safe_cols, col_types)
+        )
         placeholders = ", ".join(["?"] * len(safe_cols))
 
         try:
@@ -1199,23 +1502,29 @@ class GeneralAuditWsA916660(models.Model):
         return out.getvalue()
 
     def _inverse_sampling_process_data(self):
-        """Write edited "Chose?"/Type values back into ``sampling_data``.
+        """Write edited "Chose?"/Type values back into ``nss_candidate_pool``
+        and rebuild ``sampling_data`` from the result.
 
         Re-derives each edited row's ``Type`` from its ``Chose?`` checkbox
-        (``TRUE`` -> ``Sample``, ``FALSE`` -> ``Candidate``), enforces that
-        the resulting Sample count does not exceed
-        ``computed_sample_size`` (already net of key items), then merges
-        the result back into ``sampling_data``; ``Key Item`` rows are left
-        untouched.
+        (``TRUE`` -> ``Sample``, ``FALSE`` -> ``Candidate``).
 
-        :raise UserError: when the number of rows chosen (``Chose? =
-            TRUE``) exceeds ``computed_sample_size``.
+        Edits are merged into ``nss_candidate_pool`` (the full working
+        set, which may be larger than what was visible/edited when
+        ``sampling_process_filter`` hides some rows -- previously-chosen
+        rows outside the current filter keep their state). ``sampling_data``
+        is then rebuilt from scratch as the existing ``Key Item`` rows plus
+        every ``Sample``-tagged row in the merged pool, so it never carries
+        ``Candidate`` rows.
+
+        :raise UserError: when the total number of rows chosen (``Chose?
+            = TRUE``) across the whole pool exceeds ``computed_sample_size``.
         :return: ``None``.
         """
         for record in self:
             if (
                 record.method_type != "nss"
                 or not record.sampling_process_data
+                or not record.nss_candidate_pool
                 or not record.sampling_data
             ):
                 continue
@@ -1223,12 +1532,13 @@ class GeneralAuditWsA916660(models.Model):
                 process_rows = list(
                     csv.reader(io.StringIO(record.sampling_process_data))
                 )
+                pool_rows = list(csv.reader(io.StringIO(record.nss_candidate_pool)))
                 full_rows = list(csv.reader(io.StringIO(record.sampling_data)))
             except Exception:
                 continue
-            if not process_rows or not full_rows:
+            if not process_rows or not pool_rows or not full_rows:
                 continue
-            header = full_rows[0]
+            header = pool_rows[0]
             if not {"Type", "Chose?", "Index"} <= set(header):
                 continue
             type_idx = header.index("Type")
@@ -1236,7 +1546,6 @@ class GeneralAuditWsA916660(models.Model):
             index_idx = header.index("Index")
 
             edits = {}
-            chosen_count = 0
             for row in process_rows[1:]:
                 if len(row) <= max(type_idx, chose_idx, index_idx):
                     continue
@@ -1245,8 +1554,13 @@ class GeneralAuditWsA916660(models.Model):
                 row[type_idx] = "Sample" if chosen else "Candidate"
                 row[chose_idx] = "TRUE" if chosen else "FALSE"
                 edits[row[index_idx]] = row
-                if chosen:
-                    chosen_count += 1
+
+            merged_pool_rows = [
+                edits.get(row[index_idx], row) if len(row) > index_idx else row
+                for row in pool_rows[1:]
+            ]
+            sample_rows = [row for row in merged_pool_rows if row[type_idx] == "Sample"]
+            chosen_count = len(sample_rows)
 
             if chosen_count > record.computed_sample_size:
                 raise UserError(
@@ -1261,13 +1575,23 @@ class GeneralAuditWsA916660(models.Model):
                     }
                 )
 
-            merged_rows = [
-                edits.get(row[index_idx], row) if len(row) > index_idx else row
-                for row in full_rows[1:]
-            ]
+            pool_output = io.StringIO()
+            pool_writer = csv.writer(pool_output)
+            pool_writer.writerow(header)
+            pool_writer.writerows(merged_pool_rows)
+            record.nss_candidate_pool = pool_output.getvalue()
 
+            full_header = full_rows[0]
+            full_type_idx = full_header.index("Type")
+            key_item_rows = [
+                row
+                for row in full_rows[1:]
+                if len(row) > full_type_idx and row[full_type_idx] == "Key Item"
+            ]
             output = io.StringIO()
             writer = csv.writer(output)
-            writer.writerow(header)
-            writer.writerows(merged_rows)
+            writer.writerow(full_header)
+            writer.writerows(key_item_rows)
+            writer.writerows(sample_rows)
             record.sampling_data = output.getvalue()
+            record.realized_to_sampling = len(key_item_rows) + chosen_count
