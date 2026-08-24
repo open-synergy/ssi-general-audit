@@ -43,7 +43,9 @@
             <data>
                 <xpath expr="//page[1]" position="before">
                     <page name="business_cycle" string="Business Cycles">
-                        <field name="business_cycle_ids" widget="many2many_tags" />
+                        <group>
+                            <field name="business_cycle_ids" widget="many2many_tags" />
+                        </group>
                         <field name="business_cycle_summary_ids" readonly="1">
                             <tree>
                                 <field name="name" string="# Document" />
