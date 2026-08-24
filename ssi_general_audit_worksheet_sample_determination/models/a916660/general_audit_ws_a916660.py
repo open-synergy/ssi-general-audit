@@ -1459,6 +1459,7 @@ class GeneralAuditWsA916660(models.Model):
         # instead, so ``Amount > 10000000``-style filters compare by
         # value, not by leading digit.
         def _looks_numeric(value):
+            """Whether ``value`` parses as a float, treating blank as yes."""
             value = (value or "").strip()
             if not value:
                 return True
