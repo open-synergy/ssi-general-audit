@@ -583,11 +583,16 @@ scenarios:
             expected: 3000.0
 
   # ------------------------------------------------------------------
-  # 10. Compute reliability_factor (RELIABILITY_FACTOR_TABLE)
+  # 10. confidence_factor is a plain manual input field (ticket
+  #     HT/26/000687, 2nd revision): Confidence Level was dropped
+  #     entirely and Reliability Factor renamed to Confidence Factor --
+  #     there is no more lookup table, so it is exactly like
+  #     Performance Materiality / Risk Factor: whatever value is given
+  #     is what is stored, nothing derives a default for it.
   # ------------------------------------------------------------------
-  - name: "Compute reliability_factor - confidence_level 95 -> 3.0"
+  - name: "confidence_factor - stores the value given directly"
     steps:
-      - step: "Create worksheet with confidence_level 95"
+      - step: "Create worksheet with confidence_factor 1.5"
         action: "create"
         model: "general_audit_ws_a916660"
         save_as: "worksheet"
@@ -595,60 +600,25 @@ scenarios:
         values:
           general_audit_id: "REC: audit.id"
           type_id: "REC: ws_type.id"
-          confidence_level: "95"
+          confidence_factor: 1.5
 
-      - step: "Assert reliability_factor is 3.0"
+      - step: "Assert confidence_factor is 1.5"
         action: "assert"
         target: "worksheet"
         asserts:
-          reliability_factor:
+          confidence_factor:
             type: "value"
-            expected: 3.00
-
-  - name: "Compute reliability_factor - confidence_level 90 -> 2.31"
-    steps:
-      - step: "Create worksheet with confidence_level 90"
-        action: "create"
-        model: "general_audit_ws_a916660"
-        save_as: "worksheet"
-        as_user: "base.user_admin"
-        values:
-          general_audit_id: "REC: audit.id"
-          type_id: "REC: ws_type.id"
-          confidence_level: "90"
-
-      - step: "Assert reliability_factor is 2.31"
-        action: "assert"
-        target: "worksheet"
-        asserts:
-          reliability_factor:
-            type: "value"
-            expected: 2.31
-
-  - name: "Compute reliability_factor - confidence_level 80 -> 1.61"
-    steps:
-      - step: "Create worksheet with confidence_level 80"
-        action: "create"
-        model: "general_audit_ws_a916660"
-        save_as: "worksheet"
-        as_user: "base.user_admin"
-        values:
-          general_audit_id: "REC: audit.id"
-          type_id: "REC: ws_type.id"
-          confidence_level: "80"
-
-      - step: "Assert reliability_factor is 1.61"
-        action: "assert"
-        target: "worksheet"
-        asserts:
-          reliability_factor:
-            type: "value"
-            expected: 1.61
+            expected: 1.5
 
   # ------------------------------------------------------------------
   # 11. Compute sampling_interval
+  #
+  # Formula verified against SD_akun_MUS_terbaru.ods cell Data!S6:
+  # Tolerable Misstatement / (Risk Factor / 30%) / Confidence Factor.
+  # With tolerable_misstatement 3000, risk_factor 0.9, confidence_factor
+  # 1.0: 3000 * 0.30 = 900; 900 / 0.9 = 1000; 1000 / 1.0 = 1000.
   # ------------------------------------------------------------------
-  - name: "Compute sampling_interval - normal (tolerable 3000 / RF 3.0)"
+  - name: "Compute sampling_interval - normal (TM 3000, RF 0.9, CF 1.0 -> 1000)"
     steps:
       - step: "Create worksheet with tolerable_misstatement 3000"
         action: "create"
@@ -658,7 +628,8 @@ scenarios:
         values:
           general_audit_id: "REC: audit.id"
           type_id: "REC: ws_type.id"
-          confidence_level: "95"
+          risk_factor: 0.9
+          confidence_factor: 1.0
           tolerable_misstatement: 3000.0
 
       - step: "Assert sampling_interval is 1000.0"
@@ -679,7 +650,8 @@ scenarios:
         values:
           general_audit_id: "REC: audit.id"
           type_id: "REC: ws_type.id"
-          confidence_level: "95"
+          risk_factor: 0.9
+          confidence_factor: 1.0
           tolerable_misstatement: 0.0
 
       - step: "Assert sampling_interval is 0.0"
@@ -690,8 +662,31 @@ scenarios:
             type: "value"
             expected: 0.0
 
+  - name: "Compute sampling_interval - zero when risk_factor is 0"
+    steps:
+      - step: "Create worksheet with risk_factor 0"
+        action: "create"
+        model: "general_audit_ws_a916660"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+          risk_factor: 0.0
+          confidence_factor: 1.0
+          tolerable_misstatement: 3000.0
+
+      - step: "Assert sampling_interval is 0.0"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          sampling_interval:
+            type: "value"
+            expected: 0.0
+
   # ------------------------------------------------------------------
-  # 12. Compute computed_sample_size
+  # 12. Compute computed_sample_size (MUS: round-half-up, not ceil --
+  #     matches ROUND(S13/S6,0) in SD_akun_MUS_terbaru.ods Data!S14)
   # ------------------------------------------------------------------
   - name: "Compute computed_sample_size - normal (3000 / 1000 -> 3)"
     steps:
@@ -707,7 +702,8 @@ scenarios:
           general_ledger_id: "REC: gl.id"
           monetary_col_number: 2
           key_item_count: 2
-          confidence_level: "95"
+          risk_factor: 0.9
+          confidence_factor: 1.0
           tolerable_misstatement: 3000.0
 
       - step: "Assert computed_sample_size is 3"
@@ -732,7 +728,8 @@ scenarios:
           general_ledger_id: "REC: gl.id"
           monetary_col_number: 2
           key_item_count: 2
-          confidence_level: "95"
+          risk_factor: 0.9
+          confidence_factor: 1.0
           tolerable_misstatement: 0.0
 
       - step: "Assert computed_sample_size is 0"
@@ -742,6 +739,41 @@ scenarios:
           computed_sample_size:
             type: "value"
             expected: 0
+
+  - name: "Compute computed_sample_size - rounds half-up, not ceil (3000 / 937.5 -> 3)"
+    steps:
+      - step: "Create worksheet where sample_amount / sampling_interval = 3.2"
+        action: "create"
+        model: "general_audit_ws_a916660"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+          data_mode: "gl"
+          general_ledger_id: "REC: gl.id"
+          monetary_col_number: 2
+          key_item_count: 2
+          risk_factor: 0.9
+          confidence_factor: 1.0
+          tolerable_misstatement: 2812.5
+
+      - step: "Assert sampling_interval is 937.5"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          sampling_interval:
+            type: "value"
+            expected: 937.5
+
+      - step:
+          "Assert computed_sample_size rounds 3.2 down to 3 (ceil would wrongly give 4)"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          computed_sample_size:
+            type: "value"
+            expected: 3
 
   # ------------------------------------------------------------------
   # 12b. Compute aria_coefficient / arir_coefficient / estimate_misstatement /
@@ -862,6 +894,53 @@ scenarios:
             type: "value"
             expected: 50
 
+  # HT/26/000687 (5th revision): the raw ROUNDUP formula result is the
+  # *combined* key+sample total (matches Data!S14 "Total Plan Examination"
+  # in SD_akun_CVS_260821.ods) -- computed_sample_size must subtract
+  # key_item_count to get the pool-only figure (Data!S13 "Sampling
+  # Examination" = S14-S12), while total_plan_examination keeps the raw
+  # total. Same parameters as "Compute CVS sample size - full parameter
+  # chain" above (raw formula = 78), but with key_item_count 1 instead of
+  # 0: 78-1 = 77.
+  - name: "Compute CVS sample size - subtracts key_item_count from the raw total"
+    steps:
+      - step: "Create CVS worksheet with key_item_count 1"
+        action: "create"
+        model: "general_audit_ws_a916660"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+          data_mode: "gl"
+          general_ledger_id: "REC: gl.id"
+          monetary_col_number: 2
+          key_item_count: 1
+          method_type: "cvs"
+          performance_materiality: 10000.0
+          risk_factor: 0.9
+          tolerable_misstatement: 9000.0
+          aria: "0.5"
+          arir: "1"
+          estimate_misstatement_ratio: 0.9
+          standard_deviation_ratio: 0.1
+
+      - step: "Assert computed_sample_size is the pool-only figure (78 - 1 = 77)"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          computed_sample_size:
+            type: "value"
+            expected: 77
+
+      - step: "Assert total_plan_examination keeps the raw combined total (78)"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          total_plan_examination:
+            type: "value"
+            expected: 78
+
   # ------------------------------------------------------------------
   # 13/14. Action generate sampling
   # ------------------------------------------------------------------
@@ -881,8 +960,10 @@ scenarios:
           monetary_col_number: 2
           additional_info_col_number: 3
           key_item_count: 1
-          confidence_level: "95"
+          risk_factor: 0.9
+          confidence_factor: 1.0
           tolerable_misstatement: 3000.0
+          multiplier_random: 2000000000.0
 
       - step: "Assert sampling_data is falsy before generating"
         action: "assert"
@@ -906,6 +987,69 @@ scenarios:
             type: "value"
             operator: "is_truthy"
 
+      - step: "Assert sampling_data has From / Up To columns (MUS only)"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          sampling_data:
+            type: "value"
+            operator: "contains"
+            expected: "From,Up To"
+
+      - step: "Assert random_start is at least 0"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          random_start:
+            type: "value"
+            operator: "gte"
+            expected: 0.0
+
+      - step: "Assert random_start is below multiplier_random (2e9)"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          random_start:
+            type: "value"
+            operator: "lt"
+            expected: 2000000000.0
+
+      - step: "Assert total_plan_examination = computed_sample_size + key_item_count"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          total_plan_examination:
+            type: "value"
+            expected: 7
+
+      - step: "Assert beginning_to_sampling = key_item_count + 1"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          beginning_to_sampling:
+            type: "value"
+            expected: 2
+
+      - step:
+          "Assert realized_to_sampling: all 4 rows hit (multiplier_random dwarfs
+          sampling_interval)"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          realized_to_sampling:
+            type: "value"
+            expected: 4
+
+      - step:
+          "Assert sampling_variance = total_plan_examination - realized_to_sampling
+          (population smaller than the plan here, so it is not 0)"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          sampling_variance:
+            type: "value"
+            expected: 3
+
   - name: "Action generate sampling - negative (sampling_interval = 0)"
     steps:
       - step: "Create worksheet with tolerable_misstatement 0 (interval = 0)"
@@ -922,7 +1066,8 @@ scenarios:
           monetary_col_number: 2
           additional_info_col_number: 3
           key_item_count: 1
-          confidence_level: "95"
+          risk_factor: 0.9
+          confidence_factor: 1.0
           tolerable_misstatement: 0.0
 
       - step: "Generate sampling"
@@ -1061,14 +1206,27 @@ scenarios:
         method: "action_generate_sampling"
         as_user: "base.user_admin"
 
-      - step: "Assert sampling_data lists Candidate rows, not Sample rows"
+      - step:
+          "Assert nss_candidate_pool lists Candidate rows (HT/26/000687: sampling_data
+          itself only ever holds Key Item + chosen Sample, never Candidate -- the
+          absence check is covered in Python, see
+          test_sampling_data_never_lists_nss_candidates)"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          nss_candidate_pool:
+            type: "value"
+            operator: "contains"
+            expected: "Candidate"
+
+      - step: "Assert sampling_data has a Chose? column (NSS only)"
         action: "assert"
         target: "worksheet"
         asserts:
           sampling_data:
             type: "value"
             operator: "contains"
-            expected: "Candidate"
+            expected: "Chose?"
 
   - name: "Action generate sampling - NSS negative (empty sample pool)"
     steps:
@@ -1101,6 +1259,208 @@ scenarios:
           sampling_data:
             type: "value"
             operator: "is_falsy"
+
+  # ------------------------------------------------------------------
+  # 14b. Sampling Process tab (NSS "Chose?" checkbox, HT/26/000687)
+  #
+  # gl fixture (see top of file): REF001/1000, REF002/2000, REF003/3000,
+  # REF004/4000. key_item_count 1 -> REF004 is the key item; REF001-003
+  # are Candidates. nss_final_sample_size 1 pins computed_sample_size to
+  # 1 regardless of aria/arir/performance_materiality (not set here).
+  # ------------------------------------------------------------------
+  - name: "Sampling Process - promoting a candidate to Sample within cap"
+    steps:
+      - step: "Create NSS worksheet, sample size capped at 1"
+        action: "create"
+        model: "general_audit_ws_a916660"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+          data_mode: "gl"
+          general_ledger_id: "REC: gl.id"
+          identifier_col_number: 1
+          monetary_col_number: 2
+          additional_info_col_number: 3
+          key_item_count: 1
+          method_type: "nss"
+          nss_final_sample_size: 1
+
+      - step: "Generate sampling"
+        action: "call"
+        target: "worksheet"
+        method: "action_generate_sampling"
+        as_user: "base.user_admin"
+
+      - step: "Assert sampling_process_data lists the Candidate rows"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          sampling_process_data:
+            type: "value"
+            operator: "contains"
+            expected: "REF003"
+
+      - step: "Choose REF003 (1 chosen, within the cap of 1)"
+        action: "write"
+        target: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          sampling_process_data: |
+            Index,ref,amount,note,Type,Chose?
+            0,REF001,1000,Note 1,Candidate,FALSE
+            1,REF002,2000,Note 2,Candidate,FALSE
+            2,REF003,3000,Note 3,Candidate,TRUE
+
+      - step: "Assert sampling_data promoted REF003 to Sample"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          sampling_data:
+            type: "value"
+            operator: "contains"
+            expected: "REF003,3000,Note 3,Sample,TRUE"
+
+      - step: "Assert the untouched key item row is still Key Item"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          sampling_data:
+            type: "value"
+            operator: "contains"
+            expected: "REF004,4000,Note 4,Key Item,TRUE"
+
+  - name: "Sampling Process - choosing more than Computed Sample Size is rejected"
+    steps:
+      - step: "Create NSS worksheet, sample size capped at 1"
+        action: "create"
+        model: "general_audit_ws_a916660"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+          data_mode: "gl"
+          general_ledger_id: "REC: gl.id"
+          identifier_col_number: 1
+          monetary_col_number: 2
+          additional_info_col_number: 3
+          key_item_count: 1
+          method_type: "nss"
+          nss_final_sample_size: 1
+
+      - step: "Generate sampling"
+        action: "call"
+        target: "worksheet"
+        method: "action_generate_sampling"
+        as_user: "base.user_admin"
+
+      - step: "Choose REF002 and REF003 (2 chosen, exceeds the cap of 1) -> UserError"
+        action: "write"
+        target: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          sampling_process_data: |
+            Index,ref,amount,note,Type,Chose?
+            0,REF001,1000,Note 1,Candidate,FALSE
+            1,REF002,2000,Note 2,Candidate,TRUE
+            2,REF003,3000,Note 3,Candidate,TRUE
+        expect_error:
+          type: "UserError"
+
+  # HT/26/000687 (6th revision): a later write to a *filtered*
+  # sampling_process_data (sampling_process_filter narrows it to one
+  # row) must not lose an earlier choice made outside that filter --
+  # edits merge into nss_candidate_pool by Index, untouched rows keep
+  # their last saved state.
+  - name: "Sampling Process - a filtered write keeps a previously chosen row"
+    steps:
+      - step: "Create NSS worksheet, sample size capped at 2"
+        action: "create"
+        model: "general_audit_ws_a916660"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+          data_mode: "gl"
+          general_ledger_id: "REC: gl.id"
+          identifier_col_number: 1
+          monetary_col_number: 2
+          additional_info_col_number: 3
+          key_item_count: 1
+          method_type: "nss"
+          nss_final_sample_size: 2
+
+      - step: "Generate sampling"
+        action: "call"
+        target: "worksheet"
+        method: "action_generate_sampling"
+        as_user: "base.user_admin"
+
+      - step: "Choose REF001 (unfiltered write, all 3 candidates visible)"
+        action: "write"
+        target: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          sampling_process_data: |
+            Index,ref,amount,note,Type,Chose?
+            0,REF001,1000,Note 1,Candidate,TRUE
+            1,REF002,2000,Note 2,Candidate,FALSE
+            2,REF003,3000,Note 3,Candidate,FALSE
+
+      - step: "Narrow the Sampling Process view to REF002 only"
+        action: "write"
+        target: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          sampling_process_filter: "ref = 'REF002'"
+
+      - step: "Assert the filtered view only lists REF002, not REF001/REF003"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          sampling_process_data:
+            type: "value"
+            operator: "contains"
+            expected: "REF002"
+
+      - step: "Choose REF002 too, via the filtered (REF002-only) write"
+        action: "write"
+        target: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          sampling_process_data: |
+            Index,ref,amount,note,Type,Chose?
+            1,REF002,2000,Note 2,Candidate,TRUE
+
+      - step:
+          "Assert sampling_data kept REF001 Sample (chosen outside this filtered write)"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          sampling_data:
+            type: "value"
+            operator: "contains"
+            expected: "REF001,1000,Note 1,Sample,TRUE"
+
+      - step: "Assert sampling_data also promoted REF002 to Sample"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          sampling_data:
+            type: "value"
+            operator: "contains"
+            expected: "REF002,2000,Note 2,Sample,TRUE"
+
+      - step: "Assert realized_to_sampling counts both (1 key item + 2 samples)"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          realized_to_sampling:
+            type: "value"
+            expected: 3
 
   # ------------------------------------------------------------------
   # 15. Workflow worksheet - draft -> open -> confirm -> approve -> done
