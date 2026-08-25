@@ -78,7 +78,7 @@ class GeneralAuditWsB4f8e1a(models.Model):
         "Sample Determination worksheet.",
     )
     sample_type = fields.Selection(
-        string="Sample Type",
+        string="Sampling Method",
         related="sample_determination_id.method_type",
         store=True,
         compute_sudo=True,
