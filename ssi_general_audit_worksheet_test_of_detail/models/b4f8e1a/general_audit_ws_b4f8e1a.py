@@ -237,15 +237,15 @@ class GeneralAuditWsB4f8e1a(models.Model):
     conclusion_text = fields.Selection(
         string="Difference Estimation Conclusion",
         selection=[
-            ("no_misstatement", "TIDAK TERJADI SALAH SAJI"),
-            ("misstatement", "TERJADI SALAH SAJI"),
+            ("no_misstatement", "No Misstatement"),
+            ("misstatement", "Misstatement Detected"),
         ],
         compute="_compute_conclusion_text",
         store=True,
         compute_sudo=True,
-        help="'TERJADI SALAH SAJI' when the upper confidence limit "
+        help="'Misstatement Detected' when the upper confidence limit "
         "exceeds Tolerable Misstatement, or the lower confidence limit "
-        "is below its negative -- 'TIDAK TERJADI SALAH SAJI' otherwise.",
+        "is below its negative -- 'No Misstatement' otherwise.",
     )
 
     @api.depends("general_audit_id")
