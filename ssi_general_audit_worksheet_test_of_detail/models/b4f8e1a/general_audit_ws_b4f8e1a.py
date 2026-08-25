@@ -235,7 +235,7 @@ class GeneralAuditWsB4f8e1a(models.Model):
         help="``population_difference_projection - " "computed_precision_interval``.",
     )
     conclusion_text = fields.Selection(
-        string="Conclusion",
+        string="Difference Estimation Conclusion",
         selection=[
             ("no_misstatement", "TIDAK TERJADI SALAH SAJI"),
             ("misstatement", "TERJADI SALAH SAJI"),
