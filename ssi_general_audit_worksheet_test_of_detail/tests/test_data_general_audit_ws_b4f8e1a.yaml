@@ -701,9 +701,11 @@ scenarios:
           aria:
             type: "value"
             expected: "5"
-          aria_coefficient:
-            type: "value"
-            expected: 1.64
+          # aria_coefficient not asserted here: it round-trips through a
+          # plain (non-currency-rounded) Float, so its exact binary
+          # representation isn't guaranteed portable across environments
+          # (L-04) -- covered with tolerance in the Python precision-chain
+          # test instead.
 
   # ------------------------------------------------------------------
   # action_generate_examination_data - normal
@@ -978,14 +980,22 @@ scenarios:
         method: "invalidate_cache"
 
       - step:
-          "Set a small tolerable_misstatement and a huge discrepancy (population_count =
-          5, so the projection alone dwarfs it regardless of the precision interval)"
+          "Set a small tolerable_misstatement on the SD (tolerable_misstatement/aria on
+          the worksheet are read-only mirrors, edit them at the source)"
         action: "write"
-        target: "worksheet"
+        target: "sd"
         as_user: "base.user_admin"
         values:
           tolerable_misstatement: 10
           aria: "5"
+
+      - step:
+          "Set a huge discrepancy (population_count = 5, so the projection alone dwarfs
+          the tolerable_misstatement regardless of the precision interval)"
+        action: "write"
+        target: "worksheet"
+        as_user: "base.user_admin"
+        values:
           examination_data:
             "Seq,Item,Sample,Recorded Amount,Audited
             Amount\n1,1,S1,1000000,1\n2,2,S2,1000000,1\n"
@@ -1034,21 +1044,28 @@ scenarios:
         method: "invalidate_cache"
 
       - step:
-          "Set a comfortable tolerable_misstatement and matching amounts
-          (tolerable_misstatement/aria write through to the linked SD)"
+          "Set a comfortable tolerable_misstatement on the SD
+          (tolerable_misstatement/aria on the worksheet are read-only mirrors, edit them
+          at the source)"
         action: "write"
-        target: "worksheet"
+        target: "sd"
         as_user: "base.user_admin"
         values:
           tolerable_misstatement: 500000000
           aria: "5"
+
+      - step: "Set matching Recorded/Audited amounts on the worksheet"
+        action: "write"
+        target: "worksheet"
+        as_user: "base.user_admin"
+        values:
           examination_data:
             "Seq,Item,Sample,Recorded Amount,Audited
             Amount\n1,1,S1,1000,1000\n2,2,S2,2000,2000\n"
 
-      - step: "Assert tolerable_misstatement was actually written through to the SD"
+      - step: "Assert the worksheet's mirror picked up the SD's tolerable_misstatement"
         action: "assert"
-        target: "sd"
+        target: "worksheet"
         asserts:
           tolerable_misstatement:
             type: "value"

@@ -25,7 +25,12 @@ class TestGeneralAuditWSB4f8e1a(YamlTransactionCase):
         :param population_row_count: number of data rows to seed into
             the GL's ``raw_data``, which becomes the linked Sample
             Determination's ``population_count``.
-        :return: the opened ``general_audit_ws_b4f8e1a`` record.
+        :return: a ``(worksheet, sample_determination)`` tuple -- the
+            opened ``general_audit_ws_b4f8e1a`` record and the linked
+            ``general_audit_ws_a916660`` record (write
+            ``performance_materiality``/``risk_factor``/
+            ``tolerable_misstatement``/``aria`` on the latter, since
+            the worksheet's mirrors are read-only).
         """
         env = self.env
         admin = env.ref("base.user_admin")
@@ -133,7 +138,7 @@ class TestGeneralAuditWSB4f8e1a(YamlTransactionCase):
             )
         )
         worksheet.with_user(admin).action_open()
-        return worksheet
+        return worksheet, sd
 
     def test_precision_interval_chain_matches_formula(self):
         """Pure Python -- trigger P2 (L-04: no float tolerance in YAML
@@ -149,10 +154,10 @@ class TestGeneralAuditWSB4f8e1a(YamlTransactionCase):
         limit) against the same formula applied directly here, per
         HT/26/000689 (``ToD_akun_260821.ods`` cells ``D221``-``D227``).
         """
-        worksheet = self._create_worksheet_fixture(population_row_count=10)
+        worksheet, sd = self._create_worksheet_fixture(population_row_count=10)
+        sd.write({"aria": "5"})
         worksheet.write(
             {
-                "aria": "5",
                 "examination_data": (
                     "Seq,Item,Sample,Recorded Amount,Audited Amount\n"
                     "1,1,S1,1000,900\n"
@@ -203,10 +208,10 @@ class TestGeneralAuditWSB4f8e1a(YamlTransactionCase):
         was examined, the standard deviation is forced to 0 rather
         than computed from the sample.
         """
-        worksheet = self._create_worksheet_fixture(population_row_count=2)
+        worksheet, sd = self._create_worksheet_fixture(population_row_count=2)
+        sd.write({"aria": "5"})
         worksheet.write(
             {
-                "aria": "5",
                 "examination_data": (
                     "Seq,Item,Sample,Recorded Amount,Audited Amount\n"
                     "1,1,S1,1000,900\n"
