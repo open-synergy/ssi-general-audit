@@ -634,7 +634,9 @@ scenarios:
           raw_data: "Ref,Amount\nR1,1000\nR2,2000\nR3,3000\nR4,4000\nR5,5000\n"
           title: "GL for propagation"
 
-      - step: "Create Sample Determination worksheet with sampling data"
+      - step:
+          "Create Sample Determination worksheet with sampling data and materiality/risk
+          parameters"
         action: "create"
         model: "general_audit_ws_a916660"
         save_as: "sd"
@@ -646,6 +648,11 @@ scenarios:
           general_ledger_id: "REC: gl.id"
           identifier_col_number: 1
           monetary_col_number: 2
+          method_type: "cvs"
+          performance_materiality: 500000000
+          risk_factor: 0.65
+          tolerable_misstatement: 325000000
+          aria: "5"
           sampling_data:
             "Index,Ref,Amount,Type\n1,R1,1000,Key
             Item\n2,R2,2000,Sample\n3,R3,3000,Sample\n"
@@ -660,7 +667,7 @@ scenarios:
           type_id: "REC: ws_type.id"
           sample_determination_id: "REC: sd.id"
 
-      - step: "Assert sampling_data / population_count came from the SD"
+      - step: "Assert sampling_data / population_count / sample_type came from the SD"
         action: "assert"
         target: "worksheet"
         asserts:
@@ -672,6 +679,31 @@ scenarios:
           population_count:
             type: "value"
             expected: 5
+          sample_type:
+            type: "value"
+            expected: "cvs"
+
+      - step:
+          "Assert materiality/risk parameters mirror the SD (same field values, not
+          re-entered)"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          performance_materiality:
+            type: "value"
+            expected: 500000000.0
+          risk_factor:
+            type: "value"
+            expected: 0.65
+          tolerable_misstatement:
+            type: "value"
+            expected: 325000000.0
+          aria:
+            type: "value"
+            expected: "5"
+          aria_coefficient:
+            type: "value"
+            expected: 1.64
 
   # ------------------------------------------------------------------
   # action_generate_examination_data - normal
@@ -776,48 +808,6 @@ scenarios:
         as_user: "base.user_admin"
         expect_error:
           type: "UserError"
-
-  # ------------------------------------------------------------------
-  # onchange_tolerable_misstatement
-  # ------------------------------------------------------------------
-  - name: "Worksheet b4f8e1a - Onchange tolerable_misstatement prefill"
-    steps:
-      - step: "Create worksheet b4f8e1a"
-        action: "create"
-        model: "general_audit_ws_b4f8e1a"
-        save_as: "worksheet"
-        as_user: "base.user_admin"
-        values:
-          general_audit_id: "REC: audit.id"
-          type_id: "REC: ws_type.id"
-
-      - step: "Open worksheet (materiality fields become editable)"
-        action: "call"
-        target: "worksheet"
-        method: "action_open"
-        as_user: "base.user_admin"
-
-      - step: "Invalidate cache after opening worksheet"
-        action: "call"
-        target: "worksheet"
-        method: "invalidate_cache"
-
-      - step: "Set performance_materiality and risk_factor via Form"
-        action: "form"
-        target: "worksheet"
-        as_user: "base.user_admin"
-        save: true
-        ops:
-          - set: {performance_materiality: 500000000}
-          - set: {risk_factor: 0.65}
-
-      - step: "Assert tolerable_misstatement was prefilled"
-        action: "assert"
-        target: "worksheet"
-        asserts:
-          tolerable_misstatement:
-            type: "value"
-            expected: 325000000.0
 
   # ------------------------------------------------------------------
   # onchange_examination_data - cleared when sample_determination_id changes
@@ -1013,7 +1003,16 @@ scenarios:
   # ------------------------------------------------------------------
   - name: "Worksheet b4f8e1a - Conclusion is no_misstatement for a perfect match"
     steps:
-      - step: "Create worksheet b4f8e1a"
+      - step: "Create Sample Determination worksheet to hold the parameters"
+        action: "create"
+        model: "general_audit_ws_a916660"
+        save_as: "sd"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_a916660.id"
+
+      - step: "Create worksheet b4f8e1a referencing the SD"
         action: "create"
         model: "general_audit_ws_b4f8e1a"
         save_as: "worksheet"
@@ -1021,6 +1020,7 @@ scenarios:
         values:
           general_audit_id: "REC: audit.id"
           type_id: "REC: ws_type.id"
+          sample_determination_id: "REC: sd.id"
 
       - step: "Open worksheet"
         action: "call"
@@ -1033,7 +1033,9 @@ scenarios:
         target: "worksheet"
         method: "invalidate_cache"
 
-      - step: "Set a comfortable tolerable_misstatement and matching amounts"
+      - step:
+          "Set a comfortable tolerable_misstatement and matching amounts
+          (tolerable_misstatement/aria write through to the linked SD)"
         action: "write"
         target: "worksheet"
         as_user: "base.user_admin"
@@ -1043,6 +1045,14 @@ scenarios:
           examination_data:
             "Seq,Item,Sample,Recorded Amount,Audited
             Amount\n1,1,S1,1000,1000\n2,2,S2,2000,2000\n"
+
+      - step: "Assert tolerable_misstatement was actually written through to the SD"
+        action: "assert"
+        target: "sd"
+        asserts:
+          tolerable_misstatement:
+            type: "value"
+            expected: 500000000.0
 
       - step: "Assert conclusion_text is no_misstatement"
         action: "assert"

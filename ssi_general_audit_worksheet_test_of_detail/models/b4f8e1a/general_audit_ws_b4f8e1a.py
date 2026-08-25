@@ -9,28 +9,6 @@ import math
 from odoo import _, api, fields, models
 from odoo.exceptions import UserError
 
-# Confidence coefficient per ARIA, identical to the "Table" sheet
-# (columns A/B/D, keyed by ARIA%) in both ``ToD_akun_260821.ods`` and the
-# Sample Determination worksheet's own source spreadsheets -- duplicated
-# here (rather than imported from ``general_audit_ws_a916660``) so this
-# module does not reach into another module's model implementation.
-ARIA_COEFFICIENT_TABLE = {
-    "0.5": 2.58,
-    "2.5": 1.96,
-    "5": 1.64,
-    "10": 1.28,
-    "12.5": 1.15,
-    "15": 1.04,
-    "20": 0.84,
-    "25": 0.67,
-    "30": 0.52,
-    "35": 0.39,
-    "40": 0.25,
-    "45": 0.13,
-    "50": 0.0,
-}
-ARIA_SELECTION = [(k, "{}%".format(k)) for k in ARIA_COEFFICIENT_TABLE]
-
 
 class GeneralAuditWsB4f8e1a(models.Model):
     """
@@ -44,6 +22,14 @@ class GeneralAuditWsB4f8e1a(models.Model):
     each, and the population misstatement projection, precision
     interval, confidence limits, and conclusion are derived
     automatically.
+
+    Materiality/risk parameters (``performance_materiality``,
+    ``risk_factor``, ``tolerable_misstatement``, ``aria``,
+    ``aria_coefficient``) and ``population_count``/``sample_type`` are
+    **not** re-entered here -- they are ``related`` mirrors of the
+    linked Sample Determination worksheet's own fields, kept read-only
+    so the two worksheets can never disagree on the same account's
+    figures.
     """
 
     _name = "general_audit_ws_b4f8e1a"
@@ -91,56 +77,70 @@ class GeneralAuditWsB4f8e1a(models.Model):
         help="Total population size, inherited from the referenced "
         "Sample Determination worksheet.",
     )
+    sample_type = fields.Selection(
+        string="Sample Type",
+        related="sample_determination_id.method_type",
+        store=True,
+        compute_sudo=True,
+        help="Sampling method used to select the items, inherited from "
+        "the referenced Sample Determination worksheet.",
+    )
     performance_materiality = fields.Monetary(
         string="Performance Materiality",
         currency_field="currency_id",
+        related="sample_determination_id.performance_materiality",
         readonly=True,
-        states={
-            "open": [("readonly", False)],
-        },
-        help="Performance materiality for this account. Used to derive "
-        "``Tolerable Misstatement`` (= Performance Materiality x Risk "
-        "Factor).",
+        store=True,
+        compute_sudo=True,
+        help="Performance materiality for this account, inherited from "
+        "the referenced Sample Determination worksheet -- edit it "
+        "there, not here, so both worksheets stay consistent.",
     )
     risk_factor = fields.Float(
         string="Risk Factor",
         digits=(3, 2),
+        related="sample_determination_id.risk_factor",
         readonly=True,
-        states={
-            "open": [("readonly", False)],
-        },
-        help="Combined audit risk factor, used to derive ``Tolerable "
-        "Misstatement``.",
+        store=True,
+        compute_sudo=True,
+        help="Combined audit risk factor, inherited from the "
+        "referenced Sample Determination worksheet -- edit it there, "
+        "not here, so both worksheets stay consistent.",
     )
     tolerable_misstatement = fields.Monetary(
         string="Tolerable Misstatement",
         currency_field="currency_id",
+        related="sample_determination_id.tolerable_misstatement",
         readonly=True,
-        states={
-            "open": [("readonly", False)],
-        },
+        store=True,
+        compute_sudo=True,
         help="Maximum monetary misstatement acceptable for this "
-        "account. Auto-fills as Performance Materiality x Risk Factor "
-        "when either changes, but can still be typed over directly.",
+        "account, inherited from the referenced Sample Determination "
+        "worksheet -- edit it there, not here, so both worksheets stay "
+        "consistent.",
     )
     aria = fields.Selection(
         string="ARIA (%)",
-        selection=ARIA_SELECTION,
+        related="sample_determination_id.aria",
         readonly=True,
-        states={
-            "open": [("readonly", False)],
-        },
-        help="Acceptable Risk of Incorrect Acceptance, used to look up "
-        "the confidence coefficient for the precision interval.",
+        store=True,
+        compute_sudo=True,
+        help="Acceptable Risk of Incorrect Acceptance, inherited from "
+        "the referenced Sample Determination worksheet -- only set "
+        "there for Classical Variable / Non-Statistical Sampling, so "
+        "it stays blank when the linked worksheet used Monetary Unit "
+        "Sampling.",
     )
     aria_coefficient = fields.Float(
         string="ARIA Coefficient",
-        compute="_compute_aria_coefficient",
+        related="sample_determination_id.aria_coefficient",
+        readonly=True,
         store=True,
         compute_sudo=True,
         digits=(12, 4),
         help="Confidence coefficient looked up from the reliability "
-        "table for the chosen ARIA.",
+        "table for the chosen ARIA, inherited from the referenced "
+        "Sample Determination worksheet.",
     )
     examination_data = fields.Text(
         string="Examination Data",
@@ -262,17 +262,6 @@ class GeneralAuditWsB4f8e1a(models.Model):
                     [("general_audit_id", "=", record.general_audit_id.id)]
                 ).ids
             record.allowed_sample_determination_ids = result
-
-    @api.depends("aria")
-    def _compute_aria_coefficient(self):
-        """Look up the confidence coefficient for the chosen ARIA.
-
-        :return: nothing; assigns ``aria_coefficient`` from
-            ``ARIA_COEFFICIENT_TABLE``, or ``0.0`` when ``aria`` is
-            unset.
-        """
-        for record in self:
-            record.aria_coefficient = ARIA_COEFFICIENT_TABLE.get(record.aria, 0.0)
 
     @api.depends("examination_data")
     def _compute_examination_totals(self):
@@ -439,11 +428,6 @@ class GeneralAuditWsB4f8e1a(models.Model):
             ):
                 result = "misstatement"
             record.conclusion_text = result
-
-    @api.onchange("performance_materiality", "risk_factor")
-    def onchange_tolerable_misstatement(self):
-        """Prefill Tolerable Misstatement as Performance Materiality x Risk Factor."""
-        self.tolerable_misstatement = self.performance_materiality * self.risk_factor
 
     @api.onchange("sample_determination_id")
     def onchange_examination_data(self):

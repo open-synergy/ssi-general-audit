@@ -61,20 +61,21 @@
                                     name="sample_determination_id"
                                     domain="[('id', 'in', allowed_sample_determination_ids)]"
                                 />
-                                <field name="population_count" readonly="1" />
-                                <field name="sample_count" readonly="1" />
+                                <field name="sample_type" />
+                                <field name="population_count" />
+                                <field name="sample_count" />
                             </group>
                             <group
                                 name="examination_setup_parameters"
                                 colspan="1"
                                 col="2"
-                                string="Difference Estimation Parameters"
+                                string="Difference Estimation Parameters (from Sample Determination)"
                             >
                                 <field name="performance_materiality" />
                                 <field name="risk_factor" />
                                 <field name="tolerable_misstatement" />
                                 <field name="aria" />
-                                <field name="aria_coefficient" readonly="1" />
+                                <field name="aria_coefficient" />
                             </group>
                         </group>
                         <button
