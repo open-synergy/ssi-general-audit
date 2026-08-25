@@ -24,8 +24,40 @@ msgid "# General Audit"
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_test_of_detail
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_test_of_detail.field_general_audit_ws_b4f8e1a__sample_determination_id
+msgid "# Sample Determination"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_test_of_detail
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_test_of_detail.field_general_audit_ws_b4f8e1a__worksheet_id
 msgid "# Worksheet"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_test_of_detail
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_test_of_detail.field_general_audit_ws_b4f8e1a__conclusion_text
+msgid ""
+"'Misstatement Detected' when the upper confidence limit exceeds Tolerable "
+"Misstatement, or the lower confidence limit is below its negative -- 'No "
+"Misstatement' otherwise."
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_test_of_detail
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_test_of_detail.field_general_audit_ws_b4f8e1a__aria
+msgid "ARIA (%)"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_test_of_detail
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_test_of_detail.field_general_audit_ws_b4f8e1a__aria_coefficient
+msgid "ARIA Coefficient"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_test_of_detail
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_test_of_detail.field_general_audit_ws_b4f8e1a__aria
+msgid ""
+"Acceptable Risk of Incorrect Acceptance, inherited from the referenced "
+"Sample Determination worksheet -- only set there for Classical Variable / "
+"Non-Statistical Sampling, so it stays blank when the linked worksheet used "
+"Monetary Unit Sampling."
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_test_of_detail
@@ -114,6 +146,11 @@ msgid "Allowed Policy Templates"
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_test_of_detail
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_test_of_detail.field_general_audit_ws_b4f8e1a__allowed_sample_determination_ids
+msgid "Allowed Sample Determination"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_test_of_detail
 #: model:ir.model.fields,help:ssi_general_audit_worksheet_test_of_detail.field_general_audit_ws_b4f8e1a__approval_template_id
 msgid "Approval Configuration"
 msgstr ""
@@ -164,6 +201,22 @@ msgstr ""
 #. module: ssi_general_audit_worksheet_test_of_detail
 #: model:ir.model.fields,help:ssi_general_audit_worksheet_test_of_detail.field_general_audit_ws_b4f8e1a__partner_id
 msgid "Audited client company."
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_test_of_detail
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_test_of_detail.field_general_audit_ws_b4f8e1a__average_difference
+msgid "Average Difference per Item"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_test_of_detail
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_test_of_detail.field_general_audit_ws_b4f8e1a__examination_data
+msgid ""
+"CSV table (Seq, Item, Sample, Recorded Amount, Audited Amount), one row per "
+"item examined. Seeded by 'Generate Examination Data' from the linked Sample "
+"Determination worksheet's sampling result; fill in Audited Amount for each "
+"row as the substantive test is performed. A blank or non-numeric Audited "
+"Amount is treated as a difference of 0 (not yet examined), matching "
+"``IFERROR(Recorded-Audited,0)`` in the reference spreadsheet."
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_test_of_detail
@@ -225,6 +278,14 @@ msgid ""
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_test_of_detail
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_test_of_detail.field_general_audit_ws_b4f8e1a__risk_factor
+msgid ""
+"Combined audit risk factor, inherited from the referenced Sample "
+"Determination worksheet -- edit it there, not here, so both worksheets stay "
+"consistent."
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_test_of_detail
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_test_of_detail.field_general_audit_ws_b4f8e1a__company_id
 #: model:res.groups,name:ssi_general_audit_worksheet_test_of_detail.general_audit_ws_b4f8e1a_company_group
 msgid "Company"
@@ -250,6 +311,21 @@ msgid ""
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_test_of_detail
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_test_of_detail.field_general_audit_ws_b4f8e1a__lower_confidence_limit
+msgid "Computed Lower Confidence Limit"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_test_of_detail
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_test_of_detail.field_general_audit_ws_b4f8e1a__computed_precision_interval
+msgid "Computed Precision Interval"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_test_of_detail
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_test_of_detail.field_general_audit_ws_b4f8e1a__upper_confidence_limit
+msgid "Computed Upper Confidence Limit"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_test_of_detail
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_test_of_detail.field_general_audit_ws_b4f8e1a__conclusion_id
 msgid "Conclusion"
 msgstr ""
@@ -262,6 +338,13 @@ msgstr ""
 #. module: ssi_general_audit_worksheet_test_of_detail
 #: model:ir.model.fields,help:ssi_general_audit_worksheet_test_of_detail.field_general_audit_ws_b4f8e1a__allowed_conclusion_ids
 msgid "Conclusions allowed for the selected worksheet type."
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_test_of_detail
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_test_of_detail.field_general_audit_ws_b4f8e1a__aria_coefficient
+msgid ""
+"Confidence coefficient looked up from the reliability table for the chosen "
+"ARIA, inherited from the referenced Sample Determination worksheet."
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_test_of_detail
@@ -303,6 +386,11 @@ msgid "Date when the worksheet was reviewed."
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_test_of_detail
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_test_of_detail.field_general_audit_ws_b4f8e1a__conclusion_text
+msgid "Difference Estimation Conclusion"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_test_of_detail
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_test_of_detail.field_general_audit_ws_b4f8e1a__display_name
 msgid "Display Name"
 msgstr ""
@@ -341,6 +429,12 @@ msgid "End date of the previous period."
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_test_of_detail
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_test_of_detail.field_general_audit_ws_b4f8e1a__examination_data
+#: model_terms:ir.ui.view,arch_db:ssi_general_audit_worksheet_test_of_detail.general_audit_ws_b4f8e1a_view_form
+msgid "Examination Data"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_test_of_detail
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_test_of_detail.field_general_audit_ws_b4f8e1a__message_follower_ids
 msgid "Followers"
 msgstr ""
@@ -363,6 +457,11 @@ msgstr ""
 #. module: ssi_general_audit_worksheet_test_of_detail
 #: model:ir.model.fields,help:ssi_general_audit_worksheet_test_of_detail.field_general_audit_ws_b4f8e1a__general_audit_id
 msgid "General Audit to which this worksheet belongs."
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_test_of_detail
+#: model_terms:ir.ui.view,arch_db:ssi_general_audit_worksheet_test_of_detail.general_audit_ws_b4f8e1a_view_form
+msgid "Generate Examination Data"
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_test_of_detail
@@ -389,6 +488,11 @@ msgstr ""
 #. module: ssi_general_audit_worksheet_test_of_detail
 #: model:ir.model.fields,help:ssi_general_audit_worksheet_test_of_detail.field_general_audit_ws_b4f8e1a__message_has_error
 msgid "If checked, some messages have a delivery error."
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_test_of_detail
+#: model_terms:ir.ui.view,arch_db:ssi_general_audit_worksheet_test_of_detail.general_audit_ws_b4f8e1a_view_form
+msgid "Input Variable"
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_test_of_detail
@@ -440,6 +544,14 @@ msgid ""
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_test_of_detail
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_test_of_detail.field_general_audit_ws_b4f8e1a__tolerable_misstatement
+msgid ""
+"Maximum monetary misstatement acceptable for this account, inherited from "
+"the referenced Sample Determination worksheet -- edit it there, not here, so"
+" both worksheets stay consistent."
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_test_of_detail
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_test_of_detail.field_general_audit_ws_b4f8e1a__message_has_error
 msgid "Message Delivery error"
 msgstr ""
@@ -447,6 +559,11 @@ msgstr ""
 #. module: ssi_general_audit_worksheet_test_of_detail
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_test_of_detail.field_general_audit_ws_b4f8e1a__message_ids
 msgid "Messages"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_test_of_detail
+#: model:ir.model.fields.selection,name:ssi_general_audit_worksheet_test_of_detail.selection__general_audit_ws_b4f8e1a__conclusion_text__misstatement
+msgid "Misstatement Detected"
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_test_of_detail
@@ -485,6 +602,19 @@ msgid "Next Approvals"
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_test_of_detail
+#: model:ir.model.fields.selection,name:ssi_general_audit_worksheet_test_of_detail.selection__general_audit_ws_b4f8e1a__conclusion_text__no_misstatement
+msgid "No Misstatement"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_test_of_detail
+#: code:addons/ssi_general_audit_worksheet_test_of_detail/models/b4f8e1a/general_audit_ws_b4f8e1a.py:0
+#, python-format
+msgid ""
+"No sampling data available. Please select a Sample Determination worksheet "
+"with a generated sample first."
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_test_of_detail
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_test_of_detail.field_general_audit_ws_b4f8e1a__note
 msgid "Note"
 msgstr ""
@@ -505,6 +635,11 @@ msgid "Number of errors"
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_test_of_detail
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_test_of_detail.field_general_audit_ws_b4f8e1a__sample_count
+msgid "Number of item rows in ``examination_data``."
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_test_of_detail
 #: model:ir.model.fields,help:ssi_general_audit_worksheet_test_of_detail.field_general_audit_ws_b4f8e1a__message_needaction_counter
 msgid "Number of messages which requires an action"
 msgstr ""
@@ -517,6 +652,16 @@ msgstr ""
 #. module: ssi_general_audit_worksheet_test_of_detail
 #: model:ir.model.fields,help:ssi_general_audit_worksheet_test_of_detail.field_general_audit_ws_b4f8e1a__message_unread_counter
 msgid "Number of unread messages"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_test_of_detail
+#: model_terms:ir.ui.view,arch_db:ssi_general_audit_worksheet_test_of_detail.general_audit_ws_b4f8e1a_view_form
+msgid ""
+"One row per item sampled by the linked Sample\n"
+"                            Determination worksheet. Fill in\n"
+"                            <code>Audited Amount</code> for each row as the\n"
+"                            substantive test is performed -- a blank row is\n"
+"                            treated as not yet examined (difference of 0)."
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_test_of_detail
@@ -541,8 +686,36 @@ msgid "Partner"
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_test_of_detail
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_test_of_detail.field_general_audit_ws_b4f8e1a__performance_materiality
+msgid "Performance Materiality"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_test_of_detail
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_test_of_detail.field_general_audit_ws_b4f8e1a__performance_materiality
+msgid ""
+"Performance materiality for this account, inherited from the referenced "
+"Sample Determination worksheet -- edit it there, not here, so both "
+"worksheets stay consistent."
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_test_of_detail
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_test_of_detail.field_general_audit_ws_b4f8e1a__policy_template_id
 msgid "Policy Template"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_test_of_detail
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_test_of_detail.field_general_audit_ws_b4f8e1a__population_count
+msgid "Population Count"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_test_of_detail
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_test_of_detail.field_general_audit_ws_b4f8e1a__population_difference_projection
+msgid "Population Difference Projection"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_test_of_detail
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_test_of_detail.field_general_audit_ws_b4f8e1a__population_standard_deviation
+msgid "Population Standard Deviation"
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_test_of_detail
@@ -563,6 +736,13 @@ msgstr ""
 #. module: ssi_general_audit_worksheet_test_of_detail
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_test_of_detail.field_general_audit_ws_b4f8e1a__previous_date_start
 msgid "Previous Start Date"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_test_of_detail
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_test_of_detail.field_general_audit_ws_b4f8e1a__sample_determination_id
+msgid ""
+"Reference to the Sample Determination worksheet whose sampling result is "
+"examined by this Test of Detail."
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_test_of_detail
@@ -610,6 +790,11 @@ msgid ""
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_test_of_detail
+#: model_terms:ir.ui.view,arch_db:ssi_general_audit_worksheet_test_of_detail.general_audit_ws_b4f8e1a_view_form
+msgid "Result Analysis"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_test_of_detail
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_test_of_detail.field_general_audit_ws_b4f8e1a__review_date
 msgid "Review Date"
 msgstr ""
@@ -630,8 +815,64 @@ msgid "Reviewer"
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_test_of_detail
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_test_of_detail.field_general_audit_ws_b4f8e1a__risk_factor
+msgid "Risk Factor"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_test_of_detail
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_test_of_detail.field_general_audit_ws_b4f8e1a__sample_count
+msgid "Sample Count"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_test_of_detail
+#: model_terms:ir.ui.view,arch_db:ssi_general_audit_worksheet_test_of_detail.general_audit_ws_b4f8e1a_view_form
+msgid "Sample Determination"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_test_of_detail
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_test_of_detail.field_general_audit_ws_b4f8e1a__allowed_sample_determination_ids
+msgid ""
+"Sample Determination worksheets belonging to the same general audit "
+"engagement as this worksheet."
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_test_of_detail
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_test_of_detail.field_general_audit_ws_b4f8e1a__sampling_data
+msgid "Sampling Data"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_test_of_detail
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_test_of_detail.field_general_audit_ws_b4f8e1a__sample_type
+msgid "Sampling Method"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_test_of_detail
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_test_of_detail.field_general_audit_ws_b4f8e1a__sampling_data
+msgid ""
+"Sampling data inherited from the referenced Sample Determination worksheet "
+"-- the source of the Item/Sample/Recorded Amount columns in 'Generate "
+"Examination Data'."
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_test_of_detail
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_test_of_detail.field_general_audit_ws_b4f8e1a__sample_type
+msgid ""
+"Sampling method used to select the items, inherited from the referenced "
+"Sample Determination worksheet."
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_test_of_detail
 #: model:ir.model.fields,help:ssi_general_audit_worksheet_test_of_detail.field_general_audit_ws_b4f8e1a__conclusion_id
 msgid "Selected conclusion summarizing the worksheet's assessment."
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_test_of_detail
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_test_of_detail.field_general_audit_ws_b4f8e1a__population_standard_deviation
+msgid ""
+"Standard deviation of the sample differences, replicating "
+"``ToD_akun_260821.ods`` cell ``D223`` literally (including its ``/ "
+"sample_count - 1`` grouping, not the textbook ``/ (sample_count - 1)`` "
+"Bessel correction)."
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_test_of_detail
@@ -672,6 +913,16 @@ msgid ""
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_test_of_detail
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_test_of_detail.field_general_audit_ws_b4f8e1a__sum_difference
+msgid "Sum of Difference"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_test_of_detail
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_test_of_detail.field_general_audit_ws_b4f8e1a__sum_difference_squared
+msgid "Sum of Difference Squared"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_test_of_detail
 #: model:general_audit_worksheet_type,name:ssi_general_audit_worksheet_test_of_detail.worksheet_type_b4f8e1a
 #: model:ir.actions.act_window,name:ssi_general_audit_worksheet_test_of_detail.general_audit_ws_b4f8e1a_action
 #: model:ir.ui.menu,name:ssi_general_audit_worksheet_test_of_detail.general_audit_ws_b4f8e1a_menu
@@ -686,6 +937,13 @@ msgid "Test of Detail (b4f8e1a)"
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_test_of_detail
+#: code:addons/ssi_general_audit_worksheet_test_of_detail/models/b4f8e1a/general_audit_ws_b4f8e1a.py:0
+#, python-format
+msgid ""
+"The linked Sample Determination worksheet has no monetary column configured."
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_test_of_detail
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_test_of_detail.field_general_audit_ws_b4f8e1a__title
 msgid "Title"
 msgstr ""
@@ -693,6 +951,32 @@ msgstr ""
 #. module: ssi_general_audit_worksheet_test_of_detail
 #: model:ir.model.fields,help:ssi_general_audit_worksheet_test_of_detail.field_general_audit_ws_b4f8e1a__title
 msgid "Title of the General Audit engagement."
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_test_of_detail
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_test_of_detail.field_general_audit_ws_b4f8e1a__tolerable_misstatement
+msgid "Tolerable Misstatement"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_test_of_detail
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_test_of_detail.field_general_audit_ws_b4f8e1a__sum_difference
+msgid ""
+"Total of (Recorded Amount - Audited Amount) across every row in "
+"``examination_data``."
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_test_of_detail
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_test_of_detail.field_general_audit_ws_b4f8e1a__sum_difference_squared
+msgid ""
+"Total of (Recorded Amount - Audited Amount)^2 across every row in "
+"``examination_data``."
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_test_of_detail
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_test_of_detail.field_general_audit_ws_b4f8e1a__population_count
+msgid ""
+"Total population size, inherited from the referenced Sample Determination "
+"worksheet."
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_test_of_detail
@@ -784,4 +1068,33 @@ msgstr ""
 #. module: ssi_general_audit_worksheet_test_of_detail
 #: model:ir.model.fields,help:ssi_general_audit_worksheet_test_of_detail.field_general_audit_ws_b4f8e1a__type_id
 msgid "Worksheet type that determines behavior, items, and conclusions."
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_test_of_detail
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_test_of_detail.field_general_audit_ws_b4f8e1a__population_difference_projection
+msgid ""
+"``average_difference`` extrapolated to the whole population: "
+"``average_difference x population_count``."
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_test_of_detail
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_test_of_detail.field_general_audit_ws_b4f8e1a__computed_precision_interval
+msgid ""
+"``population_count x aria_coefficient x (population_standard_deviation / "
+"SQRT(sample_count))``."
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_test_of_detail
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_test_of_detail.field_general_audit_ws_b4f8e1a__upper_confidence_limit
+msgid "``population_difference_projection + computed_precision_interval``."
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_test_of_detail
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_test_of_detail.field_general_audit_ws_b4f8e1a__lower_confidence_limit
+msgid "``population_difference_projection - computed_precision_interval``."
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_test_of_detail
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_test_of_detail.field_general_audit_ws_b4f8e1a__average_difference
+msgid "``sum_difference / sample_count``."
 msgstr ""
