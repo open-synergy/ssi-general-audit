@@ -28,7 +28,12 @@
             ref="ssi_general_audit.general_audit_worksheet_mixin_view_tree"
         />
         <field name="arch" type="xml">
-            <data />
+            <data>
+                <xpath expr="//field[@name='general_audit_id']" position="after">
+                    <field name="sample_determination_id" optional="show" />
+                    <field name="sample_type" optional="show" />
+                </xpath>
+            </data>
         </field>
     </record>
 
