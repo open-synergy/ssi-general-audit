@@ -1309,9 +1309,9 @@ scenarios:
         values:
           sampling_process_data: |
             Index,ref,amount,note,Type,Chose?
-            0,REF001,1000,Note 1,Candidate,FALSE
-            1,REF002,2000,Note 2,Candidate,FALSE
-            2,REF003,3000,Note 3,Candidate,TRUE
+            1,REF001,1000,Note 1,Candidate,FALSE
+            2,REF002,2000,Note 2,Candidate,FALSE
+            3,REF003,3000,Note 3,Candidate,TRUE
 
       - step: "Assert sampling_data promoted REF003 to Sample"
         action: "assert"
@@ -1363,9 +1363,9 @@ scenarios:
         values:
           sampling_process_data: |
             Index,ref,amount,note,Type,Chose?
-            0,REF001,1000,Note 1,Candidate,FALSE
-            1,REF002,2000,Note 2,Candidate,TRUE
-            2,REF003,3000,Note 3,Candidate,TRUE
+            1,REF001,1000,Note 1,Candidate,FALSE
+            2,REF002,2000,Note 2,Candidate,TRUE
+            3,REF003,3000,Note 3,Candidate,TRUE
         expect_error:
           type: "UserError"
 
@@ -1406,9 +1406,9 @@ scenarios:
         values:
           sampling_process_data: |
             Index,ref,amount,note,Type,Chose?
-            0,REF001,1000,Note 1,Candidate,TRUE
-            1,REF002,2000,Note 2,Candidate,FALSE
-            2,REF003,3000,Note 3,Candidate,FALSE
+            1,REF001,1000,Note 1,Candidate,TRUE
+            2,REF002,2000,Note 2,Candidate,FALSE
+            3,REF003,3000,Note 3,Candidate,FALSE
 
       - step: "Narrow the Sampling Process view to REF002 only"
         action: "write"
@@ -1433,7 +1433,7 @@ scenarios:
         values:
           sampling_process_data: |
             Index,ref,amount,note,Type,Chose?
-            1,REF002,2000,Note 2,Candidate,TRUE
+            2,REF002,2000,Note 2,Candidate,TRUE
 
       - step:
           "Assert sampling_data kept REF001 Sample (chosen outside this filtered write)"
