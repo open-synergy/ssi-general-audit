@@ -28,7 +28,12 @@
             ref="ssi_general_audit.general_audit_worksheet_mixin_view_tree"
         />
         <field name="arch" type="xml">
-            <data />
+            <data>
+                <xpath expr="//field[@name='general_audit_id']" position="after">
+                    <field name="sample_determination_id" optional="show" />
+                    <field name="sample_type" optional="show" />
+                </xpath>
+            </data>
         </field>
     </record>
 
@@ -43,7 +48,78 @@
             ref="ssi_general_audit.general_audit_worksheet_mixin_view_form"
         />
         <field name="arch" type="xml">
-            <data />
+            <data>
+                <xpath expr="//page[1]" position="before">
+                    <page name="examination_data" string="Examination Data">
+                        <group name="examination_setup" colspan="4" col="2">
+                            <group
+                                name="examination_setup_source"
+                                colspan="1"
+                                col="2"
+                                string="Sample Determination"
+                            >
+                                <field
+                                    name="allowed_sample_determination_ids"
+                                    invisible="1"
+                                />
+                                <field
+                                    name="sample_determination_id"
+                                    domain="[('id', 'in', allowed_sample_determination_ids)]"
+                                />
+                                <field name="sample_type" />
+                                <field name="population_count" />
+                                <field name="sample_count" />
+                            </group>
+                            <group
+                                name="examination_setup_parameters"
+                                colspan="1"
+                                col="2"
+                                string="Input Variable"
+                            >
+                                <field name="performance_materiality" />
+                                <field name="risk_factor" />
+                                <field name="tolerable_misstatement" />
+                                <field name="aria" />
+                                <field name="aria_coefficient" />
+                            </group>
+                        </group>
+                        <button
+                            name="action_generate_examination_data"
+                            type="object"
+                            string="Generate Examination Data"
+                            class="oe_highlight"
+                            attrs="{'invisible': [('state', '!=', 'open')]}"
+                        />
+                        <div class="alert alert-info" role="alert">
+                            One row per item sampled by the linked Sample
+                            Determination worksheet. Fill in
+                            <code>Audited Amount</code> for each row as the
+                            substantive test is performed -- a blank row is
+                            treated as not yet examined (difference of 0).
+                        </div>
+                        <field
+                            name="examination_data"
+                            nolabel="1"
+                            widget="csv_table"
+                            options="{'default_mode': 'table'}"
+                        />
+                    </page>
+                    <page name="result_analysis" string="Result Analysis">
+                        <group name="result_analysis_group" col="2">
+                            <field name="average_difference" readonly="1" />
+                            <field
+                                name="population_difference_projection"
+                                readonly="1"
+                            />
+                            <field name="population_standard_deviation" readonly="1" />
+                            <field name="computed_precision_interval" readonly="1" />
+                            <field name="upper_confidence_limit" readonly="1" />
+                            <field name="lower_confidence_limit" readonly="1" />
+                            <field name="conclusion_text" readonly="1" />
+                        </group>
+                    </page>
+                </xpath>
+            </data>
         </field>
     </record>
 
