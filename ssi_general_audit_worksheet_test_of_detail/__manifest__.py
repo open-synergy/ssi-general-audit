@@ -12,6 +12,8 @@
     "depends": [
         "ssi_general_audit",
         "ssi_general_audit_worksheet_lead_schedule",
+        "ssi_general_audit_worksheet_sample_determination",
+        "ssi_web_widget_csv_table",
     ],
     "data": [
         "security/ir_module_category/general_audit_ws_b4f8e1a.xml",
