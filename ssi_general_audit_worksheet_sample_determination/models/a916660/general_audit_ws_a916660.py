@@ -982,7 +982,12 @@ class GeneralAuditWsA916660(models.Model):
             trailing ``"Chose?"`` column for Non-Statistical Sampling, or
             ``"From", "Up To"`` for Monetary Unit Sampling) and ``items``
             is a list of ``{"index", "cells", "amount"}`` dicts, one per
-            data row.
+            data row. ``index`` is 1-based (matches the row's position in
+            the source data, header excluded), consistent with the
+            row-numbering convention used by the other worksheet types
+            (e.g. ``general_audit_ws_e3f4a5b``) -- per HT/26/000687 (8th
+            revision, 25 Aug 2026), a 0-based index made ``sampling_data``
+            off by one against the source data.
         """
         source_header = all_rows[0]
         source_data = all_rows[1:]
@@ -997,7 +1002,7 @@ class GeneralAuditWsA916660(models.Model):
         elif self.method_type == "mus":
             output_header = output_header + ["From", "Up To"]
         items = []
-        for idx, row in enumerate(source_data):
+        for idx, row in enumerate(source_data, start=1):
             selected = [
                 row[col - 1] if len(row) >= col else "" for col in unique_columns
             ]
@@ -1147,64 +1152,43 @@ class GeneralAuditWsA916660(models.Model):
     def _perform_simple_random_sample(self, items, key_count, total_planned):
         """Select a random sample from the pool for Classical Variable Sampling.
 
-        Faithfully replicates ``SD_akun_CVS_260821.ods`` (sheet ``Data``,
-        columns ``Q18:V1017``) rather than a plain ``random.sample`` draw,
-        per HT/26/000687: walks key items (amount-descending, matching
-        ``Data!J18:N1017``'s "Direct Examination" rows) followed by the
-        sample pool in its *original* input order (matching "Sample
-        Examination" rows -- verified the same way as
-        ``_perform_mus_sampling``'s walk order). Key items are always
-        accepted (``Data!S_n = IF(Q_n<U$11, K_n, ...)``); each pool item
-        independently draws ``RANDBETWEEN(key_count+1, population_count)``
-        (``Data!R_n``) and is accepted only if that draw falls strictly
-        between ``key_count`` and ``total_planned`` (``Data!S_n``'s other
-        branch) -- unlike MUS, nothing here is weighted by amount, so
-        acceptance is a per-item coin flip, not a systematic walk. A
-        running hit counter capped at ``total_planned`` (``Data!AA18:AA1017``
-        against ``$U$13``, matching ``_perform_mus_sampling``'s cap) stops
-        accepting once the plan is filled -- but because each row's draw
-        is independent, running out of pool rows before enough draws land
-        in the acceptance window is possible (unlike MUS's amount-driven
-        walk), so "Realized to sampling" can fall short of the plan for a
-        small enough pool. That behaviour is inherited as-is from the
-        source spreadsheet.
+        Per HT/26/000687 (9th revision, 25 Aug 2026): draws exactly
+        ``total_planned - key_count`` items from the pool via
+        ``random.sample`` (without replacement), instead of the earlier
+        per-item independent ``RANDBETWEEN`` acceptance-window draw
+        ported from ``SD_akun_CVS_260821.ods``. That spreadsheet-faithful
+        approach could let "Realized to sampling" fall short of "Total
+        Plan Examination" for an ordinary pool -- a MUS-style variance
+        that has no reason to exist here: CVS draws are not
+        amount-weighted, so filling the plan is always possible as long
+        as the pool has enough rows, unlike MUS's amount-driven walk.
+        Key items are always accepted and never enter the draw.
 
         :param items: list of ``{"index", "cells", "amount"}`` dicts, as
             produced by ``_build_items_from_csv``.
         :param key_count: number of largest-amount items to treat as key
-            items; always accepted, consuming the hit cap like the source
-            sheet, but never added to the returned set.
+            items; always accepted, but never added to the returned set.
         :param total_planned: the combined key+sample target (matches
             ``total_plan_examination``, i.e. ``Data!S14``/``S15`` -- NOT
             the pool-only ``computed_sample_size``).
         :return: a ``(sorted_by_amount, selected_indices)`` tuple, in the
             same shape as ``_perform_mus_sampling``'s return value. Also
-            sets ``self.realized_to_sampling`` to the total hit count.
+            sets ``self.realized_to_sampling`` to ``key_count`` plus the
+            number of pool items actually drawn (short of
+            ``total_planned`` only when the pool itself is smaller than
+            the requested sample size).
         """
         self.ensure_one()
         sorted_by_amount = sorted(items, key=lambda x: x["amount"], reverse=True)
         key_items_desc = sorted_by_amount[:key_count]
         key_item_indices = {item["index"] for item in key_items_desc}
-        walk_sequence = key_items_desc + [
-            item for item in items if item["index"] not in key_item_indices
-        ]
-        population_count = len(items)
+        pool = [item for item in items if item["index"] not in key_item_indices]
 
-        selected_indices = set()
-        hit_count = 0
-        for position, item in enumerate(walk_sequence, start=1):
-            if position <= key_count:
-                crossed = True
-            elif population_count >= key_count + 1:
-                draw = random.randint(key_count + 1, population_count)
-                crossed = key_count < draw < total_planned
-            else:
-                crossed = False
-            if crossed and hit_count < total_planned:
-                hit_count += 1
-                if item["index"] not in key_item_indices:
-                    selected_indices.add(item["index"])
-        self.realized_to_sampling = hit_count
+        sample_size = max(0, min(total_planned - key_count, len(pool)))
+        selected_items = random.sample(pool, sample_size) if sample_size else []
+        selected_indices = {item["index"] for item in selected_items}
+
+        self.realized_to_sampling = key_count + len(selected_indices)
         return sorted_by_amount, selected_indices
 
     def _perform_nss_candidate_list(self, items, key_count):

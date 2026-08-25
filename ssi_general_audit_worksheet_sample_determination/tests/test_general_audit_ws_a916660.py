@@ -361,21 +361,20 @@ class TestGeneralAuditWSa916660(YamlTransactionCase):
             )
             self.assertLessEqual(len(selected_indices) + key_count, total_planned)
 
-    def test_cvs_sampling_never_exceeds_total_planned_and_keys_excluded(self):
-        """Pure Python -- HT/26/000687 (5th revision): faithfully replicate
-        ``SD_akun_CVS_260821.ods`` sheet ``Data``, columns ``Q18:V1017``
-        (``RANDBETWEEN`` per pool row + running cap), not a plain
-        ``random.sample`` draw.
+    def test_cvs_sampling_draws_exactly_the_planned_pool_size(self):
+        """Pure Python -- trigger P1 (L-01: ``_perform_simple_random_sample``
+        is a private helper with no ``action_*`` wrapper, so its return
+        value can't be captured via ``action: call``) and P11 (L-12: no
+        loop in YAML for the 50-trial randomness check).
 
-        Each pool row independently draws ``RANDBETWEEN(key_count+1,
-        population_count)`` and is accepted only if it lands strictly
-        inside ``(key_count, total_planned)`` -- an i.i.d. Bernoulli trial
-        per row, not a deterministic "pick exactly N" draw, so run many
-        trials to check the invariant holds regardless of which rows
-        happen to land inside the window: the running cap
-        (``total_planned``) must never let ``key_count`` + selected pool
-        items exceed the plan, and key item indices must never appear in
-        the returned (pool-only) selected set.
+        HT/26/000687 (9th revision, 25 Aug 2026): CVS must draw exactly
+        ``total_planned - key_count`` pool rows via ``random.sample``, not
+        the earlier per-row independent ``RANDBETWEEN`` acceptance-window
+        draw (which could leave "Realized to sampling" short of "Total
+        Plan Examination" even with a plentiful pool) -- run many trials
+        to check the count is always exact regardless of which rows
+        happen to be drawn, and that key item indices never appear in the
+        returned (pool-only) selected set.
         """
         _admin, worksheet, _gl, _subledger = self._create_worksheet_fixture()
 
@@ -395,13 +394,37 @@ class TestGeneralAuditWSa916660(YamlTransactionCase):
             _sorted_items, selected_indices = worksheet._perform_simple_random_sample(
                 items, key_count, total_planned
             )
-            self.assertLessEqual(len(selected_indices) + key_count, total_planned)
+            self.assertEqual(len(selected_indices), total_planned - key_count)
             self.assertTrue(selected_indices.isdisjoint(key_indices))
-            self.assertLessEqual(
-                worksheet.realized_to_sampling,
-                total_planned,
+            self.assertEqual(
+                worksheet.realized_to_sampling, key_count + len(selected_indices)
             )
-            self.assertGreaterEqual(worksheet.realized_to_sampling, key_count)
+
+    def test_cvs_sampling_falls_short_only_when_pool_is_too_small(self):
+        """Pure Python -- trigger P1 (L-01: ``_perform_simple_random_sample``
+        is a private helper with no ``action_*`` wrapper, so its return
+        value can't be captured via ``action: call``).
+
+        HT/26/000687 (9th revision, 25 Aug 2026): when the pool has fewer
+        rows than the requested sample size, drawing exactly
+        ``total_planned - key_count`` rows is impossible, so the draw is
+        capped at the pool size and "Realized to sampling" falls short --
+        the only case where a CVS variance is expected.
+        """
+        _admin, worksheet, _gl, _subledger = self._create_worksheet_fixture()
+
+        key_count = 1
+        total_planned = 10
+        items = [
+            {"index": i, "cells": [str(i)], "amount": float(10 - i)} for i in range(4)
+        ]
+
+        _sorted_items, selected_indices = worksheet._perform_simple_random_sample(
+            items, key_count, total_planned
+        )
+
+        self.assertEqual(len(selected_indices), len(items) - key_count)
+        self.assertEqual(worksheet.realized_to_sampling, len(items))
 
     def test_sampling_process_data_excludes_key_items(self):
         """HT/26/000687: the "Sampling Process" tab (NSS) must only show
