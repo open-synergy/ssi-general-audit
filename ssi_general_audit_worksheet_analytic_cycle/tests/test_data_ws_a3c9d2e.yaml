@@ -222,13 +222,76 @@ scenarios:
           code: "/"
           type_id: "REC: ws_type.id"
 
-      - step: "Fill required conclusion fields before confirm"
+      - step: "Create client account group for Standard Account"
+        action: "create"
+        model: "client_account_group"
+        save_as: "account_group"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Account Group - a3c9d2e"
+          code: "/"
+          sequence: 1
+          normal_balance: "dr"
+
+      - step: "Create client account type for Standard Account"
+        action: "create"
+        model: "client_account_type"
+        save_as: "account_type"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Account Type - a3c9d2e"
+          code: "/"
+          group_id: "REC: account_group.id"
+          sequence: 1
+          normal_balance: "dr"
+
+      - step: "Create business cycle for this scenario"
+        action: "create"
+        model: "client_business_process"
+        save_as: "business_cycle"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Business Cycle - a3c9d2e"
+          code: "/"
+
+      - step: "Get a checklist option set for the category master"
+        action: "ref"
+        xml_id: "ssi_general_audit.checklist_option_set_1"
+        save_as: "option_set"
+
+      - step: "Create a category master for this business cycle"
+        action: "create"
+        model: "general_audit_ws_a3c9d2e.item"
+        save_as: "category"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Category - a3c9d2e"
+          code: "/"
+          business_cycle_id: "REC: business_cycle.id"
+          option_set_id: "REC: option_set.id"
+
+      - step:
+          "Fill required conclusion, cycle and Standard Account fields before confirm"
         action: "write"
         target: "worksheet"
         as_user: "base.user_admin"
         values:
           conclusion_id: "REC: conclusion.id"
           conclusion: "Analytical procedures over the cycle raised no exception."
+          business_cycle_id: "REC: business_cycle.id"
+          related_account_type_ids:
+            - - 6
+              - 0
+              - - "REC: account_type.id"
+
+      - step: "Add a checklist category line before confirm"
+        action: "create"
+        model: "general_audit_ws_a3c9d2e.checklist"
+        save_as: "checklist_line"
+        as_user: "base.user_admin"
+        values:
+          worksheet_id: "REC: worksheet.id"
+          item_id: "REC: category.id"
 
       - step: "Confirm worksheet"
         action: "call"

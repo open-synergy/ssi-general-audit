@@ -3,6 +3,17 @@
      Copyright 2026 PT. Simetri Sinergi Indonesia
      License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl). -->
 <odoo>
+    <record id="general_audit_ws_a3c9d2e_item_group" model="res.groups">
+        <field name="name">Analytical Procedures – Cycle Category</field>
+        <field
+            name="category_id"
+            ref="ssi_accountant.accountant_configurator_module_category"
+        />
+        <field
+            name="users"
+            eval="[(4, ref('base.user_root')), (4, ref('base.user_admin'))]"
+        />
+    </record>
     <record id="general_audit_ws_a3c9d2e_viewer_group" model="res.groups">
         <field name="name">Viewer</field>
         <field
