@@ -332,6 +332,130 @@ scenarios:
             expected: "done"
 
   # ------------------------------------------------------------------
+  # general_audit_ws_a3c9d2e - result propagation to standard_detail
+  # (BE #279): result is now the sole source of
+  # standard_detail_ids.analytical_procedures_cycle_result, replacing
+  # the old conclusion_id -> XML ID matching.
+  # ------------------------------------------------------------------
+  - name: "Worksheet a3c9d2e - result propagation to standard detail"
+    steps:
+      - step: "Create client account group for propagation scenario"
+        action: "create"
+        model: "client_account_group"
+        save_as: "prop_account_group"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Account Group - a3c9d2e result propagation"
+          code: "/"
+          sequence: 1
+          normal_balance: "dr"
+
+      - step: "Create client account type for propagation scenario"
+        action: "create"
+        model: "client_account_type"
+        save_as: "prop_account_type"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Account Type - a3c9d2e result propagation"
+          code: "/"
+          group_id: "REC: prop_account_group.id"
+          sequence: 1
+          normal_balance: "dr"
+
+      - step: "Create business cycle used by the unrelated write later"
+        action: "create"
+        model: "client_business_process"
+        save_as: "prop_business_cycle"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Business Cycle - a3c9d2e result propagation"
+          code: "/"
+
+      - step: "Add matching standard detail to the audit"
+        action: "create"
+        model: "general_audit.standard_detail"
+        save_as: "prop_standard_detail"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: prop_account_type.id"
+
+      - step: "Create worksheet a3c9d2e for propagation scenario"
+        action: "create"
+        model: "general_audit_ws_a3c9d2e"
+        save_as: "prop_worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+
+      - step: "Set matching related_account_type_ids and result=high on the worksheet"
+        action: "write"
+        target: "prop_worksheet"
+        as_user: "base.user_admin"
+        values:
+          related_account_type_ids:
+            - - 6
+              - 0
+              - - "REC: prop_account_type.id"
+          result: "high"
+
+      - step: "Invalidate cache after setting result=high"
+        action: "call"
+        target: "prop_standard_detail"
+        method: "invalidate_cache"
+
+      - step: "Assert standard detail result is high"
+        action: "assert"
+        target: "prop_standard_detail"
+        asserts:
+          analytical_procedures_cycle_result:
+            type: "value"
+            expected: "high"
+
+      - step: "Change result from high to moderate on the same worksheet"
+        action: "write"
+        target: "prop_worksheet"
+        as_user: "base.user_admin"
+        values:
+          result: "moderate"
+
+      - step: "Invalidate cache after setting result=moderate"
+        action: "call"
+        target: "prop_standard_detail"
+        method: "invalidate_cache"
+
+      - step: "Assert standard detail result re-propagated to moderate"
+        action: "assert"
+        target: "prop_standard_detail"
+        asserts:
+          analytical_procedures_cycle_result:
+            type: "value"
+            expected: "moderate"
+
+      - step:
+          "Write an unrelated field (business_cycle_id) without touching
+          result/related_account_type_ids"
+        action: "write"
+        target: "prop_worksheet"
+        as_user: "base.user_admin"
+        values:
+          business_cycle_id: "REC: prop_business_cycle.id"
+
+      - step: "Invalidate cache after writing unrelated field"
+        action: "call"
+        target: "prop_standard_detail"
+        method: "invalidate_cache"
+
+      - step: "Assert standard detail result is NOT reset by the unrelated write"
+        action: "assert"
+        target: "prop_standard_detail"
+        asserts:
+          analytical_procedures_cycle_result:
+            type: "value"
+            expected: "moderate"
+
+  # ------------------------------------------------------------------
   # general_audit_ws_a3c9d2e - Confirm without conclusion fields is rejected
   # ------------------------------------------------------------------
   - name: "Worksheet a3c9d2e - Confirm without conclusion fields is rejected"

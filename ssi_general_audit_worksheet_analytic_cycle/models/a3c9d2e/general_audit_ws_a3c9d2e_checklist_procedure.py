@@ -51,6 +51,18 @@ class GeneralAuditWsA3c9d2eChecklistProcedure(models.Model):
     )
 
     def name_get(self):
-        """Display the selected procedure item's name (e.g. for the
-        category tree's ``many2many_tags`` summary)."""
-        return [(r.id, r.procedure_item_id.display_name) for r in self]
+        """Display the procedure item's name, with its own result
+        appended when set (e.g. for the category tree's
+        ``many2many_tags`` summary, such as "Trend Analysis (High)").
+
+        :return: list of ``(id, display_name)`` tuples.
+        :rtype: list
+        """
+        result_labels = dict(self._fields["result"].selection)
+        names = []
+        for record in self:
+            name = record.procedure_item_id.display_name
+            if record.result:
+                name = "%s (%s)" % (name, result_labels[record.result])
+            names.append((record.id, name))
+        return names

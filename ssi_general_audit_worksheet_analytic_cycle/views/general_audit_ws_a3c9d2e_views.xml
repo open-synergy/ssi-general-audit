@@ -44,12 +44,18 @@
         />
         <field name="arch" type="xml">
             <data>
-                <xpath expr="//field[@name='partner_id']" position="after">
-                    <field name="business_cycle_id" />
-                    <field name="related_account_type_ids" widget="many2many_tags" />
+                <xpath expr="//field[@name='conclusion_id']" position="before">
+                    <field name="result" />
                 </xpath>
                 <xpath expr="//page[@name='note']" position="before">
                     <page name="checklist" string="Checklist">
+                        <group name="checklist_1" colspan="4" col="2">
+                            <field name="business_cycle_id" />
+                            <field
+                                name="related_account_type_ids"
+                                widget="many2many_tags"
+                            />
+                        </group>
                         <field name="checklist_ids">
                             <tree>
                                 <field name="sequence" widget="handle" invisible="1" />
@@ -94,6 +100,29 @@
                                         </form>
                                     </field>
                                 </sheet>
+                            </form>
+                        </field>
+                    </page>
+                    <page
+                        name="checklist_conclusion"
+                        string="Analytical Procedure Cycle Conclusion"
+                    >
+                        <field name="checklist_ids" readonly="1">
+                            <tree create="false" edit="false" delete="false">
+                                <field
+                                    name="item_id"
+                                    style="white-space: normal; word-wrap: break-word; overflow-wrap: break-word;"
+                                />
+                                <field name="procedure_ids" widget="many2many_tags" />
+                            </tree>
+                            <form>
+                                <group>
+                                    <field name="item_id" />
+                                    <field
+                                        name="procedure_ids"
+                                        widget="many2many_tags"
+                                    />
+                                </group>
                             </form>
                         </field>
                     </page>
