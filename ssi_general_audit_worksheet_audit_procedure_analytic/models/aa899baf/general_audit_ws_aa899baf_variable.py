@@ -44,6 +44,7 @@ class GeneralAuditWSaa899bafVariable(models.Model):
         selection=[
             ("gl", "General Ledger"),
             ("subledger", "Subledger"),
+            ("sample_determination", "Sample Determination"),
         ],
         required=True,
         help="Determines whether to use General Ledger or Subledger data as population.",
@@ -73,6 +74,19 @@ class GeneralAuditWSaa899bafVariable(models.Model):
         string="Subledger",
         required=False,
         help="Subledger worksheet used as data source for this variable.",
+    )
+    allowed_sample_determination_ids = fields.Many2many(
+        comodel_name="general_audit_ws_a916660",
+        string="Allowed Sample Determinations",
+        compute="_compute_allowed_sample_determination_ids",
+        store=False,
+        compute_sudo=True,
+    )
+    sample_determination_id = fields.Many2one(
+        comodel_name="general_audit_ws_a916660",
+        string="Sample Determination",
+        required=False,
+        help="Sample Determination worksheet used as data source for " "this variable.",
     )
     data_title = fields.Char(
         string="Data Title",
@@ -127,6 +141,7 @@ class GeneralAuditWSaa899bafVariable(models.Model):
         "data_mode",
         "general_ledger_id",
         "subledger_id",
+        "sample_determination_id",
     )
     def _compute_data_title(self):
         for record in self:
@@ -134,6 +149,11 @@ class GeneralAuditWSaa899bafVariable(models.Model):
                 record.data_title = record.general_ledger_id.title
             elif record.data_mode == "subledger" and record.subledger_id:
                 record.data_title = record.subledger_id.title
+            elif (
+                record.data_mode == "sample_determination"
+                and record.sample_determination_id
+            ):
+                record.data_title = record.sample_determination_id.title
             else:
                 record.data_title = False
 
@@ -174,9 +194,35 @@ class GeneralAuditWSaa899bafVariable(models.Model):
                 record.allowed_subledger_ids = SL.search(criteria)
 
     @api.depends(
+        "worksheet_id",
+        "worksheet_id.general_audit_id",
+    )
+    def _compute_allowed_sample_determination_ids(self):
+        """Restrict the Sample Determination picker to the current audit.
+
+        :return: sets ``allowed_sample_determination_ids`` to the
+            ``general_audit_ws_a916660`` records sharing this variable's
+            worksheet's ``general_audit_id``, or an empty recordset when
+            unset.
+        """
+        SD = self.env["general_audit_ws_a916660"]
+        for record in self:
+            record.allowed_sample_determination_ids = False
+            if record.worksheet_id and record.worksheet_id.general_audit_id:
+                criteria = [
+                    (
+                        "general_audit_id",
+                        "=",
+                        record.worksheet_id.general_audit_id.id,
+                    ),
+                ]
+                record.allowed_sample_determination_ids = SD.search(criteria)
+
+    @api.depends(
         "data_mode",
         "general_ledger_id",
         "subledger_id",
+        "sample_determination_id",
         "filter_where_clause",
     )
     def _compute_raw_data(self):
@@ -185,6 +231,11 @@ class GeneralAuditWSaa899bafVariable(models.Model):
                 source_data = record.general_ledger_id.raw_data
             elif record.data_mode == "subledger" and record.subledger_id:
                 source_data = record.subledger_id.raw_data
+            elif (
+                record.data_mode == "sample_determination"
+                and record.sample_determination_id
+            ):
+                source_data = record.sample_determination_id.raw_data
             else:
                 source_data = False
 
@@ -198,6 +249,7 @@ class GeneralAuditWSaa899bafVariable(models.Model):
         "data_mode",
         "general_ledger_id",
         "subledger_id",
+        "sample_determination_id",
         "filter_where_clause",
         "value_col_number",
         "thousand_separator",
@@ -210,6 +262,11 @@ class GeneralAuditWSaa899bafVariable(models.Model):
                 source_data = record.general_ledger_id.raw_data
             elif record.data_mode == "subledger" and record.subledger_id:
                 source_data = record.subledger_id.raw_data
+            elif (
+                record.data_mode == "sample_determination"
+                and record.sample_determination_id
+            ):
+                source_data = record.sample_determination_id.raw_data
             else:
                 source_data = False
 
@@ -310,3 +367,7 @@ class GeneralAuditWSaa899bafVariable(models.Model):
     @api.onchange("data_mode")
     def onchange_subledger_id(self):
         self.subledger_id = False
+
+    @api.onchange("data_mode")
+    def onchange_sample_determination_id(self):
+        self.sample_determination_id = False
