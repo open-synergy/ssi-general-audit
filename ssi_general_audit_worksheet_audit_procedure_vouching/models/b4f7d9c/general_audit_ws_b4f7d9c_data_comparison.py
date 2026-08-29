@@ -6,6 +6,14 @@ from odoo import api, fields, models
 
 
 class GeneralAuditWSb4f7d9cDataComparison(models.Model):
+    """Comparison line for a Vouching Audit Procedure worksheet.
+
+    Each row provides an alternate raw data source -- General Ledger,
+    Subledger, or a matching Sample Determination worksheet -- that is
+    later matched against the parent worksheet's sampling data via
+    ``reference_col_number``.
+    """
+
     _name = "general_audit_ws_b4f7d9c.data_comparison"
     _description = "Vouching Data Comparison"
     _order = "worksheet_id, sequence, id"
@@ -73,12 +81,42 @@ class GeneralAuditWSb4f7d9cDataComparison(models.Model):
         required=False,
         help="The subledger data used as comparison source.",
     )
+    data_source = fields.Selection(
+        string="Data Source",
+        selection=[
+            ("population", "Population"),
+            ("sample", "Sample"),
+        ],
+        required=True,
+        default="population",
+        help="Determines whether the raw data comes directly from the "
+        "selected General Ledger/Subledger (Population), or from a "
+        "Sample Determination worksheet matching it (Sample).",
+    )
     raw_data = fields.Text(
         string="Raw Data",
         compute="_compute_raw_data",
         store=False,
         compute_sudo=True,
         help="Raw CSV data from the selected General Ledger or Subledger.",
+    )
+    # ── Sample Determination ─────────────────────────────────────────────────
+    allowed_sample_determination_ids = fields.Many2many(
+        comodel_name="general_audit_ws_a916660",
+        string="Allowed Sample Determination",
+        compute="_compute_allowed_sample_determination_ids",
+        store=False,
+        compute_sudo=True,
+        help="Sample Determination worksheets whose data source matches "
+        "this row's own data mode and selected ledger/subledger.",
+    )
+    sample_determination_id = fields.Many2one(
+        comodel_name="general_audit_ws_a916660",
+        string="# Sample Determination",
+        required=False,
+        help="Reference to the Sample Determination worksheet used as "
+        "the raw data source for this comparison row when data_source "
+        'is "sample".',
     )
     reference_col_number = fields.Integer(
         string="Reference Column Number",
@@ -127,17 +165,54 @@ class GeneralAuditWSb4f7d9cDataComparison(models.Model):
 
     @api.depends(
         "data_mode",
+        "data_source",
+        "general_ledger_id",
+        "subledger_id",
+        "sample_determination_id",
+    )
+    def _compute_raw_data(self):
+        """Compute raw CSV data from the selected data source.
+
+        :return: nothing; assigns ``raw_data`` from the General Ledger
+            or Subledger when ``data_source`` is ``"population"``, from
+            the referenced Sample Determination worksheet when it is
+            ``"sample"``, or ``False`` when no matching source is
+            selected.
+        """
+        for record in self:
+            result = False
+            if record.data_source == "population":
+                if record.data_mode == "gl" and record.general_ledger_id:
+                    result = record.general_ledger_id.raw_data
+                elif record.data_mode == "subledger" and record.subledger_id:
+                    result = record.subledger_id.raw_data
+            elif record.data_source == "sample" and record.sample_determination_id:
+                result = record.sample_determination_id.raw_data
+            record.raw_data = result
+
+    @api.depends(
+        "data_mode",
         "general_ledger_id",
         "subledger_id",
     )
-    def _compute_raw_data(self):
+    def _compute_allowed_sample_determination_ids(self):
+        """Restrict the Sample Determination picker to this row's source.
+
+        :return: nothing; assigns ``allowed_sample_determination_ids``
+            to the ``general_audit_ws_a916660`` records sharing this
+            row's own selected General Ledger or Subledger, or an empty
+            recordset when neither is selected.
+        """
+        SD = self.env["general_audit_ws_a916660"]
         for record in self:
+            result = []
             if record.data_mode == "gl" and record.general_ledger_id:
-                record.raw_data = record.general_ledger_id.raw_data
+                result = SD.search(
+                    [("general_ledger_id", "=", record.general_ledger_id.id)]
+                )
             elif record.data_mode == "subledger" and record.subledger_id:
-                record.raw_data = record.subledger_id.raw_data
-            else:
-                record.raw_data = False
+                result = SD.search([("subledger_id", "=", record.subledger_id.id)])
+            record.allowed_sample_determination_ids = result
 
     # ── Onchange methods ─────────────────────────────────────────────────────
 
@@ -148,3 +223,11 @@ class GeneralAuditWSb4f7d9cDataComparison(models.Model):
     @api.onchange("data_mode")
     def onchange_subledger_id(self):
         self.subledger_id = False
+
+    @api.onchange("data_mode", "general_ledger_id", "subledger_id", "data_source")
+    def onchange_sample_determination_id(self):
+        """Reset ``sample_determination_id`` when its scoping changes.
+
+        :return: nothing; clears ``sample_determination_id`` in-memory.
+        """
+        self.sample_determination_id = False
