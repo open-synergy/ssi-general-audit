@@ -26,6 +26,7 @@ msgstr ""
 
 #. module: ssi_general_audit_worksheet_audit_procedure_vouching
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_audit_procedure_vouching.field_general_audit_ws_b4f7d9c__sample_determination_id
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_audit_procedure_vouching.field_general_audit_ws_b4f7d9c_data_comparison__sample_determination_id
 msgid "# Sample Determination"
 msgstr ""
 
@@ -159,6 +160,7 @@ msgstr ""
 
 #. module: ssi_general_audit_worksheet_audit_procedure_vouching
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_audit_procedure_vouching.field_general_audit_ws_b4f7d9c__allowed_sample_determination_ids
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_audit_procedure_vouching.field_general_audit_ws_b4f7d9c_data_comparison__allowed_sample_determination_ids
 msgid "Allowed Sample Determination"
 msgstr ""
 
@@ -418,6 +420,12 @@ msgid "Data Mode"
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_audit_procedure_vouching
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_audit_procedure_vouching.field_general_audit_ws_b4f7d9c__data_source
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_audit_procedure_vouching.field_general_audit_ws_b4f7d9c_data_comparison__data_source
+msgid "Data Source"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_audit_procedure_vouching
 #: model:ir.model.fields,help:ssi_general_audit_worksheet_audit_procedure_vouching.field_general_audit_ws_b4f7d9c__preparation_date
 msgid "Date when the worksheet was prepared."
 msgstr ""
@@ -461,6 +469,15 @@ msgstr ""
 #. module: ssi_general_audit_worksheet_audit_procedure_vouching
 #: model:ir.model.fields,help:ssi_general_audit_worksheet_audit_procedure_vouching.field_general_audit_ws_b4f7d9c_vouching__sequence
 msgid "Determines the display order of vouching lines."
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_audit_procedure_vouching
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_audit_procedure_vouching.field_general_audit_ws_b4f7d9c__data_source
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_audit_procedure_vouching.field_general_audit_ws_b4f7d9c_data_comparison__data_source
+msgid ""
+"Determines whether the raw data comes directly from the selected General "
+"Ledger/Subledger (Population), or from a Sample Determination worksheet "
+"matching it (Sample)."
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_audit_procedure_vouching
@@ -794,6 +811,8 @@ msgid "Policy Template"
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_audit_procedure_vouching
+#: model:ir.model.fields.selection,name:ssi_general_audit_worksheet_audit_procedure_vouching.selection__general_audit_ws_b4f7d9c__data_source__population
+#: model:ir.model.fields.selection,name:ssi_general_audit_worksheet_audit_procedure_vouching.selection__general_audit_ws_b4f7d9c_data_comparison__data_source__population
 #: model_terms:ir.ui.view,arch_db:ssi_general_audit_worksheet_audit_procedure_vouching.general_audit_ws_b4f7d9c_view_form
 msgid "Population"
 msgstr ""
@@ -850,6 +869,13 @@ msgstr ""
 #. module: ssi_general_audit_worksheet_audit_procedure_vouching
 #: model:ir.model.fields,help:ssi_general_audit_worksheet_audit_procedure_vouching.field_general_audit_ws_b4f7d9c__ws_e51bb1c_id
 msgid "Reference to the Key Audit Procedures worksheet."
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_audit_procedure_vouching
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_audit_procedure_vouching.field_general_audit_ws_b4f7d9c_data_comparison__sample_determination_id
+msgid ""
+"Reference to the Sample Determination worksheet used as the raw data source "
+"for this comparison row when data_source is \"sample\"."
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_audit_procedure_vouching
@@ -924,10 +950,23 @@ msgid "Reviewer"
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_audit_procedure_vouching
+#: model:ir.model.fields.selection,name:ssi_general_audit_worksheet_audit_procedure_vouching.selection__general_audit_ws_b4f7d9c__data_source__sample
+#: model:ir.model.fields.selection,name:ssi_general_audit_worksheet_audit_procedure_vouching.selection__general_audit_ws_b4f7d9c_data_comparison__data_source__sample
+msgid "Sample"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_audit_procedure_vouching
 #: model:ir.model.fields,help:ssi_general_audit_worksheet_audit_procedure_vouching.field_general_audit_ws_b4f7d9c__allowed_sample_determination_ids
 msgid ""
 "Sample Determination worksheets whose data source matches the current data "
 "mode and selected ledger/subledger."
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_audit_procedure_vouching
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_audit_procedure_vouching.field_general_audit_ws_b4f7d9c_data_comparison__allowed_sample_determination_ids
+msgid ""
+"Sample Determination worksheets whose data source matches this row's own "
+"data mode and selected ledger/subledger."
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_audit_procedure_vouching
