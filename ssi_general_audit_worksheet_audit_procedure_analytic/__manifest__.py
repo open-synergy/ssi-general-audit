@@ -14,6 +14,7 @@
         "ssi_general_audit_worksheet_control_risk",
         "ssi_general_audit_worksheet_lead_schedule",
         "ssi_general_audit_worksheet_understanding_entity",
+        "ssi_general_audit_worksheet_sample_determination",
     ],
     "data": [
         "security/ir_module_category/general_audit_ws_aa899baf.xml",
