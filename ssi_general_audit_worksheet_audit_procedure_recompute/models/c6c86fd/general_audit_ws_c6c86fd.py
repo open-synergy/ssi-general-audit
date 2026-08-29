@@ -130,7 +130,6 @@ class GeneralAuditWSc6c86fd(models.Model):
         selection=[
             ("gl", "General Ledger"),
             ("subledger", "Subledger"),
-            ("sample_determination", "Sample Determination"),
         ],
         readonly=True,
         states={
@@ -171,6 +170,22 @@ class GeneralAuditWSc6c86fd(models.Model):
             "open": [("readonly", False)],
         },
         help="The subledger data to recompute.",
+    )
+    data_source = fields.Selection(
+        string="Data Source",
+        selection=[
+            ("population", "Population"),
+            ("sample", "Sample"),
+        ],
+        required=True,
+        default="population",
+        readonly=True,
+        states={
+            "open": [("readonly", False)],
+        },
+        help="Determines whether the raw data comes directly from the "
+        "selected General Ledger/Subledger (Population), or from a "
+        "Sample Determination worksheet matching it (Sample).",
     )
     allowed_sample_determination_ids = fields.Many2many(
         comodel_name="general_audit_ws_a916660",
@@ -367,81 +382,112 @@ class GeneralAuditWSc6c86fd(models.Model):
                 record.allowed_subledger_ids = SL.search(criteria)
 
     @api.depends(
-        "general_audit_id",
+        "data_mode",
+        "general_ledger_id",
+        "subledger_id",
     )
     def _compute_allowed_sample_determination_ids(self):
-        """Compute the Sample Determination worksheets selectable here.
+        """Restrict the Sample Determination picker to the matching source.
 
         Unlike ``allowed_general_ledger_ids``/``allowed_subledger_ids``,
-        the criteria is scoped only by ``general_audit_id`` --
-        ``general_audit_ws_a916660`` has no account-scoping fields
-        (``account_id``/``account_type_id``) to filter on.
+        the criteria is scoped only by ``general_ledger_id``/
+        ``subledger_id`` -- ``general_audit_ws_a916660`` has no
+        account-scoping fields (``account_id``/``account_type_id``) to
+        filter on. Pattern mirrored from
+        ``general_audit_ws_b4f7d9c._compute_allowed_sample_determination_ids``
+        (``ssi_general_audit_worksheet_audit_procedure_vouching``).
 
         :return: sets ``allowed_sample_determination_ids`` to the
-            ``general_audit_ws_a916660`` records under the same
-            ``general_audit_id``, or an empty recordset when unset.
+            ``general_audit_ws_a916660`` records sharing this record's
+            selected General Ledger or Subledger, or an empty recordset
+            when no source is selected.
         """
         SampleDetermination = self.env["general_audit_ws_a916660"]
         for record in self:
             record.allowed_sample_determination_ids = False
-            if record.general_audit_id:
-                criteria = [
-                    ("general_audit_id", "=", record.general_audit_id.id),
-                ]
+            if record.data_mode == "gl" and record.general_ledger_id:
                 record.allowed_sample_determination_ids = SampleDetermination.search(
-                    criteria
+                    [("general_ledger_id", "=", record.general_ledger_id.id)]
+                )
+            elif record.data_mode == "subledger" and record.subledger_id:
+                record.allowed_sample_determination_ids = SampleDetermination.search(
+                    [("subledger_id", "=", record.subledger_id.id)]
                 )
 
     @api.depends(
         "data_mode",
+        "data_source",
         "general_ledger_id",
         "subledger_id",
         "sample_determination_id",
     )
     def _compute_raw_data(self):
-        """Copy the recompute source data from the selected ``data_mode``.
+        """Copy the recompute source data from the selected data source.
+
+        Pulls ``raw_data`` from the General Ledger or Subledger worksheet
+        selected via ``data_mode`` when ``data_source`` is ``population``,
+        or from the Sample Determination worksheet selected via
+        ``sample_determination_id`` when ``data_source`` is ``sample``.
 
         :return: sets ``raw_data`` to the ``raw_data`` of
             ``general_ledger_id``, ``subledger_id``, or
             ``sample_determination_id`` -- whichever matches the current
-            ``data_mode`` -- or ``False`` when none applies.
+            ``data_mode``/``data_source`` -- or ``False`` when none
+            applies.
         """
         for record in self:
-            if record.data_mode == "gl" and record.general_ledger_id:
-                record.raw_data = record.general_ledger_id.raw_data
-            elif record.data_mode == "subledger" and record.subledger_id:
-                record.raw_data = record.subledger_id.raw_data
-            elif (
-                record.data_mode == "sample_determination"
-                and record.sample_determination_id
+            if (
+                record.data_mode == "gl"
+                and record.data_source == "population"
+                and record.general_ledger_id
             ):
+                record.raw_data = record.general_ledger_id.raw_data
+            elif (
+                record.data_mode == "subledger"
+                and record.data_source == "population"
+                and record.subledger_id
+            ):
+                record.raw_data = record.subledger_id.raw_data
+            elif record.data_source == "sample" and record.sample_determination_id:
                 record.raw_data = record.sample_determination_id.raw_data
             else:
                 record.raw_data = False
 
     @api.depends(
         "data_mode",
+        "data_source",
         "general_ledger_id",
         "subledger_id",
         "sample_determination_id",
     )
     def _compute_raw_data_title(self):
-        """Copy the recompute source title from the selected ``data_mode``.
+        """Copy the recompute source title from the selected data source.
+
+        Mirrors ``_compute_raw_data``: the title comes from the same
+        General Ledger/Subledger worksheet when ``data_source`` is
+        ``population``, or from the Sample Determination worksheet when
+        ``data_source`` is ``sample``.
 
         :return: sets ``raw_data_title`` to the ``title`` of
             ``general_ledger_id``, ``subledger_id``, or
             ``sample_determination_id`` -- whichever matches the current
-            ``data_mode`` -- or ``False`` when none applies.
+            ``data_mode``/``data_source`` -- or ``False`` when none
+            applies.
         """
         for record in self:
-            if record.data_mode == "gl" and record.general_ledger_id:
-                record.raw_data_title = record.general_ledger_id.title
-            elif record.data_mode == "subledger" and record.subledger_id:
-                record.raw_data_title = record.subledger_id.title
-            elif (
-                record.data_mode == "sample_determination"
-                and record.sample_determination_id
+            if (
+                record.data_mode == "gl"
+                and record.data_source == "population"
+                and record.general_ledger_id
             ):
+                record.raw_data_title = record.general_ledger_id.title
+            elif (
+                record.data_mode == "subledger"
+                and record.data_source == "population"
+                and record.subledger_id
+            ):
+                record.raw_data_title = record.subledger_id.title
+            elif record.data_source == "sample" and record.sample_determination_id:
                 record.raw_data_title = record.sample_determination_id.title
             else:
                 record.raw_data_title = False
@@ -482,6 +528,11 @@ class GeneralAuditWSc6c86fd(models.Model):
 
     @api.onchange(
         "data_mode",
+        "account_type_id",
+        "account_id",
+        "general_ledger_id",
+        "subledger_id",
+        "data_source",
     )
     def onchange_sample_determination_id(self):
         self.sample_determination_id = False
