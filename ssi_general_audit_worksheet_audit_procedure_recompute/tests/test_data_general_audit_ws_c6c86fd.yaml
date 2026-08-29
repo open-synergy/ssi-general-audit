@@ -114,6 +114,11 @@ setup:
       xml_id: "ssi_general_audit_worksheet_client_package.worksheet_type_b5e3d9f"
       save_as: "ws_type_b5e3d9f"
 
+    - step: "Get worksheet type a916660 (Sample Determination)"
+      action: "ref"
+      xml_id: "ssi_general_audit_worksheet_sample_determination.worksheet_type_a916660"
+      save_as: "ws_type_a916660"
+
     - step: "Create client account group"
       action: "create"
       model: "client_account_group"
@@ -528,6 +533,57 @@ scenarios:
           raw_data_title:
             type: "value"
             expected: "Subledger AR"
+
+  # ------------------------------------------------------------------
+  # _compute_raw_data / _compute_raw_data_title - data_mode = sample_determination
+  # ------------------------------------------------------------------
+  - name: "Worksheet c6c86fd - Compute raw_data (data_mode = sample_determination)"
+    steps:
+      - step: "Create a General Ledger to back the Sample Determination worksheet"
+        action: "create"
+        model: "general_audit_ws_d209914"
+        save_as: "gl_for_sd"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_d209914.id"
+          account_mode: "standard_account"
+          account_type_id: "REC: account_type.id"
+          raw_data: "Ref,Amount\nR1,1000\nR2,2000\n"
+          title: "GL for Sample Determination"
+
+      - step: "Create Sample Determination worksheet sourced from that GL"
+        action: "create"
+        model: "general_audit_ws_a916660"
+        save_as: "sample_determination"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_a916660.id"
+          data_mode: "gl"
+          general_ledger_id: "REC: gl_for_sd.id"
+
+      - step: "Create worksheet c6c86fd pointing at the Sample Determination"
+        action: "create"
+        model: "general_audit_ws_c6c86fd"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+          data_mode: "sample_determination"
+          sample_determination_id: "REC: sample_determination.id"
+
+      - step: "Assert raw_data / raw_data_title come from the Sample Determination"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          raw_data:
+            type: "value"
+            expected: "Ref,Amount\nR1,1000\nR2,2000\n"
+          raw_data_title:
+            type: "value"
+            expected: "Test General Audit - C6C86FD"
 
   # ------------------------------------------------------------------
   # _compute_raw_data / _compute_raw_data_title - empty
@@ -1403,6 +1459,259 @@ scenarios:
           subledger_id:
             type: "value"
             operator: "is_falsy"
+
+  # ------------------------------------------------------------------
+  # Onchange data_mode clears general_ledger_id/subledger_id when
+  # switching TO sample_determination, and clears sample_determination_id
+  # when switching AWAY from it
+  # ------------------------------------------------------------------
+  - name: "Worksheet c6c86fd - Onchange data_mode clears sample_determination_id"
+    steps:
+      - step: "Create a GL to back the Sample Determination worksheet"
+        action: "create"
+        model: "general_audit_ws_d209914"
+        save_as: "gl_for_sd_onchange"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_d209914.id"
+          account_mode: "standard_account"
+
+      - step: "Create Sample Determination worksheet available to this general_audit"
+        action: "create"
+        model: "general_audit_ws_a916660"
+        save_as: "sd_onchange"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_a916660.id"
+          data_mode: "gl"
+          general_ledger_id: "REC: gl_for_sd_onchange.id"
+
+      - step: "Create GL available to this general_audit (for data_mode=gl leg)"
+        action: "create"
+        model: "general_audit_ws_d209914"
+        save_as: "gl_onchange_sd"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_d209914.id"
+          account_mode: "standard_account"
+
+      - step: "Create worksheet c6c86fd"
+        action: "create"
+        model: "general_audit_ws_c6c86fd"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+
+      - step: "Open worksheet (data_mode/sample_determination_id become editable)"
+        action: "call"
+        target: "worksheet"
+        method: "action_open"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after opening worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Set data_mode=gl and general_ledger_id via Form"
+        action: "form"
+        target: "worksheet"
+        as_user: "base.user_admin"
+        save: true
+        ops:
+          - set: {data_mode: "gl"}
+          - set: {general_ledger_id: "REC: gl_onchange_sd"}
+
+      - step: "Assert general_ledger_id was actually persisted"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          general_ledger_id:
+            type: "value"
+            operator: "is_truthy"
+
+      - step: "Switch data_mode to sample_determination via Form"
+        action: "form"
+        target: "worksheet"
+        as_user: "base.user_admin"
+        save: true
+        ops:
+          - set: {data_mode: "sample_determination"}
+
+      - step: "Assert general_ledger_id was cleared by switching data_mode away from gl"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          general_ledger_id:
+            type: "value"
+            operator: "is_falsy"
+
+      - step: "Set sample_determination_id via Form"
+        action: "form"
+        target: "worksheet"
+        as_user: "base.user_admin"
+        save: true
+        ops:
+          - set: {sample_determination_id: "REC: sd_onchange"}
+
+      - step: "Assert sample_determination_id was actually persisted"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          sample_determination_id:
+            type: "value"
+            operator: "is_truthy"
+
+      - step: "Switch data_mode away from sample_determination via Form"
+        action: "form"
+        target: "worksheet"
+        as_user: "base.user_admin"
+        save: true
+        ops:
+          - set: {data_mode: "gl"}
+
+      - step: "Assert sample_determination_id was cleared by the onchange"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          sample_determination_id:
+            type: "value"
+            operator: "is_falsy"
+
+  # ------------------------------------------------------------------
+  # _compute_allowed_sample_determination_ids - scoped by general_audit_id
+  # only; a Sample Determination worksheet from a DIFFERENT general_audit
+  # must never appear in allowed_sample_determination_ids
+  # ------------------------------------------------------------------
+  - name:
+      "Worksheet c6c86fd - allowed_sample_determination_ids excludes other general_audit"
+    steps:
+      # The exclusion this scenario proves is scoped by general_audit_id,
+      # so the "other" fixture needs a genuinely different general_audit
+      # (not just a second worksheet under the same one). Build a fully
+      # independent second general_audit (own client/accountant/
+      # account_type_set/standard, opened) to host it -- same pattern as
+      # ssi_general_audit_worksheet_audit_procedure_vouching's
+      # "second general audit" fixture.
+      - step: "Create second client partner"
+        action: "create"
+        model: "res.partner"
+        save_as: "client_2"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Audit Client 2 - C6C86FD"
+          is_company: true
+
+      - step: "Create second accountant partner"
+        action: "create"
+        model: "res.partner"
+        save_as: "accountant_2"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Audit Accountant 2 - C6C86FD"
+
+      - step: "Grant second accountant a CPA license"
+        action: "create"
+        model: "res.partner.id_number"
+        save_as: "cpa_license_2"
+        as_user: "base.user_admin"
+        values:
+          partner_id: "REC: accountant_2.id"
+          category_id: "REC: cpa_category.id"
+          name: "CPA-C6C86FD-0002"
+
+      - step: "Create second account type set"
+        action: "create"
+        model: "client_account_type_set"
+        save_as: "account_type_set_2"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Account Type Set 2 - C6C86FD"
+          code: "/"
+
+      - step: "Create second financial accounting standard"
+        action: "create"
+        model: "accountant.financial_accounting_standard"
+        save_as: "standard_2"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Financial Accounting Standard 2 - C6C86FD"
+          code: "/"
+
+      - step: "Create second general audit"
+        action: "create"
+        model: "general_audit"
+        save_as: "audit_2"
+        as_user: "base.user_admin"
+        values:
+          title: "Test General Audit 2 - C6C86FD"
+          partner_id: "REC: client_2.id"
+          accountant_id: "REC: accountant_2.id"
+          account_type_set_id: "REC: account_type_set_2.id"
+          financial_accounting_standard_id: "REC: standard_2.id"
+          date_start: 2026-01-01
+          date_end: 2026-12-31
+          need_interim: false
+          need_previous: false
+          num_of_consecutive_audit_firm: 1
+          num_of_consecutive_audit_accountant: 1
+
+      - step: "Open second general audit"
+        action: "call"
+        target: "audit_2"
+        method: "action_open"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after opening second general audit"
+        action: "call"
+        target: "audit_2"
+        method: "invalidate_cache"
+
+      - step: "Create Sample Determination worksheet under the SECOND general_audit"
+        action: "create"
+        model: "general_audit_ws_a916660"
+        save_as: "sd_other_audit"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit_2.id"
+          type_id: "REC: ws_type_a916660.id"
+
+      - step: "Create Sample Determination worksheet under the FIRST general_audit"
+        action: "create"
+        model: "general_audit_ws_a916660"
+        save_as: "sd_same_audit"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_a916660.id"
+
+      - step: "Create worksheet c6c86fd under the FIRST general_audit"
+        action: "create"
+        model: "general_audit_ws_c6c86fd"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+
+      - step:
+          "Assert allowed_sample_determination_ids contains only the same-audit
+          worksheet -- the other general_audit's worksheet is the one the view domain
+          ([('id','in',allowed_sample_determination_ids)]) must reject as a choice, and
+          it is absent here"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          allowed_sample_determination_ids:
+            type: "m2m"
+            check: "exact"
+            expected_records:
+              - "REC: sd_same_audit"
 
   # ------------------------------------------------------------------
   # Delete in draft

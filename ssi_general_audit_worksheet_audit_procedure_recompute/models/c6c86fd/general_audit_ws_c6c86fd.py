@@ -130,6 +130,7 @@ class GeneralAuditWSc6c86fd(models.Model):
         selection=[
             ("gl", "General Ledger"),
             ("subledger", "Subledger"),
+            ("sample_determination", "Sample Determination"),
         ],
         readonly=True,
         states={
@@ -170,6 +171,23 @@ class GeneralAuditWSc6c86fd(models.Model):
             "open": [("readonly", False)],
         },
         help="The subledger data to recompute.",
+    )
+    allowed_sample_determination_ids = fields.Many2many(
+        comodel_name="general_audit_ws_a916660",
+        string="Allowed Sample Determinations",
+        compute="_compute_allowed_sample_determination_ids",
+        store=False,
+        compute_sudo=True,
+    )
+    sample_determination_id = fields.Many2one(
+        comodel_name="general_audit_ws_a916660",
+        string="Sample Determination",
+        required=False,
+        readonly=True,
+        states={
+            "open": [("readonly", False)],
+        },
+        help="The sample determination data to recompute.",
     )
     raw_data = fields.Text(
         string="Raw Data",
@@ -349,16 +367,55 @@ class GeneralAuditWSc6c86fd(models.Model):
                 record.allowed_subledger_ids = SL.search(criteria)
 
     @api.depends(
+        "general_audit_id",
+    )
+    def _compute_allowed_sample_determination_ids(self):
+        """Compute the Sample Determination worksheets selectable here.
+
+        Unlike ``allowed_general_ledger_ids``/``allowed_subledger_ids``,
+        the criteria is scoped only by ``general_audit_id`` --
+        ``general_audit_ws_a916660`` has no account-scoping fields
+        (``account_id``/``account_type_id``) to filter on.
+
+        :return: sets ``allowed_sample_determination_ids`` to the
+            ``general_audit_ws_a916660`` records under the same
+            ``general_audit_id``, or an empty recordset when unset.
+        """
+        SampleDetermination = self.env["general_audit_ws_a916660"]
+        for record in self:
+            record.allowed_sample_determination_ids = False
+            if record.general_audit_id:
+                criteria = [
+                    ("general_audit_id", "=", record.general_audit_id.id),
+                ]
+                record.allowed_sample_determination_ids = SampleDetermination.search(
+                    criteria
+                )
+
+    @api.depends(
         "data_mode",
         "general_ledger_id",
         "subledger_id",
+        "sample_determination_id",
     )
     def _compute_raw_data(self):
+        """Copy the recompute source data from the selected ``data_mode``.
+
+        :return: sets ``raw_data`` to the ``raw_data`` of
+            ``general_ledger_id``, ``subledger_id``, or
+            ``sample_determination_id`` -- whichever matches the current
+            ``data_mode`` -- or ``False`` when none applies.
+        """
         for record in self:
             if record.data_mode == "gl" and record.general_ledger_id:
                 record.raw_data = record.general_ledger_id.raw_data
             elif record.data_mode == "subledger" and record.subledger_id:
                 record.raw_data = record.subledger_id.raw_data
+            elif (
+                record.data_mode == "sample_determination"
+                and record.sample_determination_id
+            ):
+                record.raw_data = record.sample_determination_id.raw_data
             else:
                 record.raw_data = False
 
@@ -366,13 +423,26 @@ class GeneralAuditWSc6c86fd(models.Model):
         "data_mode",
         "general_ledger_id",
         "subledger_id",
+        "sample_determination_id",
     )
     def _compute_raw_data_title(self):
+        """Copy the recompute source title from the selected ``data_mode``.
+
+        :return: sets ``raw_data_title`` to the ``title`` of
+            ``general_ledger_id``, ``subledger_id``, or
+            ``sample_determination_id`` -- whichever matches the current
+            ``data_mode`` -- or ``False`` when none applies.
+        """
         for record in self:
             if record.data_mode == "gl" and record.general_ledger_id:
                 record.raw_data_title = record.general_ledger_id.title
             elif record.data_mode == "subledger" and record.subledger_id:
                 record.raw_data_title = record.subledger_id.title
+            elif (
+                record.data_mode == "sample_determination"
+                and record.sample_determination_id
+            ):
+                record.raw_data_title = record.sample_determination_id.title
             else:
                 record.raw_data_title = False
 
@@ -409,6 +479,12 @@ class GeneralAuditWSc6c86fd(models.Model):
     )
     def onchange_ws_e51bb1c_id(self):
         self.ws_e51bb1c_id = False
+
+    @api.onchange(
+        "data_mode",
+    )
+    def onchange_sample_determination_id(self):
+        self.sample_determination_id = False
 
     def _parse_numeric_value(self, value_str):
         if not value_str or not value_str.strip():
