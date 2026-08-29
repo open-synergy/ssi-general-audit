@@ -1388,6 +1388,330 @@ scenarios:
             operator: "is_falsy"
 
   # ------------------------------------------------------------------
+  # _compute_raw_data - data_source = population (unchanged pre-ticket
+  # behaviour)
+  # ------------------------------------------------------------------
+  - name: "Worksheet b4f7d9c - Compute raw_data (data_source = population)"
+    steps:
+      - step: "Create General Ledger worksheet with raw data"
+        action: "create"
+        model: "general_audit_ws_d209914"
+        save_as: "gl"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_d209914.id"
+          account_mode: "standard_account"
+          account_type_id: "REC: account_type.id"
+          raw_data: "Ref,Amount\nP1,100\nP2,200\n"
+          title: "GL Population Data Source"
+
+      - step: "Create worksheet b4f7d9c with data_source population"
+        action: "create"
+        model: "general_audit_ws_b4f7d9c"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+          data_mode: "gl"
+          general_ledger_id: "REC: gl.id"
+          data_source: "population"
+
+      - step: "Assert raw_data still comes from the GL, unaffected by data_source"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          data_source:
+            type: "value"
+            expected: "population"
+          raw_data:
+            type: "value"
+            expected: "Ref,Amount\nP1,100\nP2,200\n"
+
+  # ------------------------------------------------------------------
+  # _compute_raw_data - data_source = sample (dual role: raw_data AND
+  # sampling_data both come from the same sample_determination_id, no
+  # regression on the sampling-list role)
+  # ------------------------------------------------------------------
+  - name: "Worksheet b4f7d9c - Compute raw_data (data_source = sample)"
+    steps:
+      - step: "Create General Ledger worksheet with raw data"
+        action: "create"
+        model: "general_audit_ws_d209914"
+        save_as: "gl"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_d209914.id"
+          account_mode: "standard_account"
+          account_type_id: "REC: account_type.id"
+          raw_data: "Ref,Amount\nS1,10\nS2,20\n"
+          title: "GL for Sample Data Source"
+
+      - step: "Create Sample Determination worksheet on the same GL"
+        action: "create"
+        model: "general_audit_ws_a916660"
+        save_as: "sd"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_a916660.id"
+          data_mode: "gl"
+          general_ledger_id: "REC: gl.id"
+          sampling_data: "No,Ref\n1,S1\n"
+
+      - step:
+          "Create worksheet b4f7d9c pointing at the matching GL / Sample Determination"
+        action: "create"
+        model: "general_audit_ws_b4f7d9c"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+          data_mode: "gl"
+          general_ledger_id: "REC: gl.id"
+          data_source: "sample"
+          sample_determination_id: "REC: sd.id"
+
+      - step:
+          "Assert raw_data comes from the Sample Determination while sampling_data
+          (daftar sampel role) keeps working"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          raw_data:
+            type: "value"
+            expected: "Ref,Amount\nS1,10\nS2,20\n"
+          sampling_data:
+            type: "value"
+            expected: "No,Ref\n1,S1\n"
+
+  # ------------------------------------------------------------------
+  # data_comparison - _compute_raw_data - data_source = sample
+  # ------------------------------------------------------------------
+  - name: "Data comparison b4f7d9c - Compute raw_data (data_source = sample)"
+    steps:
+      - step: "Create General Ledger worksheet with raw data"
+        action: "create"
+        model: "general_audit_ws_d209914"
+        save_as: "gl"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_d209914.id"
+          account_mode: "standard_account"
+          account_type_id: "REC: account_type.id"
+          raw_data: "Ref,Amount\nC1,50\nC2,60\n"
+          title: "GL for Data Comparison Sample Source"
+
+      - step: "Create Sample Determination worksheet on the same GL"
+        action: "create"
+        model: "general_audit_ws_a916660"
+        save_as: "sd"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_a916660.id"
+          data_mode: "gl"
+          general_ledger_id: "REC: gl.id"
+
+      - step: "Create worksheet b4f7d9c (parent of the data comparison)"
+        action: "create"
+        model: "general_audit_ws_b4f7d9c"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+
+      - step:
+          "Create data comparison row with data_source sample, pointing at the matching
+          Sample Determination"
+        action: "create"
+        model: "general_audit_ws_b4f7d9c.data_comparison"
+        save_as: "dc"
+        as_user: "base.user_admin"
+        values:
+          worksheet_id: "REC: worksheet.id"
+          data_mode: "gl"
+          general_ledger_id: "REC: gl.id"
+          data_source: "sample"
+          sample_determination_id: "REC: sd.id"
+
+      - step: "Assert row raw_data comes from the Sample Determination"
+        action: "assert"
+        target: "dc"
+        asserts:
+          raw_data:
+            type: "value"
+            expected: "Ref,Amount\nC1,50\nC2,60\n"
+
+  # ------------------------------------------------------------------
+  # data_comparison - Onchange data_source clears sample_determination_id
+  # ------------------------------------------------------------------
+  - name:
+      "Data comparison b4f7d9c - Onchange data_source clears sample_determination_id"
+    steps:
+      - step: "Create GL available to this general_audit"
+        action: "create"
+        model: "general_audit_ws_d209914"
+        save_as: "gl"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_d209914.id"
+          account_mode: "standard_account"
+
+      - step: "Create Sample Determination worksheet pointing at the GL"
+        action: "create"
+        model: "general_audit_ws_a916660"
+        save_as: "sd"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_a916660.id"
+          data_mode: "gl"
+          general_ledger_id: "REC: gl.id"
+
+      - step: "Create worksheet b4f7d9c (parent of the data comparison)"
+        action: "create"
+        model: "general_audit_ws_b4f7d9c"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+
+      - step: "Set worksheet_id/data_mode/general_ledger_id via Form"
+        action: "form"
+        model: "general_audit_ws_b4f7d9c.data_comparison"
+        save_as: "dc"
+        as_user: "base.user_admin"
+        save: true
+        ops:
+          - set: {worksheet_id: "REC: worksheet"}
+          - set: {data_mode: "gl"}
+          - set: {general_ledger_id: "REC: gl"}
+
+      - step:
+          "Pre-fill sample_determination_id directly (not going through Form/onchange)"
+        action: "write"
+        target: "dc"
+        as_user: "base.user_admin"
+        values:
+          sample_determination_id: "REC: sd.id"
+
+      - step: "Assert sample_determination_id was actually persisted"
+        action: "assert"
+        target: "dc"
+        asserts:
+          sample_determination_id:
+            type: "value"
+            operator: "is_truthy"
+
+      - step: "Switch data_source from population to sample via Form"
+        action: "form"
+        target: "dc"
+        as_user: "base.user_admin"
+        save: true
+        ops:
+          - set: {data_source: "sample"}
+
+      - step: "Assert sample_determination_id was cleared by the onchange"
+        action: "assert"
+        target: "dc"
+        asserts:
+          sample_determination_id:
+            type: "value"
+            operator: "is_falsy"
+
+  # ------------------------------------------------------------------
+  # data_comparison - allowed_sample_determination_ids scoped to THIS
+  # row's own general_ledger_id (negative: excludes a Sample
+  # Determination matching a DIFFERENT ledger)
+  # ------------------------------------------------------------------
+  - name:
+      "Data comparison b4f7d9c - allowed_sample_determination_ids excludes mismatched GL
+      (negative)"
+    steps:
+      - step: "Create GL A for this row's own source"
+        action: "create"
+        model: "general_audit_ws_d209914"
+        save_as: "gl_a"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_d209914.id"
+          account_mode: "standard_account"
+          title: "GL A - Data Comparison Negative"
+
+      - step: "Create GL B - a different ledger in the same audit"
+        action: "create"
+        model: "general_audit_ws_d209914"
+        save_as: "gl_b"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_d209914.id"
+          account_mode: "standard_account"
+          title: "GL B - Data Comparison Negative"
+
+      - step: "Create Sample Determination matching GL A"
+        action: "create"
+        model: "general_audit_ws_a916660"
+        save_as: "sd_a"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_a916660.id"
+          data_mode: "gl"
+          general_ledger_id: "REC: gl_a.id"
+
+      - step: "Create Sample Determination matching GL B (a different ledger)"
+        action: "create"
+        model: "general_audit_ws_a916660"
+        save_as: "sd_b"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_a916660.id"
+          data_mode: "gl"
+          general_ledger_id: "REC: gl_b.id"
+
+      - step: "Create worksheet b4f7d9c (parent of the data comparison)"
+        action: "create"
+        model: "general_audit_ws_b4f7d9c"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+
+      - step: "Create data comparison row pointing at GL A only"
+        action: "create"
+        model: "general_audit_ws_b4f7d9c.data_comparison"
+        save_as: "dc"
+        as_user: "base.user_admin"
+        values:
+          worksheet_id: "REC: worksheet.id"
+          data_mode: "gl"
+          general_ledger_id: "REC: gl_a.id"
+
+      - step:
+          "Assert allowed_sample_determination_ids on this row only contains sd_a
+          (matching its own GL A), excluding sd_b (GL B)"
+        action: "assert"
+        target: "dc"
+        asserts:
+          allowed_sample_determination_ids:
+            type: "m2m"
+            check: "exact"
+            expected_records:
+              - "REC: sd_a"
+
+  # ------------------------------------------------------------------
   # Delete in draft
   # ------------------------------------------------------------------
   - name: "Worksheet b4f7d9c - Delete in draft"

@@ -175,6 +175,22 @@ class GeneralAuditWSb4f7d9c(models.Model):
         },
         help="The subledger data used as population for this vouching procedure.",
     )
+    data_source = fields.Selection(
+        string="Data Source",
+        selection=[
+            ("population", "Population"),
+            ("sample", "Sample"),
+        ],
+        required=True,
+        default="population",
+        readonly=True,
+        states={
+            "open": [("readonly", False)],
+        },
+        help="Determines whether the raw data comes directly from the "
+        "selected General Ledger/Subledger (Population), or from a "
+        "Sample Determination worksheet matching it (Sample).",
+    )
     raw_data = fields.Text(
         string="Raw Data",
         compute="_compute_raw_data",
@@ -333,17 +349,30 @@ class GeneralAuditWSb4f7d9c(models.Model):
 
     @api.depends(
         "data_mode",
+        "data_source",
         "general_ledger_id",
         "subledger_id",
+        "sample_determination_id",
     )
     def _compute_raw_data(self):
+        """Compute raw CSV data from the selected data source.
+
+        :return: nothing; assigns ``raw_data`` from the General Ledger
+            or Subledger when ``data_source`` is ``"population"``, from
+            the referenced Sample Determination worksheet when it is
+            ``"sample"``, or ``False`` when no matching source is
+            selected.
+        """
         for record in self:
-            if record.data_mode == "gl" and record.general_ledger_id:
-                record.raw_data = record.general_ledger_id.raw_data
-            elif record.data_mode == "subledger" and record.subledger_id:
-                record.raw_data = record.subledger_id.raw_data
-            else:
-                record.raw_data = False
+            result = False
+            if record.data_source == "population":
+                if record.data_mode == "gl" and record.general_ledger_id:
+                    result = record.general_ledger_id.raw_data
+                elif record.data_mode == "subledger" and record.subledger_id:
+                    result = record.subledger_id.raw_data
+            elif record.data_source == "sample" and record.sample_determination_id:
+                result = record.sample_determination_id.raw_data
+            record.raw_data = result
 
     @api.depends(
         "data_mode",
