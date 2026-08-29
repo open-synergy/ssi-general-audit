@@ -100,6 +100,7 @@
                 <field name="data_mode" optional="hide" />
                 <field name="general_ledger_id" optional="hide" />
                 <field name="subledger_id" optional="hide" />
+                <field name="data_source" optional="hide" />
                 <field name="sample_determination_id" optional="hide" />
             </tree>
         </field>
@@ -142,6 +143,7 @@
                                 domain="[('id', 'in', allowed_subledger_ids)]"
                                 attrs="{'invisible': [('data_mode', '!=', 'subledger')]}"
                             />
+                            <field name="data_source" />
                             <field
                                 name="allowed_sample_determination_ids"
                                 invisible="1"
@@ -149,7 +151,7 @@
                             <field
                                 name="sample_determination_id"
                                 domain="[('id', 'in', allowed_sample_determination_ids)]"
-                                attrs="{'invisible': [('data_mode', '!=', 'sample_determination')]}"
+                                attrs="{'invisible': [('data_source', '!=', 'sample')]}"
                             />
                             <field name="raw_data_title" readonly="1" />
                         </group>
@@ -334,6 +336,7 @@
                                 <field name="data_mode" optional="hide" />
                                 <field name="general_ledger_id" optional="hide" />
                                 <field name="subledger_id" optional="hide" />
+                                <field name="data_source" optional="hide" />
                                 <field name="sample_determination_id" optional="hide" />
                             </tree>
                         </field>
