@@ -18,11 +18,14 @@ class GeneralAuditWSA3C9D2E(models.Model):
     ``related_account_type_ids`` tags the Standard Accounts covered by
     this cycle as a whole (mirrors the single "Standard Account" field
     shown on the KKA template, next to "Siklus"). The worksheet's own
-    ``conclusion_id`` (High/Moderate — see
-    ``data/master/general_audit_worksheet_conclusion.xml``) is
-    propagated to every matched ``general_audit.standard_detail`` (see
-    :meth:`_inverse_to_standard_detail`); per-procedure results are
-    working-paper documentation only and are not propagated.
+    ``result`` (High/Moderate) is propagated to every matched
+    ``general_audit.standard_detail`` (see
+    :meth:`_inverse_to_standard_detail`). ``conclusion_id``/
+    ``conclusion`` remain the mixin's generic
+    required-before-confirm fields and are not used for this
+    propagation. Per-procedure results
+    (``checklist_ids.procedure_ids.result``) are working-paper
+    documentation only and are not propagated.
     """
 
     _name = "general_audit_ws_a3c9d2e"
@@ -38,6 +41,21 @@ class GeneralAuditWSA3C9D2E(models.Model):
     _item_model_name = "general_audit_ws_a3c9d2e.item"
     _checklist_create_page = False
 
+    result = fields.Selection(
+        string="Result",
+        selection=[
+            ("high", "High"),
+            ("moderate", "Moderate"),
+        ],
+        help=(
+            "High/Moderate result of the analytical procedures for "
+            "this cycle. Determines the value propagated to the "
+            "matched Standard Details' Analytical Procedures Cycle "
+            "Result (see _inverse_to_standard_detail); independent "
+            "of conclusion_id/conclusion, which remain the mixin's "
+            "generic required-before-confirm fields."
+        ),
+    )
     business_cycle_id = fields.Many2one(
         string="Business Cycle",
         comodel_name="client_business_process",
@@ -108,28 +126,16 @@ class GeneralAuditWSA3C9D2E(models.Model):
             record.standard_detail_ids = result
 
     def _get_analytical_procedures_cycle_result(self):
-        """Map ``conclusion_id`` to the High/Moderate result value.
+        """Return this worksheet's own :attr:`result` for propagation.
 
-        ``conclusion_id`` is generic master data
-        (``general_audit_worksheet_conclusion``, scoped by ``type_id``);
-        the High/Moderate records for this worksheet type are seeded by
-        ``data/master/general_audit_worksheet_conclusion.xml`` and
-        matched here by XML ID rather than by (translatable) name.
+        :return: ``"high"``, ``"moderate"``, or ``False`` when
+            :attr:`result` is not set.
+        :rtype: str or bool
         """
         self.ensure_one()
-        high = self.env.ref(
-            "ssi_general_audit_worksheet_analytic_cycle."
-            "general_audit_worksheet_conclusion_a3c9d2e_high",
-            raise_if_not_found=False,
-        )
-        moderate = self.env.ref(
-            "ssi_general_audit_worksheet_analytic_cycle."
-            "general_audit_worksheet_conclusion_a3c9d2e_moderate",
-            raise_if_not_found=False,
-        )
-        if high and self.conclusion_id.id == high.id:
+        if self.result == "high":
             return "high"
-        if moderate and self.conclusion_id.id == moderate.id:
+        if self.result == "moderate":
             return "moderate"
         return False
 
@@ -145,6 +151,6 @@ class GeneralAuditWSA3C9D2E(models.Model):
     def write(self, vals):
         """Re-propagate the result whenever it or the account tags change."""
         res = super().write(vals)
-        if {"conclusion_id", "related_account_type_ids"} & set(vals.keys()):
+        if {"result", "related_account_type_ids"} & set(vals.keys()):
             self._inverse_to_standard_detail()
         return res
