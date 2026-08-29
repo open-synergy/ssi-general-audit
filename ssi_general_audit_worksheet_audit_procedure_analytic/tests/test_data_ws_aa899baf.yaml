@@ -1491,8 +1491,7 @@ scenarios:
             operator: "is_falsy"
 
   # ------------------------------------------------------------------
-  # allowed_sample_determination_ids / _compute_value from sample
-  # determination source
+  # data_source="sample" / _compute_value from Sample Determination
   # ------------------------------------------------------------------
   - name:
       "Variable aa899baf - Compute value from Sample Determination source (positive)"
@@ -1510,7 +1509,7 @@ scenarios:
             1000,Cash Sales,300.00
             2000,Bank Fees,150.00
 
-      - step: "Create Sample Determination worksheet sourced from that GL"
+      - step: "Create Sample Determination worksheet matching that GL"
         action: "create"
         model: "general_audit_ws_a916660"
         save_as: "ws_sample_determination"
@@ -1530,7 +1529,9 @@ scenarios:
           general_audit_id: "REC: audit.id"
           type_id: "REC: ws_type.id"
 
-      - step: "Create variable sourced from the Sample Determination worksheet"
+      - step:
+          "Create variable with data_mode=gl and data_source=sample, sourced from the
+          Sample Determination worksheet"
         action: "create"
         model: "general_audit_ws_aa899baf.variable"
         save_as: "variable"
@@ -1538,7 +1539,9 @@ scenarios:
         values:
           worksheet_id: "REC: worksheet.id"
           name: "Total Sample"
-          data_mode: "sample_determination"
+          data_mode: "gl"
+          general_ledger_id: "REC: ws_gl_sd.id"
+          data_source: "sample"
           sample_determination_id: "REC: ws_sample_determination.id"
           value_col_number: 3
 
@@ -1552,7 +1555,7 @@ scenarios:
             expected_records:
               - "REC: ws_sample_determination"
 
-      - step: "Assert data_title and value are correctly parsed"
+      - step: "Assert data_title and value are taken from the Sample Determination"
         action: "assert"
         target: "variable"
         asserts:
@@ -1565,47 +1568,38 @@ scenarios:
 
   - name:
       "Variable aa899baf - Compute allowed_sample_determination_ids kosong (different
-      audit)"
+      general_ledger_id)"
     steps:
-      - step: "Create second general audit"
+      - step: "Create GL worksheet A (this row's own source)"
         action: "create"
-        model: "general_audit"
-        save_as: "audit_other"
+        model: "general_audit_ws_d209914"
+        save_as: "ws_gl_a"
         as_user: "base.user_admin"
         values:
-          title: "Test General Audit - AA899BAF (other)"
-          partner_id: "REC: client.id"
-          accountant_id: "REC: accountant.id"
-          account_type_set_id: "REC: account_type_set.id"
-          financial_accounting_standard_id: "REC: standard.id"
-          date_start: 2026-01-01
-          date_end: 2026-12-31
-          need_interim: false
-          need_previous: false
-          num_of_consecutive_audit_firm: 1
-          num_of_consecutive_audit_accountant: 1
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_gl.id"
 
-      - step: "Open second general audit"
-        action: "call"
-        target: "audit_other"
-        method: "action_open"
+      - step: "Create GL worksheet B (a different source in the same audit)"
+        action: "create"
+        model: "general_audit_ws_d209914"
+        save_as: "ws_gl_b"
         as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_gl.id"
 
-      - step: "Invalidate cache after opening second general audit"
-        action: "call"
-        target: "audit_other"
-        method: "invalidate_cache"
-
-      - step: "Create Sample Determination worksheet on the OTHER audit"
+      - step: "Create Sample Determination worksheet matching GL B, not GL A"
         action: "create"
         model: "general_audit_ws_a916660"
-        save_as: "ws_sample_determination_other"
+        save_as: "ws_sample_determination_other_gl"
         as_user: "base.user_admin"
         values:
-          general_audit_id: "REC: audit_other.id"
+          general_audit_id: "REC: audit.id"
           type_id: "REC: ws_type_sample_determination.id"
+          data_mode: "gl"
+          general_ledger_id: "REC: ws_gl_b.id"
 
-      - step: "Create worksheet aa899baf on the ORIGINAL audit"
+      - step: "Create worksheet aa899baf to host the variable"
         action: "create"
         model: "general_audit_ws_aa899baf"
         save_as: "worksheet"
@@ -1614,25 +1608,33 @@ scenarios:
           general_audit_id: "REC: audit.id"
           type_id: "REC: ws_type.id"
 
-      - step: "Create variable on the original audit's worksheet"
-        action: "create"
+      - step: "Set data_mode=gl with general_ledger_id pointing to GL A (not GL B)"
+        action: "form"
         model: "general_audit_ws_aa899baf.variable"
-        save_as: "variable"
+        save_as: "domain_variable"
         as_user: "base.user_admin"
-        values:
-          worksheet_id: "REC: worksheet.id"
-          name: "Cross-audit"
-          data_mode: "sample_determination"
-          value_col_number: 1
+        ops:
+          - set:
+              worksheet_id: "REC: worksheet"
+          - set:
+              name: "Domain Test Variable"
+          - set:
+              value_col_number: 1
+          - set:
+              data_mode: "gl"
+          - set:
+              general_ledger_id: "REC: ws_gl_a"
+        save: true
 
       - step:
-          "Assert allowed_sample_determination_ids excludes the other audit's worksheet
-          -- this is the domain ([('id','in',allowed_sample_determination_ids)]) that
-          the form view uses to restrict the picker; the odoo.tests.common.Form API does
-          not itself enforce m2o domains (only readonly/type), so the restriction is
-          verified at its actual source: the computed field"
+          "Assert allowed_sample_determination_ids excludes the worksheet matching the
+          other General Ledger -- this is the domain
+          ([('id','in',allowed_sample_determination_ids)]) that the form view uses to
+          restrict the picker; the odoo.tests.common.Form API does not itself enforce
+          m2o domains (only readonly/type), so the restriction is verified at its actual
+          source: the computed field"
         action: "assert"
-        target: "variable"
+        target: "domain_variable"
         asserts:
           allowed_sample_determination_ids:
             type: "m2m"
@@ -1640,11 +1642,11 @@ scenarios:
             expected_count: 0
 
   # ------------------------------------------------------------------
-  # general_audit_ws_aa899baf.variable - onchange data_mode (sample_determination)
+  # general_audit_ws_aa899baf.variable - onchange data_source
   # ------------------------------------------------------------------
   - name:
-      "Variable aa899baf - Onchange data_mode clears general_ledger_id/subledger_id when
-      switching to sample_determination"
+      "Variable aa899baf - Onchange data_source keeps general_ledger_id while setting
+      sample_determination_id"
     steps:
       - step: "Create worksheet aa899baf to host the variable"
         action: "create"
@@ -1655,7 +1657,7 @@ scenarios:
           general_audit_id: "REC: audit.id"
           type_id: "REC: ws_type.id"
 
-      - step: "Create GL worksheet as a candidate data source"
+      - step: "Create GL worksheet as the row's own source"
         action: "create"
         model: "general_audit_ws_d209914"
         save_as: "ws_gl"
@@ -1664,7 +1666,7 @@ scenarios:
           general_audit_id: "REC: audit.id"
           type_id: "REC: ws_type_gl.id"
 
-      - step: "Create Sample Determination worksheet as the switch target"
+      - step: "Create Sample Determination worksheet matching that GL"
         action: "create"
         model: "general_audit_ws_a916660"
         save_as: "ws_sample_determination_onchange"
@@ -1672,6 +1674,8 @@ scenarios:
         values:
           general_audit_id: "REC: audit.id"
           type_id: "REC: ws_type_sample_determination.id"
+          data_mode: "gl"
+          general_ledger_id: "REC: ws_gl.id"
 
       # Asserting directly on the live (unsaved) Form object trips a
       # library/Form interaction bug (`hasattr(form, "__len__")` raises
@@ -1679,8 +1683,8 @@ scenarios:
       # first and assert on the resulting record instead. name and
       # value_col_number (no default) are filled so the save succeeds.
       - step:
-          "Set data_mode to gl with general_ledger_id, then switch to
-          sample_determination"
+          "Set data_mode to gl with general_ledger_id, then switch data_source to sample
+          and pick sample_determination_id"
         action: "form"
         model: "general_audit_ws_aa899baf.variable"
         save_as: "onchange_variable_sd"
@@ -1697,26 +1701,25 @@ scenarios:
           - set:
               general_ledger_id: "REC: ws_gl"
           - set:
-              data_mode: "sample_determination"
+              data_source: "sample"
           - set:
               sample_determination_id: "REC: ws_sample_determination_onchange"
         save: true
 
-      - step: "Assert general_ledger_id was cleared by the onchange"
+      - step:
+          "Assert general_ledger_id survives the data_source switch and
+          sample_determination_id was set"
         action: "assert"
         target: "onchange_variable_sd"
         asserts:
           general_ledger_id:
-            type: "value"
-            operator: "is_falsy"
-          subledger_id:
-            type: "value"
-            operator: "is_falsy"
+            type: "m2o"
+            expected: "REC: ws_gl"
           sample_determination_id:
             type: "m2o"
             expected: "REC: ws_sample_determination_onchange"
 
-  - name: "Variable aa899baf - Onchange data_mode clears sample_determination_id"
+  - name: "Variable aa899baf - Onchange data_source clears sample_determination_id"
     steps:
       - step: "Create worksheet aa899baf to host the variable"
         action: "create"
@@ -1727,18 +1730,18 @@ scenarios:
           general_audit_id: "REC: audit.id"
           type_id: "REC: ws_type.id"
 
-      - step: "Create Sample Determination worksheet as a candidate data source"
+      - step: "Create GL worksheet as the row's own source"
         action: "create"
-        model: "general_audit_ws_a916660"
-        save_as: "ws_sample_determination_onchange2"
+        model: "general_audit_ws_d209914"
+        save_as: "ws_gl_ds2"
         as_user: "base.user_admin"
         values:
           general_audit_id: "REC: audit.id"
-          type_id: "REC: ws_type_sample_determination.id"
+          type_id: "REC: ws_type_gl.id"
 
       - step:
-          "Set data_mode to sample_determination with sample_determination_id, then
-          switch to gl"
+          "Set data_mode=gl with general_ledger_id and data_source=population, then
+          switch data_source to sample"
         action: "form"
         model: "general_audit_ws_aa899baf.variable"
         save_as: "onchange_variable_sd2"
@@ -1751,11 +1754,13 @@ scenarios:
           - set:
               value_col_number: 1
           - set:
-              data_mode: "sample_determination"
-          - set:
-              sample_determination_id: "REC: ws_sample_determination_onchange2"
-          - set:
               data_mode: "gl"
+          - set:
+              general_ledger_id: "REC: ws_gl_ds2"
+          - set:
+              data_source: "population"
+          - set:
+              data_source: "sample"
         save: true
 
       - step: "Assert sample_determination_id was cleared by the onchange"

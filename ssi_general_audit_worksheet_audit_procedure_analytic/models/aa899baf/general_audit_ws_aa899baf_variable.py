@@ -44,7 +44,6 @@ class GeneralAuditWSaa899bafVariable(models.Model):
         selection=[
             ("gl", "General Ledger"),
             ("subledger", "Subledger"),
-            ("sample_determination", "Sample Determination"),
         ],
         required=True,
         help="Determines whether to use General Ledger or Subledger data as population.",
@@ -74,6 +73,18 @@ class GeneralAuditWSaa899bafVariable(models.Model):
         string="Subledger",
         required=False,
         help="Subledger worksheet used as data source for this variable.",
+    )
+    data_source = fields.Selection(
+        string="Data Source",
+        selection=[
+            ("population", "Population"),
+            ("sample", "Sample"),
+        ],
+        required=True,
+        default="population",
+        help="Determines whether the raw data comes directly from the "
+        "selected General Ledger/Subledger (Population), or from a "
+        "Sample Determination worksheet matching it (Sample).",
     )
     allowed_sample_determination_ids = fields.Many2many(
         comodel_name="general_audit_ws_a916660",
@@ -141,18 +152,31 @@ class GeneralAuditWSaa899bafVariable(models.Model):
         "data_mode",
         "general_ledger_id",
         "subledger_id",
+        "data_source",
         "sample_determination_id",
     )
     def _compute_data_title(self):
+        """Derive the display title of the currently selected data source.
+
+        :return: sets ``data_title`` to the ``title`` of the General
+            Ledger/Subledger when ``data_source`` is ``population``, or
+            of ``sample_determination_id`` when it is ``sample``; empty
+            when no matching source is selected.
+        """
         for record in self:
-            if record.data_mode == "gl" and record.general_ledger_id:
-                record.data_title = record.general_ledger_id.title
-            elif record.data_mode == "subledger" and record.subledger_id:
-                record.data_title = record.subledger_id.title
-            elif (
-                record.data_mode == "sample_determination"
-                and record.sample_determination_id
+            if (
+                record.data_mode == "gl"
+                and record.data_source == "population"
+                and record.general_ledger_id
             ):
+                record.data_title = record.general_ledger_id.title
+            elif (
+                record.data_mode == "subledger"
+                and record.data_source == "population"
+                and record.subledger_id
+            ):
+                record.data_title = record.subledger_id.title
+            elif record.data_source == "sample" and record.sample_determination_id:
                 record.data_title = record.sample_determination_id.title
             else:
                 record.data_title = False
@@ -194,47 +218,60 @@ class GeneralAuditWSaa899bafVariable(models.Model):
                 record.allowed_subledger_ids = SL.search(criteria)
 
     @api.depends(
-        "worksheet_id",
-        "worksheet_id.general_audit_id",
+        "data_mode",
+        "general_ledger_id",
+        "subledger_id",
     )
     def _compute_allowed_sample_determination_ids(self):
-        """Restrict the Sample Determination picker to the current audit.
+        """Restrict the Sample Determination picker to the matching source.
 
         :return: sets ``allowed_sample_determination_ids`` to the
-            ``general_audit_ws_a916660`` records sharing this variable's
-            worksheet's ``general_audit_id``, or an empty recordset when
-            unset.
+            ``general_audit_ws_a916660`` records sharing this record's
+            selected General Ledger or Subledger, or an empty recordset
+            when no source is selected.
         """
         SD = self.env["general_audit_ws_a916660"]
         for record in self:
             record.allowed_sample_determination_ids = False
-            if record.worksheet_id and record.worksheet_id.general_audit_id:
-                criteria = [
-                    (
-                        "general_audit_id",
-                        "=",
-                        record.worksheet_id.general_audit_id.id,
-                    ),
-                ]
-                record.allowed_sample_determination_ids = SD.search(criteria)
+            if record.data_mode == "gl" and record.general_ledger_id:
+                record.allowed_sample_determination_ids = SD.search(
+                    [("general_ledger_id", "=", record.general_ledger_id.id)]
+                )
+            elif record.data_mode == "subledger" and record.subledger_id:
+                record.allowed_sample_determination_ids = SD.search(
+                    [("subledger_id", "=", record.subledger_id.id)]
+                )
 
     @api.depends(
         "data_mode",
         "general_ledger_id",
         "subledger_id",
+        "data_source",
         "sample_determination_id",
         "filter_where_clause",
     )
     def _compute_raw_data(self):
+        """Resolve the raw CSV data for the currently selected source.
+
+        :return: sets ``raw_data`` to the population source (General
+            Ledger/Subledger) when ``data_source`` is ``population``, or
+            to ``sample_determination_id.raw_data`` when ``sample``,
+            optionally filtered by ``filter_where_clause``.
+        """
         for record in self:
-            if record.data_mode == "gl" and record.general_ledger_id:
-                source_data = record.general_ledger_id.raw_data
-            elif record.data_mode == "subledger" and record.subledger_id:
-                source_data = record.subledger_id.raw_data
-            elif (
-                record.data_mode == "sample_determination"
-                and record.sample_determination_id
+            if (
+                record.data_mode == "gl"
+                and record.data_source == "population"
+                and record.general_ledger_id
             ):
+                source_data = record.general_ledger_id.raw_data
+            elif (
+                record.data_mode == "subledger"
+                and record.data_source == "population"
+                and record.subledger_id
+            ):
+                source_data = record.subledger_id.raw_data
+            elif record.data_source == "sample" and record.sample_determination_id:
                 source_data = record.sample_determination_id.raw_data
             else:
                 source_data = False
@@ -249,6 +286,7 @@ class GeneralAuditWSaa899bafVariable(models.Model):
         "data_mode",
         "general_ledger_id",
         "subledger_id",
+        "data_source",
         "sample_determination_id",
         "filter_where_clause",
         "value_col_number",
@@ -256,16 +294,29 @@ class GeneralAuditWSaa899bafVariable(models.Model):
         "decimal_separator",
     )
     def _compute_value(self):
+        """Sum the value column of the currently selected data source.
+
+        :return: sets ``value`` to the sum of ``value_col_number`` over
+            the raw data resolved the same way as ``_compute_raw_data``
+            (population source, or Sample Determination when
+            ``data_source`` is ``sample``), after applying
+            ``filter_where_clause``.
+        """
         for record in self:
             # Recompute raw data inline to avoid dependency on non-stored field
-            if record.data_mode == "gl" and record.general_ledger_id:
-                source_data = record.general_ledger_id.raw_data
-            elif record.data_mode == "subledger" and record.subledger_id:
-                source_data = record.subledger_id.raw_data
-            elif (
-                record.data_mode == "sample_determination"
-                and record.sample_determination_id
+            if (
+                record.data_mode == "gl"
+                and record.data_source == "population"
+                and record.general_ledger_id
             ):
+                source_data = record.general_ledger_id.raw_data
+            elif (
+                record.data_mode == "subledger"
+                and record.data_source == "population"
+                and record.subledger_id
+            ):
+                source_data = record.subledger_id.raw_data
+            elif record.data_source == "sample" and record.sample_determination_id:
                 source_data = record.sample_determination_id.raw_data
             else:
                 source_data = False
@@ -368,6 +419,6 @@ class GeneralAuditWSaa899bafVariable(models.Model):
     def onchange_subledger_id(self):
         self.subledger_id = False
 
-    @api.onchange("data_mode")
+    @api.onchange("data_mode", "general_ledger_id", "subledger_id", "data_source")
     def onchange_sample_determination_id(self):
         self.sample_determination_id = False
