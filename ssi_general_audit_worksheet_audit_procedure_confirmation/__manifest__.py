@@ -13,6 +13,7 @@
         "ssi_general_audit",
         "ssi_general_audit_worksheet_control_risk",
         "ssi_general_audit_worksheet_lead_schedule",
+        "ssi_general_audit_worksheet_sample_determination",
         "ssi_general_audit_worksheet_understanding_entity",
     ],
     "data": [

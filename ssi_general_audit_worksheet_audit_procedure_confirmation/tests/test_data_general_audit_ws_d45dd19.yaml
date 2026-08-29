@@ -114,6 +114,11 @@ setup:
       xml_id: "ssi_general_audit_worksheet_client_package.worksheet_type_b5e3d9f"
       save_as: "ws_type_subledger"
 
+    - step: "Get worksheet type a916660 (Sample Determination)"
+      action: "ref"
+      xml_id: "ssi_general_audit_worksheet_sample_determination.worksheet_type_a916660"
+      save_as: "ws_type_sample_determination"
+
     - step: "Create client account group"
       action: "create"
       model: "client_account_group"
@@ -1136,3 +1141,206 @@ scenarios:
           subledger_id:
             type: "value"
             operator: "is_falsy"
+
+  # ------------------------------------------------------------------
+  # 17. Confirmation raw_data/raw_data_title from Sample Determination
+  # ------------------------------------------------------------------
+  - name:
+      "Confirmation d45dd19 - raw_data/raw_data_title from Sample Determination source
+      (positive)"
+    steps:
+      - step: "Create GL worksheet backing the sample determination"
+        action: "create"
+        model: "general_audit_ws_d209914"
+        save_as: "ws_gl_sd"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_gl.id"
+          title: "Sample Determination Ledger"
+          raw_data: |
+            Ref,Debit
+            R1,100
+            R2,200
+
+      - step: "Create Sample Determination worksheet sourced from that GL"
+        action: "create"
+        model: "general_audit_ws_a916660"
+        save_as: "ws_sample_determination"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_sample_determination.id"
+          data_mode: "gl"
+          general_ledger_id: "REC: ws_gl_sd.id"
+
+      - step: "Create worksheet d45dd19"
+        action: "create"
+        model: "general_audit_ws_d45dd19"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+
+      - step: "Create confirmation sourced from the Sample Determination worksheet"
+        action: "create"
+        model: "general_audit_ws_d45dd19.confirmation"
+        save_as: "confirmation"
+        as_user: "base.user_admin"
+        values:
+          worksheet_id: "REC: worksheet.id"
+          party_name: "Bank ABC"
+          data_mode: "sample_determination"
+          sample_determination_id: "REC: ws_sample_determination.id"
+
+      - step: "Assert raw_data matches the Sample Determination source"
+        action: "assert"
+        target: "confirmation"
+        asserts:
+          raw_data:
+            type: "value"
+            expected: "REC: ws_sample_determination.raw_data"
+
+      - step: "Assert raw_data_title matches the Sample Determination source"
+        action: "assert"
+        target: "confirmation"
+        asserts:
+          raw_data_title:
+            type: "value"
+            expected: "REC: ws_sample_determination.title"
+
+  # ------------------------------------------------------------------
+  # 18. Onchange confirmation.data_mode clears general_ledger_id/
+  # subledger_id when switching to sample_determination
+  # ------------------------------------------------------------------
+  - name:
+      "Confirmation d45dd19 - Onchange data_mode to sample_determination clears
+      general_ledger_id/subledger_id"
+    steps:
+      - step: "Create worksheet d45dd19 to host the confirmation"
+        action: "create"
+        model: "general_audit_ws_d45dd19"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+
+      - step: "Create GL worksheet as a candidate data source"
+        action: "create"
+        model: "general_audit_ws_d209914"
+        save_as: "ws_gl_switch"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_gl.id"
+
+      - step:
+          "Set data_mode to gl with general_ledger_id, then switch to
+          sample_determination"
+        action: "form"
+        model: "general_audit_ws_d45dd19.confirmation"
+        save_as: "onchange_confirmation"
+        as_user: "base.user_admin"
+        ops:
+          - set:
+              worksheet_id: "REC: worksheet"
+          - set:
+              party_name: "Bank ABC"
+          - set:
+              data_mode: "gl"
+          - set:
+              general_ledger_id: "REC: ws_gl_switch"
+          - set:
+              data_mode: "sample_determination"
+        save: true
+
+      - step: "Assert general_ledger_id was cleared by the onchange"
+        action: "assert"
+        target: "onchange_confirmation"
+        asserts:
+          general_ledger_id:
+            type: "value"
+            operator: "is_falsy"
+          subledger_id:
+            type: "value"
+            operator: "is_falsy"
+
+  # ------------------------------------------------------------------
+  # 19. allowed_sample_determination_ids excludes a different audit's
+  # Sample Determination worksheet (negative)
+  # ------------------------------------------------------------------
+  - name:
+      "Confirmation d45dd19 - allowed_sample_determination_ids kosong (different audit)"
+    steps:
+      - step: "Create second general audit"
+        action: "create"
+        model: "general_audit"
+        save_as: "audit_other_d45dd19"
+        as_user: "base.user_admin"
+        values:
+          title: "Test General Audit - D45DD19 (other)"
+          partner_id: "REC: client.id"
+          accountant_id: "REC: accountant.id"
+          account_type_set_id: "REC: account_type_set.id"
+          financial_accounting_standard_id: "REC: standard.id"
+          date_start: 2026-01-01
+          date_end: 2026-12-31
+          need_interim: false
+          need_previous: false
+          num_of_consecutive_audit_firm: 1
+          num_of_consecutive_audit_accountant: 1
+
+      - step: "Open second general audit"
+        action: "call"
+        target: "audit_other_d45dd19"
+        method: "action_open"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after opening second general audit"
+        action: "call"
+        target: "audit_other_d45dd19"
+        method: "invalidate_cache"
+
+      - step: "Create Sample Determination worksheet on the OTHER audit"
+        action: "create"
+        model: "general_audit_ws_a916660"
+        save_as: "ws_sample_determination_other"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit_other_d45dd19.id"
+          type_id: "REC: ws_type_sample_determination.id"
+
+      - step: "Create worksheet d45dd19 on the ORIGINAL audit"
+        action: "create"
+        model: "general_audit_ws_d45dd19"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+
+      - step: "Create confirmation on the original audit's worksheet"
+        action: "create"
+        model: "general_audit_ws_d45dd19.confirmation"
+        save_as: "confirmation"
+        as_user: "base.user_admin"
+        values:
+          worksheet_id: "REC: worksheet.id"
+          party_name: "Cross-audit"
+          data_mode: "sample_determination"
+
+      - step:
+          "Assert allowed_sample_determination_ids excludes the other audit's worksheet
+          -- this is the domain ([('id','in',allowed_sample_determination_ids)]) that
+          the form view uses to restrict the picker; the odoo.tests.common.Form API does
+          not itself enforce m2o domains (only readonly/type), so the restriction is
+          verified at its actual source: the computed field"
+        action: "assert"
+        target: "confirmation"
+        asserts:
+          allowed_sample_determination_ids:
+            type: "m2m"
+            check: "count"
+            expected_count: 0
