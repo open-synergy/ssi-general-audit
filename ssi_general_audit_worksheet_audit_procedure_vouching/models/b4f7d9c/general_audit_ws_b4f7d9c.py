@@ -287,45 +287,58 @@ class GeneralAuditWSb4f7d9c(models.Model):
     )
 
     @api.depends(
+        "data_source",
         "raw_data",
         "sampling_data",
         "reference_col_number",
     )
     def _compute_vouching_data(self):
+        """Compute the data actually used for the vouching procedure.
+
+        :return: nothing; assigns ``vouching_data``. When ``data_source``
+            is ``"population"``, the whole ``raw_data`` is used as-is
+            (no cross-reference against a sample). When ``data_source``
+            is ``"sample"``, ``raw_data`` is filtered to the rows whose
+            ``reference_col_number`` column value appears in the
+            referenced ``sampling_data`` (excluding rows marked
+            ``"Candidate"``), unchanged from the previous behaviour.
+        """
         for record in self:
-            record.vouching_data = False
+            result = False
             raw = record.raw_data
             sampling = record.sampling_data
             ref_col = record.reference_col_number
-            if not raw or not sampling or not ref_col:
-                continue
-            try:
-                sampling_reader = csv.reader(io.StringIO(sampling))
-                sampling_rows = list(sampling_reader)
-                ref_values = set()
-                for idx, row in enumerate(sampling_rows):
-                    if idx == 0:
-                        continue
-                    if len(row) >= 2 and row[-1].strip() != "Candidate":
-                        ref_values.add(row[1].strip())
-                raw_reader = csv.reader(io.StringIO(raw))
-                raw_rows = list(raw_reader)
-                if not raw_rows:
-                    continue
-                result_rows = [raw_rows[0]]
-                for idx, row in enumerate(raw_rows):
-                    if idx == 0:
-                        continue
-                    if len(row) >= ref_col:
-                        if row[ref_col - 1].strip() in ref_values:
-                            result_rows.append(row)
-                if len(result_rows) > 1:
-                    output = io.StringIO()
-                    writer = csv.writer(output)
-                    writer.writerows(result_rows)
-                    record.vouching_data = output.getvalue()
-            except Exception:
-                record.vouching_data = False
+            if record.data_source == "population":
+                if raw:
+                    result = raw
+            elif raw and sampling and ref_col:
+                try:
+                    sampling_reader = csv.reader(io.StringIO(sampling))
+                    sampling_rows = list(sampling_reader)
+                    ref_values = set()
+                    for idx, row in enumerate(sampling_rows):
+                        if idx == 0:
+                            continue
+                        if len(row) >= 2 and row[-1].strip() != "Candidate":
+                            ref_values.add(row[1].strip())
+                    raw_reader = csv.reader(io.StringIO(raw))
+                    raw_rows = list(raw_reader)
+                    if raw_rows:
+                        result_rows = [raw_rows[0]]
+                        for idx, row in enumerate(raw_rows):
+                            if idx == 0:
+                                continue
+                            if len(row) >= ref_col:
+                                if row[ref_col - 1].strip() in ref_values:
+                                    result_rows.append(row)
+                        if len(result_rows) > 1:
+                            output = io.StringIO()
+                            writer = csv.writer(output)
+                            writer.writerows(result_rows)
+                            result = output.getvalue()
+                except Exception:
+                    result = False
+            record.vouching_data = result
 
     @api.depends("general_audit_id")
     def _compute_allowed_general_ledger_ids(self):

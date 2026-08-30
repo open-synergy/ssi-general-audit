@@ -784,6 +784,7 @@ scenarios:
           type_id: "REC: ws_type.id"
           data_mode: "gl"
           general_ledger_id: "REC: gl.id"
+          data_source: "sample"
           sample_determination_id: "REC: sd.id"
           reference_col_number: 1
 
@@ -820,6 +821,74 @@ scenarios:
         values:
           general_audit_id: "REC: audit.id"
           type_id: "REC: ws_type.id"
+
+      - step: "Assert vouching_data is empty"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          vouching_data:
+            type: "value"
+            operator: "is_falsy"
+
+  # ------------------------------------------------------------------
+  # _compute_vouching_data (header) - data_source = population
+  #
+  # When data_source is "population" the whole raw_data (GL/Subledger)
+  # becomes vouching_data as-is, without cross-referencing any sample --
+  # even though sample_determination_id/reference_col_number are left
+  # empty.
+  # ------------------------------------------------------------------
+  - name: "Worksheet b4f7d9c - Compute vouching_data (data_source population)"
+    steps:
+      - step: "Create General Ledger worksheet with raw data"
+        action: "create"
+        model: "general_audit_ws_d209914"
+        save_as: "gl"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_d209914.id"
+          account_mode: "standard_account"
+          account_type_id: "REC: account_type.id"
+          raw_data: "Ref,Amount\nREF1,1000\nREF2,2000\nREF3,3000\n"
+          title: "GL Vouching Population Header"
+
+      - step: "Create worksheet b4f7d9c with data_source population"
+        action: "create"
+        model: "general_audit_ws_b4f7d9c"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+          data_mode: "gl"
+          general_ledger_id: "REC: gl.id"
+          data_source: "population"
+
+      - step: "Assert vouching_data equals raw_data, unfiltered"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          vouching_data:
+            type: "value"
+            expected: "Ref,Amount\nREF1,1000\nREF2,2000\nREF3,3000\n"
+
+  # ------------------------------------------------------------------
+  # _compute_vouching_data (header) - data_source = sample, without
+  # sample_determination_id
+  # ------------------------------------------------------------------
+  - name: "Worksheet b4f7d9c - Compute vouching_data (data_source sample, kosong)"
+    steps:
+      - step:
+          "Create worksheet b4f7d9c with data_source sample, no sample_determination_id"
+        action: "create"
+        model: "general_audit_ws_b4f7d9c"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+          data_source: "sample"
 
       - step: "Assert vouching_data is empty"
         action: "assert"
