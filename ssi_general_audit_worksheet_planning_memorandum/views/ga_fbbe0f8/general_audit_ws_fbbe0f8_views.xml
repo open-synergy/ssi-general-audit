@@ -175,18 +175,23 @@
 
                     <page name="report_obj" string="Reporting Objectives">
                         <group name="group_2" col="2" style="margin-bottom: 8px;">
-                            <!-- Reporting timetable to be followed by the entity (TODO) -->
-                            <div
-                                style="display: flex; align-items: flex-start; margin-bottom: 8px;"
-                            >
+                            <div style="margin-bottom: 8px;">
                                 <div
                                     class="o_form_label"
-                                    style="font-weight: bold; white-space: normal; width: 600px;"
+                                    style="font-weight: bold; white-space: normal; margin-bottom: 8px;"
                                 >
                                     Reporting timetable to be followed by the entity
                                 </div>
-                                <span style="margin: 0 8px;font-weight: bold;">:</span>
-                                <!-- <field name="expert_type_ids" widget="many2many_tags" nolabel="1" style="flex: 1;"/> -->
+                                <field
+                                    name="reporting_timetable_ids"
+                                    nolabel="1"
+                                    readonly="1"
+                                >
+                                    <tree>
+                                        <field name="description" />
+                                        <field name="date" />
+                                    </tree>
+                                </field>
                             </div>
                         </group>
                         <group name="group_3" col="2" style="margin-bottom: 8px;">
@@ -764,7 +769,11 @@
                                     <field name="name" />
                                     <field name="business_environment_id" />
                                     <field name="state" />
-                                    <field name="conclusion" string="Conclusion" />
+                                    <field
+                                        name="conclusion"
+                                        string="Conclusion"
+                                        style="white-space: normal; word-wrap: break-word; max-width: 320px;"
+                                    />
                                 </tree>
                             </field>
                         </group>
@@ -778,7 +787,11 @@
                                     <field name="name" />
                                     <field name="business_process_id" />
                                     <field name="state" />
-                                    <field name="conclusion" string="Conclusion" />
+                                    <field
+                                        name="conclusion"
+                                        string="Conclusion"
+                                        style="white-space: normal; word-wrap: break-word; max-width: 320px;"
+                                    />
                                 </tree>
                             </field>
                         </group>
@@ -792,7 +805,11 @@
                                     <field name="name" />
                                     <field name="base_amount_source" />
                                     <field name="state" />
-                                    <field name="conclusion" string="Conclusion" />
+                                    <field
+                                        name="conclusion"
+                                        string="Conclusion"
+                                        style="white-space: normal; word-wrap: break-word; max-width: 320px;"
+                                    />
                                 </tree>
                             </field>
                         </group>
@@ -806,7 +823,11 @@
                                     <field name="name" />
                                     <field name="base_amount_source" />
                                     <field name="state" />
-                                    <field name="conclusion" string="Conclusion" />
+                                    <field
+                                        name="conclusion"
+                                        string="Conclusion"
+                                        style="white-space: normal; word-wrap: break-word; max-width: 320px;"
+                                    />
                                 </tree>
                             </field>
                         </group>
@@ -935,7 +956,23 @@
                                     <field name="business_cycle_id" />
                                     <field name="risk" />
                                     <field name="state" />
-                                    <field name="conclusion" string="Conclusion" />
+                                    <field
+                                        name="conclusion"
+                                        string="Conclusion"
+                                        style="white-space: normal; word-wrap: break-word; max-width: 320px;"
+                                    />
+                                </tree>
+                            </field>
+                        </group>
+                        <group name="link_14" string="Data Collection">
+                            <field
+                                name="link_14_ids"
+                                widget="many2many_tree"
+                                nolabel="1"
+                            >
+                                <tree>
+                                    <field name="name" />
+                                    <field name="state" />
                                 </tree>
                             </field>
                         </group>
