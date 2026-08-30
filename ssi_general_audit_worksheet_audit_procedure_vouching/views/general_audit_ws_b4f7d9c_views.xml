@@ -107,16 +107,16 @@
                     <field
                         name="sample_determination_id"
                         domain="[('id', 'in', allowed_sample_determination_ids)]"
-                        attrs="{'invisible': [('data_mode', '=', False)]}"
+                        attrs="{'invisible': [('data_source', '!=', 'sample')]}"
                     />
-                    <field name="reference_col_number" />
+                    <field
+                        name="reference_col_number"
+                        attrs="{'invisible': [('data_source', '!=', 'sample')]}"
+                    />
                 </xpath>
                 <xpath expr="//page[1]" position="before">
-                    <page name="population" string="Population">
+                    <page name="population" string="Raw Data">
                         <field name="raw_data" widget="csv_table" />
-                    </page>
-                    <page name="sampling" string="Sampling">
-                        <field name="sampling_data" nolabel="1" widget="csv_table" />
                     </page>
                     <page name="vouching_items" string="Vouching Items">
                         <field name="vouching_data" nolabel="1" widget="csv_table" />
