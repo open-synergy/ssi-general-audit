@@ -4,5 +4,6 @@
 
 from . import (
     general_audit_ws_f5a3cee_detail,
+    general_audit_ws_f5a3cee_reporting_timetable,
     general_audit_ws_f5a3cee,
 )

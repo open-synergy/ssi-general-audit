@@ -650,3 +650,159 @@ scenarios:
           state:
             type: "value"
             expected: "draft"
+
+  # ------------------------------------------------------------------
+  # reporting_timetable_ids - add a row manually while worksheet is open
+  # ------------------------------------------------------------------
+  - name: "Worksheet f5a3cee - Reporting timetable (add row while open)"
+    steps:
+      - step: "Create worksheet for reporting timetable"
+        action: "create"
+        model: "general_audit_ws_f5a3cee"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+
+      - step: "Open worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_open"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after opening worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Add a reporting timetable row manually"
+        action: "create"
+        model: "general_audit_ws_f5a3cee.reporting_timetable"
+        save_as: "timetable_line"
+        as_user: "base.user_admin"
+        values:
+          worksheet_id: "REC: worksheet.id"
+          description: "Draft laporan keuangan"
+          date: 2026-06-30
+
+      - step: "Assert the row was saved against the right worksheet"
+        action: "assert"
+        target: "timetable_line"
+        asserts:
+          id:
+            type: "value"
+            operator: "is_truthy"
+          worksheet_id:
+            type: "m2o"
+            expected: "REC: worksheet"
+          description:
+            type: "value"
+            expected: "Draft laporan keuangan"
+          date:
+            type: "value"
+            expected: 2026-06-30
+
+  # ------------------------------------------------------------------
+  # reporting_timetable_ids - complete_ok toggled independently of detail_ids
+  # ------------------------------------------------------------------
+  - name: "Worksheet f5a3cee - Reporting timetable (complete_ok independent)"
+    steps:
+      - step: "Create worksheet for independence check"
+        action: "create"
+        model: "general_audit_ws_f5a3cee"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+
+      - step: "Open worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_open"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after opening worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Create a detail line, not completed"
+        action: "create"
+        model: "general_audit_ws_f5a3cee.detail"
+        save_as: "detail_line"
+        as_user: "base.user_admin"
+        values:
+          worksheet_id: "REC: worksheet.id"
+          account_client_type_id: "REC: account_type_a.id"
+          complete_ok: false
+
+      - step: "Create a reporting timetable row, not completed"
+        action: "create"
+        model: "general_audit_ws_f5a3cee.reporting_timetable"
+        save_as: "timetable_line"
+        as_user: "base.user_admin"
+        values:
+          worksheet_id: "REC: worksheet.id"
+          description: "Draft laporan keuangan"
+          complete_ok: false
+
+      - step: "Toggle complete_ok only on the reporting timetable row"
+        action: "write"
+        target: "timetable_line"
+        as_user: "base.user_admin"
+        values:
+          complete_ok: true
+
+      - step: "Assert the reporting timetable row is now completed"
+        action: "assert"
+        target: "timetable_line"
+        asserts:
+          complete_ok:
+            type: "value"
+            expected: true
+
+      - step: "Assert the unrelated detail line stayed uncompleted"
+        action: "assert"
+        target: "detail_line"
+        asserts:
+          complete_ok:
+            type: "value"
+            expected: false
+
+  # ------------------------------------------------------------------
+  # reporting_timetable_ids - description is required
+  # ------------------------------------------------------------------
+  - name: "Worksheet f5a3cee - Reporting timetable (description required)"
+    steps:
+      - step: "Create worksheet for the required-field check"
+        action: "create"
+        model: "general_audit_ws_f5a3cee"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+
+      - step: "Open worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_open"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after opening worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Row without description must be rejected on save"
+        action: "form"
+        model: "general_audit_ws_f5a3cee.reporting_timetable"
+        as_user: "base.user_admin"
+        values:
+          worksheet_id: "REC: worksheet"
+          date: 2026-06-30
+        expect_error:
+          type: "AssertionError"
+          message_contains: "is a required field"
