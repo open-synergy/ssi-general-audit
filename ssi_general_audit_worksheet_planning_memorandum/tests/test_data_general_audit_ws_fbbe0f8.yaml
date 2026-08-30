@@ -164,6 +164,11 @@ setup:
       xml_id: "ssi_general_audit_worksheet_audit_working_plan.worksheet_type_cbbbaf4"
       save_as: "ws_type_cbbbaf4"
 
+    - step: "Get worksheet type f5a3cee"
+      action: "ref"
+      xml_id: "ssi_general_audit_worksheet_client_package.worksheet_type_f5a3cee"
+      save_as: "ws_type_f5a3cee"
+
     - step: "Get business environment - Industry Trends"
       action: "ref"
       xml_id: "ssi_general_audit.general_audit_business_environment_1_297034dd"
@@ -254,6 +259,14 @@ scenarios:
           link_13_id:
             type: "value"
             operator: "is_falsy"
+          link_14_ids:
+            type: "m2m"
+            check: "count"
+            expected_count: 0
+          reporting_timetable_ids:
+            type: "m2m"
+            check: "count"
+            expected_count: 0
           overall_materiality:
             type: "value"
             expected: 0.0
@@ -785,6 +798,14 @@ scenarios:
           link_13_id:
             type: "m2o"
             expected: "REC: ws_cbbbaf4"
+          link_14_ids:
+            type: "m2m"
+            check: "count"
+            expected_count: 0
+          reporting_timetable_ids:
+            type: "m2m"
+            check: "count"
+            expected_count: 0
 
       - step: "Assert derived fields from link_1 (bdcdfc5) business environment filters"
         action: "assert"
@@ -1233,3 +1254,276 @@ scenarios:
           state:
             type: "value"
             expected: "draft"
+
+  # ------------------------------------------------------------------
+  # link_14_ids / reporting_timetable_ids - single Data Collection
+  # worksheet with two reporting timetable rows
+  # ------------------------------------------------------------------
+  - name:
+      "Compute link_14_ids and reporting_timetable_ids from one Data Collection
+      worksheet"
+    steps:
+      - step: "Create Data Collection worksheet f5a3cee (link_14)"
+        action: "create"
+        model: "general_audit_ws_f5a3cee"
+        save_as: "ws_f5a3cee_1"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_f5a3cee.id"
+
+      - step: "Open Data Collection worksheet f5a3cee"
+        action: "call"
+        target: "ws_f5a3cee_1"
+        method: "action_open"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after opening ws_f5a3cee_1"
+        action: "call"
+        target: "ws_f5a3cee_1"
+        method: "invalidate_cache"
+
+      - step: "Add first reporting timetable row"
+        action: "create"
+        model: "general_audit_ws_f5a3cee.reporting_timetable"
+        save_as: "tt_row_1"
+        as_user: "base.user_admin"
+        values:
+          worksheet_id: "REC: ws_f5a3cee_1.id"
+          description: "Draft financial statement"
+          date: 2026-06-30
+
+      - step: "Add second reporting timetable row"
+        action: "create"
+        model: "general_audit_ws_f5a3cee.reporting_timetable"
+        save_as: "tt_row_2"
+        as_user: "base.user_admin"
+        values:
+          worksheet_id: "REC: ws_f5a3cee_1.id"
+          description: "Final financial statement"
+          date: 2026-07-15
+
+      - step: "Create worksheet fbbe0f8 on the same general audit"
+        action: "create"
+        model: "general_audit_ws_fbbe0f8"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_fbbe0f8.id"
+
+      - step: "Assert link_14_ids and reporting_timetable_ids computed"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          link_14_ids:
+            type: "m2m"
+            check: "exact"
+            expected_records:
+              - "REC: ws_f5a3cee_1"
+          reporting_timetable_ids:
+            type: "m2m"
+            check: "exact"
+            expected_records:
+              - "REC: tt_row_1"
+              - "REC: tt_row_2"
+
+  # ------------------------------------------------------------------
+  # link_14_ids / reporting_timetable_ids - a single Data Collection
+  # worksheet is excluded while draft, and picked up once it transitions
+  # to open. (NOTE: a second general_audit_ws_f5a3cee on the SAME
+  # general_audit_id is not a valid fixture here — type_id "Data
+  # Collection" has allowed_audit=False, so
+  # general_audit_worksheet_mixin._check_unique_general_audit only
+  # allows one worksheet of this type per audit engagement. Draft vs.
+  # open/done is exercised by transitioning ONE worksheet's state
+  # instead of creating a second one.)
+  # ------------------------------------------------------------------
+  - name: "reporting_timetable_ids excludes draft, includes once worksheet opens"
+    steps:
+      - step: "Create Data Collection worksheet f5a3cee (draft)"
+        action: "create"
+        model: "general_audit_ws_f5a3cee"
+        save_as: "ws_f5a3cee_transition"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_f5a3cee.id"
+
+      - step: "Add reporting timetable row while the worksheet is still draft"
+        action: "create"
+        model: "general_audit_ws_f5a3cee.reporting_timetable"
+        save_as: "tt_row_transition"
+        as_user: "base.user_admin"
+        values:
+          worksheet_id: "REC: ws_f5a3cee_transition.id"
+          description: "Interim report (pending open)"
+          date: 2026-08-01
+
+      - step: "Create worksheet fbbe0f8 on the same general audit"
+        action: "create"
+        model: "general_audit_ws_fbbe0f8"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_fbbe0f8.id"
+
+      - step: "Reload links while ws_f5a3cee_transition is still draft"
+        action: "call"
+        target: "worksheet"
+        method: "action_reload_links"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after reloading links (draft state)"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Assert link_14_ids and reporting_timetable_ids stay empty while draft"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          link_14_ids:
+            type: "m2m"
+            check: "count"
+            expected_count: 0
+          reporting_timetable_ids:
+            type: "m2m"
+            check: "count"
+            expected_count: 0
+
+      - step: "Open ws_f5a3cee_transition"
+        action: "call"
+        target: "ws_f5a3cee_transition"
+        method: "action_open"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after opening ws_f5a3cee_transition"
+        action: "call"
+        target: "ws_f5a3cee_transition"
+        method: "invalidate_cache"
+
+      - step: "Reload links again now that ws_f5a3cee_transition is open"
+        action: "call"
+        target: "worksheet"
+        method: "action_reload_links"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after reloading links (open state)"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Assert link_14_ids and reporting_timetable_ids now include the worksheet"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          link_14_ids:
+            type: "m2m"
+            check: "exact"
+            expected_records:
+              - "REC: ws_f5a3cee_transition"
+          reporting_timetable_ids:
+            type: "m2m"
+            check: "exact"
+            expected_records:
+              - "REC: tt_row_transition"
+
+  # ------------------------------------------------------------------
+  # link_14_ids / reporting_timetable_ids - Data Collection worksheet
+  # on a DIFFERENT general audit engagement is not included
+  # ------------------------------------------------------------------
+  - name: "Data Collection worksheet on a different general audit is not linked"
+    steps:
+      - step: "Create a second client partner for the other audit engagement"
+        action: "create"
+        model: "res.partner"
+        save_as: "client_other"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Audit Client - fbbe0f8 Other Audit"
+          is_company: true
+
+      - step: "Create a second general audit engagement"
+        action: "create"
+        model: "general_audit"
+        save_as: "audit_other"
+        as_user: "base.user_admin"
+        values:
+          title: "Test General Audit - fbbe0f8 Other Audit"
+          partner_id: "REC: client_other.id"
+          accountant_id: "REC: accountant.id"
+          account_type_set_id: "REC: account_type_set.id"
+          financial_accounting_standard_id: "REC: standard.id"
+          date_start: 2026-01-01
+          date_end: 2026-12-31
+          need_interim: false
+          need_previous: false
+          num_of_consecutive_audit_firm: 1
+          num_of_consecutive_audit_accountant: 1
+
+      - step: "Open the other general audit"
+        action: "call"
+        target: "audit_other"
+        method: "action_open"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after opening the other general audit"
+        action: "call"
+        target: "audit_other"
+        method: "invalidate_cache"
+
+      - step: "Create Data Collection worksheet on the other general audit"
+        action: "create"
+        model: "general_audit_ws_f5a3cee"
+        save_as: "ws_f5a3cee_other"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit_other.id"
+          type_id: "REC: ws_type_f5a3cee.id"
+
+      - step: "Open Data Collection worksheet on the other general audit"
+        action: "call"
+        target: "ws_f5a3cee_other"
+        method: "action_open"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after opening ws_f5a3cee_other"
+        action: "call"
+        target: "ws_f5a3cee_other"
+        method: "invalidate_cache"
+
+      - step: "Add reporting timetable row on the other general audit's worksheet"
+        action: "create"
+        model: "general_audit_ws_f5a3cee.reporting_timetable"
+        save_as: "tt_row_other"
+        as_user: "base.user_admin"
+        values:
+          worksheet_id: "REC: ws_f5a3cee_other.id"
+          description: "Should not appear (different general audit)"
+          date: 2026-09-01
+
+      - step: "Create worksheet fbbe0f8 on the ORIGINAL general audit"
+        action: "create"
+        model: "general_audit_ws_fbbe0f8"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_fbbe0f8.id"
+
+      - step:
+          "Assert link_14_ids and reporting_timetable_ids stay empty (other audit's
+          worksheet is not linked)"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          link_14_ids:
+            type: "m2m"
+            check: "count"
+            expected_count: 0
+          reporting_timetable_ids:
+            type: "m2m"
+            check: "count"
+            expected_count: 0

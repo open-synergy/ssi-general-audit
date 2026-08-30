@@ -18,6 +18,7 @@
         "ssi_general_audit_worksheet_acceptance_continuance",
         "ssi_general_audit_worksheet_external_communication",
         "ssi_general_audit_worksheet_audit_working_plan",
+        "ssi_general_audit_worksheet_client_package",
     ],
     "data": [
         "views/assets.xml",

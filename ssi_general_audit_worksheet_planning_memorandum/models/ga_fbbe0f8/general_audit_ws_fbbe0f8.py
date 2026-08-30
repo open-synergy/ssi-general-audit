@@ -1136,6 +1136,80 @@ class GeneralAuditWSfbbe0f8(models.Model):
         ),
     )
 
+    # Data Collection
+    # LINK - 14 f5a3cee (RA.500)
+    @api.depends(
+        "general_audit_id",
+    )
+    def _compute_link_14_ids(self):
+        """Populate ``link_14_ids`` from open/done Data Collection worksheets.
+
+        Searches ``general_audit_ws_f5a3cee`` records sharing the same
+        ``general_audit_id`` with ``state`` in ``["open", "done"]`` —
+        same criteria pattern as the other ``link_N`` fields. Many2many
+        (not Many2one) because a single audit engagement can have more
+        than one Data Collection worksheet.
+        """
+        for record in self:
+            result = False
+            obj = self.env["general_audit_ws_f5a3cee"]
+            criteria = [
+                ("general_audit_id", "=", record.general_audit_id.id),
+                ("state", "in", ["open", "done"]),
+            ]
+            link_14_ids = obj.search(criteria)
+            if link_14_ids:
+                result = link_14_ids.ids
+            record.link_14_ids = result
+
+    link_14_ids = fields.Many2many(
+        string="RA.500",
+        comodel_name="general_audit_ws_f5a3cee",
+        compute_sudo=True,
+        compute="_compute_link_14_ids",
+        relation="rel_ga_ws_fbbe0f8_2_f5a3cee",
+        store=True,
+        help=(
+            "Collection of all (Data Collection) "
+            "worksheets linked to this General Audit. Automatically computed; use it to "
+            "navigate to each detailed worksheet."
+        ),
+    )
+
+    @api.depends(
+        "link_14_ids",
+    )
+    def _compute_reporting_timetable_ids(self):
+        """Aggregate reporting timetable lines from ``link_14_ids``.
+
+        Same aggregation pattern as ``_compute_unannounced_audit_ids``:
+        gathers child records (``reporting_timetable_ids``) from every
+        linked Data Collection worksheet into a single flat collection.
+        """
+        for record in self:
+            result = False
+            if record.link_14_ids:
+                reporting_timetable_ids = record.link_14_ids.mapped(
+                    "reporting_timetable_ids"
+                )
+                if reporting_timetable_ids:
+                    result = reporting_timetable_ids.ids
+            record.reporting_timetable_ids = result
+
+    reporting_timetable_ids = fields.Many2many(
+        string="Reporting Timetable",
+        comodel_name="general_audit_ws_f5a3cee.reporting_timetable",
+        compute_sudo=True,
+        compute="_compute_reporting_timetable_ids",
+        relation="rel_ga_ws_fbbe0f8_2_f5a3cee_reporting_timetable",
+        store=True,
+        help=(
+            "Reporting timetable lines aggregated from every linked "
+            "Data Collection worksheet (``link_14_ids``). Read-only "
+            "summary; edited from the Data Collection worksheet itself."
+        ),
+    )
+
     def action_reload_links(self):
         for record in self.sudo():
             record._reload_links()
@@ -1155,6 +1229,7 @@ class GeneralAuditWSfbbe0f8(models.Model):
         self._compute_link_11_ids()
         self._compute_link_12_ids()
         self._compute_link_13_id()
+        self._compute_link_14_ids()
 
     def _get_fields_required_before_confirm(self):
         _super = super(GeneralAuditWSfbbe0f8, self)
@@ -1193,6 +1268,7 @@ class GeneralAuditWSfbbe0f8(models.Model):
             "link_11_ids": _("Control Risk - Cycle Level"),
             "link_12_ids": _("Significant Account"),
             "link_13_id": _("Audit Working Plan"),
+            "link_14_ids": _("Data Collection"),
         }
 
     @api.model
