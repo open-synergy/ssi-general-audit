@@ -73,6 +73,47 @@
                         <field name="standard_item_ids" nolabel="1" />
                     </page>
                 </xpath>
+                <xpath expr="//page[@name='details']" position="after">
+                    <page name="others" string="Others">
+                        <group string="Reporting Timetable">
+                            <field
+                                name="reporting_timetable_ids"
+                                nolabel="1"
+                                attrs="{'readonly': [('state', '!=', 'open')]}"
+                            >
+                                <tree editable="top">
+                                    <field name="worksheet_id" invisible="1" />
+                                    <field name="description" />
+                                    <field name="date" />
+                                    <field
+                                        name="attachment_ids"
+                                        widget="many2many_tags"
+                                    />
+                                    <field name="complete_ok" widget="boolean_toggle" />
+                                    <field name="state" invisible="1" />
+                                </tree>
+                                <form>
+                                    <sheet>
+                                        <group>
+                                            <field name="worksheet_id" invisible="1" />
+                                            <field name="description" />
+                                            <field name="date" />
+                                            <field
+                                                name="attachment_ids"
+                                                widget="many2many_tags"
+                                            />
+                                            <field
+                                                name="complete_ok"
+                                                widget="boolean_toggle"
+                                            />
+                                            <field name="state" invisible="1" />
+                                        </group>
+                                    </sheet>
+                                </form>
+                            </field>
+                        </group>
+                    </page>
+                </xpath>
             </data>
         </field>
     </record>

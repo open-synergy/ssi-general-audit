@@ -37,6 +37,15 @@ class GeneralAuditWSf5a3cee(models.Model):
             "Detail lines automatically populated from the client's " "account mapping."
         ),
     )
+    reporting_timetable_ids = fields.One2many(
+        string="Reporting Timetable",
+        comodel_name="general_audit_ws_f5a3cee.reporting_timetable",
+        inverse_name="worksheet_id",
+        help=(
+            "Reporting deliverable lines entered manually by the user. "
+            "Unlike ``detail_ids``, these are not auto-populated."
+        ),
+    )
 
     def _create_details_data(self, mapping):
         self.ensure_one()
