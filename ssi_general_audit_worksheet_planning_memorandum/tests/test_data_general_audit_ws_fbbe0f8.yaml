@@ -169,16 +169,6 @@ setup:
       xml_id: "ssi_general_audit_worksheet_client_package.worksheet_type_f5a3cee"
       save_as: "ws_type_f5a3cee"
 
-    - step: "Create conclusion for f5a3cee worksheet type (used to reach done)"
-      action: "create"
-      model: "general_audit_worksheet_conclusion"
-      save_as: "conclusion_f5a3cee"
-      as_user: "base.user_admin"
-      values:
-        name: "Data Collection is adequate (test)"
-        code: "/"
-        type_id: "REC: ws_type_f5a3cee.id"
-
     - step: "Get business environment - Industry Trends"
       action: "ref"
       xml_id: "ssi_general_audit.general_audit_business_environment_1_297034dd"
@@ -1339,131 +1329,36 @@ scenarios:
               - "REC: tt_row_2"
 
   # ------------------------------------------------------------------
-  # reporting_timetable_ids - open AND done Data Collection worksheets
-  # are aggregated, a draft one is not
+  # link_14_ids / reporting_timetable_ids - a single Data Collection
+  # worksheet is excluded while draft, and picked up once it transitions
+  # to open. (NOTE: a second general_audit_ws_f5a3cee on the SAME
+  # general_audit_id is not a valid fixture here — type_id "Data
+  # Collection" has allowed_audit=False, so
+  # general_audit_worksheet_mixin._check_unique_general_audit only
+  # allows one worksheet of this type per audit engagement. Draft vs.
+  # open/done is exercised by transitioning ONE worksheet's state
+  # instead of creating a second one.)
   # ------------------------------------------------------------------
-  - name: "reporting_timetable_ids aggregates open and done, excludes draft"
+  - name: "reporting_timetable_ids excludes draft, includes once worksheet opens"
     steps:
-      - step: "Create Data Collection worksheet f5a3cee (open)"
+      - step: "Create Data Collection worksheet f5a3cee (draft)"
         action: "create"
         model: "general_audit_ws_f5a3cee"
-        save_as: "ws_f5a3cee_open"
+        save_as: "ws_f5a3cee_transition"
         as_user: "base.user_admin"
         values:
           general_audit_id: "REC: audit.id"
           type_id: "REC: ws_type_f5a3cee.id"
 
-      - step: "Open ws_f5a3cee_open"
-        action: "call"
-        target: "ws_f5a3cee_open"
-        method: "action_open"
-        as_user: "base.user_admin"
-
-      - step: "Invalidate cache after opening ws_f5a3cee_open"
-        action: "call"
-        target: "ws_f5a3cee_open"
-        method: "invalidate_cache"
-
-      - step: "Add reporting timetable row on the open worksheet"
+      - step: "Add reporting timetable row while the worksheet is still draft"
         action: "create"
         model: "general_audit_ws_f5a3cee.reporting_timetable"
-        save_as: "tt_row_open"
+        save_as: "tt_row_transition"
         as_user: "base.user_admin"
         values:
-          worksheet_id: "REC: ws_f5a3cee_open.id"
-          description: "Interim report (open worksheet)"
+          worksheet_id: "REC: ws_f5a3cee_transition.id"
+          description: "Interim report (pending open)"
           date: 2026-08-01
-
-      - step: "Create Data Collection worksheet f5a3cee (to be moved to done)"
-        action: "create"
-        model: "general_audit_ws_f5a3cee"
-        save_as: "ws_f5a3cee_done"
-        as_user: "base.user_admin"
-        values:
-          general_audit_id: "REC: audit.id"
-          type_id: "REC: ws_type_f5a3cee.id"
-
-      - step: "Open ws_f5a3cee_done"
-        action: "call"
-        target: "ws_f5a3cee_done"
-        method: "action_open"
-        as_user: "base.user_admin"
-
-      - step: "Invalidate cache after opening ws_f5a3cee_done"
-        action: "call"
-        target: "ws_f5a3cee_done"
-        method: "invalidate_cache"
-
-      - step: "Add reporting timetable row on the to-be-done worksheet"
-        action: "create"
-        model: "general_audit_ws_f5a3cee.reporting_timetable"
-        save_as: "tt_row_done"
-        as_user: "base.user_admin"
-        values:
-          worksheet_id: "REC: ws_f5a3cee_done.id"
-          description: "Final report (done worksheet)"
-          date: 2026-08-15
-
-      - step: "Fill required conclusion fields before confirming ws_f5a3cee_done"
-        action: "write"
-        target: "ws_f5a3cee_done"
-        as_user: "base.user_admin"
-        values:
-          conclusion_id: "REC: conclusion_f5a3cee.id"
-          conclusion: "All requested client data has been received."
-
-      - step: "Confirm ws_f5a3cee_done"
-        action: "call"
-        target: "ws_f5a3cee_done"
-        method: "action_confirm"
-        as_user: "base.user_admin"
-        # WAJIB dua-duanya: asserts MENJALANKAN _refresh, refresh: true
-        # MENGIZINKANNYA — tanpa ini approve_ok terbaca basi milik
-        # action_confirm dan action_approve_approval gagal
-        # NONDETERMINISTIK (odoo-development-unit-test test-traps.md T-04).
-        refresh: true
-        asserts:
-          state:
-            type: "value"
-            expected: "confirm"
-
-      - step: "Approve ws_f5a3cee_done"
-        action: "call"
-        target: "ws_f5a3cee_done"
-        method: "action_approve_approval"
-        as_user: "base.user_admin"
-
-      - step: "Invalidate cache after approving ws_f5a3cee_done"
-        action: "call"
-        target: "ws_f5a3cee_done"
-        method: "invalidate_cache"
-
-      - step: "Assert ws_f5a3cee_done reached done"
-        action: "assert"
-        target: "ws_f5a3cee_done"
-        asserts:
-          state:
-            type: "value"
-            expected: "done"
-
-      - step: "Create Data Collection worksheet f5a3cee (left in draft)"
-        action: "create"
-        model: "general_audit_ws_f5a3cee"
-        save_as: "ws_f5a3cee_draft"
-        as_user: "base.user_admin"
-        values:
-          general_audit_id: "REC: audit.id"
-          type_id: "REC: ws_type_f5a3cee.id"
-
-      - step: "Add reporting timetable row on the draft worksheet"
-        action: "create"
-        model: "general_audit_ws_f5a3cee.reporting_timetable"
-        save_as: "tt_row_draft"
-        as_user: "base.user_admin"
-        values:
-          worksheet_id: "REC: ws_f5a3cee_draft.id"
-          description: "Should not appear (draft worksheet)"
-          date: 2026-08-20
 
       - step: "Create worksheet fbbe0f8 on the same general audit"
         action: "create"
@@ -1474,9 +1369,53 @@ scenarios:
           general_audit_id: "REC: audit.id"
           type_id: "REC: ws_type_fbbe0f8.id"
 
-      - step:
-          "Assert link_14_ids and reporting_timetable_ids include only open and done
-          worksheets"
+      - step: "Reload links while ws_f5a3cee_transition is still draft"
+        action: "call"
+        target: "worksheet"
+        method: "action_reload_links"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after reloading links (draft state)"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Assert link_14_ids and reporting_timetable_ids stay empty while draft"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          link_14_ids:
+            type: "m2m"
+            check: "count"
+            expected_count: 0
+          reporting_timetable_ids:
+            type: "m2m"
+            check: "count"
+            expected_count: 0
+
+      - step: "Open ws_f5a3cee_transition"
+        action: "call"
+        target: "ws_f5a3cee_transition"
+        method: "action_open"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after opening ws_f5a3cee_transition"
+        action: "call"
+        target: "ws_f5a3cee_transition"
+        method: "invalidate_cache"
+
+      - step: "Reload links again now that ws_f5a3cee_transition is open"
+        action: "call"
+        target: "worksheet"
+        method: "action_reload_links"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after reloading links (open state)"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Assert link_14_ids and reporting_timetable_ids now include the worksheet"
         action: "assert"
         target: "worksheet"
         asserts:
@@ -1484,14 +1423,12 @@ scenarios:
             type: "m2m"
             check: "exact"
             expected_records:
-              - "REC: ws_f5a3cee_open"
-              - "REC: ws_f5a3cee_done"
+              - "REC: ws_f5a3cee_transition"
           reporting_timetable_ids:
             type: "m2m"
             check: "exact"
             expected_records:
-              - "REC: tt_row_open"
-              - "REC: tt_row_done"
+              - "REC: tt_row_transition"
 
   # ------------------------------------------------------------------
   # link_14_ids / reporting_timetable_ids - Data Collection worksheet
