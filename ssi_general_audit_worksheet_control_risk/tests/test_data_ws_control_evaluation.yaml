@@ -1031,3 +1031,115 @@ scenarios:
           ]
         save_as: "unrelated_standard_link_result_f63f569"
         expect_count: 0
+
+  # ------------------------------------------------------------------
+  # Issue #299 - IT control master data restructuring
+  # (Category -> Control -> Indicator, 3 real levels)
+  # ------------------------------------------------------------------
+  - name: "IT control master data - Category 5 (Input Controls) has 4 real controls"
+    steps:
+      - step: "Get IT control category 5 (Input Controls)"
+        action: "ref"
+        xml_id: "ssi_general_audit_worksheet_control_risk.general_audit_it_control_category_5_e5e339dc"
+        save_as: "category_5"
+
+      - step: "Verify category 5 now has 4 controls, not 1 placeholder"
+        action: "search"
+        model: "general_audit_it_control"
+        domain:
+          - ["category_id", "=", "REC: category_5.id"]
+        save_as: "category_5_controls"
+        expect_count: 4
+
+      - step: "Get control B (Information entered is inaccurate or incomplete.)"
+        action: "ref"
+        xml_id: "ssi_general_audit_worksheet_control_risk.general_audit_it_control_312_d04705fa"
+        save_as: "control_b"
+
+      - step: "Get indicator 250 (was mis-attached to a category placeholder)"
+        action: "ref"
+        xml_id: "ssi_general_audit_worksheet_control_risk.general_audit_it_control_indicator_250_4255f814"
+        save_as: "indicator_250"
+
+      - step: "Get indicator 251"
+        action: "ref"
+        xml_id: "ssi_general_audit_worksheet_control_risk.general_audit_it_control_indicator_251_4976bbd2"
+        save_as: "indicator_251"
+
+      - step: "Get indicator 252"
+        action: "ref"
+        xml_id: "ssi_general_audit_worksheet_control_risk.general_audit_it_control_indicator_252_a8154cd6"
+        save_as: "indicator_252"
+
+      - step: "Assert indicator 250 now points to the real control B"
+        action: "assert"
+        target: "indicator_250"
+        asserts:
+          control_id:
+            type: "m2o"
+            expected: "REC: control_b"
+
+      - step: "Assert indicator 251 shares the same control B"
+        action: "assert"
+        target: "indicator_251"
+        asserts:
+          control_id:
+            type: "m2o"
+            expected: "REC: control_b"
+
+      - step: "Assert indicator 252 shares the same control B"
+        action: "assert"
+        target: "indicator_252"
+        asserts:
+          control_id:
+            type: "m2o"
+            expected: "REC: control_b"
+
+  - name: "IT control master data - categories untouched by the restructuring"
+    steps:
+      - step: "Get category 1"
+        action: "ref"
+        xml_id: "ssi_general_audit_worksheet_control_risk.general_audit_it_control_category_1_8b379391"
+        save_as: "category_1"
+
+      - step: "Assert category 1 name unchanged"
+        action: "assert"
+        target: "category_1"
+        asserts:
+          name:
+            type: "value"
+            expected: "Organizational and Operational Controls"
+
+      - step: "Get category 5"
+        action: "ref"
+        xml_id: "ssi_general_audit_worksheet_control_risk.general_audit_it_control_category_5_e5e339dc"
+        save_as: "category_5_check"
+
+      - step: "Assert category 5 name unchanged"
+        action: "assert"
+        target: "category_5_check"
+        asserts:
+          name:
+            type: "value"
+            expected: "Input Controls"
+
+      - step: "Verify exactly the 7 original categories still exist"
+        action: "search"
+        model: "general_audit_it_control_category"
+        domain:
+          - [
+              "name",
+              "in",
+              [
+                "Organizational and Operational Controls",
+                "Controls over System Development and Documentation",
+                "Physical and Online Security over Access to Hardware, Software, and
+                Related Data",
+                "Backup and Contingency Plans for Emergency Situations",
+                "Input Controls",
+                "Process Controls",
+                "Output Controls",
+              ],
+            ]
+        save_as: "original_categories"
+        expect_count: 7
