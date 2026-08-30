@@ -154,7 +154,7 @@ addon | version | maintainers | summary
 [ssi_general_audit_worksheet_audit_procedure_observation](ssi_general_audit_worksheet_audit_procedure_observation/) | 14.0.1.2.0 |  | General Audit Worksheet - Observation Audit Procedure
 [ssi_general_audit_worksheet_audit_procedure_recompute](ssi_general_audit_worksheet_audit_procedure_recompute/) | 14.0.1.4.0 |  | General Audit Worksheet - Recompute Audit Procedure
 [ssi_general_audit_worksheet_audit_procedure_reperformance](ssi_general_audit_worksheet_audit_procedure_reperformance/) | 14.0.1.2.2 |  | General Audit Worksheet - Reperformance Audit Procedure
-[ssi_general_audit_worksheet_audit_procedure_vouching](ssi_general_audit_worksheet_audit_procedure_vouching/) | 14.0.1.4.0 |  | General Audit Worksheet - Vouching Audit Procedure
+[ssi_general_audit_worksheet_audit_procedure_vouching](ssi_general_audit_worksheet_audit_procedure_vouching/) | 14.0.1.4.1 |  | General Audit Worksheet - Vouching Audit Procedure
 [ssi_general_audit_worksheet_audit_result](ssi_general_audit_worksheet_audit_result/) | 14.0.1.1.1 |  | General Audit Worksheet - Audit Result
 [ssi_general_audit_worksheet_audit_working_plan](ssi_general_audit_worksheet_audit_working_plan/) | 14.0.1.5.1 |  | General Audit Worksheet - Audit Working Plan
 [ssi_general_audit_worksheet_client_package](ssi_general_audit_worksheet_client_package/) | 14.0.1.3.0 |  | General Audit Worksheet - Client Assistance Package
