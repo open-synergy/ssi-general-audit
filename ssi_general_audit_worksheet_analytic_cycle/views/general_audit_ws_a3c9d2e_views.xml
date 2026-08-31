@@ -114,6 +114,7 @@
                             attrs="{'readonly': [('state', '!=', 'open')]}"
                         >
                             <tree create="false" delete="false">
+                                <field name="worksheet_id" invisible="1" />
                                 <field
                                     name="item_id"
                                     style="white-space: normal; word-wrap: break-word; overflow-wrap: break-word;"
@@ -123,6 +124,7 @@
                             </tree>
                             <form>
                                 <group>
+                                    <field name="worksheet_id" invisible="1" />
                                     <field name="item_id" />
                                     <field name="conclusion" />
                                     <field
