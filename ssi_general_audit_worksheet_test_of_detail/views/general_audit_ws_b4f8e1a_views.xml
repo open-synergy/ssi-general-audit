@@ -101,6 +101,14 @@
                             >
                                 <field name="performance_materiality" />
                                 <field
+                                    name="materiality_mapping_id"
+                                    attrs="{'invisible': ['|', ('data_source', '!=', 'population'), ('materiality_mapping_id', '=', False)]}"
+                                />
+                                <field
+                                    name="final_materiality_id"
+                                    attrs="{'invisible': ['|', ('data_source', '!=', 'population'), ('final_materiality_id', '=', False)]}"
+                                />
+                                <field
                                     name="risk_factor"
                                     attrs="{'invisible': [('data_source', '=', 'population')]}"
                                 />

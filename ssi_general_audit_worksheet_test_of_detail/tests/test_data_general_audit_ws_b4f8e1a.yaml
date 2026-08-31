@@ -1536,13 +1536,19 @@ scenarios:
 
       - step:
           "Assert performance_materiality picked up the mapping override's
-          specific_materiality"
+          specific_materiality, and materiality_mapping_id points to it"
         action: "assert"
         target: "worksheet"
         asserts:
           performance_materiality:
             type: "value"
             expected: 750000000.0
+          materiality_mapping_id:
+            type: "m2o"
+            expected: "REC: mapping"
+          final_materiality_id:
+            type: "value"
+            operator: "is_falsy"
 
   - name:
       "Worksheet b4f8e1a - Population performance_materiality falls back to the
@@ -1619,13 +1625,20 @@ scenarios:
 
       - step:
           "Assert performance_materiality fell back to the Final Materiality worksheet's
-          figure, NOT the inactive mapping's specific_materiality"
+          figure, NOT the inactive mapping's specific_materiality, and
+          final_materiality_id points to it (not the inactive mapping)"
         action: "assert"
         target: "worksheet"
         asserts:
           performance_materiality:
             type: "value"
             expected: 500000000.0
+          final_materiality_id:
+            type: "m2o"
+            expected: "REC: final_materiality_ws"
+          materiality_mapping_id:
+            type: "value"
+            operator: "is_falsy"
 
   - name:
       "Worksheet b4f8e1a - Population performance_materiality is 0.0 without a matching
@@ -1655,13 +1668,21 @@ scenarios:
           data_mode: "gl"
           general_ledger_id: "REC: gl.id"
 
-      - step: "Assert performance_materiality is 0.0 without a matching mapping"
+      - step:
+          "Assert performance_materiality is 0.0 without a matching mapping, and both
+          source fields stay empty"
         action: "assert"
         target: "worksheet"
         asserts:
           performance_materiality:
             type: "value"
             expected: 0.0
+          materiality_mapping_id:
+            type: "value"
+            operator: "is_falsy"
+          final_materiality_id:
+            type: "value"
+            operator: "is_falsy"
 
   # ------------------------------------------------------------------
   # onchange_general_ledger_id / onchange_sample_determination_id -

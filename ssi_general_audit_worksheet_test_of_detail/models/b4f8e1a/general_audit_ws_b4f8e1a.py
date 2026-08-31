@@ -186,7 +186,31 @@ class GeneralAuditWsB4f8e1a(models.Model):
         "selected General Ledger/Subledger's account type on this "
         "engagement, if one is set; otherwise the engagement's Final "
         "Materiality worksheet figure (the same threshold used by "
-        "every account by default).",
+        "every account by default). See Materiality Mapping Source / "
+        "Final Materiality Source below for which one supplied it.",
+    )
+    materiality_mapping_id = fields.Many2one(
+        comodel_name="general_audit_ws_6dcda0e_materiality_mapping",
+        string="Materiality Mapping Source",
+        compute="_compute_performance_materiality",
+        store=True,
+        compute_sudo=True,
+        help="The Specific Materiality mapping line that supplied "
+        "Performance Materiality above via its "
+        "use_specific_materiality override. Set only when Data "
+        "Source is Population and such an override is active for "
+        "the selected account -- open it to verify the figure.",
+    )
+    final_materiality_id = fields.Many2one(
+        comodel_name="general_audit_ws_bb33b94",
+        string="Final Materiality Source",
+        compute="_compute_performance_materiality",
+        store=True,
+        compute_sudo=True,
+        help="The engagement's Final Materiality worksheet that "
+        "supplied Performance Materiality above. Set only when Data "
+        "Source is Population and no mapping override is active -- "
+        "open it to verify the figure.",
     )
     risk_factor = fields.Float(
         string="Risk Factor",
@@ -415,14 +439,24 @@ class GeneralAuditWsB4f8e1a(models.Model):
         by the Final Materiality worksheet
         (``general_audit_ws_bb33b94.performance_materiality``), which
         is the same threshold used by every account unless overridden.
+        ``materiality_mapping_id``/``final_materiality_id`` record
+        which of the two actually supplied the figure, so the auditor
+        can trace it back.
 
-        :return: nothing; assigns ``performance_materiality`` --
-            mirrors the linked Sample Determination worksheet when
-            Data Source is Sample; when Data Source is Population,
-            uses the matching materiality mapping line's
-            ``specific_materiality`` if ``use_specific_materiality``
-            is set on it, else the engagement's Final Materiality
-            worksheet ``performance_materiality``, else ``0.0``.
+        :return: nothing; assigns ``performance_materiality``,
+            ``materiality_mapping_id``, and ``final_materiality_id``.
+            For Sample, ``performance_materiality`` mirrors the linked
+            Sample Determination worksheet and both source fields are
+            cleared (that path has its own reference,
+            ``sample_determination_id``). For Population,
+            ``materiality_mapping_id`` is set (and
+            ``final_materiality_id`` cleared) when a matching mapping
+            line has ``use_specific_materiality`` set; otherwise
+            ``final_materiality_id`` is set (and
+            ``materiality_mapping_id`` cleared) to the engagement's
+            Final Materiality worksheet, when one exists; otherwise
+            both are cleared and ``performance_materiality`` is
+            ``0.0``.
         """
         Mapping = self.env[  # pylint: disable=invalid-name
             "general_audit_ws_6dcda0e_materiality_mapping"
@@ -432,6 +466,8 @@ class GeneralAuditWsB4f8e1a(models.Model):
         ]
         for record in self:
             result = 0.0
+            mapping_source = Mapping.browse()
+            final_materiality_source = FinalMateriality.browse()
             if record.data_source == "sample":
                 result = record.sample_determination_id.performance_materiality
             elif record.data_source == "population":
@@ -462,6 +498,7 @@ class GeneralAuditWsB4f8e1a(models.Model):
                     )
                 if mapping and mapping.use_specific_materiality:
                     result = mapping.specific_materiality
+                    mapping_source = mapping
                 elif record.general_audit_id:
                     final_materiality = FinalMateriality.search(
                         [
@@ -475,7 +512,10 @@ class GeneralAuditWsB4f8e1a(models.Model):
                     )
                     if final_materiality:
                         result = final_materiality.performance_materiality
+                        final_materiality_source = final_materiality
             record.performance_materiality = result
+            record.materiality_mapping_id = mapping_source
+            record.final_materiality_id = final_materiality_source
 
     @api.depends(
         "data_source",
