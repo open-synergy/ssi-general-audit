@@ -11,6 +11,7 @@
     "installable": True,
     "depends": [
         "ssi_general_audit",
+        "ssi_general_audit_worksheet_final_materiality",
         "ssi_general_audit_worksheet_lead_schedule",
         "ssi_general_audit_worksheet_preliminary_materiality",
         "ssi_general_audit_worksheet_sample_determination",

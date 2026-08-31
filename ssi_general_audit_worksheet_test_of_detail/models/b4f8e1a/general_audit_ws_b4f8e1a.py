@@ -182,9 +182,11 @@ class GeneralAuditWsB4f8e1a(models.Model):
         help="Performance materiality for this account. When Data "
         "Source is Sample, inherited from the referenced Sample "
         "Determination worksheet (edit it there). When Data Source "
-        "is Population, looked up automatically from the "
-        "Materiality master data mapping matching the selected "
-        "General Ledger/Subledger's account type on this engagement.",
+        "is Population: the Materiality mapping override for the "
+        "selected General Ledger/Subledger's account type on this "
+        "engagement, if one is set; otherwise the engagement's Final "
+        "Materiality worksheet figure (the same threshold used by "
+        "every account by default).",
     )
     risk_factor = fields.Float(
         string="Risk Factor",
@@ -402,16 +404,31 @@ class GeneralAuditWsB4f8e1a(models.Model):
     def _compute_performance_materiality(self):
         """Derive Performance Materiality from the selected Data Source.
 
+        For Population, ``specific_materiality`` on the matching
+        ``general_audit_ws_6dcda0e_materiality_mapping`` line is an
+        auditor override that only applies when
+        ``use_specific_materiality`` is set on that line -- it is
+        ``0.0`` by design for the common case where no override was
+        made. When no override applies (no matching line, or the line
+        has ``use_specific_materiality`` unset), Performance
+        Materiality falls back to the engagement-wide figure computed
+        by the Final Materiality worksheet
+        (``general_audit_ws_bb33b94.performance_materiality``), which
+        is the same threshold used by every account unless overridden.
+
         :return: nothing; assigns ``performance_materiality`` --
             mirrors the linked Sample Determination worksheet when
-            Data Source is Sample, or looks up the first matching
-            ``general_audit_ws_6dcda0e_materiality_mapping`` (ordered
-            by ``sequence, id``) for the selected General
-            Ledger/Subledger's account type when Data Source is
-            Population, or ``0.0`` when no match is found.
+            Data Source is Sample; when Data Source is Population,
+            uses the matching materiality mapping line's
+            ``specific_materiality`` if ``use_specific_materiality``
+            is set on it, else the engagement's Final Materiality
+            worksheet ``performance_materiality``, else ``0.0``.
         """
         Mapping = self.env[  # pylint: disable=invalid-name
             "general_audit_ws_6dcda0e_materiality_mapping"
+        ]
+        FinalMateriality = self.env[  # pylint: disable=invalid-name
+            "general_audit_ws_bb33b94"
         ]
         for record in self:
             result = 0.0
@@ -429,6 +446,7 @@ class GeneralAuditWsB4f8e1a(models.Model):
                         record.subledger_id.account_type_id
                         or record.subledger_id.account_id.type_id
                     )
+                mapping = Mapping.browse()
                 if type_id and record.general_audit_id:
                     mapping = Mapping.search(
                         [
@@ -442,8 +460,21 @@ class GeneralAuditWsB4f8e1a(models.Model):
                         order="sequence, id",
                         limit=1,
                     )
-                    if mapping:
-                        result = mapping.specific_materiality
+                if mapping and mapping.use_specific_materiality:
+                    result = mapping.specific_materiality
+                elif record.general_audit_id:
+                    final_materiality = FinalMateriality.search(
+                        [
+                            (
+                                "worksheet_id.general_audit_id",
+                                "=",
+                                record.general_audit_id.id,
+                            ),
+                        ],
+                        limit=1,
+                    )
+                    if final_materiality:
+                        result = final_materiality.performance_materiality
             record.performance_materiality = result
 
     @api.depends(

@@ -119,6 +119,11 @@ setup:
       xml_id: "ssi_general_audit_worksheet_preliminary_materiality.worksheet_type_6dcda0e"
       save_as: "ws_type_6dcda0e"
 
+    - step: "Get worksheet type bb33b94 (Final Materiality)"
+      action: "ref"
+      xml_id: "ssi_general_audit_worksheet_final_materiality.worksheet_type_bb33b94"
+      save_as: "ws_type_bb33b94"
+
     - step: "Create client account group"
       action: "create"
       model: "client_account_group"
@@ -1471,7 +1476,8 @@ scenarios:
   # _compute_performance_materiality - Population branch
   # ------------------------------------------------------------------
   - name:
-      "Worksheet b4f8e1a - Population performance_materiality from materiality mapping"
+      "Worksheet b4f8e1a - Population performance_materiality from a materiality mapping
+      override"
     steps:
       - step: "Create General Ledger worksheet for the account type"
         action: "create"
@@ -1503,7 +1509,9 @@ scenarios:
           general_audit_id: "REC: audit.id"
           type_id: "REC: account_type.id"
 
-      - step: "Create materiality mapping line for the standard detail"
+      - step:
+          "Create materiality mapping line for the standard detail, with the
+          use_specific_materiality override switched on"
         action: "create"
         model: "general_audit_ws_6dcda0e_materiality_mapping"
         save_as: "mapping"
@@ -1511,6 +1519,7 @@ scenarios:
         values:
           worksheet_id: "REC: materiality_ws.id"
           standard_detail_id: "REC: standard_detail.id"
+          use_specific_materiality: true
           specific_materiality: 750000000
 
       - step: "Create worksheet b4f8e1a with Data Source = Population linked to the GL"
@@ -1526,13 +1535,97 @@ scenarios:
           general_ledger_id: "REC: gl.id"
 
       - step:
-          "Assert performance_materiality picked up the mapping's specific_materiality"
+          "Assert performance_materiality picked up the mapping override's
+          specific_materiality"
         action: "assert"
         target: "worksheet"
         asserts:
           performance_materiality:
             type: "value"
             expected: 750000000.0
+
+  - name:
+      "Worksheet b4f8e1a - Population performance_materiality falls back to the
+      engagement's Final Materiality when no mapping override is active"
+    steps:
+      - step: "Create General Ledger worksheet for the account type"
+        action: "create"
+        model: "general_audit_ws_d209914"
+        save_as: "gl"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_d209914.id"
+          account_mode: "standard_account"
+          account_type_id: "REC: account_type.id"
+          title: "GL for materiality fallback"
+
+      - step: "Create Specific Materiality worksheet"
+        action: "create"
+        model: "general_audit_ws_6dcda0e"
+        save_as: "materiality_ws"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_6dcda0e.id"
+
+      - step: "Create standard detail for the account type"
+        action: "create"
+        model: "general_audit.standard_detail"
+        save_as: "standard_detail"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: account_type.id"
+
+      - step:
+          "Create a matching mapping line WITHOUT the use_specific_materiality override
+          (the common case)"
+        action: "create"
+        model: "general_audit_ws_6dcda0e_materiality_mapping"
+        save_as: "mapping"
+        as_user: "base.user_admin"
+        values:
+          worksheet_id: "REC: materiality_ws.id"
+          standard_detail_id: "REC: standard_detail.id"
+          specific_materiality: 750000000
+
+      - step:
+          "Create Final Materiality worksheet for the engagement with a computed
+          Performance Materiality"
+        action: "create"
+        model: "general_audit_ws_bb33b94"
+        save_as: "final_materiality_ws"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_bb33b94.id"
+          other_amount_ok: true
+          other_base_amount: 5000000000
+          overall_materiality_percentage: 10
+          performance_materiality_percentage: 100
+
+      - step: "Create worksheet b4f8e1a with Data Source = Population linked to the GL"
+        action: "create"
+        model: "general_audit_ws_b4f8e1a"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+          data_source: "population"
+          data_mode: "gl"
+          general_ledger_id: "REC: gl.id"
+
+      - step:
+          "Assert performance_materiality fell back to the Final Materiality worksheet's
+          figure, NOT the inactive mapping's specific_materiality"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          performance_materiality:
+            type: "value"
+            expected: 500000000.0
 
   - name:
       "Worksheet b4f8e1a - Population performance_materiality is 0.0 without a matching
