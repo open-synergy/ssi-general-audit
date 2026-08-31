@@ -1907,6 +1907,86 @@ scenarios:
             operator: "is_falsy"
 
   # ------------------------------------------------------------------
+  # onchange_sample_determination_id - switching Data Source to
+  # Population resets Sample Determination (and Sampling Method along
+  # with it, being a related field)
+  # ------------------------------------------------------------------
+  - name:
+      "Worksheet b4f8e1a - Onchange data_source to Population resets Sample
+      Determination and Sampling Method"
+    steps:
+      - step: "Create General Ledger worksheet to select initially"
+        action: "create"
+        model: "general_audit_ws_d209914"
+        save_as: "gl"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_d209914.id"
+          account_mode: "standard_account"
+          account_type_id: "REC: account_type.id"
+          title: "GL for onchange data_source"
+
+      - step: "Create Sample Determination worksheet linked to that GL"
+        action: "create"
+        model: "general_audit_ws_a916660"
+        save_as: "sd"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_a916660.id"
+          data_mode: "gl"
+          general_ledger_id: "REC: gl.id"
+          method_type: "cvs"
+
+      - step:
+          "Create worksheet b4f8e1a with Data Source = Sample, Data Mode/General Ledger
+          unchanged throughout"
+        action: "create"
+        model: "general_audit_ws_b4f8e1a"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+          data_source: "sample"
+          data_mode: "gl"
+          general_ledger_id: "REC: gl.id"
+          sample_determination_id: "REC: sd.id"
+
+      - step:
+          "Sanity-check sample_type picked up the SD's method_type before the switch"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          sample_type:
+            type: "value"
+            expected: "cvs"
+
+      - step:
+          "Switch Data Source to Population via Form -- Data Mode/General Ledger stay
+          the same"
+        action: "form"
+        target: "worksheet"
+        as_user: "base.user_admin"
+        save: true
+        ops:
+          - set: {data_source: "population"}
+
+      - step:
+          "Assert sample_determination_id and sample_type were both reset by the
+          onchange"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          sample_determination_id:
+            type: "value"
+            operator: "is_falsy"
+          sample_type:
+            type: "value"
+            operator: "is_falsy"
+
+  # ------------------------------------------------------------------
   # general_audit_ws_b4f8e1a - Delete in draft
   # ------------------------------------------------------------------
   - name: "Worksheet b4f8e1a - Delete in draft"

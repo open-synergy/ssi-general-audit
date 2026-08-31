@@ -763,9 +763,14 @@ class GeneralAuditWsB4f8e1a(models.Model):
         """Clear the selected Subledger when Data Mode changes."""
         self.subledger_id = False
 
-    @api.onchange("data_mode", "general_ledger_id", "subledger_id")
+    @api.onchange("data_mode", "general_ledger_id", "subledger_id", "data_source")
     def onchange_sample_determination_id(self):
-        """Clear the stale Sample Determination when the source changes."""
+        """Clear the stale Sample Determination when the source changes.
+
+        Also clears it (and, through the ``sample_type`` related field
+        following along automatically, Sampling Method) whenever Data
+        Source is switched to Population, where neither applies.
+        """
         self.sample_determination_id = False
 
     @api.onchange(
