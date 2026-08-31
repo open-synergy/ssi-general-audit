@@ -56,8 +56,25 @@
                                 name="examination_setup_source"
                                 colspan="1"
                                 col="2"
-                                string="Sample Determination"
+                                string="Data"
                             >
+                                <field name="data_mode" />
+                                <field
+                                    name="allowed_general_ledger_ids"
+                                    invisible="1"
+                                />
+                                <field
+                                    name="general_ledger_id"
+                                    domain="[('id', 'in', allowed_general_ledger_ids)]"
+                                    attrs="{'invisible': [('data_mode', '!=', 'gl')]}"
+                                />
+                                <field name="allowed_subledger_ids" invisible="1" />
+                                <field
+                                    name="subledger_id"
+                                    domain="[('id', 'in', allowed_subledger_ids)]"
+                                    attrs="{'invisible': [('data_mode', '!=', 'subledger')]}"
+                                />
+                                <field name="data_source" />
                                 <field
                                     name="allowed_sample_determination_ids"
                                     invisible="1"
@@ -65,6 +82,16 @@
                                 <field
                                     name="sample_determination_id"
                                     domain="[('id', 'in', allowed_sample_determination_ids)]"
+                                    attrs="{'invisible': [('data_source', '!=', 'sample')]}"
+                                />
+                                <field
+                                    name="identifier_col_number"
+                                    attrs="{'invisible': [('data_source', '!=', 'population')]}"
+                                />
+                                <field
+                                    name="subledger_amount_id"
+                                    domain="[('worksheet_id', '=', subledger_id)]"
+                                    attrs="{'invisible': ['|', ('data_source', '!=', 'population'), ('data_mode', '!=', 'subledger')]}"
                                 />
                                 <field name="sample_type" />
                                 <field name="population_count" />
@@ -77,10 +104,22 @@
                                 string="Input Variable"
                             >
                                 <field name="performance_materiality" />
-                                <field name="risk_factor" />
-                                <field name="tolerable_misstatement" />
-                                <field name="aria" />
-                                <field name="aria_coefficient" />
+                                <field
+                                    name="risk_factor"
+                                    attrs="{'invisible': [('data_source', '=', 'population')]}"
+                                />
+                                <field
+                                    name="tolerable_misstatement"
+                                    attrs="{'invisible': [('data_source', '=', 'population')]}"
+                                />
+                                <field
+                                    name="aria"
+                                    attrs="{'invisible': [('data_source', '=', 'population')]}"
+                                />
+                                <field
+                                    name="aria_coefficient"
+                                    attrs="{'invisible': [('data_source', '=', 'population')]}"
+                                />
                             </group>
                         </group>
                         <button
@@ -152,8 +191,12 @@
                                 string="Computed Precision Interval"
                                 class="o_form_label"
                                 style="width: 240px;"
+                                attrs="{'invisible': [('data_source', '=', 'population')]}"
                             />
-                            <div class="o_row">
+                            <div
+                                class="o_row"
+                                attrs="{'invisible': [('data_source', '=', 'population')]}"
+                            >
                                 <field
                                     name="computed_precision_interval"
                                     readonly="1"
@@ -165,8 +208,12 @@
                                 string="Computed Upper Confidence Limit"
                                 class="o_form_label"
                                 style="width: 240px;"
+                                attrs="{'invisible': [('data_source', '=', 'population')]}"
                             />
-                            <div class="o_row">
+                            <div
+                                class="o_row"
+                                attrs="{'invisible': [('data_source', '=', 'population')]}"
+                            >
                                 <field
                                     name="upper_confidence_limit"
                                     readonly="1"
@@ -178,8 +225,12 @@
                                 string="Computed Lower Confidence Limit"
                                 class="o_form_label"
                                 style="width: 240px;"
+                                attrs="{'invisible': [('data_source', '=', 'population')]}"
                             />
-                            <div class="o_row">
+                            <div
+                                class="o_row"
+                                attrs="{'invisible': [('data_source', '=', 'population')]}"
+                            >
                                 <field
                                     name="lower_confidence_limit"
                                     readonly="1"
@@ -191,8 +242,12 @@
                                 string="Tolerable Misstatement"
                                 class="o_form_label"
                                 style="width: 240px;"
+                                attrs="{'invisible': [('data_source', '=', 'population')]}"
                             />
-                            <div class="o_row">
+                            <div
+                                class="o_row"
+                                attrs="{'invisible': [('data_source', '=', 'population')]}"
+                            >
                                 <field name="tolerable_misstatement" readonly="1" />
                             </div>
                             <label

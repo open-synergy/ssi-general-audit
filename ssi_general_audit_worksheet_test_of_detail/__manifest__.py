@@ -12,8 +12,10 @@
     "depends": [
         "ssi_general_audit",
         "ssi_general_audit_worksheet_lead_schedule",
+        "ssi_general_audit_worksheet_preliminary_materiality",
         "ssi_general_audit_worksheet_sample_determination",
         "ssi_web_widget_csv_table",
+        "web_tour",
     ],
     "data": [
         "security/ir_module_category/general_audit_ws_b4f8e1a.xml",
@@ -26,6 +28,7 @@
         "data/approval_template/general_audit_ws_b4f8e1a.xml",
         "data/general_audit_worksheet_type/general_audit_ws_b4f8e1a.xml",
         "views/general_audit_ws_b4f8e1a_views.xml",
+        "views/assets.xml",
     ],
     "demo": [],
 }

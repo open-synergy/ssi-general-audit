@@ -133,6 +133,9 @@ class TestGeneralAuditWSB4f8e1a(YamlTransactionCase):
                 {
                     "general_audit_id": audit.id,
                     "type_id": ws_type.id,
+                    "data_source": "sample",
+                    "data_mode": "gl",
+                    "general_ledger_id": gl.id,
                     "sample_determination_id": sd.id,
                 }
             )
