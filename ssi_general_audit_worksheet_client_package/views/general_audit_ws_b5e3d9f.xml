@@ -33,6 +33,7 @@
                     <field name="account_type_id" optional="show" />
                     <field name="title" optional="show" />
                     <field name="identifier_col_number" optional="hide" />
+                    <field name="recorded_amount_id" optional="hide" />
                 </xpath>
             </data>
         </field>
@@ -88,6 +89,10 @@
                                 <field name="amount" />
                             </tree>
                         </field>
+                        <field
+                            name="recorded_amount_id"
+                            domain="[('worksheet_id', '=', id)]"
+                        />
                         <field name="raw_data" nolabel="1" widget="csv_table" />
                     </page>
                 </xpath>

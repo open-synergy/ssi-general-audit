@@ -685,3 +685,116 @@ scenarios:
         expect_error:
           type: "AssertionError"
           message_contains: "readonly"
+
+  # ------------------------------------------------------------------
+  # recorded_amount_id - filled while state is open
+  # ------------------------------------------------------------------
+  - name: "Worksheet b5e3d9f - recorded_amount_id filled while open"
+    steps:
+      - step: "Create worksheet without recorded_amount_id"
+        action: "create"
+        model: "general_audit_ws_b5e3d9f"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+          account_mode: "account"
+          account_id: "REC: account.id"
+
+      - step: "Open worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_open"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after opening worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Create an amount line on the worksheet"
+        action: "create"
+        model: "general_audit_ws_b5e3d9f.amount"
+        save_as: "amount_line"
+        as_user: "base.user_admin"
+        values:
+          worksheet_id: "REC: worksheet.id"
+          label: "Amount1"
+          col_number: 2
+
+      - step: "Write recorded_amount_id while state is open"
+        action: "write"
+        target: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          recorded_amount_id: "REC: amount_line.id"
+
+      - step: "Assert recorded_amount_id was stored"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          recorded_amount_id:
+            type: "m2o"
+            expected: "REC: amount_line"
+
+  # ------------------------------------------------------------------
+  # recorded_amount_id - default (not filled)
+  # ------------------------------------------------------------------
+  - name: "Worksheet b5e3d9f - recorded_amount_id default (kosong)"
+    steps:
+      - step: "Create worksheet without recorded_amount_id"
+        action: "create"
+        model: "general_audit_ws_b5e3d9f"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+          account_mode: "account"
+          account_id: "REC: account.id"
+
+      - step: "Assert recorded_amount_id defaults to empty"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          recorded_amount_id:
+            type: "value"
+            operator: "is_falsy"
+
+  # ------------------------------------------------------------------
+  # recorded_amount_id - readonly locked outside "open" state
+  # ------------------------------------------------------------------
+  - name: "Worksheet b5e3d9f - recorded_amount_id readonly outside open"
+    steps:
+      - step: "Create worksheet, still in draft"
+        action: "create"
+        model: "general_audit_ws_b5e3d9f"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+          account_mode: "account"
+          account_id: "REC: account.id"
+
+      - step: "Create an amount line on the worksheet"
+        action: "create"
+        model: "general_audit_ws_b5e3d9f.amount"
+        save_as: "amount_line"
+        as_user: "base.user_admin"
+        values:
+          worksheet_id: "REC: worksheet.id"
+          label: "Amount1"
+          col_number: 2
+
+      - step: "Setting recorded_amount_id via Form must be rejected in draft"
+        action: "form"
+        target: "worksheet"
+        as_user: "base.user_admin"
+        save: false
+        ops:
+          - set: {recorded_amount_id: "REC: amount_line"}
+        expect_error:
+          type: "AssertionError"
+          message_contains: "readonly"
