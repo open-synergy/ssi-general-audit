@@ -20,7 +20,9 @@
   generated sample already exists for the same engagement, linked to the same General
   Ledger/Subledger selected by this worksheet's **Data Mode**.
 - **Data:** For **Data Mode = Subledger** together with **Data Source = Population**:
-  the selected Subledger worksheet has at least one Amount column configured.
+  the selected Subledger worksheet has at least one Amount column configured, and its
+  **Recorded Amount Column** field (Raw Data tab) is set to the amount column
+  representing the recorded transaction amount.
 - **Access:** User is in group _Test of Detail (b4f8e1a) — User_ (or higher).
 
 ## Flow
@@ -35,13 +37,9 @@
    - **Population**: examines 100% of the General Ledger/Subledger selected in step 4
      directly.
    - **Sample**: uses the sampling result of a linked Sample Determination worksheet.
-6. Depending on the **Data Source** selected:
-   - If **Sample**: select the **# Sample Determination** field. Only Sample
-     Determination worksheets linked to the same General Ledger/Subledger selected in
-     step 4 are selectable.
-   - If **Population** and **Data Mode** is **Subledger**: select the **Subledger Amount
-     Column** field -- which of the Subledger's amount columns to use as Recorded Amount
-     (shown only for Population + Subledger).
+6. If **Data Source** is **Sample**: select the **# Sample Determination** field. Only
+   Sample Determination worksheets linked to the same General Ledger/Subledger selected
+   in step 4 are selectable.
 7. Click the **Generate Examination Data** button.
 
 ## Post-Condition
@@ -52,7 +50,7 @@
   - **Population**: one row per data row (excluding header) of the selected General
     Ledger/Subledger; Data is the value of the selected General Ledger/Subledger's own
     **Identifier Column Number** column (blank if not configured there); Recorded Amount
-    is Debit minus Credit (General Ledger) or the raw value of the selected **Subledger
-    Amount Column** (Subledger); Audited Amount is left blank.
+    is Debit minus Credit (General Ledger) or the raw value of the selected Subledger's
+    own **Recorded Amount Column** (Subledger); Audited Amount is left blank.
 - Any Audited Amount values entered before this action are discarded and must be
   re-entered.

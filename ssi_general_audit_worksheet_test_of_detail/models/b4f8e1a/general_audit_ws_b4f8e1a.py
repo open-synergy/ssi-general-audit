@@ -108,23 +108,6 @@ class GeneralAuditWsB4f8e1a(models.Model):
         "linked Sample Determination worksheet (existing behaviour, "
         "unchanged).",
     )
-    subledger_amount_id = fields.Many2one(
-        comodel_name="general_audit_ws_b5e3d9f.amount",
-        string="Subledger Amount Column",
-        domain="[('worksheet_id', '=', subledger_id)]",
-        readonly=True,
-        states={
-            "open": [("readonly", False)],
-        },
-        help="Which Subledger amount column ("
-        "general_audit_ws_b5e3d9f.amount line) to use as Recorded "
-        "Amount when Data Mode is Subledger and Data Source is "
-        "Population. Required in that combination -- Subledger, "
-        "unlike General Ledger, has no fixed debit/credit column "
-        "pair, only a user-defined list of labelled amount columns "
-        "(amount_ids); the auditor picks which one represents the "
-        "recorded transaction amount to examine.",
-    )
     allowed_sample_determination_ids = fields.Many2many(
         comodel_name="general_audit_ws_a916660",
         string="Allowed Sample Determination",
@@ -785,17 +768,11 @@ class GeneralAuditWsB4f8e1a(models.Model):
         """Clear the stale Sample Determination when the source changes."""
         self.sample_determination_id = False
 
-    @api.onchange("subledger_id")
-    def onchange_subledger_amount_id(self):
-        """Clear the Subledger Amount column when Subledger changes."""
-        self.subledger_amount_id = False
-
     @api.onchange(
         "sample_determination_id",
         "data_source",
         "general_ledger_id",
         "subledger_id",
-        "subledger_amount_id",
     )
     def onchange_examination_data(self):
         """Clear the stale examination table when the data source changes."""
@@ -912,14 +889,14 @@ class GeneralAuditWsB4f8e1a(models.Model):
         ``identifier_col_number`` (blank when not configured there),
         and ``Recorded Amount`` is Debit minus Credit (General Ledger, not
         adjusted for the account's normal balance) or the raw value of
-        the selected ``subledger_amount_id`` column (Subledger, no
-        netting). ``Audited Amount`` starts blank for the auditor to
-        fill in.
+        the selected Subledger's own ``recorded_amount_id`` column
+        (Subledger, no netting). ``Audited Amount`` starts blank for
+        the auditor to fill in.
 
         :raise UserError: when ``data_mode`` is not set, when the
             General Ledger/Subledger required by ``data_mode`` is not
-            selected, or (Subledger only) when
-            ``subledger_amount_id`` is not selected.
+            selected, or (Subledger only) when the selected
+            Subledger's ``recorded_amount_id`` is not configured.
         :return: ``None``.
         """
         self.ensure_one()
@@ -933,10 +910,16 @@ class GeneralAuditWsB4f8e1a(models.Model):
         elif self.data_mode == "subledger":
             if not self.subledger_id:
                 raise UserError(_("Please select a Subledger first."))
-            if not self.subledger_amount_id:
-                raise UserError(_("Please select a Subledger Amount column first."))
+            if not self.subledger_id.recorded_amount_id:
+                raise UserError(
+                    _(
+                        "The selected Subledger has no Recorded Amount "
+                        "Column configured. Set it on the Subledger "
+                        "worksheet's Raw Data tab first."
+                    )
+                )
             source = self.subledger_id
-            amount_col = self.subledger_amount_id.col_number
+            amount_col = self.subledger_id.recorded_amount_id.col_number
         else:
             raise UserError(_("Please select a General Ledger or Subledger first."))
 

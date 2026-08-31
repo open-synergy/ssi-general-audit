@@ -85,13 +85,14 @@
                                     attrs="{'invisible': [('data_source', '!=', 'sample')]}"
                                 />
                                 <field
-                                    name="subledger_amount_id"
-                                    domain="[('worksheet_id', '=', subledger_id)]"
-                                    attrs="{'invisible': ['|', ('data_source', '!=', 'population'), ('data_mode', '!=', 'subledger')]}"
+                                    name="sample_type"
+                                    attrs="{'invisible': [('data_source', '=', 'population')]}"
                                 />
-                                <field name="sample_type" />
                                 <field name="population_count" />
-                                <field name="sample_count" />
+                                <field
+                                    name="sample_count"
+                                    attrs="{'invisible': [('data_source', '=', 'population')]}"
+                                />
                             </group>
                             <group
                                 name="examination_setup_parameters"

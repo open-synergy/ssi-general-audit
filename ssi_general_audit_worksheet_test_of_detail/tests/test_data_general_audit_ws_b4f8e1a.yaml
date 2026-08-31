@@ -1282,6 +1282,13 @@ scenarios:
           label: "Amount1"
           col_number: 2
 
+      - step: "Set the Subledger's own Recorded Amount Column to Amount1"
+        action: "write"
+        target: "sl"
+        as_user: "base.user_admin"
+        values:
+          recorded_amount_id: "REC: amount_line.id"
+
       - step:
           "Create worksheet b4f8e1a with Data Source = Population, Data Mode = Subledger"
         action: "create"
@@ -1294,7 +1301,6 @@ scenarios:
           data_source: "population"
           data_mode: "subledger"
           subledger_id: "REC: sl.id"
-          subledger_amount_id: "REC: amount_line.id"
 
       - step: "Generate examination data"
         action: "call"
