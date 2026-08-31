@@ -12,8 +12,10 @@
 
 - **Record:** Status is **On Progress**.
 - **Data:** For **Data Source = Population**: a General Ledger or Subledger worksheet
-  already exists for the same engagement with Raw Data imported (and, for General
-  Ledger, its Debit/Credit column numbers configured).
+  already exists for the same engagement with Raw Data imported, its Identifier Column
+  Number configured (used to fill the **Data** column of Examination Data; left blank
+  there, that column stays empty), and, for General Ledger, its Debit/Credit column
+  numbers configured.
 - **Data:** For **Data Source = Sample**: a Sample Determination worksheet with a
   generated sample already exists for the same engagement, linked to the same General
   Ledger/Subledger selected by this worksheet's **Data Mode**.
@@ -37,23 +39,20 @@
    - If **Sample**: select the **# Sample Determination** field. Only Sample
      Determination worksheets linked to the same General Ledger/Subledger selected in
      step 4 are selectable.
-   - If **Population**: optionally fill in **Identifier Column Number** -- the column
-     number (starting from 1) in the selected General Ledger/Subledger's Raw Data
-     holding each row's identifier. Left blank, the **Sample** column of Examination
-     Data stays empty. If **Data Mode** is **Subledger**, also select the **Subledger
-     Amount Column** field -- which of the Subledger's amount columns to use as Recorded
-     Amount (shown only for Population + Subledger).
+   - If **Population** and **Data Mode** is **Subledger**: select the **Subledger Amount
+     Column** field -- which of the Subledger's amount columns to use as Recorded Amount
+     (shown only for Population + Subledger).
 7. Click the **Generate Examination Data** button.
 
 ## Post-Condition
 
 - The **Examination Data** table (**Examination Data** tab) is (re)built:
   - **Sample**: one row per item sampled by the linked Sample Determination worksheet,
-    carrying over its Item, Sample, and Recorded Amount; Audited Amount is left blank.
+    carrying over its Item, Data, and Recorded Amount; Audited Amount is left blank.
   - **Population**: one row per data row (excluding header) of the selected General
-    Ledger/Subledger; Sample is the value of the **Identifier Column Number** column
-    (blank if not configured); Recorded Amount is Debit minus Credit (General Ledger) or
-    the raw value of the selected **Subledger Amount Column** (Subledger); Audited
-    Amount is left blank.
+    Ledger/Subledger; Data is the value of the selected General Ledger/Subledger's own
+    **Identifier Column Number** column (blank if not configured there); Recorded Amount
+    is Debit minus Credit (General Ledger) or the raw value of the selected **Subledger
+    Amount Column** (Subledger); Audited Amount is left blank.
 - Any Audited Amount values entered before this action are discarded and must be
   re-entered.

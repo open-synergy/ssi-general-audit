@@ -17,11 +17,17 @@ class TestUiGeneralAuditWsB4f8e1a(HttpSavepointCase):
         """Create the engagement, General Ledger, and open worksheet.
 
         Everything the tour itself is meant to exercise (Data Mode,
-        General Ledger, Data Source, Identifier Column Number, and the
-        Generate Examination Data click) is left blank/default here --
-        the tour fills those in through the UI. Only the Pre-Condition
-        (an On Progress worksheet linked to an engagement with a
-        General Ledger already imported) is prepared in Python.
+        General Ledger, Data Source, and the Generate Examination Data
+        click) is left blank/default here -- the tour fills those in
+        through the UI. Identifier Column Number is configured on the
+        General Ledger itself, not on this worksheet (that field was
+        removed from ``general_audit_ws_b4f8e1a`` -- see
+        ``general_audit_ws_d209914``/``general_audit_ws_b5e3d9f``), so
+        it is set here as part of the Pre-Condition rather than
+        through the tour. The Pre-Condition (an On Progress worksheet
+        linked to an engagement with a General Ledger already
+        imported, its Identifier Column Number already configured) is
+        prepared in Python.
         """
         super().setUpClass()
         # user_id is explicit throughout: cls.env runs as SUPERUSER, and
@@ -104,6 +110,7 @@ class TestUiGeneralAuditWsB4f8e1a(HttpSavepointCase):
                     "raw_data": "Ref,Debit,Credit\nTOUR-B4F8E1A-R1,1000,0\n",
                     "debit_col_number": 2,
                     "credit_col_number": 3,
+                    "identifier_col_number": 1,
                 }
             )
         )

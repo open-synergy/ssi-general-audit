@@ -91,14 +91,7 @@ odoo.define(
                     run: "text Population",
                 },
 
-                // Flow 6 - Fill in the Identifier Column Number (Population branch)
-                {
-                    content: "Fill in Identifier Column Number",
-                    trigger: ".o_field_widget[name='identifier_col_number']",
-                    run: "text 1",
-                },
-
-                // Flow 7 - Click the Generate Examination Data button
+                // Flow 6 - Click the Generate Examination Data button
                 {
                     content: "Click the Generate Examination Data button",
                     trigger: "button[name='action_generate_examination_data']",

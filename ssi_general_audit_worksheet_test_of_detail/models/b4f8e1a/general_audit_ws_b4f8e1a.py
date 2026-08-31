@@ -108,18 +108,6 @@ class GeneralAuditWsB4f8e1a(models.Model):
         "linked Sample Determination worksheet (existing behaviour, "
         "unchanged).",
     )
-    identifier_col_number = fields.Integer(
-        string="Identifier Column Number",
-        help="Column number (starting from 1) in the selected General "
-        "Ledger/Subledger's Raw Data holding each row's identifier/"
-        "reference -- used to fill the 'Sample' column of "
-        "Examination Data when Data Source is Population. Optional: "
-        "left blank, that column is empty.",
-        readonly=True,
-        states={
-            "open": [("readonly", False)],
-        },
-    )
     subledger_amount_id = fields.Many2one(
         comodel_name="general_audit_ws_b5e3d9f.amount",
         string="Subledger Amount Column",
@@ -824,7 +812,7 @@ class GeneralAuditWsB4f8e1a(models.Model):
         rows = list(csv.reader(io.StringIO(self.sampling_data)))
         output = io.StringIO()
         writer = csv.writer(output)
-        writer.writerow(["Seq", "Item", "Sample", "Recorded Amount", "Audited Amount"])
+        writer.writerow(["Seq", "Item", "Data", "Recorded Amount", "Audited Amount"])
         amount_pos = 1 + cell_index
         for seq, row in enumerate(rows[1:], start=1):
             item = row[0] if len(row) >= 1 else ""
@@ -838,9 +826,10 @@ class GeneralAuditWsB4f8e1a(models.Model):
 
         Builds one row per data row (excluding header) of the
         selected General Ledger/Subledger's ``raw_data``: ``Item`` is
-        the row's sequence number (Seq), ``Sample`` is the value of
-        ``identifier_col_number`` (blank when not configured), and
-        ``Recorded Amount`` is Debit minus Credit (General Ledger, not
+        the row's sequence number (Seq), ``Data`` is the value of the
+        selected General Ledger/Subledger's own
+        ``identifier_col_number`` (blank when not configured there),
+        and ``Recorded Amount`` is Debit minus Credit (General Ledger, not
         adjusted for the account's normal balance) or the raw value of
         the selected ``subledger_amount_id`` column (Subledger, no
         netting). ``Audited Amount`` starts blank for the auditor to
@@ -872,11 +861,11 @@ class GeneralAuditWsB4f8e1a(models.Model):
 
         thousand_sep = source.thousand_separator or ","
         decimal_sep = source.decimal_separator or "."
-        identifier_col = self.identifier_col_number
+        identifier_col = source.identifier_col_number
         rows = list(csv.reader(io.StringIO(source.raw_data or "")))
         output = io.StringIO()
         writer = csv.writer(output)
-        writer.writerow(["Seq", "Item", "Sample", "Recorded Amount", "Audited Amount"])
+        writer.writerow(["Seq", "Item", "Data", "Recorded Amount", "Audited Amount"])
         for seq, row in enumerate(rows[1:], start=1):
             sample = ""
             if identifier_col and len(row) >= identifier_col:

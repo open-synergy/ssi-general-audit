@@ -801,7 +801,7 @@ scenarios:
           examination_data:
             type: "value"
             operator: "contains"
-            expected: "Seq,Item,Sample,Recorded Amount,Audited Amount"
+            expected: "Seq,Item,Data,Recorded Amount,Audited Amount"
 
       - step: "Assert examination_data carries the first sampled item"
         action: "assert"
@@ -901,7 +901,7 @@ scenarios:
         as_user: "base.user_admin"
         values:
           examination_data:
-            "Seq,Item,Sample,Recorded Amount,Audited Amount\n1,1,R1,1000,1000\n"
+            "Seq,Item,Data,Recorded Amount,Audited Amount\n1,1,R1,1000,1000\n"
 
       - step: "Assert examination_data was actually persisted"
         action: "assert"
@@ -961,7 +961,7 @@ scenarios:
         as_user: "base.user_admin"
         values:
           examination_data:
-            "Seq,Item,Sample,Recorded Amount,Audited
+            "Seq,Item,Data,Recorded Amount,Audited
             Amount\n1,1,S1,1000,900\n2,2,S2,2000,2000\n3,3,S3,3000,3100\n4,4,S4,4000,\n"
 
       - step: "Assert sample_count / sum_difference / average_difference"
@@ -1049,7 +1049,7 @@ scenarios:
         as_user: "base.user_admin"
         values:
           examination_data:
-            "Seq,Item,Sample,Recorded Amount,Audited
+            "Seq,Item,Data,Recorded Amount,Audited
             Amount\n1,1,S1,1000000,1\n2,2,S2,1000000,1\n"
 
       - step: "Assert conclusion_text is misstatement"
@@ -1113,7 +1113,7 @@ scenarios:
         as_user: "base.user_admin"
         values:
           examination_data:
-            "Seq,Item,Sample,Recorded Amount,Audited
+            "Seq,Item,Data,Recorded Amount,Audited
             Amount\n1,1,S1,1000,1000\n2,2,S2,2000,2000\n"
 
       - step: "Assert the worksheet's mirror picked up the SD's tolerable_misstatement"
@@ -1152,6 +1152,7 @@ scenarios:
           raw_data: "Ref,Debit,Credit\nR1,1000,0\nR2,0,600\nR3,2000,500\n"
           debit_col_number: 2
           credit_col_number: 3
+          identifier_col_number: 1
           title: "GL for population generate examination data"
 
       - step: "Create worksheet b4f8e1a with Data Source = Population, Data Mode = GL"
@@ -1165,7 +1166,6 @@ scenarios:
           data_source: "population"
           data_mode: "gl"
           general_ledger_id: "REC: gl.id"
-          identifier_col_number: 1
 
       - step: "Generate examination data"
         action: "call"
@@ -1185,7 +1185,7 @@ scenarios:
           examination_data:
             type: "value"
             operator: "contains"
-            expected: "Seq,Item,Sample,Recorded Amount,Audited Amount"
+            expected: "Seq,Item,Data,Recorded Amount,Audited Amount"
 
       - step:
           "Assert first row: Item = Seq, Sample = identifier column, Recorded = Debit -
@@ -1264,6 +1264,7 @@ scenarios:
           account_mode: "standard_account"
           account_type_id: "REC: account_type.id"
           raw_data: "Ref,Amount1,Amount2\nR1,1000,500\nR2,2000,750\n"
+          identifier_col_number: 1
           title: "SL for population generate examination data"
 
       - step: "Create amount column line for Amount1"
@@ -1289,7 +1290,6 @@ scenarios:
           data_mode: "subledger"
           subledger_id: "REC: sl.id"
           subledger_amount_id: "REC: amount_line.id"
-          identifier_col_number: 1
 
       - step: "Generate examination data"
         action: "call"
@@ -1398,7 +1398,7 @@ scenarios:
         as_user: "base.user_admin"
         values:
           examination_data:
-            "Seq,Item,Sample,Recorded Amount,Audited
+            "Seq,Item,Data,Recorded Amount,Audited
             Amount\n1,1,R1,1000,1000\n2,2,R2,2000,2000\n"
 
       - step: "Assert computed_precision_interval is 0.0 for Population"
@@ -1456,7 +1456,7 @@ scenarios:
         as_user: "base.user_admin"
         values:
           examination_data:
-            "Seq,Item,Sample,Recorded Amount,Audited
+            "Seq,Item,Data,Recorded Amount,Audited
             Amount\n1,1,R1,1000,1000\n2,2,R2,2000,1500\n"
 
       - step: "Assert conclusion_text is misstatement"

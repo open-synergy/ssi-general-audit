@@ -85,10 +85,6 @@
                                     attrs="{'invisible': [('data_source', '!=', 'sample')]}"
                                 />
                                 <field
-                                    name="identifier_col_number"
-                                    attrs="{'invisible': [('data_source', '!=', 'population')]}"
-                                />
-                                <field
                                     name="subledger_amount_id"
                                     domain="[('worksheet_id', '=', subledger_id)]"
                                     attrs="{'invisible': ['|', ('data_source', '!=', 'population'), ('data_mode', '!=', 'subledger')]}"
