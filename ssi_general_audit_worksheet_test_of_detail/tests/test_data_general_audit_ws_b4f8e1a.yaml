@@ -1270,24 +1270,8 @@ scenarios:
           account_type_id: "REC: account_type.id"
           raw_data: "Ref,Amount1,Amount2\nR1,1000,500\nR2,2000,750\n"
           identifier_col_number: 1
+          amount_col_number: 2
           title: "SL for population generate examination data"
-
-      - step: "Create amount column line for Amount1"
-        action: "create"
-        model: "general_audit_ws_b5e3d9f.amount"
-        save_as: "amount_line"
-        as_user: "base.user_admin"
-        values:
-          worksheet_id: "REC: sl.id"
-          label: "Amount1"
-          col_number: 2
-
-      - step: "Set the Subledger's own Recorded Amount Column to Amount1"
-        action: "write"
-        target: "sl"
-        as_user: "base.user_admin"
-        values:
-          recorded_amount_id: "REC: amount_line.id"
 
       - step:
           "Create worksheet b4f8e1a with Data Source = Population, Data Mode = Subledger"
@@ -1333,11 +1317,11 @@ scenarios:
 
   # ------------------------------------------------------------------
   # action_generate_examination_data - Population / Subledger without
-  # Subledger Amount column selected is rejected
+  # amount_col_number configured on the Subledger is rejected
   # ------------------------------------------------------------------
   - name:
       "Worksheet b4f8e1a - Population/Subledger action_generate_examination_data without
-      Subledger Amount is rejected"
+      amount_col_number is rejected"
     steps:
       - step: "Create Subledger worksheet"
         action: "create"
@@ -1350,11 +1334,11 @@ scenarios:
           account_mode: "standard_account"
           account_type_id: "REC: account_type.id"
           raw_data: "Ref,Amount1\nR1,1000\n"
-          title: "SL without Amount column selected"
+          title: "SL without amount_col_number configured"
 
       - step:
           "Create worksheet b4f8e1a with Data Source = Population, Data Mode =
-          Subledger, no Subledger Amount column selected"
+          Subledger, Subledger has no amount_col_number configured"
         action: "create"
         model: "general_audit_ws_b4f8e1a"
         save_as: "worksheet"

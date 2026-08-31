@@ -889,14 +889,14 @@ class GeneralAuditWsB4f8e1a(models.Model):
         ``identifier_col_number`` (blank when not configured there),
         and ``Recorded Amount`` is Debit minus Credit (General Ledger, not
         adjusted for the account's normal balance) or the raw value of
-        the selected Subledger's own ``recorded_amount_id`` column
+        the selected Subledger's own ``amount_col_number`` column
         (Subledger, no netting). ``Audited Amount`` starts blank for
         the auditor to fill in.
 
         :raise UserError: when ``data_mode`` is not set, when the
             General Ledger/Subledger required by ``data_mode`` is not
             selected, or (Subledger only) when the selected
-            Subledger's ``recorded_amount_id`` is not configured.
+            Subledger's ``amount_col_number`` is not configured.
         :return: ``None``.
         """
         self.ensure_one()
@@ -910,16 +910,16 @@ class GeneralAuditWsB4f8e1a(models.Model):
         elif self.data_mode == "subledger":
             if not self.subledger_id:
                 raise UserError(_("Please select a Subledger first."))
-            if not self.subledger_id.recorded_amount_id:
+            if not self.subledger_id.amount_col_number:
                 raise UserError(
                     _(
-                        "The selected Subledger has no Recorded Amount "
-                        "Column configured. Set it on the Subledger "
+                        "The selected Subledger has no Amount Column "
+                        "Number configured. Set it on the Subledger "
                         "worksheet's Raw Data tab first."
                     )
                 )
             source = self.subledger_id
-            amount_col = self.subledger_id.recorded_amount_id.col_number
+            amount_col = self.subledger_id.amount_col_number
         else:
             raise UserError(_("Please select a General Ledger or Subledger first."))
 

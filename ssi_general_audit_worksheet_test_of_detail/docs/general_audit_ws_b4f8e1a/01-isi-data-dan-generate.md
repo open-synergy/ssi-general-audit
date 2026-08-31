@@ -20,9 +20,9 @@
   generated sample already exists for the same engagement, linked to the same General
   Ledger/Subledger selected by this worksheet's **Data Mode**.
 - **Data:** For **Data Mode = Subledger** together with **Data Source = Population**:
-  the selected Subledger worksheet has at least one Amount column configured, and its
-  **Recorded Amount Column** field (Raw Data tab) is set to the amount column
-  representing the recorded transaction amount.
+  the selected Subledger worksheet has its **Amount Column Number** field (Raw Data tab,
+  below Identifier Column Number) set to the Raw Data column representing the recorded
+  transaction amount.
 - **Access:** User is in group _Test of Detail (b4f8e1a) — User_ (or higher).
 
 ## Flow
@@ -51,6 +51,6 @@
     Ledger/Subledger; Data is the value of the selected General Ledger/Subledger's own
     **Identifier Column Number** column (blank if not configured there); Recorded Amount
     is Debit minus Credit (General Ledger) or the raw value of the selected Subledger's
-    own **Recorded Amount Column** (Subledger); Audited Amount is left blank.
+    own **Amount Column Number** column (Subledger); Audited Amount is left blank.
 - Any Audited Amount values entered before this action are discarded and must be
   re-entered.
