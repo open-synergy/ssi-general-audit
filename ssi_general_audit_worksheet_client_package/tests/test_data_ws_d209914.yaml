@@ -550,3 +550,96 @@ scenarios:
           state:
             type: "value"
             expected: "draft"
+
+  # ------------------------------------------------------------------
+  # identifier_col_number - filled while state is open
+  # ------------------------------------------------------------------
+  - name: "Worksheet d209914 - identifier_col_number filled while open"
+    steps:
+      - step: "Create worksheet without identifier_col_number"
+        action: "create"
+        model: "general_audit_ws_d209914"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+          account_mode: "account"
+          account_id: "REC: account.id"
+
+      - step: "Open worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_open"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after opening worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Write identifier_col_number while state is open"
+        action: "write"
+        target: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          identifier_col_number: 2
+
+      - step: "Assert identifier_col_number was stored"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          identifier_col_number:
+            type: "value"
+            expected: 2
+
+  # ------------------------------------------------------------------
+  # identifier_col_number - default (not filled)
+  # ------------------------------------------------------------------
+  - name: "Worksheet d209914 - identifier_col_number default (kosong)"
+    steps:
+      - step: "Create worksheet without identifier_col_number"
+        action: "create"
+        model: "general_audit_ws_d209914"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+          account_mode: "account"
+          account_id: "REC: account.id"
+
+      - step: "Assert identifier_col_number defaults to zero"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          identifier_col_number:
+            type: "value"
+            expected: 0
+
+  # ------------------------------------------------------------------
+  # identifier_col_number - readonly locked outside "open" state
+  # ------------------------------------------------------------------
+  - name: "Worksheet d209914 - identifier_col_number readonly outside open"
+    steps:
+      - step: "Create worksheet, still in draft"
+        action: "create"
+        model: "general_audit_ws_d209914"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+          account_mode: "account"
+          account_id: "REC: account.id"
+
+      - step: "Setting identifier_col_number via Form must be rejected in draft"
+        action: "form"
+        target: "worksheet"
+        as_user: "base.user_admin"
+        save: false
+        ops:
+          - set: {identifier_col_number: 5}
+        expect_error:
+          type: "AssertionError"
+          message_contains: "readonly"
