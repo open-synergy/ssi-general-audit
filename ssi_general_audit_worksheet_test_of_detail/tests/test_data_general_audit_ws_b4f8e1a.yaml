@@ -1370,13 +1370,49 @@ scenarios:
 
   # ------------------------------------------------------------------
   # _compute_conclusion_text / _compute_computed_precision_interval -
-  # Population branch (no confidence-limit projection)
+  # Population branch. Same formulas as Sample (ToD_akun_260821.ods):
+  # population_count = sample_count (100% examined) already forces
+  # Population Standard Deviation to 0 (cell D223's own
+  # IF(population=sample,0,...) guard), so CPI collapses to 0 and the
+  # confidence limits collapse to the total difference found -- the
+  # conclusion is then a straight comparison against
+  # tolerable_misstatement, exactly like Sample, NOT "any difference
+  # at all is a misstatement".
   # ------------------------------------------------------------------
   - name:
-      "Worksheet b4f8e1a - Population conclusion is no_misstatement when Audited matches
-      Recorded"
+      "Worksheet b4f8e1a - Population: no difference at all collapses CPI/limits to 0"
     steps:
-      - step: "Create worksheet b4f8e1a with Data Source = Population"
+      - step: "Create General Ledger worksheet with 3 population rows"
+        action: "create"
+        model: "general_audit_ws_d209914"
+        save_as: "gl"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_d209914.id"
+          account_mode: "standard_account"
+          account_type_id: "REC: account_type.id"
+          raw_data: "Ref,Debit,Credit\nR1,5000000,0\nR2,5000000,0\nR3,5000000,0\n"
+          debit_col_number: 2
+          credit_col_number: 3
+          identifier_col_number: 1
+          title: "GL for Population Result Analysis (no difference)"
+
+      - step: "Create Final Materiality worksheet with a Tolerable Misstatement policy"
+        action: "create"
+        model: "general_audit_ws_bb33b94"
+        save_as: "final_materiality_ws"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_bb33b94.id"
+          other_amount_ok: true
+          other_base_amount: 100000000
+          overall_materiality_percentage: 10
+          performance_materiality_percentage: 100
+          tolerable_misstatement_percentage: 10
+
+      - step: "Create worksheet b4f8e1a with Data Source = Population linked to the GL"
         action: "create"
         model: "general_audit_ws_b4f8e1a"
         save_as: "worksheet"
@@ -1385,56 +1421,89 @@ scenarios:
           general_audit_id: "REC: audit.id"
           type_id: "REC: ws_type.id"
           data_source: "population"
+          data_mode: "gl"
+          general_ledger_id: "REC: gl.id"
 
-      - step: "Open worksheet (examination_data becomes editable)"
+      - step: "Generate examination data (Recorded Amount = Audited Amount, all blank)"
         action: "call"
         target: "worksheet"
-        method: "action_open"
+        method: "action_generate_examination_data"
         as_user: "base.user_admin"
 
-      - step: "Invalidate cache after opening worksheet"
-        action: "call"
-        target: "worksheet"
-        method: "invalidate_cache"
-
-      - step: "Write examination_data with Audited Amount matching Recorded Amount"
+      - step: "Fill every Audited Amount equal to its Recorded Amount"
         action: "write"
         target: "worksheet"
         as_user: "base.user_admin"
         values:
           examination_data:
             "Seq,Item,Data,Recorded Amount,Audited
-            Amount\n1,1,R1,1000,1000\n2,2,R2,2000,2000\n"
+            Amount\n1,1,R1,5000000.0,5000000\n2,2,R2,5000000.0,5000000\n3,3,R3,5000000.0,5000000\n"
 
-      - step: "Assert computed_precision_interval is 0.0 for Population"
+      - step: "Invalidate cache after writing examination_data"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step:
+          "Assert population_count equals sample_count (3), so CPI/limits collapse to 0
+          per D223's own guard"
         action: "assert"
         target: "worksheet"
         asserts:
+          population_count:
+            type: "value"
+            expected: 3
+          sample_count:
+            type: "value"
+            expected: 3
           computed_precision_interval:
             type: "value"
             expected: 0.0
-
-      - step: "Assert upper_confidence_limit is 0.0 for Population"
-        action: "assert"
-        target: "worksheet"
-        asserts:
           upper_confidence_limit:
             type: "value"
             expected: 0.0
-
-      - step: "Assert conclusion_text is no_misstatement"
-        action: "assert"
-        target: "worksheet"
-        asserts:
+          lower_confidence_limit:
+            type: "value"
+            expected: 0.0
           conclusion_text:
             type: "value"
             expected: "no_misstatement"
 
   - name:
-      "Worksheet b4f8e1a - Population conclusion is misstatement when a difference
-      exists"
+      "Worksheet b4f8e1a - Population: total difference WITHIN Tolerable Misstatement
+      stays no_misstatement"
     steps:
-      - step: "Create worksheet b4f8e1a with Data Source = Population"
+      - step: "Create General Ledger worksheet with 3 population rows"
+        action: "create"
+        model: "general_audit_ws_d209914"
+        save_as: "gl"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_d209914.id"
+          account_mode: "standard_account"
+          account_type_id: "REC: account_type.id"
+          raw_data: "Ref,Debit,Credit\nR1,5000000,0\nR2,5000000,0\nR3,5000000,0\n"
+          debit_col_number: 2
+          credit_col_number: 3
+          identifier_col_number: 1
+          title: "GL for Population Result Analysis (within tolerance)"
+
+      - step: "Create Final Materiality worksheet with a Tolerable Misstatement policy"
+        action: "create"
+        model: "general_audit_ws_bb33b94"
+        save_as: "final_materiality_ws"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_bb33b94.id"
+          other_amount_ok: true
+          other_base_amount: 100000000
+          overall_materiality_percentage: 10
+          performance_materiality_percentage: 100
+          tolerable_misstatement_percentage: 10
+
+      - step: "Create worksheet b4f8e1a with Data Source = Population linked to the GL"
         action: "create"
         model: "general_audit_ws_b4f8e1a"
         save_as: "worksheet"
@@ -1443,26 +1512,119 @@ scenarios:
           general_audit_id: "REC: audit.id"
           type_id: "REC: ws_type.id"
           data_source: "population"
+          data_mode: "gl"
+          general_ledger_id: "REC: gl.id"
 
-      - step: "Open worksheet (examination_data becomes editable)"
+      - step: "Generate examination data"
         action: "call"
         target: "worksheet"
-        method: "action_open"
+        method: "action_generate_examination_data"
         as_user: "base.user_admin"
 
-      - step: "Invalidate cache after opening worksheet"
-        action: "call"
-        target: "worksheet"
-        method: "invalidate_cache"
-
-      - step: "Write examination_data with one differing Audited Amount"
+      - step:
+          "Fill Audited Amount with a total difference of 450,000 -- below the 1,000,000
+          Tolerable Misstatement (10%% of 10,000,000 Performance Materiality). Chosen so
+          it divides evenly by the 3-row population (population_count = sample_count),
+          avoiding a float-precision mismatch in the projected total (L-04)"
         action: "write"
         target: "worksheet"
         as_user: "base.user_admin"
         values:
           examination_data:
             "Seq,Item,Data,Recorded Amount,Audited
-            Amount\n1,1,R1,1000,1000\n2,2,R2,2000,1500\n"
+            Amount\n1,1,R1,5000000.0,5000000\n2,2,R2,5000000.0,4550000\n3,3,R3,5000000.0,5000000\n"
+
+      - step: "Invalidate cache after writing examination_data"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step:
+          "Assert Tolerable Misstatement is 1,000,000 (10%% of Performance Materiality)
+          and the total difference (450,000) stays under it"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          tolerable_misstatement:
+            type: "value"
+            expected: 1000000.0
+          upper_confidence_limit:
+            type: "value"
+            expected: 450000.0
+          lower_confidence_limit:
+            type: "value"
+            expected: 450000.0
+          conclusion_text:
+            type: "value"
+            expected: "no_misstatement"
+
+  - name:
+      "Worksheet b4f8e1a - Population: total difference EXCEEDING Tolerable Misstatement
+      is a misstatement"
+    steps:
+      - step: "Create General Ledger worksheet with 3 population rows"
+        action: "create"
+        model: "general_audit_ws_d209914"
+        save_as: "gl"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_d209914.id"
+          account_mode: "standard_account"
+          account_type_id: "REC: account_type.id"
+          raw_data: "Ref,Debit,Credit\nR1,5000000,0\nR2,5000000,0\nR3,5000000,0\n"
+          debit_col_number: 2
+          credit_col_number: 3
+          identifier_col_number: 1
+          title: "GL for Population Result Analysis (exceeds tolerance)"
+
+      - step: "Create Final Materiality worksheet with a Tolerable Misstatement policy"
+        action: "create"
+        model: "general_audit_ws_bb33b94"
+        save_as: "final_materiality_ws"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_bb33b94.id"
+          other_amount_ok: true
+          other_base_amount: 100000000
+          overall_materiality_percentage: 10
+          performance_materiality_percentage: 100
+          tolerable_misstatement_percentage: 10
+
+      - step: "Create worksheet b4f8e1a with Data Source = Population linked to the GL"
+        action: "create"
+        model: "general_audit_ws_b4f8e1a"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+          data_source: "population"
+          data_mode: "gl"
+          general_ledger_id: "REC: gl.id"
+
+      - step: "Generate examination data"
+        action: "call"
+        target: "worksheet"
+        method: "action_generate_examination_data"
+        as_user: "base.user_admin"
+
+      - step:
+          "Fill Audited Amount with a total difference of 1,500,000 -- above the
+          1,000,000 Tolerable Misstatement"
+        action: "write"
+        target: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          examination_data:
+            "Seq,Item,Data,Recorded Amount,Audited
+            Amount\n1,1,R1,5000000.0,5000000\n2,2,R2,5000000.0,3500000\n3,3,R3,5000000.0,5000000\n"
+
+      - step: "Invalidate cache after writing examination_data"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
 
       - step: "Assert conclusion_text is misstatement"
         action: "assert"

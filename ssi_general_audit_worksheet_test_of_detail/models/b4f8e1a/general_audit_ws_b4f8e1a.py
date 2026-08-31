@@ -207,10 +207,12 @@ class GeneralAuditWsB4f8e1a(models.Model):
         compute="_compute_performance_materiality",
         store=True,
         compute_sudo=True,
-        help="The engagement's Final Materiality worksheet that "
-        "supplied Performance Materiality above. Set only when Data "
-        "Source is Population and no mapping override is active -- "
-        "open it to verify the figure.",
+        help="The engagement's Final Materiality worksheet used for "
+        "Tolerable Misstatement above, and for Performance "
+        "Materiality above when no mapping override is active. Set "
+        "whenever Data Source is Population and the engagement has "
+        "a Final Materiality worksheet -- open it to verify the "
+        "figures.",
     )
     risk_factor = fields.Float(
         string="Risk Factor",
@@ -226,14 +228,18 @@ class GeneralAuditWsB4f8e1a(models.Model):
     tolerable_misstatement = fields.Monetary(
         string="Tolerable Misstatement",
         currency_field="currency_id",
-        related="sample_determination_id.tolerable_misstatement",
+        compute="_compute_performance_materiality",
         readonly=True,
         store=True,
         compute_sudo=True,
         help="Maximum monetary misstatement acceptable for this "
-        "account, inherited from the referenced Sample Determination "
-        "worksheet -- edit it there, not here, so both worksheets stay "
-        "consistent.",
+        "account. When Data Source is Sample, inherited from the "
+        "referenced Sample Determination worksheet (edit it there). "
+        "When Data Source is Population: Performance Materiality "
+        "above times the engagement's Final Materiality worksheet "
+        "Tolerable Misstatement Percentage -- the same policy "
+        "percentage applied engagement-wide, scaled to whichever "
+        "Performance Materiality actually applies to this account.",
     )
     aria = fields.Selection(
         string="ARIA (%)",
@@ -418,6 +424,7 @@ class GeneralAuditWsB4f8e1a(models.Model):
     @api.depends(
         "data_source",
         "sample_determination_id.performance_materiality",
+        "sample_determination_id.tolerable_misstatement",
         "data_mode",
         "general_ledger_id.account_type_id",
         "general_ledger_id.account_id.type_id",
@@ -426,7 +433,7 @@ class GeneralAuditWsB4f8e1a(models.Model):
         "general_audit_id",
     )
     def _compute_performance_materiality(self):
-        """Derive Performance Materiality from the selected Data Source.
+        """Derive Performance Materiality and Tolerable Misstatement.
 
         For Population, ``specific_materiality`` on the matching
         ``general_audit_ws_6dcda0e_materiality_mapping`` line is an
@@ -440,23 +447,35 @@ class GeneralAuditWsB4f8e1a(models.Model):
         (``general_audit_ws_bb33b94.performance_materiality``), which
         is the same threshold used by every account unless overridden.
         ``materiality_mapping_id``/``final_materiality_id`` record
-        which of the two actually supplied the figure, so the auditor
-        can trace it back.
+        which of these actually supplied Performance Materiality, so
+        the auditor can trace it back.
+
+        Tolerable Misstatement for Population is Performance
+        Materiality (whichever value above) times the engagement's
+        Final Materiality worksheet Tolerable Misstatement Percentage
+        -- mirroring ``ToD_akun_260821.ods``'s own Difference
+        Estimation formulas (cells D223/D224), which need a real
+        Tolerable Misstatement to compare against, not the ``0.0``
+        that would otherwise apply here. This is why
+        ``final_materiality_id`` is populated whenever a Final
+        Materiality worksheet is found, even when Performance
+        Materiality itself came from the mapping override -- Tolerable
+        Misstatement still depends on it.
 
         :return: nothing; assigns ``performance_materiality``,
-            ``materiality_mapping_id``, and ``final_materiality_id``.
-            For Sample, ``performance_materiality`` mirrors the linked
-            Sample Determination worksheet and both source fields are
-            cleared (that path has its own reference,
+            ``tolerable_misstatement``, ``materiality_mapping_id``, and
+            ``final_materiality_id``. For Sample, both amounts mirror
+            the linked Sample Determination worksheet and both source
+            fields are cleared (that path has its own reference,
             ``sample_determination_id``). For Population,
-            ``materiality_mapping_id`` is set (and
-            ``final_materiality_id`` cleared) when a matching mapping
-            line has ``use_specific_materiality`` set; otherwise
-            ``final_materiality_id`` is set (and
-            ``materiality_mapping_id`` cleared) to the engagement's
-            Final Materiality worksheet, when one exists; otherwise
-            both are cleared and ``performance_materiality`` is
-            ``0.0``.
+            ``materiality_mapping_id`` is set when a matching mapping
+            line has ``use_specific_materiality`` set (Performance
+            Materiality source); ``final_materiality_id`` is set
+            whenever the engagement has a Final Materiality worksheet
+            (Tolerable Misstatement source, and Performance
+            Materiality source when no mapping override applies).
+            Amounts are ``0.0`` and both source fields cleared when
+            neither is found.
         """
         Mapping = self.env[  # pylint: disable=invalid-name
             "general_audit_ws_6dcda0e_materiality_mapping"
@@ -465,11 +484,17 @@ class GeneralAuditWsB4f8e1a(models.Model):
             "general_audit_ws_bb33b94"
         ]
         for record in self:
-            result = 0.0
+            performance_materiality = 0.0
+            tolerable_misstatement = 0.0
             mapping_source = Mapping.browse()
             final_materiality_source = FinalMateriality.browse()
             if record.data_source == "sample":
-                result = record.sample_determination_id.performance_materiality
+                performance_materiality = (
+                    record.sample_determination_id.performance_materiality
+                )
+                tolerable_misstatement = (
+                    record.sample_determination_id.tolerable_misstatement
+                )
             elif record.data_source == "population":
                 type_id = False
                 if record.data_mode == "gl":
@@ -496,10 +521,8 @@ class GeneralAuditWsB4f8e1a(models.Model):
                         order="sequence, id",
                         limit=1,
                     )
-                if mapping and mapping.use_specific_materiality:
-                    result = mapping.specific_materiality
-                    mapping_source = mapping
-                elif record.general_audit_id:
+                final_materiality = FinalMateriality.browse()
+                if record.general_audit_id:
                     final_materiality = FinalMateriality.search(
                         [
                             (
@@ -510,10 +533,18 @@ class GeneralAuditWsB4f8e1a(models.Model):
                         ],
                         limit=1,
                     )
-                    if final_materiality:
-                        result = final_materiality.performance_materiality
-                        final_materiality_source = final_materiality
-            record.performance_materiality = result
+                if mapping and mapping.use_specific_materiality:
+                    performance_materiality = mapping.specific_materiality
+                    mapping_source = mapping
+                elif final_materiality:
+                    performance_materiality = final_materiality.performance_materiality
+                if final_materiality:
+                    final_materiality_source = final_materiality
+                    tolerable_misstatement = performance_materiality * (
+                        final_materiality.tolerable_misstatement_percentage / 100.0
+                    )
+            record.performance_materiality = performance_materiality
+            record.tolerable_misstatement = tolerable_misstatement
             record.materiality_mapping_id = mapping_source
             record.final_materiality_id = final_materiality_source
 
@@ -654,22 +685,25 @@ class GeneralAuditWsB4f8e1a(models.Model):
         "aria_coefficient",
         "population_standard_deviation",
         "sample_count",
-        "data_source",
     )
     def _compute_computed_precision_interval(self):
         """Derive the Computed Precision Interval (CPI).
 
-        Not meaningful when ``data_source`` is Population -- 100% of
-        the population is examined directly, so there is nothing to
-        extrapolate from a sample.
+        Same formula for both Data Source values -- when Data Source
+        is Population, ``population_count`` equals ``sample_count``
+        (100% examined), which already forces
+        ``population_standard_deviation`` to ``0.0``
+        (``_compute_population_standard_deviation``'s own guard,
+        replicating ``ToD_akun_260821.ods`` cell ``D223``'s
+        ``IF(population=sample,0,...)``), so this collapses to ``0.0``
+        without needing a separate branch here.
 
         :return: nothing; assigns ``computed_precision_interval``, or
-            ``0.0`` when ``sample_count`` is 0 or ``data_source`` is
-            ``"population"``.
+            ``0.0`` when ``sample_count`` is 0.
         """
         for record in self:
             result = 0.0
-            if record.data_source == "sample" and record.sample_count > 0:
+            if record.sample_count > 0:
                 result = (
                     record.population_count
                     * record.aria_coefficient
@@ -680,80 +714,56 @@ class GeneralAuditWsB4f8e1a(models.Model):
                 )
             record.computed_precision_interval = result
 
-    @api.depends(
-        "population_difference_projection",
-        "computed_precision_interval",
-        "data_source",
-    )
+    @api.depends("population_difference_projection", "computed_precision_interval")
     def _compute_upper_confidence_limit(self):
         """Derive the Computed Upper Confidence Limit.
 
-        Not meaningful when ``data_source`` is Population -- see
-        ``_compute_computed_precision_interval``.
-
-        :return: nothing; assigns ``upper_confidence_limit``, or
-            ``0.0`` when ``data_source`` is ``"population"``.
+        :return: nothing; assigns ``upper_confidence_limit``
         """
         for record in self:
-            result = 0.0
-            if record.data_source == "sample":
-                result = (
-                    record.population_difference_projection
-                    + record.computed_precision_interval
-                )
-            record.upper_confidence_limit = result
+            record.upper_confidence_limit = (
+                record.population_difference_projection
+                + record.computed_precision_interval
+            )
 
-    @api.depends(
-        "population_difference_projection",
-        "computed_precision_interval",
-        "data_source",
-    )
+    @api.depends("population_difference_projection", "computed_precision_interval")
     def _compute_lower_confidence_limit(self):
         """Derive the Computed Lower Confidence Limit.
 
-        Not meaningful when ``data_source`` is Population -- see
-        ``_compute_computed_precision_interval``.
-
-        :return: nothing; assigns ``lower_confidence_limit``, or
-            ``0.0`` when ``data_source`` is ``"population"``.
+        :return: nothing; assigns ``lower_confidence_limit``
         """
         for record in self:
-            result = 0.0
-            if record.data_source == "sample":
-                result = (
-                    record.population_difference_projection
-                    - record.computed_precision_interval
-                )
-            record.lower_confidence_limit = result
+            record.lower_confidence_limit = (
+                record.population_difference_projection
+                - record.computed_precision_interval
+            )
 
     @api.depends(
-        "upper_confidence_limit",
-        "lower_confidence_limit",
-        "tolerable_misstatement",
-        "data_source",
-        "sum_difference",
+        "upper_confidence_limit", "lower_confidence_limit", "tolerable_misstatement"
     )
     def _compute_conclusion_text(self):
         """Derive the Difference Estimation conclusion.
 
-        When ``data_source`` is Sample, unchanged from the previous
-        behaviour: ``"misstatement"`` when the upper confidence limit
-        exceeds ``tolerable_misstatement`` or the lower confidence
-        limit is below its negative, else ``"no_misstatement"``. When
-        ``data_source`` is Population, the confidence-limit
-        projection is not meaningful (100% of the population is
-        examined directly), so the conclusion is based directly on
-        whether any difference was found.
+        Same formula for both Data Source values: ``"misstatement"``
+        when the upper confidence limit exceeds
+        ``tolerable_misstatement`` or the lower confidence limit is
+        below its negative, else ``"no_misstatement"``. When Data
+        Source is Population, both confidence limits collapse to the
+        total difference found (see
+        ``_compute_computed_precision_interval``), so this reduces to
+        comparing that total against ``tolerable_misstatement`` --
+        exactly ``ToD_akun_260821.ods``'s own degenerate case for a
+        100%-examined population, not a bespoke Population rule.
 
         :return: nothing; assigns ``conclusion_text`` to
-            ``"misstatement"`` or ``"no_misstatement"``.
+            ``"misstatement"`` when the upper confidence limit
+            exceeds Tolerable Misstatement, or the lower confidence
+            limit is below its negative -- ``"no_misstatement"``
+            otherwise.
         """
         for record in self:
             result = "no_misstatement"
-            if record.data_source == "population":
-                if record.sum_difference != 0:
-                    result = "misstatement"
-            elif (
+            if (
                 record.upper_confidence_limit > record.tolerable_misstatement
                 or record.lower_confidence_limit < -record.tolerable_misstatement
             ):
