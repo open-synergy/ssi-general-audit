@@ -687,11 +687,11 @@ scenarios:
           message_contains: "readonly"
 
   # ------------------------------------------------------------------
-  # recorded_amount_id - filled while state is open
+  # amount_col_number - filled while state is open
   # ------------------------------------------------------------------
-  - name: "Worksheet b5e3d9f - recorded_amount_id filled while open"
+  - name: "Worksheet b5e3d9f - amount_col_number filled while open"
     steps:
-      - step: "Create worksheet without recorded_amount_id"
+      - step: "Create worksheet without amount_col_number"
         action: "create"
         model: "general_audit_ws_b5e3d9f"
         save_as: "worksheet"
@@ -713,37 +713,27 @@ scenarios:
         target: "worksheet"
         method: "invalidate_cache"
 
-      - step: "Create an amount line on the worksheet"
-        action: "create"
-        model: "general_audit_ws_b5e3d9f.amount"
-        save_as: "amount_line"
-        as_user: "base.user_admin"
-        values:
-          worksheet_id: "REC: worksheet.id"
-          label: "Amount1"
-          col_number: 2
-
-      - step: "Write recorded_amount_id while state is open"
+      - step: "Write amount_col_number while state is open"
         action: "write"
         target: "worksheet"
         as_user: "base.user_admin"
         values:
-          recorded_amount_id: "REC: amount_line.id"
+          amount_col_number: 2
 
-      - step: "Assert recorded_amount_id was stored"
+      - step: "Assert amount_col_number was stored"
         action: "assert"
         target: "worksheet"
         asserts:
-          recorded_amount_id:
-            type: "m2o"
-            expected: "REC: amount_line"
+          amount_col_number:
+            type: "value"
+            expected: 2
 
   # ------------------------------------------------------------------
-  # recorded_amount_id - default (not filled)
+  # amount_col_number - default (not filled)
   # ------------------------------------------------------------------
-  - name: "Worksheet b5e3d9f - recorded_amount_id default (kosong)"
+  - name: "Worksheet b5e3d9f - amount_col_number default (kosong)"
     steps:
-      - step: "Create worksheet without recorded_amount_id"
+      - step: "Create worksheet without amount_col_number"
         action: "create"
         model: "general_audit_ws_b5e3d9f"
         save_as: "worksheet"
@@ -754,18 +744,18 @@ scenarios:
           account_mode: "account"
           account_id: "REC: account.id"
 
-      - step: "Assert recorded_amount_id defaults to empty"
+      - step: "Assert amount_col_number defaults to zero"
         action: "assert"
         target: "worksheet"
         asserts:
-          recorded_amount_id:
+          amount_col_number:
             type: "value"
-            operator: "is_falsy"
+            expected: 0
 
   # ------------------------------------------------------------------
-  # recorded_amount_id - readonly locked outside "open" state
+  # amount_col_number - readonly locked outside "open" state
   # ------------------------------------------------------------------
-  - name: "Worksheet b5e3d9f - recorded_amount_id readonly outside open"
+  - name: "Worksheet b5e3d9f - amount_col_number readonly outside open"
     steps:
       - step: "Create worksheet, still in draft"
         action: "create"
@@ -778,23 +768,13 @@ scenarios:
           account_mode: "account"
           account_id: "REC: account.id"
 
-      - step: "Create an amount line on the worksheet"
-        action: "create"
-        model: "general_audit_ws_b5e3d9f.amount"
-        save_as: "amount_line"
-        as_user: "base.user_admin"
-        values:
-          worksheet_id: "REC: worksheet.id"
-          label: "Amount1"
-          col_number: 2
-
-      - step: "Setting recorded_amount_id via Form must be rejected in draft"
+      - step: "Setting amount_col_number via Form must be rejected in draft"
         action: "form"
         target: "worksheet"
         as_user: "base.user_admin"
         save: false
         ops:
-          - set: {recorded_amount_id: "REC: amount_line"}
+          - set: {amount_col_number: 5}
         expect_error:
           type: "AssertionError"
           message_contains: "readonly"

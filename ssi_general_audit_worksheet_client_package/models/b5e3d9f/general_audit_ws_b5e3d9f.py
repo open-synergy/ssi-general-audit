@@ -104,23 +104,20 @@ class GeneralAuditWSb5e3d9f(models.Model):
         readonly=True,
         states={"open": [("readonly", False)]},
     )
-    recorded_amount_id = fields.Many2one(
-        comodel_name="general_audit_ws_b5e3d9f.amount",
-        string="Recorded Amount Column",
-        domain="[('worksheet_id', '=', id)]",
-        readonly=True,
-        states={"open": [("readonly", False)]},
-        help="Which of the Amounts lines above represents the "
-        "recorded transaction amount for this subledger -- used by "
-        "consuming worksheets (e.g. Test of Detail) when examining "
-        "the population directly. Optional: leave unset when no "
-        "consuming worksheet needs it.",
-    )
     identifier_col_number = fields.Integer(
         string="Identifier Column Number",
         help="Column number (starting from 1) for the row identifier/reference "
         "value in Raw Data — used by consuming worksheets when examining the "
         "population directly (e.g. Test of Detail).",
+        required=False,
+        readonly=True,
+        states={"open": [("readonly", False)]},
+    )
+    amount_col_number = fields.Integer(
+        string="Amount Column Number",
+        help="Column number (starting from 1) for the recorded transaction "
+        "amount in Raw Data — used by consuming worksheets when examining "
+        "the population directly (e.g. Test of Detail).",
         required=False,
         readonly=True,
         states={"open": [("readonly", False)]},
