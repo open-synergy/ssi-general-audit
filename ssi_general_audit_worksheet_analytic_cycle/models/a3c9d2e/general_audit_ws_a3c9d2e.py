@@ -76,6 +76,19 @@ class GeneralAuditWSA3C9D2E(models.Model):
             "master categories."
         ),
     )
+    checklist_conclusion_ids = fields.One2many(
+        string="Conclusion",
+        comodel_name="general_audit_ws_a3c9d2e.checklist",
+        inverse_name="worksheet_id",
+        help=(
+            "Display alias of checklist_ids (same relation and data), "
+            "used only by the Analytical Procedure Cycle Conclusion tab. "
+            "Odoo deduplicates a field's sub-views when the same field is "
+            "shown twice on one form with different tree/form layouts, so "
+            "a separate field is needed here to give the Conclusion tab "
+            "its own columns without affecting the Checklist tab."
+        ),
+    )
     related_account_type_ids = fields.Many2many(
         string="Standard Account",
         comodel_name="client_account_type",
