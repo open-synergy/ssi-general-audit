@@ -13,7 +13,10 @@ class GeneralAuditWsA3c9d2eChecklist(models.Model):
     the supporting working paper (``ref_document``) and the specific
     procedures performed (``procedure_ids``, added freely by the
     auditor rather than populated from a master list — each procedure
-    carries its own result).
+    carries its own result). Also carries the per-category conclusion
+    (``conclusion``) and its supporting evidence (``attachment_ids``),
+    shown on the worksheet's "Analytical Procedure Cycle Conclusion"
+    tab.
     """
 
     _name = "general_audit_ws_a3c9d2e.checklist"
@@ -46,5 +49,23 @@ class GeneralAuditWsA3c9d2eChecklist(models.Model):
         help=(
             "Specific analytical procedures performed for this category, "
             "added manually by the auditor (not populated from a master list)."
+        ),
+    )
+    conclusion = fields.Char(
+        string="Conclusion",
+        help="Free-text conclusion for this analytical procedure category.",
+    )
+    attachment_ids = fields.Many2many(
+        string="Attachments",
+        comodel_name="ir.attachment",
+        relation="rel_general_audit_ws_a3c9d2e_checklist_2_attachment",
+        column1="checklist_id",
+        column2="attachment_id",
+        domain="[('res_model', '=', 'general_audit_ws_a3c9d2e'), "
+        "('res_id', '=', worksheet_id)]",
+        help=(
+            "Files attached as supporting evidence for this category's "
+            "conclusion. Only attachments linked to this worksheet can be "
+            "selected."
         ),
     )

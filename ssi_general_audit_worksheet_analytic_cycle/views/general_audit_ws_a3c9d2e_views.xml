@@ -103,23 +103,32 @@
                             </form>
                         </field>
                     </page>
+                </xpath>
+                <xpath expr="//page[@name='checklist']" position="after">
                     <page
                         name="checklist_conclusion"
                         string="Analytical Procedure Cycle Conclusion"
                     >
-                        <field name="checklist_ids" readonly="1">
-                            <tree create="false" edit="false" delete="false">
+                        <field
+                            name="checklist_ids"
+                            attrs="{'readonly': [('state', '!=', 'open')]}"
+                        >
+                            <tree create="false" delete="false">
+                                <field name="worksheet_id" invisible="1" />
                                 <field
                                     name="item_id"
                                     style="white-space: normal; word-wrap: break-word; overflow-wrap: break-word;"
                                 />
-                                <field name="procedure_ids" widget="many2many_tags" />
+                                <field name="conclusion" />
+                                <field name="attachment_ids" widget="many2many_tags" />
                             </tree>
                             <form>
                                 <group>
+                                    <field name="worksheet_id" invisible="1" />
                                     <field name="item_id" />
+                                    <field name="conclusion" />
                                     <field
-                                        name="procedure_ids"
+                                        name="attachment_ids"
                                         widget="many2many_tags"
                                     />
                                 </group>

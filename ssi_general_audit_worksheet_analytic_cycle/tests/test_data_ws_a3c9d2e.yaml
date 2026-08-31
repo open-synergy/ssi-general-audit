@@ -764,3 +764,163 @@ scenarios:
           - ["id", "=", "REC: worksheet.id"]
         save_as: "result"
         expect_count: 0
+
+  # ------------------------------------------------------------------
+  # general_audit_ws_a3c9d2e.checklist - conclusion & attachment_ids
+  # (BL-308): the "Analytical Procedure Cycle Conclusion" tab now shows
+  # a free-text conclusion plus worksheet-scoped attachments per
+  # category line, replacing the old procedure_ids summary column.
+  #
+  # A negative scenario asserting that an attachment linked to a
+  # DIFFERENT worksheet is rejected by attachment_ids is intentionally
+  # NOT written here: the field's `domain=` in the view is a
+  # client-side (widget) filter only -- the ORM does not enforce it on
+  # write/create, so there is no server-side rejection for `expect_error`
+  # or Python to observe. No `L-xx` in python-escape-hatch.md covers
+  # this (it is not a library limitation), and it is unrelated to the
+  # 12 exception types `expect_error` understands (L-22). Verifying the
+  # domain filter itself would require a UI/tour test, which this item's
+  # "Artefak terdampak: nihil" scope explicitly excludes.
+  # ------------------------------------------------------------------
+  - name: "Worksheet a3c9d2e checklist - conclusion and attachment_ids"
+    steps:
+      - step: "Create business cycle for conclusion scenario"
+        action: "create"
+        model: "client_business_process"
+        save_as: "concl_business_cycle"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Business Cycle - a3c9d2e conclusion"
+          code: "/"
+
+      - step: "Get a checklist option set for the category master"
+        action: "ref"
+        xml_id: "ssi_general_audit.checklist_option_set_1"
+        save_as: "concl_option_set"
+
+      - step: "Create a category master for this business cycle"
+        action: "create"
+        model: "general_audit_ws_a3c9d2e.item"
+        save_as: "concl_category"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Category - a3c9d2e conclusion"
+          code: "/"
+          business_cycle_id: "REC: concl_business_cycle.id"
+          option_set_id: "REC: concl_option_set.id"
+
+      - step: "Create worksheet a3c9d2e with business cycle"
+        action: "create"
+        model: "general_audit_ws_a3c9d2e"
+        save_as: "concl_worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+          business_cycle_id: "REC: concl_business_cycle.id"
+
+      - step: "Add a checklist category line"
+        action: "create"
+        model: "general_audit_ws_a3c9d2e.checklist"
+        save_as: "concl_checklist_line"
+        as_user: "base.user_admin"
+        values:
+          worksheet_id: "REC: concl_worksheet.id"
+          item_id: "REC: concl_category.id"
+
+      - step: "Create an attachment linked to this worksheet"
+        action: "create"
+        model: "ir.attachment"
+        save_as: "concl_attachment"
+        as_user: "base.user_admin"
+        values:
+          name: "conclusion-evidence.txt"
+          res_model: "general_audit_ws_a3c9d2e"
+          res_id: "REC: concl_worksheet.id"
+
+      - step: "Write conclusion and attachment_ids on the checklist line"
+        action: "write"
+        target: "concl_checklist_line"
+        as_user: "base.user_admin"
+        values:
+          conclusion: "Analytical procedures for this category are adequate."
+          attachment_ids:
+            - - 6
+              - 0
+              - - "REC: concl_attachment.id"
+
+      - step: "Invalidate cache after writing conclusion and attachment_ids"
+        action: "call"
+        target: "concl_checklist_line"
+        method: "invalidate_cache"
+
+      - step: "Assert conclusion text saved"
+        action: "assert"
+        target: "concl_checklist_line"
+        asserts:
+          conclusion:
+            type: "value"
+            expected: "Analytical procedures for this category are adequate."
+
+      - step: "Assert attachment_ids contains the created attachment"
+        action: "assert"
+        target: "concl_checklist_line"
+        asserts:
+          attachment_ids:
+            type: "m2m"
+            check: "contains"
+            expected_records:
+              - "REC: concl_attachment"
+
+  # ------------------------------------------------------------------
+  # general_audit_worksheet_conclusion (a3c9d2e) - Descriptive text (BL-308)
+  # ------------------------------------------------------------------
+  - name: "Worksheet a3c9d2e conclusion master - descriptive text"
+    steps:
+      - step: "Get the high conclusion master record"
+        action: "ref"
+        xml_id: "ssi_general_audit_worksheet_analytic_cycle.general_audit_worksheet_conclusion_a3c9d2e_high"
+        save_as: "concl_high"
+
+      - step: "Get the moderate conclusion master record"
+        action: "ref"
+        xml_id: "ssi_general_audit_worksheet_analytic_cycle.general_audit_worksheet_conclusion_a3c9d2e_moderate"
+        save_as: "concl_moderate"
+
+      - step: "Assert high conclusion carries the new descriptive text"
+        action: "assert"
+        target: "concl_high"
+        asserts:
+          name:
+            type: "value"
+            expected:
+              "Analytical procedures for the cycle have been adequately performed."
+          type_id:
+            type: "m2o"
+            expected: "REC: ws_type"
+
+      - step: "Assert moderate conclusion carries the new descriptive text"
+        action: "assert"
+        target: "concl_moderate"
+        asserts:
+          name:
+            type: "value"
+            expected:
+              "Analytical Procedures – Cycle have not been adequately performed."
+          type_id:
+            type: "m2o"
+            expected: "REC: ws_type"
+
+      # expect_count is intentionally NOT asserted here: this file's
+      # earlier scenarios (e.g. "Workflow confirm to done") create their
+      # own ad-hoc general_audit_worksheet_conclusion record under this
+      # same type_id, and all scenarios in this file share one DB
+      # transaction with no rollback between them (T-01) -- an exact
+      # count would be order-dependent. The two master records
+      # themselves are verified deterministically above via `ref`.
+      - step: "Search conclusions scoped to worksheet type a3c9d2e"
+        action: "search"
+        model: "general_audit_worksheet_conclusion"
+        domain:
+          - ["type_id", "=", "REC: ws_type.id"]
+        save_as: "concl_search_result"
