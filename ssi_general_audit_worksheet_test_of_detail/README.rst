@@ -19,6 +19,11 @@ To install this module, you need to:
 5.  Search For *General Audit Worksheet - Test of Detail*
 6.  Install the module
 
+Work Instruction
+================
+
+* `Fill Data and Generate Examination Data <docs/general_audit_ws_b4f8e1a/index.html>`_
+
 Bug Tracker
 ===========
 

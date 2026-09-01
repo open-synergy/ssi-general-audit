@@ -109,6 +109,21 @@ setup:
       xml_id: "ssi_general_audit_worksheet_sample_determination.worksheet_type_a916660"
       save_as: "ws_type_a916660"
 
+    - step: "Get worksheet type b5e3d9f (Subledger)"
+      action: "ref"
+      xml_id: "ssi_general_audit_worksheet_client_package.worksheet_type_b5e3d9f"
+      save_as: "ws_type_b5e3d9f"
+
+    - step: "Get worksheet type 6dcda0e (Specific Materiality)"
+      action: "ref"
+      xml_id: "ssi_general_audit_worksheet_preliminary_materiality.worksheet_type_6dcda0e"
+      save_as: "ws_type_6dcda0e"
+
+    - step: "Get worksheet type bb33b94 (Final Materiality)"
+      action: "ref"
+      xml_id: "ssi_general_audit_worksheet_final_materiality.worksheet_type_bb33b94"
+      save_as: "ws_type_bb33b94"
+
     - step: "Create client account group"
       action: "create"
       model: "client_account_group"
@@ -565,7 +580,19 @@ scenarios:
   # ------------------------------------------------------------------
   - name: "Worksheet b4f8e1a - Compute allowed_sample_determination_ids (normal)"
     steps:
-      - step: "Create Sample Determination worksheet for this audit"
+      - step: "Create General Ledger worksheet to match on"
+        action: "create"
+        model: "general_audit_ws_d209914"
+        save_as: "gl"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_d209914.id"
+          account_mode: "standard_account"
+          account_type_id: "REC: account_type.id"
+          title: "GL for allowed_sample_determination_ids"
+
+      - step: "Create Sample Determination worksheet linked to that GL"
         action: "create"
         model: "general_audit_ws_a916660"
         save_as: "sd"
@@ -573,8 +600,10 @@ scenarios:
         values:
           general_audit_id: "REC: audit.id"
           type_id: "REC: ws_type_a916660.id"
+          data_mode: "gl"
+          general_ledger_id: "REC: gl.id"
 
-      - step: "Create worksheet b4f8e1a"
+      - step: "Create worksheet b4f8e1a linked to the same GL"
         action: "create"
         model: "general_audit_ws_b4f8e1a"
         save_as: "worksheet"
@@ -582,6 +611,8 @@ scenarios:
         values:
           general_audit_id: "REC: audit.id"
           type_id: "REC: ws_type.id"
+          data_mode: "gl"
+          general_ledger_id: "REC: gl.id"
 
       - step: "Assert allowed_sample_determination_ids contains the fixture"
         action: "assert"
@@ -665,6 +696,9 @@ scenarios:
         values:
           general_audit_id: "REC: audit.id"
           type_id: "REC: ws_type.id"
+          data_source: "sample"
+          data_mode: "gl"
+          general_ledger_id: "REC: gl.id"
           sample_determination_id: "REC: sd.id"
 
       - step: "Assert sampling_data / population_count / sample_type came from the SD"
@@ -749,6 +783,9 @@ scenarios:
         values:
           general_audit_id: "REC: audit.id"
           type_id: "REC: ws_type.id"
+          data_source: "sample"
+          data_mode: "gl"
+          general_ledger_id: "REC: gl.id"
           sample_determination_id: "REC: sd.id"
 
       - step: "Generate examination data"
@@ -769,7 +806,7 @@ scenarios:
           examination_data:
             type: "value"
             operator: "contains"
-            expected: "Seq,Item,Sample,Recorded Amount,Audited Amount"
+            expected: "Seq,Item,Data,Recorded Amount,Audited Amount"
 
       - step: "Assert examination_data carries the first sampled item"
         action: "assert"
@@ -816,6 +853,18 @@ scenarios:
   # ------------------------------------------------------------------
   - name: "Worksheet b4f8e1a - Onchange sample_determination_id clears examination_data"
     steps:
+      - step: "Create General Ledger worksheet to match on"
+        action: "create"
+        model: "general_audit_ws_d209914"
+        save_as: "gl"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_d209914.id"
+          account_mode: "standard_account"
+          account_type_id: "REC: account_type.id"
+          title: "GL for onchange examination_data"
+
       - step: "Create Sample Determination worksheet with sampling data"
         action: "create"
         model: "general_audit_ws_a916660"
@@ -824,9 +873,11 @@ scenarios:
         values:
           general_audit_id: "REC: audit.id"
           type_id: "REC: ws_type_a916660.id"
+          data_mode: "gl"
+          general_ledger_id: "REC: gl.id"
           sampling_data: "Index,Ref,Amount,Type\n1,R1,1000,Key Item\n"
 
-      - step: "Create worksheet b4f8e1a"
+      - step: "Create worksheet b4f8e1a linked to the same GL"
         action: "create"
         model: "general_audit_ws_b4f8e1a"
         save_as: "worksheet"
@@ -834,6 +885,9 @@ scenarios:
         values:
           general_audit_id: "REC: audit.id"
           type_id: "REC: ws_type.id"
+          data_source: "sample"
+          data_mode: "gl"
+          general_ledger_id: "REC: gl.id"
 
       - step: "Open worksheet (examination_data becomes editable)"
         action: "call"
@@ -852,7 +906,7 @@ scenarios:
         as_user: "base.user_admin"
         values:
           examination_data:
-            "Seq,Item,Sample,Recorded Amount,Audited Amount\n1,1,R1,1000,1000\n"
+            "Seq,Item,Data,Recorded Amount,Audited Amount\n1,1,R1,1000,1000\n"
 
       - step: "Assert examination_data was actually persisted"
         action: "assert"
@@ -912,7 +966,7 @@ scenarios:
         as_user: "base.user_admin"
         values:
           examination_data:
-            "Seq,Item,Sample,Recorded Amount,Audited
+            "Seq,Item,Data,Recorded Amount,Audited
             Amount\n1,1,S1,1000,900\n2,2,S2,2000,2000\n3,3,S3,3000,3100\n4,4,S4,4000,\n"
 
       - step: "Assert sample_count / sum_difference / average_difference"
@@ -966,6 +1020,9 @@ scenarios:
         values:
           general_audit_id: "REC: audit.id"
           type_id: "REC: ws_type.id"
+          data_source: "sample"
+          data_mode: "gl"
+          general_ledger_id: "REC: gl.id"
           sample_determination_id: "REC: sd.id"
 
       - step: "Open worksheet"
@@ -997,7 +1054,7 @@ scenarios:
         as_user: "base.user_admin"
         values:
           examination_data:
-            "Seq,Item,Sample,Recorded Amount,Audited
+            "Seq,Item,Data,Recorded Amount,Audited
             Amount\n1,1,S1,1000000,1\n2,2,S2,1000000,1\n"
 
       - step: "Assert conclusion_text is misstatement"
@@ -1030,6 +1087,7 @@ scenarios:
         values:
           general_audit_id: "REC: audit.id"
           type_id: "REC: ws_type.id"
+          data_source: "sample"
           sample_determination_id: "REC: sd.id"
 
       - step: "Open worksheet"
@@ -1060,7 +1118,7 @@ scenarios:
         as_user: "base.user_admin"
         values:
           examination_data:
-            "Seq,Item,Sample,Recorded Amount,Audited
+            "Seq,Item,Data,Recorded Amount,Audited
             Amount\n1,1,S1,1000,1000\n2,2,S2,2000,2000\n"
 
       - step: "Assert the worksheet's mirror picked up the SD's tolerable_misstatement"
@@ -1078,6 +1136,877 @@ scenarios:
           conclusion_text:
             type: "value"
             expected: "no_misstatement"
+
+  # ------------------------------------------------------------------
+  # action_generate_examination_data - Population / General Ledger
+  # ------------------------------------------------------------------
+  - name:
+      "Worksheet b4f8e1a - Population/GL action_generate_examination_data builds one row
+      per data row"
+    steps:
+      - step: "Create General Ledger worksheet with debit/credit raw data"
+        action: "create"
+        model: "general_audit_ws_d209914"
+        save_as: "gl"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_d209914.id"
+          account_mode: "standard_account"
+          account_type_id: "REC: account_type.id"
+          raw_data: "Ref,Debit,Credit\nR1,1000,0\nR2,0,600\nR3,2000,500\n"
+          debit_col_number: 2
+          credit_col_number: 3
+          identifier_col_number: 1
+          title: "GL for population generate examination data"
+
+      - step: "Create worksheet b4f8e1a with Data Source = Population, Data Mode = GL"
+        action: "create"
+        model: "general_audit_ws_b4f8e1a"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+          data_source: "population"
+          data_mode: "gl"
+          general_ledger_id: "REC: gl.id"
+
+      - step: "Generate examination data"
+        action: "call"
+        target: "worksheet"
+        method: "action_generate_examination_data"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after generating examination data"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Assert examination_data header"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          examination_data:
+            type: "value"
+            operator: "contains"
+            expected: "Seq,Item,Data,Recorded Amount,Audited Amount"
+
+      - step:
+          "Assert first row: Item = Seq, Sample = identifier column, Recorded = Debit -
+          Credit"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          examination_data:
+            type: "value"
+            operator: "contains"
+            expected: "1,1,R1,1000.0,"
+
+      - step: "Assert second row (credit-only, negative Recorded Amount)"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          examination_data:
+            type: "value"
+            operator: "contains"
+            expected: "2,2,R2,-600.0,"
+
+      - step: "Assert third row"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          examination_data:
+            type: "value"
+            operator: "contains"
+            expected: "3,3,R3,1500.0,"
+
+  # ------------------------------------------------------------------
+  # action_generate_examination_data - Population / GL without General
+  # Ledger selected is rejected
+  # ------------------------------------------------------------------
+  - name:
+      "Worksheet b4f8e1a - Population/GL action_generate_examination_data without
+      General Ledger is rejected"
+    steps:
+      - step:
+          "Create worksheet b4f8e1a with Data Source = Population, Data Mode = GL, no
+          General Ledger selected"
+        action: "create"
+        model: "general_audit_ws_b4f8e1a"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+          data_source: "population"
+          data_mode: "gl"
+
+      - step: "Generate examination data must be rejected"
+        action: "call"
+        target: "worksheet"
+        method: "action_generate_examination_data"
+        as_user: "base.user_admin"
+        expect_error:
+          type: "UserError"
+
+  # ------------------------------------------------------------------
+  # action_generate_examination_data - Population / Subledger, raw value
+  # of the chosen amount column, no netting
+  # ------------------------------------------------------------------
+  - name:
+      "Worksheet b4f8e1a - Population/Subledger action_generate_examination_data uses
+      the raw chosen amount column"
+    steps:
+      - step: "Create Subledger worksheet with two amount columns"
+        action: "create"
+        model: "general_audit_ws_b5e3d9f"
+        save_as: "sl"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_b5e3d9f.id"
+          account_mode: "standard_account"
+          account_type_id: "REC: account_type.id"
+          raw_data: "Ref,Amount1,Amount2\nR1,1000,500\nR2,2000,750\n"
+          identifier_col_number: 1
+          amount_col_number: 2
+          title: "SL for population generate examination data"
+
+      - step:
+          "Create worksheet b4f8e1a with Data Source = Population, Data Mode = Subledger"
+        action: "create"
+        model: "general_audit_ws_b4f8e1a"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+          data_source: "population"
+          data_mode: "subledger"
+          subledger_id: "REC: sl.id"
+
+      - step: "Generate examination data"
+        action: "call"
+        target: "worksheet"
+        method: "action_generate_examination_data"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after generating examination data"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Assert first row uses the raw Amount1 value, unnetted"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          examination_data:
+            type: "value"
+            operator: "contains"
+            expected: "1,1,R1,1000.0,"
+
+      - step: "Assert second row"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          examination_data:
+            type: "value"
+            operator: "contains"
+            expected: "2,2,R2,2000.0,"
+
+  # ------------------------------------------------------------------
+  # action_generate_examination_data - Population / Subledger without
+  # amount_col_number configured on the Subledger is rejected
+  # ------------------------------------------------------------------
+  - name:
+      "Worksheet b4f8e1a - Population/Subledger action_generate_examination_data without
+      amount_col_number is rejected"
+    steps:
+      - step: "Create Subledger worksheet"
+        action: "create"
+        model: "general_audit_ws_b5e3d9f"
+        save_as: "sl"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_b5e3d9f.id"
+          account_mode: "standard_account"
+          account_type_id: "REC: account_type.id"
+          raw_data: "Ref,Amount1\nR1,1000\n"
+          title: "SL without amount_col_number configured"
+
+      - step:
+          "Create worksheet b4f8e1a with Data Source = Population, Data Mode =
+          Subledger, Subledger has no amount_col_number configured"
+        action: "create"
+        model: "general_audit_ws_b4f8e1a"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+          data_source: "population"
+          data_mode: "subledger"
+          subledger_id: "REC: sl.id"
+
+      - step: "Generate examination data must be rejected"
+        action: "call"
+        target: "worksheet"
+        method: "action_generate_examination_data"
+        as_user: "base.user_admin"
+        expect_error:
+          type: "UserError"
+
+  # ------------------------------------------------------------------
+  # _compute_conclusion_text / _compute_computed_precision_interval -
+  # Population branch. Same formulas as Sample (ToD_akun_260821.ods):
+  # population_count = sample_count (100% examined) already forces
+  # Population Standard Deviation to 0 (cell D223's own
+  # IF(population=sample,0,...) guard), so CPI collapses to 0 and the
+  # confidence limits collapse to the total difference found -- the
+  # conclusion is then a straight comparison against
+  # tolerable_misstatement, exactly like Sample, NOT "any difference
+  # at all is a misstatement".
+  # ------------------------------------------------------------------
+  - name:
+      "Worksheet b4f8e1a - Population: no difference at all collapses CPI/limits to 0"
+    steps:
+      - step: "Create General Ledger worksheet with 3 population rows"
+        action: "create"
+        model: "general_audit_ws_d209914"
+        save_as: "gl"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_d209914.id"
+          account_mode: "standard_account"
+          account_type_id: "REC: account_type.id"
+          raw_data: "Ref,Debit,Credit\nR1,5000000,0\nR2,5000000,0\nR3,5000000,0\n"
+          debit_col_number: 2
+          credit_col_number: 3
+          identifier_col_number: 1
+          title: "GL for Population Result Analysis (no difference)"
+
+      - step: "Create Final Materiality worksheet with a Tolerable Misstatement policy"
+        action: "create"
+        model: "general_audit_ws_bb33b94"
+        save_as: "final_materiality_ws"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_bb33b94.id"
+          other_amount_ok: true
+          other_base_amount: 100000000
+          overall_materiality_percentage: 10
+          performance_materiality_percentage: 100
+          tolerable_misstatement_percentage: 10
+
+      - step: "Create worksheet b4f8e1a with Data Source = Population linked to the GL"
+        action: "create"
+        model: "general_audit_ws_b4f8e1a"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+          data_source: "population"
+          data_mode: "gl"
+          general_ledger_id: "REC: gl.id"
+
+      - step: "Generate examination data (Recorded Amount = Audited Amount, all blank)"
+        action: "call"
+        target: "worksheet"
+        method: "action_generate_examination_data"
+        as_user: "base.user_admin"
+
+      - step: "Fill every Audited Amount equal to its Recorded Amount"
+        action: "write"
+        target: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          examination_data:
+            "Seq,Item,Data,Recorded Amount,Audited
+            Amount\n1,1,R1,5000000.0,5000000\n2,2,R2,5000000.0,5000000\n3,3,R3,5000000.0,5000000\n"
+
+      - step: "Invalidate cache after writing examination_data"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step:
+          "Assert population_count equals sample_count (3), so CPI/limits collapse to 0
+          per D223's own guard"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          population_count:
+            type: "value"
+            expected: 3
+          sample_count:
+            type: "value"
+            expected: 3
+          computed_precision_interval:
+            type: "value"
+            expected: 0.0
+          upper_confidence_limit:
+            type: "value"
+            expected: 0.0
+          lower_confidence_limit:
+            type: "value"
+            expected: 0.0
+          conclusion_text:
+            type: "value"
+            expected: "no_misstatement"
+
+  - name:
+      "Worksheet b4f8e1a - Population: total difference WITHIN Tolerable Misstatement
+      stays no_misstatement"
+    steps:
+      - step: "Create General Ledger worksheet with 3 population rows"
+        action: "create"
+        model: "general_audit_ws_d209914"
+        save_as: "gl"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_d209914.id"
+          account_mode: "standard_account"
+          account_type_id: "REC: account_type.id"
+          raw_data: "Ref,Debit,Credit\nR1,5000000,0\nR2,5000000,0\nR3,5000000,0\n"
+          debit_col_number: 2
+          credit_col_number: 3
+          identifier_col_number: 1
+          title: "GL for Population Result Analysis (within tolerance)"
+
+      - step: "Create Final Materiality worksheet with a Tolerable Misstatement policy"
+        action: "create"
+        model: "general_audit_ws_bb33b94"
+        save_as: "final_materiality_ws"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_bb33b94.id"
+          other_amount_ok: true
+          other_base_amount: 100000000
+          overall_materiality_percentage: 10
+          performance_materiality_percentage: 100
+          tolerable_misstatement_percentage: 10
+
+      - step: "Create worksheet b4f8e1a with Data Source = Population linked to the GL"
+        action: "create"
+        model: "general_audit_ws_b4f8e1a"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+          data_source: "population"
+          data_mode: "gl"
+          general_ledger_id: "REC: gl.id"
+
+      - step: "Generate examination data"
+        action: "call"
+        target: "worksheet"
+        method: "action_generate_examination_data"
+        as_user: "base.user_admin"
+
+      - step:
+          "Fill Audited Amount with a total difference of 450,000 -- below the 1,000,000
+          Tolerable Misstatement (10%% of 10,000,000 Performance Materiality). Chosen so
+          it divides evenly by the 3-row population (population_count = sample_count),
+          avoiding a float-precision mismatch in the projected total (L-04)"
+        action: "write"
+        target: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          examination_data:
+            "Seq,Item,Data,Recorded Amount,Audited
+            Amount\n1,1,R1,5000000.0,5000000\n2,2,R2,5000000.0,4550000\n3,3,R3,5000000.0,5000000\n"
+
+      - step: "Invalidate cache after writing examination_data"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step:
+          "Assert Tolerable Misstatement is 1,000,000 (10%% of Performance Materiality)
+          and the total difference (450,000) stays under it"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          tolerable_misstatement:
+            type: "value"
+            expected: 1000000.0
+          upper_confidence_limit:
+            type: "value"
+            expected: 450000.0
+          lower_confidence_limit:
+            type: "value"
+            expected: 450000.0
+          conclusion_text:
+            type: "value"
+            expected: "no_misstatement"
+
+  - name:
+      "Worksheet b4f8e1a - Population: total difference EXCEEDING Tolerable Misstatement
+      is a misstatement"
+    steps:
+      - step: "Create General Ledger worksheet with 3 population rows"
+        action: "create"
+        model: "general_audit_ws_d209914"
+        save_as: "gl"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_d209914.id"
+          account_mode: "standard_account"
+          account_type_id: "REC: account_type.id"
+          raw_data: "Ref,Debit,Credit\nR1,5000000,0\nR2,5000000,0\nR3,5000000,0\n"
+          debit_col_number: 2
+          credit_col_number: 3
+          identifier_col_number: 1
+          title: "GL for Population Result Analysis (exceeds tolerance)"
+
+      - step: "Create Final Materiality worksheet with a Tolerable Misstatement policy"
+        action: "create"
+        model: "general_audit_ws_bb33b94"
+        save_as: "final_materiality_ws"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_bb33b94.id"
+          other_amount_ok: true
+          other_base_amount: 100000000
+          overall_materiality_percentage: 10
+          performance_materiality_percentage: 100
+          tolerable_misstatement_percentage: 10
+
+      - step: "Create worksheet b4f8e1a with Data Source = Population linked to the GL"
+        action: "create"
+        model: "general_audit_ws_b4f8e1a"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+          data_source: "population"
+          data_mode: "gl"
+          general_ledger_id: "REC: gl.id"
+
+      - step: "Generate examination data"
+        action: "call"
+        target: "worksheet"
+        method: "action_generate_examination_data"
+        as_user: "base.user_admin"
+
+      - step:
+          "Fill Audited Amount with a total difference of 1,500,000 -- above the
+          1,000,000 Tolerable Misstatement"
+        action: "write"
+        target: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          examination_data:
+            "Seq,Item,Data,Recorded Amount,Audited
+            Amount\n1,1,R1,5000000.0,5000000\n2,2,R2,5000000.0,3500000\n3,3,R3,5000000.0,5000000\n"
+
+      - step: "Invalidate cache after writing examination_data"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Assert conclusion_text is misstatement"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          conclusion_text:
+            type: "value"
+            expected: "misstatement"
+
+  # ------------------------------------------------------------------
+  # _compute_performance_materiality - Population branch
+  # ------------------------------------------------------------------
+  - name:
+      "Worksheet b4f8e1a - Population performance_materiality from a materiality mapping
+      override"
+    steps:
+      - step: "Create General Ledger worksheet for the account type"
+        action: "create"
+        model: "general_audit_ws_d209914"
+        save_as: "gl"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_d209914.id"
+          account_mode: "standard_account"
+          account_type_id: "REC: account_type.id"
+          title: "GL for materiality mapping match"
+
+      - step: "Create Specific Materiality worksheet"
+        action: "create"
+        model: "general_audit_ws_6dcda0e"
+        save_as: "materiality_ws"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_6dcda0e.id"
+
+      - step: "Create standard detail for the account type"
+        action: "create"
+        model: "general_audit.standard_detail"
+        save_as: "standard_detail"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: account_type.id"
+
+      - step:
+          "Create materiality mapping line for the standard detail, with the
+          use_specific_materiality override switched on"
+        action: "create"
+        model: "general_audit_ws_6dcda0e_materiality_mapping"
+        save_as: "mapping"
+        as_user: "base.user_admin"
+        values:
+          worksheet_id: "REC: materiality_ws.id"
+          standard_detail_id: "REC: standard_detail.id"
+          use_specific_materiality: true
+          specific_materiality: 750000000
+
+      - step: "Create worksheet b4f8e1a with Data Source = Population linked to the GL"
+        action: "create"
+        model: "general_audit_ws_b4f8e1a"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+          data_source: "population"
+          data_mode: "gl"
+          general_ledger_id: "REC: gl.id"
+
+      - step:
+          "Assert performance_materiality picked up the mapping override's
+          specific_materiality, and materiality_mapping_id points to it"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          performance_materiality:
+            type: "value"
+            expected: 750000000.0
+          materiality_mapping_id:
+            type: "m2o"
+            expected: "REC: mapping"
+          final_materiality_id:
+            type: "value"
+            operator: "is_falsy"
+
+  - name:
+      "Worksheet b4f8e1a - Population performance_materiality falls back to the
+      engagement's Final Materiality when no mapping override is active"
+    steps:
+      - step: "Create General Ledger worksheet for the account type"
+        action: "create"
+        model: "general_audit_ws_d209914"
+        save_as: "gl"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_d209914.id"
+          account_mode: "standard_account"
+          account_type_id: "REC: account_type.id"
+          title: "GL for materiality fallback"
+
+      - step: "Create Specific Materiality worksheet"
+        action: "create"
+        model: "general_audit_ws_6dcda0e"
+        save_as: "materiality_ws"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_6dcda0e.id"
+
+      - step: "Create standard detail for the account type"
+        action: "create"
+        model: "general_audit.standard_detail"
+        save_as: "standard_detail"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: account_type.id"
+
+      - step:
+          "Create a matching mapping line WITHOUT the use_specific_materiality override
+          (the common case)"
+        action: "create"
+        model: "general_audit_ws_6dcda0e_materiality_mapping"
+        save_as: "mapping"
+        as_user: "base.user_admin"
+        values:
+          worksheet_id: "REC: materiality_ws.id"
+          standard_detail_id: "REC: standard_detail.id"
+          specific_materiality: 750000000
+
+      - step:
+          "Create Final Materiality worksheet for the engagement with a computed
+          Performance Materiality"
+        action: "create"
+        model: "general_audit_ws_bb33b94"
+        save_as: "final_materiality_ws"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_bb33b94.id"
+          other_amount_ok: true
+          other_base_amount: 5000000000
+          overall_materiality_percentage: 10
+          performance_materiality_percentage: 100
+
+      - step: "Create worksheet b4f8e1a with Data Source = Population linked to the GL"
+        action: "create"
+        model: "general_audit_ws_b4f8e1a"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+          data_source: "population"
+          data_mode: "gl"
+          general_ledger_id: "REC: gl.id"
+
+      - step:
+          "Assert performance_materiality fell back to the Final Materiality worksheet's
+          figure, NOT the inactive mapping's specific_materiality, and
+          final_materiality_id points to it (not the inactive mapping)"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          performance_materiality:
+            type: "value"
+            expected: 500000000.0
+          final_materiality_id:
+            type: "m2o"
+            expected: "REC: final_materiality_ws"
+          materiality_mapping_id:
+            type: "value"
+            operator: "is_falsy"
+
+  - name:
+      "Worksheet b4f8e1a - Population performance_materiality is 0.0 without a matching
+      mapping"
+    steps:
+      - step: "Create General Ledger worksheet for the account type"
+        action: "create"
+        model: "general_audit_ws_d209914"
+        save_as: "gl"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_d209914.id"
+          account_mode: "standard_account"
+          account_type_id: "REC: account_type.id"
+          title: "GL without a materiality mapping"
+
+      - step: "Create worksheet b4f8e1a with Data Source = Population linked to the GL"
+        action: "create"
+        model: "general_audit_ws_b4f8e1a"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+          data_source: "population"
+          data_mode: "gl"
+          general_ledger_id: "REC: gl.id"
+
+      - step:
+          "Assert performance_materiality is 0.0 without a matching mapping, and both
+          source fields stay empty"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          performance_materiality:
+            type: "value"
+            expected: 0.0
+          materiality_mapping_id:
+            type: "value"
+            operator: "is_falsy"
+          final_materiality_id:
+            type: "value"
+            operator: "is_falsy"
+
+  # ------------------------------------------------------------------
+  # onchange_general_ledger_id / onchange_sample_determination_id -
+  # changing Data Mode resets General Ledger and Sample Determination
+  # ------------------------------------------------------------------
+  - name:
+      "Worksheet b4f8e1a - Onchange data_mode resets General Ledger and Sample
+      Determination"
+    steps:
+      - step: "Create General Ledger worksheet to select initially"
+        action: "create"
+        model: "general_audit_ws_d209914"
+        save_as: "gl"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_d209914.id"
+          account_mode: "standard_account"
+          account_type_id: "REC: account_type.id"
+          title: "GL for onchange data_mode"
+
+      - step: "Create Sample Determination worksheet linked to that GL"
+        action: "create"
+        model: "general_audit_ws_a916660"
+        save_as: "sd"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_a916660.id"
+          data_mode: "gl"
+          general_ledger_id: "REC: gl.id"
+
+      - step:
+          "Create worksheet b4f8e1a with Data Mode = GL, General Ledger and Sample
+          Determination set"
+        action: "create"
+        model: "general_audit_ws_b4f8e1a"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+          data_source: "sample"
+          data_mode: "gl"
+          general_ledger_id: "REC: gl.id"
+          sample_determination_id: "REC: sd.id"
+
+      - step: "Open worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_open"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after opening worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Change Data Mode to Subledger via Form"
+        action: "form"
+        target: "worksheet"
+        as_user: "base.user_admin"
+        save: true
+        ops:
+          - set: {data_mode: "subledger"}
+
+      - step: "Assert general_ledger_id was reset by the onchange"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          general_ledger_id:
+            type: "value"
+            operator: "is_falsy"
+
+      - step: "Assert sample_determination_id was reset by the onchange"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          sample_determination_id:
+            type: "value"
+            operator: "is_falsy"
+
+  # ------------------------------------------------------------------
+  # onchange_sample_determination_id - switching Data Source to
+  # Population resets Sample Determination (and Sampling Method along
+  # with it, being a related field)
+  # ------------------------------------------------------------------
+  - name:
+      "Worksheet b4f8e1a - Onchange data_source to Population resets Sample
+      Determination and Sampling Method"
+    steps:
+      - step: "Create General Ledger worksheet to select initially"
+        action: "create"
+        model: "general_audit_ws_d209914"
+        save_as: "gl"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_d209914.id"
+          account_mode: "standard_account"
+          account_type_id: "REC: account_type.id"
+          title: "GL for onchange data_source"
+
+      - step: "Create Sample Determination worksheet linked to that GL"
+        action: "create"
+        model: "general_audit_ws_a916660"
+        save_as: "sd"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_a916660.id"
+          data_mode: "gl"
+          general_ledger_id: "REC: gl.id"
+          method_type: "cvs"
+
+      - step:
+          "Create worksheet b4f8e1a with Data Source = Sample, Data Mode/General Ledger
+          unchanged throughout"
+        action: "create"
+        model: "general_audit_ws_b4f8e1a"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+          data_source: "sample"
+          data_mode: "gl"
+          general_ledger_id: "REC: gl.id"
+          sample_determination_id: "REC: sd.id"
+
+      - step: "Open worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_open"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after opening worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step:
+          "Sanity-check sample_type picked up the SD's method_type before the switch"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          sample_type:
+            type: "value"
+            expected: "cvs"
+
+      - step:
+          "Switch Data Source to Population via Form -- Data Mode/General Ledger stay
+          the same"
+        action: "form"
+        target: "worksheet"
+        as_user: "base.user_admin"
+        save: true
+        ops:
+          - set: {data_source: "population"}
+
+      - step:
+          "Assert sample_determination_id and sample_type were both reset by the
+          onchange"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          sample_determination_id:
+            type: "value"
+            operator: "is_falsy"
+          sample_type:
+            type: "value"
+            operator: "is_falsy"
 
   # ------------------------------------------------------------------
   # general_audit_ws_b4f8e1a - Delete in draft

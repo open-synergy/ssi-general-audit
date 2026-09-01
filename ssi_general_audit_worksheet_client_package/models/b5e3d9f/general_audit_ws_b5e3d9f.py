@@ -104,6 +104,24 @@ class GeneralAuditWSb5e3d9f(models.Model):
         readonly=True,
         states={"open": [("readonly", False)]},
     )
+    identifier_col_number = fields.Integer(
+        string="Identifier Column Number",
+        help="Column number (starting from 1) for the row identifier/reference "
+        "value in Raw Data — used by consuming worksheets when examining the "
+        "population directly (e.g. Test of Detail).",
+        required=False,
+        readonly=True,
+        states={"open": [("readonly", False)]},
+    )
+    amount_col_number = fields.Integer(
+        string="Amount Column Number",
+        help="Column number (starting from 1) for the recorded transaction "
+        "amount in Raw Data — used by consuming worksheets when examining "
+        "the population directly (e.g. Test of Detail).",
+        required=False,
+        readonly=True,
+        states={"open": [("readonly", False)]},
+    )
     thousand_separator = fields.Char(
         string="Thousand Separator",
         help="Character used as thousand separator in the CSV data",

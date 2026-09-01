@@ -32,6 +32,8 @@
                     <field name="account_id" optional="show" />
                     <field name="account_type_id" optional="show" />
                     <field name="title" optional="show" />
+                    <field name="identifier_col_number" optional="hide" />
+                    <field name="amount_col_number" optional="hide" />
                 </xpath>
             </data>
         </field>
@@ -75,6 +77,8 @@
                 <xpath expr="//notebook/page[1]" position="before">
                     <page name="raw_data" string="Raw Data">
                         <group name="raw_sep" colspan="4" col="2">
+                            <field name="identifier_col_number" />
+                            <field name="amount_col_number" />
                             <field name="thousand_separator" />
                             <field name="decimal_separator" />
                         </group>

@@ -28,12 +28,7 @@
             ref="ssi_general_audit.general_audit_worksheet_mixin_view_tree"
         />
         <field name="arch" type="xml">
-            <data>
-                <xpath expr="//field[@name='general_audit_id']" position="after">
-                    <field name="sample_determination_id" optional="show" />
-                    <field name="sample_type" optional="show" />
-                </xpath>
-            </data>
+            <data />
         </field>
     </record>
 
@@ -56,8 +51,25 @@
                                 name="examination_setup_source"
                                 colspan="1"
                                 col="2"
-                                string="Sample Determination"
+                                string="Data"
                             >
+                                <field name="data_mode" />
+                                <field
+                                    name="allowed_general_ledger_ids"
+                                    invisible="1"
+                                />
+                                <field
+                                    name="general_ledger_id"
+                                    domain="[('id', 'in', allowed_general_ledger_ids)]"
+                                    attrs="{'invisible': [('data_mode', '!=', 'gl')]}"
+                                />
+                                <field name="allowed_subledger_ids" invisible="1" />
+                                <field
+                                    name="subledger_id"
+                                    domain="[('id', 'in', allowed_subledger_ids)]"
+                                    attrs="{'invisible': [('data_mode', '!=', 'subledger')]}"
+                                />
+                                <field name="data_source" />
                                 <field
                                     name="allowed_sample_determination_ids"
                                     invisible="1"
@@ -65,10 +77,17 @@
                                 <field
                                     name="sample_determination_id"
                                     domain="[('id', 'in', allowed_sample_determination_ids)]"
+                                    attrs="{'invisible': [('data_source', '!=', 'sample')]}"
                                 />
-                                <field name="sample_type" />
+                                <field
+                                    name="sample_type"
+                                    attrs="{'invisible': [('data_source', '=', 'population')]}"
+                                />
                                 <field name="population_count" />
-                                <field name="sample_count" />
+                                <field
+                                    name="sample_count"
+                                    attrs="{'invisible': [('data_source', '=', 'population')]}"
+                                />
                             </group>
                             <group
                                 name="examination_setup_parameters"
@@ -77,10 +96,27 @@
                                 string="Input Variable"
                             >
                                 <field name="performance_materiality" />
-                                <field name="risk_factor" />
+                                <field
+                                    name="materiality_mapping_id"
+                                    attrs="{'invisible': ['|', ('data_source', '!=', 'population'), ('materiality_mapping_id', '=', False)]}"
+                                />
+                                <field
+                                    name="final_materiality_id"
+                                    attrs="{'invisible': ['|', ('data_source', '!=', 'population'), ('final_materiality_id', '=', False)]}"
+                                />
+                                <field
+                                    name="risk_factor"
+                                    attrs="{'invisible': [('data_source', '=', 'population')]}"
+                                />
                                 <field name="tolerable_misstatement" />
-                                <field name="aria" />
-                                <field name="aria_coefficient" />
+                                <field
+                                    name="aria"
+                                    attrs="{'invisible': [('data_source', '=', 'population')]}"
+                                />
+                                <field
+                                    name="aria_coefficient"
+                                    attrs="{'invisible': [('data_source', '=', 'population')]}"
+                                />
                             </group>
                         </group>
                         <button
