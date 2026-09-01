@@ -1882,6 +1882,17 @@ scenarios:
           general_ledger_id: "REC: gl.id"
           sample_determination_id: "REC: sd.id"
 
+      - step: "Open worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_open"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after opening worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
       - step: "Change Data Mode to Subledger via Form"
         action: "form"
         target: "worksheet"
@@ -1953,6 +1964,17 @@ scenarios:
           data_mode: "gl"
           general_ledger_id: "REC: gl.id"
           sample_determination_id: "REC: sd.id"
+
+      - step: "Open worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_open"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after opening worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
 
       - step:
           "Sanity-check sample_type picked up the SD's method_type before the switch"
