@@ -141,6 +141,11 @@ msgid "Allowed Conclusion"
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_test_of_detail
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_test_of_detail.field_general_audit_ws_b4f8e1a__allowed_general_ledger_ids
+msgid "Allowed General Ledgers"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_test_of_detail
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_test_of_detail.field_general_audit_ws_b4f8e1a__allowed_policy_template_ids
 msgid "Allowed Policy Templates"
 msgstr ""
@@ -148,6 +153,11 @@ msgstr ""
 #. module: ssi_general_audit_worksheet_test_of_detail
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_test_of_detail.field_general_audit_ws_b4f8e1a__allowed_sample_determination_ids
 msgid "Allowed Sample Determination"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_test_of_detail
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_test_of_detail.field_general_audit_ws_b4f8e1a__allowed_subledger_ids
+msgid "Allowed Subledgers"
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_test_of_detail
@@ -380,6 +390,21 @@ msgid "Currency used for amounts in this worksheet."
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_test_of_detail
+#: model_terms:ir.ui.view,arch_db:ssi_general_audit_worksheet_test_of_detail.general_audit_ws_b4f8e1a_view_form
+msgid "Data"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_test_of_detail
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_test_of_detail.field_general_audit_ws_b4f8e1a__data_mode
+msgid "Data Mode"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_test_of_detail
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_test_of_detail.field_general_audit_ws_b4f8e1a__data_source
+msgid "Data Source"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_test_of_detail
 #: model:ir.model.fields,help:ssi_general_audit_worksheet_test_of_detail.field_general_audit_ws_b4f8e1a__preparation_date
 msgid "Date when the worksheet was prepared."
 msgstr ""
@@ -387,6 +412,13 @@ msgstr ""
 #. module: ssi_general_audit_worksheet_test_of_detail
 #: model:ir.model.fields,help:ssi_general_audit_worksheet_test_of_detail.field_general_audit_ws_b4f8e1a__review_date
 msgid "Date when the worksheet was reviewed."
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_test_of_detail
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_test_of_detail.field_general_audit_ws_b4f8e1a__data_mode
+msgid ""
+"Determines whether to use General Ledger or Subledger data as population for"
+" this Test of Detail."
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_test_of_detail
@@ -440,6 +472,11 @@ msgid "Examination Data"
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_test_of_detail
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_test_of_detail.field_general_audit_ws_b4f8e1a__final_materiality_id
+msgid "Final Materiality Source"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_test_of_detail
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_test_of_detail.field_general_audit_ws_b4f8e1a__message_follower_ids
 msgid "Followers"
 msgstr ""
@@ -462,6 +499,19 @@ msgstr ""
 #. module: ssi_general_audit_worksheet_test_of_detail
 #: model:ir.model.fields,help:ssi_general_audit_worksheet_test_of_detail.field_general_audit_ws_b4f8e1a__general_audit_id
 msgid "General Audit to which this worksheet belongs."
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_test_of_detail
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_test_of_detail.field_general_audit_ws_b4f8e1a__general_ledger_id
+#: model:ir.model.fields.selection,name:ssi_general_audit_worksheet_test_of_detail.selection__general_audit_ws_b4f8e1a__data_mode__gl
+msgid "General Ledger"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_test_of_detail
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_test_of_detail.field_general_audit_ws_b4f8e1a__allowed_general_ledger_ids
+msgid ""
+"General Ledger worksheets belonging to the same general audit engagement as "
+"this worksheet."
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_test_of_detail
@@ -549,11 +599,20 @@ msgid ""
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_test_of_detail
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_test_of_detail.field_general_audit_ws_b4f8e1a__materiality_mapping_id
+msgid "Materiality Mapping Source"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_test_of_detail
 #: model:ir.model.fields,help:ssi_general_audit_worksheet_test_of_detail.field_general_audit_ws_b4f8e1a__tolerable_misstatement
 msgid ""
-"Maximum monetary misstatement acceptable for this account, inherited from "
-"the referenced Sample Determination worksheet -- edit it there, not here, so"
-" both worksheets stay consistent."
+"Maximum monetary misstatement acceptable for this account. When Data Source "
+"is Sample, inherited from the referenced Sample Determination worksheet "
+"(edit it there). When Data Source is Population: Performance Materiality "
+"above times the engagement's Final Materiality worksheet Tolerable "
+"Misstatement Percentage -- the same policy percentage applied engagement-"
+"wide, scaled to whichever Performance Materiality actually applies to this "
+"account."
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_test_of_detail
@@ -698,14 +757,41 @@ msgstr ""
 #. module: ssi_general_audit_worksheet_test_of_detail
 #: model:ir.model.fields,help:ssi_general_audit_worksheet_test_of_detail.field_general_audit_ws_b4f8e1a__performance_materiality
 msgid ""
-"Performance materiality for this account, inherited from the referenced "
-"Sample Determination worksheet -- edit it there, not here, so both "
-"worksheets stay consistent."
+"Performance materiality for this account. When Data Source is Sample, "
+"inherited from the referenced Sample Determination worksheet (edit it "
+"there). When Data Source is Population: the Materiality mapping override for"
+" the selected General Ledger/Subledger's account type on this engagement, if"
+" one is set; otherwise the engagement's Final Materiality worksheet figure "
+"(the same threshold used by every account by default). See Materiality "
+"Mapping Source / Final Materiality Source below for which one supplied it."
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_test_of_detail
+#: code:addons/ssi_general_audit_worksheet_test_of_detail/models/b4f8e1a/general_audit_ws_b4f8e1a.py:0
+#, python-format
+msgid "Please select a General Ledger first."
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_test_of_detail
+#: code:addons/ssi_general_audit_worksheet_test_of_detail/models/b4f8e1a/general_audit_ws_b4f8e1a.py:0
+#, python-format
+msgid "Please select a General Ledger or Subledger first."
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_test_of_detail
+#: code:addons/ssi_general_audit_worksheet_test_of_detail/models/b4f8e1a/general_audit_ws_b4f8e1a.py:0
+#, python-format
+msgid "Please select a Subledger first."
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_test_of_detail
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_test_of_detail.field_general_audit_ws_b4f8e1a__policy_template_id
 msgid "Policy Template"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_test_of_detail
+#: model:ir.model.fields.selection,name:ssi_general_audit_worksheet_test_of_detail.selection__general_audit_ws_b4f8e1a__data_source__population
+msgid "Population"
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_test_of_detail
@@ -723,6 +809,14 @@ msgstr ""
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_test_of_detail.field_general_audit_ws_b4f8e1a__population_standard_deviation
 #: model_terms:ir.ui.view,arch_db:ssi_general_audit_worksheet_test_of_detail.general_audit_ws_b4f8e1a_view_form
 msgid "Population Standard Deviation"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_test_of_detail
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_test_of_detail.field_general_audit_ws_b4f8e1a__data_source
+msgid ""
+"Population examines 100% of the selected General Ledger/Subledger directly. "
+"Sample uses the sampling result of a linked Sample Determination worksheet "
+"(existing behaviour, unchanged)."
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_test_of_detail
@@ -827,20 +921,20 @@ msgid "Risk Factor"
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_test_of_detail
+#: model:ir.model.fields.selection,name:ssi_general_audit_worksheet_test_of_detail.selection__general_audit_ws_b4f8e1a__data_source__sample
+msgid "Sample"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_test_of_detail
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_test_of_detail.field_general_audit_ws_b4f8e1a__sample_count
 msgid "Sample Count"
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_test_of_detail
-#: model_terms:ir.ui.view,arch_db:ssi_general_audit_worksheet_test_of_detail.general_audit_ws_b4f8e1a_view_form
-msgid "Sample Determination"
-msgstr ""
-
-#. module: ssi_general_audit_worksheet_test_of_detail
 #: model:ir.model.fields,help:ssi_general_audit_worksheet_test_of_detail.field_general_audit_ws_b4f8e1a__allowed_sample_determination_ids
 msgid ""
-"Sample Determination worksheets belonging to the same general audit "
-"engagement as this worksheet."
+"Sample Determination worksheets sharing this record's selected General "
+"Ledger or Subledger."
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_test_of_detail
@@ -920,6 +1014,19 @@ msgid ""
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_test_of_detail
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_test_of_detail.field_general_audit_ws_b4f8e1a__subledger_id
+#: model:ir.model.fields.selection,name:ssi_general_audit_worksheet_test_of_detail.selection__general_audit_ws_b4f8e1a__data_mode__subledger
+msgid "Subledger"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_test_of_detail
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_test_of_detail.field_general_audit_ws_b4f8e1a__allowed_subledger_ids
+msgid ""
+"Subledger worksheets belonging to the same general audit engagement as this "
+"worksheet."
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_test_of_detail
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_test_of_detail.field_general_audit_ws_b4f8e1a__sum_difference
 msgid "Sum of Difference"
 msgstr ""
@@ -944,10 +1051,46 @@ msgid "Test of Detail (b4f8e1a)"
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_test_of_detail
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_test_of_detail.field_general_audit_ws_b4f8e1a__materiality_mapping_id
+msgid ""
+"The Specific Materiality mapping line that supplied Performance Materiality "
+"above via its use_specific_materiality override. Set only when Data Source "
+"is Population and such an override is active for the selected account -- "
+"open it to verify the figure."
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_test_of_detail
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_test_of_detail.field_general_audit_ws_b4f8e1a__final_materiality_id
+msgid ""
+"The engagement's Final Materiality worksheet used for Tolerable Misstatement"
+" above, and for Performance Materiality above when no mapping override is "
+"active. Set whenever Data Source is Population and the engagement has a "
+"Final Materiality worksheet -- open it to verify the figures."
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_test_of_detail
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_test_of_detail.field_general_audit_ws_b4f8e1a__general_ledger_id
+msgid "The general ledger data used as population for this Test of Detail."
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_test_of_detail
 #: code:addons/ssi_general_audit_worksheet_test_of_detail/models/b4f8e1a/general_audit_ws_b4f8e1a.py:0
 #, python-format
 msgid ""
 "The linked Sample Determination worksheet has no monetary column configured."
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_test_of_detail
+#: code:addons/ssi_general_audit_worksheet_test_of_detail/models/b4f8e1a/general_audit_ws_b4f8e1a.py:0
+#, python-format
+msgid ""
+"The selected Subledger has no Amount Column Number configured. Set it on the"
+" Subledger worksheet's Raw Data tab first."
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_test_of_detail
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_test_of_detail.field_general_audit_ws_b4f8e1a__subledger_id
+msgid "The subledger data used as population for this Test of Detail."
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_test_of_detail
@@ -983,8 +1126,10 @@ msgstr ""
 #. module: ssi_general_audit_worksheet_test_of_detail
 #: model:ir.model.fields,help:ssi_general_audit_worksheet_test_of_detail.field_general_audit_ws_b4f8e1a__population_count
 msgid ""
-"Total population size, inherited from the referenced Sample Determination "
-"worksheet."
+"Total population size. When Data Source is Sample, inherited from the "
+"referenced Sample Determination worksheet. When Data Source is Population, "
+"the number of data rows (excluding header) in the selected General "
+"Ledger/Subledger's Raw Data."
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_test_of_detail
