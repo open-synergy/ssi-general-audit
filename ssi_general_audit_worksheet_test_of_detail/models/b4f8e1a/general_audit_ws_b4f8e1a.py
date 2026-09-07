@@ -29,14 +29,17 @@ class GeneralAuditWsB4f8e1a(models.Model):
     population is already examined) and is skipped -- the conclusion
     is instead based directly on whether any difference was found.
 
-    ``risk_factor``, ``aria``, and ``aria_coefficient`` are **not**
-    re-entered here -- they stay ``related`` mirrors of the linked
-    Sample Determination worksheet's own fields (read-only, and only
-    meaningful for the Sample data source). ``performance_materiality``
+    ``aria`` and ``aria_coefficient`` are **not** re-entered here --
+    they stay ``related`` mirrors of the linked Sample Determination
+    worksheet's own fields (read-only, and only meaningful for the
+    Sample data source). ``risk_factor``, ``performance_materiality``,
     and ``population_count`` are ``compute=`` fields that branch on
     ``data_source``: mirroring the linked Sample Determination
-    worksheet for Sample, or derived directly from the selected
-    General Ledger/Subledger for Population.
+    worksheet for Sample, or, for Population, derived directly from
+    the selected General Ledger/Subledger (``population_count``), the
+    engagement's Specific Materiality mapping/worksheet
+    (``performance_materiality``), or left to the auditor to enter
+    directly (``risk_factor``, via a no-op ``inverse=``).
     """
 
     _name = "general_audit_ws_b4f8e1a"
@@ -167,10 +170,11 @@ class GeneralAuditWsB4f8e1a(models.Model):
         "Determination worksheet (edit it there). When Data Source "
         "is Population: the Materiality mapping override for the "
         "selected General Ledger/Subledger's account type on this "
-        "engagement, if one is set; otherwise the engagement's Final "
-        "Materiality worksheet figure (the same threshold used by "
-        "every account by default). See Materiality Mapping Source / "
-        "Final Materiality Source below for which one supplied it.",
+        "engagement, if one is set; otherwise the engagement's "
+        "Specific Materiality worksheet figure (the same threshold "
+        "used by every account by default). See Materiality Mapping "
+        "Source / Specific Materiality below for which one supplied "
+        "it.",
     )
     materiality_mapping_id = fields.Many2one(
         comodel_name="general_audit_ws_6dcda0e_materiality_mapping",
@@ -184,29 +188,31 @@ class GeneralAuditWsB4f8e1a(models.Model):
         "Source is Population and such an override is active for "
         "the selected account -- open it to verify the figure.",
     )
-    final_materiality_id = fields.Many2one(
-        comodel_name="general_audit_ws_bb33b94",
-        string="Final Materiality Source",
+    specific_materiality_id = fields.Many2one(
+        comodel_name="general_audit_ws_6dcda0e",
+        string="Specific Materiality",
         compute="_compute_performance_materiality",
         store=True,
         compute_sudo=True,
-        help="The engagement's Final Materiality worksheet used for "
-        "Tolerable Misstatement above, and for Performance "
-        "Materiality above when no mapping override is active. Set "
-        "whenever Data Source is Population and the engagement has "
-        "a Final Materiality worksheet -- open it to verify the "
-        "figures.",
+        help="The engagement's Specific Materiality worksheet "
+        "(materiality type Performance Materiality) used for "
+        "Performance Materiality above when no mapping override is "
+        "active. Set whenever Data Source is Population and the "
+        "engagement has a matching Specific Materiality worksheet -- "
+        "open it to verify the figure.",
     )
     risk_factor = fields.Float(
         string="Risk Factor",
         digits=(3, 2),
-        related="sample_determination_id.risk_factor",
-        readonly=True,
+        compute="_compute_risk_factor",
+        inverse="_inverse_risk_factor",
         store=True,
         compute_sudo=True,
-        help="Combined audit risk factor, inherited from the "
-        "referenced Sample Determination worksheet -- edit it there, "
-        "not here, so both worksheets stay consistent.",
+        help="Combined audit risk factor. When Data Source is "
+        "Sample, inherited from the referenced Sample Determination "
+        "worksheet -- edit it there, not here, so both worksheets "
+        "stay consistent. When Data Source is Population, entered "
+        "directly here.",
     )
     tolerable_misstatement = fields.Monetary(
         string="Tolerable Misstatement",
@@ -216,13 +222,8 @@ class GeneralAuditWsB4f8e1a(models.Model):
         store=True,
         compute_sudo=True,
         help="Maximum monetary misstatement acceptable for this "
-        "account. When Data Source is Sample, inherited from the "
-        "referenced Sample Determination worksheet (edit it there). "
-        "When Data Source is Population: Performance Materiality "
-        "above times the engagement's Final Materiality worksheet "
-        "Tolerable Misstatement Percentage -- the same policy "
-        "percentage applied engagement-wide, scaled to whichever "
-        "Performance Materiality actually applies to this account.",
+        "account: Performance Materiality above times Risk Factor "
+        "above, for both Data Source values.",
     )
     aria = fields.Selection(
         string="ARIA (%)",
@@ -404,16 +405,51 @@ class GeneralAuditWsB4f8e1a(models.Model):
                     [("subledger_id", "=", record.subledger_id.id)]
                 )
 
+    @api.depends("data_source", "sample_determination_id.risk_factor")
+    def _compute_risk_factor(self):
+        """Derive Risk Factor for the Sample data source.
+
+        For Population, the currently stored value is re-assigned
+        as-is (a no-op from the field's point of view) so a manually
+        entered figure survives recomputation -- the manual write
+        itself goes through ``_inverse_risk_factor`` below, not this
+        compute. Reading the field's own current value here is safe:
+        the recompute engine marks the field as computed before
+        invoking this method, so it will not recurse.
+
+        :return: nothing; assigns ``risk_factor`` to the linked
+            Sample Determination worksheet's own Risk Factor when
+            Data Source is Sample, or its current value otherwise.
+        """
+        for record in self:
+            result = record.risk_factor
+            if record.data_source == "sample":
+                result = record.sample_determination_id.risk_factor
+            record.risk_factor = result
+
+    def _inverse_risk_factor(self):
+        """No-op inverse enabling manual writes to ``risk_factor``.
+
+        Required so Odoo accepts a direct write on this ``compute=``
+        field -- used when Data Source is Population, where the
+        auditor enters Risk Factor manually instead of mirroring the
+        Sample Determination worksheet. The written value is stored
+        as-is; no further action is needed.
+
+        :return: ``None``.
+        """
+        return
+
     @api.depends(
         "data_source",
         "sample_determination_id.performance_materiality",
-        "sample_determination_id.tolerable_misstatement",
         "data_mode",
         "general_ledger_id.account_type_id",
         "general_ledger_id.account_id.type_id",
         "subledger_id.account_type_id",
         "subledger_id.account_id.type_id",
         "general_audit_id",
+        "risk_factor",
     )
     def _compute_performance_materiality(self):
         """Derive Performance Materiality and Tolerable Misstatement.
@@ -425,58 +461,51 @@ class GeneralAuditWsB4f8e1a(models.Model):
         ``0.0`` by design for the common case where no override was
         made. When no override applies (no matching line, or the line
         has ``use_specific_materiality`` unset), Performance
-        Materiality falls back to the engagement-wide figure computed
-        by the Final Materiality worksheet
-        (``general_audit_ws_bb33b94.performance_materiality``), which
-        is the same threshold used by every account unless overridden.
-        ``materiality_mapping_id``/``final_materiality_id`` record
+        Materiality falls back to the engagement's Specific
+        Materiality worksheet (``general_audit_ws_6dcda0e``, matched
+        on ``materiality_type == "pm"``) -- its ``base`` figure, the
+        same threshold used by every account unless overridden.
+        ``materiality_mapping_id``/``specific_materiality_id`` record
         which of these actually supplied Performance Materiality, so
         the auditor can trace it back.
 
-        Tolerable Misstatement for Population is Performance
-        Materiality (whichever value above) times the engagement's
-        Final Materiality worksheet Tolerable Misstatement Percentage
-        -- mirroring ``ToD_akun_260821.ods``'s own Difference
-        Estimation formulas (cells D223/D224), which need a real
-        Tolerable Misstatement to compare against, not the ``0.0``
-        that would otherwise apply here. This is why
-        ``final_materiality_id`` is populated whenever a Final
-        Materiality worksheet is found, even when Performance
-        Materiality itself came from the mapping override -- Tolerable
-        Misstatement still depends on it.
+        Tolerable Misstatement, for both Data Source values, is
+        Performance Materiality (whichever value above) times Risk
+        Factor -- mirroring ``ToD_akun_260821.ods``'s own Difference
+        Estimation formulas (cells D223/D224). Risk Factor is itself
+        a ``compute=`` field (``_compute_risk_factor``): mirrored from
+        the linked Sample Determination worksheet for Sample, or
+        entered directly by the auditor for Population.
 
         :return: nothing; assigns ``performance_materiality``,
-            ``tolerable_misstatement``, ``materiality_mapping_id``, and
-            ``final_materiality_id``. For Sample, both amounts mirror
-            the linked Sample Determination worksheet and both source
-            fields are cleared (that path has its own reference,
-            ``sample_determination_id``). For Population,
-            ``materiality_mapping_id`` is set when a matching mapping
-            line has ``use_specific_materiality`` set (Performance
-            Materiality source); ``final_materiality_id`` is set
-            whenever the engagement has a Final Materiality worksheet
-            (Tolerable Misstatement source, and Performance
-            Materiality source when no mapping override applies).
-            Amounts are ``0.0`` and both source fields cleared when
-            neither is found.
+            ``tolerable_misstatement``, ``materiality_mapping_id``,
+            and ``specific_materiality_id``. For Sample, Performance
+            Materiality mirrors the linked Sample Determination
+            worksheet and both source fields are cleared (that path
+            has its own reference, ``sample_determination_id``). For
+            Population, ``materiality_mapping_id`` is set when a
+            matching mapping line has ``use_specific_materiality`` set
+            (Performance Materiality source); ``specific_materiality_id``
+            is set whenever the engagement has a matching Specific
+            Materiality worksheet (Performance Materiality source when
+            no mapping override applies). Performance Materiality is
+            ``0.0`` and both source fields cleared when neither is
+            found; Tolerable Misstatement always follows Performance
+            Materiality times Risk Factor.
         """
         Mapping = self.env[  # pylint: disable=invalid-name
             "general_audit_ws_6dcda0e_materiality_mapping"
         ]
-        FinalMateriality = self.env[  # pylint: disable=invalid-name
-            "general_audit_ws_bb33b94"
+        SpecificMateriality = self.env[  # pylint: disable=invalid-name
+            "general_audit_ws_6dcda0e"
         ]
         for record in self:
             performance_materiality = 0.0
-            tolerable_misstatement = 0.0
             mapping_source = Mapping.browse()
-            final_materiality_source = FinalMateriality.browse()
+            specific_materiality_source = SpecificMateriality.browse()
             if record.data_source == "sample":
                 performance_materiality = (
                     record.sample_determination_id.performance_materiality
-                )
-                tolerable_misstatement = (
-                    record.sample_determination_id.tolerable_misstatement
                 )
             elif record.data_source == "population":
                 type_id = False
@@ -504,32 +533,26 @@ class GeneralAuditWsB4f8e1a(models.Model):
                         order="sequence, id",
                         limit=1,
                     )
-                final_materiality = FinalMateriality.browse()
+                specific_materiality_ws = SpecificMateriality.browse()
                 if record.general_audit_id:
-                    final_materiality = FinalMateriality.search(
+                    specific_materiality_ws = SpecificMateriality.search(
                         [
-                            (
-                                "worksheet_id.general_audit_id",
-                                "=",
-                                record.general_audit_id.id,
-                            ),
+                            ("general_audit_id", "=", record.general_audit_id.id),
+                            ("materiality_type", "=", "pm"),
                         ],
                         limit=1,
                     )
                 if mapping and mapping.use_specific_materiality:
                     performance_materiality = mapping.specific_materiality
                     mapping_source = mapping
-                elif final_materiality:
-                    performance_materiality = final_materiality.performance_materiality
-                if final_materiality:
-                    final_materiality_source = final_materiality
-                    tolerable_misstatement = performance_materiality * (
-                        final_materiality.tolerable_misstatement_percentage / 100.0
-                    )
+                elif specific_materiality_ws:
+                    performance_materiality = specific_materiality_ws.base
+                if specific_materiality_ws:
+                    specific_materiality_source = specific_materiality_ws
             record.performance_materiality = performance_materiality
-            record.tolerable_misstatement = tolerable_misstatement
+            record.tolerable_misstatement = performance_materiality * record.risk_factor
             record.materiality_mapping_id = mapping_source
-            record.final_materiality_id = final_materiality_source
+            record.specific_materiality_id = specific_materiality_source
 
     @api.depends(
         "data_source",
