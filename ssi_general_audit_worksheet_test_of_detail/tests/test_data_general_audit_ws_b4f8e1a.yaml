@@ -119,6 +119,11 @@ setup:
       xml_id: "ssi_general_audit_worksheet_preliminary_materiality.worksheet_type_6dcda0e"
       save_as: "ws_type_6dcda0e"
 
+    - step: "Get worksheet type d9d2b44 (Materiality Computation)"
+      action: "ref"
+      xml_id: "ssi_general_audit_worksheet_preliminary_materiality.worksheet_type_d9d2b44"
+      save_as: "ws_type_d9d2b44"
+
     - step: "Get worksheet type bb33b94 (Final Materiality)"
       action: "ref"
       xml_id: "ssi_general_audit_worksheet_final_materiality.worksheet_type_bb33b94"
@@ -1102,15 +1107,22 @@ scenarios:
         method: "invalidate_cache"
 
       - step:
-          "Set a comfortable tolerable_misstatement on the SD
-          (tolerable_misstatement/aria on the worksheet are read-only mirrors, edit them
-          at the source)"
+          "Set Performance Materiality and Risk Factor on the SD, so a comfortable
+          Tolerable Misstatement (Performance Materiality x Risk Factor) propagates to
+          the worksheet (risk_factor/aria on the worksheet are read-only mirrors, edit
+          them at the source)"
         action: "write"
         target: "sd"
         as_user: "base.user_admin"
         values:
-          tolerable_misstatement: 500000000
+          performance_materiality: 1000000000
+          risk_factor: 0.5
           aria: "5"
+
+      - step: "Invalidate cache after writing the SD's materiality/risk parameters"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
 
       - step: "Set matching Recorded/Audited amounts on the worksheet"
         action: "write"
@@ -1121,10 +1133,18 @@ scenarios:
             "Seq,Item,Data,Recorded Amount,Audited
             Amount\n1,1,S1,1000,1000\n2,2,S2,2000,2000\n"
 
-      - step: "Assert the worksheet's mirror picked up the SD's tolerable_misstatement"
+      - step:
+          "Assert tolerable_misstatement follows Performance Materiality x Risk Factor,
+          both mirrored from the SD"
         action: "assert"
         target: "worksheet"
         asserts:
+          performance_materiality:
+            type: "value"
+            expected: 1000000000.0
+          risk_factor:
+            type: "value"
+            expected: 0.5
           tolerable_misstatement:
             type: "value"
             expected: 500000000.0
@@ -1479,19 +1499,36 @@ scenarios:
           identifier_col_number: 1
           title: "GL for Population Result Analysis (within tolerance)"
 
-      - step: "Create Final Materiality worksheet with a Tolerable Misstatement policy"
+      - step: "Create Specific Materiality worksheet"
         action: "create"
-        model: "general_audit_ws_bb33b94"
-        save_as: "final_materiality_ws"
+        model: "general_audit_ws_6dcda0e"
+        save_as: "materiality_ws"
         as_user: "base.user_admin"
         values:
           general_audit_id: "REC: audit.id"
-          type_id: "REC: ws_type_bb33b94.id"
-          other_amount_ok: true
-          other_base_amount: 100000000
-          overall_materiality_percentage: 10
-          performance_materiality_percentage: 100
-          tolerable_misstatement_percentage: 10
+          type_id: "REC: ws_type_6dcda0e.id"
+
+      - step: "Create standard detail for the account type"
+        action: "create"
+        model: "general_audit.standard_detail"
+        save_as: "standard_detail"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: account_type.id"
+
+      - step:
+          "Create materiality mapping line with a Performance Materiality override of
+          10,000,000"
+        action: "create"
+        model: "general_audit_ws_6dcda0e_materiality_mapping"
+        save_as: "mapping"
+        as_user: "base.user_admin"
+        values:
+          worksheet_id: "REC: materiality_ws.id"
+          standard_detail_id: "REC: standard_detail.id"
+          use_specific_materiality: true
+          specific_materiality: 10000000
 
       - step: "Create worksheet b4f8e1a with Data Source = Population linked to the GL"
         action: "create"
@@ -1505,6 +1542,16 @@ scenarios:
           data_mode: "gl"
           general_ledger_id: "REC: gl.id"
 
+      - step:
+          "Set Risk Factor manually (Population allows direct entry) so Tolerable
+          Misstatement = Performance Materiality (10,000,000) x Risk Factor (0.1) =
+          1,000,000"
+        action: "write"
+        target: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          risk_factor: 0.1
+
       - step: "Generate examination data"
         action: "call"
         target: "worksheet"
@@ -1513,9 +1560,9 @@ scenarios:
 
       - step:
           "Fill Audited Amount with a total difference of 450,000 -- below the 1,000,000
-          Tolerable Misstatement (10%% of 10,000,000 Performance Materiality). Chosen so
-          it divides evenly by the 3-row population (population_count = sample_count),
-          avoiding a float-precision mismatch in the projected total (L-04)"
+          Tolerable Misstatement. Chosen so it divides evenly by the 3-row population
+          (population_count = sample_count), avoiding a float-precision mismatch in the
+          projected total (L-04)"
         action: "write"
         target: "worksheet"
         as_user: "base.user_admin"
@@ -1530,8 +1577,8 @@ scenarios:
         method: "invalidate_cache"
 
       - step:
-          "Assert Tolerable Misstatement is 1,000,000 (10%% of Performance Materiality)
-          and the total difference (450,000) stays under it"
+          "Assert Tolerable Misstatement is 1,000,000 (Performance Materiality x Risk
+          Factor) and the total difference (450,000) stays under it"
         action: "assert"
         target: "worksheet"
         asserts:
@@ -1688,7 +1735,9 @@ scenarios:
 
       - step:
           "Assert performance_materiality picked up the mapping override's
-          specific_materiality, and materiality_mapping_id points to it"
+          specific_materiality, materiality_mapping_id points to it, and
+          specific_materiality_id still points to the engagement's Specific Materiality
+          worksheet (found regardless of the override)"
         action: "assert"
         target: "worksheet"
         asserts:
@@ -1698,13 +1747,13 @@ scenarios:
           materiality_mapping_id:
             type: "m2o"
             expected: "REC: mapping"
-          final_materiality_id:
-            type: "value"
-            operator: "is_falsy"
+          specific_materiality_id:
+            type: "m2o"
+            expected: "REC: materiality_ws"
 
   - name:
       "Worksheet b4f8e1a - Population performance_materiality falls back to the
-      engagement's Final Materiality when no mapping override is active"
+      engagement's Specific Materiality worksheet when no mapping override is active"
     steps:
       - step: "Create General Ledger worksheet for the account type"
         action: "create"
@@ -1718,7 +1767,24 @@ scenarios:
           account_type_id: "REC: account_type.id"
           title: "GL for materiality fallback"
 
-      - step: "Create Specific Materiality worksheet"
+      - step:
+          "Create Materiality Computation worksheet with a computed Performance
+          Materiality"
+        action: "create"
+        model: "general_audit_ws_d9d2b44"
+        save_as: "ws_d9d2b44"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_d9d2b44.id"
+          other_amount_ok: true
+          other_base_amount: 500000000
+          overall_materiality_percentage: 100
+          performance_materiality_percentage: 100
+
+      - step:
+          "Create Specific Materiality worksheet (materiality type Performance
+          Materiality) with a Balance sourced from the Materiality Computation above"
         action: "create"
         model: "general_audit_ws_6dcda0e"
         save_as: "materiality_ws"
@@ -1726,6 +1792,8 @@ scenarios:
         values:
           general_audit_id: "REC: audit.id"
           type_id: "REC: ws_type_6dcda0e.id"
+          worksheet_d9d2b44_id: "REC: ws_d9d2b44.id"
+          materiality_type: "pm"
 
       - step: "Create standard detail for the account type"
         action: "create"
@@ -1748,21 +1816,6 @@ scenarios:
           standard_detail_id: "REC: standard_detail.id"
           specific_materiality: 750000000
 
-      - step:
-          "Create Final Materiality worksheet for the engagement with a computed
-          Performance Materiality"
-        action: "create"
-        model: "general_audit_ws_bb33b94"
-        save_as: "final_materiality_ws"
-        as_user: "base.user_admin"
-        values:
-          general_audit_id: "REC: audit.id"
-          type_id: "REC: ws_type_bb33b94.id"
-          other_amount_ok: true
-          other_base_amount: 5000000000
-          overall_materiality_percentage: 10
-          performance_materiality_percentage: 100
-
       - step: "Create worksheet b4f8e1a with Data Source = Population linked to the GL"
         action: "create"
         model: "general_audit_ws_b4f8e1a"
@@ -1776,21 +1829,91 @@ scenarios:
           general_ledger_id: "REC: gl.id"
 
       - step:
-          "Assert performance_materiality fell back to the Final Materiality worksheet's
-          figure, NOT the inactive mapping's specific_materiality, and
-          final_materiality_id points to it (not the inactive mapping)"
+          "Assert performance_materiality fell back to the Specific Materiality
+          worksheet's Balance, NOT the inactive mapping's specific_materiality, and
+          specific_materiality_id points to it (not the inactive mapping)"
         action: "assert"
         target: "worksheet"
         asserts:
           performance_materiality:
             type: "value"
             expected: 500000000.0
-          final_materiality_id:
+          specific_materiality_id:
             type: "m2o"
-            expected: "REC: final_materiality_ws"
+            expected: "REC: materiality_ws"
           materiality_mapping_id:
             type: "value"
             operator: "is_falsy"
+
+  - name:
+      "Worksheet b4f8e1a - Sample specific_materiality_id also points to the
+      engagement's Specific Materiality worksheet (Performance Materiality unaffected)"
+    steps:
+      - step: "Create General Ledger worksheet for the account type"
+        action: "create"
+        model: "general_audit_ws_d209914"
+        save_as: "gl"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_d209914.id"
+          account_mode: "standard_account"
+          account_type_id: "REC: account_type.id"
+          raw_data: "Ref,Amount\nR1,1000\nR2,2000\nR3,3000\n"
+          title: "GL for Sample specific_materiality_id reference"
+
+      - step: "Create Specific Materiality worksheet for the same engagement"
+        action: "create"
+        model: "general_audit_ws_6dcda0e"
+        save_as: "materiality_ws"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_6dcda0e.id"
+
+      - step: "Create Sample Determination worksheet with sampling data"
+        action: "create"
+        model: "general_audit_ws_a916660"
+        save_as: "sd"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_a916660.id"
+          data_mode: "gl"
+          general_ledger_id: "REC: gl.id"
+          identifier_col_number: 1
+          monetary_col_number: 2
+          performance_materiality: 500000000
+          risk_factor: 0.65
+          tolerable_misstatement: 325000000
+          sampling_data: "Index,Ref,Amount,Type\n1,R1,1000,Key Item\n2,R2,2000,Sample\n"
+
+      - step: "Create worksheet b4f8e1a with Data Source = Sample referencing the SD"
+        action: "create"
+        model: "general_audit_ws_b4f8e1a"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+          data_source: "sample"
+          data_mode: "gl"
+          general_ledger_id: "REC: gl.id"
+          sample_determination_id: "REC: sd.id"
+
+      - step:
+          "Assert specific_materiality_id points to the engagement's Specific
+          Materiality worksheet even for Sample, while performance_materiality still
+          mirrors the SD (unaffected by it)"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          specific_materiality_id:
+            type: "m2o"
+            expected: "REC: materiality_ws"
+          performance_materiality:
+            type: "value"
+            expected: 500000000.0
 
   - name:
       "Worksheet b4f8e1a - Population performance_materiality is 0.0 without a matching
@@ -1832,7 +1955,7 @@ scenarios:
           materiality_mapping_id:
             type: "value"
             operator: "is_falsy"
-          final_materiality_id:
+          specific_materiality_id:
             type: "value"
             operator: "is_falsy"
 
@@ -2007,6 +2130,185 @@ scenarios:
           sample_type:
             type: "value"
             operator: "is_falsy"
+
+  # ------------------------------------------------------------------
+  # _compute_risk_factor / _inverse_risk_factor - Population accepts
+  # manual entry, driving Tolerable Misstatement
+  # ------------------------------------------------------------------
+  - name:
+      "Worksheet b4f8e1a - Population risk_factor accepts manual entry, driving
+      Tolerable Misstatement"
+    steps:
+      - step: "Create General Ledger worksheet for the account type"
+        action: "create"
+        model: "general_audit_ws_d209914"
+        save_as: "gl"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_d209914.id"
+          account_mode: "standard_account"
+          account_type_id: "REC: account_type.id"
+          title: "GL for manual Risk Factor"
+
+      - step: "Create Specific Materiality worksheet"
+        action: "create"
+        model: "general_audit_ws_6dcda0e"
+        save_as: "materiality_ws"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_6dcda0e.id"
+
+      - step: "Create standard detail for the account type"
+        action: "create"
+        model: "general_audit.standard_detail"
+        save_as: "standard_detail"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: account_type.id"
+
+      - step:
+          "Create materiality mapping line with a Performance Materiality override of
+          1,000,000"
+        action: "create"
+        model: "general_audit_ws_6dcda0e_materiality_mapping"
+        save_as: "mapping"
+        as_user: "base.user_admin"
+        values:
+          worksheet_id: "REC: materiality_ws.id"
+          standard_detail_id: "REC: standard_detail.id"
+          use_specific_materiality: true
+          specific_materiality: 1000000
+
+      - step:
+          "Create worksheet b4f8e1a with Data Source = Population, no Sample
+          Determination linked"
+        action: "create"
+        model: "general_audit_ws_b4f8e1a"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+          data_source: "population"
+          data_mode: "gl"
+          general_ledger_id: "REC: gl.id"
+
+      - step: "Open worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_open"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after opening worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Set Risk Factor manually via Form (Population allows direct entry)"
+        action: "form"
+        target: "worksheet"
+        as_user: "base.user_admin"
+        save: true
+        ops:
+          - set: {risk_factor: 0.65}
+
+      - step:
+          "Assert Risk Factor stored as entered, and Tolerable Misstatement follows
+          Performance Materiality x Risk Factor"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          risk_factor:
+            type: "value"
+            expected: 0.65
+          performance_materiality:
+            type: "value"
+            expected: 1000000.0
+          tolerable_misstatement:
+            type: "value"
+            expected: 650000.0
+
+  # ------------------------------------------------------------------
+  # _compute_risk_factor - Sample: a direct write survives until the
+  # next trigger, then is overwritten back by the mirror
+  # ------------------------------------------------------------------
+  - name:
+      "Worksheet b4f8e1a - Sample risk_factor direct write is overwritten back by the
+      next compute trigger"
+    steps:
+      - step: "Create Sample Determination worksheet with a Risk Factor"
+        action: "create"
+        model: "general_audit_ws_a916660"
+        save_as: "sd"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_a916660.id"
+          risk_factor: 0.65
+
+      - step: "Create worksheet b4f8e1a referencing the SD"
+        action: "create"
+        model: "general_audit_ws_b4f8e1a"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+          data_source: "sample"
+          sample_determination_id: "REC: sd.id"
+
+      - step: "Assert risk_factor mirrors the SD at creation"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          risk_factor:
+            type: "value"
+            expected: 0.65
+
+      - step:
+          "Directly write a different risk_factor on the worksheet -- readonly is a
+          view-level (UI) concern, not an ORM-level one, so the write succeeds and
+          sticks until the next recompute trigger"
+        action: "write"
+        target: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          risk_factor: 0.99
+
+      - step: "Assert the direct write stuck (no recompute has fired yet)"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          risk_factor:
+            type: "value"
+            expected: 0.99
+
+      - step:
+          "Change the SD's own Risk Factor -- a real dependency of _compute_risk_factor,
+          so it triggers a recompute on the linked worksheet"
+        action: "write"
+        target: "sd"
+        as_user: "base.user_admin"
+        values:
+          risk_factor: 0.42
+
+      - step: "Invalidate cache after writing the SD's risk_factor"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step:
+          "Assert the worksheet's risk_factor was overwritten back to mirror the SD, NOT
+          the earlier direct write"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          risk_factor:
+            type: "value"
+            expected: 0.42
 
   # ------------------------------------------------------------------
   # general_audit_ws_b4f8e1a - Delete in draft
