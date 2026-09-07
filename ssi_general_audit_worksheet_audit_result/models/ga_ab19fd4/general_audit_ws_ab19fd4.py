@@ -33,6 +33,40 @@ class GeneralAuditWSab19fd4(models.Model):
     _type_xml_id = "ssi_general_audit_worksheet_audit_result." "worksheet_type_ab19fd4"
 
     # Findings That Influence Opinion
+    # LINK - 1 a0319a2 (WR. 110.1) - source worksheet header reference
+    @api.depends(
+        "general_audit_id",
+    )
+    def _compute_link_1_id(self):
+        """Derive the source 'Findings That Influence Opinion' worksheet.
+
+        :return: nothing; assigns ``link_1_id`` to the first
+            ``general_audit_ws_a0319a2`` record belonging to the same
+            general audit, or an empty recordset when none is found.
+        """
+        for record in self:
+            result = False
+            obj = self.env["general_audit_ws_a0319a2"]
+            if record.general_audit_id:
+                result = obj.search(
+                    [("general_audit_id", "=", record.general_audit_id.id)],
+                    limit=1,
+                )
+            record.link_1_id = result
+
+    link_1_id = fields.Many2one(
+        string="# Worksheet",
+        comodel_name="general_audit_ws_a0319a2",
+        compute_sudo=True,
+        compute="_compute_link_1_id",
+        store=True,
+        help=(
+            "Source 'Findings That Influence Opinion' worksheet whose detail "
+            "lines are aggregated into link_1_ids."
+        ),
+    )
+
+    # Findings That Influence Opinion
     # LINK - 1 a0319a2 (WR. 110.1)
     @api.depends(
         "general_audit_id",
@@ -58,6 +92,40 @@ class GeneralAuditWSab19fd4(models.Model):
         help=(
             "Auto-populated link to 'Findings That Influence Opinion'. "
             "Computed from worksheet a0319a2 belonging to the same general audit."
+        ),
+    )
+
+    # Control Deficiencies
+    # LINK - 2 d33420f (WR. 110.2) - source worksheet header reference
+    @api.depends(
+        "general_audit_id",
+    )
+    def _compute_link_2_id(self):
+        """Derive the source 'Control Deficiencies' worksheet.
+
+        :return: nothing; assigns ``link_2_id`` to the first
+            ``general_audit_ws_d33420f`` record belonging to the same
+            general audit, or an empty recordset when none is found.
+        """
+        for record in self:
+            result = False
+            obj = self.env["general_audit_ws_d33420f"]
+            if record.general_audit_id:
+                result = obj.search(
+                    [("general_audit_id", "=", record.general_audit_id.id)],
+                    limit=1,
+                )
+            record.link_2_id = result
+
+    link_2_id = fields.Many2one(
+        string="# Worksheet",
+        comodel_name="general_audit_ws_d33420f",
+        compute_sudo=True,
+        compute="_compute_link_2_id",
+        store=True,
+        help=(
+            "Source 'Control Deficiencies' worksheet whose detail lines are "
+            "aggregated into link_2_ids."
         ),
     )
 
@@ -91,6 +159,12 @@ class GeneralAuditWSab19fd4(models.Model):
     )
 
     def action_recompute(self):
+        """Refresh both source worksheet references and their detail links.
+
+        :return: ``None``.
+        """
         for record in self:
+            record._compute_link_1_id()
             record._compute_link_1_ids()
+            record._compute_link_2_id()
             record._compute_link_2_ids()

@@ -54,6 +54,13 @@ class GeneralAuditWSbc3e272Control(models.Model):
         related="detail_id.risk",
         help="Risk severity pulled from the linked control deficiency detail.",
     )
+    discussion_result = fields.Text(
+        string="Discussion Result",
+        help=(
+            "Free-form outcome of the discussion held on this control "
+            "deficiency, recorded alongside the linked condition."
+        ),
+    )
     result = fields.Selection(
         selection=[
             ("resolved", "Resolved"),

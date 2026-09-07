@@ -56,24 +56,35 @@
                             attrs="{'invisible': [('state', '!=', 'open')]}"
                         />
                         <separator string="Findings That Influence Opinion" />
+                        <group name="link_1_header" col="2">
+                            <field name="link_1_id" />
+                        </group>
                         <field name="link_1_ids" nolabel="1">
                             <tree>
                                 <field name="risk" />
                                 <field name="condition" />
                                 <field name="criteria" />
-                                <field name="cause" />
                                 <field name="effect" />
-                                <field name="proposed_adjustment" />
+                                <field name="cause" />
+                                <field name="management_response" />
+                                <field
+                                    name="proposed_adjustment"
+                                    string="Proposed Journal Entry"
+                                />
                             </tree>
                         </field>
                         <separator string="Control Deficiencies" />
+                        <group name="link_2_header" col="2">
+                            <field name="link_2_id" />
+                        </group>
                         <field name="link_2_ids" nolabel="1">
                             <tree>
                                 <field name="risk" />
                                 <field name="condition" />
                                 <field name="criteria" />
-                                <field name="cause" />
                                 <field name="effect" />
+                                <field name="cause" />
+                                <field name="management_response" />
                                 <field
                                     name="proposed_adjustment"
                                     string="Recommendation"

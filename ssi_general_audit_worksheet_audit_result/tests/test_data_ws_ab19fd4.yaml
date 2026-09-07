@@ -196,7 +196,9 @@ scenarios:
           general_audit_id: "REC: audit.id"
           type_id: "REC: ws_type.id"
 
-      - step: "Assert link_1_ids / link_2_ids contain the source details exactly"
+      - step:
+          "Assert link_1_ids / link_2_ids contain the source details exactly, and
+          link_1_id / link_2_id point to their source worksheet headers"
         action: "assert"
         target: "worksheet"
         asserts:
@@ -212,6 +214,12 @@ scenarios:
             expected_records:
               - "REC: detail_d1"
               - "REC: detail_d2"
+          link_1_id:
+            type: "m2o"
+            expected: "REC: a0319a2_ws"
+          link_2_id:
+            type: "m2o"
+            expected: "REC: d33420f_ws"
 
   # ------------------------------------------------------------------
   # Compute link_1_ids / link_2_ids - empty
@@ -227,7 +235,8 @@ scenarios:
           general_audit_id: "REC: audit.id"
           type_id: "REC: ws_type.id"
 
-      - step: "Assert link_1_ids / link_2_ids are empty"
+      - step:
+          "Assert link_1_ids / link_2_ids are empty, link_1_id / link_2_id are falsy"
         action: "assert"
         target: "worksheet"
         asserts:
@@ -239,6 +248,12 @@ scenarios:
             type: "m2m"
             check: "count"
             expected_count: 0
+          link_1_id:
+            type: "value"
+            operator: "is_falsy"
+          link_2_id:
+            type: "value"
+            operator: "is_falsy"
 
   # ------------------------------------------------------------------
   # action_recompute - reflects a newly added source detail

@@ -338,6 +338,7 @@ scenarios:
           sequence: 30
           risk: "major"
           condition: "Piutang usaha tidak dikonfirmasi ke pelanggan."
+          management_response: "Manajemen akan melakukan konfirmasi piutang."
 
       - step: "Assert detail created"
         action: "assert"
@@ -352,6 +353,9 @@ scenarios:
           risk:
             type: "value"
             expected: "major"
+          management_response:
+            type: "value"
+            expected: "Manajemen akan melakukan konfirmasi piutang."
           state:
             type: "value"
             expected: "draft"
