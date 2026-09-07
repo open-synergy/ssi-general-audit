@@ -55,7 +55,7 @@ class GeneralAuditWSab19fd4(models.Model):
             record.link_1_id = result
 
     link_1_id = fields.Many2one(
-        string="# WR.110.1",
+        string="# Worksheet",
         comodel_name="general_audit_ws_a0319a2",
         compute_sudo=True,
         compute="_compute_link_1_id",
@@ -118,7 +118,7 @@ class GeneralAuditWSab19fd4(models.Model):
             record.link_2_id = result
 
     link_2_id = fields.Many2one(
-        string="# WR.110.2",
+        string="# Worksheet",
         comodel_name="general_audit_ws_d33420f",
         compute_sudo=True,
         compute="_compute_link_2_id",
