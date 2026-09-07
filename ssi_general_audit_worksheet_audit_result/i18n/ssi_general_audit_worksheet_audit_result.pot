@@ -32,6 +32,8 @@ msgstr ""
 #. module: ssi_general_audit_worksheet_audit_result
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_audit_result.field_general_audit_ws_a0319a2__worksheet_id
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_audit_result.field_general_audit_ws_a0319a2_detail__worksheet_id
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_audit_result.field_general_audit_ws_ab19fd4__link_1_id
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_audit_result.field_general_audit_ws_ab19fd4__link_2_id
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_audit_result.field_general_audit_ws_ab19fd4__worksheet_id
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_audit_result.field_general_audit_ws_bc3e272__worksheet_id
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_audit_result.field_general_audit_ws_bc3e272_control__worksheet_id
@@ -659,6 +661,11 @@ msgid "Date when the worksheet was reviewed."
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_audit_result
+#: model_terms:ir.ui.view,arch_db:ssi_general_audit_worksheet_audit_result.general_audit_ws_bc3e272_view_form
+msgid "Decision"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_audit_result
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_audit_result.field_general_audit_ws_bc3e272_control__detail_id
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_audit_result.field_general_audit_ws_bc3e272_influence__detail_id
 msgid "Detail"
@@ -672,6 +679,12 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:ssi_general_audit_worksheet_audit_result.general_audit_ws_bc3e272_view_form
 #: model_terms:ir.ui.view,arch_db:ssi_general_audit_worksheet_audit_result.general_audit_ws_d33420f_view_form
 msgid "Details"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_audit_result
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_audit_result.field_general_audit_ws_bc3e272_control__discussion_result
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_audit_result.field_general_audit_ws_bc3e272_influence__discussion_result
+msgid "Discussion Result"
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_audit_result
@@ -846,6 +859,20 @@ msgid "Font awesome icon e.g. fa-tasks"
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_audit_result
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_audit_result.field_general_audit_ws_bc3e272_control__discussion_result
+msgid ""
+"Free-form outcome of the discussion held on this control deficiency, "
+"recorded alongside the linked condition."
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_audit_result
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_audit_result.field_general_audit_ws_bc3e272_influence__discussion_result
+msgid ""
+"Free-form outcome of the discussion held on this finding, recorded alongside"
+" the linked condition."
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_audit_result
 #: model:ir.model.fields,help:ssi_general_audit_worksheet_audit_result.field_general_audit_ws_a0319a2__general_audit_id
 #: model:ir.model.fields,help:ssi_general_audit_worksheet_audit_result.field_general_audit_ws_ab19fd4__general_audit_id
 #: model:ir.model.fields,help:ssi_general_audit_worksheet_audit_result.field_general_audit_ws_bc3e272__general_audit_id
@@ -1015,6 +1042,26 @@ msgstr ""
 #: model:ir.model.fields.selection,name:ssi_general_audit_worksheet_audit_result.selection__general_audit_ws_a0319a2_detail__risk__major
 #: model:ir.model.fields.selection,name:ssi_general_audit_worksheet_audit_result.selection__general_audit_ws_d33420f_detail__risk__major
 msgid "Major"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_audit_result
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_audit_result.field_general_audit_ws_a0319a2_detail__management_response
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_audit_result.field_general_audit_ws_d33420f_detail__management_response
+msgid "Management Response"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_audit_result
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_audit_result.field_general_audit_ws_d33420f_detail__management_response
+msgid ""
+"Management's response to the control deficiency: acknowledgement, rebuttal, "
+"or planned corrective action as communicated by management."
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_audit_result
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_audit_result.field_general_audit_ws_a0319a2_detail__management_response
+msgid ""
+"Management's response to the finding: acknowledgement, rebuttal, or planned "
+"corrective action as communicated by management."
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_audit_result
@@ -1302,6 +1349,12 @@ msgid "Proposed Adjustment"
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_audit_result
+#: model_terms:ir.ui.view,arch_db:ssi_general_audit_worksheet_audit_result.general_audit_ws_a0319a2_view_form
+#: model_terms:ir.ui.view,arch_db:ssi_general_audit_worksheet_audit_result.general_audit_ws_ab19fd4_view_form
+msgid "Proposed Journal Entry"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_audit_result
 #: model:ir.model.fields,help:ssi_general_audit_worksheet_audit_result.field_general_audit_ws_d33420f_detail__proposed_adjustment
 msgid ""
 "Proposed adjustment (if any): auditor's recommended entries or actions to "
@@ -1485,6 +1538,20 @@ msgstr ""
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_audit_result.field_general_audit_ws_bc3e272_influence__sequence
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_audit_result.field_general_audit_ws_d33420f_detail__sequence
 msgid "Sequence"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_audit_result
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_audit_result.field_general_audit_ws_ab19fd4__link_2_id
+msgid ""
+"Source 'Control Deficiencies' worksheet whose detail lines are aggregated "
+"into link_2_ids."
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_audit_result
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_audit_result.field_general_audit_ws_ab19fd4__link_1_id
+msgid ""
+"Source 'Findings That Influence Opinion' worksheet whose detail lines are "
+"aggregated into link_1_ids."
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_audit_result
