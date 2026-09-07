@@ -42,10 +42,6 @@
         />
         <field name="arch" type="xml">
             <data>
-                <xpath expr="//field[@name='date_end']" position="after">
-                    <field name="link_1_id" />
-                    <field name="link_2_id" />
-                </xpath>
                 <xpath expr="//page[@name='standard_audit']" position="replace">
                 </xpath>
                 <xpath expr="//page[@name='note']" position='before'>
@@ -60,6 +56,7 @@
                             attrs="{'invisible': [('state', '!=', 'open')]}"
                         />
                         <separator string="Findings That Influence Opinion" />
+                        <field name="link_1_id" />
                         <field name="link_1_ids" nolabel="1">
                             <tree>
                                 <field name="risk" />
@@ -75,6 +72,7 @@
                             </tree>
                         </field>
                         <separator string="Control Deficiencies" />
+                        <field name="link_2_id" />
                         <field name="link_2_ids" nolabel="1">
                             <tree>
                                 <field name="risk" />
