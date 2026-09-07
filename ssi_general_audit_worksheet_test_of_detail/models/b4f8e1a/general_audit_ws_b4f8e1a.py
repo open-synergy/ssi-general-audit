@@ -479,19 +479,20 @@ class GeneralAuditWsB4f8e1a(models.Model):
 
         :return: nothing; assigns ``performance_materiality``,
             ``tolerable_misstatement``, ``materiality_mapping_id``,
-            and ``specific_materiality_id``. For Sample, Performance
-            Materiality mirrors the linked Sample Determination
-            worksheet and both source fields are cleared (that path
-            has its own reference, ``sample_determination_id``). For
-            Population, ``materiality_mapping_id`` is set when a
-            matching mapping line has ``use_specific_materiality`` set
-            (Performance Materiality source); ``specific_materiality_id``
+            and ``specific_materiality_id``. ``specific_materiality_id``
             is set whenever the engagement has a matching Specific
-            Materiality worksheet (Performance Materiality source when
-            no mapping override applies). Performance Materiality is
-            ``0.0`` and both source fields cleared when neither is
-            found; Tolerable Misstatement always follows Performance
-            Materiality times Risk Factor.
+            Materiality worksheet, for BOTH Data Source values -- it
+            is purely a traceability reference for Sample (Performance
+            Materiality there still mirrors the linked Sample
+            Determination worksheet, unaffected by it).
+            ``materiality_mapping_id`` stays Population-only: it is
+            set when a matching mapping line has
+            ``use_specific_materiality`` set (Performance Materiality
+            override source there). Performance Materiality is
+            ``0.0`` when Population has neither an override nor a
+            matching Specific Materiality worksheet; Tolerable
+            Misstatement always follows Performance Materiality times
+            Risk Factor.
         """
         Mapping = self.env[  # pylint: disable=invalid-name
             "general_audit_ws_6dcda0e_materiality_mapping"
@@ -502,23 +503,33 @@ class GeneralAuditWsB4f8e1a(models.Model):
         for record in self:
             performance_materiality = 0.0
             mapping_source = Mapping.browse()
+
+            type_id = False
+            if record.data_mode == "gl":
+                type_id = (
+                    record.general_ledger_id.account_type_id
+                    or record.general_ledger_id.account_id.type_id
+                )
+            elif record.data_mode == "subledger":
+                type_id = (
+                    record.subledger_id.account_type_id
+                    or record.subledger_id.account_id.type_id
+                )
             specific_materiality_source = SpecificMateriality.browse()
+            if record.general_audit_id:
+                specific_materiality_source = SpecificMateriality.search(
+                    [
+                        ("general_audit_id", "=", record.general_audit_id.id),
+                        ("materiality_type", "=", "pm"),
+                    ],
+                    limit=1,
+                )
+
             if record.data_source == "sample":
                 performance_materiality = (
                     record.sample_determination_id.performance_materiality
                 )
             elif record.data_source == "population":
-                type_id = False
-                if record.data_mode == "gl":
-                    type_id = (
-                        record.general_ledger_id.account_type_id
-                        or record.general_ledger_id.account_id.type_id
-                    )
-                elif record.data_mode == "subledger":
-                    type_id = (
-                        record.subledger_id.account_type_id
-                        or record.subledger_id.account_id.type_id
-                    )
                 mapping = Mapping.browse()
                 if type_id and record.general_audit_id:
                     mapping = Mapping.search(
@@ -533,22 +544,11 @@ class GeneralAuditWsB4f8e1a(models.Model):
                         order="sequence, id",
                         limit=1,
                     )
-                specific_materiality_ws = SpecificMateriality.browse()
-                if record.general_audit_id:
-                    specific_materiality_ws = SpecificMateriality.search(
-                        [
-                            ("general_audit_id", "=", record.general_audit_id.id),
-                            ("materiality_type", "=", "pm"),
-                        ],
-                        limit=1,
-                    )
                 if mapping and mapping.use_specific_materiality:
                     performance_materiality = mapping.specific_materiality
                     mapping_source = mapping
-                elif specific_materiality_ws:
-                    performance_materiality = specific_materiality_ws.base
-                if specific_materiality_ws:
-                    specific_materiality_source = specific_materiality_ws
+                elif specific_materiality_source:
+                    performance_materiality = specific_materiality_source.base
             record.performance_materiality = performance_materiality
             record.tolerable_misstatement = performance_materiality * record.risk_factor
             record.materiality_mapping_id = mapping_source

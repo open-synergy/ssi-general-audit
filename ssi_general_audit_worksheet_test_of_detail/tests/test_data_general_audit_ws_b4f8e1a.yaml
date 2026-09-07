@@ -1846,6 +1846,76 @@ scenarios:
             operator: "is_falsy"
 
   - name:
+      "Worksheet b4f8e1a - Sample specific_materiality_id also points to the
+      engagement's Specific Materiality worksheet (Performance Materiality unaffected)"
+    steps:
+      - step: "Create General Ledger worksheet for the account type"
+        action: "create"
+        model: "general_audit_ws_d209914"
+        save_as: "gl"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_d209914.id"
+          account_mode: "standard_account"
+          account_type_id: "REC: account_type.id"
+          raw_data: "Ref,Amount\nR1,1000\nR2,2000\nR3,3000\n"
+          title: "GL for Sample specific_materiality_id reference"
+
+      - step: "Create Specific Materiality worksheet for the same engagement"
+        action: "create"
+        model: "general_audit_ws_6dcda0e"
+        save_as: "materiality_ws"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_6dcda0e.id"
+
+      - step: "Create Sample Determination worksheet with sampling data"
+        action: "create"
+        model: "general_audit_ws_a916660"
+        save_as: "sd"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_a916660.id"
+          data_mode: "gl"
+          general_ledger_id: "REC: gl.id"
+          identifier_col_number: 1
+          monetary_col_number: 2
+          performance_materiality: 500000000
+          risk_factor: 0.65
+          tolerable_misstatement: 325000000
+          sampling_data: "Index,Ref,Amount,Type\n1,R1,1000,Key Item\n2,R2,2000,Sample\n"
+
+      - step: "Create worksheet b4f8e1a with Data Source = Sample referencing the SD"
+        action: "create"
+        model: "general_audit_ws_b4f8e1a"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+          data_source: "sample"
+          data_mode: "gl"
+          general_ledger_id: "REC: gl.id"
+          sample_determination_id: "REC: sd.id"
+
+      - step:
+          "Assert specific_materiality_id points to the engagement's Specific
+          Materiality worksheet even for Sample, while performance_materiality still
+          mirrors the SD (unaffected by it)"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          specific_materiality_id:
+            type: "m2o"
+            expected: "REC: materiality_ws"
+          performance_materiality:
+            type: "value"
+            expected: 500000000.0
+
+  - name:
       "Worksheet b4f8e1a - Population performance_materiality is 0.0 without a matching
       mapping"
     steps:
