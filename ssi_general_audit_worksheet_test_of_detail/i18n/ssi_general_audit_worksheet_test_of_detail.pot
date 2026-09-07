@@ -291,9 +291,10 @@ msgstr ""
 #. module: ssi_general_audit_worksheet_test_of_detail
 #: model:ir.model.fields,help:ssi_general_audit_worksheet_test_of_detail.field_general_audit_ws_b4f8e1a__risk_factor
 msgid ""
-"Combined audit risk factor, inherited from the referenced Sample "
-"Determination worksheet -- edit it there, not here, so both worksheets stay "
-"consistent."
+"Combined audit risk factor. When Data Source is Sample, inherited from the "
+"referenced Sample Determination worksheet -- edit it there, not here, so "
+"both worksheets stay consistent. When Data Source is Population, entered "
+"directly here."
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_test_of_detail
@@ -472,11 +473,6 @@ msgid "Examination Data"
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_test_of_detail
-#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_test_of_detail.field_general_audit_ws_b4f8e1a__final_materiality_id
-msgid "Final Materiality Source"
-msgstr ""
-
-#. module: ssi_general_audit_worksheet_test_of_detail
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_test_of_detail.field_general_audit_ws_b4f8e1a__message_follower_ids
 msgid "Followers"
 msgstr ""
@@ -606,13 +602,8 @@ msgstr ""
 #. module: ssi_general_audit_worksheet_test_of_detail
 #: model:ir.model.fields,help:ssi_general_audit_worksheet_test_of_detail.field_general_audit_ws_b4f8e1a__tolerable_misstatement
 msgid ""
-"Maximum monetary misstatement acceptable for this account. When Data Source "
-"is Sample, inherited from the referenced Sample Determination worksheet "
-"(edit it there). When Data Source is Population: Performance Materiality "
-"above times the engagement's Final Materiality worksheet Tolerable "
-"Misstatement Percentage -- the same policy percentage applied engagement-"
-"wide, scaled to whichever Performance Materiality actually applies to this "
-"account."
+"Maximum monetary misstatement acceptable for this account: Performance "
+"Materiality above times Risk Factor above, for both Data Source values."
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_test_of_detail
@@ -761,9 +752,10 @@ msgid ""
 "inherited from the referenced Sample Determination worksheet (edit it "
 "there). When Data Source is Population: the Materiality mapping override for"
 " the selected General Ledger/Subledger's account type on this engagement, if"
-" one is set; otherwise the engagement's Final Materiality worksheet figure "
-"(the same threshold used by every account by default). See Materiality "
-"Mapping Source / Final Materiality Source below for which one supplied it."
+" one is set; otherwise the engagement's Specific Materiality worksheet "
+"figure (the same threshold used by every account by default). See "
+"Materiality Mapping Source / Specific Materiality below for which one "
+"supplied it."
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_test_of_detail
@@ -968,6 +960,11 @@ msgid "Selected conclusion summarizing the worksheet's assessment."
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_test_of_detail
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_test_of_detail.field_general_audit_ws_b4f8e1a__specific_materiality_id
+msgid "Specific Materiality"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_test_of_detail
 #: model:ir.model.fields,help:ssi_general_audit_worksheet_test_of_detail.field_general_audit_ws_b4f8e1a__population_standard_deviation
 msgid ""
 "Standard deviation of the sample differences, replicating "
@@ -1060,12 +1057,13 @@ msgid ""
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_test_of_detail
-#: model:ir.model.fields,help:ssi_general_audit_worksheet_test_of_detail.field_general_audit_ws_b4f8e1a__final_materiality_id
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_test_of_detail.field_general_audit_ws_b4f8e1a__specific_materiality_id
 msgid ""
-"The engagement's Final Materiality worksheet used for Tolerable Misstatement"
-" above, and for Performance Materiality above when no mapping override is "
-"active. Set whenever Data Source is Population and the engagement has a "
-"Final Materiality worksheet -- open it to verify the figures."
+"The engagement's Specific Materiality worksheet (materiality type "
+"Performance Materiality) used for Performance Materiality above when no "
+"mapping override is active. Set whenever Data Source is Population and the "
+"engagement has a matching Specific Materiality worksheet -- open it to "
+"verify the figure."
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_test_of_detail
