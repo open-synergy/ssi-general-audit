@@ -59,6 +59,13 @@ class GeneralAuditWSbc3e272Influence(models.Model):
         related="detail_id.risk",
         help="Risk severity pulled from the linked finding detail.",
     )
+    discussion_result = fields.Text(
+        string="Discussion Result",
+        help=(
+            "Free-form outcome of the discussion held on this finding, "
+            "recorded alongside the linked condition."
+        ),
+    )
     result = fields.Selection(
         selection=[
             ("resolved", "Resolved"),

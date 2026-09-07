@@ -724,6 +724,7 @@ scenarios:
         values:
           worksheet_id: "REC: worksheet.id"
           detail_id: "REC: detail.id"
+          discussion_result: "Management agrees the finding is resolved."
           result: "resolved"
 
       - step: "Assert influence line created and related fields pulled"
@@ -742,6 +743,9 @@ scenarios:
           condition:
             type: "value"
             expected: "Finding linked to discussion"
+          discussion_result:
+            type: "value"
+            expected: "Management agrees the finding is resolved."
           risk:
             type: "value"
             expected: "major"

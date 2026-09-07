@@ -79,6 +79,13 @@ class GeneralAuditWSa0319a2Detail(models.Model):
             "on the financial statements or controls."
         ),
     )
+    management_response = fields.Text(
+        string="Management Response",
+        help=(
+            "Management's response to the finding: acknowledgement, rebuttal, "
+            "or planned corrective action as communicated by management."
+        ),
+    )
     proposed_adjustment = fields.Text(
         help=(
             "Proposed adjustment (if any): auditor's recommended journal entries "

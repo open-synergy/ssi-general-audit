@@ -339,6 +339,7 @@ scenarios:
           sequence: 30
           risk: "major"
           condition: "Akses sistem keuangan tidak dibatasi berdasarkan peran."
+          management_response: "Manajemen akan menerapkan role-based access."
 
       - step: "Assert detail created"
         action: "assert"
@@ -353,6 +354,9 @@ scenarios:
           risk:
             type: "value"
             expected: "major"
+          management_response:
+            type: "value"
+            expected: "Manajemen akan menerapkan role-based access."
           state:
             type: "value"
             expected: "draft"
