@@ -95,6 +95,22 @@
                 </xpath>
                 <xpath expr="//field[@name='conclusion_id']" position="before">
                     <field name="risk" />
+                    <field
+                        name="previous_partner_in_charge"
+                        attrs="{'invisible': [('engagemet_ok', '=', True)]}"
+                    />
+                    <field
+                        name="previous_report_number"
+                        attrs="{'invisible': [('engagemet_ok', '=', True)]}"
+                    />
+                    <field
+                        name="previous_report_date"
+                        attrs="{'invisible': [('engagemet_ok', '=', True)]}"
+                    />
+                    <field
+                        name="previous_opinion_id"
+                        attrs="{'invisible': [('engagemet_ok', '=', True)]}"
+                    />
                 </xpath>
             </data>
         </field>

@@ -62,6 +62,33 @@ class GeneralAuditWS0427d28(models.Model):
         help="Risk assessment for the communication with the previous auditor,\n"
         "including the 'Not Relevant' option when applicable.",
     )
+    previous_partner_in_charge = fields.Char(
+        string="Previous Partner in Charge",
+        help=(
+            "Free-text name of the partner in charge at the predecessor "
+            "(previous) audit firm. Not a reference to res.partner/"
+            "res.users, as no record for the predecessor auditor exists "
+            "in the system."
+        ),
+    )
+    previous_report_number = fields.Char(
+        string="Previous Report Number",
+        help="Report number issued by the predecessor (previous) auditor.",
+    )
+    previous_report_date = fields.Date(
+        string="Previous Report Date",
+        help="Date of the report issued by the predecessor (previous) " "auditor.",
+    )
+    previous_opinion_id = fields.Many2one(
+        string="Previous Opinion",
+        comodel_name="accountant.opinion",
+        help=(
+            "Opinion issued by the predecessor (previous) auditor. This "
+            "field is unrelated to the current engagement's "
+            "general_audit_id.opinion_id; it purely documents information "
+            "obtained from the predecessor auditor on this worksheet."
+        ),
+    )
 
     @api.depends("general_audit_id", "general_audit_id.num_of_consecutive_audit_firm")
     def _compute_engagemet(self):
