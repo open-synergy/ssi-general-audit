@@ -46,6 +46,7 @@
                     <field
                         name="previous_partner_in_charge_id"
                         attrs="{'invisible': [('engagemet_ok', '=', True)]}"
+                        options="{'no_create': True, 'no_create_edit': True}"
                     />
                     <field
                         name="previous_report_number"
@@ -56,8 +57,9 @@
                         attrs="{'invisible': [('engagemet_ok', '=', True)]}"
                     />
                     <field
-                        name="previous_opinion"
+                        name="previous_opinion_id"
                         attrs="{'invisible': [('engagemet_ok', '=', True)]}"
+                        options="{'no_create': True, 'no_create_edit': True}"
                     />
                     <field name="engagemet_ok" invisible="1" />
                 </xpath>

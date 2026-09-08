@@ -78,11 +78,12 @@ class GeneralAuditWS0427d28(models.Model):
         string="Previous Report Date",
         help="Date of the report issued by the predecessor (previous) " "auditor.",
     )
-    previous_opinion = fields.Char(
+    previous_opinion_id = fields.Many2one(
         string="Previous Opinion",
+        comodel_name="accountant.opinion",
         help=(
-            "Free-text opinion issued by the predecessor (previous) "
-            "auditor. This field is unrelated to the current engagement's "
+            "Opinion issued by the predecessor (previous) auditor. This "
+            "field is unrelated to the current engagement's "
             "general_audit_id.opinion_id; it purely documents information "
             "obtained from the predecessor auditor on this worksheet."
         ),
