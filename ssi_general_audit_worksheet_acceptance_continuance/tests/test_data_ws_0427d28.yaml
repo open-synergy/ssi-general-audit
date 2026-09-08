@@ -224,6 +224,149 @@ scenarios:
             expected: false
 
   # ------------------------------------------------------------------
+  # previous_partner_in_charge_id / previous_report_number /
+  # previous_report_date / previous_opinion - Initial Engagement
+  # ------------------------------------------------------------------
+  - name: "Worksheet 0427d28 - Previous auditor data on initial engagement"
+    steps:
+      - step: "Create general audit with 0 consecutive years"
+        action: "create"
+        model: "general_audit"
+        save_as: "audit_prev_initial"
+        as_user: "base.user_admin"
+        values:
+          title: "Test General Audit - 0427d28 Previous Auditor Data"
+          partner_id: "REC: client.id"
+          accountant_id: "REC: accountant.id"
+          account_type_set_id: "REC: account_type_set.id"
+          financial_accounting_standard_id: "REC: standard.id"
+          date_start: 2026-01-01
+          date_end: 2026-12-31
+          need_interim: false
+          need_previous: false
+          num_of_consecutive_audit_firm: 0
+          num_of_consecutive_audit_accountant: 0
+
+      - step: "Open general audit"
+        action: "call"
+        target: "audit_prev_initial"
+        method: "action_open"
+        as_user: "base.user_admin"
+
+      - step: "Create previous auditor partner in charge"
+        action: "create"
+        model: "res.partner"
+        save_as: "previous_partner"
+        as_user: "base.user_admin"
+        values:
+          name: "John Doe, CPA"
+
+      - step: "Create worksheet 0427d28 on the initial audit"
+        action: "create"
+        model: "general_audit_ws_0427d28"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit_prev_initial.id"
+          type_id: "REC: ws_type.id"
+
+      - step: "Assert engagemet_ok is False (Initial Engagement)"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          engagemet_ok:
+            type: "value"
+            expected: false
+
+      - step: "Write previous auditor data"
+        action: "write"
+        target: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          previous_partner_in_charge_id: "REC: previous_partner.id"
+          previous_report_number: "PREV-REPORT-0001"
+          previous_report_date: 2025-03-15
+          previous_opinion: "Unqualified Opinion"
+
+      - step: "Assert previous auditor data saved"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          previous_partner_in_charge_id:
+            type: "m2o"
+            expected: "REC: previous_partner"
+          previous_report_number:
+            type: "value"
+            expected: "PREV-REPORT-0001"
+          previous_report_date:
+            type: "value"
+            expected: 2025-03-15
+          previous_opinion:
+            type: "value"
+            expected: "Unqualified Opinion"
+
+  - name: "Worksheet 0427d28 - Previous auditor data optional on recurring engagement"
+    steps:
+      - step: "Create general audit with 3 consecutive years"
+        action: "create"
+        model: "general_audit"
+        save_as: "audit_prev_recurring"
+        as_user: "base.user_admin"
+        values:
+          title: "Test General Audit - 0427d28 Recurring No Previous Data"
+          partner_id: "REC: client.id"
+          accountant_id: "REC: accountant.id"
+          account_type_set_id: "REC: account_type_set.id"
+          financial_accounting_standard_id: "REC: standard.id"
+          date_start: 2026-01-01
+          date_end: 2026-12-31
+          need_interim: false
+          need_previous: false
+          num_of_consecutive_audit_firm: 3
+          num_of_consecutive_audit_accountant: 3
+
+      - step: "Open general audit"
+        action: "call"
+        target: "audit_prev_recurring"
+        method: "action_open"
+        as_user: "base.user_admin"
+
+      - step:
+          "Create worksheet 0427d28 on the recurring audit without previous auditor data"
+        action: "create"
+        model: "general_audit_ws_0427d28"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit_prev_recurring.id"
+          type_id: "REC: ws_type.id"
+
+      - step: "Assert engagemet_ok is True (Recurring Engagement)"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          engagemet_ok:
+            type: "value"
+            expected: true
+
+      - step: "Assert previous auditor fields stay empty (optional, no error)"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          previous_partner_in_charge_id:
+            type: "value"
+            operator: "is_falsy"
+          previous_report_number:
+            type: "value"
+            operator: "is_falsy"
+          previous_report_date:
+            type: "value"
+            operator: "is_falsy"
+          previous_opinion:
+            type: "value"
+            operator: "is_falsy"
+
+  # ------------------------------------------------------------------
   # general_audit_ws_0427d28 - Workflow open to done
   # ------------------------------------------------------------------
   - name: "Worksheet 0427d28 - Workflow open to done"
