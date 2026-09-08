@@ -91,6 +91,64 @@
                         </field>
                     </page>
                 </xpath>
+                <xpath expr="//page[@name='checklist']" position="after">
+                    <page name="audit_result" string="Audit Result">
+                        <button
+                            name="action_reload_audit_result"
+                            type="object"
+                            string="Reload"
+                            class="oe_highlight"
+                            icon="fa-refresh"
+                            attrs="{'invisible': [('state', 'not in', ['open'])]}"
+                        />
+                        <group name="audit_result" colspan="4" col="2">
+                            <field name="audit_result_id" />
+                        </group>
+                    </page>
+                    <page name="management_letter" string="Management Letter">
+                        <button
+                            name="action_reload_management_letter"
+                            type="object"
+                            string="Reload"
+                            class="oe_highlight"
+                            icon="fa-refresh"
+                            attrs="{'invisible': [('state', 'not in', ['open'])]}"
+                        />
+                        <group name="management_letter" colspan="4" col="2">
+                            <field name="management_letter_id" />
+                        </group>
+                    </page>
+                    <page
+                        name="management_representation"
+                        string="Management Representation"
+                    >
+                        <button
+                            name="action_reload_management_representation"
+                            type="object"
+                            string="Reload"
+                            class="oe_highlight"
+                            icon="fa-refresh"
+                            attrs="{'invisible': [('state', 'not in', ['open'])]}"
+                        />
+                        <group name="management_representation" colspan="4" col="2">
+                            <field name="management_representation_id" />
+                        </group>
+                    </page>
+                </xpath>
+                <!-- "Relevant Audit Standard Items" is inserted by the base
+                     ssi_general_audit mixin right before "note", which puts
+                     it ahead of "checklist" (defined above). Move it to sit
+                     right after "management_representation" so the final
+                     notebook order matches the requested sequence: checklist,
+                     audit_result, management_letter,
+                     management_representation, standard_audit, note,
+                     policies. -->
+                <xpath
+                    expr="//page[@name='management_representation']"
+                    position="after"
+                >
+                    <xpath expr="//page[@name='standard_audit']" position="move" />
+                </xpath>
             </data>
         </field>
     </record>
