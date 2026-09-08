@@ -917,6 +917,341 @@ scenarios:
             expected: "done"
 
   # ------------------------------------------------------------------
+  # general_audit_ws_ff42fdc.posture - action_load_posture (aggregate
+  # by client_account_group, diff-based idempotent sync)
+  # ------------------------------------------------------------------
+  - name: "Posture ff42fdc - action_load_posture aggregates by account group"
+    steps:
+      - step: "Create account group 1 (debit-normal)"
+        action: "create"
+        model: "client_account_group"
+        save_as: "group_1"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Account Group 1 - Posture"
+          code: "/"
+          normal_balance: "dr"
+
+      - step: "Create account group 2 (credit-normal)"
+        action: "create"
+        model: "client_account_group"
+        save_as: "group_2"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Account Group 2 - Posture"
+          code: "/"
+          normal_balance: "cr"
+
+      - step: "Create client account type 1 (debit-normal, group 1)"
+        action: "create"
+        model: "client_account_type"
+        save_as: "account_type_1"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Account Type 1 - Posture"
+          code: "/"
+          group_id: "REC: group_1.id"
+          normal_balance: "dr"
+          # DILARANG membiarkan python_code pada default
+          # "result = document.balance": lihat catatan yang sama di
+          # ssi_general_audit_worksheet_lead_schedule test data.
+          python_code: "result = 0.0"
+
+      - step: "Create client account type 2 (credit-normal, group 2)"
+        action: "create"
+        model: "client_account_type"
+        save_as: "account_type_2"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Account Type 2 - Posture"
+          code: "/"
+          group_id: "REC: group_2.id"
+          normal_balance: "cr"
+          python_code: "result = 0.0"
+
+      - step: "Create client account 1 (type 1 / group 1)"
+        action: "create"
+        model: "client_account"
+        save_as: "account_1"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Client Account 1 - Posture"
+          code: "ACC-1-POSTURE"
+          partner_id: "REC: client.id"
+          type_id: "REC: account_type_1.id"
+
+      - step: "Create client account 2 (type 2 / group 2)"
+        action: "create"
+        model: "client_account"
+        save_as: "account_2"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Client Account 2 - Posture"
+          code: "ACC-2-POSTURE"
+          partner_id: "REC: client.id"
+          type_id: "REC: account_type_2.id"
+
+      - step: "Create client account mapping for the audit"
+        action: "create"
+        model: "client_account_mapping"
+        save_as: "mapping"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+
+      - step: "Map client account 1"
+        action: "create"
+        model: "client_account_mapping.detail"
+        save_as: "mapping_detail_1"
+        as_user: "base.user_admin"
+        values:
+          mapping_id: "REC: mapping.id"
+          account_id: "REC: account_1.id"
+
+      - step: "Map client account 2"
+        action: "create"
+        model: "client_account_mapping.detail"
+        save_as: "mapping_detail_2"
+        as_user: "base.user_admin"
+        values:
+          mapping_id: "REC: mapping.id"
+          account_id: "REC: account_2.id"
+
+      - step: "Reload general audit accounts from the mapping"
+        action: "call"
+        target: "audit"
+        method: "action_reload_account"
+        as_user: "base.user_admin"
+
+      - step: "Create home trial balance"
+        action: "create"
+        model: "client_trial_balance"
+        save_as: "tb_home"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          trial_balance_type: "home"
+
+      - step: "Home trial balance line for account 1 (debit 1,000,000)"
+        action: "create"
+        model: "client_trial_balance.detail"
+        save_as: "tb_home_detail_1"
+        as_user: "base.user_admin"
+        values:
+          trial_balance_id: "REC: tb_home.id"
+          account_id: "REC: account_1.id"
+          debit: 1000000.0
+
+      - step: "Home trial balance line for account 2 (credit 500,000)"
+        action: "create"
+        model: "client_trial_balance.detail"
+        save_as: "tb_home_detail_2"
+        as_user: "base.user_admin"
+        values:
+          trial_balance_id: "REC: tb_home.id"
+          account_id: "REC: account_2.id"
+          credit: 500000.0
+
+      - step: "Create adjustment entry"
+        action: "create"
+        model: "client_adjustment_entry"
+        save_as: "adj_entry"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          adjustment_type: "propose"
+
+      - step: "Adjustment line - account 1 debit 50,000"
+        action: "create"
+        model: "client_adjustment_entry.detail"
+        save_as: "adj_line_1_dr"
+        as_user: "base.user_admin"
+        values:
+          entry_id: "REC: adj_entry.id"
+          account_id: "REC: account_1.id"
+          name: "Reclass debit account 1"
+          debit: 50000.0
+
+      - step: "Adjustment line - account 1 credit 20,000"
+        action: "create"
+        model: "client_adjustment_entry.detail"
+        save_as: "adj_line_1_cr"
+        as_user: "base.user_admin"
+        values:
+          entry_id: "REC: adj_entry.id"
+          account_id: "REC: account_1.id"
+          name: "Reclass credit account 1"
+          credit: 20000.0
+
+      - step: "Adjustment line - account 2 debit 15,000"
+        action: "create"
+        model: "client_adjustment_entry.detail"
+        save_as: "adj_line_2_dr"
+        as_user: "base.user_admin"
+        values:
+          entry_id: "REC: adj_entry.id"
+          account_id: "REC: account_2.id"
+          name: "Reclass debit account 2"
+          debit: 15000.0
+
+      - step: "Adjustment line - account 2 credit 45,000"
+        action: "create"
+        model: "client_adjustment_entry.detail"
+        save_as: "adj_line_2_cr"
+        as_user: "base.user_admin"
+        values:
+          entry_id: "REC: adj_entry.id"
+          account_id: "REC: account_2.id"
+          name: "Reclass credit account 2"
+          credit: 45000.0
+
+      - step: "Confirm adjustment entry (total debit 65,000 = total credit 65,000)"
+        action: "call"
+        target: "adj_entry"
+        method: "action_confirm"
+        as_user: "base.user_admin"
+        # WAJIB dua-duanya: asserts MENJALANKAN _refresh, refresh: true
+        # MENGIZINKANNYA (_should_refresh v0.5.0) -- tanpa ini approve_ok
+        # terbaca basi milik action_confirm (test-traps.md T-04).
+        refresh: true
+        asserts:
+          state:
+            type: "value"
+            expected: "confirm"
+
+      - step: "Approve adjustment entry"
+        action: "call"
+        target: "adj_entry"
+        method: "action_approve_approval"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after approving adjustment entry"
+        action: "call"
+        target: "adj_entry"
+        method: "invalidate_cache"
+
+      - step: "Assert adjustment entry done"
+        action: "assert"
+        target: "adj_entry"
+        asserts:
+          state:
+            type: "value"
+            expected: "done"
+
+      - step: "Create worksheet ff42fdc for posture"
+        action: "create"
+        model: "general_audit_ws_ff42fdc"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_ff42fdc.id"
+
+      - step: "Open worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_open"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after opening worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Assert no posture line before loading"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          posture_ids:
+            type: "o2m"
+            check: "count"
+            expected_count: 0
+
+      - step: "Load posture"
+        action: "call"
+        target: "worksheet"
+        method: "action_load_posture"
+        as_user: "base.user_admin"
+
+      - step: "Assert two posture lines were created (one per account group)"
+        action: "search"
+        model: "general_audit_ws_ff42fdc.posture"
+        domain:
+          - ["worksheet_id", "=", "REC: worksheet.id"]
+        save_as: "postures_after_load"
+        expect_count: 2
+
+      - step: "Find posture line for group 1"
+        action: "search"
+        model: "general_audit_ws_ff42fdc.posture"
+        domain:
+          - ["worksheet_id", "=", "REC: worksheet.id"]
+          - ["group_id", "=", "REC: group_1.id"]
+        save_as: "posture_1"
+        limit: 1
+
+      - step: "Find posture line for group 2"
+        action: "search"
+        model: "general_audit_ws_ff42fdc.posture"
+        domain:
+          - ["worksheet_id", "=", "REC: worksheet.id"]
+          - ["group_id", "=", "REC: group_2.id"]
+        save_as: "posture_2"
+        limit: 1
+
+      - step: "Assert posture line for group 1 sums account 1's detail"
+        action: "assert"
+        target: "posture_1"
+        asserts:
+          unaudited:
+            type: "value"
+            expected: 1000000.0
+          adjustment_debit:
+            type: "value"
+            expected: 50000.0
+          adjustment_credit:
+            type: "value"
+            expected: 20000.0
+          # account_1 is debit-normal (type_id.normal_balance = "dr"):
+          # 1,000,000 + 50,000 - 20,000 = 1,030,000
+          audited:
+            type: "value"
+            expected: 1030000.0
+
+      - step: "Assert posture line for group 2 sums account 2's detail"
+        action: "assert"
+        target: "posture_2"
+        asserts:
+          unaudited:
+            type: "value"
+            expected: 500000.0
+          adjustment_debit:
+            type: "value"
+            expected: 15000.0
+          adjustment_credit:
+            type: "value"
+            expected: 45000.0
+          # account_2 is credit-normal (type_id.normal_balance = "cr"):
+          # 500,000 - 15,000 + 45,000 = 530,000
+          audited:
+            type: "value"
+            expected: 530000.0
+
+      - step: "Load posture a second time without any account change"
+        action: "call"
+        target: "worksheet"
+        method: "action_load_posture"
+        as_user: "base.user_admin"
+
+      - step: "Assert still exactly two posture lines (diff-based, no duplicates)"
+        action: "search"
+        model: "general_audit_ws_ff42fdc.posture"
+        domain:
+          - ["worksheet_id", "=", "REC: worksheet.id"]
+        save_as: "postures_after_reload"
+        expect_count: 2
+
+  # ------------------------------------------------------------------
   # general_audit_ws_b555edd - Cancel and restart
   # ------------------------------------------------------------------
   - name: "Worksheet b555edd - Cancel and restart"

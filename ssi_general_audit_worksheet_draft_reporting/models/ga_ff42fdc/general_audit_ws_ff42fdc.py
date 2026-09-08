@@ -15,6 +15,12 @@ class GeneralAuditWSff42fdc(models.Model):
     * ``financial_statement_opinion_date`` — the date of the opinion,
       also synchronised with the General Audit record.
 
+    It also presents the engagement's Posture Report: one
+    ``general_audit_ws_ff42fdc.posture`` line per client account group
+    (``posture_ids``), summarising Unaudited, Adjustment (Debit/Credit),
+    and Audited amounts. Use ``action_load_posture`` to synchronise the
+    posture lines with the account groups in use on the General Audit.
+
     This worksheet provides the definitive audit-file record of the opinion
     and serves as evidence that the engagement-level decision was made and
     documented in accordance with ISA 700 / SA 700.
@@ -58,6 +64,64 @@ class GeneralAuditWSff42fdc(models.Model):
         help="Date of the audit opinion. Writing this field also "
         "updates ``opinion_date`` on the General Audit.",
     )
+    posture_ids = fields.One2many(
+        comodel_name="general_audit_ws_ff42fdc.posture",
+        inverse_name="worksheet_id",
+        string="Posture Report",
+        readonly=True,
+        states={
+            "draft": [("readonly", False)],
+            "open": [("readonly", False)],
+        },
+        help="Financial statement posture per client account group, "
+        "loaded from the General Audit's account detail lines.",
+    )
+
+    def action_load_posture(self):
+        """Synchronise ``posture_ids`` with the audited account groups.
+
+        Calls ``_load_posture`` on every record in ``self``, run with
+        ``sudo()`` so users without direct write access on
+        ``general_audit_ws_ff42fdc.posture`` can still trigger the
+        reload from the button.
+        """
+        for record in self.sudo():
+            record._load_posture()
+
+    def _load_posture(self):
+        """Add/remove posture lines to match the audited account groups.
+
+        Diffs the account groups derived from
+        ``general_audit_id.detail_ids.account_id.group_id`` against the
+        groups already present on ``posture_ids``: a line is created
+        for every group newly in use, and a line is removed for every
+        group no longer represented in the audit detail. Mirrors
+        ``general_audit_ws_b26d482._load_detail``.
+        """
+        self.ensure_one()
+        posture_model = self.env["general_audit_ws_ff42fdc.posture"]
+
+        all_groups = self.general_audit_id.mapped("detail_ids.account_id.group_id")
+        existing_groups = self.posture_ids.mapped("group_id")
+
+        groups_to_add = all_groups - existing_groups
+        groups_to_remove = existing_groups - all_groups
+
+        # Add posture line
+        for group in groups_to_add:
+            posture_model.create(
+                {
+                    "worksheet_id": self.id,
+                    "group_id": group.id,
+                }
+            )
+
+        # Remove posture line
+        postures_to_remove = self.posture_ids.filtered(
+            lambda p: p.group_id in groups_to_remove
+        )
+        if postures_to_remove:
+            postures_to_remove.unlink()
 
     def _inverse_financial_statement_opinion_id(self):
         """Write ``financial_statement_opinion_id`` back to the audit.
