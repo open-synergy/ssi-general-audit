@@ -225,7 +225,7 @@ scenarios:
 
   # ------------------------------------------------------------------
   # previous_partner_in_charge_id / previous_report_number /
-  # previous_report_date / previous_opinion - Initial Engagement
+  # previous_report_date / previous_opinion_id - Initial Engagement
   # ------------------------------------------------------------------
   - name: "Worksheet 0427d28 - Previous auditor data on initial engagement"
     steps:
@@ -261,6 +261,15 @@ scenarios:
         values:
           name: "John Doe, CPA"
 
+      - step: "Create accountant opinion master data"
+        action: "create"
+        model: "accountant.opinion"
+        save_as: "opinion"
+        as_user: "base.user_admin"
+        values:
+          name: "Unqualified Opinion"
+          code: "/"
+
       - step: "Create worksheet 0427d28 on the initial audit"
         action: "create"
         model: "general_audit_ws_0427d28"
@@ -286,7 +295,7 @@ scenarios:
           previous_partner_in_charge_id: "REC: previous_partner.id"
           previous_report_number: "PREV-REPORT-0001"
           previous_report_date: 2025-03-15
-          previous_opinion: "Unqualified Opinion"
+          previous_opinion_id: "REC: opinion.id"
 
       - step: "Assert previous auditor data saved"
         action: "assert"
@@ -301,9 +310,9 @@ scenarios:
           previous_report_date:
             type: "value"
             expected: 2025-03-15
-          previous_opinion:
-            type: "value"
-            expected: "Unqualified Opinion"
+          previous_opinion_id:
+            type: "m2o"
+            expected: "REC: opinion"
 
   - name: "Worksheet 0427d28 - Previous auditor data optional on recurring engagement"
     steps:
@@ -362,7 +371,7 @@ scenarios:
           previous_report_date:
             type: "value"
             operator: "is_falsy"
-          previous_opinion:
+          previous_opinion_id:
             type: "value"
             operator: "is_falsy"
 
