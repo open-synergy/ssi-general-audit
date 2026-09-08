@@ -62,13 +62,12 @@ class GeneralAuditWS0427d28(models.Model):
         help="Risk assessment for the communication with the previous auditor,\n"
         "including the 'Not Relevant' option when applicable.",
     )
-    previous_partner_in_charge = fields.Char(
+    previous_partner_in_charge_id = fields.Many2one(
         string="Previous Partner in Charge",
+        comodel_name="res.partner",
         help=(
-            "Free-text name of the partner in charge at the predecessor "
-            "(previous) audit firm. Not a reference to res.partner/"
-            "res.users, as no record for the predecessor auditor exists "
-            "in the system."
+            "Partner in charge at the predecessor (previous) audit firm, "
+            "referencing res.partner."
         ),
     )
     previous_report_number = fields.Char(
@@ -79,12 +78,11 @@ class GeneralAuditWS0427d28(models.Model):
         string="Previous Report Date",
         help="Date of the report issued by the predecessor (previous) " "auditor.",
     )
-    previous_opinion_id = fields.Many2one(
+    previous_opinion = fields.Char(
         string="Previous Opinion",
-        comodel_name="accountant.opinion",
         help=(
-            "Opinion issued by the predecessor (previous) auditor. This "
-            "field is unrelated to the current engagement's "
+            "Free-text opinion issued by the predecessor (previous) "
+            "auditor. This field is unrelated to the current engagement's "
             "general_audit_id.opinion_id; it purely documents information "
             "obtained from the predecessor auditor on this worksheet."
         ),

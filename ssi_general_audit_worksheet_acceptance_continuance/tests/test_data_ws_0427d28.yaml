@@ -224,8 +224,8 @@ scenarios:
             expected: false
 
   # ------------------------------------------------------------------
-  # previous_partner_in_charge / previous_report_number /
-  # previous_report_date / previous_opinion_id - Initial Engagement
+  # previous_partner_in_charge_id / previous_report_number /
+  # previous_report_date / previous_opinion - Initial Engagement
   # ------------------------------------------------------------------
   - name: "Worksheet 0427d28 - Previous auditor data on initial engagement"
     steps:
@@ -253,14 +253,13 @@ scenarios:
         method: "action_open"
         as_user: "base.user_admin"
 
-      - step: "Create accountant opinion master data"
+      - step: "Create previous auditor partner in charge"
         action: "create"
-        model: "accountant.opinion"
-        save_as: "opinion"
+        model: "res.partner"
+        save_as: "previous_partner"
         as_user: "base.user_admin"
         values:
-          name: "Unqualified Opinion"
-          code: "/"
+          name: "John Doe, CPA"
 
       - step: "Create worksheet 0427d28 on the initial audit"
         action: "create"
@@ -284,27 +283,27 @@ scenarios:
         target: "worksheet"
         as_user: "base.user_admin"
         values:
-          previous_partner_in_charge: "John Doe, CPA"
+          previous_partner_in_charge_id: "REC: previous_partner.id"
           previous_report_number: "PREV-REPORT-0001"
           previous_report_date: 2025-03-15
-          previous_opinion_id: "REC: opinion.id"
+          previous_opinion: "Unqualified Opinion"
 
       - step: "Assert previous auditor data saved"
         action: "assert"
         target: "worksheet"
         asserts:
-          previous_partner_in_charge:
-            type: "value"
-            expected: "John Doe, CPA"
+          previous_partner_in_charge_id:
+            type: "m2o"
+            expected: "REC: previous_partner"
           previous_report_number:
             type: "value"
             expected: "PREV-REPORT-0001"
           previous_report_date:
             type: "value"
             expected: 2025-03-15
-          previous_opinion_id:
-            type: "m2o"
-            expected: "REC: opinion"
+          previous_opinion:
+            type: "value"
+            expected: "Unqualified Opinion"
 
   - name: "Worksheet 0427d28 - Previous auditor data optional on recurring engagement"
     steps:
@@ -354,7 +353,7 @@ scenarios:
         action: "assert"
         target: "worksheet"
         asserts:
-          previous_partner_in_charge:
+          previous_partner_in_charge_id:
             type: "value"
             operator: "is_falsy"
           previous_report_number:
@@ -363,7 +362,7 @@ scenarios:
           previous_report_date:
             type: "value"
             operator: "is_falsy"
-          previous_opinion_id:
+          previous_opinion:
             type: "value"
             operator: "is_falsy"
 
