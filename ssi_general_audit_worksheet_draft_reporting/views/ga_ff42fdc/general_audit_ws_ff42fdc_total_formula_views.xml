@@ -57,11 +57,12 @@
         <field name="type">ir.actions.act_window</field>
         <field name="res_model">general_audit_ws_ff42fdc.total_formula</field>
         <field name="view_mode">tree,form</field>
+        <field name="context">{"group_by": ["total_type"]}</field>
     </record>
 
     <menuitem
         id="general_audit_ws_ff42fdc_total_formula_menu"
-        name="Total Formula"
+        name="Total Formula Posture Report"
         parent="ssi_general_audit.menu_configuration_acc_computation"
         action="general_audit_ws_ff42fdc_total_formula_action"
         sequence="15"
