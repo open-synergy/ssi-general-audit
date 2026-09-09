@@ -52,6 +52,8 @@
         "data/sequence_template/general_audit_ws_ff42fdc.xml",
         "data/policy_template/general_audit_ws_ff42fdc.xml",
         "data/approval_template/general_audit_ws_ff42fdc.xml",
+        "data/master/general_audit_ws_ff42fdc_total_formula.xml",
+        "views/ga_ff42fdc/general_audit_ws_ff42fdc_total_formula_views.xml",
         "views/ga_ff42fdc/general_audit_ws_ff42fdc_views.xml",
         # ae598e6 - Management Letter
         "security/res_group/general_audit_ws_ae598e6.xml",

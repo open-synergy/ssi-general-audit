@@ -18,10 +18,11 @@ class GeneralAuditWsFf42fdcPosture(models.Model):
       belongs to that group.
     * ``"total"`` -- one record per ``total_type`` (nine fixed
       subtotal/total rows, e.g. Total Asset, Gross Profit), computed
-      by applying the signed ``client_account_group.code`` formula of
-      ``_TOTAL_TYPE_FORMULA`` directly against the parent General
-      Audit's ``detail_ids``. Total lines always exist, regardless of
-      whether their component groups have any data.
+      by applying the signed ``client_account_group`` formula
+      configured on ``general_audit_ws_ff42fdc.total_formula``
+      directly against the parent General Audit's ``detail_ids``.
+      Total lines always exist, regardless of whether their
+      component groups have any data.
 
     Populated/synchronised via ``action_load_posture`` on the parent
     ``general_audit_ws_ff42fdc`` worksheet, mirroring the diff-based
@@ -31,44 +32,6 @@ class GeneralAuditWsFf42fdcPosture(models.Model):
     _name = "general_audit_ws_ff42fdc.posture"
     _description = "Worksheet (ff42fdc) - Posture Line"
     _order = "sequence, id"
-
-    _TOTAL_TYPE_FORMULA = {
-        "total_asset": (("T001", 1), ("T002", 1)),
-        "total_liability": (("T003", 1), ("T004", 1)),
-        "total_equity": (("T005", 1), ("T007", 1)),
-        "total_liability_equity": (
-            ("T003", 1),
-            ("T004", 1),
-            ("T005", 1),
-            ("T007", 1),
-        ),
-        "gross_profit": (("T009", 1), ("T011", -1)),
-        "operating_profit": (("T009", 1), ("T011", -1), ("T012", -1)),
-        "profit_before_tax": (
-            ("T009", 1),
-            ("T011", -1),
-            ("T012", -1),
-            ("T010", 1),
-            ("T013", -1),
-        ),
-        "profit_after_tax": (
-            ("T009", 1),
-            ("T011", -1),
-            ("T012", -1),
-            ("T010", 1),
-            ("T013", -1),
-            ("T014", -1),
-        ),
-        "comprehensive_profit": (
-            ("T009", 1),
-            ("T011", -1),
-            ("T012", -1),
-            ("T010", 1),
-            ("T013", -1),
-            ("T014", -1),
-            ("T015", 1),
-        ),
-    }
 
     worksheet_id = fields.Many2one(
         comodel_name="general_audit_ws_ff42fdc",
@@ -184,16 +147,27 @@ class GeneralAuditWsFf42fdcPosture(models.Model):
         column from the parent General Audit's ``detail_ids`` whose
         ``account_id.group_id`` matches ``group_id``. Total lines
         (``line_type == "total"``) apply the signed
-        ``client_account_group.code`` formula of
-        ``_TOTAL_TYPE_FORMULA`` directly against ``detail_ids`` --
-        never against other Total lines -- so the result does not
-        depend on compute order. The per-row ``audited_balance``
-        already accounts for the account's normal balance side, so it
-        is summed directly without being recomputed here.
+        ``client_account_group`` formula configured on
+        ``general_audit_ws_ff42fdc.total_formula`` directly against
+        ``detail_ids`` -- never against other Total lines -- so the
+        result does not depend on compute order. A ``total_type``
+        with no configured formula line yields zero on every column,
+        rather than raising. The per-row ``audited_balance`` already
+        accounts for the account's normal balance side, so it is
+        summed directly without being recomputed here.
+
+        Reading the formula table is not itself a reactive dependency
+        of this compute: editing
+        ``general_audit_ws_ff42fdc.total_formula`` does not
+        recompute worksheets that already exist. Applying an edited
+        formula to an existing worksheet requires the user to press
+        "Reload" (``action_load_posture``), the same way other
+        adjustment data already requires a reload.
 
         :return: nothing; assigns ``unaudited``, ``adjustment_debit``,
             ``adjustment_credit``, ``audited``, and ``previous``
         """
+        formula_model = self.env["general_audit_ws_ff42fdc.total_formula"]
         for record in self:
             result_unaudited = 0.0
             result_adjustment_debit = 0.0
@@ -211,22 +185,29 @@ class GeneralAuditWsFf42fdcPosture(models.Model):
                 result_audited = sum(details.mapped("audited_balance"))
                 result_previous = sum(details.mapped("previous_balance"))
             elif record.line_type == "total" and record.total_type:
-                for code, sign in record._get_total_type_formula():
-                    code_details = all_details.filtered(
-                        lambda d, code=code: d.account_id.group_id.code == code
+                formula_lines = formula_model.search(
+                    [("total_type", "=", record.total_type)]
+                )
+                for formula_line in formula_lines:
+                    sign = 1 if formula_line.sign == "add" else -1
+                    group = formula_line.group_id
+                    group_details = all_details.filtered(
+                        lambda d, group=group: d.account_id.group_id == group
                     )
                     result_unaudited += sign * sum(
-                        code_details.mapped("home_statement_balance")
+                        group_details.mapped("home_statement_balance")
                     )
                     result_adjustment_debit += sign * sum(
-                        code_details.mapped("adjustment_debit")
+                        group_details.mapped("adjustment_debit")
                     )
                     result_adjustment_credit += sign * sum(
-                        code_details.mapped("adjustment_credit")
+                        group_details.mapped("adjustment_credit")
                     )
-                    result_audited += sign * sum(code_details.mapped("audited_balance"))
+                    result_audited += sign * sum(
+                        group_details.mapped("audited_balance")
+                    )
                     result_previous += sign * sum(
-                        code_details.mapped("previous_balance")
+                        group_details.mapped("previous_balance")
                     )
             record.unaudited = result_unaudited
             record.adjustment_debit = result_adjustment_debit
@@ -248,15 +229,6 @@ class GeneralAuditWsFf42fdcPosture(models.Model):
         if self.line_type == "group":
             return ("group", self.group_id.code)
         return ("total", self.total_type)
-
-    def _get_total_type_formula(self):
-        """Return the ``(code, sign)`` pairs for this line's total type.
-
-        :return: a tuple of ``(client_account_group.code, sign)``
-            pairs, or an empty tuple when ``total_type`` is not set
-        """
-        self.ensure_one()
-        return self._TOTAL_TYPE_FORMULA.get(self.total_type, ())
 
     @api.constrains("line_type", "group_id", "total_type")
     def _check_line_type_consistency(self):

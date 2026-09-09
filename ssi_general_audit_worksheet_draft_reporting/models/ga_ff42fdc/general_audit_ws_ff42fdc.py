@@ -184,8 +184,14 @@ class GeneralAuditWSff42fdc(models.Model):
         The nine Total lines (one per ``total_type``) are created once
         each, the first time this worksheet loads posture -- they
         always exist afterwards, regardless of whether their component
-        groups have any data. Finally, every line's ``sequence`` is
-        (re)assigned via ``_resequence_posture_lines``.
+        groups have any data. Every line's ``sequence`` is (re)assigned
+        via ``_resequence_posture_lines``. Finally, every existing
+        Total line's amounts are force-recomputed: they are not
+        reactively linked to
+        ``general_audit_ws_ff42fdc.total_formula`` (an
+        ``@api.depends`` cannot express "any formula row for my
+        total_type"), so this Reload is what applies an edited
+        formula to a worksheet that already has its Total lines.
 
         :return: nothing; writes ``posture_ids``
         """
@@ -231,6 +237,12 @@ class GeneralAuditWSff42fdc(models.Model):
                 )
 
         self._resequence_posture_lines()
+
+        # Force-recompute Total lines so an edited
+        # general_audit_ws_ff42fdc.total_formula takes effect now,
+        # instead of waiting for an unrelated detail_ids change.
+        total_lines = self.posture_ids.filtered(lambda p: p.line_type == "total")
+        total_lines._compute_amounts()
 
     def _resequence_posture_lines(self):
         """Assign ``sequence`` on ``posture_ids`` for the fixed layout.

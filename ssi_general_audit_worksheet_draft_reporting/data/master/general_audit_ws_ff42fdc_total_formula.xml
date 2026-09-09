@@ -1,0 +1,421 @@
+<?xml version="1.0" ?>
+<!-- Copyright 2026 OpenSynergy Indonesia
+     Copyright 2026 PT. Simetri Sinergi Indonesia
+     License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl-3.0-standalone.html). -->
+<odoo>
+
+    <!-- total_asset = T001 + T002 -->
+    <record
+        id="general_audit_ws_ff42fdc_total_formula_total_asset_t001"
+        model="general_audit_ws_ff42fdc.total_formula"
+    >
+        <field name="total_type">total_asset</field>
+        <field
+            name="group_id"
+            ref="ssi_general_audit.client_account_group_1_885ef902"
+        />
+        <field name="sign">add</field>
+        <field name="sequence" eval="10" />
+    </record>
+    <record
+        id="general_audit_ws_ff42fdc_total_formula_total_asset_t002"
+        model="general_audit_ws_ff42fdc.total_formula"
+    >
+        <field name="total_type">total_asset</field>
+        <field
+            name="group_id"
+            ref="ssi_general_audit.client_account_group_2_becd85c2"
+        />
+        <field name="sign">add</field>
+        <field name="sequence" eval="20" />
+    </record>
+
+    <!-- total_liability = T003 + T004 -->
+    <record
+        id="general_audit_ws_ff42fdc_total_formula_total_liability_t003"
+        model="general_audit_ws_ff42fdc.total_formula"
+    >
+        <field name="total_type">total_liability</field>
+        <field
+            name="group_id"
+            ref="ssi_general_audit.client_account_group_3_8f77474a"
+        />
+        <field name="sign">add</field>
+        <field name="sequence" eval="10" />
+    </record>
+    <record
+        id="general_audit_ws_ff42fdc_total_formula_total_liability_t004"
+        model="general_audit_ws_ff42fdc.total_formula"
+    >
+        <field name="total_type">total_liability</field>
+        <field
+            name="group_id"
+            ref="ssi_general_audit.client_account_group_4_8512d9b0"
+        />
+        <field name="sign">add</field>
+        <field name="sequence" eval="20" />
+    </record>
+
+    <!-- total_equity = T005 + T007 (Capital + Retained Earnings) -->
+    <record
+        id="general_audit_ws_ff42fdc_total_formula_total_equity_t005"
+        model="general_audit_ws_ff42fdc.total_formula"
+    >
+        <field name="total_type">total_equity</field>
+        <field
+            name="group_id"
+            ref="ssi_general_audit.client_account_group_5_7f3c394c"
+        />
+        <field name="sign">add</field>
+        <field name="sequence" eval="10" />
+    </record>
+    <record
+        id="general_audit_ws_ff42fdc_total_formula_total_equity_t007"
+        model="general_audit_ws_ff42fdc.total_formula"
+    >
+        <field name="total_type">total_equity</field>
+        <field
+            name="group_id"
+            ref="ssi_general_audit.client_account_group_7_fd2a0509"
+        />
+        <field name="sign">add</field>
+        <field name="sequence" eval="20" />
+    </record>
+
+    <!-- total_liability_equity = T003 + T004 + T005 + T007 -->
+    <record
+        id="general_audit_ws_ff42fdc_total_formula_total_liability_equity_t003"
+        model="general_audit_ws_ff42fdc.total_formula"
+    >
+        <field name="total_type">total_liability_equity</field>
+        <field
+            name="group_id"
+            ref="ssi_general_audit.client_account_group_3_8f77474a"
+        />
+        <field name="sign">add</field>
+        <field name="sequence" eval="10" />
+    </record>
+    <record
+        id="general_audit_ws_ff42fdc_total_formula_total_liability_equity_t004"
+        model="general_audit_ws_ff42fdc.total_formula"
+    >
+        <field name="total_type">total_liability_equity</field>
+        <field
+            name="group_id"
+            ref="ssi_general_audit.client_account_group_4_8512d9b0"
+        />
+        <field name="sign">add</field>
+        <field name="sequence" eval="20" />
+    </record>
+    <record
+        id="general_audit_ws_ff42fdc_total_formula_total_liability_equity_t005"
+        model="general_audit_ws_ff42fdc.total_formula"
+    >
+        <field name="total_type">total_liability_equity</field>
+        <field
+            name="group_id"
+            ref="ssi_general_audit.client_account_group_5_7f3c394c"
+        />
+        <field name="sign">add</field>
+        <field name="sequence" eval="30" />
+    </record>
+    <record
+        id="general_audit_ws_ff42fdc_total_formula_total_liability_equity_t007"
+        model="general_audit_ws_ff42fdc.total_formula"
+    >
+        <field name="total_type">total_liability_equity</field>
+        <field
+            name="group_id"
+            ref="ssi_general_audit.client_account_group_7_fd2a0509"
+        />
+        <field name="sign">add</field>
+        <field name="sequence" eval="40" />
+    </record>
+
+    <!-- gross_profit = T009 - T011 -->
+    <record
+        id="general_audit_ws_ff42fdc_total_formula_gross_profit_t009"
+        model="general_audit_ws_ff42fdc.total_formula"
+    >
+        <field name="total_type">gross_profit</field>
+        <field
+            name="group_id"
+            ref="ssi_general_audit.client_account_group_9_7849ad25"
+        />
+        <field name="sign">add</field>
+        <field name="sequence" eval="10" />
+    </record>
+    <record
+        id="general_audit_ws_ff42fdc_total_formula_gross_profit_t011"
+        model="general_audit_ws_ff42fdc.total_formula"
+    >
+        <field name="total_type">gross_profit</field>
+        <field
+            name="group_id"
+            ref="ssi_general_audit.client_account_group_11_44410d3c"
+        />
+        <field name="sign">subtract</field>
+        <field name="sequence" eval="20" />
+    </record>
+
+    <!-- operating_profit = T009 - T011 - T012 -->
+    <record
+        id="general_audit_ws_ff42fdc_total_formula_operating_profit_t009"
+        model="general_audit_ws_ff42fdc.total_formula"
+    >
+        <field name="total_type">operating_profit</field>
+        <field
+            name="group_id"
+            ref="ssi_general_audit.client_account_group_9_7849ad25"
+        />
+        <field name="sign">add</field>
+        <field name="sequence" eval="10" />
+    </record>
+    <record
+        id="general_audit_ws_ff42fdc_total_formula_operating_profit_t011"
+        model="general_audit_ws_ff42fdc.total_formula"
+    >
+        <field name="total_type">operating_profit</field>
+        <field
+            name="group_id"
+            ref="ssi_general_audit.client_account_group_11_44410d3c"
+        />
+        <field name="sign">subtract</field>
+        <field name="sequence" eval="20" />
+    </record>
+    <record
+        id="general_audit_ws_ff42fdc_total_formula_operating_profit_t012"
+        model="general_audit_ws_ff42fdc.total_formula"
+    >
+        <field name="total_type">operating_profit</field>
+        <field
+            name="group_id"
+            ref="ssi_general_audit.client_account_group_12_ae0c12b7"
+        />
+        <field name="sign">subtract</field>
+        <field name="sequence" eval="30" />
+    </record>
+
+    <!-- profit_before_tax = T009 - T011 - T012 + T010 - T013 -->
+    <record
+        id="general_audit_ws_ff42fdc_total_formula_profit_before_tax_t009"
+        model="general_audit_ws_ff42fdc.total_formula"
+    >
+        <field name="total_type">profit_before_tax</field>
+        <field
+            name="group_id"
+            ref="ssi_general_audit.client_account_group_9_7849ad25"
+        />
+        <field name="sign">add</field>
+        <field name="sequence" eval="10" />
+    </record>
+    <record
+        id="general_audit_ws_ff42fdc_total_formula_profit_before_tax_t011"
+        model="general_audit_ws_ff42fdc.total_formula"
+    >
+        <field name="total_type">profit_before_tax</field>
+        <field
+            name="group_id"
+            ref="ssi_general_audit.client_account_group_11_44410d3c"
+        />
+        <field name="sign">subtract</field>
+        <field name="sequence" eval="20" />
+    </record>
+    <record
+        id="general_audit_ws_ff42fdc_total_formula_profit_before_tax_t012"
+        model="general_audit_ws_ff42fdc.total_formula"
+    >
+        <field name="total_type">profit_before_tax</field>
+        <field
+            name="group_id"
+            ref="ssi_general_audit.client_account_group_12_ae0c12b7"
+        />
+        <field name="sign">subtract</field>
+        <field name="sequence" eval="30" />
+    </record>
+    <record
+        id="general_audit_ws_ff42fdc_total_formula_profit_before_tax_t010"
+        model="general_audit_ws_ff42fdc.total_formula"
+    >
+        <field name="total_type">profit_before_tax</field>
+        <field
+            name="group_id"
+            ref="ssi_general_audit.client_account_group_10_04a8da99"
+        />
+        <field name="sign">add</field>
+        <field name="sequence" eval="40" />
+    </record>
+    <record
+        id="general_audit_ws_ff42fdc_total_formula_profit_before_tax_t013"
+        model="general_audit_ws_ff42fdc.total_formula"
+    >
+        <field name="total_type">profit_before_tax</field>
+        <field
+            name="group_id"
+            ref="ssi_general_audit.client_account_group_13_1da08e35"
+        />
+        <field name="sign">subtract</field>
+        <field name="sequence" eval="50" />
+    </record>
+
+    <!-- profit_after_tax = profit_before_tax - T014 -->
+    <record
+        id="general_audit_ws_ff42fdc_total_formula_profit_after_tax_t009"
+        model="general_audit_ws_ff42fdc.total_formula"
+    >
+        <field name="total_type">profit_after_tax</field>
+        <field
+            name="group_id"
+            ref="ssi_general_audit.client_account_group_9_7849ad25"
+        />
+        <field name="sign">add</field>
+        <field name="sequence" eval="10" />
+    </record>
+    <record
+        id="general_audit_ws_ff42fdc_total_formula_profit_after_tax_t011"
+        model="general_audit_ws_ff42fdc.total_formula"
+    >
+        <field name="total_type">profit_after_tax</field>
+        <field
+            name="group_id"
+            ref="ssi_general_audit.client_account_group_11_44410d3c"
+        />
+        <field name="sign">subtract</field>
+        <field name="sequence" eval="20" />
+    </record>
+    <record
+        id="general_audit_ws_ff42fdc_total_formula_profit_after_tax_t012"
+        model="general_audit_ws_ff42fdc.total_formula"
+    >
+        <field name="total_type">profit_after_tax</field>
+        <field
+            name="group_id"
+            ref="ssi_general_audit.client_account_group_12_ae0c12b7"
+        />
+        <field name="sign">subtract</field>
+        <field name="sequence" eval="30" />
+    </record>
+    <record
+        id="general_audit_ws_ff42fdc_total_formula_profit_after_tax_t010"
+        model="general_audit_ws_ff42fdc.total_formula"
+    >
+        <field name="total_type">profit_after_tax</field>
+        <field
+            name="group_id"
+            ref="ssi_general_audit.client_account_group_10_04a8da99"
+        />
+        <field name="sign">add</field>
+        <field name="sequence" eval="40" />
+    </record>
+    <record
+        id="general_audit_ws_ff42fdc_total_formula_profit_after_tax_t013"
+        model="general_audit_ws_ff42fdc.total_formula"
+    >
+        <field name="total_type">profit_after_tax</field>
+        <field
+            name="group_id"
+            ref="ssi_general_audit.client_account_group_13_1da08e35"
+        />
+        <field name="sign">subtract</field>
+        <field name="sequence" eval="50" />
+    </record>
+    <record
+        id="general_audit_ws_ff42fdc_total_formula_profit_after_tax_t014"
+        model="general_audit_ws_ff42fdc.total_formula"
+    >
+        <field name="total_type">profit_after_tax</field>
+        <field
+            name="group_id"
+            ref="ssi_general_audit.client_account_group_14_aad3d348"
+        />
+        <field name="sign">subtract</field>
+        <field name="sequence" eval="60" />
+    </record>
+
+    <!-- comprehensive_profit = profit_after_tax + T015 -->
+    <record
+        id="general_audit_ws_ff42fdc_total_formula_comprehensive_profit_t009"
+        model="general_audit_ws_ff42fdc.total_formula"
+    >
+        <field name="total_type">comprehensive_profit</field>
+        <field
+            name="group_id"
+            ref="ssi_general_audit.client_account_group_9_7849ad25"
+        />
+        <field name="sign">add</field>
+        <field name="sequence" eval="10" />
+    </record>
+    <record
+        id="general_audit_ws_ff42fdc_total_formula_comprehensive_profit_t011"
+        model="general_audit_ws_ff42fdc.total_formula"
+    >
+        <field name="total_type">comprehensive_profit</field>
+        <field
+            name="group_id"
+            ref="ssi_general_audit.client_account_group_11_44410d3c"
+        />
+        <field name="sign">subtract</field>
+        <field name="sequence" eval="20" />
+    </record>
+    <record
+        id="general_audit_ws_ff42fdc_total_formula_comprehensive_profit_t012"
+        model="general_audit_ws_ff42fdc.total_formula"
+    >
+        <field name="total_type">comprehensive_profit</field>
+        <field
+            name="group_id"
+            ref="ssi_general_audit.client_account_group_12_ae0c12b7"
+        />
+        <field name="sign">subtract</field>
+        <field name="sequence" eval="30" />
+    </record>
+    <record
+        id="general_audit_ws_ff42fdc_total_formula_comprehensive_profit_t010"
+        model="general_audit_ws_ff42fdc.total_formula"
+    >
+        <field name="total_type">comprehensive_profit</field>
+        <field
+            name="group_id"
+            ref="ssi_general_audit.client_account_group_10_04a8da99"
+        />
+        <field name="sign">add</field>
+        <field name="sequence" eval="40" />
+    </record>
+    <record
+        id="general_audit_ws_ff42fdc_total_formula_comprehensive_profit_t013"
+        model="general_audit_ws_ff42fdc.total_formula"
+    >
+        <field name="total_type">comprehensive_profit</field>
+        <field
+            name="group_id"
+            ref="ssi_general_audit.client_account_group_13_1da08e35"
+        />
+        <field name="sign">subtract</field>
+        <field name="sequence" eval="50" />
+    </record>
+    <record
+        id="general_audit_ws_ff42fdc_total_formula_comprehensive_profit_t014"
+        model="general_audit_ws_ff42fdc.total_formula"
+    >
+        <field name="total_type">comprehensive_profit</field>
+        <field
+            name="group_id"
+            ref="ssi_general_audit.client_account_group_14_aad3d348"
+        />
+        <field name="sign">subtract</field>
+        <field name="sequence" eval="60" />
+    </record>
+    <record
+        id="general_audit_ws_ff42fdc_total_formula_comprehensive_profit_t015"
+        model="general_audit_ws_ff42fdc.total_formula"
+    >
+        <field name="total_type">comprehensive_profit</field>
+        <field
+            name="group_id"
+            ref="ssi_general_audit.client_account_group_15_315c4d27"
+        />
+        <field name="sign">add</field>
+        <field name="sequence" eval="70" />
+    </record>
+
+</odoo>

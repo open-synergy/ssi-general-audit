@@ -2070,3 +2070,249 @@ scenarios:
           audit_result_state:
             type: "value"
             expected: "open"
+
+  # ------------------------------------------------------------------
+  # general_audit_ws_ff42fdc.total_formula - REVISI 4: Total amounts
+  # are read from the configurable formula table, not a hardcoded
+  # dict, and editing it changes an existing worksheet after Reload.
+  # ------------------------------------------------------------------
+  - name: "Posture ff42fdc - Total Formula is configurable data (REVISI 4)"
+    steps:
+      - step: "Create client account type for T001 (Current Asset)"
+        action: "create"
+        model: "client_account_type"
+        save_as: "account_type_t001"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Account Type T001 - Total Formula"
+          code: "/"
+          group_id: "REC: group_t001.id"
+          normal_balance: "dr"
+          python_code: "result = 0.0"
+
+      - step: "Create client account type for T002 (Non Current Asset)"
+        action: "create"
+        model: "client_account_type"
+        save_as: "account_type_t002"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Account Type T002 - Total Formula"
+          code: "/"
+          group_id: "REC: group_t002.id"
+          normal_balance: "dr"
+          python_code: "result = 0.0"
+
+      - step: "Create client account for T001"
+        action: "create"
+        model: "client_account"
+        save_as: "account_t001"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Client Account T001 - Total Formula"
+          code: "ACC-T001-FORMULA"
+          partner_id: "REC: client.id"
+          type_id: "REC: account_type_t001.id"
+
+      - step: "Create client account for T002"
+        action: "create"
+        model: "client_account"
+        save_as: "account_t002"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Client Account T002 - Total Formula"
+          code: "ACC-T002-FORMULA"
+          partner_id: "REC: client.id"
+          type_id: "REC: account_type_t002.id"
+
+      - step: "Create client account mapping for the audit"
+        action: "create"
+        model: "client_account_mapping"
+        save_as: "mapping"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+
+      - step: "Map client account T001"
+        action: "create"
+        model: "client_account_mapping.detail"
+        save_as: "mapping_detail_t001"
+        as_user: "base.user_admin"
+        values:
+          mapping_id: "REC: mapping.id"
+          account_id: "REC: account_t001.id"
+
+      - step: "Map client account T002"
+        action: "create"
+        model: "client_account_mapping.detail"
+        save_as: "mapping_detail_t002"
+        as_user: "base.user_admin"
+        values:
+          mapping_id: "REC: mapping.id"
+          account_id: "REC: account_t002.id"
+
+      - step: "Reload general audit accounts from the mapping"
+        action: "call"
+        target: "audit"
+        method: "action_reload_account"
+        as_user: "base.user_admin"
+
+      - step: "Create home trial balance"
+        action: "create"
+        model: "client_trial_balance"
+        save_as: "tb_home"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          trial_balance_type: "home"
+
+      - step: "Home trial balance line for T001 (debit 200,000)"
+        action: "create"
+        model: "client_trial_balance.detail"
+        save_as: "tb_home_detail_t001"
+        as_user: "base.user_admin"
+        values:
+          trial_balance_id: "REC: tb_home.id"
+          account_id: "REC: account_t001.id"
+          debit: 200000.0
+
+      - step: "Home trial balance line for T002 (debit 300,000)"
+        action: "create"
+        model: "client_trial_balance.detail"
+        save_as: "tb_home_detail_t002"
+        as_user: "base.user_admin"
+        values:
+          trial_balance_id: "REC: tb_home.id"
+          account_id: "REC: account_t002.id"
+          debit: 300000.0
+
+      - step: "Create worksheet ff42fdc for total formula"
+        action: "create"
+        model: "general_audit_ws_ff42fdc"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_ff42fdc.id"
+
+      - step: "Open worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_open"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after opening worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Load posture"
+        action: "call"
+        target: "worksheet"
+        method: "action_load_posture"
+        as_user: "base.user_admin"
+
+      - step: "Find posture line for total_asset"
+        action: "search"
+        model: "general_audit_ws_ff42fdc.posture"
+        domain:
+          - ["worksheet_id", "=", "REC: worksheet.id"]
+          - ["line_type", "=", "total"]
+          - ["total_type", "=", "total_asset"]
+        save_as: "posture_total_asset"
+        limit: 1
+
+      # Positive (formula dari data, before editing) - total_asset =
+      # T001 + T002, same arithmetic the old hardcoded dict produced,
+      # proving the migration to configurable data changed nothing.
+      - step: "Assert total_asset sums T001 and T002 from the seeded formula"
+        action: "assert"
+        target: "posture_total_asset"
+        asserts:
+          unaudited:
+            type: "value"
+            # 200,000 + 300,000
+            expected: 500000.0
+
+      - step: "Find the seeded total_asset/T002 formula line"
+        action: "search"
+        model: "general_audit_ws_ff42fdc.total_formula"
+        domain:
+          - ["total_type", "=", "total_asset"]
+          - ["group_id", "=", "REC: group_t002.id"]
+        save_as: "formula_total_asset_t002"
+        limit: 1
+
+      - step: "Remove T002 from the total_asset formula"
+        action: "unlink"
+        target: "formula_total_asset_t002"
+        as_user: "base.user_admin"
+
+      - step: "Click Reload on the worksheet after editing the formula"
+        action: "call"
+        target: "worksheet"
+        method: "action_load_posture"
+        as_user: "base.user_admin"
+
+      # Positive (REVISI 4) - after removing T002 from the total_asset
+      # formula and pressing Reload, the amount changes to T001 alone
+      # instead of staying at T001 + T002, proving the value really
+      # comes from the formula table rather than a leftover dict.
+      - step: "Assert total_asset now sums T001 alone after Reload"
+        action: "assert"
+        target: "posture_total_asset"
+        refresh: true
+        asserts:
+          unaudited:
+            type: "value"
+            expected: 200000.0
+
+      - step: "Find all total_liability formula lines"
+        action: "search"
+        model: "general_audit_ws_ff42fdc.total_formula"
+        domain:
+          - ["total_type", "=", "total_liability"]
+        save_as: "formula_total_liability_lines"
+
+      - step: "Remove every total_liability formula line"
+        action: "unlink"
+        target: "formula_total_liability_lines"
+        as_user: "base.user_admin"
+
+      - step: "Click Reload again with total_liability formula now empty"
+        action: "call"
+        target: "worksheet"
+        method: "action_load_posture"
+        as_user: "base.user_admin"
+
+      - step: "Find posture line for total_liability"
+        action: "search"
+        model: "general_audit_ws_ff42fdc.posture"
+        domain:
+          - ["worksheet_id", "=", "REC: worksheet.id"]
+          - ["line_type", "=", "total"]
+          - ["total_type", "=", "total_liability"]
+        save_as: "posture_total_liability"
+        limit: 1
+
+      # Negative (REVISI 4) - a total_type with no configured formula
+      # line still exists as a posture line, with zero on every
+      # column, instead of raising.
+      - step: "Assert total_liability still exists with zero amounts"
+        action: "assert"
+        target: "posture_total_liability"
+        asserts:
+          unaudited:
+            type: "value"
+            expected: 0.0
+          adjustment_debit:
+            type: "value"
+            expected: 0.0
+          adjustment_credit:
+            type: "value"
+            expected: 0.0
+          audited:
+            type: "value"
+            expected: 0.0
+          previous:
+            type: "value"
+            expected: 0.0

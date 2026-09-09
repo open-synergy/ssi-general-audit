@@ -1,0 +1,70 @@
+<?xml version="1.0" ?>
+<!-- Copyright 2026 OpenSynergy Indonesia
+     Copyright 2026 PT. Simetri Sinergi Indonesia
+     License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl-3.0-standalone.html). -->
+<odoo>
+
+    <record id="general_audit_ws_ff42fdc_total_formula_view_tree" model="ir.ui.view">
+        <field name="name">general_audit_ws_ff42fdc.total_formula - tree</field>
+        <field name="model">general_audit_ws_ff42fdc.total_formula</field>
+        <field name="arch" type="xml">
+            <tree editable="bottom">
+                <field name="total_type" />
+                <field name="group_id" />
+                <field name="sign" />
+                <field name="sequence" widget="handle" />
+            </tree>
+        </field>
+    </record>
+
+    <record id="general_audit_ws_ff42fdc_total_formula_view_form" model="ir.ui.view">
+        <field name="name">general_audit_ws_ff42fdc.total_formula - form</field>
+        <field name="model">general_audit_ws_ff42fdc.total_formula</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <group>
+                        <field name="total_type" />
+                        <field name="group_id" />
+                        <field name="sign" />
+                        <field name="sequence" />
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="general_audit_ws_ff42fdc_total_formula_view_search" model="ir.ui.view">
+        <field name="name">general_audit_ws_ff42fdc.total_formula - search</field>
+        <field name="model">general_audit_ws_ff42fdc.total_formula</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="group_id" />
+                <filter
+                    name="group_by_total_type"
+                    string="Total Type"
+                    context="{'group_by': 'total_type'}"
+                />
+            </search>
+        </field>
+    </record>
+
+    <record
+        id="general_audit_ws_ff42fdc_total_formula_action"
+        model="ir.actions.act_window"
+    >
+        <field name="name">Total Formula</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">general_audit_ws_ff42fdc.total_formula</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+    <menuitem
+        id="general_audit_ws_ff42fdc_total_formula_menu"
+        name="Total Formula"
+        parent="ssi_general_audit.menu_configuration_acc_computation"
+        action="general_audit_ws_ff42fdc_total_formula_action"
+        sequence="15"
+        groups="general_audit_ws_ff42fdc_viewer_group,ssi_general_audit.client_account_group_group"
+    />
+</odoo>
