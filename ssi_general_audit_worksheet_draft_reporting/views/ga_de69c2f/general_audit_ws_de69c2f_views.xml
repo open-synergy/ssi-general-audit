@@ -41,6 +41,16 @@
         />
         <field name="arch" type="xml">
             <data>
+                <xpath expr="//notebook" position="before">
+                    <button
+                        name="action_reload_links"
+                        type="object"
+                        string="Reload"
+                        class="oe_highlight"
+                        icon="fa-refresh"
+                        attrs="{'invisible': [('state', 'not in', ['open'])]}"
+                    />
+                </xpath>
                 <xpath expr="//page[@name='note']" position="before">
                     <page name="checklist" string="Checklist">
                         <button
@@ -92,61 +102,86 @@
                     </page>
                 </xpath>
                 <xpath expr="//page[@name='checklist']" position="after">
-                    <page name="audit_result" string="Audit Result">
-                        <button
-                            name="action_reload_audit_result"
-                            type="object"
-                            string="Reload"
-                            class="oe_highlight"
-                            icon="fa-refresh"
-                            attrs="{'invisible': [('state', 'not in', ['open'])]}"
-                        />
-                        <group name="audit_result" colspan="4" col="2">
-                            <field name="audit_result_id" />
+                    <page name="links" string="Links">
+                        <group name="activity_1" string="Audit Result">
+                            <label for="audit_result_id" string="# Worksheet" />
+                            <div class="o_row">
+                                <field
+                                    name="audit_result_id"
+                                    class="oe_inline"
+                                    force_save="1"
+                                />
+                                <label
+                                    for="audit_result_state"
+                                    string="State"
+                                    style="font-weight: bold;"
+                                />
+                                <field name="audit_result_state" class="oe_inline" />
+                            </div>
+                            <field name="audit_result_conclusion" string="Conclusion" />
                         </group>
-                    </page>
-                    <page name="management_letter" string="Management Letter">
-                        <button
-                            name="action_reload_management_letter"
-                            type="object"
-                            string="Reload"
-                            class="oe_highlight"
-                            icon="fa-refresh"
-                            attrs="{'invisible': [('state', 'not in', ['open'])]}"
-                        />
-                        <group name="management_letter" colspan="4" col="2">
-                            <field name="management_letter_id" />
+                        <group name="activity_2" string="Management Letter">
+                            <label for="management_letter_id" string="# Worksheet" />
+                            <div class="o_row">
+                                <field
+                                    name="management_letter_id"
+                                    class="oe_inline"
+                                    force_save="1"
+                                />
+                                <label
+                                    for="management_letter_state"
+                                    string="State"
+                                    style="font-weight: bold;"
+                                />
+                                <field
+                                    name="management_letter_state"
+                                    class="oe_inline"
+                                />
+                            </div>
+                            <field
+                                name="management_letter_conclusion"
+                                string="Conclusion"
+                            />
                         </group>
-                    </page>
-                    <page
-                        name="management_representation"
-                        string="Management Representation"
-                    >
-                        <button
-                            name="action_reload_management_representation"
-                            type="object"
-                            string="Reload"
-                            class="oe_highlight"
-                            icon="fa-refresh"
-                            attrs="{'invisible': [('state', 'not in', ['open'])]}"
-                        />
-                        <group name="management_representation" colspan="4" col="2">
-                            <field name="management_representation_id" />
+                        <group name="activity_3" string="Management Representation">
+                            <label
+                                for="management_representation_id"
+                                string="# Worksheet"
+                            />
+                            <div class="o_row">
+                                <field
+                                    name="management_representation_id"
+                                    class="oe_inline"
+                                    force_save="1"
+                                />
+                                <label
+                                    for="management_representation_state"
+                                    string="State"
+                                    style="font-weight: bold;"
+                                />
+                                <field
+                                    name="management_representation_state"
+                                    class="oe_inline"
+                                />
+                            </div>
+                            <field
+                                name="management_representation_conclusion"
+                                string="Conclusion"
+                            />
                         </group>
                     </page>
                 </xpath>
-                <!-- "Relevant Audit Standard Items" is inserted by the base
-                     ssi_general_audit mixin right before "note", which puts
-                     it ahead of "checklist" (defined above). Move it to sit
-                     right after "management_representation" so the final
-                     notebook order matches the requested sequence: checklist,
-                     audit_result, management_letter,
-                     management_representation, standard_audit, note,
-                     policies. -->
-                <xpath
-                    expr="//page[@name='management_representation']"
-                    position="after"
-                >
+                <!-- The base ssi_general_audit mixin view inserts
+                     "standard_audit" right before "note" (in its OWN
+                     xpath resolution, before this view is even applied),
+                     which places it ahead of "checklist"/"links" defined
+                     above (both also anchored "before note"). Move it to
+                     sit right after "links" so the final notebook order
+                     is: checklist, links, standard_audit, note, policy.
+                     Verified against the LIVE resolved order via
+                     view.read_combined(), not assumed from source
+                     layout. -->
+                <xpath expr="//page[@name='links']" position="after">
                     <xpath expr="//page[@name='standard_audit']" position="move" />
                 </xpath>
             </data>

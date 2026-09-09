@@ -1358,11 +1358,22 @@ scenarios:
             expected_xml_id: "ssi_general_audit_worksheet_draft_reporting.worksheet_type_b555edd"
 
   # ------------------------------------------------------------------
-  # general_audit_ws_de69c2f - Reload Audit Result / Management Letter /
-  # Management Representation reference fields (issue #322)
+  # general_audit_ws_de69c2f - Links tab: audit_result_id /
+  # management_letter_id / management_representation_id compute+store
+  # (issue #322, third revision, meniru pola general_audit_ws_fbbe0f8)
   # ------------------------------------------------------------------
-  - name: "Worksheet de69c2f - Reload Audit Result (positive, sibling exists)"
+  - name: "Worksheet de69c2f - Links auto-filled on create (positive)"
     steps:
+      - step: "Create conclusion for ff42fdc worksheet type"
+        action: "create"
+        model: "general_audit_worksheet_conclusion"
+        save_as: "conclusion_ff42fdc"
+        as_user: "base.user_admin"
+        values:
+          name: "Opinion documented - Links Scenario"
+          code: "/"
+          type_id: "REC: ws_type_ff42fdc.id"
+
       - step: "Create audit_result (ff42fdc) sibling for the same audit"
         action: "create"
         model: "general_audit_ws_ff42fdc"
@@ -1372,90 +1383,30 @@ scenarios:
           general_audit_id: "REC: audit.id"
           type_id: "REC: ws_type_ff42fdc.id"
 
-      - step: "Create worksheet de69c2f"
-        action: "create"
-        model: "general_audit_ws_de69c2f"
-        save_as: "worksheet"
-        as_user: "base.user_admin"
-        values:
-          general_audit_id: "REC: audit.id"
-          type_id: "REC: ws_type_de69c2f.id"
-
-      - step: "Open worksheet"
+      - step: "Open audit_result sibling"
         action: "call"
-        target: "worksheet"
+        target: "ws_audit_result"
         method: "action_open"
         as_user: "base.user_admin"
 
-      - step: "Invalidate cache after opening worksheet"
-        action: "call"
-        target: "worksheet"
-        method: "invalidate_cache"
-
-      - step: "Reload audit result reference"
-        action: "call"
-        target: "worksheet"
-        method: "action_reload_audit_result"
-        as_user: "base.user_admin"
-
-      - step: "Invalidate cache after reload"
-        action: "call"
-        target: "worksheet"
-        method: "invalidate_cache"
-
-      - step: "Assert audit_result_id filled with the sibling worksheet"
-        action: "assert"
-        target: "worksheet"
-        asserts:
-          audit_result_id:
-            type: "m2o"
-            expected: "REC: ws_audit_result"
-
-  - name: "Worksheet de69c2f - Reload Audit Result (negative, no sibling)"
-    steps:
-      - step: "Create worksheet de69c2f without any ff42fdc sibling"
-        action: "create"
-        model: "general_audit_ws_de69c2f"
-        save_as: "worksheet"
+      - step: "Write conclusion on audit_result sibling"
+        action: "write"
+        target: "ws_audit_result"
         as_user: "base.user_admin"
         values:
-          general_audit_id: "REC: audit.id"
-          type_id: "REC: ws_type_de69c2f.id"
+          conclusion_id: "REC: conclusion_ff42fdc.id"
+          conclusion: "Opinion documented and ready for reference."
 
-      - step: "Open worksheet"
-        action: "call"
-        target: "worksheet"
-        method: "action_open"
+      - step: "Create conclusion for ae598e6 worksheet type"
+        action: "create"
+        model: "general_audit_worksheet_conclusion"
+        save_as: "conclusion_ae598e6"
         as_user: "base.user_admin"
+        values:
+          name: "Management letter finalised - Links Scenario"
+          code: "/"
+          type_id: "REC: ws_type_ae598e6.id"
 
-      - step: "Invalidate cache after opening worksheet"
-        action: "call"
-        target: "worksheet"
-        method: "invalidate_cache"
-
-      - step: "Reload audit result reference"
-        action: "call"
-        target: "worksheet"
-        method: "action_reload_audit_result"
-        as_user: "base.user_admin"
-
-      - step: "Invalidate cache after reload"
-        action: "call"
-        target: "worksheet"
-        method: "invalidate_cache"
-
-      - step: "Assert audit_result_id stays empty, no error raised"
-        action: "assert"
-        target: "worksheet"
-        asserts:
-          audit_result_id:
-            type: "m2o"
-            expected: false
-
-  - name:
-      "Worksheet de69c2f - Reload Management Letter and Management Representation
-      (positive)"
-    steps:
       - step: "Create management_letter (ae598e6) sibling for the same audit"
         action: "create"
         model: "general_audit_ws_ae598e6"
@@ -1464,6 +1415,30 @@ scenarios:
         values:
           general_audit_id: "REC: audit.id"
           type_id: "REC: ws_type_ae598e6.id"
+
+      - step: "Open management_letter sibling"
+        action: "call"
+        target: "ws_management_letter"
+        method: "action_open"
+        as_user: "base.user_admin"
+
+      - step: "Write conclusion on management_letter sibling"
+        action: "write"
+        target: "ws_management_letter"
+        as_user: "base.user_admin"
+        values:
+          conclusion_id: "REC: conclusion_ae598e6.id"
+          conclusion: "Management letter drafted and ready for reference."
+
+      - step: "Create conclusion for bbbdfe7 worksheet type"
+        action: "create"
+        model: "general_audit_worksheet_conclusion"
+        save_as: "conclusion_bbbdfe7"
+        as_user: "base.user_admin"
+        values:
+          name: "Representation obtained - Links Scenario"
+          code: "/"
+          type_id: "REC: ws_type_bbbdfe7.id"
 
       - step: "Create management_representation (bbbdfe7) sibling"
         action: "create"
@@ -1474,7 +1449,117 @@ scenarios:
           general_audit_id: "REC: audit.id"
           type_id: "REC: ws_type_bbbdfe7.id"
 
-      - step: "Create worksheet de69c2f"
+      - step: "Open management_representation sibling"
+        action: "call"
+        target: "ws_management_representation"
+        method: "action_open"
+        as_user: "base.user_admin"
+
+      - step: "Write conclusion on management_representation sibling"
+        action: "write"
+        target: "ws_management_representation"
+        as_user: "base.user_admin"
+        values:
+          conclusion_id: "REC: conclusion_bbbdfe7.id"
+          conclusion: "Representation letter obtained and filed."
+
+      - step: "Create worksheet de69c2f (siblings already open)"
+        action: "create"
+        model: "general_audit_ws_de69c2f"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_de69c2f.id"
+
+      - step: "Assert audit_result link filled automatically without reload"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          audit_result_id:
+            type: "m2o"
+            expected: "REC: ws_audit_result"
+          audit_result_state:
+            type: "value"
+            expected: "open"
+          audit_result_conclusion:
+            type: "value"
+            expected: "Opinion documented and ready for reference."
+
+      - step: "Assert management_letter link filled automatically without reload"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          management_letter_id:
+            type: "m2o"
+            expected: "REC: ws_management_letter"
+          management_letter_state:
+            type: "value"
+            expected: "open"
+          management_letter_conclusion:
+            type: "value"
+            expected: "Management letter drafted and ready for reference."
+
+      - step:
+          "Assert management_representation link filled automatically without reload"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          management_representation_id:
+            type: "m2o"
+            expected: "REC: ws_management_representation"
+          management_representation_state:
+            type: "value"
+            expected: "open"
+          management_representation_conclusion:
+            type: "value"
+            expected: "Representation letter obtained and filed."
+
+  - name: "Worksheet de69c2f - Links stay empty while siblings are draft (negative)"
+    steps:
+      - step: "Create audit_result (ff42fdc) sibling, left in draft"
+        action: "create"
+        model: "general_audit_ws_ff42fdc"
+        save_as: "ws_audit_result_draft"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_ff42fdc.id"
+
+      - step: "Assert audit_result sibling really is still draft"
+        action: "assert"
+        target: "ws_audit_result_draft"
+        asserts:
+          state:
+            type: "value"
+            expected: "draft"
+
+      - step: "Create worksheet de69c2f while sibling is draft"
+        action: "create"
+        model: "general_audit_ws_de69c2f"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_de69c2f.id"
+
+      - step: "Assert audit_result_id stays empty (state=draft excluded)"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          audit_result_id:
+            type: "m2o"
+            expected: false
+          management_letter_id:
+            type: "m2o"
+            expected: false
+          management_representation_id:
+            type: "m2o"
+            expected: false
+
+  - name: "Worksheet de69c2f - action_reload_links refreshes all three links"
+    steps:
+      - step: "Create worksheet de69c2f before any sibling exists"
         action: "create"
         model: "general_audit_ws_de69c2f"
         save_as: "worksheet"
@@ -1494,16 +1579,33 @@ scenarios:
         target: "worksheet"
         method: "invalidate_cache"
 
-      - step: "Reload management letter reference"
-        action: "call"
+      - step: "Assert audit_result_id still empty before any sibling exists"
+        action: "assert"
         target: "worksheet"
-        method: "action_reload_management_letter"
+        asserts:
+          audit_result_id:
+            type: "m2o"
+            expected: false
+
+      - step: "Create audit_result (ff42fdc) sibling after the fact"
+        action: "create"
+        model: "general_audit_ws_ff42fdc"
+        save_as: "ws_audit_result_late"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_ff42fdc.id"
+
+      - step: "Open the late audit_result sibling"
+        action: "call"
+        target: "ws_audit_result_late"
+        method: "action_open"
         as_user: "base.user_admin"
 
-      - step: "Reload management representation reference"
+      - step: "Click Reload to refresh the Links tab"
         action: "call"
         target: "worksheet"
-        method: "action_reload_management_representation"
+        method: "action_reload_links"
         as_user: "base.user_admin"
 
       - step: "Invalidate cache after reload"
@@ -1511,13 +1613,13 @@ scenarios:
         target: "worksheet"
         method: "invalidate_cache"
 
-      - step: "Assert management_letter_id filled with the sibling worksheet"
+      - step: "Assert audit_result_id now filled after Reload"
         action: "assert"
         target: "worksheet"
         asserts:
-          management_letter_id:
+          audit_result_id:
             type: "m2o"
-            expected: "REC: ws_management_letter"
-          management_representation_id:
-            type: "m2o"
-            expected: "REC: ws_management_representation"
+            expected: "REC: ws_audit_result_late"
+          audit_result_state:
+            type: "value"
+            expected: "open"

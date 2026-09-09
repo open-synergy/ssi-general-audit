@@ -14,13 +14,15 @@ class TestUiGeneralAuditWsDe69c2f(HttpSavepointCase):
 
     @classmethod
     def setUpClass(cls):
-        """Create an open worksheet with one sibling of each kind.
+        """Create an open worksheet, then its three link siblings.
 
-        The Pre-Condition (an On Progress Final Discussion worksheet
-        linked to an engagement that already has an Audit Result,
-        Management Letter, and Management Representation worksheet) is
-        prepared here in Python; each tour only exercises opening the
-        relevant tab and clicking its Reload button.
+        The Pre-Condition (an On Progress Final Discussion worksheet whose
+        Audit Result, Management Letter, and Management Representation
+        siblings only appear/open AFTER the worksheet itself was created)
+        is prepared here in Python, so the Links tab starts empty and the
+        tour's Reload click has something real to demonstrate -- the
+        compute only re-runs when ``general_audit_id`` changes, not when a
+        sibling worksheet is created or opened later.
         """
         super().setUpClass()
         # user_id is explicit throughout: cls.env runs as SUPERUSER, and
@@ -99,19 +101,10 @@ class TestUiGeneralAuditWsDe69c2f(HttpSavepointCase):
             "ssi_general_audit_worksheet_draft_reporting.worksheet_type_bbbdfe7"
         )
 
-        # Sibling worksheets the three Reload buttons are expected to
-        # find. Left in "draft" -- the reload searches by
-        # general_audit_id only, not by state.
-        cls.env["general_audit_ws_ff42fdc"].with_user(cls.admin).create(
-            {"general_audit_id": audit.id, "type_id": ws_type_ff42fdc.id}
-        )
-        cls.env["general_audit_ws_ae598e6"].with_user(cls.admin).create(
-            {"general_audit_id": audit.id, "type_id": ws_type_ae598e6.id}
-        )
-        cls.env["general_audit_ws_bbbdfe7"].with_user(cls.admin).create(
-            {"general_audit_id": audit.id, "type_id": ws_type_bbbdfe7.id}
-        )
-
+        # The de69c2f worksheet is created FIRST, before any sibling
+        # exists, so its audit_result_id/management_letter_id/
+        # management_representation_id computes all resolve to False at
+        # creation time -- see the tour's Post-Condition comment.
         cls.worksheet = (
             cls.env["general_audit_ws_de69c2f"]
             .with_user(cls.admin)
@@ -123,39 +116,38 @@ class TestUiGeneralAuditWsDe69c2f(HttpSavepointCase):
             )
         )
         cls.worksheet.with_user(cls.admin).action_open()
+
+        # Sibling worksheets the Reload button is expected to find. Opened
+        # (not left in draft) -- the compute filters by
+        # state in ["open", "done"].
+        ws_audit_result = (
+            cls.env["general_audit_ws_ff42fdc"]
+            .with_user(cls.admin)
+            .create({"general_audit_id": audit.id, "type_id": ws_type_ff42fdc.id})
+        )
+        ws_audit_result.with_user(cls.admin).action_open()
+        ws_management_letter = (
+            cls.env["general_audit_ws_ae598e6"]
+            .with_user(cls.admin)
+            .create({"general_audit_id": audit.id, "type_id": ws_type_ae598e6.id})
+        )
+        ws_management_letter.with_user(cls.admin).action_open()
+        ws_management_representation = (
+            cls.env["general_audit_ws_bbbdfe7"]
+            .with_user(cls.admin)
+            .create({"general_audit_id": audit.id, "type_id": ws_type_bbbdfe7.id})
+        )
+        ws_management_representation.with_user(cls.admin).action_open()
+
         cls.worksheet.invalidate_cache()
 
-    def test_reload_audit_result(self):
-        """Run the Reload Audit Result tour.
+    def test_reload_links(self):
+        """Run the Reload Links tour.
 
-        IK: docs/general_audit_ws_de69c2f/02-reload_audit_result.md
+        IK: docs/general_audit_ws_de69c2f/02-reload_links.md
         """
         self.start_tour(
             "/web",
-            "ssi_general_audit_worksheet_draft_reporting_de69c2f_reload_audit_result",
-            login="admin",
-        )
-
-    def test_reload_management_letter(self):
-        """Run the Reload Management Letter tour.
-
-        IK: docs/general_audit_ws_de69c2f/03-reload_management_letter.md
-        """
-        self.start_tour(
-            "/web",
-            "ssi_general_audit_worksheet_draft_reporting"
-            "_de69c2f_reload_management_letter",
-            login="admin",
-        )
-
-    def test_reload_management_representation(self):
-        """Run the Reload Management Representation tour.
-
-        IK: docs/general_audit_ws_de69c2f/04-reload_management_representation.md
-        """
-        self.start_tour(
-            "/web",
-            "ssi_general_audit_worksheet_draft_reporting"
-            "_de69c2f_reload_management_representation",
+            "ssi_general_audit_worksheet_draft_reporting_de69c2f_reload_links",
             login="admin",
         )
