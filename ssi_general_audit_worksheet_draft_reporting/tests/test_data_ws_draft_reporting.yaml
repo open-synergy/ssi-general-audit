@@ -132,6 +132,38 @@ setup:
       xml_id: "ssi_general_audit_worksheet_draft_reporting.worksheet_type_ae598e6"
       save_as: "ws_type_ae598e6"
 
+    # Official client_account_group codes used by the ff42fdc Posture
+    # Report Total/Subtotal formulas (see _TOTAL_TYPE_FORMULA).
+    - step: "Get client account group T001 (Current Asset)"
+      action: "ref"
+      xml_id: "ssi_general_audit.client_account_group_1_885ef902"
+      save_as: "group_t001"
+
+    - step: "Get client account group T002 (Non Current Asset)"
+      action: "ref"
+      xml_id: "ssi_general_audit.client_account_group_2_becd85c2"
+      save_as: "group_t002"
+
+    - step: "Get client account group T009 (Main Revenue)"
+      action: "ref"
+      xml_id: "ssi_general_audit.client_account_group_9_7849ad25"
+      save_as: "group_t009"
+
+    - step: "Get client account group T011 (Cost of Revenue)"
+      action: "ref"
+      xml_id: "ssi_general_audit.client_account_group_11_44410d3c"
+      save_as: "group_t011"
+
+    - step: "Get client account group T012 (Operating Expense)"
+      action: "ref"
+      xml_id: "ssi_general_audit.client_account_group_12_ae0c12b7"
+      save_as: "group_t012"
+
+    - step: "Get client account group T015 (Other Comprehensive Income)"
+      action: "ref"
+      xml_id: "ssi_general_audit.client_account_group_15_315c4d27"
+      save_as: "group_t015"
+
 scenarios:
   # ------------------------------------------------------------------
   # general_audit_ws_bbbdfe7.item - CRUD
@@ -875,6 +907,69 @@ scenarios:
             type: "value"
             expected: 2026-03-31
 
+      # Positive (Opini) - compliance_law_opinion_id / .._date and
+      # compliance_internal_control_opinion_id / .._date are LOCAL to
+      # the worksheet (unlike financial_statement_opinion_id above),
+      # so writing them must NOT touch general_audit.opinion_id /
+      # .opinion_date at all.
+      - step: "Create compliance-with-laws opinion"
+        action: "create"
+        model: "accountant.opinion"
+        save_as: "opinion_compliance_law"
+        as_user: "base.user_admin"
+        values:
+          name: "Compliant Opinion - Laws - Test"
+          code: "/"
+
+      - step: "Create compliance-with-internal-control opinion"
+        action: "create"
+        model: "accountant.opinion"
+        save_as: "opinion_compliance_internal_control"
+        as_user: "base.user_admin"
+        values:
+          name: "Compliant Opinion - Internal Control - Test"
+          code: "/"
+
+      - step: "Write both compliance opinions on the worksheet"
+        action: "write"
+        target: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          compliance_law_opinion_id: "REC: opinion_compliance_law.id"
+          compliance_law_opinion_date: 2026-04-05
+          compliance_internal_control_opinion_id:
+            "REC: opinion_compliance_internal_control.id"
+          compliance_internal_control_opinion_date: 2026-04-06
+
+      - step: "Assert both compliance opinions saved on the worksheet"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          compliance_law_opinion_id:
+            type: "m2o"
+            expected: "REC: opinion_compliance_law"
+          compliance_law_opinion_date:
+            type: "value"
+            expected: 2026-04-05
+          compliance_internal_control_opinion_id:
+            type: "m2o"
+            expected: "REC: opinion_compliance_internal_control"
+          compliance_internal_control_opinion_date:
+            type: "value"
+            expected: 2026-04-06
+
+      - step: "Assert general audit opinion untouched by the compliance opinions"
+        action: "assert"
+        target: "audit"
+        refresh: true
+        asserts:
+          opinion_id:
+            type: "m2o"
+            expected: "REC: opinion"
+          opinion_date:
+            type: "value"
+            expected: 2026-03-31
+
       - step: "Fill required conclusion fields before confirm"
         action: "write"
         target: "worksheet"
@@ -923,78 +1018,128 @@ scenarios:
 
   # ------------------------------------------------------------------
   # general_audit_ws_ff42fdc.posture - action_load_posture (aggregate
-  # by client_account_group, diff-based idempotent sync)
+  # by client_account_group, diff-based idempotent sync, Previous
+  # column, and the nine fixed Total/Subtotal lines)
   # ------------------------------------------------------------------
   - name: "Posture ff42fdc - action_load_posture aggregates by account group"
     steps:
-      - step: "Create account group 1 (debit-normal)"
-        action: "create"
-        model: "client_account_group"
-        save_as: "group_1"
-        as_user: "base.user_admin"
-        values:
-          name: "Test Account Group 1 - Posture"
-          code: "/"
-          normal_balance: "dr"
-
-      - step: "Create account group 2 (credit-normal)"
-        action: "create"
-        model: "client_account_group"
-        save_as: "group_2"
-        as_user: "base.user_admin"
-        values:
-          name: "Test Account Group 2 - Posture"
-          code: "/"
-          normal_balance: "cr"
-
-      - step: "Create client account type 1 (debit-normal, group 1)"
+      - step: "Create client account type for T001 (Current Asset)"
         action: "create"
         model: "client_account_type"
-        save_as: "account_type_1"
+        save_as: "account_type_t001"
         as_user: "base.user_admin"
         values:
-          name: "Test Account Type 1 - Posture"
+          name: "Test Account Type T001 - Posture"
           code: "/"
-          group_id: "REC: group_1.id"
+          group_id: "REC: group_t001.id"
           normal_balance: "dr"
           # DILARANG membiarkan python_code pada default
           # "result = document.balance": lihat catatan yang sama di
           # ssi_general_audit_worksheet_lead_schedule test data.
           python_code: "result = 0.0"
 
-      - step: "Create client account type 2 (credit-normal, group 2)"
+      - step: "Create client account type for T002 (Non Current Asset)"
         action: "create"
         model: "client_account_type"
-        save_as: "account_type_2"
+        save_as: "account_type_t002"
         as_user: "base.user_admin"
         values:
-          name: "Test Account Type 2 - Posture"
+          name: "Test Account Type T002 - Posture"
           code: "/"
-          group_id: "REC: group_2.id"
+          group_id: "REC: group_t002.id"
+          normal_balance: "dr"
+          python_code: "result = 0.0"
+
+      - step: "Create client account type for T009 (Main Revenue)"
+        action: "create"
+        model: "client_account_type"
+        save_as: "account_type_t009"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Account Type T009 - Posture"
+          code: "/"
+          group_id: "REC: group_t009.id"
           normal_balance: "cr"
           python_code: "result = 0.0"
 
-      - step: "Create client account 1 (type 1 / group 1)"
+      - step: "Create client account type for T011 (Cost of Revenue)"
         action: "create"
-        model: "client_account"
-        save_as: "account_1"
+        model: "client_account_type"
+        save_as: "account_type_t011"
         as_user: "base.user_admin"
         values:
-          name: "Test Client Account 1 - Posture"
-          code: "ACC-1-POSTURE"
-          partner_id: "REC: client.id"
-          type_id: "REC: account_type_1.id"
+          name: "Test Account Type T011 - Posture"
+          code: "/"
+          group_id: "REC: group_t011.id"
+          normal_balance: "dr"
+          python_code: "result = 0.0"
 
-      - step: "Create client account 2 (type 2 / group 2)"
+      - step: "Create client account type for T012 (Operating Expense)"
         action: "create"
-        model: "client_account"
-        save_as: "account_2"
+        model: "client_account_type"
+        save_as: "account_type_t012"
         as_user: "base.user_admin"
         values:
-          name: "Test Client Account 2 - Posture"
-          code: "ACC-2-POSTURE"
+          name: "Test Account Type T012 - Posture"
+          code: "/"
+          group_id: "REC: group_t012.id"
+          normal_balance: "dr"
+          python_code: "result = 0.0"
+
+      - step: "Create client account for T001"
+        action: "create"
+        model: "client_account"
+        save_as: "account_t001"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Client Account T001 - Posture"
+          code: "ACC-T001-POSTURE"
           partner_id: "REC: client.id"
-          type_id: "REC: account_type_2.id"
+          type_id: "REC: account_type_t001.id"
+
+      - step: "Create client account for T002"
+        action: "create"
+        model: "client_account"
+        save_as: "account_t002"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Client Account T002 - Posture"
+          code: "ACC-T002-POSTURE"
+          partner_id: "REC: client.id"
+          type_id: "REC: account_type_t002.id"
+
+      - step: "Create client account for T009"
+        action: "create"
+        model: "client_account"
+        save_as: "account_t009"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Client Account T009 - Posture"
+          code: "ACC-T009-POSTURE"
+          partner_id: "REC: client.id"
+          type_id: "REC: account_type_t009.id"
+
+      - step: "Create client account for T011"
+        action: "create"
+        model: "client_account"
+        save_as: "account_t011"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Client Account T011 - Posture"
+          code: "ACC-T011-POSTURE"
+          partner_id: "REC: client.id"
+          type_id: "REC: account_type_t011.id"
+
+      - step: "Create client account for T012"
+        action: "create"
+        model: "client_account"
+        save_as: "account_t012"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Client Account T012 - Posture"
+          code: "ACC-T012-POSTURE"
+          partner_id: "REC: client.id"
+          type_id: "REC: account_type_t012.id"
 
       - step: "Create client account mapping for the audit"
         action: "create"
@@ -1004,23 +1149,50 @@ scenarios:
         values:
           general_audit_id: "REC: audit.id"
 
-      - step: "Map client account 1"
+      - step: "Map client account T001"
         action: "create"
         model: "client_account_mapping.detail"
-        save_as: "mapping_detail_1"
+        save_as: "mapping_detail_t001"
         as_user: "base.user_admin"
         values:
           mapping_id: "REC: mapping.id"
-          account_id: "REC: account_1.id"
+          account_id: "REC: account_t001.id"
 
-      - step: "Map client account 2"
+      - step: "Map client account T002"
         action: "create"
         model: "client_account_mapping.detail"
-        save_as: "mapping_detail_2"
+        save_as: "mapping_detail_t002"
         as_user: "base.user_admin"
         values:
           mapping_id: "REC: mapping.id"
-          account_id: "REC: account_2.id"
+          account_id: "REC: account_t002.id"
+
+      - step: "Map client account T009"
+        action: "create"
+        model: "client_account_mapping.detail"
+        save_as: "mapping_detail_t009"
+        as_user: "base.user_admin"
+        values:
+          mapping_id: "REC: mapping.id"
+          account_id: "REC: account_t009.id"
+
+      - step: "Map client account T011"
+        action: "create"
+        model: "client_account_mapping.detail"
+        save_as: "mapping_detail_t011"
+        as_user: "base.user_admin"
+        values:
+          mapping_id: "REC: mapping.id"
+          account_id: "REC: account_t011.id"
+
+      - step: "Map client account T012"
+        action: "create"
+        model: "client_account_mapping.detail"
+        save_as: "mapping_detail_t012"
+        as_user: "base.user_admin"
+        values:
+          mapping_id: "REC: mapping.id"
+          account_id: "REC: account_t012.id"
 
       - step: "Reload general audit accounts from the mapping"
         action: "call"
@@ -1037,25 +1209,84 @@ scenarios:
           general_audit_id: "REC: audit.id"
           trial_balance_type: "home"
 
-      - step: "Home trial balance line for account 1 (debit 1,000,000)"
+      - step: "Home trial balance line for T001 (debit 1,000,000)"
         action: "create"
         model: "client_trial_balance.detail"
-        save_as: "tb_home_detail_1"
+        save_as: "tb_home_detail_t001"
         as_user: "base.user_admin"
         values:
           trial_balance_id: "REC: tb_home.id"
-          account_id: "REC: account_1.id"
+          account_id: "REC: account_t001.id"
           debit: 1000000.0
 
-      - step: "Home trial balance line for account 2 (credit 500,000)"
+      - step: "Home trial balance line for T002 (debit 500,000)"
         action: "create"
         model: "client_trial_balance.detail"
-        save_as: "tb_home_detail_2"
+        save_as: "tb_home_detail_t002"
         as_user: "base.user_admin"
         values:
           trial_balance_id: "REC: tb_home.id"
-          account_id: "REC: account_2.id"
-          credit: 500000.0
+          account_id: "REC: account_t002.id"
+          debit: 500000.0
+
+      - step: "Home trial balance line for T009 (credit 800,000)"
+        action: "create"
+        model: "client_trial_balance.detail"
+        save_as: "tb_home_detail_t009"
+        as_user: "base.user_admin"
+        values:
+          trial_balance_id: "REC: tb_home.id"
+          account_id: "REC: account_t009.id"
+          credit: 800000.0
+
+      - step: "Home trial balance line for T011 (debit 300,000)"
+        action: "create"
+        model: "client_trial_balance.detail"
+        save_as: "tb_home_detail_t011"
+        as_user: "base.user_admin"
+        values:
+          trial_balance_id: "REC: tb_home.id"
+          account_id: "REC: account_t011.id"
+          debit: 300000.0
+
+      - step: "Home trial balance line for T012 (debit 100,000)"
+        action: "create"
+        model: "client_trial_balance.detail"
+        save_as: "tb_home_detail_t012"
+        as_user: "base.user_admin"
+        values:
+          trial_balance_id: "REC: tb_home.id"
+          account_id: "REC: account_t012.id"
+          debit: 100000.0
+
+      - step: "Create previous-period trial balance"
+        action: "create"
+        model: "client_trial_balance"
+        save_as: "tb_previous"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          trial_balance_type: "previous"
+
+      - step: "Previous trial balance line for T001 (debit 900,000)"
+        action: "create"
+        model: "client_trial_balance.detail"
+        save_as: "tb_previous_detail_t001"
+        as_user: "base.user_admin"
+        values:
+          trial_balance_id: "REC: tb_previous.id"
+          account_id: "REC: account_t001.id"
+          debit: 900000.0
+
+      - step: "Previous trial balance line for T002 (debit 400,000)"
+        action: "create"
+        model: "client_trial_balance.detail"
+        save_as: "tb_previous_detail_t002"
+        as_user: "base.user_admin"
+        values:
+          trial_balance_id: "REC: tb_previous.id"
+          account_id: "REC: account_t002.id"
+          debit: 400000.0
 
       - step: "Create adjustment entry"
         action: "create"
@@ -1066,48 +1297,48 @@ scenarios:
           general_audit_id: "REC: audit.id"
           adjustment_type: "propose"
 
-      - step: "Adjustment line - account 1 debit 50,000"
+      - step: "Adjustment line - T001 debit 50,000"
         action: "create"
         model: "client_adjustment_entry.detail"
-        save_as: "adj_line_1_dr"
+        save_as: "adj_line_t001_dr"
         as_user: "base.user_admin"
         values:
           entry_id: "REC: adj_entry.id"
-          account_id: "REC: account_1.id"
-          name: "Reclass debit account 1"
+          account_id: "REC: account_t001.id"
+          name: "Reclass debit T001"
           debit: 50000.0
 
-      - step: "Adjustment line - account 1 credit 20,000"
+      - step: "Adjustment line - T001 credit 20,000"
         action: "create"
         model: "client_adjustment_entry.detail"
-        save_as: "adj_line_1_cr"
+        save_as: "adj_line_t001_cr"
         as_user: "base.user_admin"
         values:
           entry_id: "REC: adj_entry.id"
-          account_id: "REC: account_1.id"
-          name: "Reclass credit account 1"
+          account_id: "REC: account_t001.id"
+          name: "Reclass credit T001"
           credit: 20000.0
 
-      - step: "Adjustment line - account 2 debit 15,000"
+      - step: "Adjustment line - T002 debit 15,000"
         action: "create"
         model: "client_adjustment_entry.detail"
-        save_as: "adj_line_2_dr"
+        save_as: "adj_line_t002_dr"
         as_user: "base.user_admin"
         values:
           entry_id: "REC: adj_entry.id"
-          account_id: "REC: account_2.id"
-          name: "Reclass debit account 2"
+          account_id: "REC: account_t002.id"
+          name: "Reclass debit T002"
           debit: 15000.0
 
-      - step: "Adjustment line - account 2 credit 45,000"
+      - step: "Adjustment line - T002 credit 45,000"
         action: "create"
         model: "client_adjustment_entry.detail"
-        save_as: "adj_line_2_cr"
+        save_as: "adj_line_t002_cr"
         as_user: "base.user_admin"
         values:
           entry_id: "REC: adj_entry.id"
-          account_id: "REC: account_2.id"
-          name: "Reclass credit account 2"
+          account_id: "REC: account_t002.id"
+          name: "Reclass credit T002"
           credit: 45000.0
 
       - step: "Confirm adjustment entry (total debit 65,000 = total credit 65,000)"
@@ -1178,35 +1409,122 @@ scenarios:
         method: "action_load_posture"
         as_user: "base.user_admin"
 
-      - step: "Assert two posture lines were created (one per account group)"
+      # 5 Account Group lines (T001, T002, T009, T011, T012 have
+      # accounts registered) + 9 fixed Total lines, which always
+      # exist regardless of data.
+      - step: "Assert 14 posture lines were created (5 group + 9 total)"
         action: "search"
         model: "general_audit_ws_ff42fdc.posture"
         domain:
           - ["worksheet_id", "=", "REC: worksheet.id"]
         save_as: "postures_after_load"
-        expect_count: 2
+        expect_count: 14
 
-      - step: "Find posture line for group 1"
+      - step: "Find posture line for T001"
         action: "search"
         model: "general_audit_ws_ff42fdc.posture"
         domain:
           - ["worksheet_id", "=", "REC: worksheet.id"]
-          - ["group_id", "=", "REC: group_1.id"]
-        save_as: "posture_1"
+          - ["line_type", "=", "group"]
+          - ["group_id", "=", "REC: group_t001.id"]
+        save_as: "posture_t001"
         limit: 1
 
-      - step: "Find posture line for group 2"
+      - step: "Find posture line for T002"
         action: "search"
         model: "general_audit_ws_ff42fdc.posture"
         domain:
           - ["worksheet_id", "=", "REC: worksheet.id"]
-          - ["group_id", "=", "REC: group_2.id"]
-        save_as: "posture_2"
+          - ["line_type", "=", "group"]
+          - ["group_id", "=", "REC: group_t002.id"]
+        save_as: "posture_t002"
         limit: 1
 
-      - step: "Assert posture line for group 1 sums account 1's detail"
+      - step: "Find posture line for T009"
+        action: "search"
+        model: "general_audit_ws_ff42fdc.posture"
+        domain:
+          - ["worksheet_id", "=", "REC: worksheet.id"]
+          - ["line_type", "=", "group"]
+          - ["group_id", "=", "REC: group_t009.id"]
+        save_as: "posture_t009"
+        limit: 1
+
+      - step: "Find posture line for T011"
+        action: "search"
+        model: "general_audit_ws_ff42fdc.posture"
+        domain:
+          - ["worksheet_id", "=", "REC: worksheet.id"]
+          - ["line_type", "=", "group"]
+          - ["group_id", "=", "REC: group_t011.id"]
+        save_as: "posture_t011"
+        limit: 1
+
+      - step: "Find posture line for T012"
+        action: "search"
+        model: "general_audit_ws_ff42fdc.posture"
+        domain:
+          - ["worksheet_id", "=", "REC: worksheet.id"]
+          - ["line_type", "=", "group"]
+          - ["group_id", "=", "REC: group_t012.id"]
+        save_as: "posture_t012"
+        limit: 1
+
+      - step: "Find posture line for total_asset"
+        action: "search"
+        model: "general_audit_ws_ff42fdc.posture"
+        domain:
+          - ["worksheet_id", "=", "REC: worksheet.id"]
+          - ["line_type", "=", "total"]
+          - ["total_type", "=", "total_asset"]
+        save_as: "posture_total_asset"
+        limit: 1
+
+      - step: "Find posture line for gross_profit"
+        action: "search"
+        model: "general_audit_ws_ff42fdc.posture"
+        domain:
+          - ["worksheet_id", "=", "REC: worksheet.id"]
+          - ["line_type", "=", "total"]
+          - ["total_type", "=", "gross_profit"]
+        save_as: "posture_gross_profit"
+        limit: 1
+
+      - step: "Find posture line for operating_profit"
+        action: "search"
+        model: "general_audit_ws_ff42fdc.posture"
+        domain:
+          - ["worksheet_id", "=", "REC: worksheet.id"]
+          - ["line_type", "=", "total"]
+          - ["total_type", "=", "operating_profit"]
+        save_as: "posture_operating_profit"
+        limit: 1
+
+      - step: "Find posture line for profit_after_tax"
+        action: "search"
+        model: "general_audit_ws_ff42fdc.posture"
+        domain:
+          - ["worksheet_id", "=", "REC: worksheet.id"]
+          - ["line_type", "=", "total"]
+          - ["total_type", "=", "profit_after_tax"]
+        save_as: "posture_profit_after_tax"
+        limit: 1
+
+      - step: "Find posture line for comprehensive_profit"
+        action: "search"
+        model: "general_audit_ws_ff42fdc.posture"
+        domain:
+          - ["worksheet_id", "=", "REC: worksheet.id"]
+          - ["line_type", "=", "total"]
+          - ["total_type", "=", "comprehensive_profit"]
+        save_as: "posture_comprehensive_profit"
+        limit: 1
+
+      # Positive (Previous) - group line's `previous` sums
+      # previous_balance of its member accounts.
+      - step: "Assert posture line for T001 sums its detail, including Previous"
         action: "assert"
-        target: "posture_1"
+        target: "posture_t001"
         asserts:
           unaudited:
             type: "value"
@@ -1217,15 +1535,17 @@ scenarios:
           adjustment_credit:
             type: "value"
             expected: 20000.0
-          # account_1 is debit-normal (type_id.normal_balance = "dr"):
-          # 1,000,000 + 50,000 - 20,000 = 1,030,000
+          # T001 is debit-normal: 1,000,000 + 50,000 - 20,000 = 1,030,000
           audited:
             type: "value"
             expected: 1030000.0
+          previous:
+            type: "value"
+            expected: 900000.0
 
-      - step: "Assert posture line for group 2 sums account 2's detail"
+      - step: "Assert posture line for T002 sums its detail, including Previous"
         action: "assert"
-        target: "posture_2"
+        target: "posture_t002"
         asserts:
           unaudited:
             type: "value"
@@ -1236,11 +1556,138 @@ scenarios:
           adjustment_credit:
             type: "value"
             expected: 45000.0
-          # account_2 is credit-normal (type_id.normal_balance = "cr"):
-          # 500,000 - 15,000 + 45,000 = 530,000
+          # T002 is debit-normal: 500,000 + 15,000 - 45,000 = 470,000
           audited:
             type: "value"
-            expected: 530000.0
+            expected: 470000.0
+          previous:
+            type: "value"
+            expected: 400000.0
+
+      - step: "Assert posture line for T009 (revenue, credit-normal)"
+        action: "assert"
+        target: "posture_t009"
+        asserts:
+          unaudited:
+            type: "value"
+            expected: 800000.0
+          audited:
+            type: "value"
+            expected: 800000.0
+
+      - step: "Assert posture line for T011 (cost of revenue)"
+        action: "assert"
+        target: "posture_t011"
+        asserts:
+          unaudited:
+            type: "value"
+            expected: 300000.0
+          audited:
+            type: "value"
+            expected: 300000.0
+
+      - step: "Assert posture line for T012 (operating expense)"
+        action: "assert"
+        target: "posture_t012"
+        asserts:
+          unaudited:
+            type: "value"
+            expected: 100000.0
+          audited:
+            type: "value"
+            expected: 100000.0
+
+      # Positive (Total) - total_asset = T001 + T002 on every column,
+      # computed directly from general_audit.detail (not from other
+      # Total lines).
+      - step: "Assert total_asset sums T001 and T002"
+        action: "assert"
+        target: "posture_total_asset"
+        asserts:
+          unaudited:
+            type: "value"
+            # 1,000,000 + 500,000
+            expected: 1500000.0
+          adjustment_debit:
+            type: "value"
+            # 50,000 + 15,000
+            expected: 65000.0
+          adjustment_credit:
+            type: "value"
+            # 20,000 + 45,000
+            expected: 65000.0
+          audited:
+            type: "value"
+            # 1,030,000 + 470,000
+            expected: 1500000.0
+          previous:
+            type: "value"
+            # 900,000 + 400,000
+            expected: 1300000.0
+
+      # Positive (Total berantai) - gross_profit = T009 - T011, and
+      # operating_profit = gross_profit - T012 (result consistency,
+      # not recomputed from scratch).
+      - step: "Assert gross_profit and operating_profit chain correctly"
+        action: "assert"
+        target: "posture_gross_profit"
+        asserts:
+          unaudited:
+            type: "value"
+            # 800,000 - 300,000
+            expected: 500000.0
+          audited:
+            type: "value"
+            expected: 500000.0
+
+      - step: "Assert operating_profit follows from gross_profit minus T012"
+        action: "assert"
+        target: "posture_operating_profit"
+        asserts:
+          unaudited:
+            type: "value"
+            # 500,000 (gross_profit) - 100,000
+            expected: 400000.0
+          audited:
+            type: "value"
+            expected: 400000.0
+
+      # Negatif - T015 has no account registered on the audit, so it
+      # gets no Account Group line, but comprehensive_profit still
+      # exists and equals profit_after_tax because T015's contribution
+      # is 0 (no T010/T013/T014 data either, so profit_after_tax also
+      # equals operating_profit here).
+      - step: "Assert T015 has no Account Group posture line"
+        action: "search"
+        model: "general_audit_ws_ff42fdc.posture"
+        domain:
+          - ["worksheet_id", "=", "REC: worksheet.id"]
+          - ["line_type", "=", "group"]
+          - ["group_id", "=", "REC: group_t015.id"]
+        save_as: "posture_t015_absent"
+        expect_count: 0
+
+      - step: "Assert comprehensive_profit equals profit_after_tax"
+        action: "assert"
+        target: "posture_comprehensive_profit"
+        asserts:
+          unaudited:
+            type: "value"
+            expected: 400000.0
+          audited:
+            type: "value"
+            expected: 400000.0
+
+      - step: "Assert profit_after_tax matches (T015 contributes 0)"
+        action: "assert"
+        target: "posture_profit_after_tax"
+        asserts:
+          unaudited:
+            type: "value"
+            expected: 400000.0
+          audited:
+            type: "value"
+            expected: 400000.0
 
       - step: "Load posture a second time without any account change"
         action: "call"
@@ -1248,13 +1695,13 @@ scenarios:
         method: "action_load_posture"
         as_user: "base.user_admin"
 
-      - step: "Assert still exactly two posture lines (diff-based, no duplicates)"
+      - step: "Assert still exactly 14 posture lines (diff-based, no duplicates)"
         action: "search"
         model: "general_audit_ws_ff42fdc.posture"
         domain:
           - ["worksheet_id", "=", "REC: worksheet.id"]
         save_as: "postures_after_reload"
-        expect_count: 2
+        expect_count: 14
 
   # ------------------------------------------------------------------
   # general_audit_ws_b555edd - Cancel and restart

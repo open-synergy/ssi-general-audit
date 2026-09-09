@@ -168,7 +168,10 @@ class TestUiGeneralAuditWsFf42fdc(HttpSavepointCase):
         cls.worksheet.invalidate_cache()
 
     def test_load_posture(self):
-        """Run the Load Posture tour for ``general_audit_ws_ff42fdc``.
+        """Run the Reload (Posture) tour for ``general_audit_ws_ff42fdc``.
+
+        Covers the Posture Report table (Account Group and fixed Total
+        rows, Previous column) and the three Audit Opinion sections.
 
         IK: docs/general_audit_ws_ff42fdc/01-load_posture.md
         """
