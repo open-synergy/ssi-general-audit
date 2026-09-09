@@ -41,16 +41,6 @@
         />
         <field name="arch" type="xml">
             <data>
-                <xpath expr="//notebook" position="before">
-                    <button
-                        name="action_reload_links"
-                        type="object"
-                        string="Reload"
-                        class="oe_highlight"
-                        icon="fa-refresh"
-                        attrs="{'invisible': [('state', 'not in', ['open'])]}"
-                    />
-                </xpath>
                 <xpath expr="//page[@name='note']" position="before">
                     <page name="checklist" string="Checklist">
                         <button
@@ -103,6 +93,14 @@
                 </xpath>
                 <xpath expr="//page[@name='checklist']" position="after">
                     <page name="links" string="Links">
+                        <button
+                            name="action_reload_links"
+                            type="object"
+                            string="Reload"
+                            class="oe_highlight"
+                            icon="fa-refresh"
+                            attrs="{'invisible': [('state', 'not in', ['open'])]}"
+                        />
                         <group name="activity_1" string="Audit Result">
                             <label for="audit_result_id" string="# Worksheet" />
                             <div class="o_row">
