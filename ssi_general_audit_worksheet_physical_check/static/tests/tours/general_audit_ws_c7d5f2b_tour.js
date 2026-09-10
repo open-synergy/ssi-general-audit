@@ -410,11 +410,17 @@ odoo.define(
                 // AFTER Compute is clicked: the check line is freshly
                 // created with no Check Data yet, and the reference value
                 // asserted here only exists after the comparison runs.
+                //
+                // The form is READONLY at this point (right after "Check
+                // Line is saved"), and the csv_table widget renders plain
+                // <td> text cells in readonly mode -- NOT
+                // <input class="csv_table_cell_input">, which only exists
+                // in edit mode. Assert on the <td> text instead.
                 {
                     content: "Check Data shows the computed comparison row",
                     trigger:
                         ".o_field_widget[name='check_data'] " +
-                        "input.csv_table_cell_input[value='TOUR-C7D5F2B-R1']",
+                        "td:contains(TOUR-C7D5F2B-R1)",
                     run: function () {
                         // Assertion only; do not trigger the default click action.
                     },
