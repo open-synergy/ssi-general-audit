@@ -270,9 +270,17 @@ odoo.define(
                 // page, and the breadcrumb click just above reloads the
                 // worksheet form back to its first tab ("Raw Data").
                 // Activate the "Check" tab before clicking its button.
+                //
+                // :contains(Check) ALONE also matches the "Check Items"
+                // tab (substring match, and it sorts earlier: Raw Data,
+                // Check Items, Data Comparisons, Check, Findings, ...) --
+                // jQuery :contains returns the FIRST DOM match, so a bare
+                // :contains(Check) silently opens "Check Items" instead,
+                // leaving the real "Check" tab-pane inactive. Exclude it.
                 {
                     content: "Open the Check tab",
-                    trigger: ".o_notebook .nav-link:contains(Check)",
+                    trigger:
+                        ".o_notebook .nav-link:contains(Check):not(:contains(Items))",
                     extra_trigger: ".o_form_view.o_form_readonly",
                 },
                 {
