@@ -1,0 +1,567 @@
+options:
+  auto_refresh: true
+
+setup:
+  steps:
+    - step: "Get config parameter model"
+      action: "search"
+      model: "ir.config_parameter"
+      domain: []
+      save_as: "config_parameter"
+      limit: 1
+
+    - step: "Allow enough CPA licenses for this scenario"
+      action: "call"
+      target: "config_parameter"
+      method: "set_param"
+      args:
+        - "ssi_general_audit.max_number_of_cpa_license"
+        - "100"
+
+    - step: "Create client partner"
+      action: "create"
+      model: "res.partner"
+      save_as: "client"
+      as_user: "base.user_admin"
+      values:
+        name: "Test Audit Client - C7D5F2B Check"
+        is_company: true
+
+    - step: "Create accountant partner"
+      action: "create"
+      model: "res.partner"
+      save_as: "accountant"
+      as_user: "base.user_admin"
+      values:
+        name: "Test Audit Accountant - C7D5F2B Check"
+
+    - step: "Get CPA license id category"
+      action: "ref"
+      xml_id: "ssi_partner_identification_cpa_license.partner_identification_accountant_cpa_license"
+      save_as: "cpa_category"
+
+    - step: "Grant accountant a CPA license"
+      action: "create"
+      model: "res.partner.id_number"
+      save_as: "cpa_license"
+      as_user: "base.user_admin"
+      values:
+        partner_id: "REC: accountant.id"
+        category_id: "REC: cpa_category.id"
+        name: "CPA-C7D5F2B-CHECK-0001"
+
+    - step: "Create account type set"
+      action: "create"
+      model: "client_account_type_set"
+      save_as: "account_type_set"
+      as_user: "base.user_admin"
+      values:
+        name: "Test Account Type Set - C7D5F2B Check"
+        code: "/"
+
+    - step: "Create financial accounting standard"
+      action: "create"
+      model: "accountant.financial_accounting_standard"
+      save_as: "standard"
+      as_user: "base.user_admin"
+      values:
+        name: "Test Financial Accounting Standard - C7D5F2B Check"
+        code: "/"
+
+    - step: "Create general audit"
+      action: "create"
+      model: "general_audit"
+      save_as: "audit"
+      as_user: "base.user_admin"
+      values:
+        title: "Test General Audit - C7D5F2B Check"
+        partner_id: "REC: client.id"
+        accountant_id: "REC: accountant.id"
+        account_type_set_id: "REC: account_type_set.id"
+        financial_accounting_standard_id: "REC: standard.id"
+        date_start: 2026-01-01
+        date_end: 2026-12-31
+        need_interim: false
+        need_previous: false
+        num_of_consecutive_audit_firm: 1
+        num_of_consecutive_audit_accountant: 1
+
+    - step: "Open general audit"
+      action: "call"
+      target: "audit"
+      method: "action_open"
+      as_user: "base.user_admin"
+
+    - step: "Get worksheet type c7d5f2b"
+      action: "ref"
+      xml_id: "ssi_general_audit_worksheet_physical_check.worksheet_type_c7d5f2b"
+      save_as: "ws_type"
+
+    - step: "Get worksheet type d209914 (General Ledger)"
+      action: "ref"
+      xml_id: "ssi_general_audit_worksheet_client_package.worksheet_type_d209914"
+      save_as: "ws_type_d209914"
+
+    - step: "Get worksheet type a916660 (Sample Determination)"
+      action: "ref"
+      xml_id: "ssi_general_audit_worksheet_sample_determination.worksheet_type_a916660"
+      save_as: "ws_type_a916660"
+
+    - step: "Create client account group"
+      action: "create"
+      model: "client_account_group"
+      save_as: "account_group"
+      as_user: "base.user_admin"
+      values:
+        name: "Test Account Group - C7D5F2B Check"
+        code: "/"
+
+    - step: "Create client account type"
+      action: "create"
+      model: "client_account_type"
+      save_as: "account_type"
+      as_user: "base.user_admin"
+      values:
+        name: "Test Account Type - C7D5F2B Check"
+        code: "/"
+        group_id: "REC: account_group.id"
+        # No general_audit.standard_detail is created against this account
+        # type anywhere in this file, so the crashing default
+        # ("result = document.balance") never actually gets evaluated here.
+        # Set explicitly anyway, per the repo-wide rule of never leaving
+        # client_account_type.python_code at its default.
+        python_code: "result = 0.0"
+
+    - step:
+        "Create worksheet c7d5f2b (parent for all data_comparison/check_line fixtures)"
+      action: "create"
+      model: "general_audit_ws_c7d5f2b"
+      save_as: "worksheet"
+      as_user: "base.user_admin"
+      values:
+        general_audit_id: "REC: audit.id"
+        type_id: "REC: ws_type.id"
+
+scenarios:
+  # ------------------------------------------------------------------
+  # data_comparison - Create + _compute_name
+  # ------------------------------------------------------------------
+  - name: "Data comparison c7d5f2b - Create and compute name from GL title"
+    steps:
+      - step: "Create General Ledger worksheet"
+        action: "create"
+        model: "general_audit_ws_d209914"
+        save_as: "gl"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_d209914.id"
+          account_mode: "standard_account"
+          account_type_id: "REC: account_type.id"
+          title: "GL Data Comparison Name"
+
+      - step: "Create data comparison referencing the GL"
+        action: "create"
+        model: "general_audit_ws_c7d5f2b.data_comparison"
+        save_as: "dc"
+        as_user: "base.user_admin"
+        values:
+          worksheet_id: "REC: worksheet.id"
+          data_mode: "gl"
+          general_ledger_id: "REC: gl.id"
+
+      - step: "Assert data comparison created and name computed from GL title"
+        action: "assert"
+        target: "dc"
+        asserts:
+          id:
+            type: "value"
+            operator: "is_truthy"
+          worksheet_id:
+            type: "m2o"
+            expected: "REC: worksheet"
+          name:
+            type: "value"
+            expected: "GL Data Comparison Name"
+
+  # ------------------------------------------------------------------
+  # check_line - Create + _compute_name
+  # ------------------------------------------------------------------
+  - name: "Check line c7d5f2b - Create and compute name from data_comparison"
+    steps:
+      - step: "Create General Ledger worksheet"
+        action: "create"
+        model: "general_audit_ws_d209914"
+        save_as: "gl"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_d209914.id"
+          account_mode: "standard_account"
+          account_type_id: "REC: account_type.id"
+          title: "GL Check Line Name"
+
+      - step: "Create data comparison referencing the GL"
+        action: "create"
+        model: "general_audit_ws_c7d5f2b.data_comparison"
+        save_as: "dc"
+        as_user: "base.user_admin"
+        values:
+          worksheet_id: "REC: worksheet.id"
+          data_mode: "gl"
+          general_ledger_id: "REC: gl.id"
+
+      - step: "Create check line referencing the data comparison"
+        action: "create"
+        model: "general_audit_ws_c7d5f2b.check_line"
+        save_as: "check_line"
+        as_user: "base.user_admin"
+        values:
+          worksheet_id: "REC: worksheet.id"
+          data_comparison_id: "REC: dc.id"
+          comparison_mode: "sum"
+
+      - step: "Assert check line created and name mirrors data comparison name"
+        action: "assert"
+        target: "check_line"
+        asserts:
+          id:
+            type: "value"
+            operator: "is_truthy"
+          data_comparison_id:
+            type: "m2o"
+            expected: "REC: dc"
+          name:
+            type: "value"
+            expected: "GL Check Line Name"
+
+  # ------------------------------------------------------------------
+  # action_compute_check_data - comparison_mode = sum (identical vs different)
+  # ------------------------------------------------------------------
+  - name: "Check line c7d5f2b - action_compute_check_data (sum)"
+    steps:
+      - step: "Create General Ledger worksheet holding the reference raw data"
+        action: "create"
+        model: "general_audit_ws_d209914"
+        save_as: "ref_gl"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_d209914.id"
+          account_mode: "standard_account"
+          account_type_id: "REC: account_type.id"
+          raw_data: "Ref,Amount\nREF1,1000\nREF2,2000\n"
+          title: "GL Check Sum Reference"
+
+      - step: "Create Sample Determination worksheet with sampling data"
+        action: "create"
+        model: "general_audit_ws_a916660"
+        save_as: "sd"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_a916660.id"
+          sampling_data: "No,Ref\n1,REF1\n2,REF2\n"
+
+      - step: "Configure the parent worksheet's population/sampling"
+        action: "write"
+        target: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          data_mode: "gl"
+          general_ledger_id: "REC: ref_gl.id"
+          sample_determination_id: "REC: sd.id"
+          reference_col_number: 1
+
+      - step: "Create General Ledger worksheet holding the comparison raw data"
+        action: "create"
+        model: "general_audit_ws_d209914"
+        save_as: "cmp_gl"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_d209914.id"
+          account_mode: "standard_account"
+          account_type_id: "REC: account_type.id"
+          raw_data: "Ref,Amount\nREF1,600\nREF1,400\nREF2,1500\n"
+          title: "GL Check Sum Comparison"
+
+      - step: "Create data comparison referencing the comparison GL"
+        action: "create"
+        model: "general_audit_ws_c7d5f2b.data_comparison"
+        save_as: "dc"
+        as_user: "base.user_admin"
+        values:
+          worksheet_id: "REC: worksheet.id"
+          data_mode: "gl"
+          general_ledger_id: "REC: cmp_gl.id"
+          reference_col_number: 1
+
+      - step: "Create check line summing amount column 2 on both sides"
+        action: "create"
+        model: "general_audit_ws_c7d5f2b.check_line"
+        save_as: "check_line"
+        as_user: "base.user_admin"
+        values:
+          worksheet_id: "REC: worksheet.id"
+          data_comparison_id: "REC: dc.id"
+          comparison_mode: "sum"
+          reference_amount_col: 2
+          comparison_amount_col: 2
+
+      - step: "Assert check_data is empty before calling action_compute_check_data"
+        action: "assert"
+        target: "check_line"
+        asserts:
+          check_data:
+            type: "value"
+            operator: "is_falsy"
+
+      - step: "Call action_compute_check_data"
+        action: "call"
+        target: "check_line"
+        method: "action_compute_check_data"
+        as_user: "base.user_admin"
+
+      - step: "Assert check_data has the expected header"
+        action: "assert"
+        target: "check_line"
+        asserts:
+          check_data:
+            type: "value"
+            operator: "contains"
+            expected: "Ref,Amount Reference,Amount Comparison,Diff,Result"
+
+      - step: "Assert REF1 matches exactly (1000 vs 600+400=1000, diff 0, True)"
+        action: "assert"
+        target: "check_line"
+        asserts:
+          check_data:
+            type: "value"
+            operator: "contains"
+            expected: "REF1,1000,1000,0,True"
+
+      - step: "Assert REF2 diverges (2000 vs 1500, diff 500, False)"
+        action: "assert"
+        target: "check_line"
+        asserts:
+          check_data:
+            type: "value"
+            operator: "contains"
+            expected: "REF2,2000,1500,500,False"
+
+  # ------------------------------------------------------------------
+  # action_compute_check_data - comparison_mode = count
+  # ------------------------------------------------------------------
+  - name: "Check line c7d5f2b - action_compute_check_data (count)"
+    steps:
+      - step: "Create General Ledger worksheet holding the reference raw data"
+        action: "create"
+        model: "general_audit_ws_d209914"
+        save_as: "ref_gl"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_d209914.id"
+          account_mode: "standard_account"
+          account_type_id: "REC: account_type.id"
+          raw_data: "Ref,Amount\nREF1,1000\n"
+          title: "GL Check Count Reference"
+
+      - step: "Create Sample Determination worksheet with sampling data"
+        action: "create"
+        model: "general_audit_ws_a916660"
+        save_as: "sd"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_a916660.id"
+          sampling_data: "No,Ref\n1,REF1\n"
+
+      - step: "Configure the parent worksheet's population/sampling"
+        action: "write"
+        target: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          data_mode: "gl"
+          general_ledger_id: "REC: ref_gl.id"
+          sample_determination_id: "REC: sd.id"
+          reference_col_number: 1
+
+      - step: "Create General Ledger worksheet with THREE comparison rows for REF1"
+        action: "create"
+        model: "general_audit_ws_d209914"
+        save_as: "cmp_gl"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_d209914.id"
+          account_mode: "standard_account"
+          account_type_id: "REC: account_type.id"
+          raw_data: "Ref,Amount\nREF1,100\nREF1,200\nREF1,300\n"
+          title: "GL Check Count Comparison"
+
+      - step: "Create data comparison referencing the comparison GL"
+        action: "create"
+        model: "general_audit_ws_c7d5f2b.data_comparison"
+        save_as: "dc"
+        as_user: "base.user_admin"
+        values:
+          worksheet_id: "REC: worksheet.id"
+          data_mode: "gl"
+          general_ledger_id: "REC: cmp_gl.id"
+          reference_col_number: 1
+
+      - step: "Create check line counting rows on both sides"
+        action: "create"
+        model: "general_audit_ws_c7d5f2b.check_line"
+        save_as: "check_line"
+        as_user: "base.user_admin"
+        values:
+          worksheet_id: "REC: worksheet.id"
+          data_comparison_id: "REC: dc.id"
+          comparison_mode: "count"
+          reference_amount_col: 2
+          comparison_amount_col: 2
+
+      - step: "Call action_compute_check_data"
+        action: "call"
+        target: "check_line"
+        method: "action_compute_check_data"
+        as_user: "base.user_admin"
+
+      - step: "Assert REF1 count 1 (reference) vs 3 (comparison), diff -2, False"
+        action: "assert"
+        target: "check_line"
+        asserts:
+          check_data:
+            type: "value"
+            operator: "contains"
+            expected: "REF1,1,3,-2,False"
+
+  # ------------------------------------------------------------------
+  # action_compute_check_data - comparison_mode = avg
+  # ------------------------------------------------------------------
+  - name: "Check line c7d5f2b - action_compute_check_data (avg)"
+    steps:
+      - step: "Create General Ledger worksheet holding the reference raw data"
+        action: "create"
+        model: "general_audit_ws_d209914"
+        save_as: "ref_gl"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_d209914.id"
+          account_mode: "standard_account"
+          account_type_id: "REC: account_type.id"
+          raw_data: "Ref,Amount\nREF1,1000\n"
+          title: "GL Check AVG Reference"
+
+      - step: "Create Sample Determination worksheet with sampling data"
+        action: "create"
+        model: "general_audit_ws_a916660"
+        save_as: "sd"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_a916660.id"
+          sampling_data: "No,Ref\n1,REF1\n"
+
+      - step: "Configure the parent worksheet's population/sampling"
+        action: "write"
+        target: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          data_mode: "gl"
+          general_ledger_id: "REC: ref_gl.id"
+          sample_determination_id: "REC: sd.id"
+          reference_col_number: 1
+
+      - step:
+          "Create General Ledger worksheet with TWO comparison rows for REF1 (avg 900)"
+        action: "create"
+        model: "general_audit_ws_d209914"
+        save_as: "cmp_gl"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_d209914.id"
+          account_mode: "standard_account"
+          account_type_id: "REC: account_type.id"
+          raw_data: "Ref,Amount\nREF1,800\nREF1,1000\n"
+          title: "GL Check AVG Comparison"
+
+      - step: "Create data comparison referencing the comparison GL"
+        action: "create"
+        model: "general_audit_ws_c7d5f2b.data_comparison"
+        save_as: "dc"
+        as_user: "base.user_admin"
+        values:
+          worksheet_id: "REC: worksheet.id"
+          data_mode: "gl"
+          general_ledger_id: "REC: cmp_gl.id"
+          reference_col_number: 1
+
+      - step: "Create check line averaging amounts on both sides"
+        action: "create"
+        model: "general_audit_ws_c7d5f2b.check_line"
+        save_as: "check_line"
+        as_user: "base.user_admin"
+        values:
+          worksheet_id: "REC: worksheet.id"
+          data_comparison_id: "REC: dc.id"
+          comparison_mode: "avg"
+          reference_amount_col: 2
+          comparison_amount_col: 2
+
+      - step: "Call action_compute_check_data"
+        action: "call"
+        target: "check_line"
+        method: "action_compute_check_data"
+        as_user: "base.user_admin"
+
+      - step: "Assert REF1 avg 1000 (reference) vs 900 (comparison), diff 100, False"
+        action: "assert"
+        target: "check_line"
+        asserts:
+          check_data:
+            type: "value"
+            operator: "contains"
+            expected: "REF1,1000,900,100,False"
+
+  # ------------------------------------------------------------------
+  # action_compute_check_data - kosong
+  # ------------------------------------------------------------------
+  - name: "Check line c7d5f2b - action_compute_check_data (kosong)"
+    steps:
+      - step: "Create data comparison without any raw data source"
+        action: "create"
+        model: "general_audit_ws_c7d5f2b.data_comparison"
+        save_as: "dc"
+        as_user: "base.user_admin"
+        values:
+          worksheet_id: "REC: worksheet.id"
+
+      - step: "Create check line against the empty data comparison"
+        action: "create"
+        model: "general_audit_ws_c7d5f2b.check_line"
+        save_as: "check_line"
+        as_user: "base.user_admin"
+        values:
+          worksheet_id: "REC: worksheet.id"
+          data_comparison_id: "REC: dc.id"
+          comparison_mode: "sum"
+
+      - step: "Call action_compute_check_data"
+        action: "call"
+        target: "check_line"
+        method: "action_compute_check_data"
+        as_user: "base.user_admin"
+
+      - step: "Assert check_data stays empty"
+        action: "assert"
+        target: "check_line"
+        asserts:
+          check_data:
+            type: "value"
+            operator: "is_falsy"

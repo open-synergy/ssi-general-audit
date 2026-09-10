@@ -11,7 +11,10 @@
     "installable": True,
     "depends": [
         "ssi_general_audit",
+        "ssi_general_audit_worksheet_control_risk",
         "ssi_general_audit_worksheet_lead_schedule",
+        "ssi_general_audit_worksheet_sample_determination",
+        "web_tour",
     ],
     "data": [
         "security/ir_module_category/general_audit_ws_c7d5f2b.xml",
@@ -24,6 +27,7 @@
         "data/approval_template/general_audit_ws_c7d5f2b.xml",
         "data/general_audit_worksheet_type/general_audit_ws_c7d5f2b.xml",
         "views/general_audit_ws_c7d5f2b_views.xml",
+        "views/assets.xml",
     ],
     "demo": [],
 }
