@@ -42,11 +42,19 @@ class GeneralAuditWsC7d5f2bCheckLine(models.Model):
         compute_sudo=True,
         help="Name derived from the selected data comparison source.",
     )
+    allowed_data_comparison_ids = fields.Many2many(
+        comodel_name="general_audit_ws_c7d5f2b.data_comparison",
+        string="Allowed Data Comparisons",
+        compute="_compute_allowed_data_comparison_ids",
+        store=False,
+        compute_sudo=True,
+        help="Data comparison rows belonging to the same parent worksheet.",
+    )
     data_comparison_id = fields.Many2one(
         comodel_name="general_audit_ws_c7d5f2b.data_comparison",
         string="Data Comparison",
         required=True,
-        domain="[('worksheet_id', '=', worksheet_id)]",
+        domain="[('id', 'in', allowed_data_comparison_ids)]",
         help="The data comparison source to compare against the header " "raw data.",
     )
     comparison_mode = fields.Selection(
@@ -76,6 +84,39 @@ class GeneralAuditWsC7d5f2bCheckLine(models.Model):
         help="CSV result of the physical check comparison: Ref, Amount "
         "Reference, Amount Comparison, Diff, Result.",
     )
+
+    @api.depends("worksheet_id")
+    def _compute_allowed_data_comparison_ids(self):
+        """Restrict the Data Comparison picker to the parent worksheet.
+
+        Uses a computed many2many instead of a domain referencing the
+        sibling field ``worksheet_id`` directly (``[('worksheet_id',
+        '=', worksheet_id)]``): on a brand-new, unsaved record the web
+        client's client-side domain evaluator (``BasicModel
+        ._getRecordEvalContext``, ``basic_model.js``) resolves a
+        many2one field referenced by name through
+        ``this.localData[value]`` before falling back to ``false`` --
+        this lookup can miss for an invisible many2one field on a
+        freshly created record, so ``worksheet_id`` evaluates to
+        ``False`` in the domain and the search silently returns no
+        matches. The ``[('id', 'in', allowed_ids)]`` pattern (already
+        used by ``general_ledger_id``/``subledger_id`` on the parent
+        worksheet) avoids this because many2many fields are
+        substituted as a list of ids, not resolved through that
+        lookup.
+
+        :return: nothing; assigns ``allowed_data_comparison_ids`` to
+            the ``general_audit_ws_c7d5f2b.data_comparison`` records
+            sharing this record's ``worksheet_id``, or an empty
+            recordset when it is not set.
+        """
+        DataComparison = self.env["general_audit_ws_c7d5f2b.data_comparison"]
+        for record in self:
+            record.allowed_data_comparison_ids = False
+            if record.worksheet_id:
+                record.allowed_data_comparison_ids = DataComparison.search(
+                    [("worksheet_id", "=", record.worksheet_id.id)]
+                )
 
     @api.depends("data_comparison_id", "data_comparison_id.name")
     def _compute_name(self):
