@@ -42,20 +42,14 @@ class GeneralAuditWsC7d5f2bCheckLine(models.Model):
         compute_sudo=True,
         help="Name derived from the selected data comparison source.",
     )
-    allowed_data_comparison_ids = fields.Many2many(
-        comodel_name="general_audit_ws_c7d5f2b.data_comparison",
-        string="Allowed Data Comparisons",
-        compute="_compute_allowed_data_comparison_ids",
-        store=False,
-        compute_sudo=True,
-        help="Data comparison rows belonging to the same parent worksheet.",
-    )
     data_comparison_id = fields.Many2one(
         comodel_name="general_audit_ws_c7d5f2b.data_comparison",
         string="Data Comparison",
         required=True,
-        domain="[('id', 'in', allowed_data_comparison_ids)]",
-        help="The data comparison source to compare against the header " "raw data.",
+        help="The data comparison source to compare against the header "
+        "raw data. Restricted to rows of the same worksheet_id by "
+        "onchange_worksheet_id_domain() below, not by a client-side "
+        "domain attribute.",
     )
     comparison_mode = fields.Selection(
         string="Comparison Mode",
@@ -85,38 +79,39 @@ class GeneralAuditWsC7d5f2bCheckLine(models.Model):
         "Reference, Amount Comparison, Diff, Result.",
     )
 
-    @api.depends("worksheet_id")
-    def _compute_allowed_data_comparison_ids(self):
-        """Restrict the Data Comparison picker to the parent worksheet.
+    @api.onchange("worksheet_id")
+    def onchange_worksheet_id_domain(self):
+        """Restrict the Data Comparison picker via a server-side domain.
 
-        Uses a computed many2many instead of a domain referencing the
-        sibling field ``worksheet_id`` directly (``[('worksheet_id',
-        '=', worksheet_id)]``): on a brand-new, unsaved record the web
-        client's client-side domain evaluator (``BasicModel
-        ._getRecordEvalContext``, ``basic_model.js``) resolves a
-        many2one field referenced by name through
-        ``this.localData[value]`` before falling back to ``false`` --
-        this lookup can miss for an invisible many2one field on a
-        freshly created record, so ``worksheet_id`` evaluates to
-        ``False`` in the domain and the search silently returns no
-        matches. The ``[('id', 'in', allowed_ids)]`` pattern (already
-        used by ``general_ledger_id``/``subledger_id`` on the parent
-        worksheet) avoids this because many2many fields are
-        substituted as a list of ids, not resolved through that
-        lookup.
+        Two client-side approaches were tried and both failed on a
+        freshly created (unsaved) record in actual browser tour runs,
+        even though the underlying data was always correct when
+        checked server-side: a domain string referencing the sibling
+        field directly (``[('worksheet_id', '=', worksheet_id)]``),
+        and a domain string referencing a computed many2many
+        (``[('id', 'in', allowed_data_comparison_ids)]``). Both rely
+        on the web client resolving a field's in-memory value at
+        domain-evaluation time, and that resolution proved unreliable
+        for this specific field/timing combination for reasons not
+        fully pinned down without direct browser access.
+        ``@api.onchange`` returning a ``domain`` dict sidesteps this
+        entirely: the domain is computed here, in Python, from
+        ``self.worksheet_id`` -- which is always correct, since it is
+        read directly off the record rather than re-derived from a
+        client-side evaluation context -- and sent to the client as
+        part of the ``onchange()`` response for the client to apply
+        verbatim.
 
-        :return: nothing; assigns ``allowed_data_comparison_ids`` to
-            the ``general_audit_ws_c7d5f2b.data_comparison`` records
-            sharing this record's ``worksheet_id``, or an empty
-            recordset when it is not set.
+        :return: a dict with a ``domain`` key restricting
+            ``data_comparison_id`` to rows of this record's
+            ``worksheet_id``, or to no rows at all when it is unset.
+        :rtype: dict
         """
-        DataComparison = self.env["general_audit_ws_c7d5f2b.data_comparison"]
-        for record in self:
-            record.allowed_data_comparison_ids = False
-            if record.worksheet_id:
-                record.allowed_data_comparison_ids = DataComparison.search(
-                    [("worksheet_id", "=", record.worksheet_id.id)]
-                )
+        if self.worksheet_id:
+            domain = [("worksheet_id", "=", self.worksheet_id.id)]
+        else:
+            domain = [("id", "=", False)]
+        return {"domain": {"data_comparison_id": domain}}
 
     @api.depends("data_comparison_id", "data_comparison_id.name")
     def _compute_name(self):
