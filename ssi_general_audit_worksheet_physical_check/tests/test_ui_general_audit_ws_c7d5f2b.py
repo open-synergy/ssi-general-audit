@@ -92,10 +92,18 @@ class TestUiGeneralAuditWsC7D5F2B(HttpSavepointCase):
         ws_type_d209914 = cls.env.ref(
             "ssi_general_audit_worksheet_client_package.worksheet_type_d209914"
         )
-        # Reference/population source. The tour picks this GL by typing
-        # its title into the dropdown -- there are two GL worksheets on
-        # this engagement, so a plain "only option" click would be
-        # ambiguous.
+        # Reference/population source. The tour picks this GL
+        # POSITIONALLY (first created, sorts first under the model's
+        # _order "general_audit_id, parent_type_id, id" since both GL
+        # fixtures share general_audit_id/parent_type_id) -- NOT by
+        # typing a "title", because display_name here is the
+        # worksheet's own document number (mixin_transaction
+        # name_get: record.name, or "*"+id while name == "/"), not the
+        # "title" field. "title" is also a related field onto
+        # general_audit_id.title (ssi_general_audit
+        # general_audit_worksheet.py), so setting it here would rename
+        # the ENGAGEMENT's title, not label this worksheet -- left at
+        # its own default instead.
         cls.ref_gl = (
             cls.env["general_audit_ws_d209914"]
             .with_user(cls.admin)
@@ -103,12 +111,13 @@ class TestUiGeneralAuditWsC7D5F2B(HttpSavepointCase):
                 {
                     "general_audit_id": audit.id,
                     "type_id": ws_type_d209914.id,
-                    "title": "GL Physical Check Reference",
                     "raw_data": "Ref,Amount\nTOUR-C7D5F2B-R1,1000\n",
                 }
             )
         )
         # Comparison source, selected on the Data Comparison line.
+        # Created SECOND on purpose -- the tour picks it positionally
+        # as the second option, right after ref_gl.
         cls.cmp_gl = (
             cls.env["general_audit_ws_d209914"]
             .with_user(cls.admin)
@@ -116,7 +125,6 @@ class TestUiGeneralAuditWsC7D5F2B(HttpSavepointCase):
                 {
                     "general_audit_id": audit.id,
                     "type_id": ws_type_d209914.id,
-                    "title": "GL Physical Check Comparison",
                     "raw_data": "Ref,Amount\nTOUR-C7D5F2B-R1,1000\n",
                 }
             )

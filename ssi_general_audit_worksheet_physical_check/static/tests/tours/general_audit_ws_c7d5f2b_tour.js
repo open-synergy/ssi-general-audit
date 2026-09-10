@@ -100,19 +100,26 @@ odoo.define(
                 },
 
                 // Flow 4 - Select the matching General Ledger record (the
-                // population/reference source -- there are TWO General
-                // Ledger worksheets on this engagement, so the title text
-                // is required to pick the right one).
+                // population/reference source). display_name here is the
+                // worksheet's document number ("/" until action_open/
+                // action_confirm assign one -- see mixin_transaction
+                // name_get), NOT a fixture field, so it cannot be typed or
+                // matched by :contains. Two General Ledger worksheets exist
+                // on this engagement (this one, and the comparison one used
+                // later in the Data Comparison line); _order on the model
+                // is "general_audit_id, parent_type_id, id", both share
+                // general_audit_id/parent_type_id, so the one created FIRST
+                // in Python (ref_gl) sorts first -- pick it positionally.
                 {
                     content: "Open the General Ledger dropdown",
                     trigger: ".o_field_many2one[name='general_ledger_id'] input",
-                    run: "text GL Physical Check Reference",
+                    run: "click",
                 },
                 {
-                    content: "Pick the Reference General Ledger from the dropdown",
+                    content: "Pick the Reference General Ledger (created first)",
                     trigger:
                         ".ui-autocomplete:visible " +
-                        "li a:contains(GL Physical Check Reference)",
+                        ".ui-menu-item:not(.o_m2o_start_typing) a:eq(0)",
                     in_modal: false,
                 },
 
@@ -194,16 +201,19 @@ odoo.define(
                     extra_trigger: ".o_form_view.o_form_editable",
                     run: "text General Ledger",
                 },
+                // Same display_name caveat as Flow 4: pick the comparison
+                // GL (ref_gl created first, cmp_gl created second, same
+                // _order tiebreak) positionally, not by typed text.
                 {
                     content: "Open the comparison General Ledger dropdown",
                     trigger: ".o_field_many2one[name='general_ledger_id'] input",
-                    run: "text GL Physical Check Comparison",
+                    run: "click",
                 },
                 {
-                    content: "Pick the Comparison General Ledger from the dropdown",
+                    content: "Pick the Comparison General Ledger (created second)",
                     trigger:
                         ".ui-autocomplete:visible " +
-                        "li a:contains(GL Physical Check Comparison)",
+                        ".ui-menu-item:not(.o_m2o_start_typing) a:eq(1)",
                     in_modal: false,
                 },
                 {
@@ -270,16 +280,20 @@ odoo.define(
 
                 // Flow 12 - Select the Data Comparison, Comparison Mode,
                 // and the reference/comparison amount columns
+                // Only ONE Data Comparison line exists at this point (the
+                // single one created in Flow 8-9), and its own display_name
+                // is likewise a non-typeable document number/"-" -- pick it
+                // positionally, same as Sample Determination in Flow 6.
                 {
                     content: "Open the Data Comparison dropdown",
                     trigger: ".o_field_many2one[name='data_comparison_id'] input",
-                    run: "text GL Physical Check Comparison",
+                    run: "click",
                 },
                 {
-                    content: "Pick the Data Comparison from the dropdown",
+                    content: "Pick the only Data Comparison from the dropdown",
                     trigger:
                         ".ui-autocomplete:visible " +
-                        "li a:contains(GL Physical Check Comparison)",
+                        ".ui-menu-item:not(.o_m2o_start_typing) a:eq(0)",
                     in_modal: false,
                 },
                 {
