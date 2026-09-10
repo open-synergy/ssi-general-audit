@@ -20,12 +20,31 @@ msgstr ""
 
 #. module: ssi_general_audit_worksheet_physical_check
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_physical_check.field_general_audit_ws_c7d5f2b__general_audit_id
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_physical_check.field_general_audit_ws_c7d5f2b_data_comparison__general_audit_id
 msgid "# General Audit"
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_physical_check
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_physical_check.field_general_audit_ws_c7d5f2b__sample_determination_id
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_physical_check.field_general_audit_ws_c7d5f2b_data_comparison__sample_determination_id
+msgid "# Sample Determination"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_physical_check
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_physical_check.field_general_audit_ws_c7d5f2b__ws_e51bb1c_id
+msgid "# WS-E51BB1C"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_physical_check
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_physical_check.field_general_audit_ws_c7d5f2b__worksheet_id
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_physical_check.field_general_audit_ws_c7d5f2b_check_line__worksheet_id
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_physical_check.field_general_audit_ws_c7d5f2b_data_comparison__worksheet_id
 msgid "# Worksheet"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_physical_check
+#: model:ir.model.fields.selection,name:ssi_general_audit_worksheet_physical_check.selection__general_audit_ws_c7d5f2b_check_line__comparison_mode__avg
+msgid "AVG"
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_physical_check
@@ -41,6 +60,11 @@ msgstr ""
 #. module: ssi_general_audit_worksheet_physical_check
 #: model:ir.model.fields,help:ssi_general_audit_worksheet_physical_check.field_general_audit_ws_c7d5f2b__account_type_set_id
 msgid "Account type set used by the linked General Audit."
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_physical_check
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_physical_check.field_general_audit_ws_c7d5f2b__allowed_account_type_ids
+msgid "Account types allowed for selection in this physical check procedure."
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_physical_check
@@ -104,13 +128,46 @@ msgid "All"
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_physical_check
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_physical_check.field_general_audit_ws_c7d5f2b__allowed_account_type_ids
+msgid "Allowed Account Types"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_physical_check
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_physical_check.field_general_audit_ws_c7d5f2b__allowed_assertion_type_ids
+msgid "Allowed Assertion Types"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_physical_check
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_physical_check.field_general_audit_ws_c7d5f2b__allowed_conclusion_ids
 msgid "Allowed Conclusion"
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_physical_check
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_physical_check.field_general_audit_ws_c7d5f2b__allowed_general_ledger_ids
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_physical_check.field_general_audit_ws_c7d5f2b_data_comparison__allowed_general_ledger_ids
+msgid "Allowed General Ledgers"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_physical_check
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_physical_check.field_general_audit_ws_c7d5f2b__allowed_key_audit_procedure_ids
+msgid "Allowed Key Audit Procedures"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_physical_check
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_physical_check.field_general_audit_ws_c7d5f2b__allowed_policy_template_ids
 msgid "Allowed Policy Templates"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_physical_check
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_physical_check.field_general_audit_ws_c7d5f2b__allowed_sample_determination_ids
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_physical_check.field_general_audit_ws_c7d5f2b_data_comparison__allowed_sample_determination_ids
+msgid "Allowed Sample Determination"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_physical_check
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_physical_check.field_general_audit_ws_c7d5f2b__allowed_subledger_ids
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_physical_check.field_general_audit_ws_c7d5f2b_data_comparison__allowed_subledger_ids
+msgid "Allowed Subledgers"
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_physical_check
@@ -142,6 +199,21 @@ msgid "Approved"
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_physical_check
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_physical_check.field_general_audit_ws_c7d5f2b__assertion_type_ids
+msgid "Assertion Types"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_physical_check
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_physical_check.field_general_audit_ws_c7d5f2b__assertion_type_ids
+msgid "Assertion types relevant to this physical check procedure."
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_physical_check
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_physical_check.field_general_audit_ws_c7d5f2b__allowed_assertion_type_ids
+msgid "Assertion types that can be selected based on the key audit procedure."
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_physical_check
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_physical_check.field_general_audit_ws_c7d5f2b__message_attachment_count
 msgid "Attachment Count"
 msgstr ""
@@ -164,6 +236,13 @@ msgstr ""
 #. module: ssi_general_audit_worksheet_physical_check
 #: model:ir.model.fields,help:ssi_general_audit_worksheet_physical_check.field_general_audit_ws_c7d5f2b__partner_id
 msgid "Audited client company."
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_physical_check
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_physical_check.field_general_audit_ws_c7d5f2b_check_line__check_data
+msgid ""
+"CSV result of the physical check comparison: Ref, Amount Reference, Amount "
+"Comparison, Diff, Result."
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_physical_check
@@ -225,6 +304,29 @@ msgid ""
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_physical_check
+#: model_terms:ir.ui.view,arch_db:ssi_general_audit_worksheet_physical_check.general_audit_ws_c7d5f2b_view_form
+msgid "Check"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_physical_check
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_physical_check.field_general_audit_ws_c7d5f2b__check_data
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_physical_check.field_general_audit_ws_c7d5f2b_check_line__check_data
+#: model_terms:ir.ui.view,arch_db:ssi_general_audit_worksheet_physical_check.check_line_view_form
+#: model_terms:ir.ui.view,arch_db:ssi_general_audit_worksheet_physical_check.general_audit_ws_c7d5f2b_view_form
+msgid "Check Data"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_physical_check
+#: model_terms:ir.ui.view,arch_db:ssi_general_audit_worksheet_physical_check.general_audit_ws_c7d5f2b_view_form
+msgid "Check Items"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_physical_check
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_physical_check.field_general_audit_ws_c7d5f2b__check_line_ids
+msgid "Check Lines"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_physical_check
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_physical_check.field_general_audit_ws_c7d5f2b__company_id
 #: model:res.groups,name:ssi_general_audit_worksheet_physical_check.general_audit_ws_c7d5f2b_company_group
 msgid "Company"
@@ -247,6 +349,29 @@ msgid ""
 "\n"
 "* Automatically filled with user's company.\n"
 "  Default company can be changed"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_physical_check
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_physical_check.field_general_audit_ws_c7d5f2b_check_line__comparison_amount_col
+msgid "Comparison Amount Column"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_physical_check
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_physical_check.field_general_audit_ws_c7d5f2b_check_line__comparison_mode
+msgid "Comparison Mode"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_physical_check
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_physical_check.field_general_audit_ws_c7d5f2b__data_comparison_ids
+msgid ""
+"Comparison data sources to be matched against the sampling data using the "
+"reference column."
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_physical_check
+#: model_terms:ir.ui.view,arch_db:ssi_general_audit_worksheet_physical_check.check_line_view_form
+#: model_terms:ir.ui.view,arch_db:ssi_general_audit_worksheet_physical_check.general_audit_ws_c7d5f2b_view_form
+msgid "Compute Check Data"
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_physical_check
@@ -273,12 +398,21 @@ msgid ""
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_physical_check
+#: model:ir.model.fields.selection,name:ssi_general_audit_worksheet_physical_check.selection__general_audit_ws_c7d5f2b_check_line__comparison_mode__count
+msgid "Count"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_physical_check
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_physical_check.field_general_audit_ws_c7d5f2b__create_uid
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_physical_check.field_general_audit_ws_c7d5f2b_check_line__create_uid
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_physical_check.field_general_audit_ws_c7d5f2b_data_comparison__create_uid
 msgid "Created by"
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_physical_check
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_physical_check.field_general_audit_ws_c7d5f2b__create_date
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_physical_check.field_general_audit_ws_c7d5f2b_check_line__create_date
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_physical_check.field_general_audit_ws_c7d5f2b_data_comparison__create_date
 msgid "Created on"
 msgstr ""
 
@@ -293,6 +427,29 @@ msgid "Currency used for amounts in this worksheet."
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_physical_check
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_physical_check.field_general_audit_ws_c7d5f2b_check_line__data_comparison_id
+msgid "Data Comparison"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_physical_check
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_physical_check.field_general_audit_ws_c7d5f2b__data_comparison_ids
+#: model_terms:ir.ui.view,arch_db:ssi_general_audit_worksheet_physical_check.general_audit_ws_c7d5f2b_view_form
+msgid "Data Comparisons"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_physical_check
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_physical_check.field_general_audit_ws_c7d5f2b__data_mode
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_physical_check.field_general_audit_ws_c7d5f2b_data_comparison__data_mode
+msgid "Data Mode"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_physical_check
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_physical_check.field_general_audit_ws_c7d5f2b__data_source
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_physical_check.field_general_audit_ws_c7d5f2b_data_comparison__data_source
+msgid "Data Source"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_physical_check
 #: model:ir.model.fields,help:ssi_general_audit_worksheet_physical_check.field_general_audit_ws_c7d5f2b__preparation_date
 msgid "Date when the worksheet was prepared."
 msgstr ""
@@ -303,7 +460,67 @@ msgid "Date when the worksheet was reviewed."
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_physical_check
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_physical_check.field_general_audit_ws_c7d5f2b__population_description
+msgid ""
+"Description of the population or set of items subject to this physical check"
+" procedure, including the location covered and any stratification applied."
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_physical_check
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_physical_check.field_general_audit_ws_c7d5f2b__sampling_description
+msgid ""
+"Description of the sampling approach used to select items for physical check"
+" (e.g. random, systematic, judgmental) and the basis for the sample size "
+"determination."
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_physical_check
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_physical_check.field_general_audit_ws_c7d5f2b__detail_ws_e51bb1c_id
+msgid "Detail WS-E51BB1C"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_physical_check
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_physical_check.field_general_audit_ws_c7d5f2b__detail_ws_e51bb1c_id
+msgid "Details from the referenced Key Audit Procedures worksheet."
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_physical_check
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_physical_check.field_general_audit_ws_c7d5f2b_check_line__sequence
+msgid "Determines the display order of check lines."
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_physical_check
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_physical_check.field_general_audit_ws_c7d5f2b_data_comparison__sequence
+msgid "Determines the display order of data comparison lines."
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_physical_check
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_physical_check.field_general_audit_ws_c7d5f2b__data_source
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_physical_check.field_general_audit_ws_c7d5f2b_data_comparison__data_source
+msgid ""
+"Determines whether the raw data comes directly from the selected General "
+"Ledger/Subledger (Population), or from a Sample Determination worksheet "
+"matching it (Sample)."
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_physical_check
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_physical_check.field_general_audit_ws_c7d5f2b__data_mode
+msgid ""
+"Determines whether to use General Ledger or Subledger data as population for"
+" this physical check procedure."
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_physical_check
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_physical_check.field_general_audit_ws_c7d5f2b_data_comparison__data_mode
+msgid ""
+"Determines whether to use General Ledger or Subledger data as the comparison"
+" source."
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_physical_check
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_physical_check.field_general_audit_ws_c7d5f2b__display_name
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_physical_check.field_general_audit_ws_c7d5f2b_check_line__display_name
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_physical_check.field_general_audit_ws_c7d5f2b_data_comparison__display_name
 msgid "Display Name"
 msgstr ""
 
@@ -341,6 +558,12 @@ msgid "End date of the previous period."
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_physical_check
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_physical_check.field_general_audit_ws_c7d5f2b__findings
+#: model_terms:ir.ui.view,arch_db:ssi_general_audit_worksheet_physical_check.general_audit_ws_c7d5f2b_view_form
+msgid "Findings"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_physical_check
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_physical_check.field_general_audit_ws_c7d5f2b__message_follower_ids
 msgid "Followers"
 msgstr ""
@@ -366,7 +589,28 @@ msgid "General Audit to which this worksheet belongs."
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_physical_check
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_physical_check.field_general_audit_ws_c7d5f2b__general_ledger_id
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_physical_check.field_general_audit_ws_c7d5f2b_data_comparison__general_ledger_id
+#: model:ir.model.fields.selection,name:ssi_general_audit_worksheet_physical_check.selection__general_audit_ws_c7d5f2b__data_mode__gl
+#: model:ir.model.fields.selection,name:ssi_general_audit_worksheet_physical_check.selection__general_audit_ws_c7d5f2b_data_comparison__data_mode__gl
+msgid "General Ledger"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_physical_check
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_physical_check.field_general_audit_ws_c7d5f2b__allowed_general_ledger_ids
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_physical_check.field_general_audit_ws_c7d5f2b_data_comparison__allowed_general_ledger_ids
+msgid "General Ledger worksheets available for the current audit engagement."
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_physical_check
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_physical_check.field_general_audit_ws_c7d5f2b_data_comparison__general_audit_id
+msgid "General audit engagement from the parent worksheet."
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_physical_check
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_physical_check.field_general_audit_ws_c7d5f2b__id
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_physical_check.field_general_audit_ws_c7d5f2b_check_line__id
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_physical_check.field_general_audit_ws_c7d5f2b_data_comparison__id
 msgid "ID"
 msgstr ""
 
@@ -392,16 +636,6 @@ msgid "If checked, some messages have a delivery error."
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_physical_check
-#: model:ir.model,name:ssi_general_audit_worksheet_physical_check.model_general_audit_ws_c7d5f2b
-msgid "Inspection (c7d5f2b)"
-msgstr ""
-
-#. module: ssi_general_audit_worksheet_physical_check
-#: model:general_audit_worksheet_type,name:ssi_general_audit_worksheet_physical_check.worksheet_type_c7d5f2b
-msgid "Inspection Audit Procedure"
-msgstr ""
-
-#. module: ssi_general_audit_worksheet_physical_check
 #: model:ir.module.category,name:ssi_general_audit_worksheet_physical_check.general_audit_ws_c7d5f2b_data_module_category
 #: model:ir.module.category,name:ssi_general_audit_worksheet_physical_check.general_audit_ws_c7d5f2b_workflow_module_category
 msgid "Inspection Audit Procedure (c7d5f2b)"
@@ -423,17 +657,34 @@ msgid "Is Follower"
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_physical_check
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_physical_check.field_general_audit_ws_c7d5f2b__key_audit_procedure_id
+msgid "Key Audit Procedure"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_physical_check
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_physical_check.field_general_audit_ws_c7d5f2b__allowed_key_audit_procedure_ids
+msgid ""
+"Key audit procedures that can be selected based on the referenced worksheet."
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_physical_check
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_physical_check.field_general_audit_ws_c7d5f2b____last_update
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_physical_check.field_general_audit_ws_c7d5f2b_check_line____last_update
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_physical_check.field_general_audit_ws_c7d5f2b_data_comparison____last_update
 msgid "Last Modified on"
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_physical_check
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_physical_check.field_general_audit_ws_c7d5f2b__write_uid
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_physical_check.field_general_audit_ws_c7d5f2b_check_line__write_uid
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_physical_check.field_general_audit_ws_c7d5f2b_data_comparison__write_uid
 msgid "Last Updated by"
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_physical_check
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_physical_check.field_general_audit_ws_c7d5f2b__write_date
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_physical_check.field_general_audit_ws_c7d5f2b_check_line__write_date
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_physical_check.field_general_audit_ws_c7d5f2b_data_comparison__write_date
 msgid "Last Updated on"
 msgstr ""
 
@@ -468,6 +719,17 @@ msgstr ""
 #. module: ssi_general_audit_worksheet_physical_check
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_physical_check.field_general_audit_ws_c7d5f2b__my_activity_date_deadline
 msgid "My Activity Deadline"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_physical_check
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_physical_check.field_general_audit_ws_c7d5f2b_check_line__name
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_physical_check.field_general_audit_ws_c7d5f2b_data_comparison__name
+msgid "Name"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_physical_check
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_physical_check.field_general_audit_ws_c7d5f2b_check_line__name
+msgid "Name derived from the selected data comparison source."
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_physical_check
@@ -536,14 +798,35 @@ msgid "Number of unread messages"
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_physical_check
+#: model_terms:ir.ui.view,arch_db:ssi_general_audit_worksheet_physical_check.general_audit_ws_c7d5f2b_view_form
+msgid "Open Check Lines"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_physical_check
+#: model_terms:ir.ui.view,arch_db:ssi_general_audit_worksheet_physical_check.general_audit_ws_c7d5f2b_view_form
+msgid "Open Data Comparisons"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_physical_check
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_physical_check.field_general_audit_ws_c7d5f2b__operating_unit_id
 #: model:res.groups,name:ssi_general_audit_worksheet_physical_check.general_audit_ws_c7d5f2b_ou_group
 msgid "Operating Unit"
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_physical_check
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_physical_check.field_general_audit_ws_c7d5f2b__worksheet_result
+msgid "Overall result or conclusion of this physical check audit procedure."
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_physical_check
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_physical_check.field_general_audit_ws_c7d5f2b__parent_type_id
 msgid "Parent Type"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_physical_check
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_physical_check.field_general_audit_ws_c7d5f2b_check_line__worksheet_id
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_physical_check.field_general_audit_ws_c7d5f2b_data_comparison__worksheet_id
+msgid "Parent physical check worksheet."
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_physical_check
@@ -557,14 +840,48 @@ msgid "Partner"
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_physical_check
+#: model:general_audit_worksheet_type,name:ssi_general_audit_worksheet_physical_check.worksheet_type_c7d5f2b
 #: model:ir.actions.act_window,name:ssi_general_audit_worksheet_physical_check.general_audit_ws_c7d5f2b_action
 #: model:ir.ui.menu,name:ssi_general_audit_worksheet_physical_check.general_audit_ws_c7d5f2b_menu
 msgid "Physical Check"
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_physical_check
+#: model:ir.model,name:ssi_general_audit_worksheet_physical_check.model_general_audit_ws_c7d5f2b
+msgid "Physical Check (c7d5f2b)"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_physical_check
+#: model:ir.model,name:ssi_general_audit_worksheet_physical_check.model_general_audit_ws_c7d5f2b_check_line
+msgid "Physical Check Comparison Line"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_physical_check
+#: model:ir.model,name:ssi_general_audit_worksheet_physical_check.model_general_audit_ws_c7d5f2b_data_comparison
+msgid "Physical Check Data Comparison"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_physical_check
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_physical_check.field_general_audit_ws_c7d5f2b__check_line_ids
+msgid ""
+"Physical check comparison lines that compare the header raw data against the"
+" selected data comparison source."
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_physical_check
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_physical_check.field_general_audit_ws_c7d5f2b__policy_template_id
 msgid "Policy Template"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_physical_check
+#: model:ir.model.fields.selection,name:ssi_general_audit_worksheet_physical_check.selection__general_audit_ws_c7d5f2b__data_source__population
+#: model:ir.model.fields.selection,name:ssi_general_audit_worksheet_physical_check.selection__general_audit_ws_c7d5f2b_data_comparison__data_source__population
+msgid "Population"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_physical_check
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_physical_check.field_general_audit_ws_c7d5f2b__population_description
+msgid "Population Description"
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_physical_check
@@ -585,6 +902,50 @@ msgstr ""
 #. module: ssi_general_audit_worksheet_physical_check
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_physical_check.field_general_audit_ws_c7d5f2b__previous_date_start
 msgid "Previous Start Date"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_physical_check
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_physical_check.field_general_audit_ws_c7d5f2b__raw_data
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_physical_check.field_general_audit_ws_c7d5f2b_data_comparison__raw_data
+msgid "Raw CSV data from the selected General Ledger or Subledger."
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_physical_check
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_physical_check.field_general_audit_ws_c7d5f2b__raw_data
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_physical_check.field_general_audit_ws_c7d5f2b_data_comparison__raw_data
+#: model_terms:ir.ui.view,arch_db:ssi_general_audit_worksheet_physical_check.data_comparison_view_form
+#: model_terms:ir.ui.view,arch_db:ssi_general_audit_worksheet_physical_check.general_audit_ws_c7d5f2b_view_form
+msgid "Raw Data"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_physical_check
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_physical_check.field_general_audit_ws_c7d5f2b_check_line__reference_amount_col
+msgid "Reference Amount Column"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_physical_check
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_physical_check.field_general_audit_ws_c7d5f2b__reference_col_number
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_physical_check.field_general_audit_ws_c7d5f2b_data_comparison__reference_col_number
+msgid "Reference Column Number"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_physical_check
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_physical_check.field_general_audit_ws_c7d5f2b__ws_e51bb1c_id
+msgid "Reference to the Key Audit Procedures worksheet."
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_physical_check
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_physical_check.field_general_audit_ws_c7d5f2b_data_comparison__sample_determination_id
+msgid ""
+"Reference to the Sample Determination worksheet used as the raw data source "
+"for this comparison row when data_source is \"sample\"."
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_physical_check
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_physical_check.field_general_audit_ws_c7d5f2b__sample_determination_id
+msgid ""
+"Reference to the Sample Determination worksheet whose sampling result will "
+"be used as the list of items subject to physical check."
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_physical_check
@@ -652,8 +1013,56 @@ msgid "Reviewer"
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_physical_check
+#: model:ir.model.fields.selection,name:ssi_general_audit_worksheet_physical_check.selection__general_audit_ws_c7d5f2b__data_source__sample
+#: model:ir.model.fields.selection,name:ssi_general_audit_worksheet_physical_check.selection__general_audit_ws_c7d5f2b_data_comparison__data_source__sample
+msgid "Sample"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_physical_check
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_physical_check.field_general_audit_ws_c7d5f2b__allowed_sample_determination_ids
+msgid ""
+"Sample Determination worksheets whose data source matches the current data "
+"mode and selected ledger/subledger."
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_physical_check
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_physical_check.field_general_audit_ws_c7d5f2b_data_comparison__allowed_sample_determination_ids
+msgid ""
+"Sample Determination worksheets whose data source matches this row's own "
+"data mode and selected ledger/subledger."
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_physical_check
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_physical_check.field_general_audit_ws_c7d5f2b__sampling_data
+msgid "Sampling Data"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_physical_check
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_physical_check.field_general_audit_ws_c7d5f2b__sampling_description
+msgid "Sampling Description"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_physical_check
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_physical_check.field_general_audit_ws_c7d5f2b__sampling_data
+msgid ""
+"Sampling data inherited from the referenced Sample Determination worksheet, "
+"used as the list of items subject to physical check."
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_physical_check
 #: model:ir.model.fields,help:ssi_general_audit_worksheet_physical_check.field_general_audit_ws_c7d5f2b__conclusion_id
 msgid "Selected conclusion summarizing the worksheet's assessment."
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_physical_check
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_physical_check.field_general_audit_ws_c7d5f2b_check_line__sequence
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_physical_check.field_general_audit_ws_c7d5f2b_data_comparison__sequence
+msgid "Sequence"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_physical_check
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_physical_check.field_general_audit_ws_c7d5f2b__account_type_id
+msgid "Standard Account"
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_physical_check
@@ -694,8 +1103,123 @@ msgid ""
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_physical_check
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_physical_check.field_general_audit_ws_c7d5f2b__subledger_id
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_physical_check.field_general_audit_ws_c7d5f2b_data_comparison__subledger_id
+#: model:ir.model.fields.selection,name:ssi_general_audit_worksheet_physical_check.selection__general_audit_ws_c7d5f2b__data_mode__subledger
+#: model:ir.model.fields.selection,name:ssi_general_audit_worksheet_physical_check.selection__general_audit_ws_c7d5f2b_data_comparison__data_mode__subledger
+msgid "Subledger"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_physical_check
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_physical_check.field_general_audit_ws_c7d5f2b__allowed_subledger_ids
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_physical_check.field_general_audit_ws_c7d5f2b_data_comparison__allowed_subledger_ids
+msgid "Subledger worksheets available for the current audit engagement."
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_physical_check
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_physical_check.field_general_audit_ws_c7d5f2b__check_data
+msgid ""
+"Subset of raw data whose reference column matches the sampling data, used as"
+" the population subject to physical check comparison."
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_physical_check
+#: model:ir.model.fields.selection,name:ssi_general_audit_worksheet_physical_check.selection__general_audit_ws_c7d5f2b_check_line__comparison_mode__sum
+msgid "Sum"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_physical_check
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_physical_check.field_general_audit_ws_c7d5f2b__findings
+msgid ""
+"Summary of exceptions, differences, or notable observations identified "
+"during the physical check procedure."
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_physical_check
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_physical_check.field_general_audit_ws_c7d5f2b_check_line__comparison_mode
+msgid ""
+"The aggregation method used when comparing values: Count counts matching "
+"rows, Sum totals monetary values, AVG calculates the average."
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_physical_check
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_physical_check.field_general_audit_ws_c7d5f2b_data_comparison__reference_col_number
+msgid ""
+"The column number (1-based) in the comparison raw data that contains the "
+"reference identifier to match against the parent worksheet's reference "
+"column."
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_physical_check
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_physical_check.field_general_audit_ws_c7d5f2b_check_line__comparison_amount_col
+msgid ""
+"The column number (1-based) in the data comparison raw data that contains "
+"the monetary amount to compare against."
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_physical_check
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_physical_check.field_general_audit_ws_c7d5f2b_check_line__reference_amount_col
+msgid ""
+"The column number (1-based) in the header raw data (sampling data) that "
+"contains the monetary amount to compare."
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_physical_check
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_physical_check.field_general_audit_ws_c7d5f2b__reference_col_number
+msgid ""
+"The column number (1-based) in the sampling data that contains the reference"
+" identifier used to match against comparison data."
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_physical_check
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_physical_check.field_general_audit_ws_c7d5f2b_check_line__data_comparison_id
+msgid ""
+"The data comparison source to compare against the header raw data. "
+"Restricted to rows of the same worksheet_id by "
+"onchange_worksheet_id_domain() below, not by a client-side domain attribute."
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_physical_check
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_physical_check.field_general_audit_ws_c7d5f2b_data_comparison__general_ledger_id
+msgid "The general ledger data used as comparison source."
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_physical_check
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_physical_check.field_general_audit_ws_c7d5f2b__general_ledger_id
+msgid ""
+"The general ledger data used as population for this physical check "
+"procedure."
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_physical_check
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_physical_check.field_general_audit_ws_c7d5f2b__key_audit_procedure_id
+msgid "The key audit procedure associated with the referenced worksheet."
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_physical_check
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_physical_check.field_general_audit_ws_c7d5f2b__account_type_id
+msgid "The standard account type related to this physical check procedure."
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_physical_check
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_physical_check.field_general_audit_ws_c7d5f2b_data_comparison__subledger_id
+msgid "The subledger data used as comparison source."
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_physical_check
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_physical_check.field_general_audit_ws_c7d5f2b__subledger_id
+msgid ""
+"The subledger data used as population for this physical check procedure."
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_physical_check
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_physical_check.field_general_audit_ws_c7d5f2b__title
 msgid "Title"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_physical_check
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_physical_check.field_general_audit_ws_c7d5f2b_data_comparison__name
+msgid "Title from the selected General Ledger or Subledger."
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_physical_check
@@ -782,6 +1306,12 @@ msgstr ""
 #. module: ssi_general_audit_worksheet_physical_check
 #: model:ir.model.fields,help:ssi_general_audit_worksheet_physical_check.field_general_audit_ws_c7d5f2b__website_message_ids
 msgid "Website communication history"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_physical_check
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_physical_check.field_general_audit_ws_c7d5f2b__worksheet_result
+#: model_terms:ir.ui.view,arch_db:ssi_general_audit_worksheet_physical_check.general_audit_ws_c7d5f2b_view_form
+msgid "Worksheet Result"
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_physical_check
