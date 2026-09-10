@@ -312,27 +312,32 @@ odoo.define(
                     },
                 },
 
-                // Flow 12 - Select the Data Comparison, Comparison Mode,
-                // and the reference/comparison amount columns
-                // Only ONE Data Comparison line exists at this point (the
-                // single one created in Flow 8-9), and its own display_name
-                // is likewise a non-typeable document number/"-" -- pick it
-                // positionally, same as Sample Determination in Flow 6.
-                {
-                    content: "Open the Data Comparison dropdown",
-                    trigger: ".o_field_many2one[name='data_comparison_id'] input",
-                    run: "click",
-                },
-                {
-                    content: "Pick the only Data Comparison from the dropdown",
-                    trigger:
-                        ".ui-autocomplete:visible " +
-                        ".ui-menu-item:not(.o_m2o_start_typing) a:eq(0)",
-                    in_modal: false,
-                },
+                // Flow 12 - Select the Comparison Mode and amount columns
+                // FIRST, then the Data Comparison last.
+                //
+                // Order matters here, and it is not cosmetic: every other
+                // many2one on this tour whose domain depends on a computed
+                // "allowed_*_ids" field (general_ledger_id/
+                // sample_determination_id on the worksheet, general_ledger_id
+                // on the Data Comparison line) is opened only AFTER the user
+                // has already triggered a SECOND onchange round-trip on that
+                // record (by picking Data Mode/Data Source beforehand) -- and
+                // all three succeed. data_comparison_id here is the only
+                // many2one of this kind opened right after the record's
+                // FIRST (creation) onchange, with no intervening field
+                // change, and that is exactly the one that failed in CI
+                // (name_search on general_audit_ws_c7d5f2b.data_comparison
+                // returned no matches even though allowed_data_comparison_ids
+                // resolves correctly server-side -- verified via `odoo shell`
+                // onchange() simulation). Selecting Comparison Mode first
+                // reproduces the same successful pattern: it is a plain
+                // <select> field change, which triggers its own onchange
+                // round-trip before the Data Comparison dropdown is ever
+                // opened.
                 {
                     content: "Select Comparison Mode = Sum",
                     trigger: "select.o_field_widget[name='comparison_mode']",
+                    extra_trigger: ".o_form_view.o_form_editable",
                     run: "text Sum",
                 },
                 {
@@ -344,6 +349,25 @@ odoo.define(
                     content: "Fill in the Comparison Amount Column",
                     trigger: ".o_field_widget[name='comparison_amount_col']",
                     run: "text 2",
+                },
+
+                // Flow 12 (cont.) - Select the Data Comparison last, after
+                // the Comparison Mode onchange above has already run. Only
+                // ONE Data Comparison line exists at this point (the single
+                // one created in Flow 8-9), and its own display_name is a
+                // non-typeable document number/"-" -- pick it positionally,
+                // same as Sample Determination in Flow 6.
+                {
+                    content: "Open the Data Comparison dropdown",
+                    trigger: ".o_field_many2one[name='data_comparison_id'] input",
+                    run: "click",
+                },
+                {
+                    content: "Pick the only Data Comparison from the dropdown",
+                    trigger:
+                        ".ui-autocomplete:visible " +
+                        ".ui-menu-item:not(.o_m2o_start_typing) a:eq(0)",
+                    in_modal: false,
                 },
                 {
                     content: "Save the Check Line",

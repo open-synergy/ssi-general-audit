@@ -46,9 +46,10 @@
 10. Go back to the worksheet and open the **Check** tab, then click the **Open Check
     Lines** button.
 11. In the Check Lines list, click **Create** to add a check line. **(14.0: "Create")**
-12. On the new Check line, select the **Data Comparison** created in step 9, select the
-    **Comparison Mode** (Count/Sum/AVG), then fill the **Reference Amount Column** and
-    **Comparison Amount Column** fields with the respective amount column numbers.
+12. On the new Check line, select the **Comparison Mode** (Count/Sum/AVG), fill the
+    **Reference Amount Column** and **Comparison Amount Column** fields with the
+    respective amount column numbers, then select the **Data Comparison** created in
+    step 9.
 13. Click the **Compute Check Data** button.
 
 ## Post-Condition
