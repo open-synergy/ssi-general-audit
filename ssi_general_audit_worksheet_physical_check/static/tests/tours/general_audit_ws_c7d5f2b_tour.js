@@ -164,9 +164,24 @@ odoo.define(
                 },
 
                 // Flow 7 - Open Data Comparisons
+                //
+                // action_open_data_comparisons lives inside the "Data
+                // Comparisons" notebook page (3rd tab) -- after Save the
+                // active tab is still "Raw Data" (1st tab), so the button
+                // exists in the DOM but is hidden inside a non-active
+                // .tab-pane. Activate its tab first (safe even when the
+                // tab already happens to be active). See
+                // odoo-development-ui-test-skill
+                // references/patterns-fields.md "Jebakan 1c".
+                {
+                    content: "Open the Data Comparisons tab",
+                    trigger: ".o_notebook .nav-link:contains(Data Comparisons)",
+                    extra_trigger: ".o_form_view.o_form_readonly",
+                },
                 {
                     content: "Click the Open Data Comparisons button",
-                    trigger: "button[name='action_open_data_comparisons']",
+                    trigger:
+                        ".tab-pane.active button[name='action_open_data_comparisons']",
                     extra_trigger: ".o_form_view",
                 },
                 {
@@ -249,9 +264,20 @@ odoo.define(
                 },
 
                 // Flow 10 (cont.) - Open Check Lines
+                //
+                // Same cause as the Data Comparisons button above:
+                // action_open_check_lines lives inside the "Check" notebook
+                // page, and the breadcrumb click just above reloads the
+                // worksheet form back to its first tab ("Raw Data").
+                // Activate the "Check" tab before clicking its button.
+                {
+                    content: "Open the Check tab",
+                    trigger: ".o_notebook .nav-link:contains(Check)",
+                    extra_trigger: ".o_form_view.o_form_readonly",
+                },
                 {
                     content: "Click the Open Check Lines button",
-                    trigger: "button[name='action_open_check_lines']",
+                    trigger: ".tab-pane.active button[name='action_open_check_lines']",
                     extra_trigger: ".o_form_view",
                 },
                 {
