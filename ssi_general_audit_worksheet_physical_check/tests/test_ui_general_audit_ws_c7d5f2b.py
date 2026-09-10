@@ -92,18 +92,23 @@ class TestUiGeneralAuditWsC7D5F2B(HttpSavepointCase):
         ws_type_d209914 = cls.env.ref(
             "ssi_general_audit_worksheet_client_package.worksheet_type_d209914"
         )
-        # Reference/population source. The tour picks this GL
-        # POSITIONALLY (first created, sorts first under the model's
-        # _order "general_audit_id, parent_type_id, id" since both GL
-        # fixtures share general_audit_id/parent_type_id) -- NOT by
-        # typing a "title", because display_name here is the
-        # worksheet's own document number (mixin_transaction
-        # name_get: record.name, or "*"+id while name == "/"), not the
-        # "title" field. "title" is also a related field onto
-        # general_audit_id.title (ssi_general_audit
-        # general_audit_worksheet.py), so setting it here would rename
-        # the ENGAGEMENT's title, not label this worksheet -- left at
-        # its own default instead.
+        # Reference/population source. "title" here is
+        # general_audit_ws_d209914's OWN field
+        # (ssi_general_audit_worksheet_client_package
+        # models/d209914/general_audit_ws_d209914.py:141-147,
+        # fields.Char default="-") -- it is NOT related to
+        # general_audit_id.title (that related-title pattern only
+        # applies to the generic general_audit_worksheet model, not
+        # this concrete worksheet). Left at its "-" default, the GL's
+        # display_name/data_comparison's computed "name" both become
+        # the single character "-", which jQuery UI's autocomplete
+        # treats as a menu DIVIDER (_isDivider,
+        # `!/[^\-—–\s]/.test(item.text())`) rather than a selectable
+        # ui-menu-item -- the option is real and name_search returns
+        # it, but no selector can ever click it. Set an explicit,
+        # distinct title on each fixture so both the GL's own
+        # display_name and the Data Comparison's computed name (copied
+        # from general_ledger_id.title) are real, matchable text.
         cls.ref_gl = (
             cls.env["general_audit_ws_d209914"]
             .with_user(cls.admin)
@@ -111,13 +116,12 @@ class TestUiGeneralAuditWsC7D5F2B(HttpSavepointCase):
                 {
                     "general_audit_id": audit.id,
                     "type_id": ws_type_d209914.id,
+                    "title": "TOUR-C7D5F2B-GL-REF",
                     "raw_data": "Ref,Amount\nTOUR-C7D5F2B-R1,1000\n",
                 }
             )
         )
         # Comparison source, selected on the Data Comparison line.
-        # Created SECOND on purpose -- the tour picks it positionally
-        # as the second option, right after ref_gl.
         cls.cmp_gl = (
             cls.env["general_audit_ws_d209914"]
             .with_user(cls.admin)
@@ -125,6 +129,7 @@ class TestUiGeneralAuditWsC7D5F2B(HttpSavepointCase):
                 {
                     "general_audit_id": audit.id,
                     "type_id": ws_type_d209914.id,
+                    "title": "TOUR-C7D5F2B-GL-CMP",
                     "raw_data": "Ref,Amount\nTOUR-C7D5F2B-R1,1000\n",
                 }
             )
