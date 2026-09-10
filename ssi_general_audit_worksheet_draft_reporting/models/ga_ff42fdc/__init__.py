@@ -4,4 +4,6 @@
 
 from . import (
     general_audit_ws_ff42fdc,
+    general_audit_ws_ff42fdc_posture,
+    general_audit_ws_ff42fdc_total_formula,
 )

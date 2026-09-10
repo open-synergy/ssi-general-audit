@@ -127,6 +127,43 @@ setup:
       xml_id: "ssi_general_audit_worksheet_draft_reporting.worksheet_type_bbbdfe7"
       save_as: "ws_type_bbbdfe7"
 
+    - step: "Get worksheet type ae598e6"
+      action: "ref"
+      xml_id: "ssi_general_audit_worksheet_draft_reporting.worksheet_type_ae598e6"
+      save_as: "ws_type_ae598e6"
+
+    # Official client_account_group codes used by the ff42fdc Posture
+    # Report Total/Subtotal formulas (see _TOTAL_TYPE_FORMULA).
+    - step: "Get client account group T001 (Current Asset)"
+      action: "ref"
+      xml_id: "ssi_general_audit.client_account_group_1_885ef902"
+      save_as: "group_t001"
+
+    - step: "Get client account group T002 (Non Current Asset)"
+      action: "ref"
+      xml_id: "ssi_general_audit.client_account_group_2_becd85c2"
+      save_as: "group_t002"
+
+    - step: "Get client account group T009 (Main Revenue)"
+      action: "ref"
+      xml_id: "ssi_general_audit.client_account_group_9_7849ad25"
+      save_as: "group_t009"
+
+    - step: "Get client account group T011 (Cost of Revenue)"
+      action: "ref"
+      xml_id: "ssi_general_audit.client_account_group_11_44410d3c"
+      save_as: "group_t011"
+
+    - step: "Get client account group T012 (Operating Expense)"
+      action: "ref"
+      xml_id: "ssi_general_audit.client_account_group_12_ae0c12b7"
+      save_as: "group_t012"
+
+    - step: "Get client account group T015 (Other Comprehensive Income)"
+      action: "ref"
+      xml_id: "ssi_general_audit.client_account_group_15_315c4d27"
+      save_as: "group_t015"
+
 scenarios:
   # ------------------------------------------------------------------
   # general_audit_ws_bbbdfe7.item - CRUD
@@ -870,6 +907,69 @@ scenarios:
             type: "value"
             expected: 2026-03-31
 
+      # Positive (Opini) - compliance_law_opinion_id / .._date and
+      # compliance_internal_control_opinion_id / .._date are LOCAL to
+      # the worksheet (unlike financial_statement_opinion_id above),
+      # so writing them must NOT touch general_audit.opinion_id /
+      # .opinion_date at all.
+      - step: "Create compliance-with-laws opinion"
+        action: "create"
+        model: "accountant.opinion"
+        save_as: "opinion_compliance_law"
+        as_user: "base.user_admin"
+        values:
+          name: "Compliant Opinion - Laws - Test"
+          code: "/"
+
+      - step: "Create compliance-with-internal-control opinion"
+        action: "create"
+        model: "accountant.opinion"
+        save_as: "opinion_compliance_internal_control"
+        as_user: "base.user_admin"
+        values:
+          name: "Compliant Opinion - Internal Control - Test"
+          code: "/"
+
+      - step: "Write both compliance opinions on the worksheet"
+        action: "write"
+        target: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          compliance_law_opinion_id: "REC: opinion_compliance_law.id"
+          compliance_law_opinion_date: 2026-04-05
+          compliance_internal_control_opinion_id:
+            "REC: opinion_compliance_internal_control.id"
+          compliance_internal_control_opinion_date: 2026-04-06
+
+      - step: "Assert both compliance opinions saved on the worksheet"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          compliance_law_opinion_id:
+            type: "m2o"
+            expected: "REC: opinion_compliance_law"
+          compliance_law_opinion_date:
+            type: "value"
+            expected: 2026-04-05
+          compliance_internal_control_opinion_id:
+            type: "m2o"
+            expected: "REC: opinion_compliance_internal_control"
+          compliance_internal_control_opinion_date:
+            type: "value"
+            expected: 2026-04-06
+
+      - step: "Assert general audit opinion untouched by the compliance opinions"
+        action: "assert"
+        target: "audit"
+        refresh: true
+        asserts:
+          opinion_id:
+            type: "m2o"
+            expected: "REC: opinion"
+          opinion_date:
+            type: "value"
+            expected: 2026-03-31
+
       - step: "Fill required conclusion fields before confirm"
         action: "write"
         target: "worksheet"
@@ -915,6 +1015,693 @@ scenarios:
           state:
             type: "value"
             expected: "done"
+
+  # ------------------------------------------------------------------
+  # general_audit_ws_ff42fdc.posture - action_load_posture (aggregate
+  # by client_account_group, diff-based idempotent sync, Previous
+  # column, and the nine fixed Total/Subtotal lines)
+  # ------------------------------------------------------------------
+  - name: "Posture ff42fdc - action_load_posture aggregates by account group"
+    steps:
+      - step: "Create client account type for T001 (Current Asset)"
+        action: "create"
+        model: "client_account_type"
+        save_as: "account_type_t001"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Account Type T001 - Posture"
+          code: "/"
+          group_id: "REC: group_t001.id"
+          normal_balance: "dr"
+          # DILARANG membiarkan python_code pada default
+          # "result = document.balance": lihat catatan yang sama di
+          # ssi_general_audit_worksheet_lead_schedule test data.
+          python_code: "result = 0.0"
+
+      - step: "Create client account type for T002 (Non Current Asset)"
+        action: "create"
+        model: "client_account_type"
+        save_as: "account_type_t002"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Account Type T002 - Posture"
+          code: "/"
+          group_id: "REC: group_t002.id"
+          normal_balance: "dr"
+          python_code: "result = 0.0"
+
+      - step: "Create client account type for T009 (Main Revenue)"
+        action: "create"
+        model: "client_account_type"
+        save_as: "account_type_t009"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Account Type T009 - Posture"
+          code: "/"
+          group_id: "REC: group_t009.id"
+          normal_balance: "cr"
+          python_code: "result = 0.0"
+
+      - step: "Create client account type for T011 (Cost of Revenue)"
+        action: "create"
+        model: "client_account_type"
+        save_as: "account_type_t011"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Account Type T011 - Posture"
+          code: "/"
+          group_id: "REC: group_t011.id"
+          normal_balance: "dr"
+          python_code: "result = 0.0"
+
+      - step: "Create client account type for T012 (Operating Expense)"
+        action: "create"
+        model: "client_account_type"
+        save_as: "account_type_t012"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Account Type T012 - Posture"
+          code: "/"
+          group_id: "REC: group_t012.id"
+          normal_balance: "dr"
+          python_code: "result = 0.0"
+
+      - step: "Create client account for T001"
+        action: "create"
+        model: "client_account"
+        save_as: "account_t001"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Client Account T001 - Posture"
+          code: "ACC-T001-POSTURE"
+          partner_id: "REC: client.id"
+          type_id: "REC: account_type_t001.id"
+
+      - step: "Create client account for T002"
+        action: "create"
+        model: "client_account"
+        save_as: "account_t002"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Client Account T002 - Posture"
+          code: "ACC-T002-POSTURE"
+          partner_id: "REC: client.id"
+          type_id: "REC: account_type_t002.id"
+
+      - step: "Create client account for T009"
+        action: "create"
+        model: "client_account"
+        save_as: "account_t009"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Client Account T009 - Posture"
+          code: "ACC-T009-POSTURE"
+          partner_id: "REC: client.id"
+          type_id: "REC: account_type_t009.id"
+
+      - step: "Create client account for T011"
+        action: "create"
+        model: "client_account"
+        save_as: "account_t011"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Client Account T011 - Posture"
+          code: "ACC-T011-POSTURE"
+          partner_id: "REC: client.id"
+          type_id: "REC: account_type_t011.id"
+
+      - step: "Create client account for T012"
+        action: "create"
+        model: "client_account"
+        save_as: "account_t012"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Client Account T012 - Posture"
+          code: "ACC-T012-POSTURE"
+          partner_id: "REC: client.id"
+          type_id: "REC: account_type_t012.id"
+
+      - step: "Create client account mapping for the audit"
+        action: "create"
+        model: "client_account_mapping"
+        save_as: "mapping"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+
+      - step: "Map client account T001"
+        action: "create"
+        model: "client_account_mapping.detail"
+        save_as: "mapping_detail_t001"
+        as_user: "base.user_admin"
+        values:
+          mapping_id: "REC: mapping.id"
+          account_id: "REC: account_t001.id"
+
+      - step: "Map client account T002"
+        action: "create"
+        model: "client_account_mapping.detail"
+        save_as: "mapping_detail_t002"
+        as_user: "base.user_admin"
+        values:
+          mapping_id: "REC: mapping.id"
+          account_id: "REC: account_t002.id"
+
+      - step: "Map client account T009"
+        action: "create"
+        model: "client_account_mapping.detail"
+        save_as: "mapping_detail_t009"
+        as_user: "base.user_admin"
+        values:
+          mapping_id: "REC: mapping.id"
+          account_id: "REC: account_t009.id"
+
+      - step: "Map client account T011"
+        action: "create"
+        model: "client_account_mapping.detail"
+        save_as: "mapping_detail_t011"
+        as_user: "base.user_admin"
+        values:
+          mapping_id: "REC: mapping.id"
+          account_id: "REC: account_t011.id"
+
+      - step: "Map client account T012"
+        action: "create"
+        model: "client_account_mapping.detail"
+        save_as: "mapping_detail_t012"
+        as_user: "base.user_admin"
+        values:
+          mapping_id: "REC: mapping.id"
+          account_id: "REC: account_t012.id"
+
+      - step: "Reload general audit accounts from the mapping"
+        action: "call"
+        target: "audit"
+        method: "action_reload_account"
+        as_user: "base.user_admin"
+
+      - step: "Create home trial balance"
+        action: "create"
+        model: "client_trial_balance"
+        save_as: "tb_home"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          trial_balance_type: "home"
+
+      - step: "Home trial balance line for T001 (debit 1,000,000)"
+        action: "create"
+        model: "client_trial_balance.detail"
+        save_as: "tb_home_detail_t001"
+        as_user: "base.user_admin"
+        values:
+          trial_balance_id: "REC: tb_home.id"
+          account_id: "REC: account_t001.id"
+          debit: 1000000.0
+
+      - step: "Home trial balance line for T002 (debit 500,000)"
+        action: "create"
+        model: "client_trial_balance.detail"
+        save_as: "tb_home_detail_t002"
+        as_user: "base.user_admin"
+        values:
+          trial_balance_id: "REC: tb_home.id"
+          account_id: "REC: account_t002.id"
+          debit: 500000.0
+
+      - step: "Home trial balance line for T009 (credit 800,000)"
+        action: "create"
+        model: "client_trial_balance.detail"
+        save_as: "tb_home_detail_t009"
+        as_user: "base.user_admin"
+        values:
+          trial_balance_id: "REC: tb_home.id"
+          account_id: "REC: account_t009.id"
+          credit: 800000.0
+
+      - step: "Home trial balance line for T011 (debit 300,000)"
+        action: "create"
+        model: "client_trial_balance.detail"
+        save_as: "tb_home_detail_t011"
+        as_user: "base.user_admin"
+        values:
+          trial_balance_id: "REC: tb_home.id"
+          account_id: "REC: account_t011.id"
+          debit: 300000.0
+
+      - step: "Home trial balance line for T012 (debit 100,000)"
+        action: "create"
+        model: "client_trial_balance.detail"
+        save_as: "tb_home_detail_t012"
+        as_user: "base.user_admin"
+        values:
+          trial_balance_id: "REC: tb_home.id"
+          account_id: "REC: account_t012.id"
+          debit: 100000.0
+
+      - step: "Create previous-period trial balance"
+        action: "create"
+        model: "client_trial_balance"
+        save_as: "tb_previous"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          trial_balance_type: "previous"
+
+      - step: "Previous trial balance line for T001 (debit 900,000)"
+        action: "create"
+        model: "client_trial_balance.detail"
+        save_as: "tb_previous_detail_t001"
+        as_user: "base.user_admin"
+        values:
+          trial_balance_id: "REC: tb_previous.id"
+          account_id: "REC: account_t001.id"
+          debit: 900000.0
+
+      - step: "Previous trial balance line for T002 (debit 400,000)"
+        action: "create"
+        model: "client_trial_balance.detail"
+        save_as: "tb_previous_detail_t002"
+        as_user: "base.user_admin"
+        values:
+          trial_balance_id: "REC: tb_previous.id"
+          account_id: "REC: account_t002.id"
+          debit: 400000.0
+
+      - step: "Create adjustment entry"
+        action: "create"
+        model: "client_adjustment_entry"
+        save_as: "adj_entry"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          adjustment_type: "propose"
+
+      - step: "Adjustment line - T001 debit 50,000"
+        action: "create"
+        model: "client_adjustment_entry.detail"
+        save_as: "adj_line_t001_dr"
+        as_user: "base.user_admin"
+        values:
+          entry_id: "REC: adj_entry.id"
+          account_id: "REC: account_t001.id"
+          name: "Reclass debit T001"
+          debit: 50000.0
+
+      - step: "Adjustment line - T001 credit 20,000"
+        action: "create"
+        model: "client_adjustment_entry.detail"
+        save_as: "adj_line_t001_cr"
+        as_user: "base.user_admin"
+        values:
+          entry_id: "REC: adj_entry.id"
+          account_id: "REC: account_t001.id"
+          name: "Reclass credit T001"
+          credit: 20000.0
+
+      - step: "Adjustment line - T002 debit 15,000"
+        action: "create"
+        model: "client_adjustment_entry.detail"
+        save_as: "adj_line_t002_dr"
+        as_user: "base.user_admin"
+        values:
+          entry_id: "REC: adj_entry.id"
+          account_id: "REC: account_t002.id"
+          name: "Reclass debit T002"
+          debit: 15000.0
+
+      - step: "Adjustment line - T002 credit 45,000"
+        action: "create"
+        model: "client_adjustment_entry.detail"
+        save_as: "adj_line_t002_cr"
+        as_user: "base.user_admin"
+        values:
+          entry_id: "REC: adj_entry.id"
+          account_id: "REC: account_t002.id"
+          name: "Reclass credit T002"
+          credit: 45000.0
+
+      - step: "Confirm adjustment entry (total debit 65,000 = total credit 65,000)"
+        action: "call"
+        target: "adj_entry"
+        method: "action_confirm"
+        as_user: "base.user_admin"
+        # WAJIB dua-duanya: asserts MENJALANKAN _refresh, refresh: true
+        # MENGIZINKANNYA (_should_refresh v0.5.0) -- tanpa ini approve_ok
+        # terbaca basi milik action_confirm (test-traps.md T-04).
+        refresh: true
+        asserts:
+          state:
+            type: "value"
+            expected: "confirm"
+
+      - step: "Approve adjustment entry"
+        action: "call"
+        target: "adj_entry"
+        method: "action_approve_approval"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after approving adjustment entry"
+        action: "call"
+        target: "adj_entry"
+        method: "invalidate_cache"
+
+      - step: "Assert adjustment entry done"
+        action: "assert"
+        target: "adj_entry"
+        asserts:
+          state:
+            type: "value"
+            expected: "done"
+
+      - step: "Create worksheet ff42fdc for posture"
+        action: "create"
+        model: "general_audit_ws_ff42fdc"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_ff42fdc.id"
+
+      - step: "Open worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_open"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after opening worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Assert no posture line before loading"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          posture_ids:
+            type: "o2m"
+            check: "count"
+            expected_count: 0
+
+      - step: "Load posture"
+        action: "call"
+        target: "worksheet"
+        method: "action_load_posture"
+        as_user: "base.user_admin"
+
+      # 5 Account Group lines (T001, T002, T009, T011, T012 have
+      # accounts registered) + 9 fixed Total lines, which always
+      # exist regardless of data.
+      - step: "Assert 14 posture lines were created (5 group + 9 total)"
+        action: "search"
+        model: "general_audit_ws_ff42fdc.posture"
+        domain:
+          - ["worksheet_id", "=", "REC: worksheet.id"]
+        save_as: "postures_after_load"
+        expect_count: 14
+
+      - step: "Find posture line for T001"
+        action: "search"
+        model: "general_audit_ws_ff42fdc.posture"
+        domain:
+          - ["worksheet_id", "=", "REC: worksheet.id"]
+          - ["line_type", "=", "group"]
+          - ["group_id", "=", "REC: group_t001.id"]
+        save_as: "posture_t001"
+        limit: 1
+
+      - step: "Find posture line for T002"
+        action: "search"
+        model: "general_audit_ws_ff42fdc.posture"
+        domain:
+          - ["worksheet_id", "=", "REC: worksheet.id"]
+          - ["line_type", "=", "group"]
+          - ["group_id", "=", "REC: group_t002.id"]
+        save_as: "posture_t002"
+        limit: 1
+
+      - step: "Find posture line for T009"
+        action: "search"
+        model: "general_audit_ws_ff42fdc.posture"
+        domain:
+          - ["worksheet_id", "=", "REC: worksheet.id"]
+          - ["line_type", "=", "group"]
+          - ["group_id", "=", "REC: group_t009.id"]
+        save_as: "posture_t009"
+        limit: 1
+
+      - step: "Find posture line for T011"
+        action: "search"
+        model: "general_audit_ws_ff42fdc.posture"
+        domain:
+          - ["worksheet_id", "=", "REC: worksheet.id"]
+          - ["line_type", "=", "group"]
+          - ["group_id", "=", "REC: group_t011.id"]
+        save_as: "posture_t011"
+        limit: 1
+
+      - step: "Find posture line for T012"
+        action: "search"
+        model: "general_audit_ws_ff42fdc.posture"
+        domain:
+          - ["worksheet_id", "=", "REC: worksheet.id"]
+          - ["line_type", "=", "group"]
+          - ["group_id", "=", "REC: group_t012.id"]
+        save_as: "posture_t012"
+        limit: 1
+
+      - step: "Find posture line for total_asset"
+        action: "search"
+        model: "general_audit_ws_ff42fdc.posture"
+        domain:
+          - ["worksheet_id", "=", "REC: worksheet.id"]
+          - ["line_type", "=", "total"]
+          - ["total_type", "=", "total_asset"]
+        save_as: "posture_total_asset"
+        limit: 1
+
+      - step: "Find posture line for gross_profit"
+        action: "search"
+        model: "general_audit_ws_ff42fdc.posture"
+        domain:
+          - ["worksheet_id", "=", "REC: worksheet.id"]
+          - ["line_type", "=", "total"]
+          - ["total_type", "=", "gross_profit"]
+        save_as: "posture_gross_profit"
+        limit: 1
+
+      - step: "Find posture line for operating_profit"
+        action: "search"
+        model: "general_audit_ws_ff42fdc.posture"
+        domain:
+          - ["worksheet_id", "=", "REC: worksheet.id"]
+          - ["line_type", "=", "total"]
+          - ["total_type", "=", "operating_profit"]
+        save_as: "posture_operating_profit"
+        limit: 1
+
+      - step: "Find posture line for profit_after_tax"
+        action: "search"
+        model: "general_audit_ws_ff42fdc.posture"
+        domain:
+          - ["worksheet_id", "=", "REC: worksheet.id"]
+          - ["line_type", "=", "total"]
+          - ["total_type", "=", "profit_after_tax"]
+        save_as: "posture_profit_after_tax"
+        limit: 1
+
+      - step: "Find posture line for comprehensive_profit"
+        action: "search"
+        model: "general_audit_ws_ff42fdc.posture"
+        domain:
+          - ["worksheet_id", "=", "REC: worksheet.id"]
+          - ["line_type", "=", "total"]
+          - ["total_type", "=", "comprehensive_profit"]
+        save_as: "posture_comprehensive_profit"
+        limit: 1
+
+      # Positive (Previous) - group line's `previous` sums
+      # previous_balance of its member accounts.
+      - step: "Assert posture line for T001 sums its detail, including Previous"
+        action: "assert"
+        target: "posture_t001"
+        asserts:
+          unaudited:
+            type: "value"
+            expected: 1000000.0
+          adjustment_debit:
+            type: "value"
+            expected: 50000.0
+          adjustment_credit:
+            type: "value"
+            expected: 20000.0
+          # T001 is debit-normal: 1,000,000 + 50,000 - 20,000 = 1,030,000
+          audited:
+            type: "value"
+            expected: 1030000.0
+          previous:
+            type: "value"
+            expected: 900000.0
+
+      - step: "Assert posture line for T002 sums its detail, including Previous"
+        action: "assert"
+        target: "posture_t002"
+        asserts:
+          unaudited:
+            type: "value"
+            expected: 500000.0
+          adjustment_debit:
+            type: "value"
+            expected: 15000.0
+          adjustment_credit:
+            type: "value"
+            expected: 45000.0
+          # T002 is debit-normal: 500,000 + 15,000 - 45,000 = 470,000
+          audited:
+            type: "value"
+            expected: 470000.0
+          previous:
+            type: "value"
+            expected: 400000.0
+
+      - step: "Assert posture line for T009 (revenue, credit-normal)"
+        action: "assert"
+        target: "posture_t009"
+        asserts:
+          unaudited:
+            type: "value"
+            expected: 800000.0
+          audited:
+            type: "value"
+            expected: 800000.0
+
+      - step: "Assert posture line for T011 (cost of revenue)"
+        action: "assert"
+        target: "posture_t011"
+        asserts:
+          unaudited:
+            type: "value"
+            expected: 300000.0
+          audited:
+            type: "value"
+            expected: 300000.0
+
+      - step: "Assert posture line for T012 (operating expense)"
+        action: "assert"
+        target: "posture_t012"
+        asserts:
+          unaudited:
+            type: "value"
+            expected: 100000.0
+          audited:
+            type: "value"
+            expected: 100000.0
+
+      # Positive (Total) - total_asset = T001 + T002 on every column,
+      # computed directly from general_audit.detail (not from other
+      # Total lines).
+      - step: "Assert total_asset sums T001 and T002"
+        action: "assert"
+        target: "posture_total_asset"
+        asserts:
+          unaudited:
+            type: "value"
+            # 1,000,000 + 500,000
+            expected: 1500000.0
+          adjustment_debit:
+            type: "value"
+            # 50,000 + 15,000
+            expected: 65000.0
+          adjustment_credit:
+            type: "value"
+            # 20,000 + 45,000
+            expected: 65000.0
+          audited:
+            type: "value"
+            # 1,030,000 + 470,000
+            expected: 1500000.0
+          previous:
+            type: "value"
+            # 900,000 + 400,000
+            expected: 1300000.0
+
+      # Positive (Total berantai) - gross_profit = T009 - T011, and
+      # operating_profit = gross_profit - T012 (result consistency,
+      # not recomputed from scratch).
+      - step: "Assert gross_profit and operating_profit chain correctly"
+        action: "assert"
+        target: "posture_gross_profit"
+        asserts:
+          unaudited:
+            type: "value"
+            # 800,000 - 300,000
+            expected: 500000.0
+          audited:
+            type: "value"
+            expected: 500000.0
+
+      - step: "Assert operating_profit follows from gross_profit minus T012"
+        action: "assert"
+        target: "posture_operating_profit"
+        asserts:
+          unaudited:
+            type: "value"
+            # 500,000 (gross_profit) - 100,000
+            expected: 400000.0
+          audited:
+            type: "value"
+            expected: 400000.0
+
+      # Negatif - T015 has no account registered on the audit, so it
+      # gets no Account Group line, but comprehensive_profit still
+      # exists and equals profit_after_tax because T015's contribution
+      # is 0 (no T010/T013/T014 data either, so profit_after_tax also
+      # equals operating_profit here).
+      - step: "Assert T015 has no Account Group posture line"
+        action: "search"
+        model: "general_audit_ws_ff42fdc.posture"
+        domain:
+          - ["worksheet_id", "=", "REC: worksheet.id"]
+          - ["line_type", "=", "group"]
+          - ["group_id", "=", "REC: group_t015.id"]
+        save_as: "posture_t015_absent"
+        expect_count: 0
+
+      - step: "Assert comprehensive_profit equals profit_after_tax"
+        action: "assert"
+        target: "posture_comprehensive_profit"
+        asserts:
+          unaudited:
+            type: "value"
+            expected: 400000.0
+          audited:
+            type: "value"
+            expected: 400000.0
+
+      - step: "Assert profit_after_tax matches (T015 contributes 0)"
+        action: "assert"
+        target: "posture_profit_after_tax"
+        asserts:
+          unaudited:
+            type: "value"
+            expected: 400000.0
+          audited:
+            type: "value"
+            expected: 400000.0
+
+      - step: "Load posture a second time without any account change"
+        action: "call"
+        target: "worksheet"
+        method: "action_load_posture"
+        as_user: "base.user_admin"
+
+      - step: "Assert still exactly 14 posture lines (diff-based, no duplicates)"
+        action: "search"
+        model: "general_audit_ws_ff42fdc.posture"
+        domain:
+          - ["worksheet_id", "=", "REC: worksheet.id"]
+        save_as: "postures_after_reload"
+        expect_count: 14
 
   # ------------------------------------------------------------------
   # general_audit_ws_b555edd - Cancel and restart
@@ -1016,3 +1803,516 @@ scenarios:
           parent_type_id:
             type: "m2o"
             expected_xml_id: "ssi_general_audit_worksheet_draft_reporting.worksheet_type_b555edd"
+
+  # ------------------------------------------------------------------
+  # general_audit_ws_de69c2f - Links tab: audit_result_id /
+  # management_letter_id / management_representation_id compute+store
+  # (issue #322, third revision, meniru pola general_audit_ws_fbbe0f8)
+  # ------------------------------------------------------------------
+  - name: "Worksheet de69c2f - Links auto-filled on create (positive)"
+    steps:
+      - step: "Create conclusion for ff42fdc worksheet type"
+        action: "create"
+        model: "general_audit_worksheet_conclusion"
+        save_as: "conclusion_ff42fdc"
+        as_user: "base.user_admin"
+        values:
+          name: "Opinion documented - Links Scenario"
+          code: "/"
+          type_id: "REC: ws_type_ff42fdc.id"
+
+      - step: "Create audit_result (ff42fdc) sibling for the same audit"
+        action: "create"
+        model: "general_audit_ws_ff42fdc"
+        save_as: "ws_audit_result"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_ff42fdc.id"
+
+      - step: "Open audit_result sibling"
+        action: "call"
+        target: "ws_audit_result"
+        method: "action_open"
+        as_user: "base.user_admin"
+
+      - step: "Write conclusion on audit_result sibling"
+        action: "write"
+        target: "ws_audit_result"
+        as_user: "base.user_admin"
+        values:
+          conclusion_id: "REC: conclusion_ff42fdc.id"
+          conclusion: "Opinion documented and ready for reference."
+
+      - step: "Create conclusion for ae598e6 worksheet type"
+        action: "create"
+        model: "general_audit_worksheet_conclusion"
+        save_as: "conclusion_ae598e6"
+        as_user: "base.user_admin"
+        values:
+          name: "Management letter finalised - Links Scenario"
+          code: "/"
+          type_id: "REC: ws_type_ae598e6.id"
+
+      - step: "Create management_letter (ae598e6) sibling for the same audit"
+        action: "create"
+        model: "general_audit_ws_ae598e6"
+        save_as: "ws_management_letter"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_ae598e6.id"
+
+      - step: "Open management_letter sibling"
+        action: "call"
+        target: "ws_management_letter"
+        method: "action_open"
+        as_user: "base.user_admin"
+
+      - step: "Write conclusion on management_letter sibling"
+        action: "write"
+        target: "ws_management_letter"
+        as_user: "base.user_admin"
+        values:
+          conclusion_id: "REC: conclusion_ae598e6.id"
+          conclusion: "Management letter drafted and ready for reference."
+
+      - step: "Create conclusion for bbbdfe7 worksheet type"
+        action: "create"
+        model: "general_audit_worksheet_conclusion"
+        save_as: "conclusion_bbbdfe7"
+        as_user: "base.user_admin"
+        values:
+          name: "Representation obtained - Links Scenario"
+          code: "/"
+          type_id: "REC: ws_type_bbbdfe7.id"
+
+      - step: "Create management_representation (bbbdfe7) sibling"
+        action: "create"
+        model: "general_audit_ws_bbbdfe7"
+        save_as: "ws_management_representation"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_bbbdfe7.id"
+
+      - step: "Open management_representation sibling"
+        action: "call"
+        target: "ws_management_representation"
+        method: "action_open"
+        as_user: "base.user_admin"
+
+      - step: "Write conclusion on management_representation sibling"
+        action: "write"
+        target: "ws_management_representation"
+        as_user: "base.user_admin"
+        values:
+          conclusion_id: "REC: conclusion_bbbdfe7.id"
+          conclusion: "Representation letter obtained and filed."
+
+      - step: "Create worksheet de69c2f (siblings already open)"
+        action: "create"
+        model: "general_audit_ws_de69c2f"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_de69c2f.id"
+
+      - step: "Assert audit_result link filled automatically without reload"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          audit_result_id:
+            type: "m2o"
+            expected: "REC: ws_audit_result"
+          audit_result_state:
+            type: "value"
+            expected: "open"
+          audit_result_conclusion:
+            type: "value"
+            expected: "Opinion documented and ready for reference."
+
+      - step: "Assert management_letter link filled automatically without reload"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          management_letter_id:
+            type: "m2o"
+            expected: "REC: ws_management_letter"
+          management_letter_state:
+            type: "value"
+            expected: "open"
+          management_letter_conclusion:
+            type: "value"
+            expected: "Management letter drafted and ready for reference."
+
+      - step:
+          "Assert management_representation link filled automatically without reload"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          management_representation_id:
+            type: "m2o"
+            expected: "REC: ws_management_representation"
+          management_representation_state:
+            type: "value"
+            expected: "open"
+          management_representation_conclusion:
+            type: "value"
+            expected: "Representation letter obtained and filed."
+
+  - name: "Worksheet de69c2f - Links stay empty while siblings are draft (negative)"
+    steps:
+      - step: "Create audit_result (ff42fdc) sibling, left in draft"
+        action: "create"
+        model: "general_audit_ws_ff42fdc"
+        save_as: "ws_audit_result_draft"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_ff42fdc.id"
+
+      - step: "Assert audit_result sibling really is still draft"
+        action: "assert"
+        target: "ws_audit_result_draft"
+        asserts:
+          state:
+            type: "value"
+            expected: "draft"
+
+      - step: "Create worksheet de69c2f while sibling is draft"
+        action: "create"
+        model: "general_audit_ws_de69c2f"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_de69c2f.id"
+
+      - step: "Assert audit_result_id stays empty (state=draft excluded)"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          audit_result_id:
+            type: "m2o"
+            expected: false
+          management_letter_id:
+            type: "m2o"
+            expected: false
+          management_representation_id:
+            type: "m2o"
+            expected: false
+
+  - name: "Worksheet de69c2f - action_reload_links refreshes all three links"
+    steps:
+      - step: "Create worksheet de69c2f before any sibling exists"
+        action: "create"
+        model: "general_audit_ws_de69c2f"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_de69c2f.id"
+
+      - step: "Open worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_open"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after opening worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Assert audit_result_id still empty before any sibling exists"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          audit_result_id:
+            type: "m2o"
+            expected: false
+
+      - step: "Create audit_result (ff42fdc) sibling after the fact"
+        action: "create"
+        model: "general_audit_ws_ff42fdc"
+        save_as: "ws_audit_result_late"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_ff42fdc.id"
+
+      - step: "Open the late audit_result sibling"
+        action: "call"
+        target: "ws_audit_result_late"
+        method: "action_open"
+        as_user: "base.user_admin"
+
+      - step: "Click Reload to refresh the Links tab"
+        action: "call"
+        target: "worksheet"
+        method: "action_reload_links"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after reload"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Assert audit_result_id now filled after Reload"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          audit_result_id:
+            type: "m2o"
+            expected: "REC: ws_audit_result_late"
+          audit_result_state:
+            type: "value"
+            expected: "open"
+
+  # ------------------------------------------------------------------
+  # general_audit_ws_ff42fdc.total_formula - REVISI 4: Total amounts
+  # are read from the configurable formula table, not a hardcoded
+  # dict, and editing it changes an existing worksheet after Reload.
+  # ------------------------------------------------------------------
+  - name: "Posture ff42fdc - Total Formula is configurable data (REVISI 4)"
+    steps:
+      - step: "Create client account type for T001 (Current Asset)"
+        action: "create"
+        model: "client_account_type"
+        save_as: "account_type_t001"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Account Type T001 - Total Formula"
+          code: "/"
+          group_id: "REC: group_t001.id"
+          normal_balance: "dr"
+          python_code: "result = 0.0"
+
+      - step: "Create client account type for T002 (Non Current Asset)"
+        action: "create"
+        model: "client_account_type"
+        save_as: "account_type_t002"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Account Type T002 - Total Formula"
+          code: "/"
+          group_id: "REC: group_t002.id"
+          normal_balance: "dr"
+          python_code: "result = 0.0"
+
+      - step: "Create client account for T001"
+        action: "create"
+        model: "client_account"
+        save_as: "account_t001"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Client Account T001 - Total Formula"
+          code: "ACC-T001-FORMULA"
+          partner_id: "REC: client.id"
+          type_id: "REC: account_type_t001.id"
+
+      - step: "Create client account for T002"
+        action: "create"
+        model: "client_account"
+        save_as: "account_t002"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Client Account T002 - Total Formula"
+          code: "ACC-T002-FORMULA"
+          partner_id: "REC: client.id"
+          type_id: "REC: account_type_t002.id"
+
+      - step: "Create client account mapping for the audit"
+        action: "create"
+        model: "client_account_mapping"
+        save_as: "mapping"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+
+      - step: "Map client account T001"
+        action: "create"
+        model: "client_account_mapping.detail"
+        save_as: "mapping_detail_t001"
+        as_user: "base.user_admin"
+        values:
+          mapping_id: "REC: mapping.id"
+          account_id: "REC: account_t001.id"
+
+      - step: "Map client account T002"
+        action: "create"
+        model: "client_account_mapping.detail"
+        save_as: "mapping_detail_t002"
+        as_user: "base.user_admin"
+        values:
+          mapping_id: "REC: mapping.id"
+          account_id: "REC: account_t002.id"
+
+      - step: "Reload general audit accounts from the mapping"
+        action: "call"
+        target: "audit"
+        method: "action_reload_account"
+        as_user: "base.user_admin"
+
+      - step: "Create home trial balance"
+        action: "create"
+        model: "client_trial_balance"
+        save_as: "tb_home"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          trial_balance_type: "home"
+
+      - step: "Home trial balance line for T001 (debit 200,000)"
+        action: "create"
+        model: "client_trial_balance.detail"
+        save_as: "tb_home_detail_t001"
+        as_user: "base.user_admin"
+        values:
+          trial_balance_id: "REC: tb_home.id"
+          account_id: "REC: account_t001.id"
+          debit: 200000.0
+
+      - step: "Home trial balance line for T002 (debit 300,000)"
+        action: "create"
+        model: "client_trial_balance.detail"
+        save_as: "tb_home_detail_t002"
+        as_user: "base.user_admin"
+        values:
+          trial_balance_id: "REC: tb_home.id"
+          account_id: "REC: account_t002.id"
+          debit: 300000.0
+
+      - step: "Create worksheet ff42fdc for total formula"
+        action: "create"
+        model: "general_audit_ws_ff42fdc"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_ff42fdc.id"
+
+      - step: "Open worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_open"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after opening worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Load posture"
+        action: "call"
+        target: "worksheet"
+        method: "action_load_posture"
+        as_user: "base.user_admin"
+
+      - step: "Find posture line for total_asset"
+        action: "search"
+        model: "general_audit_ws_ff42fdc.posture"
+        domain:
+          - ["worksheet_id", "=", "REC: worksheet.id"]
+          - ["line_type", "=", "total"]
+          - ["total_type", "=", "total_asset"]
+        save_as: "posture_total_asset"
+        limit: 1
+
+      # Positive (formula dari data, before editing) - total_asset =
+      # T001 + T002, same arithmetic the old hardcoded dict produced,
+      # proving the migration to configurable data changed nothing.
+      - step: "Assert total_asset sums T001 and T002 from the seeded formula"
+        action: "assert"
+        target: "posture_total_asset"
+        asserts:
+          unaudited:
+            type: "value"
+            # 200,000 + 300,000
+            expected: 500000.0
+
+      - step: "Find the seeded total_asset/T002 formula line"
+        action: "search"
+        model: "general_audit_ws_ff42fdc.total_formula"
+        domain:
+          - ["total_type", "=", "total_asset"]
+          - ["group_id", "=", "REC: group_t002.id"]
+        save_as: "formula_total_asset_t002"
+        limit: 1
+
+      - step: "Remove T002 from the total_asset formula"
+        action: "unlink"
+        target: "formula_total_asset_t002"
+        as_user: "base.user_admin"
+
+      - step: "Click Reload on the worksheet after editing the formula"
+        action: "call"
+        target: "worksheet"
+        method: "action_load_posture"
+        as_user: "base.user_admin"
+
+      # Positive (REVISI 4) - after removing T002 from the total_asset
+      # formula and pressing Reload, the amount changes to T001 alone
+      # instead of staying at T001 + T002, proving the value really
+      # comes from the formula table rather than a leftover dict.
+      - step: "Assert total_asset now sums T001 alone after Reload"
+        action: "assert"
+        target: "posture_total_asset"
+        refresh: true
+        asserts:
+          unaudited:
+            type: "value"
+            expected: 200000.0
+
+      - step: "Find all total_liability formula lines"
+        action: "search"
+        model: "general_audit_ws_ff42fdc.total_formula"
+        domain:
+          - ["total_type", "=", "total_liability"]
+        save_as: "formula_total_liability_lines"
+
+      - step: "Remove every total_liability formula line"
+        action: "unlink"
+        target: "formula_total_liability_lines"
+        as_user: "base.user_admin"
+
+      - step: "Click Reload again with total_liability formula now empty"
+        action: "call"
+        target: "worksheet"
+        method: "action_load_posture"
+        as_user: "base.user_admin"
+
+      - step: "Find posture line for total_liability"
+        action: "search"
+        model: "general_audit_ws_ff42fdc.posture"
+        domain:
+          - ["worksheet_id", "=", "REC: worksheet.id"]
+          - ["line_type", "=", "total"]
+          - ["total_type", "=", "total_liability"]
+        save_as: "posture_total_liability"
+        limit: 1
+
+      # Negative (REVISI 4) - a total_type with no configured formula
+      # line still exists as a posture line, with zero on every
+      # column, instead of raising.
+      - step: "Assert total_liability still exists with zero amounts"
+        action: "assert"
+        target: "posture_total_liability"
+        asserts:
+          unaudited:
+            type: "value"
+            expected: 0.0
+          adjustment_debit:
+            type: "value"
+            expected: 0.0
+          adjustment_credit:
+            type: "value"
+            expected: 0.0
+          audited:
+            type: "value"
+            expected: 0.0
+          previous:
+            type: "value"
+            expected: 0.0

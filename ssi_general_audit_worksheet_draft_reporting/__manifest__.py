@@ -11,6 +11,7 @@
     "installable": True,
     "depends": [
         "ssi_general_audit_worksheet_audit_result",
+        "web_tour",
     ],
     "data": [
         "security/ir_module_category_data.xml",
@@ -51,6 +52,8 @@
         "data/sequence_template/general_audit_ws_ff42fdc.xml",
         "data/policy_template/general_audit_ws_ff42fdc.xml",
         "data/approval_template/general_audit_ws_ff42fdc.xml",
+        "data/master/general_audit_ws_ff42fdc_total_formula.xml",
+        "views/ga_ff42fdc/general_audit_ws_ff42fdc_total_formula_views.xml",
         "views/ga_ff42fdc/general_audit_ws_ff42fdc_views.xml",
         # ae598e6 - Management Letter
         "security/res_group/general_audit_ws_ae598e6.xml",
@@ -70,6 +73,7 @@
         "views/ga_bbbdfe7/general_audit_ws_bbbdfe7_views.xml",
         "views/ga_bbbdfe7/general_audit_ws_bbbdfe7_item_views.xml",
         "security/ir.model.access.csv",
+        "views/assets.xml",
     ],
     "demo": [],
 }
