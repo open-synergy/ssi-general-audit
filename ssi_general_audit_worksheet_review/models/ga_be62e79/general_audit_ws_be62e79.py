@@ -39,3 +39,11 @@ class GeneralAuditWSbe62e79(models.Model):
         comodel_name="general_audit_ws_be62e79.checklist",
         help="Checklist lines for this worksheet.",
     )
+    financial_accounting_standard_id = fields.Many2one(
+        string="Financial Accounting Standard",
+        related="general_audit_id.financial_accounting_standard_id",
+        store=False,
+        help="Financial accounting standard (e.g. IFRS, PSAK Umum, PSAK "
+        "ETAP) selected on the General Audit engagement, shown here for "
+        "reference.",
+    )
