@@ -9,9 +9,11 @@
 - **Record:** Status is **Open**. `raw_data` and `conclusion` are editable only while
   the worksheet is Open; outside that state they are read-only. Both are inherited
   generically from the base worksheet (`general_audit_worksheet`) except `raw_data`,
-  which this module adds.
+  which this module adds. `financial_accounting_standard_id` is always read-only
+  (related from the parent General Audit).
 - **Data:** A General Audit engagement already exists and is Open, with a worksheet of
-  this type already created for it.
+  this type already created for it. Its **Financial Accounting Standard** (e.g. IFRS,
+  PSAK Umum, PSAK ETAP) is set, since the worksheet shows it for reference.
 - **Data:** The auditor has completed the financial statement disclosure checklist for
   the applicable financial reporting framework (e.g. IFRS, PSAK Umum, PSAK ETAP) outside
   Odoo (e.g. in a spreadsheet) and exported it as CSV.
@@ -21,10 +23,12 @@
 ## Flow
 
 1. Open the **Windup & Reporting > Review > Financial Statement Disclosure** menu.
-2. Open the worksheet to fill in.
+2. Open the worksheet to fill in. The **Financial Accounting Standard** field (below
+   Reviewer) shows which checklist variant applies.
 3. Click the **Edit** button.
-4. Paste the completed disclosure checklist CSV (item, source standard, note, and
-   Yes/No/N-A status per row) into the **Raw Data** field.
+4. Open the **Checklist** tab (the first tab), then paste the completed disclosure
+   checklist CSV (item, source standard, note, and Yes/No/N-A status per row) into the
+   **Raw Data** field.
 5. Fill in the **Conclusion** narrative text field with a summary of the completeness
    assessment.
 6. Click **Save**.

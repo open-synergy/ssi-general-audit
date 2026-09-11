@@ -22,6 +22,11 @@ class GeneralAuditWSa025441(models.Model):
     ``general_audit_worksheet_mixin``), and master data for
     ``conclusion_id`` covering this worksheet type already includes
     Complete/Incomplete-equivalent options.
+
+    ``financial_accounting_standard_id`` is shown as a read-only reference
+    (related from the parent General Audit) so the auditor knows which
+    disclosure checklist variant applies before pasting it into
+    ``raw_data``.
     """
 
     _name = "general_audit_ws_a025441"
@@ -39,4 +44,13 @@ class GeneralAuditWSa025441(models.Model):
         help="Raw data in CSV format containing the completed financial "
         "statement disclosure checklist (item, source standard, note, "
         "and Yes/No/N-A status per row).",
+    )
+    financial_accounting_standard_id = fields.Many2one(
+        string="Financial Accounting Standard",
+        related="general_audit_id.financial_accounting_standard_id",
+        store=False,
+        help="Financial accounting standard (e.g. IFRS, PSAK Umum, PSAK "
+        "ETAP) selected on the General Audit engagement, shown here for "
+        "reference when choosing which disclosure checklist to paste "
+        "into Raw Data.",
     )

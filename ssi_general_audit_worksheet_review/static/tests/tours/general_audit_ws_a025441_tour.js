@@ -78,6 +78,20 @@ odoo.define(
                         // Assertion only; do not trigger the default click action.
                     },
                 },
+                {
+                    // Financial_accounting_standard_id -- related, read-only
+                    // display of the engagement's standard, shown below
+                    // Reviewer so the auditor knows which checklist variant
+                    // to paste. Value comes from setUpClass's
+                    // "Test Standard - A025441 Tour" fixture.
+                    content: "Financial Accounting Standard is shown",
+                    trigger:
+                        ".o_field_widget[name='financial_accounting_standard_id']" +
+                        ":contains(Test Standard - A025441 Tour)",
+                    run: function () {
+                        // Assertion only; do not trigger the default click action.
+                    },
+                },
 
                 // Flow 3 - Click the Edit button
                 //
@@ -97,8 +111,18 @@ odoo.define(
                     },
                 },
 
-                // Flow 4 - Paste the completed disclosure checklist CSV
-                // into Raw Data.
+                // Flow 4 - Open the Checklist tab, then paste the
+                // completed disclosure checklist CSV into Raw Data.
+                //
+                // "Checklist" is the first notebook page, so it is
+                // already active on load -- the click is still issued
+                // per odoo-development-ui-test skill
+                // references/patterns-fields.md §Jebakan 1c (safe even
+                // when the page happens to already be active).
+                {
+                    content: "Open the Checklist tab",
+                    trigger: ".o_notebook .nav-link:contains(Checklist)",
+                },
                 //
                 // widget="csv_table" (FieldCsvTable) switches its own
                 // tagName to "div" in edit mode so it can nest a toggle

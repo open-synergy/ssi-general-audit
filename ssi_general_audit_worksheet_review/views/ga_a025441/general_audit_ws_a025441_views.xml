@@ -41,20 +41,18 @@
         />
         <field name="arch" type="xml">
             <data>
-                <xpath expr="//group[@name='footer']" position="after">
-                    <group
-                        name="a025441_raw_data"
-                        string="Disclosure Checklist (CSV)"
-                        colspan="4"
-                        col="1"
-                    >
+                <xpath expr="//field[@name='reviewer_id']/.." position="after">
+                    <field name="financial_accounting_standard_id" readonly="1" />
+                </xpath>
+                <xpath expr="//page[@name='standard_audit']" position="before">
+                    <page name="checklist" string="Checklist">
                         <field
                             name="raw_data"
                             nolabel="1"
                             widget="csv_table"
                             placeholder="Paste the completed financial statement disclosure checklist (item, source standard, note, Yes/No/N-A status) as CSV."
                         />
-                    </group>
+                    </page>
                 </xpath>
             </data>
         </field>
