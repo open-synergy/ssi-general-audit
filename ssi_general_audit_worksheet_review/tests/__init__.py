@@ -6,4 +6,5 @@ from . import test_general_audit_ws_a025441
 from . import test_general_audit_ws_bcc0d76
 from . import test_general_audit_ws_cae598e
 from . import test_general_audit_ws_checklist
+from . import test_ui_general_audit_ws_a025441
 from . import test_worksheet_type_data
