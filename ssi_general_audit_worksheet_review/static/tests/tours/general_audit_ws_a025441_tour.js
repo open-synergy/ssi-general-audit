@@ -132,69 +132,108 @@ odoo.define(
                 // so the " textarea" suffix is required (not the usual
                 // exception -- see odoo-development-ui-test skill
                 // references/patterns-fields.md §C, Text row).
+                //
+                // `run` is a FUNCTION here, not a "text ..." string --
+                // deliberately, not stylistically. Odoo 14's tour engine
+                // parses a string `run` with a regex that has no /s or
+                // /m flag (tour_manager.js ~line 499:
+                // /^([a-zA-Z0-9_]+) *(?:\(? *(.+?) *\)?)?$/), so "." never
+                // matches "\n": a multi-line CSV payload makes the regex
+                // return null and the very next line's `m[1]` throws
+                // "Cannot read properties of null (reading '1')" --
+                // deterministically, proven from two full CI runs
+                // (PR #327, run 34603243888) where this was the ONLY
+                // failure and it recurred at the identical point on an
+                // unchanged-code rerun (ruling out the registered S-01
+                // core race, which has a different message entirely:
+                // "Cannot SET properties of null (setting 'props')").
+                // The function form bypasses that regex parser
+                // completely (tour_manager.js branches on
+                // `typeof tip.run === "function"` before ever reaching
+                // it) and calls the same underlying helper
+                // (`RunningTourActionHelper.text`,
+                // running_tour_action_helper.js) directly.
                 {
                     content: "Paste the disclosure checklist CSV into Raw Data",
                     trigger: ".o_field_widget[name='raw_data'] textarea",
                     extra_trigger: ".o_form_view.o_form_editable",
-                    run:
-                        "text Item,Standard,Note,Status\n" +
-                        "PSAK 1 - Basis of preparation,PSAK 1,Note 2,Yes",
+                    run: function (actions) {
+                        actions.text(
+                            "Item,Standard,Note,Status\n" +
+                                "PSAK 1 - Basis of preparation,PSAK 1,Note 2,Yes"
+                        );
+                    },
                 },
 
-                // Flow 5 - Fill in the Conclusion narrative text
-                // (conclusion, a plain Text field inherited generically
-                // from general_audit_worksheet -- not a field this
-                // ticket adds). Picking conclusion_id (the companion
-                // Many2one) was tried here too, but its autocomplete
-                // dropdown never rendered in this environment for
-                // reasons that could not be pinned down from the server
-                // log across three attempts (typed search, then a plain
-                // "click" open both left the tour waiting on
-                // ".ui-autocomplete:visible" until timeout, with the
-                // preceding name_search calls returning the same result
-                // count regardless of interaction) -- and no other tour
-                // in this repo exercises conclusion_id, so there is no
-                // working precedent to compare against either. Since
-                // conclusion_id is unrelated to what this ticket
-                // changes and its ORM-level behavior is already covered
-                // by the YAML unit test, it is left out of this UI tour
-                // rather than debugged further here.
+                // Flow 5 - Select the Conclusion (conclusion_id, inherited
+                // generically from general_audit_worksheet -- master data
+                // for worksheet_type_a025441 already ships with the module,
+                // see data/master/general_audit_worksheet_conclusion.xml).
+                {
+                    content: "Open the Conclusion dropdown",
+                    trigger: ".o_field_many2one[name='conclusion_id'] input",
+                    run: "text Financial Statement Disclosure has been completed",
+                },
+                {
+                    content: "Pick the Conclusion from the dropdown",
+                    trigger:
+                        ".ui-autocomplete:visible " +
+                        "li a:contains(Financial Statement Disclosure has been completed)",
+                    in_modal: false,
+                },
+
+                // Flow 6 - Fill in the Conclusion narrative text
                 {
                     content: "Fill in the Conclusion narrative",
                     trigger: ".o_field_widget[name='conclusion']",
                     run: "text All disclosure items reviewed and documented.",
                 },
 
-                // Flow 6 - Save
-                //
-                // Post-Condition (record persisted with the entered
-                // values) is NOT asserted here through the readonly
-                // re-render. Every attempt to wait on
-                // ".o_form_view.o_form_readonly" after this click --
-                // across four different step sequences, and confirmed
-                // non-flaky by an identical-code rerun (same crash
-                // point both times, ruling out the registered S-01 core
-                // race) -- crashes the tour engine itself
-                // ("TypeError: Cannot read properties of null" inside
-                // web_tour's own _to_next_running_step, not a selector
-                // timeout). The leading suspect is the csv_table widget
-                // (module ssi_web_widget_csv_table, a SEPARATE repo
-                // installed here from the package index, not this
-                // module's own code): its tagName is only forced to
-                // "div" when the widget is first created in edit mode;
-                // an instance first created readonly (the normal way
-                // 14.0 opens an existing record) inherits FieldText's
-                // own "span", and _renderReadonly() then appends a
-                // <table> into that <span> -- invalid nesting. That
-                // fix belongs to ssi-web, not this module, and could
-                // not be verified through this repo's
-                // test-module-ci-local.sh, which installs csv_table
-                // from the published package, not the local checkout.
-                // Persistence of raw_data/conclusion is still verified
-                // at the ORM level by the YAML unit test.
+                // Flow 7 - Save
                 {
                     content: "Save the worksheet",
                     trigger: ".o_form_button_save",
+                },
+                {
+                    content: "Worksheet is saved",
+                    trigger: ".o_form_view.o_form_readonly",
+                    run: function () {
+                        // Assertion only; do not trigger the default click action.
+                    },
+                },
+
+                // Post-Condition - Raw Data, Conclusion (m2o) and the
+                // Conclusion narrative show the saved values. csv_table
+                // renders plain <td> text cells in readonly mode (not
+                // <input class="csv_table_cell_input">, which only
+                // exists in edit mode) -- assert on the <td> text, on
+                // the data row (row 0 is the header).
+                {
+                    content: "Raw Data shows the saved disclosure checklist row",
+                    trigger:
+                        ".o_field_widget[name='raw_data'] " +
+                        "td:contains(PSAK 1 - Basis of preparation)",
+                    run: function () {
+                        // Assertion only; do not trigger the default click action.
+                    },
+                },
+                {
+                    content: "Conclusion shows the saved selection",
+                    trigger:
+                        ".o_field_widget[name='conclusion_id']" +
+                        ":contains(Financial Statement Disclosure has been completed)",
+                    run: function () {
+                        // Assertion only; do not trigger the default click action.
+                    },
+                },
+                {
+                    content: "Conclusion narrative shows the saved text",
+                    trigger:
+                        ".o_field_widget[name='conclusion']" +
+                        ":contains(All disclosure items reviewed and documented.)",
+                    run: function () {
+                        // Assertion only; do not trigger the default click action.
+                    },
                 },
             ]
         );
