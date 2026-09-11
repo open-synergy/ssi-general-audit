@@ -107,103 +107,30 @@ setup:
       xml_id: "ssi_general_audit_worksheet_review.worksheet_type_a025441"
       save_as: "ws_type_a025441"
 
-    - step: "Create relevant accounting standard"
-      action: "create"
-      model: "client_relevant_account_type"
-      save_as: "relevant_type"
-      as_user: "base.user_admin"
-      values:
-        name: "Test Relevant Accounting Standard"
-        code: "/"
-
-    - step: "Create checklist option set"
-      action: "create"
-      model: "checklist.option_set"
-      save_as: "option_set"
-      as_user: "base.user_admin"
-      values:
-        name: "Test Option Set - a025441"
-        code: "/"
-
 scenarios:
   # ------------------------------------------------------------------
-  # general_audit_ws_a025441.item - CRUD
+  # general_audit_ws_a025441.item / .checklist -- purged models
+  #
+  # GitHub issue #326: general_audit_ws_a025441 no longer inherits
+  # mixin.checklist, and its item master / checklist value models are
+  # removed from the code entirely (replaced by the raw_data CSV
+  # field, following the General Ledger/Subledger pattern). Prove
+  # neither model is registered anymore.
   # ------------------------------------------------------------------
-  - name: "general_audit_ws_a025441.item - Create"
+  - name: "Purged models are no longer registered (a025441)"
     steps:
-      - step: "Create item"
-        action: "create"
-        model: "general_audit_ws_a025441.item"
-        save_as: "item"
-        as_user: "base.user_admin"
-        values:
-          name: "Test Item A025441"
-          financial_accounting_standard_id: "REC: fas_a.id"
-          relevant_accounting_standard_id: "REC: relevant_type.id"
-          option_set_id: "REC: option_set.id"
-
-      - step: "Assert item created"
-        action: "assert"
-        target: "item"
-        asserts:
-          id:
-            type: "value"
-            operator: "is_truthy"
-          name:
-            type: "value"
-            expected: "Test Item A025441"
-
-  - name: "general_audit_ws_a025441.item - Edit"
-    steps:
-      - step: "Create item"
-        action: "create"
-        model: "general_audit_ws_a025441.item"
-        save_as: "item"
-        as_user: "base.user_admin"
-        values:
-          name: "Test Item A025441"
-          financial_accounting_standard_id: "REC: fas_a.id"
-          relevant_accounting_standard_id: "REC: relevant_type.id"
-          option_set_id: "REC: option_set.id"
-
-      - step: "Write new name"
-        action: "write"
-        target: "item"
-        as_user: "base.user_admin"
-        values:
-          name: "Updated Item A025441"
-
-      - step: "Assert name updated"
-        action: "assert"
-        target: "item"
-        asserts:
-          name:
-            type: "value"
-            expected: "Updated Item A025441"
-
-  - name: "general_audit_ws_a025441.item - Delete"
-    steps:
-      - step: "Create item"
-        action: "create"
-        model: "general_audit_ws_a025441.item"
-        save_as: "item"
-        as_user: "base.user_admin"
-        values:
-          name: "Test Item A025441 To Delete"
-          financial_accounting_standard_id: "REC: fas_a.id"
-          relevant_accounting_standard_id: "REC: relevant_type.id"
-          option_set_id: "REC: option_set.id"
-
-      - step: "Delete item"
-        action: "unlink"
-        target: "item"
-        as_user: "base.user_admin"
-
-      - step: "Verify deleted"
+      - step: "Search ir.model for the purged item/checklist models"
         action: "search"
-        model: "general_audit_ws_a025441.item"
-        domain: [["name", "=", "Test Item A025441 To Delete"]]
-        save_as: "result"
+        model: "ir.model"
+        domain:
+          [
+            [
+              "model",
+              "in",
+              ["general_audit_ws_a025441.item", "general_audit_ws_a025441.checklist"],
+            ],
+          ]
+        save_as: "purged_models"
         expect_count: 0
 
   # ------------------------------------------------------------------
@@ -230,56 +157,17 @@ scenarios:
           state:
             type: "value"
             expected: "draft"
+          raw_data:
+            type: "value"
+            operator: "is_falsy"
 
   # ------------------------------------------------------------------
-  # _get_checklist_item_domain() override
-  #
-  # action: call cannot capture a Python method's return value in this
-  # framework (odoo_yaml_test.case._action_call runs the method and only
-  # supports asserting fields on the target afterwards -- there is no
-  # save_as for a return value). The override is therefore exercised
-  # through action_populate_checklist() (mixin.checklist), the only
-  # production code path that actually consumes
-  # _get_checklist_item_domain(), which is arguably a more faithful test
-  # than inspecting the raw domain list would have been.
+  # raw_data / conclusion_id / conclusion -- fillable while Open
+  # (conclusion_id/conclusion are inherited generically from
+  # general_audit_worksheet; not declared on general_audit_ws_a025441)
   # ------------------------------------------------------------------
-  - name:
-      "Checklist domain filtering (a025441) - only matching financial accounting
-      standard passes"
+  - name: "Fill raw_data, conclusion_id and conclusion while Open (a025441)"
     steps:
-      - step:
-          "Create item matching the general audit's financial accounting standard
-          (FAS-A)"
-        action: "create"
-        model: "general_audit_ws_a025441.item"
-        save_as: "item_fas_a"
-        as_user: "base.user_admin"
-        values:
-          name: "Item FAS-A"
-          financial_accounting_standard_id: "REC: fas_a.id"
-          relevant_accounting_standard_id: "REC: relevant_type.id"
-          option_set_id: "REC: option_set.id"
-
-      - step: "Create a different financial accounting standard (FAS-B)"
-        action: "create"
-        model: "accountant.financial_accounting_standard"
-        save_as: "fas_b"
-        as_user: "base.user_admin"
-        values:
-          name: "Test FAS-B"
-          code: "/"
-
-      - step: "Create item with a different standard (FAS-B, must not pass the domain)"
-        action: "create"
-        model: "general_audit_ws_a025441.item"
-        save_as: "item_fas_b"
-        as_user: "base.user_admin"
-        values:
-          name: "Item FAS-B"
-          financial_accounting_standard_id: "REC: fas_b.id"
-          relevant_accounting_standard_id: "REC: relevant_type.id"
-          option_set_id: "REC: option_set.id"
-
       - step: "Create worksheet a025441"
         action: "create"
         model: "general_audit_ws_a025441"
@@ -300,49 +188,48 @@ scenarios:
         target: "worksheet"
         method: "invalidate_cache"
 
-      - step: "Populate checklist from master items"
-        action: "call"
-        target: "worksheet"
-        method: "action_populate_checklist"
+      - step: "Create conclusion master for a025441 worksheet type"
+        action: "create"
+        model: "general_audit_worksheet_conclusion"
+        save_as: "conclusion_master_fill"
         as_user: "base.user_admin"
+        values:
+          name: "Financial statement disclosures completed"
+          code: "/"
+          type_id: "REC: ws_type_a025441.id"
 
-      - step: "Assert only the FAS-A item was populated"
+      - step: "Fill the disclosure checklist CSV, conclusion_id and conclusion"
+        action: "write"
+        target: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          raw_data:
+            "Item,Standard,Note,Status\nPSAK 1 - Basis of preparation,PSAK 1,Disclosed
+            in Note 2,Yes\n"
+          conclusion_id: "REC: conclusion_master_fill.id"
+          conclusion: "All disclosure items reviewed and documented."
+
+      - step: "Assert the three fields were saved"
         action: "assert"
         target: "worksheet"
         asserts:
-          checklist_ids:
-            type: "o2m"
-            check: "count"
-            expected_count: 1
-
-      - step: "Assert a checklist line exists for the FAS-A item"
-        action: "search"
-        model: "general_audit_ws_a025441.checklist"
-        domain:
-          [
-            ["worksheet_id", "=", "REC: worksheet.id"],
-            ["item_id", "=", "REC: item_fas_a.id"],
-          ]
-        save_as: "line_fas_a"
-        expect_count: 1
-
-      - step: "Assert no checklist line was created for the FAS-B item"
-        action: "search"
-        model: "general_audit_ws_a025441.checklist"
-        domain:
-          [
-            ["worksheet_id", "=", "REC: worksheet.id"],
-            ["item_id", "=", "REC: item_fas_b.id"],
-          ]
-        save_as: "line_fas_b"
-        expect_count: 0
+          raw_data:
+            type: "value"
+            operator: "contains"
+            expected: "PSAK 1 - Basis of preparation"
+          conclusion_id:
+            type: "m2o"
+            expected: "REC: conclusion_master_fill"
+          conclusion:
+            type: "value"
+            expected: "All disclosure items reviewed and documented."
 
   # ------------------------------------------------------------------
-  # general_audit_ws_a025441.checklist - line + related fields
+  # raw_data - readonly locked outside "open" state
   # ------------------------------------------------------------------
-  - name: "Checklist line a025441"
+  - name: "Worksheet a025441 - raw_data readonly outside open"
     steps:
-      - step: "Create worksheet a025441"
+      - step: "Create worksheet, still in draft"
         action: "create"
         model: "general_audit_ws_a025441"
         save_as: "worksheet"
@@ -351,52 +238,16 @@ scenarios:
           general_audit_id: "REC: audit.id"
           type_id: "REC: ws_type_a025441.id"
 
-      - step: "Open worksheet"
-        action: "call"
+      - step: "Setting raw_data via Form must be rejected in draft"
+        action: "form"
         target: "worksheet"
-        method: "action_open"
         as_user: "base.user_admin"
-
-      - step: "Create item for the checklist line"
-        action: "create"
-        model: "general_audit_ws_a025441.item"
-        save_as: "item"
-        as_user: "base.user_admin"
-        values:
-          name: "Item For Checklist Line"
-          financial_accounting_standard_id: "REC: fas_a.id"
-          relevant_accounting_standard_id: "REC: relevant_type.id"
-          option_set_id: "REC: option_set.id"
-
-      - step: "Create checklist line"
-        action: "create"
-        model: "general_audit_ws_a025441.checklist"
-        save_as: "checklist_line"
-        as_user: "base.user_admin"
-        values:
-          worksheet_id: "REC: worksheet.id"
-          item_id: "REC: item.id"
-
-      - step: "Assert checklist_ids contains the new line"
-        action: "assert"
-        target: "worksheet"
-        asserts:
-          checklist_ids:
-            type: "o2m"
-            check: "contains"
-            expected_records:
-              - "REC: checklist_line"
-
-      - step: "Assert related fields on the checklist line"
-        action: "assert"
-        target: "checklist_line"
-        asserts:
-          financial_accounting_standard_id:
-            type: "m2o"
-            expected: "REC: fas_a"
-          relevant_accounting_standard_id:
-            type: "m2o"
-            expected: "REC: relevant_type"
+        save: false
+        ops:
+          - set: {raw_data: "Item,Standard,Note,Status\nPSAK 1,PSAK 1,Note,Yes\n"}
+        expect_error:
+          type: "AssertionError"
+          message_contains: "readonly"
 
   # ------------------------------------------------------------------
   # Workflow
@@ -431,10 +282,17 @@ scenarios:
             type: "value"
             expected: "open"
 
+      - step: "Fill the disclosure checklist before confirm"
+        action: "write"
+        target: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          raw_data: "Item,Standard,Note,Status\nPSAK 1,PSAK 1,Note 2,Yes\n"
+
       - step: "Create conclusion for a025441 worksheet type"
         action: "create"
         model: "general_audit_worksheet_conclusion"
-        save_as: "conclusion"
+        save_as: "conclusion_master"
         as_user: "base.user_admin"
         values:
           name: "Financial statement disclosures reviewed"
@@ -446,7 +304,7 @@ scenarios:
         target: "worksheet"
         as_user: "base.user_admin"
         values:
-          conclusion_id: "REC: conclusion.id"
+          conclusion_id: "REC: conclusion_master.id"
           conclusion: "All disclosure items reviewed and documented."
 
       - step: "Confirm worksheet"

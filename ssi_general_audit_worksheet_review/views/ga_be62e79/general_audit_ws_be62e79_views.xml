@@ -41,6 +41,16 @@
         />
         <field name="arch" type="xml">
             <data>
+                <!-- Scoped to header_right: the plain //field[@name='reviewer_id']
+                     also matches an unrelated invisible many2one_avatar field of
+                     the same name inside header_left, earlier in document order,
+                     which XPath's first-match semantics would pick instead. -->
+                <xpath
+                    expr="//group[@name='header_right']//field[@name='reviewer_id']/.."
+                    position="after"
+                >
+                    <field name="financial_accounting_standard_id" readonly="1" />
+                </xpath>
                 <xpath expr="//page[@name='note']" position="before">
                     <page name="checklist" string="Checklist">
                         <button

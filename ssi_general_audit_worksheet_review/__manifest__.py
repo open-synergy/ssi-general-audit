@@ -4,13 +4,15 @@
 # pylint: disable=locally-disabled, manifest-required-author
 {
     "name": "General Audit Worksheet - Review",
-    "version": "14.0.1.1.1",
+    "version": "14.0.1.1.2",
     "website": "https://simetri-sinergi.id",
     "author": "OpenSynergy Indonesia, PT. Simetri Sinergi Indonesia",
     "license": "AGPL-3",
     "installable": True,
     "depends": [
         "ssi_general_audit",
+        "ssi_web_widget_csv_table",
+        "web_tour",
     ],
     "data": [
         "security/ir_module_category_data.xml",
@@ -38,7 +40,7 @@
         "data/policy_template/general_audit_ws_a025441.xml",
         "data/approval_template/general_audit_ws_a025441.xml",
         "views/ga_a025441/general_audit_ws_a025441_views.xml",
-        "views/ga_a025441/general_audit_ws_a025441_item_views.xml",
+        "views/assets.xml",
         # bcc0d76 - Audit Quality
         "security/res_group/general_audit_ws_bcc0d76.xml",
         "security/ir_rule/general_audit_ws_bcc0d76.xml",
