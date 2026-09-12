@@ -2316,3 +2316,198 @@ scenarios:
           previous:
             type: "value"
             expected: 0.0
+
+  # ------------------------------------------------------------------
+  # general_audit_ws_ff42fdc.posture - T015 (Other Comprehensive Income)
+  # interleaved between the Total lines profit_after_tax and
+  # comprehensive_profit (HT/26/000736; _POSTURE_LINE_ORDER)
+  # ------------------------------------------------------------------
+  - name:
+      "Posture ff42fdc - T015 sits between Profit After Tax and Comprehensive Profit"
+    steps:
+      - step: "Create client account type for T009 (Main Revenue)"
+        action: "create"
+        model: "client_account_type"
+        save_as: "account_type_t009_order"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Account Type T009 - T015 Order"
+          code: "/"
+          group_id: "REC: group_t009.id"
+          normal_balance: "cr"
+          python_code: "result = 0.0"
+
+      - step: "Create client account type for T015 (Other Comprehensive Income)"
+        action: "create"
+        model: "client_account_type"
+        save_as: "account_type_t015_order"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Account Type T015 - T015 Order"
+          code: "/"
+          group_id: "REC: group_t015.id"
+          normal_balance: "cr"
+          python_code: "result = 0.0"
+
+      - step: "Create client account for T009"
+        action: "create"
+        model: "client_account"
+        save_as: "account_t009_order"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Client Account T009 - T015 Order"
+          code: "ACC-T009-ORDER"
+          partner_id: "REC: client.id"
+          type_id: "REC: account_type_t009_order.id"
+
+      - step: "Create client account for T015"
+        action: "create"
+        model: "client_account"
+        save_as: "account_t015_order"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Client Account T015 - T015 Order"
+          code: "ACC-T015-ORDER"
+          partner_id: "REC: client.id"
+          type_id: "REC: account_type_t015_order.id"
+
+      - step: "Create client account mapping for the audit"
+        action: "create"
+        model: "client_account_mapping"
+        save_as: "mapping_order"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+
+      - step: "Map client account T009"
+        action: "create"
+        model: "client_account_mapping.detail"
+        save_as: "mapping_detail_t009_order"
+        as_user: "base.user_admin"
+        values:
+          mapping_id: "REC: mapping_order.id"
+          account_id: "REC: account_t009_order.id"
+
+      - step: "Map client account T015"
+        action: "create"
+        model: "client_account_mapping.detail"
+        save_as: "mapping_detail_t015_order"
+        as_user: "base.user_admin"
+        values:
+          mapping_id: "REC: mapping_order.id"
+          account_id: "REC: account_t015_order.id"
+
+      - step: "Reload general audit accounts from the mapping"
+        action: "call"
+        target: "audit"
+        method: "action_reload_account"
+        as_user: "base.user_admin"
+
+      - step: "Create home trial balance"
+        action: "create"
+        model: "client_trial_balance"
+        save_as: "tb_home_order"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          trial_balance_type: "home"
+
+      - step: "Home trial balance line for T009 (credit 900,000)"
+        action: "create"
+        model: "client_trial_balance.detail"
+        save_as: "tb_home_detail_t009_order"
+        as_user: "base.user_admin"
+        values:
+          trial_balance_id: "REC: tb_home_order.id"
+          account_id: "REC: account_t009_order.id"
+          credit: 900000.0
+
+      - step: "Home trial balance line for T015 (credit 150,000)"
+        action: "create"
+        model: "client_trial_balance.detail"
+        save_as: "tb_home_detail_t015_order"
+        as_user: "base.user_admin"
+        values:
+          trial_balance_id: "REC: tb_home_order.id"
+          account_id: "REC: account_t015_order.id"
+          credit: 150000.0
+
+      - step: "Create worksheet ff42fdc for T015 ordering"
+        action: "create"
+        model: "general_audit_ws_ff42fdc"
+        save_as: "worksheet_order"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_ff42fdc.id"
+
+      - step: "Open worksheet"
+        action: "call"
+        target: "worksheet_order"
+        method: "action_open"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after opening worksheet"
+        action: "call"
+        target: "worksheet_order"
+        method: "invalidate_cache"
+
+      - step: "Load posture"
+        action: "call"
+        target: "worksheet_order"
+        method: "action_load_posture"
+        as_user: "base.user_admin"
+
+      # Positive - T015 has a balance (via account_t015_order), so it
+      # gets its own Account Group posture line, unlike the negative
+      # scenario above where T015 has no account registered.
+      - step: "Find posture line for T015 (group)"
+        action: "search"
+        model: "general_audit_ws_ff42fdc.posture"
+        domain:
+          - ["worksheet_id", "=", "REC: worksheet_order.id"]
+          - ["line_type", "=", "group"]
+          - ["group_id", "=", "REC: group_t015.id"]
+        save_as: "posture_t015_order"
+        expect_count: 1
+
+      - step: "Find posture line for profit_after_tax"
+        action: "search"
+        model: "general_audit_ws_ff42fdc.posture"
+        domain:
+          - ["worksheet_id", "=", "REC: worksheet_order.id"]
+          - ["line_type", "=", "total"]
+          - ["total_type", "=", "profit_after_tax"]
+        save_as: "posture_profit_after_tax_order"
+        expect_count: 1
+
+      - step: "Find posture line for comprehensive_profit"
+        action: "search"
+        model: "general_audit_ws_ff42fdc.posture"
+        domain:
+          - ["worksheet_id", "=", "REC: worksheet_order.id"]
+          - ["line_type", "=", "total"]
+          - ["total_type", "=", "comprehensive_profit"]
+        save_as: "posture_comprehensive_profit_order"
+        expect_count: 1
+
+      # Positive (Sasaran) - the T015 group line's sequence sits
+      # strictly between profit_after_tax and comprehensive_profit,
+      # per _POSTURE_LINE_ORDER (HT/26/000736).
+      - step: "Assert T015 group posture line sits after Profit After Tax"
+        action: "assert"
+        target: "posture_t015_order"
+        asserts:
+          sequence:
+            type: "value"
+            operator: "gt"
+            expected: "REC: posture_profit_after_tax_order.sequence"
+
+      - step: "Assert T015 group posture line sits before Comprehensive Profit"
+        action: "assert"
+        target: "posture_t015_order"
+        asserts:
+          sequence:
+            type: "value"
+            operator: "lt"
+            expected: "REC: posture_comprehensive_profit_order.sequence"

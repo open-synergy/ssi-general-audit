@@ -78,6 +78,9 @@ class GeneralAuditWSff42fdc(models.Model):
         ("total", "profit_before_tax"),
         ("group", "T014"),
         ("total", "profit_after_tax"),
+        # T015 (Other Comprehensive Income) contributes to
+        # `comprehensive_profit`, so it is interleaved right here.
+        ("group", "T015"),
         ("total", "comprehensive_profit"),
     )
 
