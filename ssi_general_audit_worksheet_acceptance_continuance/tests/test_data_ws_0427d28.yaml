@@ -376,6 +376,97 @@ scenarios:
             operator: "is_falsy"
 
   # ------------------------------------------------------------------
+  # previous_year_audited - toggle visibility condition (issue #328)
+  # ------------------------------------------------------------------
+  - name: "Worksheet 0427d28 - previous_year_audited True is stored"
+    steps:
+      - step: "Create worksheet 0427d28 with previous_year_audited True"
+        action: "create"
+        model: "general_audit_ws_0427d28"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+          previous_year_audited: true
+
+      - step: "Assert previous_year_audited stored True"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          previous_year_audited:
+            type: "value"
+            expected: true
+
+  - name:
+      "Worksheet 0427d28 - previous_year_audited False still allows writing predecessor
+      fields"
+    steps:
+      - step: "Create worksheet 0427d28 without previous_year_audited (default False)"
+        action: "create"
+        model: "general_audit_ws_0427d28"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+
+      - step: "Assert previous_year_audited defaults to False"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          previous_year_audited:
+            type: "value"
+            expected: false
+
+      - step: "Create previous auditor partner in charge (negative scenario)"
+        action: "create"
+        model: "res.partner"
+        save_as: "previous_partner_neg"
+        as_user: "base.user_admin"
+        values:
+          name: "Jane Roe, CPA"
+
+      - step: "Create accountant opinion master data (negative scenario)"
+        action: "create"
+        model: "accountant.opinion"
+        save_as: "opinion_neg"
+        as_user: "base.user_admin"
+        values:
+          name: "Qualified Opinion"
+          code: "/"
+
+      - step: "Write predecessor auditor fields although previous_year_audited is False"
+        action: "write"
+        target: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          previous_partner_in_charge_id: "REC: previous_partner_neg.id"
+          previous_report_number: "PREV-REPORT-0002"
+          previous_report_date: 2025-06-20
+          previous_opinion_id: "REC: opinion_neg.id"
+
+      - step: "Assert predecessor auditor data still saved at data level"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          previous_year_audited:
+            type: "value"
+            expected: false
+          previous_partner_in_charge_id:
+            type: "m2o"
+            expected: "REC: previous_partner_neg"
+          previous_report_number:
+            type: "value"
+            expected: "PREV-REPORT-0002"
+          previous_report_date:
+            type: "value"
+            expected: 2025-06-20
+          previous_opinion_id:
+            type: "m2o"
+            expected: "REC: opinion_neg"
+
+  # ------------------------------------------------------------------
   # general_audit_ws_0427d28 - Workflow open to done
   # ------------------------------------------------------------------
   - name: "Worksheet 0427d28 - Workflow open to done"

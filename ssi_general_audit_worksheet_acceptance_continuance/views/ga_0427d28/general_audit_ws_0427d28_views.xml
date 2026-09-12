@@ -43,22 +43,23 @@
             <data>
                 <xpath expr="//group[@name='header_right']" position="inside">
                     <field name="engagemet" />
+                    <field name="previous_year_audited" />
                     <field
                         name="previous_partner_in_charge_id"
-                        attrs="{'invisible': [('engagemet_ok', '=', True)]}"
+                        attrs="{'invisible': [('previous_year_audited', '=', False)]}"
                         options="{'no_create': True, 'no_create_edit': True}"
                     />
                     <field
                         name="previous_report_number"
-                        attrs="{'invisible': [('engagemet_ok', '=', True)]}"
+                        attrs="{'invisible': [('previous_year_audited', '=', False)]}"
                     />
                     <field
                         name="previous_report_date"
-                        attrs="{'invisible': [('engagemet_ok', '=', True)]}"
+                        attrs="{'invisible': [('previous_year_audited', '=', False)]}"
                     />
                     <field
                         name="previous_opinion_id"
-                        attrs="{'invisible': [('engagemet_ok', '=', True)]}"
+                        attrs="{'invisible': [('previous_year_audited', '=', False)]}"
                         options="{'no_create': True, 'no_create_edit': True}"
                     />
                     <field name="engagemet_ok" invisible="1" />

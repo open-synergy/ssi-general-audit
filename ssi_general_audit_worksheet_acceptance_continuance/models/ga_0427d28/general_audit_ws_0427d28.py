@@ -116,3 +116,14 @@ class GeneralAuditWS0427d28(models.Model):
             "is recurring (True) or initial (False)."
         ),
     )
+    previous_year_audited = fields.Boolean(
+        string="Was Last Year's Financial Statement Audited?",
+        help=(
+            "Manual answer indicating whether the client's financial "
+            "statement for the previous year was audited. This value "
+            "(not engagemet_ok) controls the visibility of the "
+            "predecessor auditor fields below: previous_partner_in_"
+            "charge_id, previous_report_number, previous_report_date, "
+            "and previous_opinion_id."
+        ),
+    )
