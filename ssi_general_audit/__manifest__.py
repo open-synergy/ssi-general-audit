@@ -97,6 +97,7 @@
         "views/tb/client_trial_balance_computation_views.xml",
         "views/tb/client_trial_balance_group_detail_views.xml",
         "views/tb/client_trial_balance_standard_detail_views.xml",
+        "wizards/import_adjustment_entry_detail.xml",
         "views/client_adjustment_entry_views.xml",
         "views/client_account/client_account_mapping_views.xml",
         "views/worksheet/general_audit_worksheet_mixin_views.xml",
