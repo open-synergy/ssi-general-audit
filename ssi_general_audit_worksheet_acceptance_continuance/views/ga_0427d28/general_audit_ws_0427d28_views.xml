@@ -43,26 +43,30 @@
             <data>
                 <xpath expr="//group[@name='header_right']" position="inside">
                     <field name="engagemet" />
-                    <field name="previous_year_audited" />
+                    <field
+                        name="acceptance_continuance_id"
+                        options="{'no_create': True, 'no_create_edit': True}"
+                    />
                     <field
                         name="previous_partner_in_charge_id"
-                        attrs="{'invisible': [('previous_year_audited', '=', False)]}"
+                        attrs="{'invisible': ['|', ('engagemet_ok', '=', True), ('financial_statement', '!=', 'available_audit')]}"
                         options="{'no_create': True, 'no_create_edit': True}"
                     />
                     <field
                         name="previous_report_number"
-                        attrs="{'invisible': [('previous_year_audited', '=', False)]}"
+                        attrs="{'invisible': ['|', ('engagemet_ok', '=', True), ('financial_statement', '!=', 'available_audit')]}"
                     />
                     <field
                         name="previous_report_date"
-                        attrs="{'invisible': [('previous_year_audited', '=', False)]}"
+                        attrs="{'invisible': ['|', ('engagemet_ok', '=', True), ('financial_statement', '!=', 'available_audit')]}"
                     />
                     <field
                         name="previous_opinion_id"
-                        attrs="{'invisible': [('previous_year_audited', '=', False)]}"
+                        attrs="{'invisible': ['|', ('engagemet_ok', '=', True), ('financial_statement', '!=', 'available_audit')]}"
                         options="{'no_create': True, 'no_create_edit': True}"
                     />
                     <field name="engagemet_ok" invisible="1" />
+                    <field name="financial_statement" invisible="1" />
                 </xpath>
                 <xpath expr="//page[@name='note']" position="before">
                     <page

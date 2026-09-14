@@ -376,95 +376,198 @@ scenarios:
             operator: "is_falsy"
 
   # ------------------------------------------------------------------
-  # previous_year_audited - toggle visibility condition (issue #328)
+  # acceptance_continuance_id / financial_statement - link to 806c4e1
+  # (issue #332, replaces previous_year_audited from issue #328)
   # ------------------------------------------------------------------
-  - name: "Worksheet 0427d28 - previous_year_audited True is stored"
-    steps:
-      - step: "Create worksheet 0427d28 with previous_year_audited True"
-        action: "create"
-        model: "general_audit_ws_0427d28"
-        save_as: "worksheet"
-        as_user: "base.user_admin"
-        values:
-          general_audit_id: "REC: audit.id"
-          type_id: "REC: ws_type.id"
-          previous_year_audited: true
-
-      - step: "Assert previous_year_audited stored True"
-        action: "assert"
-        target: "worksheet"
-        asserts:
-          previous_year_audited:
-            type: "value"
-            expected: true
-
   - name:
-      "Worksheet 0427d28 - previous_year_audited False still allows writing predecessor
-      fields"
+      "Worksheet 0427d28 - Links to 806c4e1 when financial_statement is available_audit"
     steps:
-      - step: "Create worksheet 0427d28 without previous_year_audited (default False)"
+      - step: "Get worksheet type 806c4e1"
+        action: "ref"
+        xml_id: "ssi_general_audit_worksheet_acceptance_continuance.worksheet_type_806c4e1"
+        save_as: "ws_type_806c4e1"
+
+      - step: "Create general audit with 0 consecutive years"
+        action: "create"
+        model: "general_audit"
+        save_as: "audit_link_available"
+        as_user: "base.user_admin"
+        values:
+          title: "Test General Audit - 0427d28 Link Available Audit"
+          partner_id: "REC: client.id"
+          accountant_id: "REC: accountant.id"
+          account_type_set_id: "REC: account_type_set.id"
+          financial_accounting_standard_id: "REC: standard.id"
+          date_start: 2026-01-01
+          date_end: 2026-12-31
+          need_interim: false
+          need_previous: false
+          num_of_consecutive_audit_firm: 0
+          num_of_consecutive_audit_accountant: 0
+
+      - step: "Open general audit"
+        action: "call"
+        target: "audit_link_available"
+        method: "action_open"
+        as_user: "base.user_admin"
+
+      - step: "Create worksheet 806c4e1 with financial_statement available_audit"
+        action: "create"
+        model: "general_audit_ws_806c4e1"
+        save_as: "acceptance"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit_link_available.id"
+          type_id: "REC: ws_type_806c4e1.id"
+          financial_statement: "available_audit"
+
+      - step: "Create worksheet 0427d28 on the same general audit"
         action: "create"
         model: "general_audit_ws_0427d28"
         save_as: "worksheet"
         as_user: "base.user_admin"
         values:
-          general_audit_id: "REC: audit.id"
+          general_audit_id: "REC: audit_link_available.id"
           type_id: "REC: ws_type.id"
 
-      - step: "Assert previous_year_audited defaults to False"
+      - step: "Assert acceptance_continuance_id and financial_statement propagated"
         action: "assert"
         target: "worksheet"
         asserts:
-          previous_year_audited:
+          acceptance_continuance_id:
+            type: "m2o"
+            expected: "REC: acceptance"
+          financial_statement:
             type: "value"
-            expected: false
+            expected: "available_audit"
 
-      - step: "Create previous auditor partner in charge (negative scenario)"
+      - step: "Create previous auditor partner in charge"
         action: "create"
         model: "res.partner"
-        save_as: "previous_partner_neg"
+        save_as: "previous_partner_link"
         as_user: "base.user_admin"
         values:
-          name: "Jane Roe, CPA"
+          name: "Richard Roe, CPA"
 
-      - step: "Create accountant opinion master data (negative scenario)"
+      - step: "Create accountant opinion master data"
         action: "create"
         model: "accountant.opinion"
-        save_as: "opinion_neg"
+        save_as: "opinion_link"
         as_user: "base.user_admin"
         values:
-          name: "Qualified Opinion"
+          name: "Unmodified Opinion"
           code: "/"
 
-      - step: "Write predecessor auditor fields although previous_year_audited is False"
+      - step: "Write predecessor auditor data"
         action: "write"
         target: "worksheet"
         as_user: "base.user_admin"
         values:
-          previous_partner_in_charge_id: "REC: previous_partner_neg.id"
-          previous_report_number: "PREV-REPORT-0002"
-          previous_report_date: 2025-06-20
-          previous_opinion_id: "REC: opinion_neg.id"
+          previous_partner_in_charge_id: "REC: previous_partner_link.id"
+          previous_report_number: "PREV-REPORT-0003"
+          previous_report_date: 2025-09-01
+          previous_opinion_id: "REC: opinion_link.id"
 
-      - step: "Assert predecessor auditor data still saved at data level"
+      - step: "Assert predecessor auditor data saved"
         action: "assert"
         target: "worksheet"
         asserts:
-          previous_year_audited:
-            type: "value"
-            expected: false
           previous_partner_in_charge_id:
             type: "m2o"
-            expected: "REC: previous_partner_neg"
+            expected: "REC: previous_partner_link"
           previous_report_number:
             type: "value"
-            expected: "PREV-REPORT-0002"
+            expected: "PREV-REPORT-0003"
           previous_report_date:
             type: "value"
-            expected: 2025-06-20
+            expected: 2025-09-01
           previous_opinion_id:
             type: "m2o"
-            expected: "REC: opinion_neg"
+            expected: "REC: opinion_link"
+
+  - name:
+      "Worksheet 0427d28 - Links to 806c4e1 even when financial_statement is not
+      available_audit"
+    steps:
+      - step: "Get worksheet type 806c4e1"
+        action: "ref"
+        xml_id: "ssi_general_audit_worksheet_acceptance_continuance.worksheet_type_806c4e1"
+        save_as: "ws_type_806c4e1"
+
+      - step: "Create general audit with 0 consecutive years"
+        action: "create"
+        model: "general_audit"
+        save_as: "audit_link_unavailable"
+        as_user: "base.user_admin"
+        values:
+          title: "Test General Audit - 0427d28 Link No Available Audit"
+          partner_id: "REC: client.id"
+          accountant_id: "REC: accountant.id"
+          account_type_set_id: "REC: account_type_set.id"
+          financial_accounting_standard_id: "REC: standard.id"
+          date_start: 2026-01-01
+          date_end: 2026-12-31
+          need_interim: false
+          need_previous: false
+          num_of_consecutive_audit_firm: 0
+          num_of_consecutive_audit_accountant: 0
+
+      - step: "Open general audit"
+        action: "call"
+        target: "audit_link_unavailable"
+        method: "action_open"
+        as_user: "base.user_admin"
+
+      - step: "Create worksheet 806c4e1 with financial_statement no_available"
+        action: "create"
+        model: "general_audit_ws_806c4e1"
+        save_as: "acceptance_unavailable"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit_link_unavailable.id"
+          type_id: "REC: ws_type_806c4e1.id"
+          financial_statement: "no_available"
+
+      - step: "Create worksheet 0427d28 on the same general audit"
+        action: "create"
+        model: "general_audit_ws_0427d28"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit_link_unavailable.id"
+          type_id: "REC: ws_type.id"
+
+      - step: "Assert link is still set but financial_statement is not available_audit"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          acceptance_continuance_id:
+            type: "m2o"
+            expected: "REC: acceptance_unavailable"
+          financial_statement:
+            type: "value"
+            expected: "no_available"
+
+  - name:
+      "Worksheet 0427d28 - acceptance_continuance_id stays empty without a 806c4e1
+      record"
+    steps:
+      - step: "Create worksheet 0427d28 on the shared audit (no 806c4e1 created)"
+        action: "create"
+        model: "general_audit_ws_0427d28"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+
+      - step: "Assert acceptance_continuance_id is empty, no error"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          acceptance_continuance_id:
+            type: "value"
+            operator: "is_falsy"
 
   # ------------------------------------------------------------------
   # general_audit_ws_0427d28 - Workflow open to done

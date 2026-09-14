@@ -116,14 +116,60 @@ class GeneralAuditWS0427d28(models.Model):
             "is recurring (True) or initial (False)."
         ),
     )
-    previous_year_audited = fields.Boolean(
-        string="Was Last Year's Financial Statement Audited?",
+
+    def _get_acceptance_continuance_criteria(self):
+        """Build the domain selecting the linked 806c4e1 worksheet.
+
+        Extension point: override to change how the "Acceptance and
+        Continuance of Client Relationship Analysis" worksheet
+        (``general_audit_ws_806c4e1``) is matched to this worksheet.
+
+        :return: an Odoo search domain
+        """
+        self.ensure_one()
+        return [("general_audit_id", "=", self.general_audit_id.id)]
+
+    @api.depends("general_audit_id")
+    def _compute_acceptance_continuance_id(self):
+        """Link to the 806c4e1 worksheet sharing the same general audit.
+
+        Mirrors the reverse cross-reference already used by
+        ``general_audit_ws_806c4e1`` (``link_1``..``link_4``): the
+        record for the same ``general_audit_id`` is looked up
+        automatically, so the user never sets this field by hand.
+        """
+        obj_806c4e1 = self.env["general_audit_ws_806c4e1"]
+        for record in self:
+            result = False
+            criteria = record._get_acceptance_continuance_criteria()
+            acceptance_continuance = obj_806c4e1.search(criteria, limit=1)
+            if acceptance_continuance:
+                result = acceptance_continuance.id
+            record.acceptance_continuance_id = result
+
+    acceptance_continuance_id = fields.Many2one(
+        string="Acceptance and Continuance Analysis",
+        comodel_name="general_audit_ws_806c4e1",
+        compute="_compute_acceptance_continuance_id",
+        compute_sudo=True,
+        store=True,
         help=(
-            "Manual answer indicating whether the client's financial "
-            "statement for the previous year was audited. This value "
-            "(not engagemet_ok) controls the visibility of the "
-            "predecessor auditor fields below: previous_partner_in_"
-            "charge_id, previous_report_number, previous_report_date, "
-            "and previous_opinion_id."
+            "Linked 'Acceptance and Continuance of Client Relationship "
+            "Analysis' worksheet (general_audit_ws_806c4e1) for the same "
+            "general audit. Computed automatically, not user-editable."
+        ),
+    )
+    financial_statement = fields.Selection(
+        string="Prior Period Financial Statement",
+        related="acceptance_continuance_id.financial_statement",
+        store=True,
+        readonly=True,
+        help=(
+            "Prior period financial statement availability, mirrored "
+            "from the linked acceptance_continuance_id worksheet. "
+            "Together with engagemet_ok, this determines whether the "
+            "predecessor auditor fields below are shown: previous_"
+            "partner_in_charge_id, previous_report_number, previous_"
+            "report_date, and previous_opinion_id."
         ),
     )
