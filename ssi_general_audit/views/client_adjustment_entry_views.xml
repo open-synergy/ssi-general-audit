@@ -96,6 +96,14 @@
                 </xpath>
                 <xpath expr="//page[@name='note']" position="before">
                     <page name="detail" string="Details">
+                        <button
+                            name="%(import_adjustment_entry_detail_action)d"
+                            type="action"
+                            string="Import"
+                            class="oe_highlight"
+                            icon="fa-upload"
+                            attrs="{'invisible': [('state', '!=', 'draft')]}"
+                        />
                         <field name="detail_ids">
                             <tree editable="top">
                                 <field
