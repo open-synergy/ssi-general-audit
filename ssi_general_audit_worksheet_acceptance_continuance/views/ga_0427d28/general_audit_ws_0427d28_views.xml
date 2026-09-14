@@ -44,10 +44,6 @@
                 <xpath expr="//group[@name='header_right']" position="inside">
                     <field name="engagemet" />
                     <field
-                        name="acceptance_continuance_id"
-                        options="{'no_create': True, 'no_create_edit': True}"
-                    />
-                    <field
                         name="previous_partner_in_charge_id"
                         attrs="{'invisible': ['|', ('engagemet_ok', '=', True), ('financial_statement', '!=', 'available_audit')]}"
                         options="{'no_create': True, 'no_create_edit': True}"
@@ -66,7 +62,6 @@
                         options="{'no_create': True, 'no_create_edit': True}"
                     />
                     <field name="engagemet_ok" invisible="1" />
-                    <field name="financial_statement" invisible="1" />
                 </xpath>
                 <xpath expr="//page[@name='note']" position="before">
                     <page
@@ -114,6 +109,23 @@
                                 </sheet>
                             </form>
                         </field>
+                    </page>
+                </xpath>
+                <xpath expr="//page[@name='note']" position="before">
+                    <page name="links" string="Links">
+                        <group>
+                            <group
+                                name="acceptance_continuance"
+                                string="Acceptance and Continuance of Client Relationship Analysis"
+                            >
+                                <field
+                                    name="acceptance_continuance_id"
+                                    string="# Worksheet"
+                                    options="{'no_create': True, 'no_create_edit': True}"
+                                />
+                                <field name="financial_statement" />
+                            </group>
+                        </group>
                     </page>
                 </xpath>
                 <xpath expr="//field[@name='conclusion_id']" position="before">
