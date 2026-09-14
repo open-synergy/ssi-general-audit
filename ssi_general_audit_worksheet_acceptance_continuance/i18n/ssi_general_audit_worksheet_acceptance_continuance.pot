@@ -54,6 +54,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_acceptance_continuance.field_general_audit_ws_b9d8a5c_summary__worksheet_id
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_acceptance_continuance.field_general_audit_ws_f5e7049__worksheet_id
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_acceptance_continuance.field_general_audit_ws_f5e7049_checklist__worksheet_id
+#: model_terms:ir.ui.view,arch_db:ssi_general_audit_worksheet_acceptance_continuance.general_audit_ws_0427d28_view_form
 #: model_terms:ir.ui.view,arch_db:ssi_general_audit_worksheet_acceptance_continuance.general_audit_ws_805d4d5_view_form
 #: model_terms:ir.ui.view,arch_db:ssi_general_audit_worksheet_acceptance_continuance.general_audit_ws_806c4e1_view_form
 #: model_terms:ir.ui.view,arch_db:ssi_general_audit_worksheet_acceptance_continuance.general_audit_ws_842f0d6_view_form
@@ -64,6 +65,16 @@ msgstr ""
 #. module: ssi_general_audit_worksheet_acceptance_continuance
 #: model_terms:ir.ui.view,arch_db:ssi_general_audit_worksheet_acceptance_continuance.general_audit_ws_805d4d5_view_form
 msgid "A. Basic Information of the Customer"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_acceptance_continuance
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_acceptance_continuance.field_general_audit_ws_0427d28__acceptance_continuance_id
+msgid "Acceptance and Continuance Analysis"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_acceptance_continuance
+#: model_terms:ir.ui.view,arch_db:ssi_general_audit_worksheet_acceptance_continuance.general_audit_ws_0427d28_view_form
+msgid "Acceptance and Continuance of Client Relationship Analysis"
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_acceptance_continuance
@@ -2497,6 +2508,15 @@ msgid "Legal form/type of the entity (e.g., PT, CV, Foundation)."
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_acceptance_continuance
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_acceptance_continuance.field_general_audit_ws_0427d28__acceptance_continuance_id
+msgid ""
+"Linked 'Acceptance and Continuance of Client Relationship Analysis' "
+"worksheet (general_audit_ws_806c4e1) for the same general audit. Computed "
+"automatically, not user-editable."
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_acceptance_continuance
+#: model_terms:ir.ui.view,arch_db:ssi_general_audit_worksheet_acceptance_continuance.general_audit_ws_0427d28_view_form
 #: model_terms:ir.ui.view,arch_db:ssi_general_audit_worksheet_acceptance_continuance.general_audit_ws_805d4d5_view_form
 #: model_terms:ir.ui.view,arch_db:ssi_general_audit_worksheet_acceptance_continuance.general_audit_ws_806c4e1_view_form
 #: model_terms:ir.ui.view,arch_db:ssi_general_audit_worksheet_acceptance_continuance.general_audit_ws_842f0d6_view_form
@@ -2608,16 +2628,6 @@ msgstr ""
 #. module: ssi_general_audit_worksheet_acceptance_continuance
 #: model:ir.actions.act_window,name:ssi_general_audit_worksheet_acceptance_continuance.general_audit_ws_f5e7049_item_action
 msgid "Management Integrity Checklists"
-msgstr ""
-
-#. module: ssi_general_audit_worksheet_acceptance_continuance
-#: model:ir.model.fields,help:ssi_general_audit_worksheet_acceptance_continuance.field_general_audit_ws_0427d28__previous_year_audited
-msgid ""
-"Manual answer indicating whether the client's financial statement for the "
-"previous year was audited. This value (not engagemet_ok) controls the "
-"visibility of the predecessor auditor fields below: "
-"previous_partner_in_charge_id, previous_report_number, previous_report_date,"
-" and previous_opinion_id."
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_acceptance_continuance
@@ -3680,8 +3690,19 @@ msgid "Primary industry classification of the entity (res.partner.industry)."
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_acceptance_continuance
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_acceptance_continuance.field_general_audit_ws_0427d28__financial_statement
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_acceptance_continuance.field_general_audit_ws_806c4e1__financial_statement
 msgid "Prior Period Financial Statement"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_acceptance_continuance
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_acceptance_continuance.field_general_audit_ws_0427d28__financial_statement
+msgid ""
+"Prior period financial statement availability, mirrored from the linked "
+"acceptance_continuance_id worksheet. Together with engagemet_ok, this "
+"determines whether the predecessor auditor fields "
+"(previous_partner_in_charge_id, previous_report_number, "
+"previous_report_date, previous_opinion_id) and the Checklist page are shown."
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_acceptance_continuance
@@ -4780,11 +4801,6 @@ msgstr ""
 #: model:res.groups,name:ssi_general_audit_worksheet_acceptance_continuance.general_audit_ws_b9d8a5c_viewer_group
 #: model:res.groups,name:ssi_general_audit_worksheet_acceptance_continuance.general_audit_ws_f5e7049_viewer_group
 msgid "Viewer"
-msgstr ""
-
-#. module: ssi_general_audit_worksheet_acceptance_continuance
-#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_acceptance_continuance.field_general_audit_ws_0427d28__previous_year_audited
-msgid "Was Last Year's Financial Statement Audited?"
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_acceptance_continuance
