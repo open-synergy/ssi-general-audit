@@ -29,6 +29,9 @@ class TestImportAdjustmentEntryDetail(YamlTransactionCase):
         :return: tuple ``(entry, known_account)`` -- the draft entry and
             one ``client_account`` known to its client partner
         """
+        self.env["ir.config_parameter"].sudo().set_param(
+            "ssi_general_audit.max_number_of_cpa_license", "100"
+        )
         client = self.env["res.partner"].create(
             {
                 "name": "Test Client - Import Adjustment Entry",
