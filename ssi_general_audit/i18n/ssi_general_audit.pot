@@ -98,12 +98,26 @@ msgid ""
 msgstr ""
 
 #. module: ssi_general_audit
+#: code:addons/ssi_general_audit/wizards/import_adjustment_entry_detail.py:0
+#, python-format
+msgid ""
+"\n"
+"Context: Import Adjustment Entry Detail\n"
+"Database ID: %s\n"
+"Problem: Account code %s is not found in the client's chart of\n"
+"    accounts\n"
+"Solution: Fix the account code in the CSV file, or create the\n"
+"    account first\n"
+msgstr ""
+
+#. module: ssi_general_audit
 #: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit__account_mapping_id
 msgid "# Account Mapping"
 msgstr ""
 
 #. module: ssi_general_audit
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_adjustment_entry_detail__entry_id
+#: model:ir.model.fields,field_description:ssi_general_audit.field_import_adjustment_entry_detail__entry_id
 msgid "# Adjustment Entry"
 msgstr ""
 
@@ -1021,6 +1035,11 @@ msgid "Adjustment entry documents created for this audit."
 msgstr ""
 
 #. module: ssi_general_audit
+#: model:ir.model.fields,help:ssi_general_audit.field_import_adjustment_entry_detail__entry_id
+msgid "Adjustment entry that will receive the imported lines."
+msgstr ""
+
+#. module: ssi_general_audit
 #: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit_detail__adjustment_ids
 msgid "Adjustments"
 msgstr ""
@@ -1546,6 +1565,12 @@ msgid "CPA"
 msgstr ""
 
 #. module: ssi_general_audit
+#: model:ir.model.fields,help:ssi_general_audit.field_import_adjustment_entry_detail__data
+msgid ""
+"CSV file with columns (no header): account code, description, debit, credit."
+msgstr ""
+
+#. module: ssi_general_audit
 #: model:ir.model.fields,help:ssi_general_audit.field_client_trial_balance_computation__amount
 msgid "Calculated amount produced by the computation code."
 msgstr ""
@@ -1656,6 +1681,7 @@ msgid "Can Start"
 msgstr ""
 
 #. module: ssi_general_audit
+#: model_terms:ir.ui.view,arch_db:ssi_general_audit.import_adjustment_entry_detail_view_form
 #: model_terms:ir.ui.view,arch_db:ssi_general_audit.import_client_account_view_form
 #: model_terms:ir.ui.view,arch_db:ssi_general_audit.import_trial_balance_detail_view_form
 msgid "Cancel"
@@ -2273,6 +2299,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit_worksheet_summary__create_uid
 #: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit_worksheet_type__create_uid
 #: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit_worksheet_type_category__create_uid
+#: model:ir.model.fields,field_description:ssi_general_audit.field_import_adjustment_entry_detail__create_uid
 #: model:ir.model.fields,field_description:ssi_general_audit.field_import_client_account__create_uid
 #: model:ir.model.fields,field_description:ssi_general_audit.field_import_trial_balance_detail__create_uid
 #: model:ir.model.fields,field_description:ssi_general_audit.field_team_role__create_uid
@@ -2316,6 +2343,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit_worksheet_summary__create_date
 #: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit_worksheet_type__create_date
 #: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit_worksheet_type_category__create_date
+#: model:ir.model.fields,field_description:ssi_general_audit.field_import_adjustment_entry_detail__create_date
 #: model:ir.model.fields,field_description:ssi_general_audit.field_import_client_account__create_date
 #: model:ir.model.fields,field_description:ssi_general_audit.field_import_trial_balance_detail__create_date
 #: model:ir.model.fields,field_description:ssi_general_audit.field_team_role__create_date
@@ -2736,6 +2764,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit_worksheet_type__display_name
 #: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit_worksheet_type_category__display_name
 #: model:ir.model.fields,field_description:ssi_general_audit.field_hr_employee__display_name
+#: model:ir.model.fields,field_description:ssi_general_audit.field_import_adjustment_entry_detail__display_name
 #: model:ir.model.fields,field_description:ssi_general_audit.field_import_client_account__display_name
 #: model:ir.model.fields,field_description:ssi_general_audit.field_import_trial_balance_detail__display_name
 #: model:ir.model.fields,field_description:ssi_general_audit.field_mixin_checklist__display_name
@@ -3138,6 +3167,7 @@ msgid "Fair Value Measurement"
 msgstr ""
 
 #. module: ssi_general_audit
+#: model:ir.model.fields,field_description:ssi_general_audit.field_import_adjustment_entry_detail__data
 #: model:ir.model.fields,field_description:ssi_general_audit.field_import_client_account__data
 #: model:ir.model.fields,field_description:ssi_general_audit.field_import_trial_balance_detail__data
 msgid "File"
@@ -3626,6 +3656,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit_worksheet_type__id
 #: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit_worksheet_type_category__id
 #: model:ir.model.fields,field_description:ssi_general_audit.field_hr_employee__id
+#: model:ir.model.fields,field_description:ssi_general_audit.field_import_adjustment_entry_detail__id
 #: model:ir.model.fields,field_description:ssi_general_audit.field_import_client_account__id
 #: model:ir.model.fields,field_description:ssi_general_audit.field_import_trial_balance_detail__id
 #: model:ir.model.fields,field_description:ssi_general_audit.field_mixin_checklist__id
@@ -3863,9 +3894,17 @@ msgid "Implemented"
 msgstr ""
 
 #. module: ssi_general_audit
+#: model_terms:ir.ui.view,arch_db:ssi_general_audit.client_adjustment_entry_view_form
+#: model_terms:ir.ui.view,arch_db:ssi_general_audit.import_adjustment_entry_detail_view_form
 #: model_terms:ir.ui.view,arch_db:ssi_general_audit.import_client_account_view_form
 #: model_terms:ir.ui.view,arch_db:ssi_general_audit.import_trial_balance_detail_view_form
 msgid "Import"
+msgstr ""
+
+#. module: ssi_general_audit
+#: model:ir.actions.act_window,name:ssi_general_audit.import_adjustment_entry_detail_action
+#: model:ir.model,name:ssi_general_audit.model_import_adjustment_entry_detail
+msgid "Import Adjustment Entry Detail"
 msgstr ""
 
 #. module: ssi_general_audit
@@ -4283,6 +4322,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit_worksheet_type____last_update
 #: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit_worksheet_type_category____last_update
 #: model:ir.model.fields,field_description:ssi_general_audit.field_hr_employee____last_update
+#: model:ir.model.fields,field_description:ssi_general_audit.field_import_adjustment_entry_detail____last_update
 #: model:ir.model.fields,field_description:ssi_general_audit.field_import_client_account____last_update
 #: model:ir.model.fields,field_description:ssi_general_audit.field_import_trial_balance_detail____last_update
 #: model:ir.model.fields,field_description:ssi_general_audit.field_mixin_checklist____last_update
@@ -4330,6 +4370,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit_worksheet_summary__write_uid
 #: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit_worksheet_type__write_uid
 #: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit_worksheet_type_category__write_uid
+#: model:ir.model.fields,field_description:ssi_general_audit.field_import_adjustment_entry_detail__write_uid
 #: model:ir.model.fields,field_description:ssi_general_audit.field_import_client_account__write_uid
 #: model:ir.model.fields,field_description:ssi_general_audit.field_import_trial_balance_detail__write_uid
 #: model:ir.model.fields,field_description:ssi_general_audit.field_team_role__write_uid
@@ -4373,6 +4414,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit_worksheet_summary__write_date
 #: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit_worksheet_type__write_date
 #: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit_worksheet_type_category__write_date
+#: model:ir.model.fields,field_description:ssi_general_audit.field_import_adjustment_entry_detail__write_date
 #: model:ir.model.fields,field_description:ssi_general_audit.field_import_client_account__write_date
 #: model:ir.model.fields,field_description:ssi_general_audit.field_import_trial_balance_detail__write_date
 #: model:ir.model.fields,field_description:ssi_general_audit.field_team_role__write_date
