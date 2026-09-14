@@ -168,8 +168,8 @@ class GeneralAuditWS0427d28(models.Model):
             "Prior period financial statement availability, mirrored "
             "from the linked acceptance_continuance_id worksheet. "
             "Together with engagemet_ok, this determines whether the "
-            "predecessor auditor fields below are shown: previous_"
-            "partner_in_charge_id, previous_report_number, previous_"
-            "report_date, and previous_opinion_id."
+            "predecessor auditor fields (previous_partner_in_charge_id, "
+            "previous_report_number, previous_report_date, previous_"
+            "opinion_id) and the Checklist page are shown."
         ),
     )

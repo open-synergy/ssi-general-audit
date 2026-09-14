@@ -67,7 +67,7 @@
                     <page
                         name="checklist"
                         string="Checklist"
-                        attrs="{'invisible': [('engagemet_ok', '=', True)]}"
+                        attrs="{'invisible': ['|', ('engagemet_ok', '=', True), ('financial_statement', '!=', 'available_audit')]}"
                     >
                         <button
                             name="action_populate_checklist"
