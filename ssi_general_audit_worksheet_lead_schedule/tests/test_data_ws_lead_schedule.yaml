@@ -1862,3 +1862,496 @@ scenarios:
             type: "m2m"
             check: "count"
             expected_count: 0
+
+  # ==================================================================
+  # b26d482 - Total fields (footer sum on detail_ids)
+  # ==================================================================
+  - name: "b26d482 - Total fields sum across two detail rows (positive)"
+    steps:
+      - step: "Create client account mapping for the audit"
+        action: "create"
+        model: "client_account_mapping"
+        save_as: "mapping"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+
+      - step: "Map client account A"
+        action: "create"
+        model: "client_account_mapping.detail"
+        save_as: "mapping_detail_a"
+        as_user: "base.user_admin"
+        values:
+          mapping_id: "REC: mapping.id"
+          account_id: "REC: account_a.id"
+
+      - step: "Map client account B"
+        action: "create"
+        model: "client_account_mapping.detail"
+        save_as: "mapping_detail_b"
+        as_user: "base.user_admin"
+        values:
+          mapping_id: "REC: mapping.id"
+          account_id: "REC: account_b.id"
+
+      - step: "Reload general audit accounts from the mapping"
+        action: "call"
+        target: "audit"
+        method: "action_reload_account"
+        as_user: "base.user_admin"
+
+      - step: "Find general_audit.detail for account A"
+        action: "search"
+        model: "general_audit.detail"
+        domain:
+          - ["general_audit_id", "=", "REC: audit.id"]
+          - ["account_id", "=", "REC: account_a.id"]
+        save_as: "detail_a"
+        limit: 1
+
+      - step: "Find general_audit.detail for account B"
+        action: "search"
+        model: "general_audit.detail"
+        domain:
+          - ["general_audit_id", "=", "REC: audit.id"]
+          - ["account_id", "=", "REC: account_b.id"]
+        save_as: "detail_b"
+        limit: 1
+
+      - step: "Create home trial balance"
+        action: "create"
+        model: "client_trial_balance"
+        save_as: "tb_home"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          trial_balance_type: "home"
+
+      - step: "Home trial balance line for account A (debit 500,000)"
+        action: "create"
+        model: "client_trial_balance.detail"
+        save_as: "tb_home_detail_a"
+        as_user: "base.user_admin"
+        values:
+          trial_balance_id: "REC: tb_home.id"
+          account_id: "REC: account_a.id"
+          debit: 500000.0
+
+      - step: "Home trial balance line for account B (credit 300,000)"
+        action: "create"
+        model: "client_trial_balance.detail"
+        save_as: "tb_home_detail_b"
+        as_user: "base.user_admin"
+        values:
+          trial_balance_id: "REC: tb_home.id"
+          account_id: "REC: account_b.id"
+          credit: 300000.0
+
+      - step: "Create previous trial balance"
+        action: "create"
+        model: "client_trial_balance"
+        save_as: "tb_previous"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          trial_balance_type: "previous"
+
+      - step: "Previous trial balance line for account A (debit 200,000)"
+        action: "create"
+        model: "client_trial_balance.detail"
+        save_as: "tb_previous_detail_a"
+        as_user: "base.user_admin"
+        values:
+          trial_balance_id: "REC: tb_previous.id"
+          account_id: "REC: account_a.id"
+          debit: 200000.0
+
+      - step: "Previous trial balance line for account B (credit 100,000)"
+        action: "create"
+        model: "client_trial_balance.detail"
+        save_as: "tb_previous_detail_b"
+        as_user: "base.user_admin"
+        values:
+          trial_balance_id: "REC: tb_previous.id"
+          account_id: "REC: account_b.id"
+          credit: 100000.0
+
+      - step: "Create adjustment entry"
+        action: "create"
+        model: "client_adjustment_entry"
+        save_as: "adj_entry"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          adjustment_type: "propose"
+
+      - step: "Adjustment line - account A debit 10,000"
+        action: "create"
+        model: "client_adjustment_entry.detail"
+        save_as: "adj_line_a_dr"
+        as_user: "base.user_admin"
+        values:
+          entry_id: "REC: adj_entry.id"
+          account_id: "REC: account_a.id"
+          name: "Reclass debit A"
+          debit: 10000.0
+
+      - step: "Adjustment line - account A credit 4,000"
+        action: "create"
+        model: "client_adjustment_entry.detail"
+        save_as: "adj_line_a_cr"
+        as_user: "base.user_admin"
+        values:
+          entry_id: "REC: adj_entry.id"
+          account_id: "REC: account_a.id"
+          name: "Reclass credit A"
+          credit: 4000.0
+
+      - step: "Adjustment line - account B debit 6,000"
+        action: "create"
+        model: "client_adjustment_entry.detail"
+        save_as: "adj_line_b_dr"
+        as_user: "base.user_admin"
+        values:
+          entry_id: "REC: adj_entry.id"
+          account_id: "REC: account_b.id"
+          name: "Reclass debit B"
+          debit: 6000.0
+
+      - step: "Adjustment line - account B credit 12,000"
+        action: "create"
+        model: "client_adjustment_entry.detail"
+        save_as: "adj_line_b_cr"
+        as_user: "base.user_admin"
+        values:
+          entry_id: "REC: adj_entry.id"
+          account_id: "REC: account_b.id"
+          name: "Reclass credit B"
+          credit: 12000.0
+
+      - step: "Confirm adjustment entry (total debit 16,000 = total credit 16,000)"
+        action: "call"
+        target: "adj_entry"
+        method: "action_confirm"
+        as_user: "base.user_admin"
+        # WAJIB dua-duanya: asserts MENJALANKAN _refresh, refresh: true
+        # MENGIZINKANNYA (test-traps.md T-04) — tanpa ini approve_ok
+        # terbaca basi milik action_confirm, approve gagal nondeterministik.
+        refresh: true
+        asserts:
+          state:
+            type: "value"
+            expected: "confirm"
+
+      - step: "Approve adjustment entry"
+        action: "call"
+        target: "adj_entry"
+        method: "action_approve_approval"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after approving adjustment entry"
+        action: "call"
+        target: "adj_entry"
+        method: "invalidate_cache"
+
+      - step: "Invalidate cache on general_audit.detail A after adjustment approval"
+        action: "call"
+        target: "detail_a"
+        method: "invalidate_cache"
+
+      - step: "Invalidate cache on general_audit.detail B after adjustment approval"
+        action: "call"
+        target: "detail_b"
+        method: "invalidate_cache"
+
+      - step: "Create worksheet b26d482"
+        action: "create"
+        model: "general_audit_ws_b26d482"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_b26d482.id"
+
+      - step: "Open worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_open"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after opening worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Set balance_type to end_period"
+        action: "write"
+        target: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          balance_type: "end_period"
+
+      - step: "Load detail"
+        action: "call"
+        target: "worksheet"
+        method: "action_load_detail"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache on worksheet after loading detail"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Assert the 5 total_* fields equal the manual sum of detail_ids"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          # current_balance: A = 500,000 (dr-normal), B = 300,000 (cr-normal).
+          total_current_balance:
+            type: "value"
+            expected: 800000.0
+          # adjustment_dr: A = 10,000, B = 6,000.
+          total_debit_adjustments:
+            type: "value"
+            expected: 16000.0
+          # adjustment_cr: A = 4,000, B = 12,000.
+          total_credit_adjustments:
+            type: "value"
+            expected: 16000.0
+          # adjusted_balance: A = 500,000+10,000-4,000 = 506,000;
+          # B = 300,000-6,000+12,000 = 306,000; sum = 812,000.
+          total_adjusted_balance:
+            type: "value"
+            expected: 812000.0
+          # previous_balance: A = 200,000 (dr-normal), B = 100,000 (cr-normal).
+          total_previous_balance:
+            type: "value"
+            expected: 300000.0
+
+  - name: "b26d482 - Total fields recompute after adding a detail row (write, tuple)"
+    steps:
+      - step: "Create client account mapping for the audit"
+        action: "create"
+        model: "client_account_mapping"
+        save_as: "mapping"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+
+      - step: "Map client account A"
+        action: "create"
+        model: "client_account_mapping.detail"
+        save_as: "mapping_detail_a"
+        as_user: "base.user_admin"
+        values:
+          mapping_id: "REC: mapping.id"
+          account_id: "REC: account_a.id"
+
+      - step: "Map client account B"
+        action: "create"
+        model: "client_account_mapping.detail"
+        save_as: "mapping_detail_b"
+        as_user: "base.user_admin"
+        values:
+          mapping_id: "REC: mapping.id"
+          account_id: "REC: account_b.id"
+
+      - step: "Reload general audit accounts from the mapping"
+        action: "call"
+        target: "audit"
+        method: "action_reload_account"
+        as_user: "base.user_admin"
+
+      - step: "Find general_audit.detail for account A"
+        action: "search"
+        model: "general_audit.detail"
+        domain:
+          - ["general_audit_id", "=", "REC: audit.id"]
+          - ["account_id", "=", "REC: account_a.id"]
+        save_as: "detail_a"
+        limit: 1
+
+      - step: "Find general_audit.detail for account B"
+        action: "search"
+        model: "general_audit.detail"
+        domain:
+          - ["general_audit_id", "=", "REC: audit.id"]
+          - ["account_id", "=", "REC: account_b.id"]
+        save_as: "detail_b"
+        limit: 1
+
+      - step: "Create home trial balance"
+        action: "create"
+        model: "client_trial_balance"
+        save_as: "tb_home"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          trial_balance_type: "home"
+
+      - step: "Home trial balance line for account A (debit 700,000)"
+        action: "create"
+        model: "client_trial_balance.detail"
+        save_as: "tb_home_detail_a"
+        as_user: "base.user_admin"
+        values:
+          trial_balance_id: "REC: tb_home.id"
+          account_id: "REC: account_a.id"
+          debit: 700000.0
+
+      - step: "Home trial balance line for account B (credit 250,000)"
+        action: "create"
+        model: "client_trial_balance.detail"
+        save_as: "tb_home_detail_b"
+        as_user: "base.user_admin"
+        values:
+          trial_balance_id: "REC: tb_home.id"
+          account_id: "REC: account_b.id"
+          credit: 250000.0
+
+      - step: "Create worksheet b26d482"
+        action: "create"
+        model: "general_audit_ws_b26d482"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_b26d482.id"
+
+      - step: "Open worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_open"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after opening worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Set balance_type to end_period"
+        action: "write"
+        target: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          balance_type: "end_period"
+
+      - step: "Add the first detail row (account A) directly"
+        action: "create"
+        model: "general_audit_ws_b26d482.detail"
+        save_as: "ws_detail_a"
+        as_user: "base.user_admin"
+        values:
+          worksheet_id: "REC: worksheet.id"
+          detail_id: "REC: detail_a.id"
+
+      - step: "Invalidate cache on worksheet after the first detail row"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Assert totals reflect only account A"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          total_current_balance:
+            type: "value"
+            expected: 700000.0
+          total_debit_adjustments:
+            type: "value"
+            expected: 0.0
+          total_credit_adjustments:
+            type: "value"
+            expected: 0.0
+          total_adjusted_balance:
+            type: "value"
+            expected: 700000.0
+          total_previous_balance:
+            type: "value"
+            expected: 0.0
+
+      - step:
+          "Write: add a second detail row (account B) via inline (0, 0, {...}) tuple"
+        action: "write"
+        target: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          detail_ids:
+            - - 0
+              - 0
+              - detail_id: "REC: detail_b.id"
+
+      - step: "Invalidate cache on worksheet after the second detail row"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Assert totals now include both account A and account B"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          detail_ids:
+            type: "o2m"
+            check: "count"
+            expected_count: 2
+          total_current_balance:
+            type: "value"
+            expected: 950000.0
+          total_debit_adjustments:
+            type: "value"
+            expected: 0.0
+          total_credit_adjustments:
+            type: "value"
+            expected: 0.0
+          total_adjusted_balance:
+            type: "value"
+            expected: 950000.0
+          total_previous_balance:
+            type: "value"
+            expected: 0.0
+
+  - name: "b26d482 - Total fields are zero without any detail_ids (negative)"
+    steps:
+      - step: "Create worksheet b26d482 with no accounts loaded"
+        action: "create"
+        model: "general_audit_ws_b26d482"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_b26d482.id"
+
+      - step: "Open worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_open"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after opening worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Assert the 5 total_* fields are all 0.0 when detail_ids is empty"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          detail_ids:
+            type: "o2m"
+            check: "count"
+            expected_count: 0
+          total_current_balance:
+            type: "value"
+            expected: 0.0
+          total_debit_adjustments:
+            type: "value"
+            expected: 0.0
+          total_credit_adjustments:
+            type: "value"
+            expected: 0.0
+          total_adjusted_balance:
+            type: "value"
+            expected: 0.0
+          total_previous_balance:
+            type: "value"
+            expected: 0.0

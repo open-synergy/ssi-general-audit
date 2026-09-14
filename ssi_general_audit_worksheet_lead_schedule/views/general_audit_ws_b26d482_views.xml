@@ -62,12 +62,27 @@
                                 <field name="detail_id" invisible="1" />
                                 <field name="account_id" />
                                 <field name="currency_id" invisible="1" />
-                                <field name="current_balance" />
+                                <field
+                                    name="current_balance"
+                                    sum="Total Current Balance"
+                                />
                                 <field name="ws_f9f3299_id" string="Lead Schedule" />
-                                <field name="adjustment_dr" />
-                                <field name="adjustment_cr" />
-                                <field name="adjusted_balance" />
-                                <field name="previous_balance" />
+                                <field
+                                    name="adjustment_dr"
+                                    sum="Total Debit Adjustments"
+                                />
+                                <field
+                                    name="adjustment_cr"
+                                    sum="Total Credit Adjustments"
+                                />
+                                <field
+                                    name="adjusted_balance"
+                                    sum="Total Adjusted Balance"
+                                />
+                                <field
+                                    name="previous_balance"
+                                    sum="Total Previous Balance"
+                                />
                             </tree>
                             <form>
                                 <sheet>
@@ -85,6 +100,13 @@
                                 </sheet>
                             </form>
                         </field>
+                        <group name="detail_totals" colspan="4" col="2">
+                            <field name="total_current_balance" />
+                            <field name="total_debit_adjustments" />
+                            <field name="total_credit_adjustments" />
+                            <field name="total_adjusted_balance" />
+                            <field name="total_previous_balance" />
+                        </group>
                     </page>
                 </xpath>
             </data>

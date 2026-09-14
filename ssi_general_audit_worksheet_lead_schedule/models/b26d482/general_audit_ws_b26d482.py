@@ -2,7 +2,7 @@
 # Copyright 2025 PT. Simetri Sinergi Indonesia
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl-3.0-standalone.html).
 
-from odoo import fields, models
+from odoo import api, fields, models
 
 
 class GeneralAuditWSb26d482(models.Model):
@@ -22,6 +22,11 @@ class GeneralAuditWSb26d482(models.Model):
     * **Previous balance** — prior-year comparative.
     * Cross-reference to the per-account-type lead schedule
       (``general_audit_ws_f9f3299``).
+
+    ``total_current_balance``, ``total_debit_adjustments``,
+    ``total_credit_adjustments``, ``total_adjusted_balance`` and
+    ``total_previous_balance`` mirror each Monetary column of
+    ``detail_ids`` as a grand total, shown next to the detail tree.
 
     Use ``action_load_detail`` to synchronise the detail lines with the
     accounts registered on the parent General Audit.
@@ -58,6 +63,75 @@ class GeneralAuditWSb26d482(models.Model):
             "open": [("readonly", False)],
         },
     )
+    total_current_balance = fields.Monetary(
+        string="Total Current Balance",
+        currency_field="currency_id",
+        compute="_compute_total_detail",
+        compute_sudo=True,
+        store=True,
+        help="Sum of the current balance of all detail lines.",
+    )
+    total_debit_adjustments = fields.Monetary(
+        string="Total Debit Adjustments",
+        currency_field="currency_id",
+        compute="_compute_total_detail",
+        compute_sudo=True,
+        store=True,
+        help="Sum of the debit adjustments of all detail lines.",
+    )
+    total_credit_adjustments = fields.Monetary(
+        string="Total Credit Adjustments",
+        currency_field="currency_id",
+        compute="_compute_total_detail",
+        compute_sudo=True,
+        store=True,
+        help="Sum of the credit adjustments of all detail lines.",
+    )
+    total_adjusted_balance = fields.Monetary(
+        string="Total Adjusted Balance",
+        currency_field="currency_id",
+        compute="_compute_total_detail",
+        compute_sudo=True,
+        store=True,
+        help="Sum of the adjusted balance of all detail lines.",
+    )
+    total_previous_balance = fields.Monetary(
+        string="Total Previous Balance",
+        currency_field="currency_id",
+        compute="_compute_total_detail",
+        compute_sudo=True,
+        store=True,
+        help="Sum of the previous balance of all detail lines.",
+    )
+
+    @api.depends(
+        "detail_ids",
+        "detail_ids.current_balance",
+        "detail_ids.adjustment_dr",
+        "detail_ids.adjustment_cr",
+        "detail_ids.adjusted_balance",
+        "detail_ids.previous_balance",
+    )
+    def _compute_total_detail(self):
+        """Sum every Monetary column of ``detail_ids`` onto the parent.
+
+        :return: None, fields are assigned in-place per record.
+        """
+        for record in self:
+            current_balance = (
+                debit_adjustments
+            ) = credit_adjustments = adjusted_balance = previous_balance = 0.0
+            for detail in record.detail_ids:
+                current_balance += detail.current_balance
+                debit_adjustments += detail.adjustment_dr
+                credit_adjustments += detail.adjustment_cr
+                adjusted_balance += detail.adjusted_balance
+                previous_balance += detail.previous_balance
+            record.total_current_balance = current_balance
+            record.total_debit_adjustments = debit_adjustments
+            record.total_credit_adjustments = credit_adjustments
+            record.total_adjusted_balance = adjusted_balance
+            record.total_previous_balance = previous_balance
 
     def action_load_detail(self):
         for record in self.sudo():
