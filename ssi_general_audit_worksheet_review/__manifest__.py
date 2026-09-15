@@ -11,6 +11,7 @@
     "installable": True,
     "depends": [
         "ssi_general_audit",
+        "ssi_general_audit_worksheet_final_report",
         "ssi_web_widget_csv_table",
         "web_tour",
     ],
@@ -66,7 +67,7 @@
         "data/policy_template/general_audit_ws_cae598e.xml",
         "data/approval_template/general_audit_ws_cae598e.xml",
         "views/ga_cae598e/general_audit_ws_cae598e_views.xml",
-        # fc75636 - Independen Auditor Report
+        # fc75636 - Proposed Audit Opinion
         "security/res_group/general_audit_ws_fc75636.xml",
         "security/ir_rule/general_audit_ws_fc75636.xml",
         "data/ir_sequence/general_audit_ws_fc75636.xml",
