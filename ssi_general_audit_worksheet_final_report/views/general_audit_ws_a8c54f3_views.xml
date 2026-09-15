@@ -42,7 +42,10 @@
         <field name="arch" type="xml">
             <data>
                 <xpath expr="//field[@name='conclusion_id']" position="before">
-                    <field name="proposed_audit_opinion_id" />
+                    <field
+                        name="proposed_audit_opinion_id"
+                        attrs="{'readonly': [('state', '!=', 'open')]}"
+                    />
                 </xpath>
             </data>
         </field>
