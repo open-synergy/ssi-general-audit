@@ -11,6 +11,7 @@
     "installable": True,
     "depends": [
         "ssi_general_audit",
+        "ssi_accountant",
     ],
     "data": [
         "security/ir_module_category_data.xml",
@@ -41,6 +42,8 @@
         "data/policy_template/general_audit_ws_f3ed115.xml",
         "data/approval_template/general_audit_ws_f3ed115.xml",
         "views/general_audit_ws_f3ed115_views.xml",
+        "views/general_audit_ws_f3ed115_category_views.xml",
+        "views/general_audit_ws_f3ed115_item_views.xml",
         "security/ir.model.access.csv",
     ],
     "demo": [],

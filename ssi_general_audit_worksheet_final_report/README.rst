@@ -24,9 +24,11 @@ deliverables.  The worksheets in this module cover:
    drafting and reviewing the report issued to users of the financial
    statements, including opinion type, basis for opinion, key audit matters,
    and other reporting responsibilities.
-3. **WS.090.3 — Audit Report** — Internal audit report document capturing the
-   opinion, basis narrative, and all additional paragraphs (emphasis of
-   matter, other matter) before finalising the client-facing report.
+3. **WS.090.3 — Final Communication With TCWG** — Internal audit report
+   document capturing the opinion, basis narrative, and all additional
+   paragraphs (emphasis of matter, other matter) before finalising the
+   client-facing report, plus a checklist confirming the required
+   communication points with those charged with governance.
 
 **Key features:**
 
@@ -38,7 +40,7 @@ deliverables.  The worksheets in this module cover:
 
 - ``general_audit_ws_a8c54f3`` — WS.090.1 Audit Final Memorandum
 - ``general_audit_ws_b66777d`` — WS.090.2 Independent Auditor's Report
-- ``general_audit_ws_f3ed115`` — WS.090.3 Audit Report
+- ``general_audit_ws_f3ed115`` — WS.090.3 Final Communication With TCWG
 
 **ISA / SA references:** ISA 220 / SA 220 — Quality Control for an Audit;
 ISA 700 / SA 700 — Forming an Opinion and Reporting on Financial Statements;
