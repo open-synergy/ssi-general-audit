@@ -196,7 +196,48 @@ class GeneralAuditWSff42fdc(models.Model):
         total_type"), so this Reload is what applies an edited
         formula to a worksheet that already has its Total lines.
 
-        :return: nothing; writes ``posture_ids``
+        ORM cache note (two distinct bugs, both fixed here):
+
+        1. ``posture_ids`` is invalidated at the very end of this
+           method (see the trailing ``invalidate_cache`` call below).
+           Without it, a caller reading ``self.posture_ids`` straight
+           after this method returns -- in the same transaction, e.g.
+           from a test or from a chained method -- would see the
+           Account Group and Total lines in *creation* order instead
+           of ``sequence`` order. This is because ``create()`` (via
+           ``Many2one._update_inverses`` in ``odoo/fields.py``) keeps
+           the worksheet's already-cached ``posture_ids`` tuple
+           "consistent" by *appending* every newly created line's id
+           to it, rather than re-querying the comodel (whose
+           ``_order = "sequence, id"`` only takes effect on a fresh
+           ``search()``).
+        2. Every line is created with an explicit placeholder
+           ``sequence`` of ``-1`` (see the ``create()`` calls below),
+           which ``_resequence_posture_lines`` then always overwrites.
+           Without that placeholder, a line created without
+           ``sequence`` in its vals gets it defaulted to ``0`` in
+           *cache* only (``Integer.convert_to_cache(None, ...)``) --
+           the column itself is left ``NULL`` in the database, since
+           ``sequence`` is absent from the ``INSERT``. Whichever line
+           happens to land on position 0 of ``_POSTURE_LINE_ORDER``
+           (target ``sequence == 0``) then makes
+           ``posture.sequence = 0`` in ``_resequence_posture_lines`` a
+           no-op: ``Field.write()`` skips fields whose new value
+           already matches the cached one, so the pending database
+           write is never staged and the row is left with
+           ``sequence IS NULL``. PostgreSQL sorts ``NULL`` last on an
+           ascending ``ORDER BY``, so that one line -- read back as
+           ``0`` in Python, since ``NULL`` also converts to ``0`` --
+           reappears at the *end* of any fresh, correctly-flushed
+           ``search()``, not at the front where a real ``0`` belongs.
+           ``-1`` can never collide with a real target (every position
+           in ``_POSTURE_LINE_ORDER``, and every unmatched fallback in
+           ``_resequence_posture_lines``, computes to ``>= 0``), so the
+           assignment is always a genuine change and always reaches
+           the database.
+
+        :return: nothing; writes ``posture_ids`` and invalidates its
+            cache on ``self``
         """
         self.ensure_one()
         posture_model = self.env["general_audit_ws_ff42fdc.posture"]
@@ -208,13 +249,17 @@ class GeneralAuditWSff42fdc(models.Model):
         groups_to_add = all_groups - existing_groups
         groups_to_remove = existing_groups - all_groups
 
-        # Add posture line
+        # Add posture line. `sequence: -1` is a placeholder that
+        # _resequence_posture_lines always overwrites below -- see the
+        # docstring note 2 above for why it must never be a value
+        # _resequence_posture_lines could actually assign (>= 0).
         for group in groups_to_add:
             posture_model.create(
                 {
                     "worksheet_id": self.id,
                     "line_type": "group",
                     "group_id": group.id,
+                    "sequence": -1,
                 }
             )
 
@@ -236,6 +281,7 @@ class GeneralAuditWSff42fdc(models.Model):
                         "worksheet_id": self.id,
                         "line_type": "total",
                         "total_type": total_type,
+                        "sequence": -1,
                     }
                 )
 
@@ -246,6 +292,13 @@ class GeneralAuditWSff42fdc(models.Model):
         # instead of waiting for an unrelated detail_ids change.
         total_lines = self.posture_ids.filtered(lambda p: p.line_type == "total")
         total_lines._compute_amounts()
+
+        # Drop the cached posture_ids tuple so the next read -- even
+        # within this same transaction -- re-queries the comodel and
+        # gets the lines back in sequence order. See the docstring
+        # above for why the cache would otherwise still hold them in
+        # creation order after a single Reload.
+        self.invalidate_cache(fnames=["posture_ids"], ids=self.ids)
 
     def _resequence_posture_lines(self):
         """Assign ``sequence`` on ``posture_ids`` for the fixed layout.
