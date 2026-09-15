@@ -117,6 +117,15 @@ setup:
       xml_id: "ssi_general_audit_worksheet_final_report.worksheet_type_f3ed115"
       save_as: "ws_type_f3ed115"
 
+    - step: "Create accountant opinion"
+      action: "create"
+      model: "accountant.opinion"
+      save_as: "opinion"
+      as_user: "base.user_admin"
+      values:
+        name: "Unqualified Opinion - Final Report"
+        code: "/"
+
 scenarios:
   # ------------------------------------------------------------------
   # general_audit_ws_a8c54f3 - create in draft (default type_id)
@@ -908,3 +917,51 @@ scenarios:
               - "REC: isa_700"
               - "REC: isa_705"
               - "REC: isa_706"
+
+  # ------------------------------------------------------------------
+  # proposed_audit_opinion_id - positive: set and read back
+  # ------------------------------------------------------------------
+  - name: "Worksheet a8c54f3 - proposed_audit_opinion_id set and saved"
+    steps:
+      - step: "Create worksheet a8c54f3 with proposed_audit_opinion_id"
+        action: "create"
+        model: "general_audit_ws_a8c54f3"
+        save_as: "worksheet_with_opinion"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_a8c54f3.id"
+          proposed_audit_opinion_id: "REC: opinion.id"
+
+      - step: "Assert proposed_audit_opinion_id saved and read back"
+        action: "assert"
+        target: "worksheet_with_opinion"
+        asserts:
+          proposed_audit_opinion_id:
+            type: "m2o"
+            expected: "REC: opinion"
+
+  # ------------------------------------------------------------------
+  # proposed_audit_opinion_id - negative: optional, not required
+  # ------------------------------------------------------------------
+  - name: "Worksheet a8c54f3 - proposed_audit_opinion_id left empty is valid"
+    steps:
+      - step: "Create worksheet a8c54f3 without proposed_audit_opinion_id"
+        action: "create"
+        model: "general_audit_ws_a8c54f3"
+        save_as: "worksheet_without_opinion"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_a8c54f3.id"
+
+      - step: "Assert worksheet saved with proposed_audit_opinion_id empty"
+        action: "assert"
+        target: "worksheet_without_opinion"
+        asserts:
+          id:
+            type: "value"
+            operator: "is_truthy"
+          proposed_audit_opinion_id:
+            type: "value"
+            operator: "is_falsy"
