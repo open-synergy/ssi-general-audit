@@ -1,0 +1,249 @@
+setup:
+  steps:
+    - step: "Get config parameter model"
+      action: "search"
+      model: "ir.config_parameter"
+      domain: []
+      save_as: "config_parameter"
+      limit: 1
+
+    - step: "Allow enough CPA licenses for this scenario"
+      action: "call"
+      target: "config_parameter"
+      method: "set_param"
+      args:
+        - "ssi_general_audit.max_number_of_cpa_license"
+        - "100"
+
+    - step: "Create client partner"
+      action: "create"
+      model: "res.partner"
+      save_as: "client"
+      as_user: "base.user_admin"
+      values:
+        name: "Test Audit Client - fc75636"
+        is_company: true
+
+    - step: "Create accountant partner"
+      action: "create"
+      model: "res.partner"
+      save_as: "accountant"
+      as_user: "base.user_admin"
+      values:
+        name: "Test Audit Accountant - fc75636"
+
+    - step: "Get CPA license id category"
+      action: "ref"
+      xml_id: "ssi_partner_identification_cpa_license.partner_identification_accountant_cpa_license"
+      save_as: "cpa_category"
+
+    - step: "Grant accountant a CPA license"
+      action: "create"
+      model: "res.partner.id_number"
+      save_as: "cpa_license"
+      as_user: "base.user_admin"
+      values:
+        partner_id: "REC: accountant.id"
+        category_id: "REC: cpa_category.id"
+        name: "CPA-FC75636-0001"
+
+    - step: "Create account type set"
+      action: "create"
+      model: "client_account_type_set"
+      save_as: "account_type_set"
+      as_user: "base.user_admin"
+      values:
+        name: "Test Account Type Set - fc75636"
+        code: "/"
+
+    - step: "Create financial accounting standard"
+      action: "create"
+      model: "accountant.financial_accounting_standard"
+      save_as: "fas"
+      as_user: "base.user_admin"
+      values:
+        name: "Test FAS - fc75636"
+        code: "/"
+
+    - step: "Create general audit"
+      action: "create"
+      model: "general_audit"
+      save_as: "audit"
+      as_user: "base.user_admin"
+      values:
+        title: "Test General Audit - fc75636"
+        partner_id: "REC: client.id"
+        accountant_id: "REC: accountant.id"
+        account_type_set_id: "REC: account_type_set.id"
+        financial_accounting_standard_id: "REC: fas.id"
+        date_start: 2026-01-01
+        date_end: 2026-12-31
+        need_interim: false
+        need_previous: false
+        num_of_consecutive_audit_firm: 1
+        num_of_consecutive_audit_accountant: 1
+
+    - step: "Open general audit"
+      action: "call"
+      target: "audit"
+      method: "action_open"
+      as_user: "base.user_admin"
+
+    - step: "Assert general audit open"
+      action: "assert"
+      target: "audit"
+      refresh: true
+      asserts:
+        state:
+          type: "value"
+          expected: "open"
+
+    - step: "Get worksheet type fc75636"
+      action: "ref"
+      xml_id: "ssi_general_audit_worksheet_review.worksheet_type_fc75636"
+      save_as: "ws_type_fc75636"
+
+    - step: "Get worksheet type a8c54f3"
+      action: "ref"
+      xml_id: "ssi_general_audit_worksheet_final_report.worksheet_type_a8c54f3"
+      save_as: "ws_type_a8c54f3"
+
+    - step: "Create accountant opinion"
+      action: "create"
+      model: "accountant.opinion"
+      save_as: "opinion"
+      as_user: "base.user_admin"
+      values:
+        name: "Unqualified Opinion - fc75636"
+        code: "/"
+
+scenarios:
+  # ------------------------------------------------------------------
+  # general_audit_ws_fc75636 - Create
+  # ------------------------------------------------------------------
+  - name: "Create worksheet fc75636"
+    steps:
+      - step: "Create worksheet fc75636"
+        action: "create"
+        model: "general_audit_ws_fc75636"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_fc75636.id"
+
+      - step: "Assert worksheet created in draft, links empty"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          id:
+            type: "value"
+            operator: "is_truthy"
+          state:
+            type: "value"
+            expected: "draft"
+          audit_final_memorandum_id:
+            type: "value"
+            operator: "is_falsy"
+          proposed_audit_opinion_id:
+            type: "value"
+            operator: "is_falsy"
+
+  # ------------------------------------------------------------------
+  # audit_final_memorandum_id / proposed_audit_opinion_id - positive:
+  # action_reload_links finds the matching Audit Final Memorandum
+  # (a8c54f3) sibling of the same General Audit, once it is Open, and
+  # mirrors its proposed_audit_opinion_id.
+  # ------------------------------------------------------------------
+  - name: "Reload Links fc75636 - finds matching a8c54f3 sibling"
+    steps:
+      - step: "Create worksheet fc75636, before the sibling exists"
+        action: "create"
+        model: "general_audit_ws_fc75636"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_fc75636.id"
+
+      - step: "Open worksheet fc75636"
+        action: "call"
+        target: "worksheet"
+        method: "action_open"
+        as_user: "base.user_admin"
+
+      - step: "Create worksheet a8c54f3 with proposed_audit_opinion_id"
+        action: "create"
+        model: "general_audit_ws_a8c54f3"
+        save_as: "memorandum"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_a8c54f3.id"
+          proposed_audit_opinion_id: "REC: opinion.id"
+
+      - step: "Open worksheet a8c54f3"
+        action: "call"
+        target: "memorandum"
+        method: "action_open"
+        as_user: "base.user_admin"
+
+      - step: "Reload links on worksheet fc75636"
+        action: "call"
+        target: "worksheet"
+        method: "action_reload_links"
+        as_user: "base.user_admin"
+
+      - step: "Assert audit_final_memorandum_id and proposed_audit_opinion_id"
+        action: "assert"
+        target: "worksheet"
+        refresh: true
+        asserts:
+          audit_final_memorandum_id:
+            type: "m2o"
+            expected: "REC: memorandum"
+          proposed_audit_opinion_id:
+            type: "m2o"
+            expected: "REC: opinion"
+
+  # ------------------------------------------------------------------
+  # audit_final_memorandum_id - negative: no matching a8c54f3 sibling
+  # of the same General Audit -- reload leaves it empty, no error.
+  # ------------------------------------------------------------------
+  - name: "Reload Links fc75636 - no sibling, stays empty without error"
+    steps:
+      - step: "Create worksheet fc75636 with no a8c54f3 sibling"
+        action: "create"
+        model: "general_audit_ws_fc75636"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_fc75636.id"
+
+      - step: "Open worksheet fc75636"
+        action: "call"
+        target: "worksheet"
+        method: "action_open"
+        as_user: "base.user_admin"
+
+      - step: "Reload links on worksheet fc75636 (no sibling exists)"
+        action: "call"
+        target: "worksheet"
+        method: "action_reload_links"
+        as_user: "base.user_admin"
+
+      - step: "Assert audit_final_memorandum_id stays empty"
+        action: "assert"
+        target: "worksheet"
+        refresh: true
+        asserts:
+          id:
+            type: "value"
+            operator: "is_truthy"
+          audit_final_memorandum_id:
+            type: "value"
+            operator: "is_falsy"
+          proposed_audit_opinion_id:
+            type: "value"
+            operator: "is_falsy"

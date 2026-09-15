@@ -94,12 +94,49 @@
                         </field>
                     </page>
                 </xpath>
+                <xpath expr="//page[@name='checklist']" position="after">
+                    <page name="links" string="Links">
+                        <button
+                            name="action_reload_links"
+                            type="object"
+                            string="Reload"
+                            class="oe_highlight"
+                            icon="fa-refresh"
+                            attrs="{'invisible': [('state', 'not in', ['open'])]}"
+                        />
+                        <group name="activity_1" string="Audit Final Memorandum">
+                            <label
+                                for="audit_final_memorandum_id"
+                                string="# Worksheet"
+                            />
+                            <div class="o_row">
+                                <field
+                                    name="audit_final_memorandum_id"
+                                    class="oe_inline"
+                                    force_save="1"
+                                />
+                            </div>
+                            <field name="proposed_audit_opinion_id" readonly="1" />
+                        </group>
+                    </page>
+                </xpath>
+                <!-- The base ssi_general_audit mixin view inserts
+                     "standard_audit" right before "note" (in its OWN
+                     xpath resolution, before this view is even applied),
+                     which places it ahead of "checklist"/"links" defined
+                     above (both also anchored "before note"). Move it to
+                     sit right after "links" so the final notebook order
+                     is: checklist, links, standard_audit, note, policy.
+                     Same pattern as general_audit_ws_de69c2f_views.xml. -->
+                <xpath expr="//page[@name='links']" position="after">
+                    <xpath expr="//page[@name='standard_audit']" position="move" />
+                </xpath>
             </data>
         </field>
     </record>
 
     <record id="general_audit_ws_fc75636_action" model="ir.actions.act_window">
-        <field name="name">Independen Auditor Report</field>
+        <field name="name">Proposed Audit Opinion</field>
         <field name="type">ir.actions.act_window</field>
         <field name="res_model">general_audit_ws_fc75636</field>
         <field name="view_mode">tree,form</field>
@@ -107,10 +144,10 @@
 
     <menuitem
         id="general_audit_ws_fc75636_menu"
-        name="Independen Auditor Report"
-        parent="ssi_general_audit.menu_general_audit_review"
+        name="Proposed Audit Opinion"
+        parent="ssi_general_audit.menu_general_audit_final_report"
         action="general_audit_ws_fc75636_action"
-        sequence="4"
+        sequence="2"
         groups="general_audit_ws_fc75636_viewer_group"
     />
 </odoo>
