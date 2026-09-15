@@ -965,3 +965,111 @@ scenarios:
           proposed_audit_opinion_id:
             type: "value"
             operator: "is_falsy"
+
+  # ------------------------------------------------------------------
+  # general_audit_ws_f3ed115 - checklist_ids populate (positive)
+  #
+  # This module intentionally ships no master data for
+  # general_audit_ws_f3ed115.item (content not yet formulated by the
+  # user), so calling action_populate_checklist here must not error
+  # out and must simply leave checklist_ids empty -- there is nothing
+  # in the item master to populate from. This locks in that
+  # "populate on an empty item master is a safe no-op" behaviour.
+  # ------------------------------------------------------------------
+  - name: "Worksheet f3ed115 - action_populate_checklist with empty item master"
+    steps:
+      - step: "Create worksheet f3ed115"
+        action: "create"
+        model: "general_audit_ws_f3ed115"
+        save_as: "checklist_worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_f3ed115.id"
+
+      - step: "Open worksheet"
+        action: "call"
+        target: "checklist_worksheet"
+        method: "action_open"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after opening worksheet"
+        action: "call"
+        target: "checklist_worksheet"
+        method: "invalidate_cache"
+
+      - step: "Assert checklist_ids is empty before Populate"
+        action: "assert"
+        target: "checklist_worksheet"
+        asserts:
+          checklist_ids:
+            type: "o2m"
+            check: "count"
+            expected_count: 0
+
+      - step: "Call action_populate_checklist against an empty item master"
+        action: "call"
+        target: "checklist_worksheet"
+        method: "action_populate_checklist"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after calling action_populate_checklist"
+        action: "call"
+        target: "checklist_worksheet"
+        method: "invalidate_cache"
+
+      - step: "Assert worksheet still saved without error"
+        action: "assert"
+        target: "checklist_worksheet"
+        asserts:
+          id:
+            type: "value"
+            operator: "is_truthy"
+
+      - step: "Assert checklist_ids is still empty after Populate"
+        action: "assert"
+        target: "checklist_worksheet"
+        asserts:
+          checklist_ids:
+            type: "o2m"
+            check: "count"
+            expected_count: 0
+
+  # ------------------------------------------------------------------
+  # worksheet_type_f3ed115 - rename (negative + code/model_name stable)
+  #
+  # The old display name "Audit Report" must no longer be found, but
+  # the type's code (F3ED115) and model_name must be untouched so that
+  # any existing reference by xmlid stays valid.
+  # ------------------------------------------------------------------
+  - name: "Worksheet type f3ed115 - old name gone, code/model_name unchanged"
+    steps:
+      - step: "Search worksheet type by the old name 'Audit Report'"
+        action: "search"
+        model: "general_audit_worksheet_type"
+        domain:
+          - ["name", "=", "Audit Report"]
+        save_as: "old_name_search"
+        expect_count: 0
+
+      - step: "Search worksheet type by code F3ED115"
+        action: "search"
+        model: "general_audit_worksheet_type"
+        domain:
+          - ["code", "=", "F3ED115"]
+        save_as: "by_code"
+        expect_count: 1
+
+      - step: "Assert renamed worksheet type keeps its code and model_name"
+        action: "assert"
+        target: "ws_type_f3ed115"
+        asserts:
+          name:
+            type: "value"
+            expected: "Final Communication With TCWG"
+          code:
+            type: "value"
+            expected: "F3ED115"
+          model_name:
+            type: "value"
+            expected: "general_audit_ws_f3ed115"

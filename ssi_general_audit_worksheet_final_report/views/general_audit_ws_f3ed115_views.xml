@@ -41,12 +41,58 @@
         />
         <field name="arch" type="xml">
             <data>
+                <xpath expr="//page[@name='note']" position="before">
+                    <page name="checklist" string="Checklist">
+                        <button
+                            name="action_populate_checklist"
+                            string="Populate"
+                            type="object"
+                            icon="fa-refresh"
+                            class="oe_highlight"
+                            style="margin-right:4px"
+                            attrs="{'invisible': [('state', '!=', 'open')]}"
+                        />
+                        <field name="checklist_ids">
+                            <tree create="false" delete="false">
+                                <field name="sequence" invisible="1" />
+                                <field name="category_id" optional="hide" />
+                                <field
+                                    name="item_id"
+                                    options="{'no_create': True, 'no_create_edit': True}"
+                                    style="white-space: normal; word-wrap: break-word; overflow-wrap: break-word;"
+                                />
+                                <field name="allowed_option_ids" invisible="1" />
+                                <field
+                                    name="option_id"
+                                    domain="[('id', 'in', allowed_option_ids)]"
+                                />
+                            </tree>
+                            <form>
+                                <sheet>
+                                    <group>
+                                        <field name="item_id" invisible="1" />
+                                        <field name="category_id" />
+                                        <field name="item_name" />
+                                        <field
+                                            name="allowed_option_ids"
+                                            invisible="1"
+                                        />
+                                        <field
+                                            name="option_id"
+                                            domain="[('id', 'in', allowed_option_ids)]"
+                                        />
+                                    </group>
+                                </sheet>
+                            </form>
+                        </field>
+                    </page>
+                </xpath>
             </data>
         </field>
     </record>
 
     <record id="general_audit_ws_f3ed115_action" model="ir.actions.act_window">
-        <field name="name">Audit Report</field>
+        <field name="name">Final Communication With TCWG</field>
         <field name="type">ir.actions.act_window</field>
         <field name="res_model">general_audit_ws_f3ed115</field>
         <field name="view_mode">tree,form</field>
@@ -54,7 +100,7 @@
 
     <menuitem
         id="general_audit_ws_f3ed115_menu"
-        name="Audit Report"
+        name="Final Communication With TCWG"
         parent="ssi_general_audit.menu_general_audit_final_report"
         action="general_audit_ws_f3ed115_action"
         sequence="3"
