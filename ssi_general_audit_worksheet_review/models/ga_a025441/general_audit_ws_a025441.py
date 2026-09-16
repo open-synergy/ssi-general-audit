@@ -9,12 +9,17 @@ class GeneralAuditWSa025441(models.Model):
     """
     WS: Financial Statement Disclosure Checklist (a025441) — ISA 700 / SA 700.
 
-    The auditor completes the Yes / No / N-A disclosure checklist for the
-    applicable financial reporting framework (e.g. IFRS, PSAK Umum, PSAK
-    ETAP) outside Odoo (e.g. in a spreadsheet), then pastes the completed
+    The auditor completes the disclosure checklist for the applicable
+    financial reporting framework (e.g. IFRS, PSAK Umum, PSAK ETAP)
+    outside Odoo (e.g. in a spreadsheet), then pastes the completed
     checklist as CSV into ``raw_data``.  This avoids maintaining master
     data for the thousands of disclosure items that PSAK Umum/IFRS
     (± 4000 items) or PSAK ETAP (± 600 items) require.
+
+    Status: ``TRUE`` for Yes, ``FALSE`` for No, leave blank for N-A.
+    The ``csv_table`` widget (``ssi_web_widget_csv_table``) renders any
+    cell whose text is exactly ``TRUE``/``FALSE`` (case-insensitive) as
+    a checkbox; a blank cell stays a plain text input, matching N-A.
 
     The overall completeness assessment and narrative conclusion are not
     declared here: ``conclusion_id`` and ``conclusion`` are already
@@ -43,7 +48,8 @@ class GeneralAuditWSa025441(models.Model):
         states={"open": [("readonly", False)]},
         help="Raw data in CSV format containing the completed financial "
         "statement disclosure checklist (item, source standard, note, "
-        "and Yes/No/N-A status per row).",
+        "and Status per row). Status: TRUE for Yes, FALSE for No, "
+        "leave blank for N-A.",
     )
     financial_accounting_standard_id = fields.Many2one(
         string="Financial Accounting Standard",
