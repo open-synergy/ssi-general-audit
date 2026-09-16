@@ -111,8 +111,9 @@ odoo.define(
                     },
                 },
 
-                // Flow 4 - Open the Checklist tab, then paste the
-                // completed disclosure checklist CSV into Raw Data.
+                // Flow 4 - Open the Checklist tab, switch to Text mode
+                // (Raw Data starts empty), then paste the completed
+                // disclosure checklist CSV into Raw Data.
                 //
                 // "Checklist" is the first notebook page, so it is
                 // already active on load -- the click is still issued
@@ -122,6 +123,20 @@ odoo.define(
                 {
                     content: "Open the Checklist tab",
                     trigger: ".o_notebook .nav-link:contains(Checklist)",
+                },
+                //
+                // options="{'default_mode': 'table'}" (issue #350) makes
+                // FieldCsvTable open in Table mode by default. With Raw
+                // Data still empty, table mode shows only the "No data.
+                // Switch to Text mode to enter CSV data." message -- the
+                // real textarea stays display:none until the Text toggle
+                // is clicked (ssi_web_widget_csv_table.js _renderEdit()).
+                {
+                    content: "Switch the Raw Data widget to Text mode",
+                    trigger:
+                        ".o_field_widget[name='raw_data'] " +
+                        ".csv_table_toggle_btn[data-mode='text']",
+                    extra_trigger: ".o_form_view.o_form_editable",
                 },
                 //
                 // widget="csv_table" (FieldCsvTable) switches its own
@@ -153,6 +168,13 @@ odoo.define(
                 // it) and calls the same underlying helper
                 // (`RunningTourActionHelper.text`,
                 // running_tour_action_helper.js) directly.
+                //
+                // Status uses TRUE (issue #350 convention: TRUE = Yes,
+                // FALSE = No, blank = N-A) instead of the old free-text
+                // "Yes" -- _buildEditableCell() in
+                // ssi_web_widget_csv_table.js only renders a checkbox
+                // for a cell whose trimmed text is exactly TRUE/FALSE
+                // (case-insensitive).
                 {
                     content: "Paste the disclosure checklist CSV into Raw Data",
                     trigger: ".o_field_widget[name='raw_data'] textarea",
@@ -160,7 +182,7 @@ odoo.define(
                     run: function (actions) {
                         actions.text(
                             "Item,Standard,Note,Status\n" +
-                                "PSAK 1 - Basis of preparation,PSAK 1,Note 2,Yes"
+                                "PSAK 1 - Basis of preparation,PSAK 1,Note 2,TRUE"
                         );
                     },
                 },
@@ -231,6 +253,46 @@ odoo.define(
                     trigger:
                         ".o_field_widget[name='conclusion']" +
                         ":contains(All disclosure items reviewed and documented.)",
+                    run: function () {
+                        // Assertion only; do not trigger the default click action.
+                    },
+                },
+
+                // Flow 8 - Click Edit again and reopen the Checklist tab
+                // to prove options="{'default_mode': 'table'}" (issue
+                // #350): with Raw Data now holding the saved TRUE row,
+                // FieldCsvTable's init() re-derives _tableEditMode from
+                // nodeOptions.default_mode on every fresh render, so
+                // _renderEdit() calls _appendEditableTable() straight
+                // away -- Status shows as a checkbox with NO click on
+                // the Table toggle button anywhere in this Flow step.
+                {
+                    content: "Click the Edit button again",
+                    trigger: ".o_form_button_edit",
+                },
+                {
+                    content: "Form is editable again",
+                    trigger: ".o_form_view.o_form_editable",
+                    run: function () {
+                        // Assertion only; do not trigger the default click action.
+                    },
+                },
+                {
+                    content: "Open the Checklist tab again",
+                    trigger: ".o_notebook .nav-link:contains(Checklist)",
+                },
+                {
+                    // Only one data row exists in this fixture, so the
+                    // sole checkbox in the table is unambiguously the
+                    // PSAK 1 row's Status cell -- no :contains() anchor
+                    // is needed (and none is possible: in table-edit
+                    // mode every cell is an <input>, not text content).
+                    content:
+                        "Status renders as a checked checkbox as soon as " +
+                        "the tab opens, without the Table toggle",
+                    trigger:
+                        ".o_field_widget[name='raw_data'] " +
+                        "input.csv_table_cell_checkbox:checked",
                     run: function () {
                         // Assertion only; do not trigger the default click action.
                     },

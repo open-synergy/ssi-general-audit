@@ -29,14 +29,18 @@
 2. Open the worksheet to fill in. The **Financial Accounting Standard** field (below
    Reviewer) shows which checklist variant applies.
 3. Click the **Edit** button.
-4. Open the **Checklist** tab (the first tab), then paste the completed disclosure
-   checklist CSV (item, source standard, note, and Yes/No/N-A status per row) into the
-   **Raw Data** field.
+4. Open the **Checklist** tab (the first tab). It opens directly in **Table** mode;
+   since **Raw Data** is still empty, click the **Text** toggle button first, then paste
+   the completed disclosure checklist CSV (item, source standard, note, and Status:
+   `TRUE` for Yes, `FALSE` for No, blank for N-A, per row) into the **Raw Data** field.
 5. Select the **Conclusion** field (e.g. "Financial Statement Disclosure has been
    completed"), based on whether all required disclosures were made.
 6. Fill in the **Conclusion** narrative text field with a summary of the completeness
    assessment.
 7. Click **Save**.
+8. Click **Edit** again and open the **Checklist** tab once more to confirm: it now
+   shows **Table** mode directly, with the Status column already rendered as checkboxes
+   for the rows just saved — no need to click the **Table** toggle.
 
 ## Post-Condition
 
@@ -44,3 +48,6 @@
   updated with the new values.
 - The fields remain editable as long as the worksheet stays **Open**; once the worksheet
   leaves the Open state (e.g. Confirm), they become read-only again.
+- While editing, the **Checklist** tab always opens in **Table** mode: any Status cell
+  holding `TRUE`/`FALSE` renders as a checkbox as soon as the tab opens, without
+  clicking the **Table** toggle button; a blank cell stays a plain text input (N-A).
