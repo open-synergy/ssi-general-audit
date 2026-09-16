@@ -61,8 +61,13 @@ class GeneralAuditWSbcc0d76(models.Model):
         Detail = self.env["general_audit_ws_bcc0d76.detail"]
         Worksheet = self.env["general_audit_worksheet"]
 
-        # Ambil semua worksheet yang terkait dengan general audit
-        worksheets = Worksheet.search([("parent_type_id.main_worksheet", "=", True)])
+        # Ambil semua worksheet yang terkait dengan general audit ini saja
+        worksheets = Worksheet.search(
+            [
+                ("parent_type_id.main_worksheet", "=", True),
+                ("general_audit_id", "=", self.general_audit_id.id),
+            ]
+        )
 
         # Mapping existing detail untuk mencegah duplikasi create
         mapping = {chk.general_worksheet_id.id: chk for chk in self.detail_ids}

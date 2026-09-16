@@ -296,22 +296,24 @@ scenarios:
 
   # ------------------------------------------------------------------
   # bcc0d76 - action_populate: empty / normal / dedup / idempotent /
-  # unlink orphan, all combined into ONE scenario on purpose.
+  # unlink orphan / cross-general_audit isolation, all combined into
+  # ONE scenario on purpose.
   #
   # GeneralAuditWSbcc0d76._populate() (models/ga_bcc0d76/
-  # general_audit_ws_bcc0d76.py) searches ALL general_audit_worksheet
-  # records with parent_type_id.main_worksheet = True WITHOUT filtering
-  # by general_audit_id. This is pre-existing production behaviour (see
-  # BL-0165 notes), not something this test patches. Scenarios in the
-  # same YAML file share one uncommitted transaction (only the registry
-  # is reset between scenarios, not the database), so any qualifying
-  # general_audit_worksheet created in an earlier scenario would still be
-  # picked up by a later scenario's action_populate call. Combining every
-  # populate sub-case into one scenario, and giving each sub-case its own
-  # dedicated general_audit_worksheet_type, keeps the assertions
-  # deterministic: filtered searches (worksheet_id + parent_type_id)
-  # prove each behaviour regardless of what other qualifying worksheets
-  # exist elsewhere in the transaction (e.g. worksheet_type_be62e79 also
+  # general_audit_ws_bcc0d76.py) now filters general_audit_worksheet by
+  # general_audit_id, in addition to parent_type_id.main_worksheet, so
+  # worksheets belonging to a DIFFERENT general_audit are never mixed
+  # into this one's detail lines (see the isolation sub-case below).
+  # Scenarios in the same YAML file share one uncommitted transaction
+  # (only the registry is reset between scenarios, not the database),
+  # so any qualifying general_audit_worksheet created in an earlier
+  # scenario would still be picked up by a later scenario's
+  # action_populate call. Combining every populate sub-case into one
+  # scenario, and giving each sub-case its own dedicated
+  # general_audit_worksheet_type, keeps the assertions deterministic:
+  # filtered searches (worksheet_id + parent_type_id) prove each
+  # behaviour regardless of what other qualifying worksheets exist
+  # elsewhere in the transaction (e.g. worksheet_type_be62e79 also
   # ships with main_worksheet=True as production seed data).
   #
   # "Unlink orphan" is exercised by flipping the source type's
@@ -323,9 +325,22 @@ scenarios:
   # the type exercises the exact same cleanup branch in _populate()
   # (the worksheet no longer appears in the qualifying search, so its
   # detail line is removed) without touching an FK-referenced record.
+  #
+  # "Isolation" populates the OTHER general_audit's own worksheet, not
+  # the first one, on purpose. general_audit_worksheet._order is
+  # "general_audit_id, parent_type_id, id", so an unscoped search would
+  # always return the first (lower-id) general_audit's own row first
+  # for a shared type — re-populating the FIRST worksheet after adding
+  # a same-type row under a SECOND, later-created general_audit would
+  # still resolve correctly by coincidence of id order, and would not
+  # have caught the regression. Populating the second (higher-id)
+  # worksheet is what actually exercises the bug described in issue
+  # #352: before the fix it would wrongly resolve to the older, first
+  # general_audit's row instead of its own.
   # ------------------------------------------------------------------
   - name:
-      "WS bcc0d76 - action_populate (empty, normal, dedup, idempotent, unlink orphan)"
+      "WS bcc0d76 - action_populate (empty, normal, dedup, idempotent, unlink orphan,
+      cross-general_audit isolation)"
     steps:
       - step: "Create worksheet bcc0d76"
         action: "create"
@@ -536,3 +551,135 @@ scenarios:
           ]
         save_as: "detail_type_3_after"
         expect_count: 0
+
+      - step: "Create a second client partner for the other general audit"
+        action: "create"
+        model: "res.partner"
+        save_as: "client_other"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Audit Client - bcc0d76 (other)"
+          is_company: true
+
+      - step: "Create a second general audit, for cross-audit isolation"
+        action: "create"
+        model: "general_audit"
+        save_as: "audit_other"
+        as_user: "base.user_admin"
+        values:
+          title: "Test General Audit - bcc0d76 (other)"
+          partner_id: "REC: client_other.id"
+          accountant_id: "REC: accountant.id"
+          account_type_set_id: "REC: account_type_set.id"
+          financial_accounting_standard_id: "REC: standard.id"
+          date_start: 2026-01-01
+          date_end: 2026-12-31
+          need_interim: false
+          need_previous: false
+          num_of_consecutive_audit_firm: 1
+          num_of_consecutive_audit_accountant: 1
+
+      - step: "Open the other general audit"
+        action: "call"
+        target: "audit_other"
+        method: "action_open"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after opening the other general audit"
+        action: "call"
+        target: "audit_other"
+        method: "invalidate_cache"
+
+      - step: "Assert the other general audit is open"
+        action: "assert"
+        target: "audit_other"
+        asserts:
+          state:
+            type: "value"
+            expected: "open"
+
+      - step: "Create worksheet bcc0d76 under the other general audit"
+        action: "create"
+        model: "general_audit_ws_bcc0d76"
+        save_as: "worksheet_other"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit_other.id"
+          type_id: "REC: ws_type_bcc0d76.id"
+
+      - step: "Open the other worksheet"
+        action: "call"
+        target: "worksheet_other"
+        method: "action_open"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after opening the other worksheet"
+        action: "call"
+        target: "worksheet_other"
+        method: "invalidate_cache"
+
+      - step:
+          "Create a general_audit_worksheet of type #1 under the other general audit
+          (same parent_type_id as gw1, different general_audit_id)"
+        action: "create"
+        model: "general_audit_worksheet"
+        save_as: "gw1_other"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit_other.id"
+          parent_type_id: "REC: main_type_1.id"
+
+      - step: "Populate the other general audit's own worksheet"
+        action: "call"
+        target: "worksheet_other"
+        method: "action_populate"
+        as_user: "base.user_admin"
+
+      - step:
+          "Assert exactly one detail line for type #1 was created under the other
+          worksheet"
+        action: "search"
+        model: "general_audit_ws_bcc0d76.detail"
+        domain:
+          [
+            ["worksheet_id", "=", "REC: worksheet_other.id"],
+            ["parent_type_id", "=", "REC: main_type_1.id"],
+          ]
+        save_as: "detail_type_1_other"
+        limit: 1
+        expect_count: 1
+
+      - step:
+          "Assert the other worksheet's detail line points to its OWN source worksheet
+          (gw1_other), not the first general audit's (gw1) — proves the general_audit_id
+          scoping"
+        action: "assert"
+        target: "detail_type_1_other"
+        asserts:
+          general_worksheet_id:
+            type: "m2o"
+            expected: "REC: gw1_other"
+
+      - step:
+          "Assert the first general audit's own detail line for type #1 is unaffected by
+          the other general audit's data"
+        action: "search"
+        model: "general_audit_ws_bcc0d76.detail"
+        domain:
+          [
+            ["worksheet_id", "=", "REC: worksheet.id"],
+            ["parent_type_id", "=", "REC: main_type_1.id"],
+          ]
+        save_as: "detail_type_1_after_isolation"
+        limit: 1
+        expect_count: 1
+
+      - step:
+          "Assert the first general audit's detail line still points to its own source
+          worksheet (gw1), not the other general audit's (gw1_other)"
+        action: "assert"
+        target: "detail_type_1_after_isolation"
+        asserts:
+          general_worksheet_id:
+            type: "m2o"
+            expected: "REC: gw1"
