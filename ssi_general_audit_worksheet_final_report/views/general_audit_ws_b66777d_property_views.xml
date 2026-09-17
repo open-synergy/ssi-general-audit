@@ -1,0 +1,82 @@
+<?xml version="1.0" ?>
+<!-- Copyright 2026 OpenSynergy Indonesia
+     Copyright 2026 PT. Simetri Sinergi Indonesia
+     License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl-3.0-standalone.html). -->
+<odoo>
+
+    <record id="general_audit_ws_b66777d_property_view_search" model="ir.ui.view">
+        <field name="name">general_audit_ws_b66777d.property - search</field>
+        <field name="model">general_audit_ws_b66777d.property</field>
+        <field
+            name="inherit_id"
+            ref="ssi_master_data_mixin.mixin_master_data_view_search"
+        />
+        <field name="mode">primary</field>
+        <field name="arch" type="xml">
+            <data />
+        </field>
+    </record>
+
+    <record id="general_audit_ws_b66777d_property_view_tree" model="ir.ui.view">
+        <field name="name">general_audit_ws_b66777d.property - tree</field>
+        <field name="model">general_audit_ws_b66777d.property</field>
+        <field
+            name="inherit_id"
+            ref="ssi_master_data_mixin.mixin_master_data_view_tree"
+        />
+        <field name="mode">primary</field>
+        <field name="arch" type="xml">
+            <data>
+                <xpath expr="//field[@name='code']" position="before">
+                    <field name="sequence" widget="handle" />
+                </xpath>
+            </data>
+        </field>
+    </record>
+
+    <record id="general_audit_ws_b66777d_property_view_form" model="ir.ui.view">
+        <field name="name">general_audit_ws_b66777d.property - form</field>
+        <field name="model">general_audit_ws_b66777d.property</field>
+        <field
+            name="inherit_id"
+            ref="ssi_master_data_mixin.mixin_master_data_view_form"
+        />
+        <field name="mode">primary</field>
+        <field name="arch" type="xml">
+            <data>
+                <xpath expr="//field[@name='code']" position="after">
+                    <field name="sequence" />
+                </xpath>
+                <xpath expr="//page[@name='note']" position="before">
+                    <page name="page_python_code" string="Python Code">
+                        <group name="group_python_code_1" colspan="4" col="2">
+                            <field
+                                name="python_code"
+                                colspan="2"
+                                widget="ace"
+                                nolabel="1"
+                            />
+                        </group>
+                    </page>
+                </xpath>
+            </data>
+        </field>
+    </record>
+
+    <record id="general_audit_ws_b66777d_property_action" model="ir.actions.act_window">
+        <field name="name">Detail Property</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">general_audit_ws_b66777d.property</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+    <menuitem
+        id="general_audit_ws_b66777d_property_menu"
+        name="Detail Property"
+        parent="ssi_general_audit.menu_configuration_acc_computation"
+        action="general_audit_ws_b66777d_property_action"
+        sequence="51"
+        groups="general_audit_ws_b66777d_viewer_group"
+    />
+
+</odoo>

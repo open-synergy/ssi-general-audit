@@ -68,6 +68,97 @@ class GeneralAuditWSb66777d(models.Model):
         "``_build_lai_number``'s docstring) when the worksheet is "
         "opened, but can still be overwritten manually.",
     )
+    detail_ids = fields.One2many(
+        string="Details",
+        comodel_name="general_audit_ws_b66777d.detail",
+        inverse_name="worksheet_id",
+        readonly=True,
+        help=(
+            "Summary rows (Property/Value), one per active "
+            "general_audit_ws_b66777d.property master record, "
+            "(re)populated by clicking the Populate button "
+            "(action_populate_detail) -- empty on a freshly created "
+            "worksheet. See _populate_detail()."
+        ),
+    )
+
+    def action_populate_detail(self):
+        """Button action: (re)populate this worksheet's ``detail_ids``.
+
+        Thin dispatcher over ``_populate_detail()``, mirroring
+        ``ssi_custom_information_mixin``'s own
+        ``action_reload_custom_info`` / ``_reload_custom_info`` split
+        (``mixin_custom_info.py``).
+
+        :return: None
+        """
+        for record in self:
+            record._populate_detail()
+
+    def _populate_detail(self):
+        """Replace ``detail_ids`` with a fresh snapshot of every active
+        ``general_audit_ws_b66777d.property``.
+
+        The properties themselves are master data now (Configuration
+        menu), not a fixed Python constant -- so unlike the previous
+        revision of this method there is no closed set of "11 rows" to
+        reason about: whatever is active in
+        ``general_audit_ws_b66777d.property`` at the moment Populate is
+        clicked is exactly what gets snapshotted. There is still no
+        "still relevant" existing row to preserve the way
+        ``ssi_custom_information_mixin._reload_custom_info`` preserves
+        rows that still match its template: every property is
+        (re)evaluated fresh on every click, so the correct behaviour
+        remains unlink-everything-then-create-everything -- callers
+        must not assume ``detail_ids`` row ``id`` stability across two
+        Populate clicks.
+
+        Uses ``sudo()`` for both the ``unlink()`` and the ``create()``
+        calls because ``general_audit_ws_b66777d.detail``'s own
+        ``ir.model.access.csv`` grants 0 create/write/unlink to every
+        group (the issue's Keputusan Desain: "Details" rows are
+        system-populated only, via this method, never manually
+        editable) -- without ``sudo()`` this would raise
+        ``AccessError`` for every user, including the one clicking
+        Populate. ``general_audit_ws_b66777d.property`` itself is a
+        regular master data model (full CRUD for this worksheet's user
+        group) and is only ever read here, never written.
+
+        :return: None
+        """
+        self.ensure_one()
+        self.detail_ids.sudo().unlink()
+        Detail = self.env["general_audit_ws_b66777d.detail"].sudo()
+        properties = self.env["general_audit_ws_b66777d.property"].search(
+            [], order="sequence, id"
+        )
+        for prop in properties:
+            Detail.create(self._prepare_detail_vals(prop))
+
+    def _prepare_detail_vals(self, prop):
+        """Build the values of one ``detail_ids`` row.
+
+        ``python_code`` is COPIED from ``prop.python_code`` here (not
+        ``related=`` on the field) so this row's snapshot is unaffected
+        by the master data being edited afterwards -- see
+        ``general_audit_ws_b66777d.detail.python_code``'s own help
+        text.
+
+        Extension point: override to add fields to each row created by
+        ``_populate_detail()``.
+
+        :param prop: the ``general_audit_ws_b66777d.property`` master
+            record this row is populated from
+        :type prop: recordset of ``general_audit_ws_b66777d.property``
+        :return: dict of ``general_audit_ws_b66777d.detail`` values
+        :rtype: dict
+        """
+        self.ensure_one()
+        return {
+            "worksheet_id": self.id,
+            "property_id": prop.id,
+            "python_code": prop.python_code,
+        }
 
     @ssi_decorator.post_open_action()
     def _10_generate_lai_number(self):

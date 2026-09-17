@@ -44,6 +44,32 @@
                 <xpath expr="//field[@name='conclusion_id']" position="before">
                     <field name="lai_number" />
                 </xpath>
+                <xpath expr="//page[1]" position="before">
+                    <page name="details" string="Details">
+                        <button
+                            name="action_populate_detail"
+                            string="Populate"
+                            type="object"
+                            icon="fa-refresh"
+                            class="oe_highlight"
+                            style="margin-right:4px"
+                            attrs="{'invisible': [('state', '!=', 'open')]}"
+                        />
+                        <field name="detail_ids" nolabel="1">
+                            <tree create="false" delete="false" editable="false">
+                                <field name="property_id" readonly="1" />
+                                <field name="value" readonly="1" />
+                            </tree>
+                            <form>
+                                <group>
+                                    <field name="property_id" readonly="1" />
+                                    <field name="python_code" readonly="1" />
+                                    <field name="value" readonly="1" />
+                                </group>
+                            </form>
+                        </field>
+                    </page>
+                </xpath>
             </data>
         </field>
     </record>
@@ -60,7 +86,7 @@
         name="Independent Auditor Report Review"
         parent="ssi_general_audit.menu_general_audit_final_report"
         action="general_audit_ws_b66777d_action"
-        sequence="3"
+        sequence="4"
         groups="general_audit_ws_b66777d_viewer_group"
     />
 </odoo>
