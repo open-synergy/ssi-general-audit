@@ -1090,17 +1090,55 @@ class GeneralAudit(models.Model):
 
     @ssi_decorator.post_open_action()
     def _reload_computation(self):
+        """Add/remove computation lines to match the account type set.
+
+        Diffs the computation items configured on
+        ``account_type_set_id.computation_ids`` against the
+        computation items already present on ``computation_ids``: a
+        line is created for every computation item newly configured,
+        and a line is removed for every computation item no longer
+        configured. A line whose computation item is still configured
+        is left untouched -- its ``id`` never changes. Mirrors
+        ``general_audit_ws_ff42fdc._load_posture``.
+
+        This matters because three worksheets, in other modules, hold
+        a ``general_audit_computation_id`` Many2one
+        (``ondelete="restrict"``) straight onto
+        ``general_audit.computation``: unlinking every row
+        unconditionally -- the previous behaviour -- always raised a
+        FK ``RESTRICT`` violation once such a worksheet line existed,
+        even when the reload only needed to ADD a newly configured
+        computation item and none of the existing ones went away.
+
+        :return: nothing; writes ``computation_ids``
+        """
         self.ensure_one()
         Computation = self.env["general_audit.computation"]
-        self.computation_ids.unlink()
-        if self.account_type_set_id:
-            for detail in self.account_type_set_id.computation_ids:
-                data = {
-                    "general_audit_id": self.id,
-                    "computation_item_id": detail.computation_id.id,
-                    "sequence": detail.sequence,
-                }
-                Computation.create(data)
+        target_details = (
+            self.account_type_set_id.computation_ids
+            if self.account_type_set_id
+            else self.env["client_account_type.computation_item"]
+        )
+        target_items = target_details.mapped("computation_id")
+        existing_computations = self.computation_ids
+        existing_items = existing_computations.mapped("computation_item_id")
+
+        computations_to_remove = existing_computations.filtered(
+            lambda c: c.computation_item_id not in target_items
+        )
+        if computations_to_remove:
+            computations_to_remove.unlink()
+
+        items_to_add = target_items - existing_items
+        for detail in target_details.filtered(
+            lambda d: d.computation_id in items_to_add
+        ):
+            data = {
+                "general_audit_id": self.id,
+                "computation_item_id": detail.computation_id.id,
+                "sequence": detail.sequence,
+            }
+            Computation.create(data)
 
     def action_recompute_computation(self):
         for record in self.sudo():
