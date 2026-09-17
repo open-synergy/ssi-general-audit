@@ -2,7 +2,7 @@
 # Copyright 2025 PT. Simetri Sinergi Indonesia
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl-3.0-standalone.html).
 
-from odoo import fields, models
+from odoo import api, fields, models
 
 from odoo.addons.ssi_decorator import ssi_decorator
 
@@ -24,6 +24,115 @@ _ROMAN_NUMERAL_MONTHS = {
     11: "XI",
     12: "XII",
 }
+
+
+def _computation_item_python_code(item_name):
+    """Build the ``python_code`` for a "Details" row #4-10.
+
+    Each of these rows looks up its amount from
+    ``general_audit.computation_ids`` by the linked
+    ``trial_balance_computation_item.name`` (NOT ``code`` -- the issue's
+    Keputusan Desain is explicit about this, since ``code`` values like
+    ``T100`` carry no meaning for a reader of this table), taking the
+    first matching line's ``audited_amount``. Falls back to ``0.0``
+    when no such computation item exists on the General Audit (e.g. a
+    General Audit created before that computation item existed, or one
+    whose account type set never seeded it).
+
+    :param item_name: exact ``trial_balance_computation_item.name`` to
+        match, e.g. ``"Total Revenue"``
+    :type item_name: str
+    :return: ``python_code`` source, ready for ``safe_eval``
+    :rtype: str
+    """
+    return (
+        "result = 0.0\n"
+        "lines = document.worksheet_id.general_audit_id.computation_ids"
+        ".filtered(\n"
+        '    lambda c: c.computation_item_id.name == "{}"\n'
+        ")\n"
+        "if lines:\n"
+        "    result = lines[0].audited_amount\n"
+    ).format(item_name)
+
+
+#: Python code for "Details" row #3 (Data Laporan Keuangan Yang Digunakan),
+#: exactly as specified by the issue's Keputusan Desain: the audit period
+#: length in whole calendar months, counted inclusively (Jan-Dec = 12).
+_FINANCIAL_REPORT_PERIOD_PYTHON_CODE = (
+    "ga = document.worksheet_id.general_audit_id\n"
+    "months = 0\n"
+    "if ga.date_start and ga.date_end:\n"
+    "    months = (\n"
+    "        (ga.date_end.year - ga.date_start.year) * 12\n"
+    "        + (ga.date_end.month - ga.date_start.month)\n"
+    "        + 1\n"
+    "    )\n"
+    "if months == 12:\n"
+    '    result = "Yearly Financial Report"\n'
+    "elif months and months < 12:\n"
+    '    result = "Interim Financial Report"\n'
+    "elif months > 12:\n"
+    '    result = "More than 12 months"\n'
+    "else:\n"
+    '    result = ""\n'
+)
+
+#: The 11 fixed "Details" rows populated once by
+#: ``GeneralAuditWSb66777d.create()`` -- ``(property, value_type,
+#: python_code)``. Deliberately a Python constant, not XML master data:
+#: these rows are specific to this one worksheet model, never reused or
+#: user-editable elsewhere (issue's Keputusan Desain).
+_DETAIL_ROWS = [
+    (
+        "Standar Akuntansi Keuangan yang Digunakan oleh klien",
+        "char",
+        "result = (\n"
+        "    document.worksheet_id.general_audit_id\n"
+        '    .financial_accounting_standard_id.name or ""\n'
+        ")\n",
+    ),
+    (
+        "Mata Uang Yang Digunakan",
+        "char",
+        "result = (\n"
+        "    document.worksheet_id.general_audit_id.currency_id.name\n"
+        '    or ""\n'
+        ")\n",
+    ),
+    (
+        "Data Laporan Keuangan Yang Digunakan",
+        "char",
+        _FINANCIAL_REPORT_PERIOD_PYTHON_CODE,
+    ),
+    ("Revenue", "amount", _computation_item_python_code("Total Revenue")),
+    ("Total Asset", "amount", _computation_item_python_code("Total Asset")),
+    (
+        "Total Liability",
+        "amount",
+        _computation_item_python_code("Total Liability"),
+    ),
+    ("EBIT", "amount", _computation_item_python_code("EBIT")),
+    ("Tax Expense", "amount", _computation_item_python_code("Tax Expense")),
+    (
+        "Total Net Profit",
+        "amount",
+        _computation_item_python_code("Total Net Profit"),
+    ),
+    (
+        "Total Net Profit & OCI",
+        "amount",
+        _computation_item_python_code("Total Net Profit & OCI"),
+    ),
+    (
+        "Konsolidasi",
+        "char",
+        "result = (\n"
+        "    document.worksheet_id.general_audit_id.partner_id\n"
+        '    .entity_type_id.name or ""\n'
+        ")\n",
+    ),
+]
 
 
 class GeneralAuditWSb66777d(models.Model):
@@ -68,6 +177,67 @@ class GeneralAuditWSb66777d(models.Model):
         "``_build_lai_number``'s docstring) when the worksheet is "
         "opened, but can still be overwritten manually.",
     )
+    detail_ids = fields.One2many(
+        string="Details",
+        comodel_name="general_audit_ws_b66777d.detail",
+        inverse_name="worksheet_id",
+        readonly=True,
+        help=(
+            "11 fixed summary rows (Property/Python Code/Value), "
+            "populated once when this worksheet is created from the "
+            "linked General Audit. See create()."
+        ),
+    )
+
+    @api.model_create_multi
+    def create(self, vals_list):
+        """Create worksheet(s), then seed their fixed ``detail_ids``.
+
+        The 11 rows in ``_DETAIL_ROWS`` are created with ``sudo()``
+        because this model's own ``ir.model.access.csv`` grants 0
+        create/write/unlink to every group (the issue's Keputusan
+        Desain: "Details" is system-populated only, never manually
+        editable) -- without ``sudo()`` this would raise ``AccessError``
+        for every user, including the one creating the worksheet.
+
+        :param vals_list: list of value dicts, one per worksheet
+        :type vals_list: list
+        :return: the newly created worksheet(s)
+        :rtype: recordset of ``general_audit_ws_b66777d``
+        """
+        _super = super(GeneralAuditWSb66777d, self)
+        records = _super.create(vals_list)
+        Detail = self.env["general_audit_ws_b66777d.detail"].sudo()
+        for record in records:
+            for property_name, value_type, python_code in _DETAIL_ROWS:
+                Detail.create(
+                    record._prepare_detail_vals(property_name, value_type, python_code)
+                )
+        return records
+
+    def _prepare_detail_vals(self, property_name, value_type, python_code):
+        """Build the values of one ``detail_ids`` row.
+
+        Extension point: override to add fields to each of the 11 rows
+        created by ``create()`` (e.g. a glue module adding a 12th
+        property without rewriting ``_DETAIL_ROWS``).
+
+        :param property_name: label for the row, e.g. ``"Revenue"``
+        :type property_name: str
+        :param value_type: ``"char"`` or ``"amount"``
+        :type value_type: str
+        :param python_code: source evaluated to fill the row's Value
+        :type python_code: str
+        :return: dict of ``general_audit_ws_b66777d.detail`` values
+        :rtype: dict
+        """
+        self.ensure_one()
+        return {
+            "worksheet_id": self.id,
+            "property": property_name,
+            "value_type": value_type,
+            "python_code": python_code,
+        }
 
     @ssi_decorator.post_open_action()
     def _10_generate_lai_number(self):

@@ -44,6 +44,46 @@
                 <xpath expr="//field[@name='conclusion_id']" position="before">
                     <field name="lai_number" />
                 </xpath>
+                <xpath expr="//page[1]" position="before">
+                    <page name="details" string="Details">
+                        <field name="detail_ids" nolabel="1">
+                            <tree create="false" delete="false" editable="false">
+                                <field name="property" readonly="1" />
+                                <field name="python_code" readonly="1" />
+                                <field
+                                    name="value_char"
+                                    readonly="1"
+                                    attrs="{'invisible': [('value_type', '!=', 'char')]}"
+                                />
+                                <field
+                                    name="value_amount"
+                                    readonly="1"
+                                    attrs="{'invisible': [('value_type', '!=', 'amount')]}"
+                                />
+                                <field name="value_type" invisible="1" />
+                                <field name="currency_id" invisible="1" />
+                            </tree>
+                            <form>
+                                <group>
+                                    <field name="property" readonly="1" />
+                                    <field name="python_code" readonly="1" />
+                                    <field
+                                        name="value_char"
+                                        readonly="1"
+                                        attrs="{'invisible': [('value_type', '!=', 'char')]}"
+                                    />
+                                    <field
+                                        name="value_amount"
+                                        readonly="1"
+                                        attrs="{'invisible': [('value_type', '!=', 'amount')]}"
+                                    />
+                                    <field name="value_type" invisible="1" />
+                                    <field name="currency_id" invisible="1" />
+                                </group>
+                            </form>
+                        </field>
+                    </page>
+                </xpath>
             </data>
         </field>
     </record>
