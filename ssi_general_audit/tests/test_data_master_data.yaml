@@ -633,6 +633,120 @@ scenarios:
         expect_count: 0
 
   # ------------------------------------------------------------------
+  # client_account_type_set - built-in sets seeded with the new
+  # Tax Expense (T100) / Total Net Profit (T101) / Total Net Profit
+  # & OCI (T102) computation items (issue #361 additional scope).
+  # ------------------------------------------------------------------
+  - name:
+      "client_account_type_set - built-in sets have Tax Expense, Total Net Profit, Total
+      Net Profit & OCI"
+    steps:
+      - step: "Get Limited Company set"
+        action: "ref"
+        xml_id: "ssi_general_audit.client_account_type_set_st"
+        save_as: "set_st"
+
+      - step: "Get Cooperative set"
+        action: "ref"
+        xml_id: "ssi_general_audit.client_account_type_set_cooperative"
+        save_as: "set_cooperative"
+
+      - step: "Get Non-Profit set"
+        action: "ref"
+        xml_id: "ssi_general_audit.client_account_type_set_non_profit"
+        save_as: "set_non_profit"
+
+      - step: "Get Tax Expense computation item"
+        action: "ref"
+        xml_id: "ssi_general_audit.trial_balance_computation_item_30_b40ad860"
+        save_as: "item_tax_expense"
+
+      - step: "Get Total Net Profit computation item"
+        action: "ref"
+        xml_id: "ssi_general_audit.trial_balance_computation_item_31_ec987fd9"
+        save_as: "item_total_net_profit"
+
+      - step: "Get Total Net Profit & OCI computation item"
+        action: "ref"
+        xml_id: "ssi_general_audit.trial_balance_computation_item_32_c046e7f5"
+        save_as: "item_total_net_profit_oci"
+
+      - step: "Limited Company has all 3 new computation items"
+        action: "search"
+        model: "client_account_type.computation_item"
+        domain:
+          - ["account_type_set_id", "=", "REC: set_st.id"]
+          - [
+              "computation_id",
+              "in",
+              [
+                "REC: item_tax_expense.id",
+                "REC: item_total_net_profit.id",
+                "REC: item_total_net_profit_oci.id",
+              ],
+            ]
+        save_as: "st_new_items"
+        expect_count: 3
+
+      - step: "Cooperative has all 3 new computation items"
+        action: "search"
+        model: "client_account_type.computation_item"
+        domain:
+          - ["account_type_set_id", "=", "REC: set_cooperative.id"]
+          - [
+              "computation_id",
+              "in",
+              [
+                "REC: item_tax_expense.id",
+                "REC: item_total_net_profit.id",
+                "REC: item_total_net_profit_oci.id",
+              ],
+            ]
+        save_as: "cooperative_new_items"
+        expect_count: 3
+
+      - step: "Non-Profit has all 3 new computation items"
+        action: "search"
+        model: "client_account_type.computation_item"
+        domain:
+          - ["account_type_set_id", "=", "REC: set_non_profit.id"]
+          - [
+              "computation_id",
+              "in",
+              [
+                "REC: item_tax_expense.id",
+                "REC: item_total_net_profit.id",
+                "REC: item_total_net_profit_oci.id",
+              ],
+            ]
+        save_as: "non_profit_new_items"
+        expect_count: 3
+
+      - step:
+          "All 9 new rows (3 sets x 3 items) use the default python_code, none manually
+          overridden"
+        action: "search"
+        model: "client_account_type.computation_item"
+        domain:
+          - [
+              "account_type_set_id",
+              "in",
+              ["REC: set_st.id", "REC: set_cooperative.id", "REC: set_non_profit.id"],
+            ]
+          - [
+              "computation_id",
+              "in",
+              [
+                "REC: item_tax_expense.id",
+                "REC: item_total_net_profit.id",
+                "REC: item_total_net_profit_oci.id",
+              ],
+            ]
+          - ["use_default", "=", true]
+        save_as: "all_new_items_default"
+        expect_count: 9
+
+  # ------------------------------------------------------------------
   # general_audit_worksheet_type
   # ------------------------------------------------------------------
   - name: "general_audit_worksheet_type - Create"
