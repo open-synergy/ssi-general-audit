@@ -143,7 +143,7 @@ Available addons
 ----------------
 addon | version | maintainers | summary
 --- | --- | --- | ---
-[ssi_general_audit](ssi_general_audit/) | 14.0.4.2.1 |  | General Audit
+[ssi_general_audit](ssi_general_audit/) | 14.0.4.3.0 |  | General Audit
 [ssi_general_audit_core](ssi_general_audit_core/) | 14.0.1.2.0 |  | General Audit - Core
 [ssi_general_audit_worksheet_acceptance_continuance](ssi_general_audit_worksheet_acceptance_continuance/) | 14.0.1.7.0 |  | General Audit Worksheet - Acceptance and Continuance
 [ssi_general_audit_worksheet_analytic_cycle](ssi_general_audit_worksheet_analytic_cycle/) | 14.0.1.6.0 |  | General Audit Worksheet - Analytical Procedures – Cycle
@@ -164,7 +164,7 @@ addon | version | maintainers | summary
 [ssi_general_audit_worksheet_expert](ssi_general_audit_worksheet_expert/) | 14.0.1.2.1 |  | General Audit Worksheet - Expert
 [ssi_general_audit_worksheet_external_communication](ssi_general_audit_worksheet_external_communication/) | 14.0.1.3.0 |  | General Audit Worksheet - External Communication
 [ssi_general_audit_worksheet_final_materiality](ssi_general_audit_worksheet_final_materiality/) | 14.0.1.1.2 |  | General Audit Worksheet - Final Materiality & Analytical Procedures
-[ssi_general_audit_worksheet_final_report](ssi_general_audit_worksheet_final_report/) | 14.0.1.2.0 |  | General Audit Worksheet - Final Report
+[ssi_general_audit_worksheet_final_report](ssi_general_audit_worksheet_final_report/) | 14.0.1.3.0 |  | General Audit Worksheet - Final Report
 [ssi_general_audit_worksheet_independence_statement](ssi_general_audit_worksheet_independence_statement/) | 14.0.1.2.0 |  | General Audit Worksheet - Independence Statement
 [ssi_general_audit_worksheet_inherent_risk](ssi_general_audit_worksheet_inherent_risk/) | 14.0.2.3.6 |  | General Audit Worksheet - Inherent Risk
 [ssi_general_audit_worksheet_lead_schedule](ssi_general_audit_worksheet_lead_schedule/) | 14.0.1.3.0 |  | General Audit Worksheet - Lead Schedule
