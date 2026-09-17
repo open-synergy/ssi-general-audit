@@ -34,7 +34,9 @@
         "data/sequence_template/general_audit_ws_b66777d.xml",
         "data/policy_template/general_audit_ws_b66777d.xml",
         "data/approval_template/general_audit_ws_b66777d.xml",
+        "data/master/general_audit_ws_b66777d_property.xml",
         "views/general_audit_ws_b66777d_views.xml",
+        "views/general_audit_ws_b66777d_property_views.xml",
         # f3ed115
         "security/res_group/general_audit_ws_f3ed115.xml",
         "security/ir_rule/general_audit_ws_f3ed115.xml",

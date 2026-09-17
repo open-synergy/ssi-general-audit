@@ -34,13 +34,15 @@ class GeneralAuditWsB66777dDetail(models.Model):
         ondelete="cascade",
         help=("Independent Auditor's Report worksheet this Details row " "belongs to."),
     )
-    property = fields.Char(
+    property_id = fields.Many2one(
         string="Property",
+        comodel_name="general_audit_ws_b66777d.property",
         required=True,
+        ondelete="restrict",
         help=(
-            "Label of this Details row (e.g. 'Revenue', "
-            "'Konsolidasi'). Free text, not a selection -- the 11 "
-            "rows are seeded automatically, never typed by a user."
+            "Master data row (Configuration > ... > Independent "
+            "Auditor Report > Detail Property) this Details row was "
+            "populated from."
         ),
     )
     python_code = fields.Text(
@@ -48,9 +50,13 @@ class GeneralAuditWsB66777dDetail(models.Model):
         required=True,
         help=(
             "Python snippet evaluated on every Populate click to "
-            "derive this row's Value. Must assign its result to a "
-            "variable named 'result'. Available names: 'env' and "
-            "'document' (this detail record itself)."
+            "derive this row's Value. COPIED from property_id.python_"
+            "code at populate time (not related=), so editing the "
+            "master data afterwards does not change a row already "
+            "snapshotted -- consistent with Populate being a manual, "
+            "point-in-time action rather than a live-reactive one. "
+            "Available names: 'env' and 'document' (this detail "
+            "record itself)."
         ),
     )
     value = fields.Char(

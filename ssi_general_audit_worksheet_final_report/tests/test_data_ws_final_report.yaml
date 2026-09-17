@@ -1548,14 +1548,22 @@ scenarios:
         model: "general_audit_ws_b66777d.detail"
         domain:
           - ["worksheet_id", "=", "REC: details_worksheet.id"]
-          - ["property", "=", "Standar Akuntansi Keuangan yang Digunakan oleh klien"]
+          - [
+              "property_id",
+              "=",
+              "REF:
+              ssi_general_audit_worksheet_final_report.general_audit_ws_b66777d_property_1",
+            ]
         save_as: "row_standard"
         expect_count: 1
 
-      - step: "Assert row #1 value"
+      - step: "Assert row #1 property_id ref and value"
         action: "assert"
         target: "row_standard"
         asserts:
+          property_id:
+            type: "m2o"
+            expected_xml_id: "ssi_general_audit_worksheet_final_report.general_audit_ws_b66777d_property_1"
           value:
             type: "value"
             expected: "Test Financial Accounting Standard - Final Report"
@@ -1565,14 +1573,22 @@ scenarios:
         model: "general_audit_ws_b66777d.detail"
         domain:
           - ["worksheet_id", "=", "REC: details_worksheet.id"]
-          - ["property", "=", "Mata Uang Yang Digunakan"]
+          - [
+              "property_id",
+              "=",
+              "REF:
+              ssi_general_audit_worksheet_final_report.general_audit_ws_b66777d_property_2",
+            ]
         save_as: "row_currency"
         expect_count: 1
 
-      - step: "Assert row #2 value is not empty"
+      - step: "Assert row #2 property_id ref and value is not empty"
         action: "assert"
         target: "row_currency"
         asserts:
+          property_id:
+            type: "m2o"
+            expected_xml_id: "ssi_general_audit_worksheet_final_report.general_audit_ws_b66777d_property_2"
           value:
             type: "value"
             operator: "is_truthy"
@@ -1582,16 +1598,24 @@ scenarios:
         model: "general_audit_ws_b66777d.detail"
         domain:
           - ["worksheet_id", "=", "REC: details_worksheet.id"]
-          - ["property", "=", "Data Laporan Keuangan Yang Digunakan"]
+          - [
+              "property_id",
+              "=",
+              "REF:
+              ssi_general_audit_worksheet_final_report.general_audit_ws_b66777d_property_3",
+            ]
         save_as: "row_period"
         expect_count: 1
 
       - step:
-          "Assert row #3 is Yearly Financial Report (audit.id date_start/date_end span
-          exactly 12 months)"
+          "Assert row #3 property_id ref, is Yearly Financial Report (audit.id
+          date_start/date_end span exactly 12 months)"
         action: "assert"
         target: "row_period"
         asserts:
+          property_id:
+            type: "m2o"
+            expected_xml_id: "ssi_general_audit_worksheet_final_report.general_audit_ws_b66777d_property_3"
           value:
             type: "value"
             expected: "Yearly Financial Report"
@@ -1601,14 +1625,24 @@ scenarios:
         model: "general_audit_ws_b66777d.detail"
         domain:
           - ["worksheet_id", "=", "REC: details_worksheet.id"]
-          - ["property", "=", "Revenue"]
+          - [
+              "property_id",
+              "=",
+              "REF:
+              ssi_general_audit_worksheet_final_report.general_audit_ws_b66777d_property_4",
+            ]
         save_as: "row_revenue"
         expect_count: 1
 
-      - step: "Assert row #4 value is the thousand-separator formatted audited_amount"
+      - step:
+          "Assert row #4 property_id ref, value is the thousand-separator formatted
+          audited_amount"
         action: "assert"
         target: "row_revenue"
         asserts:
+          property_id:
+            type: "m2o"
+            expected_xml_id: "ssi_general_audit_worksheet_final_report.general_audit_ws_b66777d_property_4"
           value:
             type: "value"
             expected: "1,000,000.00"
@@ -1618,14 +1652,22 @@ scenarios:
         model: "general_audit_ws_b66777d.detail"
         domain:
           - ["worksheet_id", "=", "REC: details_worksheet.id"]
-          - ["property", "=", "Total Asset"]
+          - [
+              "property_id",
+              "=",
+              "REF:
+              ssi_general_audit_worksheet_final_report.general_audit_ws_b66777d_property_5",
+            ]
         save_as: "row_total_asset"
         expect_count: 1
 
-      - step: "Assert row #5 value"
+      - step: "Assert row #5 property_id ref and value"
         action: "assert"
         target: "row_total_asset"
         asserts:
+          property_id:
+            type: "m2o"
+            expected_xml_id: "ssi_general_audit_worksheet_final_report.general_audit_ws_b66777d_property_5"
           value:
             type: "value"
             expected: "2,000,000.00"
@@ -1635,14 +1677,22 @@ scenarios:
         model: "general_audit_ws_b66777d.detail"
         domain:
           - ["worksheet_id", "=", "REC: details_worksheet.id"]
-          - ["property", "=", "Total Liability"]
+          - [
+              "property_id",
+              "=",
+              "REF:
+              ssi_general_audit_worksheet_final_report.general_audit_ws_b66777d_property_6",
+            ]
         save_as: "row_total_liability"
         expect_count: 1
 
-      - step: "Assert row #6 value"
+      - step: "Assert row #6 property_id ref and value"
         action: "assert"
         target: "row_total_liability"
         asserts:
+          property_id:
+            type: "m2o"
+            expected_xml_id: "ssi_general_audit_worksheet_final_report.general_audit_ws_b66777d_property_6"
           value:
             type: "value"
             expected: "500,000.00"
@@ -1652,14 +1702,22 @@ scenarios:
         model: "general_audit_ws_b66777d.detail"
         domain:
           - ["worksheet_id", "=", "REC: details_worksheet.id"]
-          - ["property", "=", "EBIT"]
+          - [
+              "property_id",
+              "=",
+              "REF:
+              ssi_general_audit_worksheet_final_report.general_audit_ws_b66777d_property_7",
+            ]
         save_as: "row_ebit"
         expect_count: 1
 
-      - step: "Assert row #7 value"
+      - step: "Assert row #7 property_id ref and value"
         action: "assert"
         target: "row_ebit"
         asserts:
+          property_id:
+            type: "m2o"
+            expected_xml_id: "ssi_general_audit_worksheet_final_report.general_audit_ws_b66777d_property_7"
           value:
             type: "value"
             expected: "300,000.00"
@@ -1669,14 +1727,22 @@ scenarios:
         model: "general_audit_ws_b66777d.detail"
         domain:
           - ["worksheet_id", "=", "REC: details_worksheet.id"]
-          - ["property", "=", "Tax Expense"]
+          - [
+              "property_id",
+              "=",
+              "REF:
+              ssi_general_audit_worksheet_final_report.general_audit_ws_b66777d_property_8",
+            ]
         save_as: "row_tax_expense"
         expect_count: 1
 
-      - step: "Assert row #8 value"
+      - step: "Assert row #8 property_id ref and value"
         action: "assert"
         target: "row_tax_expense"
         asserts:
+          property_id:
+            type: "m2o"
+            expected_xml_id: "ssi_general_audit_worksheet_final_report.general_audit_ws_b66777d_property_8"
           value:
             type: "value"
             expected: "60,000.00"
@@ -1686,14 +1752,22 @@ scenarios:
         model: "general_audit_ws_b66777d.detail"
         domain:
           - ["worksheet_id", "=", "REC: details_worksheet.id"]
-          - ["property", "=", "Total Net Profit"]
+          - [
+              "property_id",
+              "=",
+              "REF:
+              ssi_general_audit_worksheet_final_report.general_audit_ws_b66777d_property_9",
+            ]
         save_as: "row_total_net_profit"
         expect_count: 1
 
-      - step: "Assert row #9 value"
+      - step: "Assert row #9 property_id ref and value"
         action: "assert"
         target: "row_total_net_profit"
         asserts:
+          property_id:
+            type: "m2o"
+            expected_xml_id: "ssi_general_audit_worksheet_final_report.general_audit_ws_b66777d_property_9"
           value:
             type: "value"
             expected: "240,000.00"
@@ -1703,14 +1777,22 @@ scenarios:
         model: "general_audit_ws_b66777d.detail"
         domain:
           - ["worksheet_id", "=", "REC: details_worksheet.id"]
-          - ["property", "=", "Total Net Profit & OCI"]
+          - [
+              "property_id",
+              "=",
+              "REF:
+              ssi_general_audit_worksheet_final_report.general_audit_ws_b66777d_property_10",
+            ]
         save_as: "row_total_net_profit_oci"
         expect_count: 1
 
-      - step: "Assert row #10 value"
+      - step: "Assert row #10 property_id ref and value"
         action: "assert"
         target: "row_total_net_profit_oci"
         asserts:
+          property_id:
+            type: "m2o"
+            expected_xml_id: "ssi_general_audit_worksheet_final_report.general_audit_ws_b66777d_property_10"
           value:
             type: "value"
             expected: "250,000.00"
@@ -1720,14 +1802,22 @@ scenarios:
         model: "general_audit_ws_b66777d.detail"
         domain:
           - ["worksheet_id", "=", "REC: details_worksheet.id"]
-          - ["property", "=", "Konsolidasi"]
+          - [
+              "property_id",
+              "=",
+              "REF:
+              ssi_general_audit_worksheet_final_report.general_audit_ws_b66777d_property_11",
+            ]
         save_as: "row_konsolidasi"
         expect_count: 1
 
-      - step: "Assert row #11 value matches partner's entity type"
+      - step: "Assert row #11 property_id ref and value matches partner's entity type"
         action: "assert"
         target: "row_konsolidasi"
         asserts:
+          property_id:
+            type: "m2o"
+            expected_xml_id: "ssi_general_audit_worksheet_final_report.general_audit_ws_b66777d_property_11"
           value:
             type: "value"
             expected: "Perseroan Terbatas"
@@ -1817,7 +1907,12 @@ scenarios:
         model: "general_audit_ws_b66777d.detail"
         domain:
           - ["worksheet_id", "=", "REC: details_worksheet_6mo.id"]
-          - ["property", "=", "Data Laporan Keuangan Yang Digunakan"]
+          - [
+              "property_id",
+              "=",
+              "REF:
+              ssi_general_audit_worksheet_final_report.general_audit_ws_b66777d_property_3",
+            ]
         save_as: "row_period_6mo"
         expect_count: 1
 
@@ -1886,7 +1981,12 @@ scenarios:
         model: "general_audit_ws_b66777d.detail"
         domain:
           - ["worksheet_id", "=", "REC: details_worksheet_18mo.id"]
-          - ["property", "=", "Data Laporan Keuangan Yang Digunakan"]
+          - [
+              "property_id",
+              "=",
+              "REF:
+              ssi_general_audit_worksheet_final_report.general_audit_ws_b66777d_property_3",
+            ]
         save_as: "row_period_18mo"
         expect_count: 1
 
@@ -1982,7 +2082,12 @@ scenarios:
         model: "general_audit_ws_b66777d.detail"
         domain:
           - ["worksheet_id", "=", "REC: details_worksheet_no_computation.id"]
-          - ["property", "=", "Revenue"]
+          - [
+              "property_id",
+              "=",
+              "REF:
+              ssi_general_audit_worksheet_final_report.general_audit_ws_b66777d_property_4",
+            ]
         save_as: "row_revenue_empty"
         expect_count: 1
 
@@ -2000,7 +2105,12 @@ scenarios:
         model: "general_audit_ws_b66777d.detail"
         domain:
           - ["worksheet_id", "=", "REC: details_worksheet_no_computation.id"]
-          - ["property", "=", "Total Net Profit & OCI"]
+          - [
+              "property_id",
+              "=",
+              "REF:
+              ssi_general_audit_worksheet_final_report.general_audit_ws_b66777d_property_10",
+            ]
         save_as: "row_total_net_profit_oci_empty"
         expect_count: 1
 
@@ -2017,7 +2127,12 @@ scenarios:
         model: "general_audit_ws_b66777d.detail"
         domain:
           - ["worksheet_id", "=", "REC: details_worksheet_no_computation.id"]
-          - ["property", "=", "Konsolidasi"]
+          - [
+              "property_id",
+              "=",
+              "REF:
+              ssi_general_audit_worksheet_final_report.general_audit_ws_b66777d_property_11",
+            ]
         save_as: "row_konsolidasi_empty"
         expect_count: 1
 

@@ -1,0 +1,172 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<odoo>
+    <record
+        id="general_audit_ws_b66777d_property_1"
+        model="general_audit_ws_b66777d.property"
+    >
+        <field name="code">STANDARD</field>
+        <field name="name">Standar Akuntansi Keuangan yang Digunakan oleh klien</field>
+        <field name="sequence" eval="10" />
+        <field name="python_code">result = (
+    document.worksheet_id.general_audit_id
+    .financial_accounting_standard_id.name or ""
+)
+</field>
+    </record>
+    <record
+        id="general_audit_ws_b66777d_property_2"
+        model="general_audit_ws_b66777d.property"
+    >
+        <field name="code">CURRENCY</field>
+        <field name="name">Mata Uang Yang Digunakan</field>
+        <field name="sequence" eval="20" />
+        <field name="python_code">result = (
+    document.worksheet_id.general_audit_id.currency_id.name
+    or ""
+)
+</field>
+    </record>
+    <record
+        id="general_audit_ws_b66777d_property_3"
+        model="general_audit_ws_b66777d.property"
+    >
+        <field name="code">PERIOD</field>
+        <field name="name">Data Laporan Keuangan Yang Digunakan</field>
+        <field name="sequence" eval="30" />
+        <field name="python_code">ga = document.worksheet_id.general_audit_id
+months = 0
+if ga.date_start and ga.date_end:
+    months = (
+        (ga.date_end.year - ga.date_start.year) * 12
+        + (ga.date_end.month - ga.date_start.month)
+        + 1
+    )
+if months == 12:
+    result = "Yearly Financial Report"
+elif months and months &lt; 12:
+    result = "Interim Financial Report"
+elif months > 12:
+    result = "More than 12 months"
+else:
+    result = ""
+</field>
+    </record>
+    <record
+        id="general_audit_ws_b66777d_property_4"
+        model="general_audit_ws_b66777d.property"
+    >
+        <field name="code">REVENUE</field>
+        <field name="name">Revenue</field>
+        <field name="sequence" eval="40" />
+        <field name="python_code">result = 0.0
+lines = document.worksheet_id.general_audit_id.computation_ids.filtered(
+    lambda c: c.computation_item_id.name == "Total Revenue"
+)
+if lines:
+    result = lines[0].audited_amount
+</field>
+    </record>
+    <record
+        id="general_audit_ws_b66777d_property_5"
+        model="general_audit_ws_b66777d.property"
+    >
+        <field name="code">TOTAL_ASSET</field>
+        <field name="name">Total Asset</field>
+        <field name="sequence" eval="50" />
+        <field name="python_code">result = 0.0
+lines = document.worksheet_id.general_audit_id.computation_ids.filtered(
+    lambda c: c.computation_item_id.name == "Total Asset"
+)
+if lines:
+    result = lines[0].audited_amount
+</field>
+    </record>
+    <record
+        id="general_audit_ws_b66777d_property_6"
+        model="general_audit_ws_b66777d.property"
+    >
+        <field name="code">TOTAL_LIABILITY</field>
+        <field name="name">Total Liability</field>
+        <field name="sequence" eval="60" />
+        <field name="python_code">result = 0.0
+lines = document.worksheet_id.general_audit_id.computation_ids.filtered(
+    lambda c: c.computation_item_id.name == "Total Liability"
+)
+if lines:
+    result = lines[0].audited_amount
+</field>
+    </record>
+    <record
+        id="general_audit_ws_b66777d_property_7"
+        model="general_audit_ws_b66777d.property"
+    >
+        <field name="code">EBIT</field>
+        <field name="name">EBIT</field>
+        <field name="sequence" eval="70" />
+        <field name="python_code">result = 0.0
+lines = document.worksheet_id.general_audit_id.computation_ids.filtered(
+    lambda c: c.computation_item_id.name == "EBIT"
+)
+if lines:
+    result = lines[0].audited_amount
+</field>
+    </record>
+    <record
+        id="general_audit_ws_b66777d_property_8"
+        model="general_audit_ws_b66777d.property"
+    >
+        <field name="code">TAX_EXPENSE</field>
+        <field name="name">Tax Expense</field>
+        <field name="sequence" eval="80" />
+        <field name="python_code">result = 0.0
+lines = document.worksheet_id.general_audit_id.computation_ids.filtered(
+    lambda c: c.computation_item_id.name == "Tax Expense"
+)
+if lines:
+    result = lines[0].audited_amount
+</field>
+    </record>
+    <record
+        id="general_audit_ws_b66777d_property_9"
+        model="general_audit_ws_b66777d.property"
+    >
+        <field name="code">TOTAL_NET_PROFIT</field>
+        <field name="name">Total Net Profit</field>
+        <field name="sequence" eval="90" />
+        <field name="python_code">result = 0.0
+lines = document.worksheet_id.general_audit_id.computation_ids.filtered(
+    lambda c: c.computation_item_id.name == "Total Net Profit"
+)
+if lines:
+    result = lines[0].audited_amount
+</field>
+    </record>
+    <record
+        id="general_audit_ws_b66777d_property_10"
+        model="general_audit_ws_b66777d.property"
+    >
+        <field name="code">TOTAL_NET_PROFIT_OCI</field>
+        <field name="name">Total Net Profit &amp; OCI</field>
+        <field name="sequence" eval="100" />
+        <field name="python_code">result = 0.0
+lines = document.worksheet_id.general_audit_id.computation_ids.filtered(
+    lambda c: c.computation_item_id.name == "Total Net Profit &amp; OCI"
+)
+if lines:
+    result = lines[0].audited_amount
+</field>
+    </record>
+    <record
+        id="general_audit_ws_b66777d_property_11"
+        model="general_audit_ws_b66777d.property"
+    >
+        <field name="code">CONSOLIDATION</field>
+        <field name="name">Konsolidasi</field>
+        <field name="sequence" eval="110" />
+        <field name="python_code">result = (
+    document.worksheet_id.general_audit_id.partner_id
+    .entity_type_id.name or ""
+)
+</field>
+    </record>
+</odoo>
