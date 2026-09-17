@@ -337,6 +337,40 @@
         >result = T010 / (account_group["T001"] + account_group["T002"])</field>
     </record>
     <record
+        id="trial_balance_computation_item_30_b40ad860"
+        model="trial_balance_computation_item"
+    >
+        <field name="code">T030</field>
+        <field name="name">Tax Expense</field>
+        <field name="sequence" eval="540" />
+        <field name="category">summary</field>
+        <field name="python_code">result = account_group.get("T014", 0.0)</field>
+    </record>
+    <record
+        id="trial_balance_computation_item_31_ec987fd9"
+        model="trial_balance_computation_item"
+    >
+        <field name="code">T031</field>
+        <field name="name">Total Net Profit</field>
+        <field name="sequence" eval="550" />
+        <field name="category">summary</field>
+        <field
+            name="python_code"
+        >result = account_group.get("T009", 0.0) + account_group.get("T010", 0.0) - account_group.get("T011", 0.0) - account_group.get("T012", 0.0) - account_group.get("T013", 0.0) - account_group.get("T014", 0.0)</field>
+    </record>
+    <record
+        id="trial_balance_computation_item_32_c046e7f5"
+        model="trial_balance_computation_item"
+    >
+        <field name="code">T032</field>
+        <field name="name">Total Net Profit &amp; OCI</field>
+        <field name="sequence" eval="560" />
+        <field name="category">summary</field>
+        <field
+            name="python_code"
+        >result = account_group.get("T009", 0.0) + account_group.get("T010", 0.0) - account_group.get("T011", 0.0) - account_group.get("T012", 0.0) - account_group.get("T013", 0.0) - account_group.get("T014", 0.0) + account_group.get("T015", 0.0)</field>
+    </record>
+    <record
         id="trial_balance_computation_item_wc_ta"
         model="trial_balance_computation_item"
     >
