@@ -1,0 +1,127 @@
+scenarios:
+  # ------------------------------------------------------------------
+  # HT/26/000749 - reorganize "Accountant" Configuration submenus
+  # (ssi_accountant) under "Configuration -> Standard & Regulation ->
+  # Accountant" (ssi_general_audit_core), and hide the "Accountant" app
+  # root menu from the sidebar for every user. No new model/field is
+  # introduced; this proves the ir.ui.menu data overrides in
+  # ssi_general_audit_core/menu.xml land as intended.
+  # ------------------------------------------------------------------
+  - name: "menu - Accountant Configuration submenus relocated"
+    steps:
+      - step: "Get the new Accountant menu under Standard & Regulation"
+        action: "ref"
+        xml_id: "ssi_general_audit_core.menu_configuration_accountant"
+        save_as: "accountant_config_menu"
+
+      - step: "New Accountant menu is a child of Standard & Regulation"
+        action: "assert"
+        target: "accountant_config_menu"
+        asserts:
+          parent_id:
+            type: "m2o"
+            expected_xml_id: "ssi_general_audit.menu_configuration_std_regulation"
+
+      - step: "Get the relocated Services menu"
+        action: "ref"
+        xml_id: "ssi_accountant.accountant_service_menu"
+        save_as: "service_menu"
+
+      - step: "Services menu now sits under the new Accountant menu"
+        action: "assert"
+        target: "service_menu"
+        asserts:
+          parent_id:
+            type: "m2o"
+            expected_xml_id: "ssi_general_audit_core.menu_configuration_accountant"
+          name:
+            type: "value"
+            expected: "Services"
+          sequence:
+            type: "value"
+            expected: 1
+          action.name:
+            type: "value"
+            expected: "Accountant Services"
+          groups_id:
+            type: "m2m"
+            check: "exact_xml_ids"
+            expected_xml_ids:
+              - "ssi_accountant.accountant_service_group"
+
+      - step: "Get the relocated Financial Accounting Standards menu"
+        action: "ref"
+        xml_id: "ssi_accountant.accountant_financial_accounting_standard_menu"
+        save_as: "fas_menu"
+
+      - step: "Financial Accounting Standards menu now sits under the new menu"
+        action: "assert"
+        target: "fas_menu"
+        asserts:
+          parent_id:
+            type: "m2o"
+            expected_xml_id: "ssi_general_audit_core.menu_configuration_accountant"
+          name:
+            type: "value"
+            expected: "Financial Accounting Standards"
+          sequence:
+            type: "value"
+            expected: 2
+          action.name:
+            type: "value"
+            expected: "Financial Accounting Standards"
+          groups_id:
+            type: "m2m"
+            check: "exact_xml_ids"
+            expected_xml_ids:
+              - "ssi_accountant.accountant_financial_accountant_standard_group"
+
+      - step: "Get the relocated Opinions menu"
+        action: "ref"
+        xml_id: "ssi_accountant.accountant_opinion_menu"
+        save_as: "opinion_menu"
+
+      - step: "Opinions menu now sits under the new Accountant menu"
+        action: "assert"
+        target: "opinion_menu"
+        asserts:
+          parent_id:
+            type: "m2o"
+            expected_xml_id: "ssi_general_audit_core.menu_configuration_accountant"
+          name:
+            type: "value"
+            expected: "Opinions"
+          sequence:
+            type: "value"
+            expected: 3
+          action.name:
+            type: "value"
+            expected: "Opinions"
+          groups_id:
+            type: "m2m"
+            check: "exact_xml_ids"
+            expected_xml_ids:
+              - "ssi_accountant.accountant_opinion_group"
+
+  # ------------------------------------------------------------------
+  # Negative path: the "Accountant" app root menu must no longer be
+  # reachable by any user. groups_id is restricted to an empty,
+  # unassignable group (aura_no_one_group) instead of being left with
+  # the default public/no-groups visibility.
+  # ------------------------------------------------------------------
+  - name: "menu - Accountant app root hidden from every user"
+    steps:
+      - step: "Get the Accountant app root menu"
+        action: "ref"
+        xml_id: "ssi_accountant.menu_root_accountant"
+        save_as: "accountant_root_menu"
+
+      - step: "Root menu groups_id contains only the no-one group"
+        action: "assert"
+        target: "accountant_root_menu"
+        asserts:
+          groups_id:
+            type: "m2m"
+            check: "exact_xml_ids"
+            expected_xml_ids:
+              - "ssi_general_audit_core.aura_no_one_group"
