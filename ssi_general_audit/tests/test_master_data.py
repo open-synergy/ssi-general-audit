@@ -111,13 +111,21 @@ class TestMasterData(YamlTransactionCase):
         Pure Python — trigger P1 (L-01: ``call`` discards return values;
         L-03: no YAML action stores an ``EVAL:`` result to the
         registry), same rationale as
-        ``test_client_financial_ratio_current_ratio_audited``.
+        ``test_client_financial_ratio_current_ratio_audited``. Looked
+        up by ``code`` (``T100``, not the original ``T030``) because
+        ``T030``/``T031``/``T032`` collided with pre-existing bare
+        references in Current Ratio/Cash Ratio/Quick Ratio/Inventory
+        Turnover Ratio/Net Profit Margin -- see the module comment
+        above ``T100`` in
+        ``data/master/trial_balance_computation_item.xml``.
         Localdict var available: ``account_group``.
         Output var read back: ``result``.
         """
-        item = self.env.ref(
-            "ssi_general_audit.trial_balance_computation_item_30_b40ad860"
+        item = self.env["trial_balance_computation_item"].search(
+            [("code", "=", "T100")]
         )
+        self.assertEqual(len(item), 1)
+        self.assertEqual(item.name, "Tax Expense")
         localdict = {
             "account_group": {
                 "T009": 100.0,
@@ -145,12 +153,17 @@ class TestMasterData(YamlTransactionCase):
         T011/T012/T013/T014 subtract), so a drift between this item's
         ``python_code`` and Posture's formula fails here even if both
         happen to evaluate to the same literal number.
+        Looked up by ``code`` (``T101``, not the original ``T031``) --
+        full rationale under
+        ``test_trial_balance_computation_item_tax_expense``.
         Localdict var available: ``account_group``.
         Output var read back: ``result``.
         """
-        item = self.env.ref(
-            "ssi_general_audit.trial_balance_computation_item_31_ec987fd9"
+        item = self.env["trial_balance_computation_item"].search(
+            [("code", "=", "T101")]
         )
+        self.assertEqual(len(item), 1)
+        self.assertEqual(item.name, "Total Net Profit")
         account_group = {
             "T009": 100.0,
             "T010": 10.0,
@@ -187,12 +200,17 @@ class TestMasterData(YamlTransactionCase):
         ``general_audit_ws_ff42fdc_total_formula.xml`` (same as Profit
         After Tax, plus T015 add), mirroring
         ``test_trial_balance_computation_item_total_net_profit``.
+        Looked up by ``code`` (``T102``, not the original ``T032``) --
+        full rationale under
+        ``test_trial_balance_computation_item_tax_expense``.
         Localdict var available: ``account_group``.
         Output var read back: ``result``.
         """
-        item = self.env.ref(
-            "ssi_general_audit.trial_balance_computation_item_32_c046e7f5"
+        item = self.env["trial_balance_computation_item"].search(
+            [("code", "=", "T102")]
         )
+        self.assertEqual(len(item), 1)
+        self.assertEqual(item.name, "Total Net Profit & OCI")
         account_group = {
             "T009": 100.0,
             "T010": 10.0,
