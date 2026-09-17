@@ -345,6 +345,219 @@ scenarios:
             operator: "is_truthy"
 
   # ------------------------------------------------------------------
+  # general_audit_ws_b66777d - lai_number full format built by
+  # _build_lai_number() when action_open() runs (issue #360, revision 2).
+  #
+  # DELIBERATELY placed here, BEFORE every other scenario in this file
+  # that opens a b66777d worksheet ("Workflow open, confirm and approve
+  # to done" and "Cancel and restart" below): the sequence
+  # general_audit_ws_b66777d.lai_number is a real DB counter shared by
+  # the whole file's single transaction (odoo-yaml-test does not reset
+  # it between scenarios), so this MUST be the first scenario to call
+  # action_open() on a b66777d worksheet for the exact-match assertion
+  # below ("00001/...") to hold. Do not reorder this scenario after
+  # those two without recomputing the expected seq segment.
+  # ------------------------------------------------------------------
+  - name:
+      "Worksheet b66777d - lai_number built by action_open matches the full LAI format"
+    steps:
+      - step: "Give the client a VAT/NPWP number so npwp_flag is '1'"
+        action: "write"
+        target: "client"
+        as_user: "base.user_admin"
+        values:
+          vat: "01.234.567.8-901.000"
+
+      - step: "Create an accountant service with code AU.1"
+        action: "create"
+        model: "accountant.service"
+        save_as: "lai_service"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Service - LAI Number"
+          code: "AU.1"
+
+      - step: "Create an industry with accountant_service_code 05"
+        action: "create"
+        model: "res.partner.industry"
+        save_as: "lai_industry"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Industry - LAI Number"
+          accountant_service_code: "05"
+
+      - step: "Get cpa_license id category"
+        action: "ref"
+        xml_id: "ssi_partner_identification_cpa_license.partner_identification_accountant_cpa_license"
+        save_as: "lai_cpa_license_category"
+
+      - step: "Give the accountant a CPA license ending in 1983"
+        action: "create"
+        model: "res.partner.id_number"
+        save_as: "lai_cpa_license"
+        as_user: "base.user_admin"
+        values:
+          partner_id: "REC: accountant.id"
+          category_id: "REC: lai_cpa_license_category.id"
+          name: "AP.0017.AB.1983"
+
+      - step:
+          "Create a cpa_firm_license id category (module
+          ssi_partner_identification_cpa_firm_license is NOT a dependency of this module
+          -- office_code is deliberately best-effort in production, see
+          _build_lai_number's docstring -- so this test creates its own category by code
+          instead of relying on that module's xml_id being installed)"
+        action: "create"
+        model: "res.partner.id_category"
+        save_as: "lai_cpa_firm_license_category"
+        as_user: "base.user_admin"
+        values:
+          name: "CPA Firm License (test)"
+          code: "cpa_firm_license"
+
+      - step: "Give the audit firm's own company a running, open CPA firm license"
+        action: "create"
+        model: "res.partner.id_number"
+        save_as: "lai_firm_license"
+        as_user: "base.user_admin"
+        values:
+          partner_id: "REC: company.partner_id.id"
+          category_id: "REC: lai_cpa_firm_license_category.id"
+          name: "AK.0004.AP.2.1470"
+          status: "open"
+
+      - step: "Create a General Audit with every LAI Number source field filled"
+        action: "create"
+        model: "general_audit"
+        save_as: "lai_audit"
+        as_user: "base.user_admin"
+        values:
+          title: "Test General Audit - LAI Number Format"
+          partner_id: "REC: client.id"
+          accountant_id: "REC: accountant.id"
+          service_id: "REC: lai_service.id"
+          industry_id: "REC: lai_industry.id"
+          account_type_set_id: "REC: account_type_set.id"
+          financial_accounting_standard_id: "REC: standard.id"
+          date: 2026-08-15
+          date_start: 2026-01-01
+          date_end: 2026-12-31
+          need_interim: false
+          need_previous: false
+          num_of_consecutive_audit_firm: 1
+          num_of_consecutive_audit_accountant: 1
+
+      - step: "Open the General Audit"
+        action: "call"
+        target: "lai_audit"
+        method: "action_open"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after opening the General Audit"
+        action: "call"
+        target: "lai_audit"
+        method: "invalidate_cache"
+
+      - step: "Create worksheet b66777d under this General Audit"
+        action: "create"
+        model: "general_audit_ws_b66777d"
+        save_as: "lai_worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: lai_audit.id"
+          type_id: "REC: ws_type_b66777d.id"
+
+      - step: "Assert lai_number still empty while worksheet is draft"
+        action: "assert"
+        target: "lai_worksheet"
+        asserts:
+          state:
+            type: "value"
+            expected: "draft"
+          lai_number:
+            type: "value"
+            operator: "is_falsy"
+
+      - step: "Open worksheet b66777d"
+        action: "call"
+        target: "lai_worksheet"
+        method: "action_open"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after opening worksheet"
+        action: "call"
+        target: "lai_worksheet"
+        method: "invalidate_cache"
+
+      # Expected value, computed by hand from the fixture above:
+      #   seq          = "00001" (first call to this file's
+      #                  general_audit_ws_b66777d.lai_number sequence --
+      #                  see the scenario-placement note above)
+      #   office_code  = last 6 chars of "AK.0004.AP.2.1470" = "2.1470"
+      #   service_code = lai_service.code                    = "AU.1"
+      #   sector_code  = lai_industry.accountant_service_code = "05"
+      #   AP           = last 4 chars of "AP.0017.AB.1983"   = "1983"
+      #   subsequence  = num_of_consecutive_audit_accountant = "1"
+      #   npwp_flag    = client.vat is set                   = "1"
+      #   roman_month  = month of 2026-08-15 (August)        = "VIII"
+      #   year         = year of 2026-08-15                  = "2026"
+      # -> "00001/2.1470/AU.1/05/1983-1/1/VIII/2026"
+      - step: "Assert lai_number matches the full LAI format exactly"
+        action: "assert"
+        target: "lai_worksheet"
+        asserts:
+          state:
+            type: "value"
+            expected: "open"
+          lai_number:
+            type: "value"
+            expected: "00001/2.1470/AU.1/05/1983-1/1/VIII/2026"
+
+  # ------------------------------------------------------------------
+  # general_audit_ws_b66777d - lai_number set manually BEFORE open is not
+  # overwritten by the _10_generate_lai_number post_open_action hook
+  # ------------------------------------------------------------------
+  - name: "Worksheet b66777d - lai_number set before open is kept as-is by action_open"
+    steps:
+      - step: "Create worksheet b66777d"
+        action: "create"
+        model: "general_audit_ws_b66777d"
+        save_as: "lai_worksheet_preset"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_b66777d.id"
+
+      - step: "Set lai_number manually while still draft"
+        action: "write"
+        target: "lai_worksheet_preset"
+        as_user: "base.user_admin"
+        values:
+          lai_number: "LAI/PRESET/00001"
+
+      - step: "Open worksheet"
+        action: "call"
+        target: "lai_worksheet_preset"
+        method: "action_open"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after opening worksheet"
+        action: "call"
+        target: "lai_worksheet_preset"
+        method: "invalidate_cache"
+
+      - step: "Assert the pre-set lai_number was not overwritten by action_open"
+        action: "assert"
+        target: "lai_worksheet_preset"
+        asserts:
+          state:
+            type: "value"
+            expected: "open"
+          lai_number:
+            type: "value"
+            expected: "LAI/PRESET/00001"
+
+  # ------------------------------------------------------------------
   # general_audit_ws_b66777d - workflow draft to done
   # ------------------------------------------------------------------
   - name: "Worksheet b66777d - Workflow open, confirm and approve to done"
@@ -506,117 +719,6 @@ scenarios:
           state:
             type: "value"
             expected: "draft"
-
-  # ------------------------------------------------------------------
-  # general_audit_ws_b66777d - lai_number stays empty until action_open
-  # (post_open_action hook `_10_generate_lai_number`), then follows the
-  # sequence pattern; overwritten value afterwards persists (not readonly)
-  # ------------------------------------------------------------------
-  - name: "Worksheet b66777d - lai_number empty in draft, filled by action_open"
-    steps:
-      - step: "Create worksheet b66777d without explicit lai_number"
-        action: "create"
-        model: "general_audit_ws_b66777d"
-        save_as: "lai_worksheet"
-        as_user: "base.user_admin"
-        values:
-          general_audit_id: "REC: audit.id"
-          type_id: "REC: ws_type_b66777d.id"
-
-      - step: "Assert lai_number still empty while worksheet is draft"
-        action: "assert"
-        target: "lai_worksheet"
-        asserts:
-          state:
-            type: "value"
-            expected: "draft"
-          lai_number:
-            type: "value"
-            operator: "is_falsy"
-
-      - step: "Open worksheet"
-        action: "call"
-        target: "lai_worksheet"
-        method: "action_open"
-        as_user: "base.user_admin"
-
-      - step: "Invalidate cache after opening worksheet"
-        action: "call"
-        target: "lai_worksheet"
-        method: "invalidate_cache"
-
-      - step:
-          "Assert lai_number auto-filled following the LAI/<year>/ sequence pattern
-          after open"
-        action: "assert"
-        target: "lai_worksheet"
-        asserts:
-          state:
-            type: "value"
-            expected: "open"
-          lai_number:
-            type: "value"
-            operator: "contains"
-            expected: "EVAL: 'LAI/%d/' % datetime.now().year"
-
-      - step: "Overwrite lai_number manually after it was auto-filled"
-        action: "write"
-        target: "lai_worksheet"
-        as_user: "base.user_admin"
-        values:
-          lai_number: "LAI/MANUAL/00099"
-
-      - step: "Assert manual lai_number value persisted (field is not readonly)"
-        action: "assert"
-        target: "lai_worksheet"
-        asserts:
-          lai_number:
-            type: "value"
-            expected: "LAI/MANUAL/00099"
-
-  # ------------------------------------------------------------------
-  # general_audit_ws_b66777d - lai_number set manually BEFORE open is not
-  # overwritten by the _10_generate_lai_number post_open_action hook
-  # ------------------------------------------------------------------
-  - name: "Worksheet b66777d - lai_number set before open is kept as-is by action_open"
-    steps:
-      - step: "Create worksheet b66777d"
-        action: "create"
-        model: "general_audit_ws_b66777d"
-        save_as: "lai_worksheet_preset"
-        as_user: "base.user_admin"
-        values:
-          general_audit_id: "REC: audit.id"
-          type_id: "REC: ws_type_b66777d.id"
-
-      - step: "Set lai_number manually while still draft"
-        action: "write"
-        target: "lai_worksheet_preset"
-        as_user: "base.user_admin"
-        values:
-          lai_number: "LAI/PRESET/00001"
-
-      - step: "Open worksheet"
-        action: "call"
-        target: "lai_worksheet_preset"
-        method: "action_open"
-        as_user: "base.user_admin"
-
-      - step: "Invalidate cache after opening worksheet"
-        action: "call"
-        target: "lai_worksheet_preset"
-        method: "invalidate_cache"
-
-      - step: "Assert the pre-set lai_number was not overwritten by action_open"
-        action: "assert"
-        target: "lai_worksheet_preset"
-        asserts:
-          state:
-            type: "value"
-            expected: "open"
-          lai_number:
-            type: "value"
-            expected: "LAI/PRESET/00001"
 
   # ------------------------------------------------------------------
   # general_audit_ws_f3ed115 - create in draft (default type_id)
