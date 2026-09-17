@@ -194,4 +194,145 @@
         />
     <field name="use_default" eval="1" />
 </record>
+
+<!-- Tax Expense (T100) / Total Net Profit (T101) / Total Net Profit
+     and OCI (T102) on all three built-in account type sets, for
+     issue #361. sequence and python_code are left to their
+     related-field defaults (computation_id.sequence /
+     computation_id.python_code via use_default), not overridden
+     here. -->
+<record
+        id="client_account_type_set_st_tax_expense"
+        model="client_account_type.computation_item"
+    >
+    <field
+            name="account_type_set_id"
+            ref="ssi_general_audit.client_account_type_set_st"
+        />
+    <field
+            name="computation_id"
+            ref="ssi_general_audit.trial_balance_computation_item_30_b40ad860"
+        />
+    <field name="use_default" eval="1" />
+</record>
+
+<record
+        id="client_account_type_set_st_total_net_profit"
+        model="client_account_type.computation_item"
+    >
+    <field
+            name="account_type_set_id"
+            ref="ssi_general_audit.client_account_type_set_st"
+        />
+    <field
+            name="computation_id"
+            ref="ssi_general_audit.trial_balance_computation_item_31_ec987fd9"
+        />
+    <field name="use_default" eval="1" />
+</record>
+
+<record
+        id="client_account_type_set_st_total_net_profit_oci"
+        model="client_account_type.computation_item"
+    >
+    <field
+            name="account_type_set_id"
+            ref="ssi_general_audit.client_account_type_set_st"
+        />
+    <field
+            name="computation_id"
+            ref="ssi_general_audit.trial_balance_computation_item_32_c046e7f5"
+        />
+    <field name="use_default" eval="1" />
+</record>
+
+<record
+        id="client_account_type_set_cooperative_tax_expense"
+        model="client_account_type.computation_item"
+    >
+    <field
+            name="account_type_set_id"
+            ref="ssi_general_audit.client_account_type_set_cooperative"
+        />
+    <field
+            name="computation_id"
+            ref="ssi_general_audit.trial_balance_computation_item_30_b40ad860"
+        />
+    <field name="use_default" eval="1" />
+</record>
+
+<record
+        id="client_account_type_set_cooperative_total_net_profit"
+        model="client_account_type.computation_item"
+    >
+    <field
+            name="account_type_set_id"
+            ref="ssi_general_audit.client_account_type_set_cooperative"
+        />
+    <field
+            name="computation_id"
+            ref="ssi_general_audit.trial_balance_computation_item_31_ec987fd9"
+        />
+    <field name="use_default" eval="1" />
+</record>
+
+<record
+        id="client_account_type_set_cooperative_total_net_profit_oci"
+        model="client_account_type.computation_item"
+    >
+    <field
+            name="account_type_set_id"
+            ref="ssi_general_audit.client_account_type_set_cooperative"
+        />
+    <field
+            name="computation_id"
+            ref="ssi_general_audit.trial_balance_computation_item_32_c046e7f5"
+        />
+    <field name="use_default" eval="1" />
+</record>
+
+<record
+        id="client_account_type_set_non_profit_tax_expense"
+        model="client_account_type.computation_item"
+    >
+    <field
+            name="account_type_set_id"
+            ref="ssi_general_audit.client_account_type_set_non_profit"
+        />
+    <field
+            name="computation_id"
+            ref="ssi_general_audit.trial_balance_computation_item_30_b40ad860"
+        />
+    <field name="use_default" eval="1" />
+</record>
+
+<record
+        id="client_account_type_set_non_profit_total_net_profit"
+        model="client_account_type.computation_item"
+    >
+    <field
+            name="account_type_set_id"
+            ref="ssi_general_audit.client_account_type_set_non_profit"
+        />
+    <field
+            name="computation_id"
+            ref="ssi_general_audit.trial_balance_computation_item_31_ec987fd9"
+        />
+    <field name="use_default" eval="1" />
+</record>
+
+<record
+        id="client_account_type_set_non_profit_total_net_profit_oci"
+        model="client_account_type.computation_item"
+    >
+    <field
+            name="account_type_set_id"
+            ref="ssi_general_audit.client_account_type_set_non_profit"
+        />
+    <field
+            name="computation_id"
+            ref="ssi_general_audit.trial_balance_computation_item_32_c046e7f5"
+        />
+    <field name="use_default" eval="1" />
+</record>
 </odoo>

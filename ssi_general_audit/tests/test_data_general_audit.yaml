@@ -609,3 +609,209 @@ scenarios:
           extrapolation_balance:
             type: "value"
             expected: 0.0
+
+  # ------------------------------------------------------------------
+  # general_audit._reload_computation - diff-based sync, not
+  # delete-all-recreate-all. Regression for #361: worksheets in other
+  # modules hold an `ondelete="restrict"` Many2one straight onto
+  # `general_audit.computation`, so unconditionally unlinking every
+  # line (the previous behaviour) always raised a FK RESTRICT
+  # violation once such a worksheet line existed -- even when the
+  # reload only needed to ADD a newly configured computation item.
+  # This proves the invariant that makes that impossible: a line
+  # whose computation item is still configured keeps its database id
+  # across a reload; only stale/new lines are touched.
+  # ------------------------------------------------------------------
+  - name:
+      "general_audit - reload computation keeps untouched lines, only diffs stale/new
+      ones"
+    steps:
+      - step: "Get config parameter model"
+        action: "search"
+        model: "ir.config_parameter"
+        domain: []
+        save_as: "config_parameter"
+        limit: 1
+
+      - step: "Allow enough CPA licenses for this scenario"
+        action: "call"
+        target: "config_parameter"
+        method: "set_param"
+        args:
+          - "ssi_general_audit.max_number_of_cpa_license"
+          - "100"
+
+      - step: "Create client partner"
+        action: "create"
+        model: "res.partner"
+        save_as: "client"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Audit Client - Reload Computation"
+          is_company: true
+
+      - step: "Create accountant partner"
+        action: "create"
+        model: "res.partner"
+        save_as: "accountant"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Audit Accountant - Reload Computation"
+
+      - step: "Get CPA license id category"
+        action: "ref"
+        xml_id: "ssi_partner_identification_cpa_license.partner_identification_accountant_cpa_license"
+        save_as: "cpa_category"
+
+      - step: "Grant accountant a CPA license"
+        action: "create"
+        model: "res.partner.id_number"
+        save_as: "cpa_license"
+        as_user: "base.user_admin"
+        values:
+          partner_id: "REC: accountant.id"
+          category_id: "REC: cpa_category.id"
+          name: "CPA-RELOAD-0001"
+
+      - step: "Create account type set"
+        action: "create"
+        model: "client_account_type_set"
+        save_as: "account_type_set"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Reload Computation Account Type Set"
+          code: "/"
+
+      - step: "Create financial accounting standard"
+        action: "create"
+        model: "accountant.financial_accounting_standard"
+        save_as: "standard"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Reload Computation Financial Accounting Standard"
+          code: "/"
+
+      - step: "Create computation item Alpha (kept across the second reload)"
+        action: "create"
+        model: "trial_balance_computation_item"
+        save_as: "item_alpha"
+        values:
+          name: "Test Reload Item Alpha"
+          code: "/"
+
+      - step: "Create computation item Beta (removed across the second reload)"
+        action: "create"
+        model: "trial_balance_computation_item"
+        save_as: "item_beta"
+        values:
+          name: "Test Reload Item Beta"
+          code: "/"
+
+      - step: "Create computation item Gamma (added on the second reload)"
+        action: "create"
+        model: "trial_balance_computation_item"
+        save_as: "item_gamma"
+        values:
+          name: "Test Reload Item Gamma"
+          code: "/"
+
+      - step: "Configure the account type set with Alpha"
+        action: "create"
+        model: "client_account_type.computation_item"
+        save_as: "detail_alpha"
+        values:
+          account_type_set_id: "REC: account_type_set.id"
+          computation_id: "REC: item_alpha.id"
+
+      - step: "Configure the account type set with Beta"
+        action: "create"
+        model: "client_account_type.computation_item"
+        save_as: "detail_beta"
+        values:
+          account_type_set_id: "REC: account_type_set.id"
+          computation_id: "REC: item_beta.id"
+
+      - step: "Create general audit"
+        action: "create"
+        model: "general_audit"
+        save_as: "audit"
+        as_user: "base.user_admin"
+        values:
+          title: "Test Reload Computation General Audit"
+          partner_id: "REC: client.id"
+          accountant_id: "REC: accountant.id"
+          account_type_set_id: "REC: account_type_set.id"
+          financial_accounting_standard_id: "REC: standard.id"
+          date_start: 2026-01-01
+          date_end: 2026-12-31
+          need_interim: false
+          need_previous: false
+          num_of_consecutive_audit_firm: 1
+          num_of_consecutive_audit_accountant: 1
+
+      - step: "First reload: create lines for Alpha and Beta"
+        action: "call"
+        target: "audit"
+        method: "action_reload_computation"
+
+      - step: "Find the computation line created for Alpha"
+        action: "search"
+        model: "general_audit.computation"
+        domain:
+          - ["general_audit_id", "=", "REC: audit.id"]
+          - ["computation_item_id", "=", "REC: item_alpha.id"]
+        save_as: "comp_alpha_before"
+        expect_count: 1
+
+      - step: "Find the computation line created for Beta"
+        action: "search"
+        model: "general_audit.computation"
+        domain:
+          - ["general_audit_id", "=", "REC: audit.id"]
+          - ["computation_item_id", "=", "REC: item_beta.id"]
+        save_as: "comp_beta_before"
+        expect_count: 1
+
+      - step: "Remove Beta from the account type set (item goes away)"
+        action: "unlink"
+        target: "detail_beta"
+
+      - step: "Add Gamma to the account type set (newly configured item)"
+        action: "create"
+        model: "client_account_type.computation_item"
+        save_as: "detail_gamma"
+        values:
+          account_type_set_id: "REC: account_type_set.id"
+          computation_id: "REC: item_gamma.id"
+
+      - step:
+          "Second reload: must not raise FK RESTRICT, must diff instead of
+          delete-all-recreate-all"
+        action: "call"
+        target: "audit"
+        method: "action_reload_computation"
+
+      - step: "Alpha's line is untouched -- same database id as before"
+        action: "search"
+        model: "general_audit.computation"
+        domain:
+          - ["id", "=", "REC: comp_alpha_before.id"]
+        save_as: "comp_alpha_after"
+        expect_count: 1
+
+      - step: "Beta's line is gone -- its item is no longer configured"
+        action: "search"
+        model: "general_audit.computation"
+        domain:
+          - ["id", "=", "REC: comp_beta_before.id"]
+        save_as: "comp_beta_after"
+        expect_count: 0
+
+      - step: "Gamma's line was created -- its item is newly configured"
+        action: "search"
+        model: "general_audit.computation"
+        domain:
+          - ["general_audit_id", "=", "REC: audit.id"]
+          - ["computation_item_id", "=", "REC: item_gamma.id"]
+        save_as: "comp_gamma_after"
+        expect_count: 1
