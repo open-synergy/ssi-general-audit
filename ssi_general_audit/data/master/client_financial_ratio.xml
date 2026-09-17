@@ -25,7 +25,7 @@ if account_group.get("T003", {}).get("end_period", False) and account_group.get(
   result_end_period = account_group.get("T001", {}).get("end_period", 0.0) / account_group["T003"]["end_period"]
 
 if account_group.get("T003", {}).get("audited", False) and account_group.get("T003", {}).get("audited", False) != 0.0:
-  result_end_period = account_group.get("T001", {}).get("audited", 0.0) / account_group["T003"]["audited"]</field>
+  result_audited = account_group.get("T001", {}).get("audited", 0.0) / account_group["T003"]["audited"]</field>
     </record>
     <record id="client_financial_ratio_2_30a38c23" model="client_financial_ratio">
         <field name="sequence" eval="20" />
@@ -49,7 +49,7 @@ if account_group.get("T003", {}).get("end_period", False) and account_group.get(
   result_end_period = account_type.get("S111", {}).get("end_period", 0.0) / account_group["T003"]["end_period"]
 
 if account_group.get("T003", {}).get("audited", False) and account_group.get("T003", {}).get("audited", False) != 0.0:
-  result_end_period = account_type.get("S111", {}).get("audited", 0.0) / account_group["T003"]["audited"]
+  result_audited = account_type.get("S111", {}).get("audited", 0.0) / account_group["T003"]["audited"]
 </field>
     </record>
     <record id="client_financial_ratio_3_475786bf" model="client_financial_ratio">

@@ -57,6 +57,17 @@ class GeneralAuditWSbcc0d76(models.Model):
             record._populate()
 
     def _populate(self):
+        """Sync detail lines with the qualifying source worksheets.
+
+        Creates one detail line per ``general_audit_worksheet_type`` whose
+        ``main_worksheet`` flag is set and that belongs to this record's
+        ``general_audit_id``, skipping types that already have a detail
+        line. Detail lines whose source worksheet no longer qualifies are
+        removed, **except** those already referenced by a
+        ``general_audit_ws_cae598e.detail`` (``detail_id``), which are left
+        untouched to avoid a ``ForeignKeyViolation`` on the
+        ``ondelete="restrict"`` relation.
+        """
         self.ensure_one()
         Detail = self.env["general_audit_ws_bcc0d76.detail"]
         Worksheet = self.env["general_audit_worksheet"]
@@ -92,8 +103,17 @@ class GeneralAuditWSbcc0d76(models.Model):
                     }
                 )
 
-        # --- Hapus detail yang tidak ada lagi di worksheet ---
+        # --- Hapus detail yang tidak ada lagi di worksheet, kecuali yang
+        # --- sudah dievaluasi di Audit Evidence Evaluation (cae598e) ---
         worksheet_ids = {w.id for w in unique_worksheets}
+        evaluated_detail_ids = set(
+            self.env["general_audit_ws_cae598e.detail"]
+            .search([("detail_id", "in", self.detail_ids.ids)])
+            .detail_id.ids
+        )
         for chk in self.detail_ids:
-            if chk.general_worksheet_id.id not in worksheet_ids:
+            if (
+                chk.general_worksheet_id.id not in worksheet_ids
+                and chk.id not in evaluated_detail_ids
+            ):
                 chk.unlink()

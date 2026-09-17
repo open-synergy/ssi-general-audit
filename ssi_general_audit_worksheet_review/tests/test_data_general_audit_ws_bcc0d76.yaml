@@ -296,8 +296,8 @@ scenarios:
 
   # ------------------------------------------------------------------
   # bcc0d76 - action_populate: empty / normal / dedup / idempotent /
-  # unlink orphan / cross-general_audit isolation, all combined into
-  # ONE scenario on purpose.
+  # unlink orphan / referenced-detail preservation / cross-general_audit
+  # isolation, all combined into ONE scenario on purpose.
   #
   # GeneralAuditWSbcc0d76._populate() (models/ga_bcc0d76/
   # general_audit_ws_bcc0d76.py) now filters general_audit_worksheet by
@@ -325,6 +325,18 @@ scenarios:
   # the type exercises the exact same cleanup branch in _populate()
   # (the worksheet no longer appears in the qualifying search, so its
   # detail line is removed) without touching an FK-referenced record.
+  #
+  # "Referenced-detail preservation" (type #4 vs type #5, issue #354) is
+  # the regression this scenario was extended for: a bcc0d76 detail line
+  # that is already referenced by a general_audit_ws_cae598e.detail
+  # (detail_id, ondelete="restrict") must survive _populate()'s cleanup
+  # even after its source worksheet is disqualified, because a plain
+  # chk.unlink() on it would raise the exact psycopg2.ForeignKeyViolation
+  # from HT/26/000748 instead of silently dropping the reference. Type #5
+  # is disqualified in the SAME action_populate call and has no cae598e
+  # reference, so it must still be unlinked — proving the fix only
+  # tightens the unlink condition and does not weaken the existing
+  # "unlink orphan" cleanup.
   #
   # "Isolation" populates the OTHER general_audit's own worksheet, not
   # the first one, on purpose. general_audit_worksheet._order is
@@ -550,6 +562,166 @@ scenarios:
             ["parent_type_id", "=", "REC: main_type_3.id"],
           ]
         save_as: "detail_type_3_after"
+        expect_count: 0
+
+      # --------------------------------------------------------------
+      # Regression for issue #354: a bcc0d76 detail line already
+      # referenced by a general_audit_ws_cae598e.detail (ondelete=
+      # "restrict") must be KEPT even when its source worksheet no
+      # longer qualifies, while a sibling unreferenced line (type #5)
+      # is still removed in the SAME action_populate call — proving
+      # the fix does not regress the existing "unlink orphan" cleanup.
+      # --------------------------------------------------------------
+      - step:
+          "Create dedicated main worksheet type #4 (for referenced-detail preservation)"
+        action: "create"
+        model: "general_audit_worksheet_type"
+        save_as: "main_type_4"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Main Worksheet Type 4"
+          code: "/"
+          model_name: "general_audit_worksheet"
+          main_worksheet: true
+
+      - step: "Create a general_audit_worksheet of type #4"
+        action: "create"
+        model: "general_audit_worksheet"
+        save_as: "gw4"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          parent_type_id: "REC: main_type_4.id"
+
+      - step:
+          "Create dedicated main worksheet type #5 (unreferenced sibling, must still be
+          unlinked)"
+        action: "create"
+        model: "general_audit_worksheet_type"
+        save_as: "main_type_5"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Main Worksheet Type 5"
+          code: "/"
+          model_name: "general_audit_worksheet"
+          main_worksheet: true
+
+      - step: "Create a general_audit_worksheet of type #5"
+        action: "create"
+        model: "general_audit_worksheet"
+        save_as: "gw5"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          parent_type_id: "REC: main_type_5.id"
+
+      - step: "Populate so detail lines for type #4 and type #5 exist"
+        action: "call"
+        target: "worksheet"
+        method: "action_populate"
+        as_user: "base.user_admin"
+
+      - step: "Assert the detail line for type #4 was created"
+        action: "search"
+        model: "general_audit_ws_bcc0d76.detail"
+        domain:
+          [
+            ["worksheet_id", "=", "REC: worksheet.id"],
+            ["parent_type_id", "=", "REC: main_type_4.id"],
+          ]
+        save_as: "detail_type_4"
+        limit: 1
+        expect_count: 1
+
+      - step: "Assert the detail line for type #5 was created"
+        action: "search"
+        model: "general_audit_ws_bcc0d76.detail"
+        domain:
+          [
+            ["worksheet_id", "=", "REC: worksheet.id"],
+            ["parent_type_id", "=", "REC: main_type_5.id"],
+          ]
+        save_as: "detail_type_5"
+        limit: 1
+        expect_count: 1
+
+      - step: "Get worksheet type cae598e"
+        action: "ref"
+        xml_id: "ssi_general_audit_worksheet_review.worksheet_type_cae598e"
+        save_as: "ws_type_cae598e"
+
+      - step: "Create worksheet cae598e under the same general audit"
+        action: "create"
+        model: "general_audit_ws_cae598e"
+        save_as: "worksheet_cae598e"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_cae598e.id"
+
+      - step: "Open worksheet cae598e"
+        action: "call"
+        target: "worksheet_cae598e"
+        method: "action_open"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after opening worksheet cae598e"
+        action: "call"
+        target: "worksheet_cae598e"
+        method: "invalidate_cache"
+
+      - step: "Evaluate the type #4 detail line in Audit Evidence Evaluation (cae598e)"
+        action: "create"
+        model: "general_audit_ws_cae598e.detail"
+        save_as: "evaluation_type_4"
+        as_user: "base.user_admin"
+        values:
+          worksheet_id: "REC: worksheet_cae598e.id"
+          detail_id: "REC: detail_type_4.id"
+
+      - step:
+          "Disqualify type #4 and type #5 as main worksheets (both sources no longer
+          qualify)"
+        action: "write"
+        target: "main_type_4"
+        as_user: "base.user_admin"
+        values:
+          main_worksheet: false
+
+      - step: "Disqualify type #5 as a main worksheet"
+        action: "write"
+        target: "main_type_5"
+        as_user: "base.user_admin"
+        values:
+          main_worksheet: false
+
+      - step: "Populate again after disqualifying both sources"
+        action: "call"
+        target: "worksheet"
+        method: "action_populate"
+        as_user: "base.user_admin"
+
+      - step:
+          "Assert the type #4 detail line is KEPT because it is referenced by cae598e"
+        action: "search"
+        model: "general_audit_ws_bcc0d76.detail"
+        domain:
+          [
+            ["worksheet_id", "=", "REC: worksheet.id"],
+            ["parent_type_id", "=", "REC: main_type_4.id"],
+          ]
+        save_as: "detail_type_4_after"
+        expect_count: 1
+
+      - step: "Assert the unreferenced type #5 detail line is still unlinked"
+        action: "search"
+        model: "general_audit_ws_bcc0d76.detail"
+        domain:
+          [
+            ["worksheet_id", "=", "REC: worksheet.id"],
+            ["parent_type_id", "=", "REC: main_type_5.id"],
+          ]
+        save_as: "detail_type_5_after"
         expect_count: 0
 
       - step: "Create a second client partner for the other general audit"
