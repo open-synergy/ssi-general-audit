@@ -144,7 +144,7 @@ Available addons
 addon | version | maintainers | summary
 --- | --- | --- | ---
 [ssi_general_audit](ssi_general_audit/) | 14.0.4.2.1 |  | General Audit
-[ssi_general_audit_core](ssi_general_audit_core/) | 14.0.1.1.0 |  | General Audit - Core
+[ssi_general_audit_core](ssi_general_audit_core/) | 14.0.1.2.0 |  | General Audit - Core
 [ssi_general_audit_worksheet_acceptance_continuance](ssi_general_audit_worksheet_acceptance_continuance/) | 14.0.1.7.0 |  | General Audit Worksheet - Acceptance and Continuance
 [ssi_general_audit_worksheet_analytic_cycle](ssi_general_audit_worksheet_analytic_cycle/) | 14.0.1.6.0 |  | General Audit Worksheet - Analytical Procedures – Cycle
 [ssi_general_audit_worksheet_assignment_letter](ssi_general_audit_worksheet_assignment_letter/) | 14.0.1.0.3 |  | General Audit Worksheet - Assignment Letter
