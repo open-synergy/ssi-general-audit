@@ -80,6 +80,7 @@
         name="Accountant"
         web_icon="ssi_general_audit_core,static/icon/accountant.png"
         sequence="997"
+        groups="ssi_general_audit_core.aura_no_one_group"
     />
 
     <menuitem
@@ -110,6 +111,25 @@
         />
     </record>
 
+    <menuitem
+        id="menu_configuration_accountant"
+        name="Accountant"
+        parent="ssi_general_audit.menu_configuration_std_regulation"
+    />
 
+    <record id="ssi_accountant.accountant_service_menu" model="ir.ui.menu">
+        <field name="parent_id" ref="menu_configuration_accountant" />
+    </record>
+
+    <record
+        id="ssi_accountant.accountant_financial_accounting_standard_menu"
+        model="ir.ui.menu"
+    >
+        <field name="parent_id" ref="menu_configuration_accountant" />
+    </record>
+
+    <record id="ssi_accountant.accountant_opinion_menu" model="ir.ui.menu">
+        <field name="parent_id" ref="menu_configuration_accountant" />
+    </record>
 
 </odoo>
