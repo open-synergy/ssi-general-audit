@@ -4,6 +4,8 @@
 
 from odoo import fields, models
 
+from odoo.addons.ssi_decorator import ssi_decorator
+
 
 class GeneralAuditWSb66777d(models.Model):
     """
@@ -41,11 +43,24 @@ class GeneralAuditWSb66777d(models.Model):
 
     lai_number = fields.Char(
         string="LAI Number",
-        default=lambda self: self.env["ir.sequence"].next_by_code(
-            "general_audit_ws_b66777d.lai_number"
-        ),
         help="Document number of the Laporan Auditor Independen (LAI), "
         "the physical independent auditor's report handed to the "
         "client. Auto-filled from a dedicated sequence when the "
-        "record is created, but can still be overwritten manually.",
+        "worksheet is opened, but can still be overwritten manually.",
     )
+
+    @ssi_decorator.post_open_action()
+    def _10_generate_lai_number(self):
+        """Fill ``lai_number`` from its sequence when the worksheet opens.
+
+        Runs after ``action_open`` (``post_open_action`` hook). Only fills
+        ``lai_number`` when it is still empty, so a value entered manually
+        before opening the worksheet is never overwritten.
+
+        :return: None
+        """
+        self.ensure_one()
+        if not self.lai_number:
+            self.lai_number = self.env["ir.sequence"].next_by_code(
+                "general_audit_ws_b66777d.lai_number"
+            )

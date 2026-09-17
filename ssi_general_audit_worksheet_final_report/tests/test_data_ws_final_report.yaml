@@ -508,10 +508,11 @@ scenarios:
             expected: "draft"
 
   # ------------------------------------------------------------------
-  # general_audit_ws_b66777d - lai_number default from sequence, then
-  # overwritten manually (not readonly)
+  # general_audit_ws_b66777d - lai_number stays empty until action_open
+  # (post_open_action hook `_10_generate_lai_number`), then follows the
+  # sequence pattern; overwritten value afterwards persists (not readonly)
   # ------------------------------------------------------------------
-  - name: "Worksheet b66777d - lai_number defaults from sequence and can be overwritten"
+  - name: "Worksheet b66777d - lai_number empty in draft, filled by action_open"
     steps:
       - step: "Create worksheet b66777d without explicit lai_number"
         action: "create"
@@ -522,16 +523,43 @@ scenarios:
           general_audit_id: "REC: audit.id"
           type_id: "REC: ws_type_b66777d.id"
 
-      - step: "Assert lai_number auto-filled following the LAI/<year>/ sequence pattern"
+      - step: "Assert lai_number still empty while worksheet is draft"
         action: "assert"
         target: "lai_worksheet"
         asserts:
+          state:
+            type: "value"
+            expected: "draft"
+          lai_number:
+            type: "value"
+            operator: "is_falsy"
+
+      - step: "Open worksheet"
+        action: "call"
+        target: "lai_worksheet"
+        method: "action_open"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after opening worksheet"
+        action: "call"
+        target: "lai_worksheet"
+        method: "invalidate_cache"
+
+      - step:
+          "Assert lai_number auto-filled following the LAI/<year>/ sequence pattern
+          after open"
+        action: "assert"
+        target: "lai_worksheet"
+        asserts:
+          state:
+            type: "value"
+            expected: "open"
           lai_number:
             type: "value"
             operator: "contains"
             expected: "EVAL: 'LAI/%d/' % datetime.now().year"
 
-      - step: "Overwrite lai_number manually"
+      - step: "Overwrite lai_number manually after it was auto-filled"
         action: "write"
         target: "lai_worksheet"
         as_user: "base.user_admin"
@@ -545,6 +573,50 @@ scenarios:
           lai_number:
             type: "value"
             expected: "LAI/MANUAL/00099"
+
+  # ------------------------------------------------------------------
+  # general_audit_ws_b66777d - lai_number set manually BEFORE open is not
+  # overwritten by the _10_generate_lai_number post_open_action hook
+  # ------------------------------------------------------------------
+  - name: "Worksheet b66777d - lai_number set before open is kept as-is by action_open"
+    steps:
+      - step: "Create worksheet b66777d"
+        action: "create"
+        model: "general_audit_ws_b66777d"
+        save_as: "lai_worksheet_preset"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_b66777d.id"
+
+      - step: "Set lai_number manually while still draft"
+        action: "write"
+        target: "lai_worksheet_preset"
+        as_user: "base.user_admin"
+        values:
+          lai_number: "LAI/PRESET/00001"
+
+      - step: "Open worksheet"
+        action: "call"
+        target: "lai_worksheet_preset"
+        method: "action_open"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after opening worksheet"
+        action: "call"
+        target: "lai_worksheet_preset"
+        method: "invalidate_cache"
+
+      - step: "Assert the pre-set lai_number was not overwritten by action_open"
+        action: "assert"
+        target: "lai_worksheet_preset"
+        asserts:
+          state:
+            type: "value"
+            expected: "open"
+          lai_number:
+            type: "value"
+            expected: "LAI/PRESET/00001"
 
   # ------------------------------------------------------------------
   # general_audit_ws_f3ed115 - create in draft (default type_id)
