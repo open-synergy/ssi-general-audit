@@ -3,6 +3,7 @@
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl-3.0-standalone.html).
 
 from odoo import api, fields, models
+from odoo.tools.misc import get_lang
 from odoo.tools.safe_eval import safe_eval as eval  # pylint: disable=redefined-builtin
 
 
@@ -10,17 +11,17 @@ class GeneralAuditWsB66777dDetail(models.Model):
     """One row of the "Details" summary table on WS.090.2 (b66777d).
 
     Stores a single Property / Python Code / Value line. The 11 fixed
-    rows are populated exactly once, when their parent worksheet is
-    created (see ``general_audit_ws_b66777d.create()``) -- they are a
-    snapshot of the linked General Audit at that moment, not a
-    live-reactive summary: editing the General Audit afterwards does
-    not update these rows again.
+    rows are (re)populated by ``general_audit_ws_b66777d.
+    action_populate_detail()`` -- a full unlink-then-recreate snapshot
+    of the linked General Audit at the moment it is clicked, not a
+    live-reactive summary and not auto-filled on worksheet creation
+    (see that method's docstring).
 
     Not exposed for manual editing: every group's
     create/write/unlink permission on this model is 0 in
     ``security/ir.model.access.csv``, so only the ``sudo()``-wrapped
-    populate logic inside ``general_audit_ws_b66777d.create()`` can
-    write to it.
+    populate logic inside ``general_audit_ws_b66777d._populate_detail()``
+    can write to it.
     """
 
     _name = "general_audit_ws_b66777d.detail"
@@ -46,51 +47,23 @@ class GeneralAuditWsB66777dDetail(models.Model):
         string="Python Code",
         required=True,
         help=(
-            "Python snippet evaluated once (on worksheet creation) to "
+            "Python snippet evaluated on every Populate click to "
             "derive this row's Value. Must assign its result to a "
             "variable named 'result'. Available names: 'env' and "
             "'document' (this detail record itself)."
         ),
     )
-    value_type = fields.Selection(
-        string="Value Type",
-        selection=[
-            ("char", "Text"),
-            ("amount", "Amount"),
-        ],
-        required=True,
-        help=(
-            "Which of Value (Text) / Value (Amount) actually holds "
-            "the result of python_code for this row; set once when "
-            "the row is seeded, not inferred from python_code."
-        ),
-    )
-    value_char = fields.Char(
-        string="Value (Text)",
+    value = fields.Char(
+        string="Value",
         readonly=True,
         compute="_compute_value",
         store=True,
         compute_sudo=True,
-        help="Result of python_code, filled in when value_type is 'char'.",
-    )
-    currency_id = fields.Many2one(
-        string="Currency",
-        comodel_name="res.currency",
-        related="worksheet_id.general_audit_id.currency_id",
-        compute_sudo=True,
         help=(
-            "Currency of the linked General Audit, used only so "
-            "Value (Amount) renders with the correct currency symbol."
+            "Result of python_code, always as a display-ready string: "
+            "text results are used as-is, numeric results are "
+            "thousand-separator formatted (see _compute_value)."
         ),
-    )
-    value_amount = fields.Monetary(
-        string="Value (Amount)",
-        readonly=True,
-        compute="_compute_value",
-        store=True,
-        compute_sudo=True,
-        currency_field="currency_id",
-        help="Result of python_code, filled in when value_type is 'amount'.",
     )
 
     def _get_localdict(self):
@@ -111,31 +84,41 @@ class GeneralAuditWsB66777dDetail(models.Model):
 
     @api.depends(
         "python_code",
-        "value_type",
     )
     def _compute_value(self):
-        """Evaluate ``python_code`` into ``value_char``/``value_amount``.
+        """Evaluate ``python_code`` into the display-ready ``value``.
 
-        Depending only on ``python_code``/``value_type`` (both set
-        exactly once, together, when a row is created -- see
-        ``general_audit_ws_b66777d.create()``) is deliberate: it makes
-        this compute fire exactly once per row, matching the "snapshot,
-        not live" design in the issue's Keputusan Desain, without
-        needing a separate flag to suppress recomputation.
+        Depending only on ``python_code`` (set once per row, at the
+        moment ``general_audit_ws_b66777d._populate_detail()``
+        unlinks and recreates every row) is deliberate: it makes this
+        compute fire exactly once per row's lifetime, matching the
+        "snapshot on Populate, not live" design in the issue's
+        Keputusan Desain, without needing a separate flag to suppress
+        recomputation.
 
         ``python_code`` is executed with ``safe_eval(mode="exec",
         nocopy=True)``, the same mechanism as
         ``general_audit.computation._recompute_audited``. Any
         exception during evaluation is swallowed and the row falls
-        back to an empty value (``""``/``0.0``) rather than blocking
-        ``create()`` -- a malformed or overly defensive snippet must
-        never stop a worksheet from being created.
+        back to an empty ``value`` rather than blocking ``_populate_
+        detail()`` -- a malformed or overly defensive snippet must
+        never stop the Populate button from finishing.
+
+        The evaluated ``result`` is coerced to a string:
+
+        - already a ``str`` -- used as-is.
+        - a non-boolean ``int``/``float`` -- thousand-separator
+          formatted via ``get_lang(self.env).format(fmt, result,
+          grouping=True, monetary=True)``, the same helper used by
+          ``ssi_custom_information_mixin``'s own
+          ``custom_info_value._compute_value`` for its numeric
+          properties -- 0 decimals for ``int``, 2 for ``float``.
+        - anything else falsy, or the ``except`` branch -- ``""``.
 
         :return: None
         """
         for record in self:
-            result_char = ""
-            result_amount = 0.0
+            value = ""
             try:
                 localdict = record._get_localdict()
                 eval(
@@ -145,11 +128,14 @@ class GeneralAuditWsB66777dDetail(models.Model):
                     nocopy=True,
                 )
                 result = localdict["result"]
-                if record.value_type == "amount":
-                    result_amount = result
-                else:
-                    result_char = result
+                if isinstance(result, str):
+                    value = result
+                elif isinstance(result, (int, float)) and not isinstance(result, bool):
+                    lang = get_lang(record.env)
+                    fmt = "%.0f" if isinstance(result, int) else "%.2f"
+                    value = lang.format(fmt, result, grouping=True, monetary=True)
+                elif result:
+                    value = str(result)
             except Exception:
                 pass
-            record.value_char = result_char
-            record.value_amount = result_amount
+            record.value = value

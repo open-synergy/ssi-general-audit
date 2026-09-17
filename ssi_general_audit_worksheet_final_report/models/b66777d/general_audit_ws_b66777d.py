@@ -2,7 +2,7 @@
 # Copyright 2025 PT. Simetri Sinergi Indonesia
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl-3.0-standalone.html).
 
-from odoo import api, fields, models
+from odoo import fields, models
 
 from odoo.addons.ssi_decorator import ssi_decorator
 
@@ -78,15 +78,14 @@ _FINANCIAL_REPORT_PERIOD_PYTHON_CODE = (
     '    result = ""\n'
 )
 
-#: The 11 fixed "Details" rows populated once by
-#: ``GeneralAuditWSb66777d.create()`` -- ``(property, value_type,
+#: The 11 fixed "Details" rows (re)populated by
+#: ``GeneralAuditWSb66777d._populate_detail()`` -- ``(property,
 #: python_code)``. Deliberately a Python constant, not XML master data:
 #: these rows are specific to this one worksheet model, never reused or
 #: user-editable elsewhere (issue's Keputusan Desain).
 _DETAIL_ROWS = [
     (
         "Standar Akuntansi Keuangan yang Digunakan oleh klien",
-        "char",
         "result = (\n"
         "    document.worksheet_id.general_audit_id\n"
         '    .financial_accounting_standard_id.name or ""\n'
@@ -94,7 +93,6 @@ _DETAIL_ROWS = [
     ),
     (
         "Mata Uang Yang Digunakan",
-        "char",
         "result = (\n"
         "    document.worksheet_id.general_audit_id.currency_id.name\n"
         '    or ""\n'
@@ -102,31 +100,20 @@ _DETAIL_ROWS = [
     ),
     (
         "Data Laporan Keuangan Yang Digunakan",
-        "char",
         _FINANCIAL_REPORT_PERIOD_PYTHON_CODE,
     ),
-    ("Revenue", "amount", _computation_item_python_code("Total Revenue")),
-    ("Total Asset", "amount", _computation_item_python_code("Total Asset")),
-    (
-        "Total Liability",
-        "amount",
-        _computation_item_python_code("Total Liability"),
-    ),
-    ("EBIT", "amount", _computation_item_python_code("EBIT")),
-    ("Tax Expense", "amount", _computation_item_python_code("Tax Expense")),
-    (
-        "Total Net Profit",
-        "amount",
-        _computation_item_python_code("Total Net Profit"),
-    ),
+    ("Revenue", _computation_item_python_code("Total Revenue")),
+    ("Total Asset", _computation_item_python_code("Total Asset")),
+    ("Total Liability", _computation_item_python_code("Total Liability")),
+    ("EBIT", _computation_item_python_code("EBIT")),
+    ("Tax Expense", _computation_item_python_code("Tax Expense")),
+    ("Total Net Profit", _computation_item_python_code("Total Net Profit")),
     (
         "Total Net Profit & OCI",
-        "amount",
         _computation_item_python_code("Total Net Profit & OCI"),
     ),
     (
         "Konsolidasi",
-        "char",
         "result = (\n"
         "    document.worksheet_id.general_audit_id.partner_id\n"
         '    .entity_type_id.name or ""\n'
@@ -183,49 +170,64 @@ class GeneralAuditWSb66777d(models.Model):
         inverse_name="worksheet_id",
         readonly=True,
         help=(
-            "11 fixed summary rows (Property/Python Code/Value), "
-            "populated once when this worksheet is created from the "
-            "linked General Audit. See create()."
+            "11 fixed summary rows (Property/Value), (re)populated by "
+            "clicking the Populate button (action_populate_detail) -- "
+            "empty on a freshly created worksheet. See "
+            "_populate_detail()."
         ),
     )
 
-    @api.model_create_multi
-    def create(self, vals_list):
-        """Create worksheet(s), then seed their fixed ``detail_ids``.
+    def action_populate_detail(self):
+        """Button action: (re)populate this worksheet's ``detail_ids``.
 
-        The 11 rows in ``_DETAIL_ROWS`` are created with ``sudo()``
-        because this model's own ``ir.model.access.csv`` grants 0
-        create/write/unlink to every group (the issue's Keputusan
-        Desain: "Details" is system-populated only, never manually
-        editable) -- without ``sudo()`` this would raise ``AccessError``
-        for every user, including the one creating the worksheet.
+        Thin dispatcher over ``_populate_detail()``, mirroring
+        ``ssi_custom_information_mixin``'s own
+        ``action_reload_custom_info`` / ``_reload_custom_info`` split
+        (``mixin_custom_info.py``).
 
-        :param vals_list: list of value dicts, one per worksheet
-        :type vals_list: list
-        :return: the newly created worksheet(s)
-        :rtype: recordset of ``general_audit_ws_b66777d``
+        :return: None
         """
-        _super = super(GeneralAuditWSb66777d, self)
-        records = _super.create(vals_list)
-        Detail = self.env["general_audit_ws_b66777d.detail"].sudo()
-        for record in records:
-            for property_name, value_type, python_code in _DETAIL_ROWS:
-                Detail.create(
-                    record._prepare_detail_vals(property_name, value_type, python_code)
-                )
-        return records
+        for record in self:
+            record._populate_detail()
 
-    def _prepare_detail_vals(self, property_name, value_type, python_code):
+    def _populate_detail(self):
+        """Replace ``detail_ids`` with a fresh snapshot of the 11 rows.
+
+        Unlike ``ssi_custom_information_mixin._reload_custom_info``
+        (which diffs against a configurable template and only
+        unlinks/creates the rows that actually changed), this worksheet
+        has no such template: ``_DETAIL_ROWS`` is a fixed constant of
+        exactly 11 properties, so there is never a "still relevant"
+        existing row to preserve. The correct behaviour degenerates to
+        unlink-everything-then-create-everything, every time this is
+        called -- callers must not assume row ``id`` stability across
+        two Populate clicks.
+
+        Uses ``sudo()`` for both the ``unlink()`` and the ``create()``
+        calls because this model's own ``ir.model.access.csv`` grants 0
+        create/write/unlink to every group (the issue's Keputusan
+        Desain: "Details" is system-populated only, via this method,
+        never manually editable) -- without ``sudo()`` this would raise
+        ``AccessError`` for every user, including the one clicking
+        Populate.
+
+        :return: None
+        """
+        self.ensure_one()
+        self.detail_ids.sudo().unlink()
+        Detail = self.env["general_audit_ws_b66777d.detail"].sudo()
+        for property_name, python_code in _DETAIL_ROWS:
+            Detail.create(self._prepare_detail_vals(property_name, python_code))
+
+    def _prepare_detail_vals(self, property_name, python_code):
         """Build the values of one ``detail_ids`` row.
 
         Extension point: override to add fields to each of the 11 rows
-        created by ``create()`` (e.g. a glue module adding a 12th
-        property without rewriting ``_DETAIL_ROWS``).
+        created by ``_populate_detail()`` (e.g. a glue module adding a
+        12th property without rewriting ``_DETAIL_ROWS``).
 
         :param property_name: label for the row, e.g. ``"Revenue"``
         :type property_name: str
-        :param value_type: ``"char"`` or ``"amount"``
-        :type value_type: str
         :param python_code: source evaluated to fill the row's Value
         :type python_code: str
         :return: dict of ``general_audit_ws_b66777d.detail`` values
@@ -235,7 +237,6 @@ class GeneralAuditWSb66777d(models.Model):
         return {
             "worksheet_id": self.id,
             "property": property_name,
-            "value_type": value_type,
             "python_code": python_code,
         }
 

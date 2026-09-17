@@ -1288,14 +1288,48 @@ scenarios:
             expected: "general_audit_ws_f3ed115"
 
   # ------------------------------------------------------------------
-  # general_audit_ws_b66777d - Details tab (issue #362): 11 fixed rows
-  # populated by create(), values matching the linked General Audit
-  # exactly. audited_amount is written DIRECTLY on general_audit.
-  # computation (not via the reload+recompute chain at general_audit /
-  # client_trial_balance level) -- isolates this test from that
-  # unrelated machinery, per field investigation for this item.
+  # general_audit_ws_b66777d - Details tab (issue #362, revision 2):
+  # NOT auto-populated on create() any more -- detail_ids only fills
+  # when the "Populate" button (action_populate_detail) is clicked.
   # ------------------------------------------------------------------
-  - name: "Worksheet b66777d - Details tab has all 11 rows matching the General Audit"
+  - name:
+      "Worksheet b66777d - Details tab is empty right after create (no auto-populate)"
+    steps:
+      - step: "Create worksheet b66777d"
+        action: "create"
+        model: "general_audit_ws_b66777d"
+        save_as: "details_fresh_worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_b66777d.id"
+
+      - step: "Assert detail_ids is empty on a freshly created worksheet"
+        action: "assert"
+        target: "details_fresh_worksheet"
+        asserts:
+          state:
+            type: "value"
+            expected: "draft"
+          detail_ids:
+            type: "o2m"
+            check: "count"
+            expected_count: 0
+
+  # ------------------------------------------------------------------
+  # general_audit_ws_b66777d - Details tab: action_populate_detail(),
+  # called while state='open', fills all 11 rows matching the linked
+  # General Audit exactly. audited_amount is written DIRECTLY on
+  # general_audit.computation (not via the reload+recompute chain at
+  # general_audit / client_trial_balance level) -- isolates this test
+  # from that unrelated machinery, per field investigation for this
+  # item. Numeric rows come back thousand-separator formatted
+  # (get_lang().format(..., grouping=True, monetary=True), 2 decimals
+  # for float) -- see general_audit_ws_b66777d.detail._compute_value.
+  # ------------------------------------------------------------------
+  - name:
+      "Worksheet b66777d - action_populate_detail fills all 11 rows matching the General
+      Audit"
     steps:
       - step: "Create an entity type for the Konsolidasi row"
         action: "create"
@@ -1469,6 +1503,37 @@ scenarios:
           general_audit_id: "REC: audit.id"
           type_id: "REC: ws_type_b66777d.id"
 
+      - step: "Assert detail_ids still empty before opening/populating"
+        action: "assert"
+        target: "details_worksheet"
+        asserts:
+          detail_ids:
+            type: "o2m"
+            check: "count"
+            expected_count: 0
+
+      - step: "Open worksheet (Populate button only shows/works while open)"
+        action: "call"
+        target: "details_worksheet"
+        method: "action_open"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after opening worksheet"
+        action: "call"
+        target: "details_worksheet"
+        method: "invalidate_cache"
+
+      - step: "Click Populate (action_populate_detail)"
+        action: "call"
+        target: "details_worksheet"
+        method: "action_populate_detail"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after populating"
+        action: "call"
+        target: "details_worksheet"
+        method: "invalidate_cache"
+
       - step: "Assert exactly 11 detail_ids rows were created"
         action: "assert"
         target: "details_worksheet"
@@ -1487,14 +1552,11 @@ scenarios:
         save_as: "row_standard"
         expect_count: 1
 
-      - step: "Assert row #1 value_type/value_char"
+      - step: "Assert row #1 value"
         action: "assert"
         target: "row_standard"
         asserts:
-          value_type:
-            type: "value"
-            expected: "char"
-          value_char:
+          value:
             type: "value"
             expected: "Test Financial Accounting Standard - Final Report"
 
@@ -1507,14 +1569,11 @@ scenarios:
         save_as: "row_currency"
         expect_count: 1
 
-      - step: "Assert row #2 value_type/value_char"
+      - step: "Assert row #2 value is not empty"
         action: "assert"
         target: "row_currency"
         asserts:
-          value_type:
-            type: "value"
-            expected: "char"
-          value_char:
+          value:
             type: "value"
             operator: "is_truthy"
 
@@ -1533,10 +1592,7 @@ scenarios:
         action: "assert"
         target: "row_period"
         asserts:
-          value_type:
-            type: "value"
-            expected: "char"
-          value_char:
+          value:
             type: "value"
             expected: "Yearly Financial Report"
 
@@ -1549,16 +1605,13 @@ scenarios:
         save_as: "row_revenue"
         expect_count: 1
 
-      - step: "Assert row #4 value_type/value_amount matches audited_amount"
+      - step: "Assert row #4 value is the thousand-separator formatted audited_amount"
         action: "assert"
         target: "row_revenue"
         asserts:
-          value_type:
+          value:
             type: "value"
-            expected: "amount"
-          value_amount:
-            type: "value"
-            expected: 1000000.0
+            expected: "1,000,000.00"
 
       - step: "Find detail row #5 (Total Asset)"
         action: "search"
@@ -1569,13 +1622,13 @@ scenarios:
         save_as: "row_total_asset"
         expect_count: 1
 
-      - step: "Assert row #5 value_amount matches audited_amount"
+      - step: "Assert row #5 value"
         action: "assert"
         target: "row_total_asset"
         asserts:
-          value_amount:
+          value:
             type: "value"
-            expected: 2000000.0
+            expected: "2,000,000.00"
 
       - step: "Find detail row #6 (Total Liability)"
         action: "search"
@@ -1586,13 +1639,13 @@ scenarios:
         save_as: "row_total_liability"
         expect_count: 1
 
-      - step: "Assert row #6 value_amount matches audited_amount"
+      - step: "Assert row #6 value"
         action: "assert"
         target: "row_total_liability"
         asserts:
-          value_amount:
+          value:
             type: "value"
-            expected: 500000.0
+            expected: "500,000.00"
 
       - step: "Find detail row #7 (EBIT)"
         action: "search"
@@ -1603,13 +1656,13 @@ scenarios:
         save_as: "row_ebit"
         expect_count: 1
 
-      - step: "Assert row #7 value_amount matches audited_amount"
+      - step: "Assert row #7 value"
         action: "assert"
         target: "row_ebit"
         asserts:
-          value_amount:
+          value:
             type: "value"
-            expected: 300000.0
+            expected: "300,000.00"
 
       - step: "Find detail row #8 (Tax Expense)"
         action: "search"
@@ -1620,13 +1673,13 @@ scenarios:
         save_as: "row_tax_expense"
         expect_count: 1
 
-      - step: "Assert row #8 value_amount matches audited_amount"
+      - step: "Assert row #8 value"
         action: "assert"
         target: "row_tax_expense"
         asserts:
-          value_amount:
+          value:
             type: "value"
-            expected: 60000.0
+            expected: "60,000.00"
 
       - step: "Find detail row #9 (Total Net Profit)"
         action: "search"
@@ -1637,13 +1690,13 @@ scenarios:
         save_as: "row_total_net_profit"
         expect_count: 1
 
-      - step: "Assert row #9 value_amount matches audited_amount"
+      - step: "Assert row #9 value"
         action: "assert"
         target: "row_total_net_profit"
         asserts:
-          value_amount:
+          value:
             type: "value"
-            expected: 240000.0
+            expected: "240,000.00"
 
       - step: "Find detail row #10 (Total Net Profit & OCI)"
         action: "search"
@@ -1654,13 +1707,13 @@ scenarios:
         save_as: "row_total_net_profit_oci"
         expect_count: 1
 
-      - step: "Assert row #10 value_amount matches audited_amount"
+      - step: "Assert row #10 value"
         action: "assert"
         target: "row_total_net_profit_oci"
         asserts:
-          value_amount:
+          value:
             type: "value"
-            expected: 250000.0
+            expected: "250,000.00"
 
       - step: "Find detail row #11 (Konsolidasi)"
         action: "search"
@@ -1671,20 +1724,40 @@ scenarios:
         save_as: "row_konsolidasi"
         expect_count: 1
 
-      - step: "Assert row #11 value_type/value_char matches partner's entity type"
+      - step: "Assert row #11 value matches partner's entity type"
         action: "assert"
         target: "row_konsolidasi"
         asserts:
-          value_type:
-            type: "value"
-            expected: "char"
-          value_char:
+          value:
             type: "value"
             expected: "Perseroan Terbatas"
 
+      - step: "Click Populate a second time"
+        action: "call"
+        target: "details_worksheet"
+        method: "action_populate_detail"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after the second populate"
+        action: "call"
+        target: "details_worksheet"
+        method: "invalidate_cache"
+
+      - step:
+          "Assert still exactly 11 rows after a second Populate click (unlink+recreate,
+          not duplicated)"
+        action: "assert"
+        target: "details_worksheet"
+        asserts:
+          detail_ids:
+            type: "o2m"
+            check: "count"
+            expected_count: 11
+
   # ------------------------------------------------------------------
-  # general_audit_ws_b66777d - Details tab row #3, period length
-  # boundaries (issue #362 Skenario Uji: < 12 months and > 12 months)
+  # general_audit_ws_b66777d - Details row #3, period length boundaries
+  # (issue #362 Skenario Uji: < 12 months and > 12 months), reached via
+  # action_populate_detail() while state='open'
   # ------------------------------------------------------------------
   - name:
       "Worksheet b66777d - Details row #3 is Interim Financial Report for a 6-month
@@ -1717,6 +1790,28 @@ scenarios:
           general_audit_id: "REC: audit_6mo.id"
           type_id: "REC: ws_type_b66777d.id"
 
+      - step: "Open worksheet"
+        action: "call"
+        target: "details_worksheet_6mo"
+        method: "action_open"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after opening worksheet"
+        action: "call"
+        target: "details_worksheet_6mo"
+        method: "invalidate_cache"
+
+      - step: "Click Populate"
+        action: "call"
+        target: "details_worksheet_6mo"
+        method: "action_populate_detail"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after populating"
+        action: "call"
+        target: "details_worksheet_6mo"
+        method: "invalidate_cache"
+
       - step: "Find detail row #3 for the 6-month worksheet"
         action: "search"
         model: "general_audit_ws_b66777d.detail"
@@ -1730,7 +1825,7 @@ scenarios:
         action: "assert"
         target: "row_period_6mo"
         asserts:
-          value_char:
+          value:
             type: "value"
             expected: "Interim Financial Report"
 
@@ -1764,6 +1859,28 @@ scenarios:
           general_audit_id: "REC: audit_18mo.id"
           type_id: "REC: ws_type_b66777d.id"
 
+      - step: "Open worksheet"
+        action: "call"
+        target: "details_worksheet_18mo"
+        method: "action_open"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after opening worksheet"
+        action: "call"
+        target: "details_worksheet_18mo"
+        method: "invalidate_cache"
+
+      - step: "Click Populate"
+        action: "call"
+        target: "details_worksheet_18mo"
+        method: "action_populate_detail"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after populating"
+        action: "call"
+        target: "details_worksheet_18mo"
+        method: "invalidate_cache"
+
       - step: "Find detail row #3 for the 18-month worksheet"
         action: "search"
         model: "general_audit_ws_b66777d.detail"
@@ -1777,17 +1894,21 @@ scenarios:
         action: "assert"
         target: "row_period_18mo"
         asserts:
-          value_char:
+          value:
             type: "value"
             expected: "More than 12 months"
 
   # ------------------------------------------------------------------
-  # general_audit_ws_b66777d - Details tab rows #4-10, negative path:
-  # a General Audit with NO computation_ids at all must not raise
-  # during create() -- amount rows just default to 0.0
+  # general_audit_ws_b66777d - Details rows #4-10, negative path: a
+  # General Audit with NO computation_ids at all must not raise during
+  # action_populate_detail() -- amount rows just format the neutral
+  # 0.0 fallback as "0.00" (thousand-separator formatting always
+  # applies to a numeric result, per _compute_value -- there is no
+  # empty-string special case for zero).
   # ------------------------------------------------------------------
   - name:
-      "Worksheet b66777d - Details rows #4-10 default to 0.0 without computation_ids"
+      "Worksheet b66777d - Details rows #4-10 format to 0.00 without computation_ids, no
+      error"
     steps:
       - step: "Create a General Audit with no computation lines at all"
         action: "create"
@@ -1816,9 +1937,7 @@ scenarios:
             check: "count"
             expected_count: 0
 
-      - step:
-          "Create worksheet b66777d for the General Audit without computation_ids (must
-          not raise)"
+      - step: "Create worksheet b66777d for the General Audit without computation_ids"
         action: "create"
         model: "general_audit_ws_b66777d"
         save_as: "details_worksheet_no_computation"
@@ -1826,6 +1945,28 @@ scenarios:
         values:
           general_audit_id: "REC: audit_no_computation.id"
           type_id: "REC: ws_type_b66777d.id"
+
+      - step: "Open worksheet"
+        action: "call"
+        target: "details_worksheet_no_computation"
+        method: "action_open"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after opening worksheet"
+        action: "call"
+        target: "details_worksheet_no_computation"
+        method: "invalidate_cache"
+
+      - step: "Click Populate (must not raise despite no computation_ids)"
+        action: "call"
+        target: "details_worksheet_no_computation"
+        method: "action_populate_detail"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after populating"
+        action: "call"
+        target: "details_worksheet_no_computation"
+        method: "invalidate_cache"
 
       - step: "Assert exactly 11 detail_ids rows were still created"
         action: "assert"
@@ -1845,16 +1986,13 @@ scenarios:
         save_as: "row_revenue_empty"
         expect_count: 1
 
-      - step: "Assert row #4 defaults to value_amount 0.0, not an error"
+      - step: "Assert row #4 formats the 0.0 fallback as 0.00, not an error"
         action: "assert"
         target: "row_revenue_empty"
         asserts:
-          value_type:
+          value:
             type: "value"
-            expected: "amount"
-          value_amount:
-            type: "value"
-            expected: 0.0
+            expected: "0.00"
 
       - step:
           "Find detail row #10 (Total Net Profit & OCI) for the no-computation worksheet"
@@ -1866,10 +2004,29 @@ scenarios:
         save_as: "row_total_net_profit_oci_empty"
         expect_count: 1
 
-      - step: "Assert row #10 also defaults to value_amount 0.0"
+      - step: "Assert row #10 also formats to 0.00"
         action: "assert"
         target: "row_total_net_profit_oci_empty"
         asserts:
-          value_amount:
+          value:
             type: "value"
-            expected: 0.0
+            expected: "0.00"
+
+      - step: "Find detail row #11 (Konsolidasi) for the no-computation worksheet"
+        action: "search"
+        model: "general_audit_ws_b66777d.detail"
+        domain:
+          - ["worksheet_id", "=", "REC: details_worksheet_no_computation.id"]
+          - ["property", "=", "Konsolidasi"]
+        save_as: "row_konsolidasi_empty"
+        expect_count: 1
+
+      - step:
+          "Assert row #11 falls back to empty string (no entity_type_id on this test's
+          client)"
+        action: "assert"
+        target: "row_konsolidasi_empty"
+        asserts:
+          value:
+            type: "value"
+            expected: ""
