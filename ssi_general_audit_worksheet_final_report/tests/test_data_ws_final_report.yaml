@@ -508,6 +508,45 @@ scenarios:
             expected: "draft"
 
   # ------------------------------------------------------------------
+  # general_audit_ws_b66777d - lai_number default from sequence, then
+  # overwritten manually (not readonly)
+  # ------------------------------------------------------------------
+  - name: "Worksheet b66777d - lai_number defaults from sequence and can be overwritten"
+    steps:
+      - step: "Create worksheet b66777d without explicit lai_number"
+        action: "create"
+        model: "general_audit_ws_b66777d"
+        save_as: "lai_worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_b66777d.id"
+
+      - step: "Assert lai_number auto-filled following the LAI/<year>/ sequence pattern"
+        action: "assert"
+        target: "lai_worksheet"
+        asserts:
+          lai_number:
+            type: "value"
+            operator: "contains"
+            expected: "EVAL: 'LAI/%d/' % datetime.now().year"
+
+      - step: "Overwrite lai_number manually"
+        action: "write"
+        target: "lai_worksheet"
+        as_user: "base.user_admin"
+        values:
+          lai_number: "LAI/MANUAL/00099"
+
+      - step: "Assert manual lai_number value persisted (field is not readonly)"
+        action: "assert"
+        target: "lai_worksheet"
+        asserts:
+          lai_number:
+            type: "value"
+            expected: "LAI/MANUAL/00099"
+
+  # ------------------------------------------------------------------
   # general_audit_ws_f3ed115 - create in draft (default type_id)
   # ------------------------------------------------------------------
   - name: "Worksheet f3ed115 - Create in draft with default type_id"

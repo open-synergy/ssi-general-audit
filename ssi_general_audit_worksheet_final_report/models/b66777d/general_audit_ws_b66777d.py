@@ -2,7 +2,7 @@
 # Copyright 2025 PT. Simetri Sinergi Indonesia
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl-3.0-standalone.html).
 
-from odoo import models
+from odoo import fields, models
 
 
 class GeneralAuditWSb66777d(models.Model):
@@ -38,3 +38,14 @@ class GeneralAuditWSb66777d(models.Model):
         "general_audit_worksheet_mixin",
     ]
     _type_xml_id = "ssi_general_audit_worksheet_final_report." "worksheet_type_b66777d"
+
+    lai_number = fields.Char(
+        string="LAI Number",
+        default=lambda self: self.env["ir.sequence"].next_by_code(
+            "general_audit_ws_b66777d.lai_number"
+        ),
+        help="Document number of the Laporan Auditor Independen (LAI), "
+        "the physical independent auditor's report handed to the "
+        "client. Auto-filled from a dedicated sequence when the "
+        "record is created, but can still be overwritten manually.",
+    )

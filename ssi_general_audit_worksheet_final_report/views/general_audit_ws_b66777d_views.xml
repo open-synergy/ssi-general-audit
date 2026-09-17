@@ -41,12 +41,15 @@
         />
         <field name="arch" type="xml">
             <data>
+                <xpath expr="//field[@name='conclusion_id']" position="before">
+                    <field name="lai_number" />
+                </xpath>
             </data>
         </field>
     </record>
 
     <record id="general_audit_ws_b66777d_action" model="ir.actions.act_window">
-        <field name="name">Independen Auditor Report</field>
+        <field name="name">Independent Auditor Report Review</field>
         <field name="type">ir.actions.act_window</field>
         <field name="res_model">general_audit_ws_b66777d</field>
         <field name="view_mode">tree,form</field>
@@ -54,7 +57,7 @@
 
     <menuitem
         id="general_audit_ws_b66777d_menu"
-        name="Independen Auditor Report"
+        name="Independent Auditor Report Review"
         parent="ssi_general_audit.menu_general_audit_final_report"
         action="general_audit_ws_b66777d_action"
         sequence="3"
