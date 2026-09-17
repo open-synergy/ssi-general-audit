@@ -226,6 +226,19 @@ class GeneralAudit(models.Model):
         ondelete="restrict",
         help="Lead accountant in charge of the audit.",
     )
+    service_id = fields.Many2one(
+        string="Service",
+        comodel_name="accountant.service",
+        default=lambda self: self._default_service_id(),
+        ondelete="restrict",
+        help=(
+            "Accountant service this engagement is classified under "
+            "(e.g., Historical Audit Services, Historical Review "
+            "Services). Not required, since existing engagements may "
+            "not have this set yet; used downstream to derive report "
+            "numbering such as the LAI Number."
+        ),
+    )
     team_allocation_user_ids = fields.Many2many(
         string="Teams",
         comodel_name="res.users",
@@ -497,6 +510,25 @@ class GeneralAudit(models.Model):
     @api.model
     def _default_currency_id(self):
         return self.env.user.company_id.currency_id.id
+
+    @api.model
+    def _default_service_id(self):
+        """Return the id of the default accountant service, if any.
+
+        Looked up by ``name`` -- not ``env.ref()`` -- because
+        ``accountant.service`` ships no official master data in this
+        module, only demo records under different names/codes.
+        Silently returns ``False`` when "Historical Audit Services"
+        is not configured on this instance, instead of raising, so a
+        General Audit can still be created.
+
+        :return: id of the ``accountant.service`` record named
+            "Historical Audit Services", or ``False`` if none exists.
+        """
+        service = self.env["accountant.service"].search(
+            [("name", "=", "Historical Audit Services")], limit=1
+        )
+        return service.id
 
     @api.depends(
         "account_type_set_id",
