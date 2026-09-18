@@ -1,0 +1,127 @@
+setup:
+  steps:
+    - step: "Get config parameter model"
+      action: "search"
+      model: "ir.config_parameter"
+      domain: []
+      save_as: "config_parameter"
+      limit: 1
+
+    - step: "Allow enough CPA licenses for this scenario"
+      action: "call"
+      target: "config_parameter"
+      method: "set_param"
+      args:
+        - "ssi_general_audit.max_number_of_cpa_license"
+        - "100"
+
+    - step: "Create client partner"
+      action: "create"
+      model: "res.partner"
+      save_as: "client"
+      values:
+        name: "Test Client - Adjustment Entry Detail AJE Code"
+        is_company: true
+
+    - step: "Create accountant partner"
+      action: "create"
+      model: "res.partner"
+      save_as: "accountant"
+      values:
+        name: "Test Accountant - Adjustment Entry Detail AJE Code"
+
+    - step: "Create account type set"
+      action: "create"
+      model: "client_account_type_set"
+      save_as: "account_type_set"
+      values:
+        name: "Test Account Type Set - AJE Code"
+        code: "/"
+
+    - step: "Create financial accounting standard"
+      action: "create"
+      model: "accountant.financial_accounting_standard"
+      save_as: "standard"
+      values:
+        name: "Test Financial Accounting Standard - AJE Code"
+        code: "/"
+
+    - step: "Create general audit"
+      action: "create"
+      model: "general_audit"
+      save_as: "audit"
+      values:
+        title: "Test General Audit - AJE Code"
+        partner_id: "REC: client.id"
+        accountant_id: "REC: accountant.id"
+        account_type_set_id: "REC: account_type_set.id"
+        financial_accounting_standard_id: "REC: standard.id"
+        date_start: 2026-01-01
+        date_end: 2026-12-31
+        need_interim: false
+        need_previous: false
+        num_of_consecutive_audit_firm: 1
+        num_of_consecutive_audit_accountant: 1
+
+    - step: "Create adjustment entry"
+      action: "create"
+      model: "client_adjustment_entry"
+      save_as: "entry"
+      values:
+        general_audit_id: "REC: audit.id"
+        adjustment_type: "propose"
+
+    - step: "Create account group"
+      action: "create"
+      model: "client_account_group"
+      save_as: "account_group"
+      values:
+        name: "Test Group - AJE Code"
+        code: "/"
+        sequence: 1
+        normal_balance: "dr"
+
+    - step: "Create account type"
+      action: "create"
+      model: "client_account_type"
+      save_as: "account_type"
+      values:
+        name: "Cash - AJE Code"
+        code: "/"
+        group_id: "REC: account_group.id"
+        sequence: 1
+        normal_balance: "dr"
+
+    - step: "Create client account"
+      action: "create"
+      model: "client_account"
+      save_as: "account"
+      values:
+        name: "Kas Test - AJE Code"
+        code: "KASAJECODE"
+        partner_id: "REC: client.id"
+        type_id: "REC: account_type.id"
+
+scenarios:
+  - name: "Detail line without AJE code does not raise"
+    steps:
+      - step: "Create detail line without aje_code"
+        action: "create"
+        model: "client_adjustment_entry.detail"
+        save_as: "detail"
+        values:
+          entry_id: "REC: entry.id"
+          account_id: "REC: account.id"
+          name: "Manual adjustment line"
+          debit: 50.0
+          credit: 0.0
+      - step: "Assert aje_code stays empty and record is valid"
+        action: "assert"
+        target: "detail"
+        asserts:
+          aje_code:
+            type: "value"
+            operator: "is_falsy"
+          name:
+            type: "value"
+            expected: "Manual adjustment line"

@@ -40,8 +40,10 @@ class ImportAdjustmentEntryDetail(models.TransientModel):
     data = fields.Binary(
         string="File",
         required=True,
-        help="CSV file with columns (no header): account code, "
-        "description, debit, credit.",
+        help="CSV file with columns (no header): account code, AJE "
+        "code, description, debit, credit. This column order changed "
+        "in open-synergy/ssi-general-audit#365 (AJE code was inserted "
+        "before description) -- older 4-column files must be updated.",
     )
 
     def button_import(self):
@@ -63,12 +65,13 @@ class ImportAdjustmentEntryDetail(models.TransientModel):
         """Create one ``client_adjustment_entry.detail`` from a CSV row.
 
         Column order (no header): account code (``client_account.code``,
-        looked up within the entry's client partner), description,
-        debit, credit. A new detail line is always created — existing
-        lines are never updated, since this model has no pre-loaded
-        rows to match against.
+        looked up within the entry's client partner), AJE code,
+        description, debit, credit. A new detail line is always
+        created — existing lines are never updated, since this model
+        has no pre-loaded rows to match against.
 
-        :param row: one CSV row, e.g. ``["101", "Cash", "100", "0"]``
+        :param row: one CSV row, e.g.
+            ``["101", "AJE-001", "Cash", "100", "0"]``
         :raises UserError: when the account code is not found in the
             client's chart of accounts
         """
@@ -99,8 +102,9 @@ Solution: Fix the account code in the CSV file, or create the
             {
                 "entry_id": self.entry_id.id,
                 "account_id": account.id,
-                "name": row[1],
-                "debit": row[2] or 0.0,
-                "credit": row[3] or 0.0,
+                "aje_code": row[1],
+                "name": row[2],
+                "debit": row[3] or 0.0,
+                "credit": row[4] or 0.0,
             }
         )
