@@ -1123,11 +1123,11 @@ scenarios:
           previous_balance:
             type: "value"
             expected: 800000.0
-          # diff = (adjusted_balance - previous_balance) / abs(previous_balance)
-          # = (1,200,000 - 800,000) / 800,000 = 0.5
+          # diff = (adjusted_balance - previous_balance) / abs(previous_balance) * 100
+          # = (1,200,000 - 800,000) / 800,000 * 100 = 50.0
           diff:
             type: "value"
-            expected: 0.5
+            expected: 50.0
 
       - step: "Switch balance_type to interim"
         action: "write"
@@ -1151,10 +1151,10 @@ scenarios:
           adjusted_balance:
             type: "value"
             expected: 900000.0
-          # diff = (900,000 - 800,000) / 800,000 = 0.125
+          # diff = (900,000 - 800,000) / 800,000 * 100 = 12.5
           diff:
             type: "value"
-            expected: 0.125
+            expected: 12.5
 
       - step: "Switch worksheet to account type B, balance_type end_period"
         action: "write"

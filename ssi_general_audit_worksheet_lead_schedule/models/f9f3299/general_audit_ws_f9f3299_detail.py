@@ -110,9 +110,10 @@ class GeneralAuditWSf9f3299Detail(models.Model):
         for record in self:
             record.diff = 0.0
             if record.previous_balance != 0:
-                record.diff = (record.adjusted_balance - record.previous_balance) / abs(
-                    record.previous_balance
-                )
+                record.diff = (
+                    (record.adjusted_balance - record.previous_balance)
+                    / abs(record.previous_balance)
+                ) * 100.0
 
     @api.depends(
         "worksheet_id.balance_type",
