@@ -16,7 +16,9 @@ class TestImportAdjustmentEntryDetail(YamlTransactionCase):
     Covers the CSV import button added to the ``client_adjustment_entry``
     "Details" page (open-synergy/ssi-general-audit#339): a valid CSV
     creates new detail lines, an unknown account code raises
-    ``UserError`` without creating any line.
+    ``UserError`` without creating any line. The CSV column order was
+    changed by open-synergy/ssi-general-audit#365 to insert an AJE
+    code column before the description.
     """
 
     def _create_adjustment_entry(self):
@@ -119,7 +121,8 @@ class TestImportAdjustmentEntryDetail(YamlTransactionCase):
         """
         entry, known_account = self._create_adjustment_entry()
         csv_content = (
-            "%s,Cash adjustment,100.0,0.0\n" "%s,Reversal of cash adjustment,0.0,40.0\n"
+            "%s,AJE-001,Cash adjustment,100.0,0.0\n"
+            "%s,AJE-002,Reversal of cash adjustment,0.0,40.0\n"
         ) % (known_account.code, known_account.code)
         wizard = self.env["import_adjustment_entry_detail"].create(
             {
@@ -131,10 +134,12 @@ class TestImportAdjustmentEntryDetail(YamlTransactionCase):
         self.assertEqual(len(entry.detail_ids), 2)
         first, second = entry.detail_ids[0], entry.detail_ids[1]
         self.assertEqual(first.account_id, known_account)
+        self.assertEqual(first.aje_code, "AJE-001")
         self.assertEqual(first.name, "Cash adjustment")
         self.assertEqual(first.debit, 100.0)
         self.assertEqual(first.credit, 0.0)
         self.assertEqual(second.account_id, known_account)
+        self.assertEqual(second.aje_code, "AJE-002")
         self.assertEqual(second.name, "Reversal of cash adjustment")
         self.assertEqual(second.debit, 0.0)
         self.assertEqual(second.credit, 40.0)
@@ -147,7 +152,7 @@ class TestImportAdjustmentEntryDetail(YamlTransactionCase):
         ``EVAL:``).
         """
         entry, _known_account = self._create_adjustment_entry()
-        csv_content = "DOES-NOT-EXIST,Unmapped line,10.0,0.0\n"
+        csv_content = "DOES-NOT-EXIST,AJE-999,Unmapped line,10.0,0.0\n"
         wizard = self.env["import_adjustment_entry_detail"].create(
             {
                 "entry_id": entry.id,

@@ -20,6 +20,12 @@ class ClientAdjustmentEntryDetail(models.Model):
     _name = "client_adjustment_entry.detail"
     _description = "Accountant Client Adjustment Entry Detail"
 
+    aje_code = fields.Char(
+        string="AJE Code",
+        help="Original AJE/CAJE code from the client's source document, "
+        "for traceability only. Free text, not validated against any "
+        "record.",
+    )
     name = fields.Char(
         string="Description",
         required=True,
