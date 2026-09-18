@@ -9,5 +9,8 @@ from odoo.tests import tagged
 
 @tagged("post_install", "-at_install")
 class TestGeneralAuditWS6dcda0e(YamlTransactionCase):
+    """Cover ``general_audit_ws_6dcda0e`` and its materiality mapping line."""
+
     def test_general_audit_ws_6dcda0e(self):
+        """Run the ``general_audit_ws_6dcda0e`` YAML scenarios."""
         self.run_yaml_scenario("test_data_general_audit_ws_6dcda0e.yaml")
