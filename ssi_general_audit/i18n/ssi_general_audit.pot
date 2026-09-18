@@ -337,6 +337,11 @@ msgid "<span>Worksheet Summary</span>"
 msgstr ""
 
 #. module: ssi_general_audit
+#: model:ir.model.fields,field_description:ssi_general_audit.field_client_adjustment_entry_detail__aje_code
+msgid "AJE Code"
+msgstr ""
+
+#. module: ssi_general_audit
 #: model:ir.model,name:ssi_general_audit.model_mixin_checklist_value
 msgid "Abstract Base for Checklist"
 msgstr ""
@@ -1576,7 +1581,10 @@ msgstr ""
 #. module: ssi_general_audit
 #: model:ir.model.fields,help:ssi_general_audit.field_import_adjustment_entry_detail__data
 msgid ""
-"CSV file with columns (no header): account code, description, debit, credit."
+"CSV file with columns (no header): account code, AJE code, description, "
+"debit, credit. This column order changed in open-synergy/ssi-general-"
+"audit#365 (AJE code was inserted before description) -- older 4-column files"
+" must be updated."
 msgstr ""
 
 #. module: ssi_general_audit
@@ -5698,6 +5706,13 @@ msgstr ""
 #. module: ssi_general_audit
 #: model:ir.model.fields,help:ssi_general_audit.field_client_account__sequence
 msgid "Ordering within the client's chart of accounts."
+msgstr ""
+
+#. module: ssi_general_audit
+#: model:ir.model.fields,help:ssi_general_audit.field_client_adjustment_entry_detail__aje_code
+msgid ""
+"Original AJE/CAJE code from the client's source document, for traceability "
+"only. Free text, not validated against any record."
 msgstr ""
 
 #. module: ssi_general_audit
