@@ -37,8 +37,19 @@ class GeneralAuditWS6dcda0e1MaterialityMapping(models.Model):
         "worksheet_id.worksheet_d9d2b44_id.overall_materiality",
         "worksheet_id.worksheet_d9d2b44_id.performance_materiality",
         "standard_detail_id",
+        "standard_detail_id.home_statement_balance",
+        "standard_detail_id.adjusted_extrapolation_balance",
     )
     def _compute_materiality(self):
+        """Derive ``balance``/``materiality``/``final_materiality``.
+
+        Reads ``standard_detail_id.home_statement_balance`` (End Period
+        source) or ``standard_detail_id.adjusted_extrapolation_balance``
+        (Extrapolation source) as the account balance, compares its
+        absolute value against the overall/performance materiality
+        threshold of the linked computation worksheet, and forces
+        *Material* when ``use_specific_materiality`` is ticked.
+        """
         for document in self:
             materiality = "im"
             base = balance = 0.0
