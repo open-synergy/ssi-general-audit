@@ -107,11 +107,13 @@
                     expr="//page[@name='checklist']/button[@name='action_populate_checklist']"
                     position="before"
                 >
-                    <field
-                        name="preliminary_analytic_procedure_id"
-                        domain="[('general_audit_id', '=', general_audit_id)]"
-                        options="{'no_create': True, 'no_create_edit': True}"
-                    />
+                    <group name="preliminary_analytic_procedure" colspan="4" col="2">
+                        <field
+                            name="preliminary_analytic_procedure_id"
+                            domain="[('general_audit_id','=',general_audit_id),('state','in',['open','done'])]"
+                            options="{'no_create': True, 'no_create_edit': True}"
+                        />
+                    </group>
                 </xpath>
             </data>
         </field>

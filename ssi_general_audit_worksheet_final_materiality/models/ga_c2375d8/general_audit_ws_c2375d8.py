@@ -54,15 +54,16 @@ Each line records the response/assessment for a specific checklist item.""",
         comodel_name="general_audit_ws_c8740d4",
         required=False,
         readonly=True,
+        ondelete="restrict",
         states={
             "open": [
                 ("readonly", False),
+                ("required", True),
             ],
         },
-        domain="[('general_audit_id', '=', general_audit_id)]",
         help=(
             "Related Preliminary Analytic Procedure worksheet, limited to the "
-            "same general audit engagement."
+            "same general audit engagement and already open/done."
         ),
     )
     conclusion_ids = fields.One2many(
