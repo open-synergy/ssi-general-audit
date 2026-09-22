@@ -82,6 +82,192 @@ class GeneralAuditWSb66777d(models.Model):
         ),
     )
 
+    # Final Audit Opinion
+    opinion = fields.Html(
+        string="Opinion",
+        help=(
+            "Final narrative of the audit Opinion paragraph, meant to "
+            "be filled by clicking Populate (copying "
+            "general_audit_ws_fc75636's draft_opinion of the same "
+            "General Audit) and then edited manually as needed -- "
+            "always editable, regardless of this worksheet's state."
+        ),
+    )
+    basis_for_opinion = fields.Html(
+        string="Basis for Opinion",
+        help=(
+            "Final narrative of the Basis for Opinion paragraph, meant "
+            "to be filled by clicking Populate (copying "
+            "general_audit_ws_fc75636's draft_basis_for_opinion of the "
+            "same General Audit) and then edited manually as needed -- "
+            "always editable, regardless of this worksheet's state."
+        ),
+    )
+    key_audit_matters = fields.Html(
+        string="Key Audit Matters",
+        help=(
+            "Final narrative of the Key Audit Matters paragraph, meant "
+            "to be filled by clicking Populate (copying "
+            "general_audit_ws_fc75636's draft_key_audit_matters of the "
+            "same General Audit) and then edited manually as needed -- "
+            "always editable, regardless of this worksheet's state. "
+            "Situational: only relevant for engagements that require a "
+            "Key Audit Matters section."
+        ),
+    )
+    other_information = fields.Html(
+        string="Other Information",
+        help=(
+            "Final narrative of the Other Information paragraph, meant "
+            "to be filled by clicking Populate (copying "
+            "general_audit_ws_fc75636's draft_other_information of the "
+            "same General Audit) and then edited manually as needed -- "
+            "always editable, regardless of this worksheet's state. "
+            "Situational: only relevant when the engagement includes "
+            "other information."
+        ),
+    )
+    responsibilities_of_management = fields.Html(
+        string="Responsibilities of Management",
+        help=(
+            "Final narrative of the Responsibilities of Management "
+            "paragraph, meant to be filled by clicking Populate "
+            "(copying general_audit_ws_fc75636's "
+            "draft_responsibilities_of_management of the same General "
+            "Audit) and then edited manually as needed -- always "
+            "editable, regardless of this worksheet's state."
+        ),
+    )
+    auditor_responsibilities = fields.Html(
+        string="Auditor's Responsibilities",
+        help=(
+            "Final narrative of the Auditor's Responsibilities "
+            "paragraph, meant to be filled by clicking Populate "
+            "(copying general_audit_ws_fc75636's "
+            "draft_auditor_responsibilities of the same General Audit) "
+            "and then edited manually as needed -- always editable, "
+            "regardless of this worksheet's state."
+        ),
+    )
+    other_legal_regulatory = fields.Html(
+        string="Report on Other Legal and Regulatory Requirements",
+        help=(
+            "Final narrative of the Report on Other Legal and "
+            "Regulatory Requirements section, meant to be filled by "
+            "clicking Populate (copying general_audit_ws_fc75636's "
+            "draft_other_legal_regulatory of the same General Audit) "
+            "and then edited manually as needed -- always editable, "
+            "regardless of this worksheet's state. Situational: only "
+            "relevant when such requirements apply to the engagement."
+        ),
+    )
+    emphasis_of_matter = fields.Html(
+        string="Emphasis of Matter",
+        help=(
+            "Final narrative of the Emphasis of Matter paragraph, "
+            "meant to be filled by clicking Populate (copying "
+            "general_audit_ws_fc75636's draft_emphasis_of_matter of "
+            "the same General Audit) and then edited manually as "
+            "needed -- always editable, regardless of this worksheet's "
+            "state. Situational: only relevant when an emphasis of "
+            "matter paragraph is needed."
+        ),
+    )
+    other_matter = fields.Html(
+        string="Other Matter",
+        help=(
+            "Final narrative of the Other Matter paragraph, meant to "
+            "be filled by clicking Populate (copying "
+            "general_audit_ws_fc75636's draft_other_matter of the same "
+            "General Audit) and then edited manually as needed -- "
+            "always editable, regardless of this worksheet's state. "
+            "Situational: only relevant when an other matter paragraph "
+            "is needed."
+        ),
+    )
+
+    def action_populate_final_opinion(self):
+        """Button action: (re)populate this worksheet's final opinion.
+
+        Thin dispatcher over ``_populate_final_opinion()``, mirroring
+        ``action_populate_detail`` / ``_populate_detail`` above.
+
+        :return: None
+        """
+        for record in self:
+            record._populate_final_opinion()
+
+    def _populate_final_opinion(self):
+        """Copy the nine opinion fields from this engagement's fc75636.
+
+        Looks up the ``general_audit_ws_fc75636`` (Independen Auditor
+        Report Review) record sharing this worksheet's
+        ``general_audit_id`` and, when found, copies its nine
+        ``draft_*`` narrative fields onto this worksheet's matching
+        final fields via ``write()`` (not ``related=``, so the copy is
+        a point-in-time snapshot the auditor can then freely edit).
+
+        ``ssi_general_audit_worksheet_review`` (the module providing
+        ``general_audit_ws_fc75636``) depends on *this* module, never
+        the other way around, so that model is not guaranteed to be
+        registered when this method runs -- checked via ``in
+        self.env`` before searching. Best-effort like
+        ``_build_lai_number``: when the model is not installed, or no
+        matching fc75636 record exists yet for this engagement, this
+        does nothing rather than raising.
+
+        Reads the fc75636 record with ``sudo()`` (same rationale as
+        ``_compute_audit_final_memorandum_id``'s ``compute_sudo=True``
+        above): the two worksheets can be assigned to different users
+        within the same engagement, and this best-effort copy should
+        not fail with an ``AccessError`` for a user who can open this
+        worksheet but was not also granted read access on fc75636.
+
+        :return: None
+        """
+        self.ensure_one()
+        if "general_audit_ws_fc75636" not in self.env:
+            return
+        draft = (
+            self.env["general_audit_ws_fc75636"]
+            .sudo()
+            .search(
+                [("general_audit_id", "=", self.general_audit_id.id)],
+                limit=1,
+                order="id desc",
+            )
+        )
+        if not draft:
+            return
+        self.write(self._prepare_final_opinion_vals(draft))
+
+    def _prepare_final_opinion_vals(self, draft):
+        """Build the ``write()`` values copied from a fc75636 record.
+
+        Extension point: override to add fields to the copy performed
+        by ``_populate_final_opinion()``.
+
+        :param draft: the ``general_audit_ws_fc75636`` record this
+            worksheet's final opinion is populated from
+        :type draft: recordset of ``general_audit_ws_fc75636``
+        :return: dict of ``general_audit_ws_b66777d`` values
+        :rtype: dict
+        """
+        self.ensure_one()
+        return {
+            "opinion": draft.draft_opinion,
+            "basis_for_opinion": draft.draft_basis_for_opinion,
+            "key_audit_matters": draft.draft_key_audit_matters,
+            "other_information": draft.draft_other_information,
+            "responsibilities_of_management": (
+                draft.draft_responsibilities_of_management
+            ),
+            "auditor_responsibilities": (draft.draft_auditor_responsibilities),
+            "other_legal_regulatory": draft.draft_other_legal_regulatory,
+            "emphasis_of_matter": draft.draft_emphasis_of_matter,
+            "other_matter": draft.draft_other_matter,
+        }
+
     def action_populate_detail(self):
         """Button action: (re)populate this worksheet's ``detail_ids``.
 

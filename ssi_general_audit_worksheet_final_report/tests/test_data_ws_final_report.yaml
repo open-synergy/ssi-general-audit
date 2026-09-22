@@ -2145,3 +2145,102 @@ scenarios:
           value:
             type: "value"
             expected: ""
+
+  # ------------------------------------------------------------------
+  # general_audit_ws_b66777d - Final Audit Opinion tab (issue #382):
+  # this module's own suite never has general_audit_ws_fc75636
+  # installed -- ssi_general_audit_worksheet_review (which provides
+  # it) depends on THIS module, never the other way around, see
+  # _populate_final_opinion()'s docstring -- so this is the "model not
+  # registered" best-effort branch. The positive copy-from-fc75636
+  # path is instead covered where both modules coexist:
+  # ssi_general_audit_worksheet_review/tests/
+  # test_data_general_audit_ws_fc75636.yaml.
+  # ------------------------------------------------------------------
+  - name:
+      "Worksheet b66777d - Final Audit Opinion fields empty on create, editable any
+      state, Populate does not error without fc75636 installed"
+    steps:
+      - step: "Create worksheet b66777d"
+        action: "create"
+        model: "general_audit_ws_b66777d"
+        save_as: "opinion_worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_b66777d.id"
+
+      - step: "Assert the nine final opinion fields are empty on create"
+        action: "assert"
+        target: "opinion_worksheet"
+        asserts:
+          state:
+            type: "value"
+            expected: "draft"
+          opinion:
+            type: "value"
+            operator: "is_falsy"
+          other_matter:
+            type: "value"
+            operator: "is_falsy"
+
+      - step: "Fill the Opinion field manually while still in draft"
+        action: "write"
+        target: "opinion_worksheet"
+        as_user: "base.user_admin"
+        values:
+          opinion: "Manual draft-state opinion text"
+
+      - step: "Assert the manual edit while draft is saved (no states gate)"
+        action: "assert"
+        target: "opinion_worksheet"
+        refresh: true
+        asserts:
+          opinion:
+            type: "value"
+            operator: "contains"
+            expected: "Manual draft-state opinion text"
+
+      - step: "Open worksheet b66777d"
+        action: "call"
+        target: "opinion_worksheet"
+        method: "action_open"
+        as_user: "base.user_admin"
+
+      - step:
+          "Click Populate: must not error, general_audit_ws_fc75636 is not installed in
+          this module's own test suite"
+        action: "call"
+        target: "opinion_worksheet"
+        method: "action_populate_final_opinion"
+        as_user: "base.user_admin"
+
+      - step: "Assert the manual Opinion text from before open is untouched"
+        action: "assert"
+        target: "opinion_worksheet"
+        refresh: true
+        asserts:
+          opinion:
+            type: "value"
+            operator: "contains"
+            expected: "Manual draft-state opinion text"
+          other_matter:
+            type: "value"
+            operator: "is_falsy"
+
+      - step: "Edit the Opinion field manually again, now that state is open"
+        action: "write"
+        target: "opinion_worksheet"
+        as_user: "base.user_admin"
+        values:
+          opinion: "Manual open-state opinion text"
+
+      - step: "Assert the second manual edit while open is saved"
+        action: "assert"
+        target: "opinion_worksheet"
+        refresh: true
+        asserts:
+          opinion:
+            type: "value"
+            operator: "contains"
+            expected: "Manual open-state opinion text"

@@ -48,6 +48,11 @@ ISA 701 / SA 701 — Key Audit Matters; ISA 705 / SA 705 — Modifications to
 the Opinion; ISA 706 / SA 706 — Emphasis-of-Matter Paragraphs
 
 
+Work Instruction
+================
+
+* `Fill Final Audit Opinion <docs/general_audit_ws_b66777d/index.html>`_
+
 Installation
 ============
 

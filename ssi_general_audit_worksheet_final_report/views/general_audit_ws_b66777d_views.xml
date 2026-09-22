@@ -70,6 +70,49 @@
                         </field>
                     </page>
                 </xpath>
+                <xpath expr="//page[@name='details']" position="after">
+                    <page name="final_opinion" string="Final Audit Opinion">
+                        <button
+                            name="action_populate_final_opinion"
+                            string="Populate"
+                            type="object"
+                            icon="fa-refresh"
+                            class="oe_highlight"
+                            style="margin-right:4px"
+                            attrs="{'invisible': [('state', '!=', 'open')]}"
+                        />
+                        <label for="opinion" />
+                        <field name="opinion" widget="html" nolabel="1" />
+                        <label for="basis_for_opinion" />
+                        <field name="basis_for_opinion" widget="html" nolabel="1" />
+                        <label for="key_audit_matters" />
+                        <field name="key_audit_matters" widget="html" nolabel="1" />
+                        <label for="other_information" />
+                        <field name="other_information" widget="html" nolabel="1" />
+                        <label for="responsibilities_of_management" />
+                        <field
+                            name="responsibilities_of_management"
+                            widget="html"
+                            nolabel="1"
+                        />
+                        <label for="auditor_responsibilities" />
+                        <field
+                            name="auditor_responsibilities"
+                            widget="html"
+                            nolabel="1"
+                        />
+                        <label for="other_legal_regulatory" />
+                        <field
+                            name="other_legal_regulatory"
+                            widget="html"
+                            nolabel="1"
+                        />
+                        <label for="emphasis_of_matter" />
+                        <field name="emphasis_of_matter" widget="html" nolabel="1" />
+                        <label for="other_matter" />
+                        <field name="other_matter" widget="html" nolabel="1" />
+                    </page>
+                </xpath>
             </data>
         </field>
     </record>
