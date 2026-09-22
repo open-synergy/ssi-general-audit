@@ -350,6 +350,21 @@ odoo.define(
                     extra_trigger: ".o_form_view",
                 },
 
+                // Draft_opinion_id is a non-stored compute (no Reload
+                // needed, unlike audit_final_memorandum_id above): the
+                // fc75636 sibling was already Open before this
+                // worksheet was even created (setUpClass), so it
+                // resolves as soon as the tab is rendered.
+                {
+                    content: "Draft Audit Opinion field shows the fc75636 sibling",
+                    trigger:
+                        ".tab-pane.active " +
+                        ".o_field_widget[name='draft_opinion_id']",
+                    run: function () {
+                        // Assertion only; do not trigger the default click action.
+                    },
+                },
+
                 // Flow 4 - Click Populate. This is an object-type button
                 // that writes the nine fields asynchronously, so the
                 // next step's trigger must name something that only

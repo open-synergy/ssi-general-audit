@@ -410,14 +410,19 @@ scenarios:
 
   # ------------------------------------------------------------------
   # general_audit_ws_b66777d - action_populate_final_opinion() (issue
-  # #382). Both fc75636 (this module) and b66777d (final_report module,
-  # which THIS module depends on -- not the other way around) coexist
-  # here, unlike ssi_general_audit_worksheet_final_report's own test
-  # suite, which never has fc75636 installed at all (see
+  # #382, revision 2). Both fc75636 (this module) and b66777d
+  # (final_report module, which THIS module depends on -- not the
+  # other way around) coexist here, unlike
+  # ssi_general_audit_worksheet_final_report's own test suite, which
+  # never has fc75636 installed at all (see
   # _populate_final_opinion()'s docstring for why that is exactly the
   # "model not installed" best-effort branch this module's suite
-  # cannot exercise). This is therefore the only place the actual copy
-  # can be tested end-to-end.
+  # cannot exercise). This is therefore the only place the actual
+  # copy -- and the draft_opinion_id compute field it now reads from
+  # -- can be tested end-to-end. The fc75636 sibling is opened (not
+  # left in draft) because _compute_draft_opinion_id only matches
+  # ``state in ["open", "done"]``, same as
+  # ``_compute_audit_final_memorandum_id`` above.
   # ------------------------------------------------------------------
   - name: "Populate final opinion b66777d - copies all nine fields from fc75636"
     options: {auto_refresh: true}
@@ -435,6 +440,12 @@ scenarios:
         values:
           general_audit_id: "REC: audit.id"
           type_id: "REC: ws_type_fc75636.id"
+
+      - step: "Open worksheet fc75636 so draft_opinion_id can match it"
+        action: "call"
+        target: "populate_source"
+        method: "action_open"
+        as_user: "base.user_admin"
 
       - step: "Fill all nine draft narrative fields with distinct text"
         action: "write"
@@ -473,6 +484,16 @@ scenarios:
           other_matter:
             type: "value"
             operator: "is_falsy"
+          draft_opinion_id:
+            type: "m2o"
+            expected: "REC: populate_source"
+
+      - step: "Manually fill the Opinion field before Populate"
+        action: "write"
+        target: "final_worksheet"
+        as_user: "base.user_admin"
+        values:
+          opinion: "Manually authored opinion - must survive Populate"
 
       - step: "Open worksheet b66777d (Populate button only shows/works while open)"
         action: "call"
@@ -486,14 +507,16 @@ scenarios:
         method: "action_populate_final_opinion"
         as_user: "base.user_admin"
 
-      - step: "Assert all nine final fields match the fc75636 source"
+      - step:
+          "Assert the manually-filled Opinion is untouched, the other eight empty fields
+          are now filled from the fc75636 source"
         action: "assert"
         target: "final_worksheet"
         asserts:
           opinion:
             type: "value"
             operator: "contains"
-            expected: "Populate test text - Opinion"
+            expected: "Manually authored opinion - must survive Populate"
           basis_for_opinion:
             type: "value"
             operator: "contains"
@@ -527,21 +550,114 @@ scenarios:
             operator: "contains"
             expected: "Populate test text - Other Matter"
 
-      - step: "Edit one final field manually after Populate"
+      - step: "Edit one of the now-filled final fields manually after Populate"
         action: "write"
         target: "final_worksheet"
         as_user: "base.user_admin"
         values:
-          opinion: "Populate test text - Opinion, edited manually"
+          other_matter: "Populate test text - Other Matter, edited manually"
 
-      - step: "Assert the manual edit after Populate is saved"
+      - step: "Click Populate a second time"
+        action: "call"
+        target: "final_worksheet"
+        method: "action_populate_final_opinion"
+        as_user: "base.user_admin"
+
+      - step:
+          "Assert the second Populate click did not overwrite either the original manual
+          Opinion edit or the manual edit just made to Other Matter -- both fields are
+          non-empty, so both are skipped"
         action: "assert"
         target: "final_worksheet"
         asserts:
           opinion:
             type: "value"
             operator: "contains"
-            expected: "Populate test text - Opinion, edited manually"
+            expected: "Manually authored opinion - must survive Populate"
+          other_matter:
+            type: "value"
+            operator: "contains"
+            expected: "Populate test text - Other Matter, edited manually"
+
+  # ------------------------------------------------------------------
+  # general_audit_ws_b66777d.draft_opinion_id (issue #382, revision 2):
+  # non-stored compute must resolve correctly even when the matching
+  # fc75636 record is created AFTER the b66777d worksheet already
+  # exists -- no Reload button, no action on the b66777d record
+  # itself, just re-reading the field. Uses a General Audit isolated
+  # from the shared "audit" fixture so no fc75636 created by an
+  # earlier scenario in this file interferes with the "still empty"
+  # assertion below.
+  # ------------------------------------------------------------------
+  - name: "draft_opinion_id resolves live even when fc75636 is created after b66777d"
+    steps:
+      - step: "Create a fresh General Audit isolated for this scenario"
+        action: "create"
+        model: "general_audit"
+        save_as: "live_audit"
+        as_user: "base.user_admin"
+        values:
+          title: "Test General Audit - Live Compute Draft Opinion"
+          partner_id: "REC: client.id"
+          accountant_id: "REC: accountant.id"
+          account_type_set_id: "REC: account_type_set.id"
+          financial_accounting_standard_id: "REC: fas.id"
+          date_start: 2026-01-01
+          date_end: 2026-12-31
+          need_interim: false
+          need_previous: false
+          num_of_consecutive_audit_firm: 1
+          num_of_consecutive_audit_accountant: 1
+
+      - step: "Open the fresh General Audit"
+        action: "call"
+        target: "live_audit"
+        method: "action_open"
+        as_user: "base.user_admin"
+
+      - step: "Create worksheet b66777d before any fc75636 sibling exists"
+        action: "create"
+        model: "general_audit_ws_b66777d"
+        save_as: "live_worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: live_audit.id"
+          type_id: "REC: ws_type_b66777d.id"
+
+      - step: "Assert draft_opinion_id is empty before any fc75636 sibling exists"
+        action: "assert"
+        target: "live_worksheet"
+        asserts:
+          draft_opinion_id:
+            type: "value"
+            operator: "is_falsy"
+
+      - step: "Now create the matching fc75636 sibling for the same engagement"
+        action: "create"
+        model: "general_audit_ws_fc75636"
+        save_as: "live_source"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: live_audit.id"
+          type_id: "REC: ws_type_fc75636.id"
+
+      - step: "Open the fc75636 sibling"
+        action: "call"
+        target: "live_source"
+        method: "action_open"
+        as_user: "base.user_admin"
+
+      - step:
+          "Re-read draft_opinion_id on the SAME b66777d record, with no reload button
+          and no action on it -- must now resolve, proving the non-stored compute is
+          always live"
+        action: "assert"
+        target: "live_worksheet"
+        refresh: true
+        asserts:
+          draft_opinion_id:
+            type: "m2o"
+            expected: "REC: live_source"
 
   # ------------------------------------------------------------------
   # general_audit_ws_b66777d - action_populate_final_opinion() (issue
