@@ -41,6 +41,22 @@
         />
         <field name="arch" type="xml">
             <data>
+                <xpath expr="//page[1]" position="before">
+                    <page
+                        string="Final Analytical Procedures Conclusion"
+                        name="analytic_procedure_conclusion"
+                    >
+                        <field name="conclusion_ids">
+                            <tree editable="top">
+                                <field name="worksheet_id" invisible="1" />
+                                <field name="sequence" invisible="1" />
+                                <field name="parent_sequence" invisible="1" />
+                                <field name="category_id" />
+                                <field name="name" />
+                            </tree>
+                        </field>
+                    </page>
+                </xpath>
                 <xpath expr="//page[@name='note']" position="before">
                     <page name="checklist" string="Checklist">
                         <button
@@ -86,6 +102,18 @@
                             </form>
                         </field>
                     </page>
+                </xpath>
+                <xpath
+                    expr="//page[@name='checklist']/button[@name='action_populate_checklist']"
+                    position="before"
+                >
+                    <group name="preliminary_analytic_procedure" colspan="4" col="2">
+                        <field
+                            name="preliminary_analytic_procedure_id"
+                            domain="[('general_audit_id','=',general_audit_id),('state','in',['open','done'])]"
+                            options="{'no_create': True, 'no_create_edit': True}"
+                        />
+                    </group>
                 </xpath>
             </data>
         </field>

@@ -535,3 +535,177 @@ scenarios:
           state:
             type: "value"
             expected: "draft"
+
+  # ------------------------------------------------------------------
+  # preliminary_analytic_procedure_id + conclusion_ids (positive path)
+  # ------------------------------------------------------------------
+  - name: "c2375d8 - preliminary_analytic_procedure_id and conclusion_ids"
+    steps:
+      - step: "Get worksheet type c8740d4"
+        action: "ref"
+        xml_id: "ssi_general_audit_worksheet_preliminary_analytic_procedure.worksheet_type_c8740d4"
+        save_as: "ws_type_c8740d4"
+
+      - step:
+          "Create preliminary analytic procedure worksheet (c8740d4) on the same audit"
+        action: "create"
+        model: "general_audit_ws_c8740d4"
+        save_as: "preliminary_ws"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_c8740d4.id"
+
+      - step: "Create worksheet c2375d8"
+        action: "create"
+        model: "general_audit_ws_c2375d8"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_c2375d8.id"
+
+      - step: "Open worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_open"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after opening worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Link the preliminary analytic procedure worksheet"
+        action: "write"
+        target: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          preliminary_analytic_procedure_id: "REC: preliminary_ws.id"
+
+      - step: "Assert preliminary_analytic_procedure_id saved"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          preliminary_analytic_procedure_id:
+            type: "m2o"
+            expected: "REC: preliminary_ws"
+
+      - step: "Create parent conclusion category"
+        action: "create"
+        model: "analytic_procedure_conclusion_category"
+        save_as: "category_parent"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Parent Category - C2375D8"
+          code: "C2375D8-CAT-PARENT"
+          sequence: 1
+
+      - step: "Create child conclusion category"
+        action: "create"
+        model: "analytic_procedure_conclusion_category"
+        save_as: "category_child"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Child Category - C2375D8"
+          code: "C2375D8-CAT-CHILD"
+          sequence: 15
+          parent_id: "REC: category_parent.id"
+
+      - step: "Create conclusion line"
+        action: "create"
+        model: "general_audit_ws_c2375d8.analytic_procedure_conclusion"
+        save_as: "conclusion_line"
+        as_user: "base.user_admin"
+        values:
+          worksheet_id: "REC: worksheet.id"
+          category_id: "REC: category_child.id"
+          name:
+            "Final analytical procedures do not indicate a risk of material
+            misstatement."
+
+      - step: "Assert conclusion_ids contains the line"
+        action: "assert"
+        target: "worksheet"
+        refresh: true
+        asserts:
+          conclusion_ids:
+            type: "o2m"
+            check: "contains"
+            expected_records:
+              - "REC: conclusion_line"
+
+      - step: "Assert conclusion line category_id"
+        action: "assert"
+        target: "conclusion_line"
+        asserts:
+          category_id:
+            type: "m2o"
+            expected: "REC: category_child"
+
+      - step: "Assert conclusion line sequence follows category_id.sequence"
+        action: "assert"
+        target: "conclusion_line"
+        asserts:
+          sequence:
+            type: "value"
+            expected: 15
+
+      - step:
+          "Assert conclusion line parent_sequence follows category_id.parent_id.sequence"
+        action: "assert"
+        target: "conclusion_line"
+        asserts:
+          parent_sequence:
+            type: "value"
+            expected: 1
+
+  # ------------------------------------------------------------------
+  # conclusion_ids required fields (negative path) — via Form, per
+  # python-escape-hatch.md L-22: Form.save() asserts required fields
+  # without touching the DB (AssertionError "is a required field"),
+  # while action: create would hit a raw NOT NULL psycopg2.IntegrityError
+  # that expect_error cannot recognise.
+  # ------------------------------------------------------------------
+  - name: "c2375d8 - conclusion line required fields (negative path)"
+    steps:
+      - step: "Create worksheet c2375d8"
+        action: "create"
+        model: "general_audit_ws_c2375d8"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_c2375d8.id"
+
+      - step: "Create conclusion category"
+        action: "create"
+        model: "analytic_procedure_conclusion_category"
+        save_as: "category"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Category - C2375D8 Negative Path"
+          code: "C2375D8-CAT-NEG"
+          sequence: 20
+
+      - step: "Conclusion line via form without category_id must be rejected"
+        action: "form"
+        model: "general_audit_ws_c2375d8.analytic_procedure_conclusion"
+        as_user: "base.user_admin"
+        values:
+          worksheet_id: "REC: worksheet"
+          name: "Conclusion line missing category_id"
+        expect_error:
+          type: "AssertionError"
+          message_contains: "is a required field"
+
+      - step: "Conclusion line via form without name must be rejected"
+        action: "form"
+        model: "general_audit_ws_c2375d8.analytic_procedure_conclusion"
+        as_user: "base.user_admin"
+        values:
+          worksheet_id: "REC: worksheet"
+          category_id: "REC: category"
+        expect_error:
+          type: "AssertionError"
+          message_contains: "is a required field"
