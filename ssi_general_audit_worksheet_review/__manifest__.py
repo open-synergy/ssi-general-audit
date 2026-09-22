@@ -78,6 +78,9 @@
         "views/ga_fc75636/general_audit_ws_fc75636_item_views.xml",
         "views/ga_fc75636/general_audit_ws_fc75636_category_views.xml",
         "security/ir.model.access.csv",
+        # b66777d - draft_opinion_id extension (Independen Auditor Report,
+        # owned by ssi_general_audit_worksheet_final_report)
+        "views/general_audit_ws_b66777d_views.xml",
     ],
     "demo": [],
 }
