@@ -118,5 +118,164 @@ odoo.define(
                 },
             ]
         );
+
+        // IK: docs/general_audit_ws_fc75636/02-fill-draft-opinion.md
+        tour.register(
+            "ssi_general_audit_worksheet_review_fc75636_fill_draft_opinion",
+            {
+                test: true,
+                url: "/web",
+            },
+            [
+                // Flow 1 - Open the Windup & Reporting > Final Report >
+                // Proposed Audit Opinion menu.
+                tour.stepUtils.showAppsMenuItem(),
+                {
+                    content: "Open the Windup & Reporting app",
+                    trigger:
+                        '.o_app[data-menu-xmlid="ssi_general_audit.menu_wind_up_reporting_root"]',
+                },
+                {
+                    content: "Open the Final Report menu",
+                    trigger:
+                        ".o_menu_sections " +
+                        '[data-menu-xmlid="ssi_general_audit.menu_general_audit_final_report"]',
+                },
+                {
+                    content: "Open the Proposed Audit Opinion menu",
+                    trigger:
+                        ".o_menu_sections " +
+                        "[data-menu-xmlid='ssi_general_audit_worksheet_review" +
+                        ".general_audit_ws_fc75636_menu']",
+                },
+                {
+                    content: "Proposed Audit Opinion list is displayed",
+                    trigger:
+                        ".o_control_panel .breadcrumb-item.active" +
+                        ":contains(Proposed Audit Opinion)",
+                    extra_trigger: ".o_list_view",
+                    run: function () {
+                        // Assertion only; do not trigger the default click action.
+                    },
+                },
+
+                // Flow 2 - Open the worksheet to draft the audit opinion for
+                {
+                    content: "Open the worksheet",
+                    trigger: ".o_list_view .o_data_row:first .o_data_cell:first",
+                    extra_trigger: ".o_list_view",
+                },
+                {
+                    content: "Worksheet form is open",
+                    trigger: ".o_form_view",
+                    run: function () {
+                        // Assertion only; do not trigger the default click action.
+                    },
+                },
+
+                // Flow 3 - Open the Draft Audit Opinion tab
+                {
+                    content: "Open the Draft Audit Opinion tab",
+                    trigger: ".o_notebook .nav-link:contains(Draft Audit Opinion)",
+                    extra_trigger: ".o_form_view",
+                },
+
+                // Flow 4 - Fill in the nine narrative fields
+                {
+                    content: "Fill in the Opinion field",
+                    trigger:
+                        ".tab-pane.active " +
+                        ".o_field_widget[name='draft_opinion'] .note-editable",
+                    run: "text Draft opinion narrative for this engagement.",
+                },
+                {
+                    content: "Fill in the Basis for Opinion field",
+                    trigger:
+                        ".tab-pane.active " +
+                        ".o_field_widget[name='draft_basis_for_opinion']" +
+                        " .note-editable",
+                    run: "text Draft basis for opinion narrative for this engagement.",
+                },
+                {
+                    content: "Fill in the Key Audit Matters field",
+                    trigger:
+                        ".tab-pane.active " +
+                        ".o_field_widget[name='draft_key_audit_matters']" +
+                        " .note-editable",
+                    run: "text Draft key audit matters narrative for this engagement.",
+                },
+                {
+                    content: "Fill in the Other Information field",
+                    trigger:
+                        ".tab-pane.active " +
+                        ".o_field_widget[name='draft_other_information']" +
+                        " .note-editable",
+                    run: "text Draft other information narrative for this engagement.",
+                },
+                {
+                    content: "Fill in the Responsibilities of Management field",
+                    trigger:
+                        ".tab-pane.active " +
+                        ".o_field_widget[name='draft_responsibilities_of_management']" +
+                        " .note-editable",
+                    run:
+                        "text Draft responsibilities of management narrative for " +
+                        "this engagement.",
+                },
+                {
+                    content: "Fill in the Auditor's Responsibilities field",
+                    trigger:
+                        ".tab-pane.active " +
+                        ".o_field_widget[name='draft_auditor_responsibilities']" +
+                        " .note-editable",
+                    run:
+                        "text Draft auditor's responsibilities narrative for " +
+                        "this engagement.",
+                },
+                {
+                    content:
+                        "Fill in the Report on Other Legal and Regulatory " +
+                        "Requirements field",
+                    trigger:
+                        ".tab-pane.active " +
+                        ".o_field_widget[name='draft_other_legal_regulatory']" +
+                        " .note-editable",
+                    run:
+                        "text Draft other legal and regulatory requirements " +
+                        "narrative for this engagement.",
+                },
+                {
+                    content: "Fill in the Emphasis of Matter field",
+                    trigger:
+                        ".tab-pane.active " +
+                        ".o_field_widget[name='draft_emphasis_of_matter']" +
+                        " .note-editable",
+                    run: "text Draft emphasis of matter narrative for this engagement.",
+                },
+                {
+                    content: "Fill in the Other Matter field",
+                    trigger:
+                        ".tab-pane.active " +
+                        ".o_field_widget[name='draft_other_matter']" +
+                        " .note-editable",
+                    run: "text Draft other matter narrative for this engagement.",
+                },
+
+                // Flow 5 - Click Save
+                {
+                    content: "Save the record",
+                    trigger: ".o_form_button_save",
+                },
+
+                // Post-Condition - the record is saved
+                {
+                    content: "Worksheet is saved",
+                    trigger: ".o_form_view.o_form_readonly",
+                    run: function () {
+                        // Assertion only; do not trigger the default click action.
+                    },
+                },
+            ]
+        );
     }
 );

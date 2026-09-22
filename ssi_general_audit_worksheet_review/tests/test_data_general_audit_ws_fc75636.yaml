@@ -247,3 +247,163 @@ scenarios:
           proposed_audit_opinion_id:
             type: "value"
             operator: "is_falsy"
+
+  # ------------------------------------------------------------------
+  # Draft Audit Opinion - positive: worksheet is Open, the nine narrative
+  # Html fields can be filled (including simple HTML markup such as
+  # <b>/<ul>) and keep their value after save.
+  # ------------------------------------------------------------------
+  - name: "Draft Audit Opinion fc75636 - fields are saved when open"
+    steps:
+      - step: "Create worksheet fc75636"
+        action: "create"
+        model: "general_audit_ws_fc75636"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_fc75636.id"
+
+      - step: "Open worksheet fc75636"
+        action: "call"
+        target: "worksheet"
+        method: "action_open"
+        as_user: "base.user_admin"
+
+      - step: "Fill in the nine Draft Audit Opinion fields"
+        action: "write"
+        target: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          draft_opinion: "<p>Custom opinion narrative with <b>bold emphasis</b>.</p>"
+          draft_basis_for_opinion: "<p>Custom basis for opinion narrative.</p>"
+          draft_key_audit_matters: >-
+            <p>Custom key audit matters:</p><ul><li>Matter one</li> <li>Matter
+            two</li></ul>
+          draft_other_information: "<p>Custom other information narrative.</p>"
+          draft_responsibilities_of_management:
+            "<p>Custom responsibilities of management narrative.</p>"
+          draft_auditor_responsibilities:
+            "<p>Custom auditor's responsibilities narrative.</p>"
+          draft_other_legal_regulatory:
+            "<p>Custom other legal and regulatory narrative.</p>"
+          draft_emphasis_of_matter: "<p>Custom emphasis of matter narrative.</p>"
+          draft_other_matter: "<p>Custom other matter narrative.</p>"
+
+      - step: "Assert the nine Draft Audit Opinion fields keep their value"
+        action: "assert"
+        target: "worksheet"
+        refresh: true
+        asserts:
+          draft_opinion:
+            type: "value"
+            operator: "contains"
+            expected: "bold emphasis"
+          draft_basis_for_opinion:
+            type: "value"
+            operator: "contains"
+            expected: "Custom basis for opinion narrative"
+          draft_key_audit_matters:
+            type: "value"
+            operator: "contains"
+            expected: "Matter one"
+          draft_other_information:
+            type: "value"
+            operator: "contains"
+            expected: "Custom other information narrative"
+          draft_responsibilities_of_management:
+            type: "value"
+            operator: "contains"
+            expected: "Custom responsibilities of management narrative"
+          draft_auditor_responsibilities:
+            type: "value"
+            operator: "contains"
+            expected: "Custom auditor's responsibilities narrative"
+          draft_other_legal_regulatory:
+            type: "value"
+            operator: "contains"
+            expected: "Custom other legal and regulatory narrative"
+          draft_emphasis_of_matter:
+            type: "value"
+            operator: "contains"
+            expected: "Custom emphasis of matter narrative"
+          draft_other_matter:
+            type: "value"
+            operator: "contains"
+            expected: "Custom other matter narrative"
+
+      - step: "Assert draft_opinion keeps the <b> markup"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          draft_opinion:
+            type: "value"
+            operator: "contains"
+            expected: "<b>"
+
+      - step: "Assert draft_key_audit_matters keeps the <ul>/<li> markup"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          draft_key_audit_matters:
+            type: "value"
+            operator: "contains"
+            expected: "<li>Matter one</li>"
+
+  # ------------------------------------------------------------------
+  # Draft Audit Opinion - defaults: draft_opinion, draft_basis_for_opinion,
+  # draft_responsibilities_of_management and draft_auditor_responsibilities
+  # carry a generic template as default; the other five fields (situational
+  # sections) have no default.
+  # ------------------------------------------------------------------
+  - name: "Draft Audit Opinion fc75636 - default values on a new worksheet"
+    steps:
+      - step: "Create worksheet fc75636, no Draft Audit Opinion values given"
+        action: "create"
+        model: "general_audit_ws_fc75636"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_fc75636.id"
+
+      - step: "Assert the four templated fields carry a default value"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          draft_opinion:
+            type: "value"
+            operator: "contains"
+            expected: "Kami telah mengaudit laporan keuangan"
+          draft_basis_for_opinion:
+            type: "value"
+            operator: "contains"
+            expected: "Kami melaksanakan audit kami berdasarkan Standar Audit"
+          draft_responsibilities_of_management:
+            type: "value"
+            operator: "contains"
+            expected: "Manajemen bertanggung jawab atas penyusunan"
+          draft_auditor_responsibilities:
+            type: "value"
+            operator: "contains"
+            expected: "Tujuan kami adalah untuk memeroleh keyakinan memadai"
+
+      - step: "Assert the five situational fields have no default"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          draft_key_audit_matters:
+            type: "value"
+            operator: "is_falsy"
+          draft_other_information:
+            type: "value"
+            operator: "is_falsy"
+          draft_other_legal_regulatory:
+            type: "value"
+            operator: "is_falsy"
+          draft_emphasis_of_matter:
+            type: "value"
+            operator: "is_falsy"
+          draft_other_matter:
+            type: "value"
+            operator: "is_falsy"

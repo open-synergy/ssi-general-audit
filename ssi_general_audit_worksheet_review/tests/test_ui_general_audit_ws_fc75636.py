@@ -145,3 +145,14 @@ class TestUiGeneralAuditWsFc75636(HttpSavepointCase):
             "ssi_general_audit_worksheet_review_fc75636_reload_links",
             login="admin",
         )
+
+    def test_fill_draft_opinion(self):
+        """Run the Fill Draft Audit Opinion tour.
+
+        IK: docs/general_audit_ws_fc75636/02-fill-draft-opinion.md
+        """
+        self.start_tour(
+            "/web",
+            "ssi_general_audit_worksheet_review_fc75636_fill_draft_opinion",
+            login="admin",
+        )
