@@ -2,7 +2,7 @@
 # Copyright 2025 PT. Simetri Sinergi Indonesia
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl-3.0-standalone.html).
 
-from odoo import fields, models
+from odoo import api, fields, models
 
 from odoo.addons.ssi_decorator import ssi_decorator
 
@@ -79,6 +79,55 @@ class GeneralAuditWSb66777d(models.Model):
             "(re)populated by clicking the Populate button "
             "(action_populate_detail) -- empty on a freshly created "
             "worksheet. See _populate_detail()."
+        ),
+    )
+
+    @api.depends("general_audit_id")
+    def _compute_draft_opinion_id(self):
+        """Find this engagement's Draft Audit Opinion (fc75636) worksheet.
+
+        Non-stored on purpose (no ``store=True``): unlike the
+        ``store=True`` + manual "Reload" button pattern used by
+        ``general_audit_ws_fc75636.audit_final_memorandum_id``, this
+        field must resolve correctly even when the matching fc75636
+        record is created *after* this worksheet already exists --
+        Odoo's ORM cannot auto-invalidate a stored compute just
+        because an unrelated model's record was created, so storing
+        it would require the same kind of manual reload trigger.
+        Recomputing on every access guarantees it is always current
+        with no user action needed.
+
+        :return: None
+        """
+        for record in self:
+            result = False
+            if "general_audit_ws_fc75636" in self.env:
+                draft = (
+                    self.env["general_audit_ws_fc75636"]
+                    .sudo()
+                    .search(
+                        [
+                            ("general_audit_id", "=", record.general_audit_id.id),
+                            ("state", "in", ["open", "done"]),
+                        ],
+                        limit=1,
+                        order="id desc",
+                    )
+                )
+                if draft:
+                    result = draft.id
+            record.draft_opinion_id = result
+
+    draft_opinion_id = fields.Many2one(
+        string="Draft Audit Opinion",
+        comodel_name="general_audit_ws_fc75636",
+        compute="_compute_draft_opinion_id",
+        compute_sudo=True,
+        help=(
+            "The Draft Audit Opinion (fc75636) worksheet of this same "
+            "engagement, found by general_audit_id. Not stored -- "
+            "always recomputed live, so it resolves correctly even if "
+            "the fc75636 record is created after this worksheet."
         ),
     )
 
@@ -198,51 +247,40 @@ class GeneralAuditWSb66777d(models.Model):
             record._populate_final_opinion()
 
     def _populate_final_opinion(self):
-        """Copy the nine opinion fields from this engagement's fc75636.
+        """Fill this worksheet's still-empty opinion fields from fc75636.
 
-        Looks up the ``general_audit_ws_fc75636`` (Independen Auditor
-        Report Review) record sharing this worksheet's
-        ``general_audit_id`` and, when found, copies its nine
-        ``draft_*`` narrative fields onto this worksheet's matching
-        final fields via ``write()`` (not ``related=``, so the copy is
-        a point-in-time snapshot the auditor can then freely edit).
+        Reads ``self.draft_opinion_id`` (the non-stored compute field
+        above -- no manual search here anymore) and, when it resolves
+        to a record, writes only the subset of the nine final opinion
+        fields that are **currently empty** with the matching
+        ``draft_*`` narrative from it (``_prepare_final_opinion_vals``
+        does the filtering). A field the auditor already edited
+        manually is left untouched -- this is an infill, not an
+        overwrite, so clicking Populate again after manual edits is
+        always safe.
 
-        ``ssi_general_audit_worksheet_review`` (the module providing
-        ``general_audit_ws_fc75636``) depends on *this* module, never
-        the other way around, so that model is not guaranteed to be
-        registered when this method runs -- checked via ``in
-        self.env`` before searching. Best-effort like
-        ``_build_lai_number``: when the model is not installed, or no
-        matching fc75636 record exists yet for this engagement, this
-        does nothing rather than raising.
-
-        Reads the fc75636 record with ``sudo()`` (same rationale as
-        ``_compute_audit_final_memorandum_id``'s ``compute_sudo=True``
-        above): the two worksheets can be assigned to different users
-        within the same engagement, and this best-effort copy should
-        not fail with an ``AccessError`` for a user who can open this
-        worksheet but was not also granted read access on fc75636.
+        Best-effort like ``_build_lai_number``: when
+        ``draft_opinion_id`` is empty (fc75636 not installed, or no
+        matching record exists yet for this engagement), this does
+        nothing rather than raising.
 
         :return: None
         """
         self.ensure_one()
-        if "general_audit_ws_fc75636" not in self.env:
+        if not self.draft_opinion_id:
             return
-        draft = (
-            self.env["general_audit_ws_fc75636"]
-            .sudo()
-            .search(
-                [("general_audit_id", "=", self.general_audit_id.id)],
-                limit=1,
-                order="id desc",
-            )
-        )
-        if not draft:
-            return
-        self.write(self._prepare_final_opinion_vals(draft))
+        vals = self._prepare_final_opinion_vals(self.draft_opinion_id)
+        if vals:
+            self.write(vals)
 
     def _prepare_final_opinion_vals(self, draft):
         """Build the ``write()`` values copied from a fc75636 record.
+
+        Only includes a key when this worksheet's matching final
+        field is currently falsy (``False``/``None``/empty HTML
+        string) -- fields already filled (manually or by a previous
+        Populate click) are excluded so ``_populate_final_opinion()``
+        never overwrites them.
 
         Extension point: override to add fields to the copy performed
         by ``_populate_final_opinion()``.
@@ -250,11 +288,12 @@ class GeneralAuditWSb66777d(models.Model):
         :param draft: the ``general_audit_ws_fc75636`` record this
             worksheet's final opinion is populated from
         :type draft: recordset of ``general_audit_ws_fc75636``
-        :return: dict of ``general_audit_ws_b66777d`` values
+        :return: dict of ``general_audit_ws_b66777d`` values, only
+            for fields that are currently empty
         :rtype: dict
         """
         self.ensure_one()
-        return {
+        candidates = {
             "opinion": draft.draft_opinion,
             "basis_for_opinion": draft.draft_basis_for_opinion,
             "key_audit_matters": draft.draft_key_audit_matters,
@@ -266,6 +305,11 @@ class GeneralAuditWSb66777d(models.Model):
             "other_legal_regulatory": draft.draft_other_legal_regulatory,
             "emphasis_of_matter": draft.draft_emphasis_of_matter,
             "other_matter": draft.draft_other_matter,
+        }
+        return {
+            field_name: value
+            for field_name, value in candidates.items()
+            if not self[field_name]
         }
 
     team_allocation_ids = fields.One2many(

@@ -2147,15 +2147,17 @@ scenarios:
             expected: ""
 
   # ------------------------------------------------------------------
-  # general_audit_ws_b66777d - Final Audit Opinion tab (issue #382):
-  # this module's own suite never has general_audit_ws_fc75636
-  # installed -- ssi_general_audit_worksheet_review (which provides
-  # it) depends on THIS module, never the other way around, see
-  # _populate_final_opinion()'s docstring -- so this is the "model not
-  # registered" best-effort branch. The positive copy-from-fc75636
-  # path is instead covered where both modules coexist:
-  # ssi_general_audit_worksheet_review/tests/
-  # test_data_general_audit_ws_fc75636.yaml.
+  # general_audit_ws_b66777d - Final Audit Opinion tab (issue #382,
+  # revision 2): this module's own suite never has
+  # general_audit_ws_fc75636 installed -- ssi_general_audit_worksheet_review
+  # (which provides it) depends on THIS module, never the other way
+  # around, see _populate_final_opinion()'s and
+  # _compute_draft_opinion_id()'s docstrings -- so this is the "model
+  # not registered" best-effort branch for both draft_opinion_id and
+  # the Populate button. The positive copy-from-fc75636 path (and the
+  # "only fill empty fields" infill behaviour) is instead covered
+  # where both modules coexist: ssi_general_audit_worksheet_review/
+  # tests/test_data_general_audit_ws_fc75636.yaml.
   # ------------------------------------------------------------------
   - name:
       "Worksheet b66777d - Final Audit Opinion fields empty on create, editable any
@@ -2181,6 +2183,9 @@ scenarios:
             type: "value"
             operator: "is_falsy"
           other_matter:
+            type: "value"
+            operator: "is_falsy"
+          draft_opinion_id:
             type: "value"
             operator: "is_falsy"
 
