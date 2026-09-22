@@ -293,6 +293,19 @@ class GeneralAuditWSb66777d(models.Model):
         for record in self:
             record._populate_team_allocation()
 
+    #: Maps a ``general_audit_worksheet_type_category``'s ``code`` to the
+    #: matching realized/AWP phase field prefix on ``team_allocation``
+    #: (``<prefix>_allocation`` / ``awp_<prefix>_allocation``). Closed set
+    #: of 4, mirroring ``ssi_general_audit``'s ``general_audit_worksheet_
+    #: type_category_data.xml`` (worksheet_type_category_pe/ra/rr/wr) --
+    #: note code "RE" for Risk Responses, not "RR".
+    _TEAM_ALLOCATION_CATEGORY_FIELD = {
+        "PE": "pe",
+        "RA": "ra",
+        "RE": "rr",
+        "WR": "reporting",
+    }
+
     def _populate_team_allocation(self):
         """Replace ``team_allocation_ids`` with a fresh aggregation.
 
@@ -301,9 +314,17 @@ class GeneralAuditWSb66777d(models.Model):
         ``ssi_general_audit``'s ``general_audit_worksheet``) sharing
         this worksheet's ``general_audit_id``, and sums each one's
         ``preparation_time`` onto its ``user_id.employee_id`` and
-        ``review_time`` onto its ``reviewer_id.employee_id``. One row
-        per ``hr.employee`` that contributed at least one of the two
-        is (re)created.
+        ``review_time`` onto its ``reviewer_id.employee_id``, bucketed
+        by audit phase (see ``_compute_team_allocation_totals()``). One
+        row per ``hr.employee`` that contributed at least one of the
+        two is (re)created.
+
+        This doubles as the "Reload" behaviour requested for stale
+        historical data (issue #383, open question #1): every click
+        unlinks the previous snapshot and re-reads current worksheet
+        data from scratch, so values filled in after the fact are
+        picked up the next time Populate is clicked -- no separate
+        field/button is needed.
 
         Like ``_populate_detail()``, this is unlink-then-recreate: a
         full snapshot taken at click time, not a live-reactive
@@ -331,12 +352,23 @@ class GeneralAuditWSb66777d(models.Model):
             )
 
     def _compute_team_allocation_totals(self):
-        """Aggregate preparation/review time per ``hr.employee``.
+        """Aggregate preparation/review time per ``hr.employee`` & phase.
 
-        :return: mapping of ``hr.employee`` id to a two-key dict,
-            ``{"preparation": int, "review": int}``, summed across
-            every ``general_audit_worksheet`` sharing this worksheet's
-            ``general_audit_id``
+        Each ``general_audit_worksheet``'s audit phase is read from its
+        own ``parent_type_id.category_id`` (NOT a flat single number
+        per worksheet) -- see ``_TEAM_ALLOCATION_CATEGORY_FIELD``. A
+        worksheet whose ``parent_type_id`` is empty, or whose
+        ``parent_type_id.category_id`` is empty (e.g. legacy data),
+        contributes 0 to every phase bucket rather than raising --
+        its time is simply not attributable to a phase. It still
+        counts this employee as "contributing" (gets a row) as long
+        as some worksheet -- categorized or not -- recorded time for
+        them.
+
+        :return: mapping of ``hr.employee`` id to a four-key dict,
+            ``{"pe": int, "ra": int, "rr": int, "reporting": int}``,
+            summed across every ``general_audit_worksheet`` sharing
+            this worksheet's ``general_audit_id``
         :rtype: dict
         """
         self.ensure_one()
@@ -345,18 +377,27 @@ class GeneralAuditWSb66777d(models.Model):
             [("general_audit_id", "=", self.general_audit_id.id)]
         )
         for worksheet in worksheets:
+            category_field = None
+            if worksheet.parent_type_id and worksheet.parent_type_id.category_id:
+                category_field = self._TEAM_ALLOCATION_CATEGORY_FIELD.get(
+                    worksheet.parent_type_id.category_id.code
+                )
             prep_employee = worksheet.user_id.employee_id
             if prep_employee and worksheet.preparation_time:
                 entry = totals.setdefault(
-                    prep_employee.id, {"preparation": 0, "review": 0}
+                    prep_employee.id,
+                    {"pe": 0, "ra": 0, "rr": 0, "reporting": 0},
                 )
-                entry["preparation"] += worksheet.preparation_time
+                if category_field:
+                    entry[category_field] += worksheet.preparation_time
             review_employee = worksheet.reviewer_id.employee_id
             if review_employee and worksheet.review_time:
                 entry = totals.setdefault(
-                    review_employee.id, {"preparation": 0, "review": 0}
+                    review_employee.id,
+                    {"pe": 0, "ra": 0, "rr": 0, "reporting": 0},
                 )
-                entry["review"] += worksheet.review_time
+                if category_field:
+                    entry[category_field] += worksheet.review_time
         return totals
 
     def _prepare_team_allocation_vals(self, employee_id, times):
@@ -368,8 +409,8 @@ class GeneralAuditWSb66777d(models.Model):
         :param employee_id: id of the ``hr.employee`` this row
             aggregates
         :type employee_id: int
-        :param times: ``{"preparation": int, "review": int}`` totals
-            for this employee, as built by
+        :param times: ``{"pe": int, "ra": int, "rr": int,
+            "reporting": int}`` totals for this employee, as built by
             ``_compute_team_allocation_totals()``
         :type times: dict
         :return: dict of ``general_audit_ws_b66777d.team_allocation``
@@ -377,16 +418,24 @@ class GeneralAuditWSb66777d(models.Model):
         :rtype: dict
         """
         self.ensure_one()
+        awp_line = self._get_awp_team_allocation_line(employee_id)
         return {
             "worksheet_id": self.id,
             "team_id": employee_id,
-            "total_preparation_time": times["preparation"],
-            "total_review_time": times["review"],
-            "awp_total_allocation": self._get_awp_total_allocation(employee_id),
+            "pe_allocation": times["pe"],
+            "ra_allocation": times["ra"],
+            "rr_allocation": times["rr"],
+            "reporting_allocation": times["reporting"],
+            "awp_pe_allocation": int(awp_line.pe_allocation) if awp_line else 0,
+            "awp_ra_allocation": int(awp_line.ra_allocation) if awp_line else 0,
+            "awp_rr_allocation": int(awp_line.rr_allocation) if awp_line else 0,
+            "awp_reporting_allocation": (
+                int(awp_line.reporting_allocation) if awp_line else 0
+            ),
         }
 
-    def _get_awp_total_allocation(self, employee_id):
-        """Best-effort AWP planned total allocation for one employee.
+    def _get_awp_team_allocation_line(self, employee_id):
+        """Best-effort AWP planned allocation line for one employee.
 
         Looks up the ``general_audit_ws_cbbbaf4`` (Audit Working Plan)
         record sharing this worksheet's ``general_audit_id`` and, when
@@ -397,10 +446,10 @@ class GeneralAuditWSb66777d(models.Model):
         this module nor is depended on by it, so that model is not
         guaranteed to be registered when this method runs -- checked
         via ``in self.env`` before searching, same pattern as
-        ``_populate_final_opinion``. Returns ``0`` (never raises) when
-        the model is not installed, no AWP worksheet exists yet for
-        this engagement, or the AWP has no allocation row for this
-        employee.
+        ``_populate_final_opinion``. Returns ``None`` (never raises)
+        when the model is not installed, no AWP worksheet exists yet
+        for this engagement, or the AWP has no allocation row for
+        this employee -- callers treat ``None`` as all-zero.
 
         Reads with ``sudo()``, same rationale as
         ``_populate_final_opinion``: the two worksheets can be
@@ -408,12 +457,13 @@ class GeneralAuditWSb66777d(models.Model):
 
         :param employee_id: id of the ``hr.employee`` to look up
         :type employee_id: int
-        :return: planned total allocation hours from the AWP, or ``0``
-        :rtype: int
+        :return: the matching AWP team allocation line, or ``None``
+        :rtype: recordset of
+            ``general_audit_ws_cbbbaf4.team_allocation`` or ``None``
         """
         self.ensure_one()
         if "general_audit_ws_cbbbaf4" not in self.env:
-            return 0
+            return None
         awp = (
             self.env["general_audit_ws_cbbbaf4"]
             .sudo()
@@ -424,11 +474,9 @@ class GeneralAuditWSb66777d(models.Model):
             )
         )
         if not awp:
-            return 0
+            return None
         line = awp.team_allocation_ids.filtered(lambda l: l.team_id.id == employee_id)
-        if not line:
-            return 0
-        return int(line[0].total_allocation)
+        return line[0] if line else None
 
     def action_populate_detail(self):
         """Button action: (re)populate this worksheet's ``detail_ids``.
