@@ -49,3 +49,34 @@ class GeneralAuditWSc2375d8(models.Model):
         help="""Checklist lines linked to this Final Analytical Procedures worksheet.
 Each line records the response/assessment for a specific checklist item.""",
     )
+    preliminary_analytic_procedure_id = fields.Many2one(
+        string="Preliminary Analytic Procedure",
+        comodel_name="general_audit_ws_c8740d4",
+        required=False,
+        readonly=True,
+        states={
+            "open": [
+                ("readonly", False),
+            ],
+        },
+        domain="[('general_audit_id', '=', general_audit_id)]",
+        help=(
+            "Related Preliminary Analytic Procedure worksheet, limited to the "
+            "same general audit engagement."
+        ),
+    )
+    conclusion_ids = fields.One2many(
+        string="Conclusion(s)",
+        comodel_name="general_audit_ws_c2375d8.analytic_procedure_conclusion",
+        inverse_name="worksheet_id",
+        readonly=True,
+        states={
+            "open": [
+                ("readonly", False),
+            ],
+        },
+        help=(
+            "Conclusion lines summarizing the results of the final "
+            "analytical procedures."
+        ),
+    )

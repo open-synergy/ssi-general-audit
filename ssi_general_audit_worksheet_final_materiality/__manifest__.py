@@ -29,6 +29,7 @@
         "views/ga_bb33b94/general_audit_ws_bb33b94_views.xml",
         # c2375d8 - Final Analytical Procedures
         "security/res_group/general_audit_ws_c2375d8.xml",
+        "security/ir_model_access/general_audit_ws_c2375d8.xml",
         "security/ir_rule/general_audit_ws_c2375d8.xml",
         "data/ir_sequence/general_audit_ws_c2375d8.xml",
         "data/sequence_template/general_audit_ws_c2375d8.xml",
