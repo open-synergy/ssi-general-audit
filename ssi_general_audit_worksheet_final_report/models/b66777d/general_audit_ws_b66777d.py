@@ -2,7 +2,7 @@
 # Copyright 2025 PT. Simetri Sinergi Indonesia
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl-3.0-standalone.html).
 
-from odoo import api, fields, models
+from odoo import fields, models
 
 from odoo.addons.ssi_decorator import ssi_decorator
 
@@ -82,56 +82,32 @@ class GeneralAuditWSb66777d(models.Model):
         ),
     )
 
-    @api.depends("general_audit_id")
-    def _compute_draft_opinion_id(self):
-        """Find this engagement's Draft Audit Opinion (fc75636) worksheet.
-
-        Non-stored on purpose (no ``store=True``): unlike the
-        ``store=True`` + manual "Reload" button pattern used by
-        ``general_audit_ws_fc75636.audit_final_memorandum_id``, this
-        field must resolve correctly even when the matching fc75636
-        record is created *after* this worksheet already exists --
-        Odoo's ORM cannot auto-invalidate a stored compute just
-        because an unrelated model's record was created, so storing
-        it would require the same kind of manual reload trigger.
-        Recomputing on every access guarantees it is always current
-        with no user action needed.
-
-        :return: None
-        """
-        for record in self:
-            result = False
-            if "general_audit_ws_fc75636" in self.env:
-                draft = (
-                    self.env["general_audit_ws_fc75636"]
-                    .sudo()
-                    .search(
-                        [
-                            ("general_audit_id", "=", record.general_audit_id.id),
-                            ("state", "in", ["open", "done"]),
-                        ],
-                        limit=1,
-                        order="id desc",
-                    )
-                )
-                if draft:
-                    result = draft.id
-            record.draft_opinion_id = result
-
-    draft_opinion_id = fields.Many2one(
-        string="Draft Audit Opinion",
-        comodel_name="general_audit_ws_fc75636",
-        compute="_compute_draft_opinion_id",
-        compute_sudo=True,
-        help=(
-            "The Draft Audit Opinion (fc75636) worksheet of this same "
-            "engagement, found by general_audit_id. Not stored -- "
-            "always recomputed live, so it resolves correctly even if "
-            "the fc75636 record is created after this worksheet."
-        ),
-    )
-
     # Final Audit Opinion
+    #
+    # draft_opinion_id (the "Draft Audit Opinion" Many2one shown at the
+    # top of the "Final Audit Opinion" page, right before the nine
+    # fields below) is NOT defined here. It is added as an extension
+    # field by ssi_general_audit_worksheet_review, in
+    # models/b66777d/general_audit_ws_b66777d.py of that module -- see
+    # the docstring there for why: a static Many2one field on THIS
+    # model with comodel_name="general_audit_ws_fc75636" (a model this
+    # module never depends on) would work most of the time, but Odoo's
+    # field setup caches its comodel resolution the first time it
+    # runs. When this module and ssi_general_audit_worksheet_review
+    # are updated together in one process (as `-u modA,modB` does, and
+    # as CI's test runner does), this module's own module-load pass
+    # completes -- and therefore triggers that first resolution --
+    # before general_audit_ws_fc75636 is even registered, permanently
+    # pinning the field to Odoo's internal "_unknown" placeholder
+    # model for the rest of that process (verified with an `odoo
+    # shell -u` probe; a later plain restart, with no -u flag, does
+    # not hit this because then the field's first resolution happens
+    # only after every module has finished loading). Declaring the
+    # field in the *review* module instead sidesteps this entirely:
+    # review already depends on this module, so by the time review's
+    # own fields are set up, both general_audit_ws_b66777d and
+    # general_audit_ws_fc75636 are already registered, in every
+    # loading order.
     opinion = fields.Html(
         string="Opinion",
         help=(
@@ -249,25 +225,30 @@ class GeneralAuditWSb66777d(models.Model):
     def _populate_final_opinion(self):
         """Fill this worksheet's still-empty opinion fields from fc75636.
 
-        Reads ``self.draft_opinion_id`` (the non-stored compute field
-        above -- no manual search here anymore) and, when it resolves
-        to a record, writes only the subset of the nine final opinion
-        fields that are **currently empty** with the matching
-        ``draft_*`` narrative from it (``_prepare_final_opinion_vals``
-        does the filtering). A field the auditor already edited
-        manually is left untouched -- this is an infill, not an
-        overwrite, so clicking Populate again after manual edits is
-        always safe.
+        Reads ``self.draft_opinion_id`` -- the non-stored compute
+        field added by ``ssi_general_audit_worksheet_review`` (see
+        the comment above ``opinion`` for why it lives there, not on
+        this model directly) -- and, when it resolves to a record,
+        writes only the subset of the nine final opinion fields that
+        are **currently empty** with the matching ``draft_*``
+        narrative from it (``_prepare_final_opinion_vals`` does the
+        filtering). A field the auditor already edited manually is
+        left untouched -- this is an infill, not an overwrite, so
+        clicking Populate again after manual edits is always safe.
 
-        Best-effort like ``_build_lai_number``: when
-        ``draft_opinion_id`` is empty (fc75636 not installed, or no
-        matching record exists yet for this engagement), this does
-        nothing rather than raising.
+        Best-effort like ``_build_lai_number``: checks ``"draft_
+        opinion_id" in self._fields`` first (that module may not be
+        installed, in which case the field does not exist on this
+        model at all), then whether it is empty (fc75636 not
+        installed despite the field existing cannot happen given the
+        module dependency, but no matching fc75636 record yet for
+        this engagement can) -- either way, this does nothing rather
+        than raising.
 
         :return: None
         """
         self.ensure_one()
-        if not self.draft_opinion_id:
+        if "draft_opinion_id" not in self._fields or not self.draft_opinion_id:
             return
         vals = self._prepare_final_opinion_vals(self.draft_opinion_id)
         if vals:
