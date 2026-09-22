@@ -23,6 +23,18 @@ class TestUiGeneralAuditWsFc75636(HttpSavepointCase):
         real to demonstrate -- the compute only re-runs when
         ``general_audit_id`` changes, not when a sibling worksheet is
         created or opened later.
+
+        Also creates an Open ``general_audit_ws_b66777d`` worksheet
+        (``cls.final_worksheet``) under the same General Audit, for the
+        b66777d "Fill Final Audit Opinion" tour
+        (``ssi_general_audit_worksheet_final_report/docs/
+        general_audit_ws_b66777d/01-fill-final-opinion.md``). That IK's
+        module cannot host this tour itself: it depends on THIS module,
+        never the other way around, so a fc75636 Populate source (here,
+        ``cls.worksheet``, given a known ``draft_opinion`` text) can only
+        exist together with a b66777d worksheet in a test suite on this
+        side of the dependency. See
+        ``GeneralAuditWSb66777d._populate_final_opinion()``'s docstring.
         """
         super().setUpClass()
         # user_id is explicit throughout: cls.env runs as SUPERUSER, and
@@ -133,7 +145,30 @@ class TestUiGeneralAuditWsFc75636(HttpSavepointCase):
         )
         ws_memorandum.with_user(cls.admin).action_open()
 
+        # Populate button source for the b66777d tour below: give
+        # cls.worksheet's Opinion a known text so the tour's
+        # post-Populate assertion has an exact string to match.
+        cls.worksheet.with_user(cls.admin).write(
+            {"draft_opinion": "Populate tour source text - Opinion"}
+        )
+
+        ws_type_b66777d = cls.env.ref(
+            "ssi_general_audit_worksheet_final_report.worksheet_type_b66777d"
+        )
+        cls.final_worksheet = (
+            cls.env["general_audit_ws_b66777d"]
+            .with_user(cls.admin)
+            .create(
+                {
+                    "general_audit_id": audit.id,
+                    "type_id": ws_type_b66777d.id,
+                }
+            )
+        )
+        cls.final_worksheet.with_user(cls.admin).action_open()
+
         cls.worksheet.invalidate_cache()
+        cls.final_worksheet.invalidate_cache()
 
     def test_reload_links(self):
         """Run the Reload Links tour.
@@ -154,5 +189,17 @@ class TestUiGeneralAuditWsFc75636(HttpSavepointCase):
         self.start_tour(
             "/web",
             "ssi_general_audit_worksheet_review_fc75636_fill_draft_opinion",
+            login="admin",
+        )
+
+    def test_fill_final_opinion(self):
+        """Run the b66777d Fill Final Audit Opinion tour.
+
+        Module ``ssi_general_audit_worksheet_final_report``. IK:
+        docs/general_audit_ws_b66777d/01-fill-final-opinion.md
+        """
+        self.start_tour(
+            "/web",
+            "ssi_general_audit_worksheet_review_b66777d_fill_final_opinion",
             login="admin",
         )

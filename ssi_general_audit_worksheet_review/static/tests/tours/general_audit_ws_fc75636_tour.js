@@ -277,5 +277,131 @@ odoo.define(
                 },
             ]
         );
+
+        // IK (ssi_general_audit_worksheet_final_report module):
+        // docs/general_audit_ws_b66777d/01-fill-final-opinion.md
+        //
+        // Lives in THIS module's tour file, not
+        // ssi_general_audit_worksheet_final_report's, because
+        // ssi_general_audit_worksheet_review depends on
+        // ssi_general_audit_worksheet_final_report -- never the other
+        // way around -- so this is the only place a fc75636 sibling
+        // worksheet (the Populate button's copy source) can exist
+        // for the tour's setUpClass fixture. See
+        // GeneralAuditWSb66777d._populate_final_opinion()'s docstring.
+        tour.register(
+            "ssi_general_audit_worksheet_review_b66777d_fill_final_opinion",
+            {
+                test: true,
+                url: "/web",
+            },
+            [
+                // Flow 1 - Open the Windup & Reporting > Final Report >
+                // Independen Auditor Report menu.
+                tour.stepUtils.showAppsMenuItem(),
+                {
+                    content: "Open the Windup & Reporting app",
+                    trigger:
+                        '.o_app[data-menu-xmlid="ssi_general_audit.menu_wind_up_reporting_root"]',
+                },
+                {
+                    content: "Open the Final Report menu",
+                    trigger:
+                        ".o_menu_sections " +
+                        '[data-menu-xmlid="ssi_general_audit.menu_general_audit_final_report"]',
+                },
+                {
+                    content: "Open the Independen Auditor Report menu",
+                    trigger:
+                        ".o_menu_sections " +
+                        "[data-menu-xmlid='ssi_general_audit_worksheet_final_report" +
+                        ".general_audit_ws_b66777d_menu']",
+                },
+                {
+                    content: "Independen Auditor Report list is displayed",
+                    trigger:
+                        ".o_control_panel .breadcrumb-item.active" +
+                        ":contains(Independen Auditor Report)",
+                    extra_trigger: ".o_list_view",
+                    run: function () {
+                        // Assertion only; do not trigger the default click action.
+                    },
+                },
+
+                // Flow 2 - Open the worksheet to fill the final audit
+                // opinion for
+                {
+                    content: "Open the worksheet",
+                    trigger: ".o_list_view .o_data_row:first .o_data_cell:first",
+                    extra_trigger: ".o_list_view",
+                },
+                {
+                    content: "Worksheet form is open",
+                    trigger: ".o_form_view",
+                    run: function () {
+                        // Assertion only; do not trigger the default click action.
+                    },
+                },
+
+                // Flow 3 - Open the Final Audit Opinion tab
+                {
+                    content: "Open the Final Audit Opinion tab",
+                    trigger: ".o_notebook .nav-link:contains(Final Audit Opinion)",
+                    extra_trigger: ".o_form_view",
+                },
+
+                // Flow 4 - Click Populate. This is an object-type button
+                // that writes the nine fields asynchronously, so the
+                // next step's trigger must name something that only
+                // exists AFTER the write lands -- here, the Opinion
+                // field's note-editable actually carrying the exact
+                // text copied from this engagement's fc75636 sibling
+                // (setUpClass fixture), not just the empty widget the
+                // form already renders before Populate is clicked. See
+                // odoo-development-ui-test skill
+                // patterns-advanced-gotchas.md §P.
+                {
+                    content: "Click the Populate button",
+                    trigger:
+                        ".o_form_view button[name='action_populate_final_opinion']",
+                    extra_trigger: ".o_form_view",
+                },
+                {
+                    content: "Opinion field is filled by Populate",
+                    trigger:
+                        ".tab-pane.active " +
+                        ".o_field_widget[name='opinion'] " +
+                        ".note-editable:contains(Populate tour source text - Opinion)",
+                    run: function () {
+                        // Assertion only; do not trigger the default click action.
+                    },
+                },
+
+                // Flow 5 - Edit one of the nine fields manually after
+                // Populate
+                {
+                    content: "Edit the Opinion field manually after Populate",
+                    trigger:
+                        ".tab-pane.active " +
+                        ".o_field_widget[name='opinion'] .note-editable",
+                    run: "text Opinion narrative, edited manually after Populate.",
+                },
+
+                // Flow 6 - Click Save
+                {
+                    content: "Save the record",
+                    trigger: ".o_form_button_save",
+                },
+
+                // Post-Condition - the record is saved
+                {
+                    content: "Worksheet is saved",
+                    trigger: ".o_form_view.o_form_readonly",
+                    run: function () {
+                        // Assertion only; do not trigger the default click action.
+                    },
+                },
+            ]
+        );
     }
 );

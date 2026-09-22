@@ -12,7 +12,7 @@ class TestGeneralAuditWSfc75636(YamlTransactionCase):
     """YAML scenario runner for the ``general_audit_ws_fc75636`` worksheet."""
 
     def test_general_audit_ws_fc75636(self):
-        """Run the fc75636 Links tab (Reload) and Draft Audit Opinion
-        scenarios.
+        """Run the fc75636 Links tab (Reload), Draft Audit Opinion, and
+        b66777d Populate Final Audit Opinion scenarios.
         """
         self.run_yaml_scenario("test_data_general_audit_ws_fc75636.yaml")
