@@ -6,4 +6,5 @@ from . import (
     general_audit_ws_b66777d_property,
     general_audit_ws_b66777d,
     general_audit_ws_b66777d_detail,
+    general_audit_ws_b66777d_team_allocation,
 )

@@ -268,6 +268,168 @@ class GeneralAuditWSb66777d(models.Model):
             "other_matter": draft.draft_other_matter,
         }
 
+    team_allocation_ids = fields.One2many(
+        string="Final Team Allocations",
+        comodel_name="general_audit_ws_b66777d.team_allocation",
+        inverse_name="worksheet_id",
+        readonly=True,
+        help=(
+            "One row per hr.employee that contributed preparation "
+            "and/or review time to this engagement, (re)populated by "
+            "clicking the Populate button "
+            "(action_populate_team_allocation) -- empty on a freshly "
+            "created worksheet. See _populate_team_allocation()."
+        ),
+    )
+
+    def action_populate_team_allocation(self):
+        """Button action: (re)populate this worksheet's ``team_allocation_ids``.
+
+        Thin dispatcher over ``_populate_team_allocation()``, mirroring
+        ``action_populate_detail`` / ``_populate_detail`` above.
+
+        :return: None
+        """
+        for record in self:
+            record._populate_team_allocation()
+
+    def _populate_team_allocation(self):
+        """Replace ``team_allocation_ids`` with a fresh aggregation.
+
+        Searches every ``general_audit_worksheet`` (the shared shadow
+        model backing every worksheet type -- see
+        ``ssi_general_audit``'s ``general_audit_worksheet``) sharing
+        this worksheet's ``general_audit_id``, and sums each one's
+        ``preparation_time`` onto its ``user_id.employee_id`` and
+        ``review_time`` onto its ``reviewer_id.employee_id``. One row
+        per ``hr.employee`` that contributed at least one of the two
+        is (re)created.
+
+        Like ``_populate_detail()``, this is unlink-then-recreate: a
+        full snapshot taken at click time, not a live-reactive
+        summary -- callers must not assume ``team_allocation_ids`` row
+        ``id`` stability across two Populate clicks. A worksheet whose
+        ``user_id``/``reviewer_id`` has no linked ``hr.employee``
+        (``res.users.employee_id`` empty) contributes nothing for that
+        half -- best-effort, matching ``_populate_final_opinion``'s
+        treatment of missing data.
+
+        Uses ``sudo()`` for the ``unlink()``/``create()`` calls, same
+        rationale as ``_populate_detail()``: this model's ACL grants 0
+        create/write/unlink to every group (rows are system-populated
+        only), so without ``sudo()`` this would raise ``AccessError``
+        for every user, including the one clicking Populate.
+
+        :return: None
+        """
+        self.ensure_one()
+        self.team_allocation_ids.sudo().unlink()
+        TeamAllocation = self.env["general_audit_ws_b66777d.team_allocation"].sudo()
+        for employee_id, times in self._compute_team_allocation_totals().items():
+            TeamAllocation.create(
+                self._prepare_team_allocation_vals(employee_id, times)
+            )
+
+    def _compute_team_allocation_totals(self):
+        """Aggregate preparation/review time per ``hr.employee``.
+
+        :return: mapping of ``hr.employee`` id to a two-key dict,
+            ``{"preparation": int, "review": int}``, summed across
+            every ``general_audit_worksheet`` sharing this worksheet's
+            ``general_audit_id``
+        :rtype: dict
+        """
+        self.ensure_one()
+        totals = {}
+        worksheets = self.env["general_audit_worksheet"].search(
+            [("general_audit_id", "=", self.general_audit_id.id)]
+        )
+        for worksheet in worksheets:
+            prep_employee = worksheet.user_id.employee_id
+            if prep_employee and worksheet.preparation_time:
+                entry = totals.setdefault(
+                    prep_employee.id, {"preparation": 0, "review": 0}
+                )
+                entry["preparation"] += worksheet.preparation_time
+            review_employee = worksheet.reviewer_id.employee_id
+            if review_employee and worksheet.review_time:
+                entry = totals.setdefault(
+                    review_employee.id, {"preparation": 0, "review": 0}
+                )
+                entry["review"] += worksheet.review_time
+        return totals
+
+    def _prepare_team_allocation_vals(self, employee_id, times):
+        """Build the values of one ``team_allocation_ids`` row.
+
+        Extension point: override to add fields to each row created
+        by ``_populate_team_allocation()``.
+
+        :param employee_id: id of the ``hr.employee`` this row
+            aggregates
+        :type employee_id: int
+        :param times: ``{"preparation": int, "review": int}`` totals
+            for this employee, as built by
+            ``_compute_team_allocation_totals()``
+        :type times: dict
+        :return: dict of ``general_audit_ws_b66777d.team_allocation``
+            values
+        :rtype: dict
+        """
+        self.ensure_one()
+        return {
+            "worksheet_id": self.id,
+            "team_id": employee_id,
+            "total_preparation_time": times["preparation"],
+            "total_review_time": times["review"],
+            "awp_total_allocation": self._get_awp_total_allocation(employee_id),
+        }
+
+    def _get_awp_total_allocation(self, employee_id):
+        """Best-effort AWP planned total allocation for one employee.
+
+        Looks up the ``general_audit_ws_cbbbaf4`` (Audit Working Plan)
+        record sharing this worksheet's ``general_audit_id`` and, when
+        found, its ``team_allocation_ids`` row for ``employee_id``.
+
+        ``ssi_general_audit_worksheet_audit_working_plan`` (the module
+        providing ``general_audit_ws_cbbbaf4``) neither depends on
+        this module nor is depended on by it, so that model is not
+        guaranteed to be registered when this method runs -- checked
+        via ``in self.env`` before searching, same pattern as
+        ``_populate_final_opinion``. Returns ``0`` (never raises) when
+        the model is not installed, no AWP worksheet exists yet for
+        this engagement, or the AWP has no allocation row for this
+        employee.
+
+        Reads with ``sudo()``, same rationale as
+        ``_populate_final_opinion``: the two worksheets can be
+        assigned to different users within the same engagement.
+
+        :param employee_id: id of the ``hr.employee`` to look up
+        :type employee_id: int
+        :return: planned total allocation hours from the AWP, or ``0``
+        :rtype: int
+        """
+        self.ensure_one()
+        if "general_audit_ws_cbbbaf4" not in self.env:
+            return 0
+        awp = (
+            self.env["general_audit_ws_cbbbaf4"]
+            .sudo()
+            .search(
+                [("general_audit_id", "=", self.general_audit_id.id)],
+                limit=1,
+                order="id desc",
+            )
+        )
+        if not awp:
+            return 0
+        line = awp.team_allocation_ids.filtered(lambda l: l.team_id.id == employee_id)
+        if not line:
+            return 0
+        return int(line[0].total_allocation)
+
     def action_populate_detail(self):
         """Button action: (re)populate this worksheet's ``detail_ids``.
 

@@ -12,6 +12,7 @@
     "depends": [
         "ssi_general_audit",
         "ssi_accountant",
+        "web_tour",
     ],
     "data": [
         "security/ir_module_category_data.xml",
@@ -48,6 +49,7 @@
         "views/general_audit_ws_f3ed115_category_views.xml",
         "views/general_audit_ws_f3ed115_item_views.xml",
         "security/ir.model.access.csv",
+        "views/assets.xml",
     ],
     "demo": [],
 }

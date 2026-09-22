@@ -2244,3 +2244,186 @@ scenarios:
             type: "value"
             operator: "contains"
             expected: "Manual open-state opinion text"
+
+  # ------------------------------------------------------------------
+  # general_audit_ws_b66777d - Final Team Allocations (issue #383):
+  # action_populate_team_allocation() aggregates preparation_time +
+  # review_time, from every general_audit_worksheet of the same
+  # engagement, per hr.employee (positive)
+  # ------------------------------------------------------------------
+  - name:
+      "Worksheet b66777d - action_populate_team_allocation aggregates preparation/review
+      time per Team Member"
+    steps:
+      - step: "Create team member user"
+        action: "create"
+        model: "res.users"
+        save_as: "team_member_user"
+        as_user: "base.user_admin"
+        values:
+          name: "Team Allocation Test User"
+          login: "team_allocation_test_user@example.com"
+          email: "team_allocation_test_user@example.com"
+
+      - step: "Link the team member user to a fresh employee"
+        action: "create"
+        model: "hr.employee"
+        save_as: "team_member_employee"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Team Member - Final Team Allocations"
+          user_id: "REC: team_member_user.id"
+
+      - step: "Create worksheet b66777d, prepared by the team member"
+        action: "create"
+        model: "general_audit_ws_b66777d"
+        save_as: "alloc_worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_b66777d.id"
+          user_id: "REC: team_member_user.id"
+          preparation_time: 8
+
+      - step: "Create a second worksheet, reviewed by the same team member"
+        action: "create"
+        model: "general_audit_ws_a8c54f3"
+        save_as: "alloc_worksheet_2"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_a8c54f3.id"
+
+      - step: "Set the second worksheet's reviewer and review_time"
+        action: "write"
+        target: "alloc_worksheet_2"
+        as_user: "base.user_admin"
+        values:
+          reviewer_id: "REC: team_member_user.id"
+          review_time: 5
+
+      - step: "Assert team_allocation_ids is empty before Populate"
+        action: "assert"
+        target: "alloc_worksheet"
+        asserts:
+          team_allocation_ids:
+            type: "o2m"
+            check: "count"
+            expected_count: 0
+
+      - step: "Click Populate (action_populate_team_allocation)"
+        action: "call"
+        target: "alloc_worksheet"
+        method: "action_populate_team_allocation"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after populating"
+        action: "call"
+        target: "alloc_worksheet"
+        method: "invalidate_cache"
+
+      - step: "Assert exactly one team_allocation_ids row was created"
+        action: "assert"
+        target: "alloc_worksheet"
+        asserts:
+          team_allocation_ids:
+            type: "o2m"
+            check: "count"
+            expected_count: 1
+
+      - step: "Find the created row for the team member"
+        action: "search"
+        model: "general_audit_ws_b66777d.team_allocation"
+        domain:
+          - ["worksheet_id", "=", "REC: alloc_worksheet.id"]
+          - ["team_id", "=", "REC: team_member_employee.id"]
+        save_as: "alloc_row"
+        expect_count: 1
+
+      - step:
+          "Assert the row sums preparation_time (8) + review_time (5); AWP is not
+          installed in this module's own test suite (see _get_awp_total_allocation's
+          docstring), so awp_total_allocation is the best-effort 0 and diff_allocation
+          equals total_allocation"
+        action: "assert"
+        target: "alloc_row"
+        asserts:
+          total_preparation_time:
+            type: "value"
+            expected: 8
+          total_review_time:
+            type: "value"
+            expected: 5
+          total_allocation:
+            type: "value"
+            expected: 13
+          awp_total_allocation:
+            type: "value"
+            expected: 0
+          diff_allocation:
+            type: "value"
+            expected: 13
+
+  # ------------------------------------------------------------------
+  # general_audit_ws_b66777d - Final Team Allocations (issue #383):
+  # a Team Member with no preparation/review time recorded anywhere in
+  # the engagement gets no row -- Populate is not "one row per
+  # Employee", it is "one row per CONTRIBUTING Employee" (negative)
+  # ------------------------------------------------------------------
+  - name:
+      "Worksheet b66777d - action_populate_team_allocation skips a Team Member with no
+      recorded time"
+    steps:
+      - step: "Create a team member user who never records any time"
+        action: "create"
+        model: "res.users"
+        save_as: "idle_member_user"
+        as_user: "base.user_admin"
+        values:
+          name: "Idle Team Allocation Test User"
+          login: "idle_team_allocation_test_user@example.com"
+          email: "idle_team_allocation_test_user@example.com"
+
+      - step: "Link the idle user to a fresh employee"
+        action: "create"
+        model: "hr.employee"
+        save_as: "idle_member_employee"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Idle Team Member - Final Team Allocations"
+          user_id: "REC: idle_member_user.id"
+
+      - step:
+          "Create worksheet b66777d, prepared/reviewed by the default admin user (no
+          preparation_time/review_time filled in)"
+        action: "create"
+        model: "general_audit_ws_b66777d"
+        save_as: "idle_worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_b66777d.id"
+
+      - step: "Click Populate (action_populate_team_allocation)"
+        action: "call"
+        target: "idle_worksheet"
+        method: "action_populate_team_allocation"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after populating"
+        action: "call"
+        target: "idle_worksheet"
+        method: "invalidate_cache"
+
+      - step:
+          "Assert no error was raised and no row exists for the idle Team Member -- AWP
+          is not installed in this module's own test suite, so a missing Audit Working
+          Plan row for a contributing member would likewise resolve to a 0 diff rather
+          than error (see _get_awp_total_allocation's docstring)"
+        action: "search"
+        model: "general_audit_ws_b66777d.team_allocation"
+        domain:
+          - ["worksheet_id", "=", "REC: idle_worksheet.id"]
+          - ["team_id", "=", "REC: idle_member_employee.id"]
+        save_as: "idle_row"
+        expect_count: 0
