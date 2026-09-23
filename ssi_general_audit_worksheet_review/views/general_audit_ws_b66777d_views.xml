@@ -1,0 +1,31 @@
+<?xml version="1.0" ?>
+<!-- Copyright 2026 OpenSynergy Indonesia
+     Copyright 2026 PT. Simetri Sinergi Indonesia
+     License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl-3.0-standalone.html). -->
+<odoo>
+
+    <!-- Adds the draft_opinion_id field (defined in
+         models/b66777d/general_audit_ws_b66777d.py of THIS module;
+         see that file's docstring for why it is not defined directly
+         on ssi_general_audit_worksheet_final_report's own view/model)
+         at the very top of the Final Audit Opinion page, above the
+         Populate button and the nine narrative fields. -->
+    <record id="general_audit_ws_b66777d_view_form_draft_opinion_id" model="ir.ui.view">
+        <field name="name">general_audit_ws_b66777d form - draft_opinion_id</field>
+        <field name="model">general_audit_ws_b66777d</field>
+        <field
+            name="inherit_id"
+            ref="ssi_general_audit_worksheet_final_report.general_audit_ws_b66777d_view_form"
+        />
+        <field name="arch" type="xml">
+            <data>
+                <xpath expr="//page[@name='final_opinion']/button[1]" position="before">
+                    <group col="2">
+                        <label for="draft_opinion_id" string="# Draft Audit Opinion" />
+                        <field name="draft_opinion_id" readonly="1" nolabel="1" />
+                    </group>
+                </xpath>
+            </data>
+        </field>
+    </record>
+</odoo>

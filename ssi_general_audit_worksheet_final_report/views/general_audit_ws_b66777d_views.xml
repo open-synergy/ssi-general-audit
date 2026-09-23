@@ -4,6 +4,34 @@
      License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl-3.0-standalone.html). -->
 <odoo>
 
+    <!-- Minimal read-only tree for general_audit_worksheet (the shared
+         shadow model behind every concrete worksheet), used ONLY by
+         general_audit_ws_b66777d.team_allocation's "Sumber" drill-down
+         button (action_view_source_worksheets, issue #383 follow-up).
+         general_audit_worksheet has no view of its own anywhere in this
+         repo; do not repurpose this one for other uses. -->
+    <record
+        id="general_audit_worksheet_view_tree_source_b66777d_team_allocation"
+        model="ir.ui.view"
+    >
+        <field name="name">general_audit_worksheet tree - source worksheets</field>
+        <field name="model">general_audit_worksheet</field>
+        <field name="arch" type="xml">
+            <tree create="false" edit="false" delete="false">
+                <field name="category_id" invisible="1" />
+                <field name="name" />
+                <field name="parent_type_id" />
+                <field name="preparation_date" />
+                <field name="preparation_time" />
+                <field name="user_id" />
+                <field name="review_date" />
+                <field name="review_time" />
+                <field name="reviewer_id" />
+                <field name="state" />
+            </tree>
+        </field>
+    </record>
+
     <record id="general_audit_ws_b66777d_view_search" model="ir.ui.view">
         <field name="name">general_audit_ws_b66777d form</field>
         <field name="model">general_audit_ws_b66777d</field>
@@ -68,6 +96,185 @@
                                 </group>
                             </form>
                         </field>
+                    </page>
+                </xpath>
+                <xpath expr="//page[@name='details']" position="after">
+                    <page name="final_opinion" string="Final Audit Opinion">
+                        <button
+                            name="action_populate_final_opinion"
+                            string="Populate"
+                            type="object"
+                            icon="fa-refresh"
+                            class="oe_highlight"
+                            style="margin-right:4px"
+                            attrs="{'invisible': [('state', '!=', 'open')]}"
+                        />
+                        <separator string="Opinion" />
+                        <field name="opinion" widget="html" nolabel="1" />
+                        <separator string="Basis for Opinion" />
+                        <field name="basis_for_opinion" widget="html" nolabel="1" />
+                        <separator string="Key Audit Matters" />
+                        <field name="key_audit_matters" widget="html" nolabel="1" />
+                        <separator string="Other Information" />
+                        <field name="other_information" widget="html" nolabel="1" />
+                        <separator string="Responsibilities of Management" />
+                        <field
+                            name="responsibilities_of_management"
+                            widget="html"
+                            nolabel="1"
+                        />
+                        <separator string="Auditor's Responsibilities" />
+                        <field
+                            name="auditor_responsibilities"
+                            widget="html"
+                            nolabel="1"
+                        />
+                        <separator
+                            string="Report on Other Legal and Regulatory Requirements"
+                        />
+                        <field
+                            name="other_legal_regulatory"
+                            widget="html"
+                            nolabel="1"
+                        />
+                        <separator string="Emphasis of Matter" />
+                        <field name="emphasis_of_matter" widget="html" nolabel="1" />
+                        <separator string="Other Matter" />
+                        <field name="other_matter" widget="html" nolabel="1" />
+                    </page>
+                </xpath>
+                <xpath expr="//page[@name='final_opinion']" position="after">
+                    <page name="final_team_allocation" string="Final Team Allocations">
+                        <button
+                            name="action_populate_team_allocation"
+                            string="Populate"
+                            type="object"
+                            icon="fa-refresh"
+                            class="oe_highlight"
+                            style="margin-right:4px"
+                            attrs="{'invisible': [('state', '!=', 'open')]}"
+                        />
+                        <field name="team_allocation_ids" nolabel="1">
+                            <tree create="false" delete="false" editable="false">
+                                <field name="team_id" readonly="1" />
+                                <field name="pe_allocation" readonly="1" />
+                                <field name="ra_allocation" readonly="1" />
+                                <field name="rr_allocation" readonly="1" />
+                                <field name="reporting_allocation" readonly="1" />
+                                <button
+                                    name="action_view_source_worksheets"
+                                    type="object"
+                                    icon="fa-search"
+                                />
+                            </tree>
+                            <form>
+                                <group>
+                                    <field name="team_id" readonly="1" />
+                                    <field name="pe_allocation" readonly="1" />
+                                    <field name="ra_allocation" readonly="1" />
+                                    <field name="rr_allocation" readonly="1" />
+                                    <field name="reporting_allocation" readonly="1" />
+                                </group>
+                            </form>
+                        </field>
+                        <group name="final_team_allocation_totals" colspan="4" col="3">
+                            <group
+                                name="final_team_allocation_total"
+                                string="Total (Independent Auditor Report)"
+                                colspan="1"
+                                col="2"
+                            >
+                                <field
+                                    name="total_pe_allocation"
+                                    string="Pre-Engagement"
+                                    readonly="1"
+                                />
+                                <field
+                                    name="total_ra_allocation"
+                                    string="Risk Assessment"
+                                    readonly="1"
+                                />
+                                <field
+                                    name="total_rr_allocation"
+                                    string="Risk Responses"
+                                    readonly="1"
+                                />
+                                <field
+                                    name="total_reporting_allocation"
+                                    string="Windup &amp; Reporting"
+                                    readonly="1"
+                                />
+                                <field
+                                    name="total_allocation"
+                                    string="Total"
+                                    readonly="1"
+                                />
+                            </group>
+                            <group
+                                name="final_team_allocation_awp_total"
+                                string="Total (AWP)"
+                                colspan="1"
+                                col="2"
+                            >
+                                <field
+                                    name="awp_total_pe_allocation"
+                                    string="Pre-Engagement"
+                                    readonly="1"
+                                />
+                                <field
+                                    name="awp_total_ra_allocation"
+                                    string="Risk Assessment"
+                                    readonly="1"
+                                />
+                                <field
+                                    name="awp_total_rr_allocation"
+                                    string="Risk Responses"
+                                    readonly="1"
+                                />
+                                <field
+                                    name="awp_total_reporting_allocation"
+                                    string="Windup &amp; Reporting"
+                                    readonly="1"
+                                />
+                                <field
+                                    name="awp_total_allocation"
+                                    string="Total"
+                                    readonly="1"
+                                />
+                            </group>
+                            <group
+                                name="final_team_allocation_diff"
+                                string="Difference"
+                                colspan="1"
+                                col="2"
+                            >
+                                <field
+                                    name="diff_pe_allocation"
+                                    string="Pre-Engagement"
+                                    readonly="1"
+                                />
+                                <field
+                                    name="diff_ra_allocation"
+                                    string="Risk Assessment"
+                                    readonly="1"
+                                />
+                                <field
+                                    name="diff_rr_allocation"
+                                    string="Risk Responses"
+                                    readonly="1"
+                                />
+                                <field
+                                    name="diff_reporting_allocation"
+                                    string="Windup &amp; Reporting"
+                                    readonly="1"
+                                />
+                                <field
+                                    name="diff_allocation"
+                                    string="Total"
+                                    readonly="1"
+                                />
+                            </group>
+                        </group>
                     </page>
                 </xpath>
             </data>

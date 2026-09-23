@@ -95,6 +95,58 @@
                     </page>
                 </xpath>
                 <xpath expr="//page[@name='checklist']" position="after">
+                    <page name="draft_opinion" string="Draft Audit Opinion">
+                        <separator string="Opinion" />
+                        <field name="draft_opinion" widget="html" nolabel="1" />
+                        <separator string="Basis for Opinion" />
+                        <field
+                            name="draft_basis_for_opinion"
+                            widget="html"
+                            nolabel="1"
+                        />
+                        <separator string="Key Audit Matters" />
+                        <field
+                            name="draft_key_audit_matters"
+                            widget="html"
+                            nolabel="1"
+                        />
+                        <separator string="Other Information" />
+                        <field
+                            name="draft_other_information"
+                            widget="html"
+                            nolabel="1"
+                        />
+                        <separator string="Responsibilities of Management" />
+                        <field
+                            name="draft_responsibilities_of_management"
+                            widget="html"
+                            nolabel="1"
+                        />
+                        <separator string="Auditor's Responsibilities" />
+                        <field
+                            name="draft_auditor_responsibilities"
+                            widget="html"
+                            nolabel="1"
+                        />
+                        <separator
+                            string="Report on Other Legal and Regulatory Requirements"
+                        />
+                        <field
+                            name="draft_other_legal_regulatory"
+                            widget="html"
+                            nolabel="1"
+                        />
+                        <separator string="Emphasis of Matter" />
+                        <field
+                            name="draft_emphasis_of_matter"
+                            widget="html"
+                            nolabel="1"
+                        />
+                        <separator string="Other Matter" />
+                        <field name="draft_other_matter" widget="html" nolabel="1" />
+                    </page>
+                </xpath>
+                <xpath expr="//page[@name='draft_opinion']" position="after">
                     <page name="links" string="Links">
                         <button
                             name="action_reload_links"
@@ -123,11 +175,12 @@
                 <!-- The base ssi_general_audit mixin view inserts
                      "standard_audit" right before "note" (in its OWN
                      xpath resolution, before this view is even applied),
-                     which places it ahead of "checklist"/"links" defined
-                     above (both also anchored "before note"). Move it to
-                     sit right after "links" so the final notebook order
-                     is: checklist, links, standard_audit, note, policy.
-                     Same pattern as general_audit_ws_de69c2f_views.xml. -->
+                     which places it ahead of "checklist"/"draft_opinion"/
+                     "links" defined above (all also anchored "before
+                     note"). Move it to sit right after "links" so the
+                     final notebook order is: checklist, draft_opinion,
+                     links, standard_audit, note, policy. Same pattern as
+                     general_audit_ws_de69c2f_views.xml. -->
                 <xpath expr="//page[@name='links']" position="after">
                     <xpath expr="//page[@name='standard_audit']" position="move" />
                 </xpath>

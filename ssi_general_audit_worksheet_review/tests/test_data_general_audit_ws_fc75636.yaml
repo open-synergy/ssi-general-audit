@@ -247,3 +247,510 @@ scenarios:
           proposed_audit_opinion_id:
             type: "value"
             operator: "is_falsy"
+
+  # ------------------------------------------------------------------
+  # Draft Audit Opinion - positive: worksheet is Open, the nine narrative
+  # Html fields can be filled (including simple HTML markup such as
+  # <b>/<ul>) and keep their value after save.
+  # ------------------------------------------------------------------
+  - name: "Draft Audit Opinion fc75636 - fields are saved when open"
+    steps:
+      - step: "Create worksheet fc75636"
+        action: "create"
+        model: "general_audit_ws_fc75636"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_fc75636.id"
+
+      - step: "Open worksheet fc75636"
+        action: "call"
+        target: "worksheet"
+        method: "action_open"
+        as_user: "base.user_admin"
+
+      - step: "Fill in the nine Draft Audit Opinion fields"
+        action: "write"
+        target: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          draft_opinion: "<p>Custom opinion narrative with <b>bold emphasis</b>.</p>"
+          draft_basis_for_opinion: "<p>Custom basis for opinion narrative.</p>"
+          draft_key_audit_matters: >-
+            <p>Custom key audit matters:</p><ul><li>Matter one</li> <li>Matter
+            two</li></ul>
+          draft_other_information: "<p>Custom other information narrative.</p>"
+          draft_responsibilities_of_management:
+            "<p>Custom responsibilities of management narrative.</p>"
+          draft_auditor_responsibilities:
+            "<p>Custom auditor's responsibilities narrative.</p>"
+          draft_other_legal_regulatory:
+            "<p>Custom other legal and regulatory narrative.</p>"
+          draft_emphasis_of_matter: "<p>Custom emphasis of matter narrative.</p>"
+          draft_other_matter: "<p>Custom other matter narrative.</p>"
+
+      - step: "Assert the nine Draft Audit Opinion fields keep their value"
+        action: "assert"
+        target: "worksheet"
+        refresh: true
+        asserts:
+          draft_opinion:
+            type: "value"
+            operator: "contains"
+            expected: "bold emphasis"
+          draft_basis_for_opinion:
+            type: "value"
+            operator: "contains"
+            expected: "Custom basis for opinion narrative"
+          draft_key_audit_matters:
+            type: "value"
+            operator: "contains"
+            expected: "Matter one"
+          draft_other_information:
+            type: "value"
+            operator: "contains"
+            expected: "Custom other information narrative"
+          draft_responsibilities_of_management:
+            type: "value"
+            operator: "contains"
+            expected: "Custom responsibilities of management narrative"
+          draft_auditor_responsibilities:
+            type: "value"
+            operator: "contains"
+            expected: "Custom auditor's responsibilities narrative"
+          draft_other_legal_regulatory:
+            type: "value"
+            operator: "contains"
+            expected: "Custom other legal and regulatory narrative"
+          draft_emphasis_of_matter:
+            type: "value"
+            operator: "contains"
+            expected: "Custom emphasis of matter narrative"
+          draft_other_matter:
+            type: "value"
+            operator: "contains"
+            expected: "Custom other matter narrative"
+
+      - step: "Assert draft_opinion keeps the <b> markup"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          draft_opinion:
+            type: "value"
+            operator: "contains"
+            expected: "<b>"
+
+      - step: "Assert draft_key_audit_matters keeps the <ul>/<li> markup"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          draft_key_audit_matters:
+            type: "value"
+            operator: "contains"
+            expected: "<li>Matter one</li>"
+
+  # ------------------------------------------------------------------
+  # Draft Audit Opinion - defaults: draft_opinion, draft_basis_for_opinion,
+  # draft_responsibilities_of_management and draft_auditor_responsibilities
+  # carry a generic template as default; the other five fields (situational
+  # sections) have no default.
+  # ------------------------------------------------------------------
+  - name: "Draft Audit Opinion fc75636 - default values on a new worksheet"
+    steps:
+      - step: "Create worksheet fc75636, no Draft Audit Opinion values given"
+        action: "create"
+        model: "general_audit_ws_fc75636"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_fc75636.id"
+
+      - step: "Assert the four templated fields carry a default value"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          draft_opinion:
+            type: "value"
+            operator: "contains"
+            expected: "Kami telah mengaudit laporan keuangan"
+          draft_basis_for_opinion:
+            type: "value"
+            operator: "contains"
+            expected: "Kami melaksanakan audit kami berdasarkan Standar Audit"
+          draft_responsibilities_of_management:
+            type: "value"
+            operator: "contains"
+            expected: "Manajemen bertanggung jawab atas penyusunan"
+          draft_auditor_responsibilities:
+            type: "value"
+            operator: "contains"
+            expected: "Tujuan kami adalah untuk memeroleh keyakinan memadai"
+
+      - step: "Assert the five situational fields have no default"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          draft_key_audit_matters:
+            type: "value"
+            operator: "is_falsy"
+          draft_other_information:
+            type: "value"
+            operator: "is_falsy"
+          draft_other_legal_regulatory:
+            type: "value"
+            operator: "is_falsy"
+          draft_emphasis_of_matter:
+            type: "value"
+            operator: "is_falsy"
+          draft_other_matter:
+            type: "value"
+            operator: "is_falsy"
+
+  # ------------------------------------------------------------------
+  # general_audit_ws_b66777d - action_populate_final_opinion() (issue
+  # #382, revision 2). Both fc75636 (this module) and b66777d
+  # (final_report module, which THIS module depends on -- not the
+  # other way around) coexist here, unlike
+  # ssi_general_audit_worksheet_final_report's own test suite, which
+  # never has fc75636 installed at all (see
+  # _populate_final_opinion()'s docstring for why that is exactly the
+  # "model not installed" best-effort branch this module's suite
+  # cannot exercise). This is therefore the only place the actual
+  # copy -- and the draft_opinion_id compute field it now reads from
+  # -- can be tested end-to-end. The fc75636 sibling is opened (not
+  # left in draft) because _compute_draft_opinion_id only matches
+  # ``state in ["open", "done"]``, same as
+  # ``_compute_audit_final_memorandum_id`` above.
+  # ------------------------------------------------------------------
+  - name: "Populate final opinion b66777d - copies all nine fields from fc75636"
+    options: {auto_refresh: true}
+    steps:
+      - step: "Get worksheet type b66777d"
+        action: "ref"
+        xml_id: "ssi_general_audit_worksheet_final_report.worksheet_type_b66777d"
+        save_as: "ws_type_b66777d"
+
+      - step: "Create worksheet fc75636 for this engagement"
+        action: "create"
+        model: "general_audit_ws_fc75636"
+        save_as: "populate_source"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_fc75636.id"
+
+      - step: "Open worksheet fc75636 so draft_opinion_id can match it"
+        action: "call"
+        target: "populate_source"
+        method: "action_open"
+        as_user: "base.user_admin"
+
+      - step: "Fill all nine draft narrative fields with distinct text"
+        action: "write"
+        target: "populate_source"
+        as_user: "base.user_admin"
+        values:
+          draft_opinion: "Populate test text - Opinion"
+          draft_basis_for_opinion: "Populate test text - Basis for Opinion"
+          draft_key_audit_matters: "Populate test text - Key Audit Matters"
+          draft_other_information: "Populate test text - Other Information"
+          draft_responsibilities_of_management:
+            "Populate test text - Responsibilities of Management"
+          draft_auditor_responsibilities:
+            "Populate test text - Auditor Responsibilities"
+          draft_other_legal_regulatory:
+            "Populate test text - Other Legal and Regulatory"
+          draft_emphasis_of_matter: "Populate test text - Emphasis of Matter"
+          draft_other_matter: "Populate test text - Other Matter"
+
+      - step: "Create worksheet b66777d for the same engagement"
+        action: "create"
+        model: "general_audit_ws_b66777d"
+        save_as: "final_worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_b66777d.id"
+
+      - step: "Assert final opinion fields empty before Populate"
+        action: "assert"
+        target: "final_worksheet"
+        asserts:
+          opinion:
+            type: "value"
+            operator: "is_falsy"
+          other_matter:
+            type: "value"
+            operator: "is_falsy"
+          draft_opinion_id:
+            type: "m2o"
+            expected: "REC: populate_source"
+
+      - step: "Manually fill the Opinion field before Populate"
+        action: "write"
+        target: "final_worksheet"
+        as_user: "base.user_admin"
+        values:
+          opinion: "Manually authored opinion - must survive Populate"
+
+      - step: "Open worksheet b66777d (Populate button only shows/works while open)"
+        action: "call"
+        target: "final_worksheet"
+        method: "action_open"
+        as_user: "base.user_admin"
+
+      - step: "Click Populate (action_populate_final_opinion)"
+        action: "call"
+        target: "final_worksheet"
+        method: "action_populate_final_opinion"
+        as_user: "base.user_admin"
+
+      - step:
+          "Assert the manually-filled Opinion is untouched, the other eight empty fields
+          are now filled from the fc75636 source"
+        action: "assert"
+        target: "final_worksheet"
+        asserts:
+          opinion:
+            type: "value"
+            operator: "contains"
+            expected: "Manually authored opinion - must survive Populate"
+          basis_for_opinion:
+            type: "value"
+            operator: "contains"
+            expected: "Populate test text - Basis for Opinion"
+          key_audit_matters:
+            type: "value"
+            operator: "contains"
+            expected: "Populate test text - Key Audit Matters"
+          other_information:
+            type: "value"
+            operator: "contains"
+            expected: "Populate test text - Other Information"
+          responsibilities_of_management:
+            type: "value"
+            operator: "contains"
+            expected: "Populate test text - Responsibilities of Management"
+          auditor_responsibilities:
+            type: "value"
+            operator: "contains"
+            expected: "Populate test text - Auditor Responsibilities"
+          other_legal_regulatory:
+            type: "value"
+            operator: "contains"
+            expected: "Populate test text - Other Legal and Regulatory"
+          emphasis_of_matter:
+            type: "value"
+            operator: "contains"
+            expected: "Populate test text - Emphasis of Matter"
+          other_matter:
+            type: "value"
+            operator: "contains"
+            expected: "Populate test text - Other Matter"
+
+      - step: "Edit one of the now-filled final fields manually after Populate"
+        action: "write"
+        target: "final_worksheet"
+        as_user: "base.user_admin"
+        values:
+          other_matter: "Populate test text - Other Matter, edited manually"
+
+      - step: "Click Populate a second time"
+        action: "call"
+        target: "final_worksheet"
+        method: "action_populate_final_opinion"
+        as_user: "base.user_admin"
+
+      - step:
+          "Assert the second Populate click did not overwrite either the original manual
+          Opinion edit or the manual edit just made to Other Matter -- both fields are
+          non-empty, so both are skipped"
+        action: "assert"
+        target: "final_worksheet"
+        asserts:
+          opinion:
+            type: "value"
+            operator: "contains"
+            expected: "Manually authored opinion - must survive Populate"
+          other_matter:
+            type: "value"
+            operator: "contains"
+            expected: "Populate test text - Other Matter, edited manually"
+
+  # ------------------------------------------------------------------
+  # general_audit_ws_b66777d.draft_opinion_id (issue #382, revision 2):
+  # non-stored compute must resolve correctly even when the matching
+  # fc75636 record is created AFTER the b66777d worksheet already
+  # exists -- no Reload button, no action on the b66777d record
+  # itself, just re-reading the field. Uses a General Audit isolated
+  # from the shared "audit" fixture so no fc75636 created by an
+  # earlier scenario in this file interferes with the "still empty"
+  # assertion below.
+  # ------------------------------------------------------------------
+  - name: "draft_opinion_id resolves live even when fc75636 is created after b66777d"
+    steps:
+      - step: "Create a fresh General Audit isolated for this scenario"
+        action: "create"
+        model: "general_audit"
+        save_as: "live_audit"
+        as_user: "base.user_admin"
+        values:
+          title: "Test General Audit - Live Compute Draft Opinion"
+          partner_id: "REC: client.id"
+          accountant_id: "REC: accountant.id"
+          account_type_set_id: "REC: account_type_set.id"
+          financial_accounting_standard_id: "REC: fas.id"
+          date_start: 2026-01-01
+          date_end: 2026-12-31
+          need_interim: false
+          need_previous: false
+          num_of_consecutive_audit_firm: 1
+          num_of_consecutive_audit_accountant: 1
+
+      - step: "Open the fresh General Audit"
+        action: "call"
+        target: "live_audit"
+        method: "action_open"
+        as_user: "base.user_admin"
+
+      - step: "Get worksheet type b66777d (live-compute scenario)"
+        action: "ref"
+        xml_id: "ssi_general_audit_worksheet_final_report.worksheet_type_b66777d"
+        save_as: "ws_type_b66777d"
+
+      - step: "Create worksheet b66777d before any fc75636 sibling exists"
+        action: "create"
+        model: "general_audit_ws_b66777d"
+        save_as: "live_worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: live_audit.id"
+          type_id: "REC: ws_type_b66777d.id"
+
+      - step: "Assert draft_opinion_id is empty before any fc75636 sibling exists"
+        action: "assert"
+        target: "live_worksheet"
+        asserts:
+          draft_opinion_id:
+            type: "value"
+            operator: "is_falsy"
+
+      - step: "Now create the matching fc75636 sibling for the same engagement"
+        action: "create"
+        model: "general_audit_ws_fc75636"
+        save_as: "live_source"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: live_audit.id"
+          type_id: "REC: ws_type_fc75636.id"
+
+      - step: "Open the fc75636 sibling"
+        action: "call"
+        target: "live_source"
+        method: "action_open"
+        as_user: "base.user_admin"
+
+      - step:
+          "Re-read draft_opinion_id on the SAME b66777d record, with no reload button
+          and no action on it -- must now resolve, proving the non-stored compute is
+          always live"
+        action: "assert"
+        target: "live_worksheet"
+        refresh: true
+        asserts:
+          draft_opinion_id:
+            type: "m2o"
+            expected: "REC: live_source"
+
+  # ------------------------------------------------------------------
+  # general_audit_ws_b66777d - action_populate_final_opinion() (issue
+  # #382): negative path within THIS module's own suite -- no fc75636
+  # exists yet for this engagement. Must not raise, and must leave the
+  # nine final fields untouched (still empty).
+  # ------------------------------------------------------------------
+  - name: "Populate final opinion b66777d - no matching fc75636 does not error"
+    steps:
+      - step: "Get worksheet type b66777d (no-match scenario)"
+        action: "ref"
+        xml_id: "ssi_general_audit_worksheet_final_report.worksheet_type_b66777d"
+        save_as: "ws_type_b66777d_nomatch"
+
+      - step: "Create a fresh General Audit with no fc75636 sibling"
+        action: "create"
+        model: "general_audit"
+        save_as: "nomatch_audit"
+        as_user: "base.user_admin"
+        values:
+          title: "Test General Audit - Populate No Match"
+          partner_id: "REC: client.id"
+          accountant_id: "REC: accountant.id"
+          account_type_set_id: "REC: account_type_set.id"
+          financial_accounting_standard_id: "REC: fas.id"
+          date_start: 2026-01-01
+          date_end: 2026-12-31
+          need_interim: false
+          need_previous: false
+          num_of_consecutive_audit_firm: 1
+          num_of_consecutive_audit_accountant: 1
+
+      - step: "Open the fresh General Audit"
+        action: "call"
+        target: "nomatch_audit"
+        method: "action_open"
+        as_user: "base.user_admin"
+
+      - step: "Create worksheet b66777d with no fc75636 sibling yet"
+        action: "create"
+        model: "general_audit_ws_b66777d"
+        save_as: "nomatch_worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: nomatch_audit.id"
+          type_id: "REC: ws_type_b66777d_nomatch.id"
+
+      - step: "Open worksheet b66777d"
+        action: "call"
+        target: "nomatch_worksheet"
+        method: "action_open"
+        as_user: "base.user_admin"
+
+      - step: "Click Populate: must not raise despite no fc75636 sibling"
+        action: "call"
+        target: "nomatch_worksheet"
+        method: "action_populate_final_opinion"
+        as_user: "base.user_admin"
+
+      - step: "Assert the nine final fields are still empty"
+        action: "assert"
+        target: "nomatch_worksheet"
+        refresh: true
+        asserts:
+          opinion:
+            type: "value"
+            operator: "is_falsy"
+          basis_for_opinion:
+            type: "value"
+            operator: "is_falsy"
+          key_audit_matters:
+            type: "value"
+            operator: "is_falsy"
+          other_information:
+            type: "value"
+            operator: "is_falsy"
+          responsibilities_of_management:
+            type: "value"
+            operator: "is_falsy"
+          auditor_responsibilities:
+            type: "value"
+            operator: "is_falsy"
+          other_legal_regulatory:
+            type: "value"
+            operator: "is_falsy"
+          emphasis_of_matter:
+            type: "value"
+            operator: "is_falsy"
+          other_matter:
+            type: "value"
+            operator: "is_falsy"

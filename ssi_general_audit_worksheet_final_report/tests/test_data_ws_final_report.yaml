@@ -2145,3 +2145,650 @@ scenarios:
           value:
             type: "value"
             expected: ""
+
+  # ------------------------------------------------------------------
+  # general_audit_ws_b66777d - Final Audit Opinion tab (issue #382,
+  # revision 2): this module's own suite never has
+  # general_audit_ws_fc75636 installed -- ssi_general_audit_worksheet_review
+  # (which provides it) depends on THIS module, never the other way
+  # around, see _populate_final_opinion()'s docstring -- so this is
+  # the "model not registered" best-effort branch for the Populate
+  # button. draft_opinion_id itself is not even asserted here: that
+  # field is added by ssi_general_audit_worksheet_review as an
+  # extension of this model (see that module's models/b66777d/
+  # general_audit_ws_b66777d.py), so it does not exist on
+  # general_audit_ws_b66777d at all in this module's own suite --
+  # asserting on it here would error, not just read falsy. The
+  # positive copy-from-fc75636 path (and the "only fill empty fields"
+  # infill behaviour), together with draft_opinion_id itself, are
+  # instead covered where both modules coexist:
+  # ssi_general_audit_worksheet_review/tests/
+  # test_data_general_audit_ws_fc75636.yaml.
+  # ------------------------------------------------------------------
+  - name:
+      "Worksheet b66777d - Final Audit Opinion fields empty on create, editable any
+      state, Populate does not error without fc75636 installed"
+    steps:
+      - step: "Create worksheet b66777d"
+        action: "create"
+        model: "general_audit_ws_b66777d"
+        save_as: "opinion_worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_b66777d.id"
+
+      - step: "Assert the nine final opinion fields are empty on create"
+        action: "assert"
+        target: "opinion_worksheet"
+        asserts:
+          state:
+            type: "value"
+            expected: "draft"
+          opinion:
+            type: "value"
+            operator: "is_falsy"
+          other_matter:
+            type: "value"
+            operator: "is_falsy"
+
+      - step: "Fill the Opinion field manually while still in draft"
+        action: "write"
+        target: "opinion_worksheet"
+        as_user: "base.user_admin"
+        values:
+          opinion: "Manual draft-state opinion text"
+
+      - step: "Assert the manual edit while draft is saved (no states gate)"
+        action: "assert"
+        target: "opinion_worksheet"
+        refresh: true
+        asserts:
+          opinion:
+            type: "value"
+            operator: "contains"
+            expected: "Manual draft-state opinion text"
+
+      - step: "Open worksheet b66777d"
+        action: "call"
+        target: "opinion_worksheet"
+        method: "action_open"
+        as_user: "base.user_admin"
+
+      - step:
+          "Click Populate: must not error, general_audit_ws_fc75636 is not installed in
+          this module's own test suite"
+        action: "call"
+        target: "opinion_worksheet"
+        method: "action_populate_final_opinion"
+        as_user: "base.user_admin"
+
+      - step: "Assert the manual Opinion text from before open is untouched"
+        action: "assert"
+        target: "opinion_worksheet"
+        refresh: true
+        asserts:
+          opinion:
+            type: "value"
+            operator: "contains"
+            expected: "Manual draft-state opinion text"
+          other_matter:
+            type: "value"
+            operator: "is_falsy"
+
+      - step: "Edit the Opinion field manually again, now that state is open"
+        action: "write"
+        target: "opinion_worksheet"
+        as_user: "base.user_admin"
+        values:
+          opinion: "Manual open-state opinion text"
+
+      - step: "Assert the second manual edit while open is saved"
+        action: "assert"
+        target: "opinion_worksheet"
+        refresh: true
+        asserts:
+          opinion:
+            type: "value"
+            operator: "contains"
+            expected: "Manual open-state opinion text"
+
+  # ------------------------------------------------------------------
+  # general_audit_ws_b66777d - Final Team Allocations (issue #383,
+  # revision 3 -- design revision requested after browser review:
+  # "Total"/"AWP Total"/"Difference" are worksheet-wide aggregates,
+  # not per-row columns anymore -- general_audit_ws_b66777d.team_
+  # allocation itself now only carries the four realized phase
+  # columns). action_populate_team_allocation() sums preparation_time
+  # + review_time, from every general_audit_worksheet of the same
+  # engagement, per hr.employee AND per audit phase, where the phase
+  # comes from each worksheet's own parent_type_id.category_id -- NOT
+  # a flat single number per worksheet. TWO Team Members, each
+  # contributing to a DIFFERENT pair of phases (PE/RA for the first,
+  # RR/Reporting for the second), prove: (1) each row's own breakdown
+  # lands in the right bucket, and (2) the parent worksheet's
+  # total_pe_allocation/total_ra_allocation/total_rr_allocation/
+  # total_reporting_allocation/total_allocation are the SUM ACROSS
+  # BOTH ROWS, not a copy of a single row (positive). AWP is not
+  # installed in this module's own test suite, so every
+  # awp_total_*_allocation is the best-effort 0 (see
+  # _get_awp_worksheet's docstring) and every diff_*_allocation
+  # equals the matching total_*_allocation.
+  # ------------------------------------------------------------------
+  - name:
+      "Worksheet b66777d - action_populate_team_allocation aggregates per-row realized
+      phases into worksheet-wide Total/AWP Total/Difference"
+    steps:
+      - step: "Get PE (Pre-Engagement) worksheet type category"
+        action: "ref"
+        xml_id: "ssi_general_audit.worksheet_type_category_pe"
+        save_as: "category_pe"
+
+      - step: "Get RA (Risk Assessment) worksheet type category"
+        action: "ref"
+        xml_id: "ssi_general_audit.worksheet_type_category_ra"
+        save_as: "category_ra"
+
+      - step: "Get RE (Risk Responses) worksheet type category"
+        action: "ref"
+        xml_id: "ssi_general_audit.worksheet_type_category_rr"
+        save_as: "category_rr"
+
+      - step: "Get WR (Windup & Reporting) worksheet type category"
+        action: "ref"
+        xml_id: "ssi_general_audit.worksheet_type_category_wr"
+        save_as: "category_wr"
+
+      - step: "Create a worksheet type in the PE category"
+        action: "create"
+        model: "general_audit_worksheet_type"
+        save_as: "type_pe"
+        as_user: "base.user_admin"
+        values:
+          name: "Final Team Allocations - Test Type PE"
+          code: "/"
+          model_name: "general_audit_ws_a8c54f3"
+          category_id: "REC: category_pe.id"
+
+      - step: "Create a worksheet type in the RA category"
+        action: "create"
+        model: "general_audit_worksheet_type"
+        save_as: "type_ra"
+        as_user: "base.user_admin"
+        values:
+          name: "Final Team Allocations - Test Type RA"
+          code: "/"
+          model_name: "general_audit_ws_a8c54f3"
+          category_id: "REC: category_ra.id"
+
+      - step: "Create a worksheet type in the RE (Risk Responses) category"
+        action: "create"
+        model: "general_audit_worksheet_type"
+        save_as: "type_rr"
+        as_user: "base.user_admin"
+        values:
+          name: "Final Team Allocations - Test Type RE"
+          code: "/"
+          model_name: "general_audit_ws_a8c54f3"
+          category_id: "REC: category_rr.id"
+
+      - step: "Create a worksheet type in the WR (Windup & Reporting) category"
+        action: "create"
+        model: "general_audit_worksheet_type"
+        save_as: "type_wr"
+        as_user: "base.user_admin"
+        values:
+          name: "Final Team Allocations - Test Type WR"
+          code: "/"
+          model_name: "general_audit_ws_a8c54f3"
+          category_id: "REC: category_wr.id"
+
+      - step: "Create first team member user (PE/RA)"
+        action: "create"
+        model: "res.users"
+        save_as: "team_member_user"
+        as_user: "base.user_admin"
+        values:
+          name: "Team Allocation Test User"
+          login: "team_allocation_test_user@example.com"
+          email: "team_allocation_test_user@example.com"
+
+      - step: "Link the first team member user to a fresh employee"
+        action: "create"
+        model: "hr.employee"
+        save_as: "team_member_employee"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Team Member - Final Team Allocations"
+          user_id: "REC: team_member_user.id"
+
+      - step: "Create second team member user (RE/WR)"
+        action: "create"
+        model: "res.users"
+        save_as: "second_member_user"
+        as_user: "base.user_admin"
+        values:
+          name: "Team Allocation Test User 2"
+          login: "team_allocation_test_user_2@example.com"
+          email: "team_allocation_test_user_2@example.com"
+
+      - step: "Link the second team member user to a fresh employee"
+        action: "create"
+        model: "hr.employee"
+        save_as: "second_member_employee"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Team Member 2 - Final Team Allocations"
+          user_id: "REC: second_member_user.id"
+
+      - step: "Create worksheet b66777d - this is the row's own worksheet"
+        action: "create"
+        model: "general_audit_ws_b66777d"
+        save_as: "alloc_worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_b66777d.id"
+
+      - step: "Create a PE-category worksheet prepared by the first team member"
+        # type_id (not parent_type_id) must be the category-bearing
+        # type: general_audit_worksheet_mixin.write() unconditionally
+        # re-syncs parent_type_id from type_id on every write, so a
+        # separate parent_type_id here would be silently discarded.
+        action: "create"
+        model: "general_audit_ws_a8c54f3"
+        save_as: "alloc_worksheet_pe"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: type_pe.id"
+          user_id: "REC: team_member_user.id"
+          preparation_time: 8
+
+      - step: "Create a second worksheet, in the RA category"
+        action: "create"
+        model: "general_audit_ws_a8c54f3"
+        save_as: "alloc_worksheet_ra"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: type_ra.id"
+
+      - step: "Set the RA-category worksheet's reviewer and review_time"
+        action: "write"
+        target: "alloc_worksheet_ra"
+        as_user: "base.user_admin"
+        values:
+          reviewer_id: "REC: team_member_user.id"
+          review_time: 5
+
+      - step: "Create a RE-category worksheet prepared by the second team member"
+        action: "create"
+        model: "general_audit_ws_a8c54f3"
+        save_as: "alloc_worksheet_rr"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: type_rr.id"
+          user_id: "REC: second_member_user.id"
+          preparation_time: 3
+
+      - step: "Create a fourth worksheet, in the WR category"
+        action: "create"
+        model: "general_audit_ws_a8c54f3"
+        save_as: "alloc_worksheet_wr"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: type_wr.id"
+
+      - step: "Set the WR-category worksheet's reviewer and review_time"
+        action: "write"
+        target: "alloc_worksheet_wr"
+        as_user: "base.user_admin"
+        values:
+          reviewer_id: "REC: second_member_user.id"
+          review_time: 2
+
+      - step: "Assert team_allocation_ids is empty before Populate"
+        action: "assert"
+        target: "alloc_worksheet"
+        asserts:
+          team_allocation_ids:
+            type: "o2m"
+            check: "count"
+            expected_count: 0
+
+      - step: "Click Populate (action_populate_team_allocation)"
+        action: "call"
+        target: "alloc_worksheet"
+        method: "action_populate_team_allocation"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after populating"
+        action: "call"
+        target: "alloc_worksheet"
+        method: "invalidate_cache"
+
+      - step: "Assert exactly two team_allocation_ids rows were created"
+        action: "assert"
+        target: "alloc_worksheet"
+        asserts:
+          team_allocation_ids:
+            type: "o2m"
+            check: "count"
+            expected_count: 2
+
+      - step: "Find the created row for the first team member"
+        action: "search"
+        model: "general_audit_ws_b66777d.team_allocation"
+        domain:
+          - ["worksheet_id", "=", "REC: alloc_worksheet.id"]
+          - ["team_id", "=", "REC: team_member_employee.id"]
+        save_as: "alloc_row"
+        expect_count: 1
+
+      - step: "Find the created row for the second team member"
+        action: "search"
+        model: "general_audit_ws_b66777d.team_allocation"
+        domain:
+          - ["worksheet_id", "=", "REC: alloc_worksheet.id"]
+          - ["team_id", "=", "REC: second_member_employee.id"]
+        save_as: "alloc_row_2"
+        expect_count: 1
+
+      - step:
+          "Assert the first row puts the 8 preparation hours into pe_allocation and the
+          5 review hours into ra_allocation (not summed flat into one number) -- the
+          other two phases stay 0. Total/AWP Total/Difference are no longer columns on
+          this row model (moved to the parent worksheet, asserted below)"
+        action: "assert"
+        target: "alloc_row"
+        asserts:
+          pe_allocation:
+            type: "value"
+            expected: 8
+          ra_allocation:
+            type: "value"
+            expected: 5
+          rr_allocation:
+            type: "value"
+            expected: 0
+          reporting_allocation:
+            type: "value"
+            expected: 0
+
+      - step:
+          "Assert the second row puts the 3 preparation hours into rr_allocation and the
+          2 review hours into reporting_allocation -- the other two phases stay 0"
+        action: "assert"
+        target: "alloc_row_2"
+        asserts:
+          pe_allocation:
+            type: "value"
+            expected: 0
+          ra_allocation:
+            type: "value"
+            expected: 0
+          rr_allocation:
+            type: "value"
+            expected: 3
+          reporting_allocation:
+            type: "value"
+            expected: 2
+
+      - step:
+          "Assert the parent worksheet's total_*_allocation fields are the SUM across
+          BOTH rows (8+0=8, 5+0=5, 0+3=3, 0+2=2, grand total 18) -- not a copy of either
+          single row. AWP is not installed in this module's own test suite, so every
+          awp_total_*_allocation is the best-effort 0 (see _get_awp_worksheet's
+          docstring) and every diff_*_allocation equals the matching total_*_allocation"
+        action: "assert"
+        target: "alloc_worksheet"
+        refresh: true
+        asserts:
+          total_pe_allocation:
+            type: "value"
+            expected: 8
+          total_ra_allocation:
+            type: "value"
+            expected: 5
+          total_rr_allocation:
+            type: "value"
+            expected: 3
+          total_reporting_allocation:
+            type: "value"
+            expected: 2
+          total_allocation:
+            type: "value"
+            expected: 18
+          awp_total_pe_allocation:
+            type: "value"
+            expected: 0
+          awp_total_ra_allocation:
+            type: "value"
+            expected: 0
+          awp_total_rr_allocation:
+            type: "value"
+            expected: 0
+          awp_total_reporting_allocation:
+            type: "value"
+            expected: 0
+          awp_total_allocation:
+            type: "value"
+            expected: 0
+          diff_pe_allocation:
+            type: "value"
+            expected: 8
+          diff_ra_allocation:
+            type: "value"
+            expected: 5
+          diff_rr_allocation:
+            type: "value"
+            expected: 3
+          diff_reporting_allocation:
+            type: "value"
+            expected: 2
+          diff_allocation:
+            type: "value"
+            expected: 18
+
+  # ------------------------------------------------------------------
+  # general_audit_ws_b66777d - Final Team Allocations (issue #383):
+  # a Team Member with no preparation/review time recorded anywhere in
+  # the engagement gets no row -- Populate is not "one row per
+  # Employee", it is "one row per CONTRIBUTING Employee" (negative)
+  # ------------------------------------------------------------------
+  - name:
+      "Worksheet b66777d - action_populate_team_allocation skips a Team Member with no
+      recorded time"
+    steps:
+      - step: "Create a team member user who never records any time"
+        action: "create"
+        model: "res.users"
+        save_as: "idle_member_user"
+        as_user: "base.user_admin"
+        values:
+          name: "Idle Team Allocation Test User"
+          login: "idle_team_allocation_test_user@example.com"
+          email: "idle_team_allocation_test_user@example.com"
+
+      - step: "Link the idle user to a fresh employee"
+        action: "create"
+        model: "hr.employee"
+        save_as: "idle_member_employee"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Idle Team Member - Final Team Allocations"
+          user_id: "REC: idle_member_user.id"
+
+      - step:
+          "Create worksheet b66777d, prepared/reviewed by the default admin user (no
+          preparation_time/review_time filled in)"
+        action: "create"
+        model: "general_audit_ws_b66777d"
+        save_as: "idle_worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_b66777d.id"
+
+      - step: "Click Populate (action_populate_team_allocation)"
+        action: "call"
+        target: "idle_worksheet"
+        method: "action_populate_team_allocation"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after populating"
+        action: "call"
+        target: "idle_worksheet"
+        method: "invalidate_cache"
+
+      - step:
+          "Assert no error was raised and no row exists for the idle Team Member -- AWP
+          is not installed in this module's own test suite, so the parent worksheet's
+          own awp_total_*_allocation fields would likewise resolve to best-effort 0
+          rather than error (see _get_awp_worksheet's docstring)"
+        action: "search"
+        model: "general_audit_ws_b66777d.team_allocation"
+        domain:
+          - ["worksheet_id", "=", "REC: idle_worksheet.id"]
+          - ["team_id", "=", "REC: idle_member_employee.id"]
+        save_as: "idle_row"
+        expect_count: 0
+
+  # ------------------------------------------------------------------
+  # general_audit_ws_b66777d - Final Team Allocations (issue #383,
+  # revision 2): a worksheet whose parent_type_id, or that type's own
+  # category_id, is empty does not error -- it just contributes 0 to
+  # every phase bucket, per the issue's explicit guard (`if worksheet.
+  # parent_type_id and worksheet.parent_type_id.category_id`). The
+  # employee still gets a row (they DID record time somewhere), just
+  # with every phase column -- and therefore Total Allocation -- at 0
+  # (negative)
+  # ------------------------------------------------------------------
+  - name:
+      "Worksheet b66777d - action_populate_team_allocation guards a worksheet with no
+      parent_type_id category (contributes 0 to every phase, no error)"
+    steps:
+      - step: "Create a team member user for the uncategorized worksheet"
+        action: "create"
+        model: "res.users"
+        save_as: "uncategorized_member_user"
+        as_user: "base.user_admin"
+        values:
+          name: "Uncategorized Team Allocation Test User"
+          login: "uncategorized_team_allocation_test_user@example.com"
+          email: "uncategorized_team_allocation_test_user@example.com"
+
+      - step: "Link the user to a fresh employee"
+        action: "create"
+        model: "hr.employee"
+        save_as: "uncategorized_member_employee"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Uncategorized Team Member - Final Team Allocations"
+          user_id: "REC: uncategorized_member_user.id"
+
+      - step: "Create worksheet b66777d - this is the row's own worksheet"
+        action: "create"
+        model: "general_audit_ws_b66777d"
+        save_as: "uncategorized_alloc_worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_b66777d.id"
+
+      - step: "Create a worksheet type with no category_id"
+        action: "create"
+        model: "general_audit_worksheet_type"
+        save_as: "type_no_category"
+        as_user: "base.user_admin"
+        values:
+          name: "Final Team Allocations - Test Type No Category"
+          code: "/"
+          model_name: "general_audit_ws_a8c54f3"
+
+      - step: "Create a worksheet using that uncategorized type, prepared by the user"
+        # NOTE: type_id (not parent_type_id) is what must be set to the
+        # uncategorized type here. general_audit_worksheet_mixin.write()
+        # unconditionally re-syncs parent_type_id from type_id on every
+        # write (see _update_parent_worksheet()), so setting them to
+        # DIFFERENT values here would silently lose parent_type_id's
+        # override the moment anything writes to this record again
+        # (e.g. sequence assignment right after create).
+        action: "create"
+        model: "general_audit_ws_a8c54f3"
+        save_as: "uncategorized_worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: type_no_category.id"
+          user_id: "REC: uncategorized_member_user.id"
+          preparation_time: 6
+
+      - step: "Click Populate (action_populate_team_allocation)"
+        action: "call"
+        target: "uncategorized_alloc_worksheet"
+        method: "action_populate_team_allocation"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after populating"
+        action: "call"
+        target: "uncategorized_alloc_worksheet"
+        method: "invalidate_cache"
+
+      - step: "Find the row for the uncategorized team member"
+        action: "search"
+        model: "general_audit_ws_b66777d.team_allocation"
+        domain:
+          - ["worksheet_id", "=", "REC: uncategorized_alloc_worksheet.id"]
+          - ["team_id", "=", "REC: uncategorized_member_employee.id"]
+        save_as: "uncategorized_row"
+        expect_count: 1
+
+      - step:
+          "Assert the row exists (they did record time) but every phase column is 0 --
+          the 6 preparation hours are not attributable to any phase since the
+          worksheet's type has no category_id. Total Allocation is no longer a column on
+          this row model (moved to the parent worksheet); it is asserted below instead,
+          on uncategorized_alloc_worksheet's own total_allocation"
+        action: "assert"
+        target: "uncategorized_row"
+        asserts:
+          pe_allocation:
+            type: "value"
+            expected: 0
+          ra_allocation:
+            type: "value"
+            expected: 0
+          rr_allocation:
+            type: "value"
+            expected: 0
+          reporting_allocation:
+            type: "value"
+            expected: 0
+
+      - step:
+          "Assert the parent worksheet's total_allocation is likewise 0 -- the row
+          exists (contributing employee) but every phase, and therefore the grand total,
+          is 0 since the worksheet's type has no category_id"
+        action: "assert"
+        target: "uncategorized_alloc_worksheet"
+        refresh: true
+        asserts:
+          total_pe_allocation:
+            type: "value"
+            expected: 0
+          total_ra_allocation:
+            type: "value"
+            expected: 0
+          total_rr_allocation:
+            type: "value"
+            expected: 0
+          total_reporting_allocation:
+            type: "value"
+            expected: 0
+          total_allocation:
+            type: "value"
+            expected: 0
