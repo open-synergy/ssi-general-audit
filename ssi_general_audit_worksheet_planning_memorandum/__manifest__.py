@@ -19,6 +19,12 @@
         "ssi_general_audit_worksheet_external_communication",
         "ssi_general_audit_worksheet_audit_working_plan",
         "ssi_general_audit_worksheet_client_package",
+        "ssi_general_audit_worksheet_engagement_letter_checklist",
+        "ssi_general_audit_worksheet_assignment_letter",
+        "ssi_general_audit_worksheet_independence_statement",
+        "ssi_general_audit_worksheet_trial_balance",
+        "ssi_general_audit_worksheet_preliminary_analytic_procedure",
+        "ssi_general_audit_worksheet_romm",
     ],
     "data": [
         "views/assets.xml",

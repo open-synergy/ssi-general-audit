@@ -154,6 +154,11 @@ setup:
       xml_id: "ssi_general_audit_worksheet_acceptance_continuance.worksheet_type_b9d8a5c"
       save_as: "ws_type_b9d8a5c"
 
+    - step: "Get worksheet type 806c4e1"
+      action: "ref"
+      xml_id: "ssi_general_audit_worksheet_acceptance_continuance.worksheet_type_806c4e1"
+      save_as: "ws_type_806c4e1"
+
     - step: "Get worksheet type ae48e68"
       action: "ref"
       xml_id: "ssi_general_audit_worksheet_external_communication.worksheet_type_ae48e68"
@@ -204,7 +209,7 @@ scenarios:
           general_audit_id: "REC: audit.id"
           type_id: "REC: ws_type_fbbe0f8.id"
 
-      - step: "Assert all 13 links and derived compute fields are empty"
+      - step: "Assert all 39 links (link_1..link_40) and derived fields are empty"
         action: "assert"
         target: "worksheet"
         asserts:
@@ -263,6 +268,84 @@ scenarios:
             type: "m2m"
             check: "count"
             expected_count: 0
+          link_15_id:
+            type: "value"
+            operator: "is_falsy"
+          link_16_id:
+            type: "value"
+            operator: "is_falsy"
+          link_17_id:
+            type: "value"
+            operator: "is_falsy"
+          link_18_id:
+            type: "value"
+            operator: "is_falsy"
+          link_19_id:
+            type: "value"
+            operator: "is_falsy"
+          link_20_id:
+            type: "value"
+            operator: "is_falsy"
+          link_21_id:
+            type: "value"
+            operator: "is_falsy"
+          link_22_id:
+            type: "value"
+            operator: "is_falsy"
+          link_23_id:
+            type: "value"
+            operator: "is_falsy"
+          link_24_id:
+            type: "value"
+            operator: "is_falsy"
+          link_25_id:
+            type: "value"
+            operator: "is_falsy"
+          link_26_id:
+            type: "value"
+            operator: "is_falsy"
+          link_27_id:
+            type: "value"
+            operator: "is_falsy"
+          link_28_id:
+            type: "value"
+            operator: "is_falsy"
+          link_29_id:
+            type: "value"
+            operator: "is_falsy"
+          link_30_id:
+            type: "value"
+            operator: "is_falsy"
+          link_31_id:
+            type: "value"
+            operator: "is_falsy"
+          link_32_id:
+            type: "value"
+            operator: "is_falsy"
+          link_33_id:
+            type: "value"
+            operator: "is_falsy"
+          link_34_id:
+            type: "value"
+            operator: "is_falsy"
+          link_35_id:
+            type: "value"
+            operator: "is_falsy"
+          link_36_id:
+            type: "value"
+            operator: "is_falsy"
+          link_37_id:
+            type: "value"
+            operator: "is_falsy"
+          link_38_id:
+            type: "value"
+            operator: "is_falsy"
+          link_39_id:
+            type: "value"
+            operator: "is_falsy"
+          link_40_id:
+            type: "value"
+            operator: "is_falsy"
           reporting_timetable_ids:
             type: "m2m"
             check: "count"
@@ -1183,6 +1266,175 @@ scenarios:
             check: "exact"
             expected_records:
               - "REC: ws_bdcdfc5"
+
+  # ------------------------------------------------------------------
+  # link_15 (Acceptance and Continuance of Client Relationships
+  # Analysis, general_audit_ws_806c4e1) - open sets link_15_id/
+  # link_15_conclusion, done (via action_reload_links) sets
+  # link_15_state. Representative of the Many2one link_15..link_40
+  # pattern added for issue #385 (all 26 share the exact same
+  # _compute_link_N_id shape as link_5..link_13).
+  #
+  # ws_806c4e1 is driven to "done" with a direct `write` on `state`
+  # instead of the full action_confirm/action_approve_approval chain:
+  # confirming general_audit_ws_806c4e1 for real enforces ITS OWN
+  # predecessor-worksheet policy (_10_predecessor_check on
+  # general_audit_worksheet_mixin, driven by `type_id.predecessor_ids`
+  # -- data that is not shipped by any module and can be configured
+  # per instance). That workflow belongs to
+  # ssi_general_audit_worksheet_acceptance_continuance's own test
+  # suite; this scenario only needs ws_806c4e1 to reach a concrete
+  # state so fbbe0f8's own compute/related mechanism can be observed.
+  # ------------------------------------------------------------------
+  - name: "Compute link_15 from Acceptance and Continuance worksheet (806c4e1)"
+    steps:
+      - step: "Create worksheet 806c4e1"
+        action: "create"
+        model: "general_audit_ws_806c4e1"
+        save_as: "ws_806c4e1"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_806c4e1.id"
+
+      - step: "Open worksheet 806c4e1"
+        action: "call"
+        target: "ws_806c4e1"
+        method: "action_open"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after opening ws_806c4e1"
+        action: "call"
+        target: "ws_806c4e1"
+        method: "invalidate_cache"
+
+      - step: "Create worksheet fbbe0f8 on the same general audit"
+        action: "create"
+        model: "general_audit_ws_fbbe0f8"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_fbbe0f8.id"
+
+      - step: "Assert link_15_id resolved and link_15_state is open"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          link_15_id:
+            type: "m2o"
+            expected: "REC: ws_806c4e1"
+          link_15_state:
+            type: "value"
+            expected: "open"
+
+      - step: "Create conclusion for worksheet type 806c4e1"
+        action: "create"
+        model: "general_audit_worksheet_conclusion"
+        save_as: "conclusion_806c4e1"
+        as_user: "base.user_admin"
+        values:
+          name: "Client relationship may continue (link_15 test)"
+          code: "/"
+          type_id: "REC: ws_type_806c4e1.id"
+
+      - step: "Fill required conclusion fields on ws_806c4e1 before confirm"
+        action: "write"
+        target: "ws_806c4e1"
+        as_user: "base.user_admin"
+        values:
+          conclusion_id: "REC: conclusion_806c4e1.id"
+          conclusion: "Acceptance and continuance analysis completed for link_15 test."
+          risk: "low"
+          client_relationship: "yes"
+
+      - step: "Assert link_15_conclusion mirrors ws_806c4e1 conclusion"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          link_15_conclusion:
+            type: "value"
+            expected: "Acceptance and continuance analysis completed for link_15 test."
+          link_15_conclusion_id:
+            type: "m2o"
+            expected: "REC: conclusion_806c4e1"
+
+      - step: "Move ws_806c4e1 straight to done (see header comment above)"
+        action: "write"
+        target: "ws_806c4e1"
+        as_user: "base.user_admin"
+        values:
+          state: "done"
+
+      - step: "Invalidate cache after moving ws_806c4e1 to done"
+        action: "call"
+        target: "ws_806c4e1"
+        method: "invalidate_cache"
+
+      - step: "Assert ws_806c4e1 is done"
+        action: "assert"
+        target: "ws_806c4e1"
+        asserts:
+          state:
+            type: "value"
+            expected: "done"
+
+      - step: "Call action_reload_links on fbbe0f8 after ws_806c4e1 is done"
+        action: "call"
+        target: "worksheet"
+        method: "action_reload_links"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after reloading links"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Assert link_15_state now reflects done"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          link_15_state:
+            type: "value"
+            expected: "done"
+
+  # ------------------------------------------------------------------
+  # link_35 (ROMM - Financial Statement Level, general_audit_ws_c165170)
+  # - negative path: without an open/done c165170 worksheet for this
+  # general_audit_id, link_35_id stays empty (False), not an error.
+  # ------------------------------------------------------------------
+  - name: "link_35_id stays falsy without a c165170 worksheet for this audit"
+    steps:
+      - step: "Create worksheet fbbe0f8 with no ROMM - FS Level worksheet"
+        action: "create"
+        model: "general_audit_ws_fbbe0f8"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_fbbe0f8.id"
+
+      - step: "Assert link_35_id is falsy, not an error"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          link_35_id:
+            type: "value"
+            operator: "is_falsy"
+
+      - step: "Reload links with still no c165170 worksheet present"
+        action: "call"
+        target: "worksheet"
+        method: "action_reload_links"
+        as_user: "base.user_admin"
+
+      - step: "Assert link_35_id still falsy after action_reload_links"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          link_35_id:
+            type: "value"
+            operator: "is_falsy"
 
   # ------------------------------------------------------------------
   # Cancel and restart
