@@ -96,8 +96,10 @@ class TestWSFinalReport(YamlTransactionCase):
         domain into a fresh ``search()`` on ``general_audit_worksheet``
         must come back with EXACTLY the first two worksheets.
 
-        :return: nothing; asserts the action dict's shape and that its
-            domain, searched, matches the contributing worksheets
+        :return: nothing; asserts the action dict's shape (including
+            its ``category_id`` group-by context, PE/RA/RR/Windup &
+            Reporting) and that its domain, searched, matches the
+            contributing worksheets
         """
         audit = self._create_general_audit_for_source_worksheets("Source Worksheets")
         other_audit = self._create_general_audit_for_source_worksheets(
@@ -208,6 +210,7 @@ class TestWSFinalReport(YamlTransactionCase):
 
         self.assertEqual(action["res_model"], "general_audit_worksheet")
         self.assertEqual(action["type"], "ir.actions.act_window")
+        self.assertEqual(action["context"], {"group_by": "category_id"})
 
         found = self.env["general_audit_worksheet"].search(action["domain"])
         self.assertEqual(

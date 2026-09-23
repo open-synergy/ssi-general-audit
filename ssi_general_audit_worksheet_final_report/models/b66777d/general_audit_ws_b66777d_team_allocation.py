@@ -152,7 +152,8 @@ class GeneralAuditWsB66777dTeamAllocation(models.Model):
 
         :return: an ``ir.actions.act_window`` dict, ``target: "new"``,
             restricted to the matching ``general_audit_worksheet``
-            records
+            records, grouped by ``category_id`` (PE/RA/RR/Windup &
+            Reporting)
         :rtype: dict
         """
         self.ensure_one()
@@ -178,4 +179,5 @@ class GeneralAuditWsB66777dTeamAllocation(models.Model):
             ).id,
             "target": "new",
             "domain": domain,
+            "context": {"group_by": "category_id"},
         }
