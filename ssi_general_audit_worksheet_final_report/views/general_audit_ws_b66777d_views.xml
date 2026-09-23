@@ -4,6 +4,33 @@
      License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl-3.0-standalone.html). -->
 <odoo>
 
+    <!-- Minimal read-only tree for general_audit_worksheet (the shared
+         shadow model behind every concrete worksheet), used ONLY by
+         general_audit_ws_b66777d.team_allocation's "Sumber" drill-down
+         button (action_view_source_worksheets, issue #383 follow-up).
+         general_audit_worksheet has no view of its own anywhere in this
+         repo; do not repurpose this one for other uses. -->
+    <record
+        id="general_audit_worksheet_view_tree_source_b66777d_team_allocation"
+        model="ir.ui.view"
+    >
+        <field name="name">general_audit_worksheet tree - source worksheets</field>
+        <field name="model">general_audit_worksheet</field>
+        <field name="arch" type="xml">
+            <tree create="false" edit="false" delete="false">
+                <field name="title" />
+                <field name="parent_type_id" />
+                <field name="preparation_date" />
+                <field name="preparation_time" />
+                <field name="user_id" />
+                <field name="review_date" />
+                <field name="review_time" />
+                <field name="reviewer_id" />
+                <field name="state" />
+            </tree>
+        </field>
+    </record>
+
     <record id="general_audit_ws_b66777d_view_search" model="ir.ui.view">
         <field name="name">general_audit_ws_b66777d form</field>
         <field name="model">general_audit_ws_b66777d</field>
@@ -128,6 +155,12 @@
                         />
                         <field name="team_allocation_ids" nolabel="1">
                             <tree create="false" delete="false" editable="false">
+                                <button
+                                    name="action_view_source_worksheets"
+                                    type="object"
+                                    icon="fa-search"
+                                    string="Sumber"
+                                />
                                 <field name="team_id" readonly="1" />
                                 <field name="pe_allocation" readonly="1" />
                                 <field name="ra_allocation" readonly="1" />

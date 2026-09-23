@@ -2,7 +2,7 @@
 # Copyright 2026 PT. Simetri Sinergi Indonesia
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl-3.0-standalone.html).
 
-from odoo import fields, models
+from odoo import _, fields, models
 
 
 class GeneralAuditWsB66777dTeamAllocation(models.Model):
@@ -125,3 +125,57 @@ class GeneralAuditWsB66777dTeamAllocation(models.Model):
             "total_reporting_allocation."
         ),
     )
+
+    def action_view_source_worksheets(self):
+        """Open the worksheets whose time this row aggregates.
+
+        :return: an ``ir.actions.act_window`` dict listing every
+            ``general_audit_worksheet`` counted into this row's
+            pe/ra/rr/reporting_allocation by ``general_audit_ws_
+            b66777d._compute_team_allocation_totals()``
+        :rtype: dict
+        """
+        for record in self.sudo():
+            result = record._view_source_worksheets()
+        return result
+
+    def _view_source_worksheets(self):
+        """Build the source-worksheets window action for this row.
+
+        Mirrors, field for field, the aggregation domain used by
+        ``general_audit_ws_b66777d._compute_team_allocation_totals()``:
+        every ``general_audit_worksheet`` of the same engagement
+        (``worksheet_id.general_audit_id``) where this row's
+        ``team_id`` is either the preparer (``user_id.employee_id``)
+        with ``preparation_time`` > 0, or the reviewer
+        (``reviewer_id.employee_id``) with ``review_time`` > 0.
+
+        :return: an ``ir.actions.act_window`` dict, ``target: "new"``,
+            restricted to the matching ``general_audit_worksheet``
+            records
+        :rtype: dict
+        """
+        self.ensure_one()
+        domain = [
+            ("general_audit_id", "=", self.worksheet_id.general_audit_id.id),
+            "|",
+            "&",
+            ("user_id.employee_id", "=", self.team_id.id),
+            ("preparation_time", ">", 0),
+            "&",
+            ("reviewer_id.employee_id", "=", self.team_id.id),
+            ("review_time", ">", 0),
+        ]
+        return {
+            "name": _("Source Worksheets - %s") % self.team_id.display_name,
+            "type": "ir.actions.act_window",
+            "res_model": "general_audit_worksheet",
+            "view_mode": "tree",
+            "view_id": self.env.ref(
+                "ssi_general_audit_worksheet_final_report."
+                "general_audit_worksheet_view_tree_source_b66777d_"
+                "team_allocation"
+            ).id,
+            "target": "new",
+            "domain": domain,
+        }
