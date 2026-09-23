@@ -1,0 +1,108 @@
+<?xml version="1.0" ?>
+<!-- Copyright 2026 OpenSynergy Indonesia
+     Copyright 2026 PT. Simetri Sinergi Indonesia
+     License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl-3.0-standalone.html). -->
+<odoo>
+
+    <!-- Adds link_42_id..link_47_id (defined in
+         models/a8c54f3/general_audit_ws_a8c54f3.py of THIS module) to the
+         Links tab/group created by
+         ssi_general_audit_worksheet_final_report, right after the
+         activity_41 group (Management Representation) and before
+         activity_48 (Independent Auditor Report). -->
+    <record id="general_audit_ws_a8c54f3_view_form_link_42_47" model="ir.ui.view">
+        <field name="name">general_audit_ws_a8c54f3 form - link_42_47</field>
+        <field name="model">general_audit_ws_a8c54f3</field>
+        <field
+            name="inherit_id"
+            ref="ssi_general_audit_worksheet_final_report.general_audit_ws_a8c54f3_view_form"
+        />
+        <field name="arch" type="xml">
+            <data>
+                <xpath expr="//group[@name='activity_41']" position="after">
+                    <group
+                        name="activity_42"
+                        string="Financial Statement Disclosure Review"
+                    >
+                        <label for="link_42_id" string="# Worksheet" />
+                        <div class="o_row">
+                            <field name="link_42_id" class="oe_inline" force_save="1" />
+                            <label
+                                for="link_42_state"
+                                string="State"
+                                style="font-weight: bold;"
+                            />
+                            <field name="link_42_state" class="oe_inline" />
+                        </div>
+                        <field name="link_42_conclusion" string="Conclusion" />
+                    </group>
+                    <group name="activity_43" string="Financial Statement Disclosure">
+                        <label for="link_43_id" string="# Worksheet" />
+                        <div class="o_row">
+                            <field name="link_43_id" class="oe_inline" force_save="1" />
+                            <label
+                                for="link_43_state"
+                                string="State"
+                                style="font-weight: bold;"
+                            />
+                            <field name="link_43_state" class="oe_inline" />
+                        </div>
+                        <field name="link_43_conclusion" string="Conclusion" />
+                    </group>
+                    <group name="activity_44" string="Audit Quality">
+                        <label for="link_44_id" string="# Worksheet" />
+                        <div class="o_row">
+                            <field name="link_44_id" class="oe_inline" force_save="1" />
+                            <label
+                                for="link_44_state"
+                                string="State"
+                                style="font-weight: bold;"
+                            />
+                            <field name="link_44_state" class="oe_inline" />
+                        </div>
+                        <field name="link_44_conclusion" string="Conclusion" />
+                    </group>
+                    <group name="activity_45" string="Audit Evidence Evaluation">
+                        <label for="link_45_id" string="# Worksheet" />
+                        <div class="o_row">
+                            <field name="link_45_id" class="oe_inline" force_save="1" />
+                            <label
+                                for="link_45_state"
+                                string="State"
+                                style="font-weight: bold;"
+                            />
+                            <field name="link_45_state" class="oe_inline" />
+                        </div>
+                        <field name="link_45_conclusion" string="Conclusion" />
+                    </group>
+                    <group name="activity_46" string="Audit Evidence Evaluation Detail">
+                        <label for="link_46_id" string="# Worksheet" />
+                        <div class="o_row">
+                            <field name="link_46_id" class="oe_inline" force_save="1" />
+                            <label
+                                for="link_46_state"
+                                string="State"
+                                style="font-weight: bold;"
+                            />
+                            <field name="link_46_state" class="oe_inline" />
+                        </div>
+                        <field name="link_46_conclusion" string="Conclusion" />
+                    </group>
+                    <group name="activity_47" string="Proposed Audit Opinion">
+                        <label for="link_47_id" string="# Worksheet" />
+                        <div class="o_row">
+                            <field name="link_47_id" class="oe_inline" force_save="1" />
+                            <label
+                                for="link_47_state"
+                                string="State"
+                                style="font-weight: bold;"
+                            />
+                            <field name="link_47_state" class="oe_inline" />
+                        </div>
+                        <field name="link_47_conclusion" string="Conclusion" />
+                    </group>
+                </xpath>
+            </data>
+        </field>
+    </record>
+</odoo>

@@ -81,6 +81,9 @@
         # b66777d - draft_opinion_id extension (Independen Auditor Report,
         # owned by ssi_general_audit_worksheet_final_report)
         "views/general_audit_ws_b66777d_views.xml",
+        # a8c54f3 - link_42_id..link_47_id extension (Audit Final
+        # Memorandum, owned by ssi_general_audit_worksheet_final_report)
+        "views/general_audit_ws_a8c54f3_views.xml",
     ],
     "demo": [],
 }
