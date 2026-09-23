@@ -18,7 +18,7 @@
         <field name="model">general_audit_worksheet</field>
         <field name="arch" type="xml">
             <tree create="false" edit="false" delete="false">
-                <field name="title" />
+                <field name="name" />
                 <field name="parent_type_id" />
                 <field name="preparation_date" />
                 <field name="preparation_time" />
@@ -155,17 +155,16 @@
                         />
                         <field name="team_allocation_ids" nolabel="1">
                             <tree create="false" delete="false" editable="false">
-                                <button
-                                    name="action_view_source_worksheets"
-                                    type="object"
-                                    icon="fa-search"
-                                    string="Sumber"
-                                />
                                 <field name="team_id" readonly="1" />
                                 <field name="pe_allocation" readonly="1" />
                                 <field name="ra_allocation" readonly="1" />
                                 <field name="rr_allocation" readonly="1" />
                                 <field name="reporting_allocation" readonly="1" />
+                                <button
+                                    name="action_view_source_worksheets"
+                                    type="object"
+                                    icon="fa-search"
+                                />
                             </tree>
                             <form>
                                 <group>
