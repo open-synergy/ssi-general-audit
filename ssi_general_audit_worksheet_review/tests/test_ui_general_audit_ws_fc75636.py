@@ -197,7 +197,21 @@ class TestUiGeneralAuditWsFc75636(HttpSavepointCase):
 
         Module ``ssi_general_audit_worksheet_final_report``. IK:
         docs/general_audit_ws_b66777d/01-fill-final-opinion.md
+
+        Re-seeds ``cls.worksheet.draft_opinion`` first: HttpSavepointCase
+        test methods share one real, uncommitted-per-method database
+        (browser requests hit the live server, not a per-test
+        savepoint), so ``test_fill_draft_opinion`` -- run first by
+        alphabetical test order -- overwrites this same field via its
+        own tour before this method ever runs. Without re-seeding, this
+        tour's Populate assertion would look for the ORIGINAL fixture
+        text and find the OTHER tour's edited text instead, regardless
+        of which one actually ran first in a given suite ordering.
         """
+        self.worksheet.with_user(self.admin).write(
+            {"draft_opinion": "Populate tour source text - Opinion"}
+        )
+        self.worksheet.invalidate_cache()
         self.start_tour(
             "/web",
             "ssi_general_audit_worksheet_review_b66777d_fill_final_opinion",
