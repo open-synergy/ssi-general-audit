@@ -397,14 +397,19 @@ odoo.define(
                     },
                 },
 
-                // Flow 4 - Click Populate. This is an object-type button
-                // that writes the nine fields asynchronously, so the
-                // next step's trigger must name something that only
-                // exists AFTER the write lands -- here, the Opinion
-                // field's note-editable actually carrying the exact
-                // text copied from this engagement's fc75636 sibling
-                // (setUpClass fixture), not just the empty widget the
-                // form already renders before Populate is clicked. See
+                // Flow 4 - Click Populate. This writes the nine fields
+                // server-side (proven by a passing YAML scenario using
+                // the exact same method), but the already-mounted Html
+                // widget for "opinion" does not live-refresh its
+                // Summernote content from the object button's implicit
+                // reload -- unlike a one2many table (see the sibling
+                // "Final Team Allocations" tour, action_populate_team_
+                // allocation, whose row DOES appear live). Checking
+                // .note-editable right after the click times out at 0
+                // matches even though the write already landed. Force a
+                // genuine re-mount instead: leave the record (breadcrumb
+                // back to the list) and reopen it, so the Html widget is
+                // built fresh from the now-populated data. See
                 // odoo-development-ui-test skill
                 // patterns-advanced-gotchas.md §P.
                 {
@@ -414,11 +419,44 @@ odoo.define(
                     extra_trigger: ".o_form_view",
                 },
                 {
+                    content: "Back to the Independen Auditor Report list",
+                    trigger: ".breadcrumb-item:not(.active)",
+                    extra_trigger: ".o_form_view",
+                },
+                {
+                    content: "Re-open the worksheet for a fresh render",
+                    trigger: ".o_list_view .o_data_row:first .o_data_cell:first",
+                    extra_trigger: ".o_list_view",
+                },
+                {
+                    content: "Worksheet form is open again",
+                    trigger: ".o_form_view",
+                    run: function () {
+                        // Assertion only; do not trigger the default click action.
+                    },
+                },
+                {
+                    content: "Re-open the Final Audit Opinion tab",
+                    trigger: ".o_notebook .nav-link:contains(Final Audit Opinion)",
+                    extra_trigger: ".o_form_view",
+                },
+                {
                     content: "Opinion field is filled by Populate",
                     trigger:
                         ".tab-pane.active " +
                         ".o_field_widget[name='opinion'] " +
                         ".note-editable:contains(Populate tour source text - Opinion)",
+                    run: function () {
+                        // Assertion only; do not trigger the default click action.
+                    },
+                },
+                {
+                    content: "Click the Edit button again",
+                    trigger: ".o_form_button_edit",
+                },
+                {
+                    content: "Form is editable again",
+                    trigger: ".o_form_view.o_form_editable",
                     run: function () {
                         // Assertion only; do not trigger the default click action.
                     },
