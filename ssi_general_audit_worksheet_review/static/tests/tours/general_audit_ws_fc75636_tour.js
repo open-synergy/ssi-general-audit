@@ -449,10 +449,21 @@ odoo.define(
                     trigger: ".o_form_button_save",
                 },
 
-                // Post-Condition - the record is saved
+                // Post-Condition - the record is saved. write() itself
+                // returns quickly (server logs confirm ~50ms), but this
+                // page's edit-to-readonly transition tears down NINE
+                // Summernote editors at once (one per final opinion
+                // field) plus draft_opinion_id's own re-render -- CI
+                // observed this taking noticeably longer than the
+                // default 10s under full-suite load (227 tests, 38
+                // modules), well past when write() itself completed.
+                // Widen the timeout rather than add a fake intermediate
+                // gate; the trigger itself is the same proven pattern
+                // the sibling Draft Audit Opinion tour uses successfully.
                 {
                     content: "Worksheet is saved",
                     trigger: ".o_form_view.o_form_readonly",
+                    timeout: 30000,
                     run: function () {
                         // Assertion only; do not trigger the default click action.
                     },
