@@ -679,6 +679,16 @@ class GeneralAuditWSfbbe0f8(models.Model):
         "general_audit_id",
     )
     def _compute_link_5_id(self):
+        """Populate ``link_5_id`` from open/done Inherent Risk - Financial
+        Statement Level worksheets.
+
+        Searches ``general_audit_ws_c16abd7`` records sharing the same
+        ``general_audit_id`` with ``state`` in ``["open", "done"]``, plus
+        ``limit=1``: like other worksheet types, more than one open/done
+        record may exist per audit, so the first match by default order is
+        used instead of raising on multiple results (matches the pattern
+        applied to ``_compute_link_15_id`` onward).
+        """
         for record in self:
             result = False
             obj = self.env["general_audit_ws_c16abd7"]
@@ -686,7 +696,7 @@ class GeneralAuditWSfbbe0f8(models.Model):
                 ("general_audit_id", "=", record.general_audit_id.id),
                 ("state", "in", ["open", "done"]),
             ]
-            link_5_id = obj.search(criteria)
+            link_5_id = obj.search(criteria, limit=1)
             if link_5_id:
                 result = link_5_id.id
             record.link_5_id = result
@@ -736,6 +746,16 @@ class GeneralAuditWSfbbe0f8(models.Model):
         "general_audit_id",
     )
     def _compute_link_6_id(self):
+        """Populate ``link_6_id`` from open/done Team Communication
+        Pre-Engagement worksheets.
+
+        Searches ``general_audit_ws_437fc8f`` records sharing the same
+        ``general_audit_id`` with ``state`` in ``["open", "done"]``, plus
+        ``limit=1``: like other worksheet types, more than one open/done
+        record may exist per audit, so the first match by default order is
+        used instead of raising on multiple results (matches the pattern
+        applied to ``_compute_link_15_id`` onward).
+        """
         for record in self:
             result = False
             obj = self.env["general_audit_ws_437fc8f"]
@@ -743,7 +763,7 @@ class GeneralAuditWSfbbe0f8(models.Model):
                 ("general_audit_id", "=", record.general_audit_id.id),
                 ("state", "in", ["open", "done"]),
             ]
-            link_6_id = obj.search(criteria)
+            link_6_id = obj.search(criteria, limit=1)
             if link_6_id:
                 result = link_6_id.id
             record.link_6_id = result
@@ -793,6 +813,16 @@ class GeneralAuditWSfbbe0f8(models.Model):
         "general_audit_id",
     )
     def _compute_link_7_id(self):
+        """Populate ``link_7_id`` from open/done Main Business Activity
+        Process worksheets.
+
+        Searches ``general_audit_ws_ae11f7e`` records sharing the same
+        ``general_audit_id`` with ``state`` in ``["open", "done"]``, plus
+        ``limit=1``: like other worksheet types, more than one open/done
+        record may exist per audit, so the first match by default order is
+        used instead of raising on multiple results (matches the pattern
+        applied to ``_compute_link_15_id`` onward).
+        """
         for record in self:
             result = False
             obj = self.env["general_audit_ws_ae11f7e"]
@@ -800,7 +830,7 @@ class GeneralAuditWSfbbe0f8(models.Model):
                 ("general_audit_id", "=", record.general_audit_id.id),
                 ("state", "in", ["open", "done"]),
             ]
-            link_7_id = obj.search(criteria)
+            link_7_id = obj.search(criteria, limit=1)
             if link_7_id:
                 result = link_7_id.id
             record.link_7_id = result
@@ -850,6 +880,16 @@ class GeneralAuditWSfbbe0f8(models.Model):
         "general_audit_id",
     )
     def _compute_link_8_id(self):
+        """Populate ``link_8_id`` from open/done Control Risk - Entity Level
+        worksheets.
+
+        Searches ``general_audit_ws_b59b886`` records sharing the same
+        ``general_audit_id`` with ``state`` in ``["open", "done"]``, plus
+        ``limit=1``: like other worksheet types, more than one open/done
+        record may exist per audit, so the first match by default order is
+        used instead of raising on multiple results (matches the pattern
+        applied to ``_compute_link_15_id`` onward).
+        """
         for record in self:
             result = False
             obj = self.env["general_audit_ws_b59b886"]
@@ -857,7 +897,7 @@ class GeneralAuditWSfbbe0f8(models.Model):
                 ("general_audit_id", "=", record.general_audit_id.id),
                 ("state", "in", ["open", "done"]),
             ]
-            link_8_id = obj.search(criteria)
+            link_8_id = obj.search(criteria, limit=1)
             if link_8_id:
                 result = link_8_id.id
             record.link_8_id = result
@@ -908,6 +948,16 @@ class GeneralAuditWSfbbe0f8(models.Model):
         "general_audit_id",
     )
     def _compute_link_9_id(self):
+        """Populate ``link_9_id`` from open/done Competency, availability,
+        and independency of assignment team worksheets.
+
+        Searches ``general_audit_ws_b9d8a5c`` records sharing the same
+        ``general_audit_id`` with ``state`` in ``["open", "done"]``, plus
+        ``limit=1``: like other worksheet types, more than one open/done
+        record may exist per audit, so the first match by default order is
+        used instead of raising on multiple results (matches the pattern
+        applied to ``_compute_link_15_id`` onward).
+        """
         for record in self:
             result = False
             obj = self.env["general_audit_ws_b9d8a5c"]
@@ -915,7 +965,7 @@ class GeneralAuditWSfbbe0f8(models.Model):
                 ("general_audit_id", "=", record.general_audit_id.id),
                 ("state", "in", ["open", "done"]),
             ]
-            link_9_id = obj.search(criteria)
+            link_9_id = obj.search(criteria, limit=1)
             if link_9_id:
                 result = link_9_id.id
             record.link_9_id = result
@@ -966,6 +1016,16 @@ class GeneralAuditWSfbbe0f8(models.Model):
         "general_audit_id",
     )
     def _compute_link_10_id(self):
+        """Populate ``link_10_id`` from open/done External Communication
+        worksheets.
+
+        Searches ``general_audit_ws_ae48e68`` records sharing the same
+        ``general_audit_id`` with ``state`` in ``["open", "done"]``, plus
+        ``limit=1``: like other worksheet types, more than one open/done
+        record may exist per audit, so the first match by default order is
+        used instead of raising on multiple results (matches the pattern
+        applied to ``_compute_link_15_id`` onward).
+        """
         for record in self:
             result = False
             obj = self.env["general_audit_ws_ae48e68"]
@@ -973,7 +1033,7 @@ class GeneralAuditWSfbbe0f8(models.Model):
                 ("general_audit_id", "=", record.general_audit_id.id),
                 ("state", "in", ["open", "done"]),
             ]
-            link_10_id = obj.search(criteria)
+            link_10_id = obj.search(criteria, limit=1)
             if link_10_id:
                 result = link_10_id.id
             record.link_10_id = result
@@ -1085,6 +1145,16 @@ class GeneralAuditWSfbbe0f8(models.Model):
         "general_audit_id",
     )
     def _compute_link_13_id(self):
+        """Populate ``link_13_id`` from open/done Audit Working Plan
+        worksheets.
+
+        Searches ``general_audit_ws_cbbbaf4`` records sharing the same
+        ``general_audit_id`` with ``state`` in ``["open", "done"]``, plus
+        ``limit=1``: like other worksheet types, more than one open/done
+        record may exist per audit, so the first match by default order is
+        used instead of raising on multiple results (matches the pattern
+        applied to ``_compute_link_15_id`` onward).
+        """
         for record in self:
             result = False
             obj = self.env["general_audit_ws_cbbbaf4"]
@@ -1092,7 +1162,7 @@ class GeneralAuditWSfbbe0f8(models.Model):
                 ("general_audit_id", "=", record.general_audit_id.id),
                 ("state", "in", ["open", "done"]),
             ]
-            link_13_id = obj.search(criteria)
+            link_13_id = obj.search(criteria, limit=1)
             if link_13_id:
                 result = link_13_id.id
             record.link_13_id = result
@@ -1210,6 +1280,1688 @@ class GeneralAuditWSfbbe0f8(models.Model):
         ),
     )
 
+    # Acceptance and Continuance of Client Relationships Analysis
+    # LINK - 15 806c4e1
+    @api.depends(
+        "general_audit_id",
+    )
+    def _compute_link_15_id(self):
+        """Populate ``link_15_id`` from open/done Acceptance and Continuance of
+        Client Relationships Analysis worksheets.
+
+        Searches ``general_audit_ws_806c4e1`` records sharing the same
+        ``general_audit_id`` with ``state`` in ``["open", "done"]`` -- same
+        criteria pattern as ``_compute_link_5_id``, plus ``limit=1``:
+        this worksheet type may allow more than one open/done record
+        per audit (``allowed_audit=True``), so the first match by
+        default order is used instead of raising on multiple results.
+        """
+        for record in self:
+            result = False
+            obj = self.env["general_audit_ws_806c4e1"]
+            criteria = [
+                ("general_audit_id", "=", record.general_audit_id.id),
+                ("state", "in", ["open", "done"]),
+            ]
+            link_15_id = obj.search(criteria, limit=1)
+            if link_15_id:
+                result = link_15_id.id
+            record.link_15_id = result
+
+    link_15_id = fields.Many2one(
+        string="Acceptance and Continuance of Client Relationships Analysis",
+        comodel_name="general_audit_ws_806c4e1",
+        compute_sudo=True,
+        compute="_compute_link_15_id",
+        store=True,
+        help=(
+            "Link to worksheet (Acceptance and Continuance of Client "
+            "Relationships Analysis) for this General Audit. "
+            "Automatically computed and stored."
+        ),
+    )
+    link_15_state = fields.Selection(
+        string="State",
+        related="link_15_id.state",
+        help=(
+            "Workflow state of the linked Acceptance and Continuance of "
+            "Client Relationships Analysis worksheet. Read-only and "
+            "follows the linked record."
+        ),
+    )
+    link_15_conclusion_id = fields.Many2one(
+        string="Conclusion ID",
+        related="link_15_id.conclusion_id",
+        help=(
+            "Conclusion from the Acceptance and Continuance of Client "
+            "Relationships Analysis worksheet. Read-only, mirrors the "
+            "linked record."
+        ),
+    )
+    link_15_conclusion = fields.Text(
+        string="Conclusion",
+        related="link_15_id.conclusion",
+        help=(
+            "Conclusion on the Acceptance and Continuance of Client "
+            "Relationships Analysis worksheet. Read-only, mirrors the "
+            "linked record."
+        ),
+    )
+
+    # Previous Financial Reporting Issues
+    # LINK - 16 369c5a5
+    @api.depends(
+        "general_audit_id",
+    )
+    def _compute_link_16_id(self):
+        """Populate ``link_16_id`` from open/done Previous Financial Reporting
+        Issues worksheets.
+
+        Searches ``general_audit_ws_369c5a5`` records sharing the same
+        ``general_audit_id`` with ``state`` in ``["open", "done"]`` -- same
+        criteria pattern as ``_compute_link_5_id``, plus ``limit=1``:
+        this worksheet type may allow more than one open/done record
+        per audit (``allowed_audit=True``), so the first match by
+        default order is used instead of raising on multiple results.
+        """
+        for record in self:
+            result = False
+            obj = self.env["general_audit_ws_369c5a5"]
+            criteria = [
+                ("general_audit_id", "=", record.general_audit_id.id),
+                ("state", "in", ["open", "done"]),
+            ]
+            link_16_id = obj.search(criteria, limit=1)
+            if link_16_id:
+                result = link_16_id.id
+            record.link_16_id = result
+
+    link_16_id = fields.Many2one(
+        string="Previous Financial Reporting Issues",
+        comodel_name="general_audit_ws_369c5a5",
+        compute_sudo=True,
+        compute="_compute_link_16_id",
+        store=True,
+        help=(
+            "Link to worksheet (Previous Financial Reporting Issues) "
+            "for this General Audit. Automatically computed and stored."
+        ),
+    )
+    link_16_state = fields.Selection(
+        string="State",
+        related="link_16_id.state",
+        help=(
+            "Workflow state of the linked Previous Financial Reporting "
+            "Issues worksheet. Read-only and follows the linked record."
+        ),
+    )
+    link_16_conclusion_id = fields.Many2one(
+        string="Conclusion ID",
+        related="link_16_id.conclusion_id",
+        help=(
+            "Conclusion from the Previous Financial Reporting Issues "
+            "worksheet. Read-only, mirrors the linked record."
+        ),
+    )
+    link_16_conclusion = fields.Text(
+        string="Conclusion",
+        related="link_16_id.conclusion",
+        help=(
+            "Conclusion on the Previous Financial Reporting Issues "
+            "worksheet. Read-only, mirrors the linked record."
+        ),
+    )
+
+    # Management Integrity
+    # LINK - 17 f5e7049
+    @api.depends(
+        "general_audit_id",
+    )
+    def _compute_link_17_id(self):
+        """Populate ``link_17_id`` from open/done Management Integrity
+        worksheets.
+
+        Searches ``general_audit_ws_f5e7049`` records sharing the same
+        ``general_audit_id`` with ``state`` in ``["open", "done"]`` -- same
+        criteria pattern as ``_compute_link_5_id``, plus ``limit=1``:
+        this worksheet type may allow more than one open/done record
+        per audit (``allowed_audit=True``), so the first match by
+        default order is used instead of raising on multiple results.
+        """
+        for record in self:
+            result = False
+            obj = self.env["general_audit_ws_f5e7049"]
+            criteria = [
+                ("general_audit_id", "=", record.general_audit_id.id),
+                ("state", "in", ["open", "done"]),
+            ]
+            link_17_id = obj.search(criteria, limit=1)
+            if link_17_id:
+                result = link_17_id.id
+            record.link_17_id = result
+
+    link_17_id = fields.Many2one(
+        string="Management Integrity",
+        comodel_name="general_audit_ws_f5e7049",
+        compute_sudo=True,
+        compute="_compute_link_17_id",
+        store=True,
+        help=(
+            "Link to worksheet (Management Integrity) for this General "
+            "Audit. Automatically computed and stored."
+        ),
+    )
+    link_17_state = fields.Selection(
+        string="State",
+        related="link_17_id.state",
+        help=(
+            "Workflow state of the linked Management Integrity "
+            "worksheet. Read-only and follows the linked record."
+        ),
+    )
+    link_17_conclusion_id = fields.Many2one(
+        string="Conclusion ID",
+        related="link_17_id.conclusion_id",
+        help=(
+            "Conclusion from the Management Integrity worksheet. Read- "
+            "only, mirrors the linked record."
+        ),
+    )
+    link_17_conclusion = fields.Text(
+        string="Conclusion",
+        related="link_17_id.conclusion",
+        help=(
+            "Conclusion on the Management Integrity worksheet. Read- "
+            "only, mirrors the linked record."
+        ),
+    )
+
+    # Communication with Previous Auditor
+    # LINK - 18 0427d28
+    @api.depends(
+        "general_audit_id",
+    )
+    def _compute_link_18_id(self):
+        """Populate ``link_18_id`` from open/done Communication with Previous
+        Auditor worksheets.
+
+        Searches ``general_audit_ws_0427d28`` records sharing the same
+        ``general_audit_id`` with ``state`` in ``["open", "done"]`` -- same
+        criteria pattern as ``_compute_link_5_id``, plus ``limit=1``:
+        this worksheet type may allow more than one open/done record
+        per audit (``allowed_audit=True``), so the first match by
+        default order is used instead of raising on multiple results.
+        """
+        for record in self:
+            result = False
+            obj = self.env["general_audit_ws_0427d28"]
+            criteria = [
+                ("general_audit_id", "=", record.general_audit_id.id),
+                ("state", "in", ["open", "done"]),
+            ]
+            link_18_id = obj.search(criteria, limit=1)
+            if link_18_id:
+                result = link_18_id.id
+            record.link_18_id = result
+
+    link_18_id = fields.Many2one(
+        string="Communication with Previous Auditor",
+        comodel_name="general_audit_ws_0427d28",
+        compute_sudo=True,
+        compute="_compute_link_18_id",
+        store=True,
+        help=(
+            "Link to worksheet (Communication with Previous Auditor) "
+            "for this General Audit. Automatically computed and stored."
+        ),
+    )
+    link_18_state = fields.Selection(
+        string="State",
+        related="link_18_id.state",
+        help=(
+            "Workflow state of the linked Communication with Previous "
+            "Auditor worksheet. Read-only and follows the linked "
+            "record."
+        ),
+    )
+    link_18_conclusion_id = fields.Many2one(
+        string="Conclusion ID",
+        related="link_18_id.conclusion_id",
+        help=(
+            "Conclusion from the Communication with Previous Auditor "
+            "worksheet. Read-only, mirrors the linked record."
+        ),
+    )
+    link_18_conclusion = fields.Text(
+        string="Conclusion",
+        related="link_18_id.conclusion",
+        help=(
+            "Conclusion on the Communication with Previous Auditor "
+            "worksheet. Read-only, mirrors the linked record."
+        ),
+    )
+
+    # Engagement Letter
+    # LINK - 19 d8aaebc
+    @api.depends(
+        "general_audit_id",
+    )
+    def _compute_link_19_id(self):
+        """Populate ``link_19_id`` from open/done Engagement Letter worksheets.
+
+        Searches ``general_audit_ws_d8aaebc`` records sharing the same
+        ``general_audit_id`` with ``state`` in ``["open", "done"]`` -- same
+        criteria pattern as ``_compute_link_5_id``, plus ``limit=1``:
+        this worksheet type may allow more than one open/done record
+        per audit (``allowed_audit=True``), so the first match by
+        default order is used instead of raising on multiple results.
+        """
+        for record in self:
+            result = False
+            obj = self.env["general_audit_ws_d8aaebc"]
+            criteria = [
+                ("general_audit_id", "=", record.general_audit_id.id),
+                ("state", "in", ["open", "done"]),
+            ]
+            link_19_id = obj.search(criteria, limit=1)
+            if link_19_id:
+                result = link_19_id.id
+            record.link_19_id = result
+
+    link_19_id = fields.Many2one(
+        string="Engagement Letter",
+        comodel_name="general_audit_ws_d8aaebc",
+        compute_sudo=True,
+        compute="_compute_link_19_id",
+        store=True,
+        help=(
+            "Link to worksheet (Engagement Letter) for this General "
+            "Audit. Automatically computed and stored."
+        ),
+    )
+    link_19_state = fields.Selection(
+        string="State",
+        related="link_19_id.state",
+        help=(
+            "Workflow state of the linked Engagement Letter worksheet. "
+            "Read-only and follows the linked record."
+        ),
+    )
+    link_19_conclusion_id = fields.Many2one(
+        string="Conclusion ID",
+        related="link_19_id.conclusion_id",
+        help=(
+            "Conclusion from the Engagement Letter worksheet. Read- "
+            "only, mirrors the linked record."
+        ),
+    )
+    link_19_conclusion = fields.Text(
+        string="Conclusion",
+        related="link_19_id.conclusion",
+        help=(
+            "Conclusion on the Engagement Letter worksheet. Read-only, "
+            "mirrors the linked record."
+        ),
+    )
+
+    # Assignment Letter
+    # LINK - 20 c435bcd
+    @api.depends(
+        "general_audit_id",
+    )
+    def _compute_link_20_id(self):
+        """Populate ``link_20_id`` from open/done Assignment Letter worksheets.
+
+        Searches ``general_audit_ws_c435bcd`` records sharing the same
+        ``general_audit_id`` with ``state`` in ``["open", "done"]`` -- same
+        criteria pattern as ``_compute_link_5_id``, plus ``limit=1``:
+        this worksheet type may allow more than one open/done record
+        per audit (``allowed_audit=True``), so the first match by
+        default order is used instead of raising on multiple results.
+        """
+        for record in self:
+            result = False
+            obj = self.env["general_audit_ws_c435bcd"]
+            criteria = [
+                ("general_audit_id", "=", record.general_audit_id.id),
+                ("state", "in", ["open", "done"]),
+            ]
+            link_20_id = obj.search(criteria, limit=1)
+            if link_20_id:
+                result = link_20_id.id
+            record.link_20_id = result
+
+    link_20_id = fields.Many2one(
+        string="Assignment Letter",
+        comodel_name="general_audit_ws_c435bcd",
+        compute_sudo=True,
+        compute="_compute_link_20_id",
+        store=True,
+        help=(
+            "Link to worksheet (Assignment Letter) for this General "
+            "Audit. Automatically computed and stored."
+        ),
+    )
+    link_20_state = fields.Selection(
+        string="State",
+        related="link_20_id.state",
+        help=(
+            "Workflow state of the linked Assignment Letter worksheet. "
+            "Read-only and follows the linked record."
+        ),
+    )
+    link_20_conclusion_id = fields.Many2one(
+        string="Conclusion ID",
+        related="link_20_id.conclusion_id",
+        help=(
+            "Conclusion from the Assignment Letter worksheet. Read- "
+            "only, mirrors the linked record."
+        ),
+    )
+    link_20_conclusion = fields.Text(
+        string="Conclusion",
+        related="link_20_id.conclusion",
+        help=(
+            "Conclusion on the Assignment Letter worksheet. Read-only, "
+            "mirrors the linked record."
+        ),
+    )
+
+    # Independence Statement
+    # LINK - 21 09253fe
+    @api.depends(
+        "general_audit_id",
+    )
+    def _compute_link_21_id(self):
+        """Populate ``link_21_id`` from open/done Independence Statement
+        worksheets.
+
+        Searches ``general_audit_ws_09253fe`` records sharing the same
+        ``general_audit_id`` with ``state`` in ``["open", "done"]`` -- same
+        criteria pattern as ``_compute_link_5_id``, plus ``limit=1``:
+        this worksheet type may allow more than one open/done record
+        per audit (``allowed_audit=True``), so the first match by
+        default order is used instead of raising on multiple results.
+        """
+        for record in self:
+            result = False
+            obj = self.env["general_audit_ws_09253fe"]
+            criteria = [
+                ("general_audit_id", "=", record.general_audit_id.id),
+                ("state", "in", ["open", "done"]),
+            ]
+            link_21_id = obj.search(criteria, limit=1)
+            if link_21_id:
+                result = link_21_id.id
+            record.link_21_id = result
+
+    link_21_id = fields.Many2one(
+        string="Independence Statement",
+        comodel_name="general_audit_ws_09253fe",
+        compute_sudo=True,
+        compute="_compute_link_21_id",
+        store=True,
+        help=(
+            "Link to worksheet (Independence Statement) for this "
+            "General Audit. Automatically computed and stored."
+        ),
+    )
+    link_21_state = fields.Selection(
+        string="State",
+        related="link_21_id.state",
+        help=(
+            "Workflow state of the linked Independence Statement "
+            "worksheet. Read-only and follows the linked record."
+        ),
+    )
+    link_21_conclusion_id = fields.Many2one(
+        string="Conclusion ID",
+        related="link_21_id.conclusion_id",
+        help=(
+            "Conclusion from the Independence Statement worksheet. "
+            "Read-only, mirrors the linked record."
+        ),
+    )
+    link_21_conclusion = fields.Text(
+        string="Conclusion",
+        related="link_21_id.conclusion",
+        help=(
+            "Conclusion on the Independence Statement worksheet. Read- "
+            "only, mirrors the linked record."
+        ),
+    )
+
+    # Client Assistance Package
+    # LINK - 22 abd82ed
+    @api.depends(
+        "general_audit_id",
+    )
+    def _compute_link_22_id(self):
+        """Populate ``link_22_id`` from open/done Client Assistance Package
+        worksheets.
+
+        Searches ``general_audit_ws_abd82ed`` records sharing the same
+        ``general_audit_id`` with ``state`` in ``["open", "done"]`` -- same
+        criteria pattern as ``_compute_link_5_id``, plus ``limit=1``:
+        this worksheet type may allow more than one open/done record
+        per audit (``allowed_audit=True``), so the first match by
+        default order is used instead of raising on multiple results.
+        """
+        for record in self:
+            result = False
+            obj = self.env["general_audit_ws_abd82ed"]
+            criteria = [
+                ("general_audit_id", "=", record.general_audit_id.id),
+                ("state", "in", ["open", "done"]),
+            ]
+            link_22_id = obj.search(criteria, limit=1)
+            if link_22_id:
+                result = link_22_id.id
+            record.link_22_id = result
+
+    link_22_id = fields.Many2one(
+        string="Client Assistance Package",
+        comodel_name="general_audit_ws_abd82ed",
+        compute_sudo=True,
+        compute="_compute_link_22_id",
+        store=True,
+        help=(
+            "Link to worksheet (Client Assistance Package) for this "
+            "General Audit. Automatically computed and stored."
+        ),
+    )
+    link_22_state = fields.Selection(
+        string="State",
+        related="link_22_id.state",
+        help=(
+            "Workflow state of the linked Client Assistance Package "
+            "worksheet. Read-only and follows the linked record."
+        ),
+    )
+    link_22_conclusion_id = fields.Many2one(
+        string="Conclusion ID",
+        related="link_22_id.conclusion_id",
+        help=(
+            "Conclusion from the Client Assistance Package worksheet. "
+            "Read-only, mirrors the linked record."
+        ),
+    )
+    link_22_conclusion = fields.Text(
+        string="Conclusion",
+        related="link_22_id.conclusion",
+        help=(
+            "Conclusion on the Client Assistance Package worksheet. "
+            "Read-only, mirrors the linked record."
+        ),
+    )
+
+    # Trial Balance
+    # LINK - 23 a033cc6
+    @api.depends(
+        "general_audit_id",
+    )
+    def _compute_link_23_id(self):
+        """Populate ``link_23_id`` from open/done Trial Balance worksheets.
+
+        Searches ``general_audit_ws_a033cc6`` records sharing the same
+        ``general_audit_id`` with ``state`` in ``["open", "done"]`` -- same
+        criteria pattern as ``_compute_link_5_id``, plus ``limit=1``:
+        this worksheet type may allow more than one open/done record
+        per audit (``allowed_audit=True``), so the first match by
+        default order is used instead of raising on multiple results.
+        """
+        for record in self:
+            result = False
+            obj = self.env["general_audit_ws_a033cc6"]
+            criteria = [
+                ("general_audit_id", "=", record.general_audit_id.id),
+                ("state", "in", ["open", "done"]),
+            ]
+            link_23_id = obj.search(criteria, limit=1)
+            if link_23_id:
+                result = link_23_id.id
+            record.link_23_id = result
+
+    link_23_id = fields.Many2one(
+        string="Trial Balance",
+        comodel_name="general_audit_ws_a033cc6",
+        compute_sudo=True,
+        compute="_compute_link_23_id",
+        store=True,
+        help=(
+            "Link to worksheet (Trial Balance) for this General Audit. "
+            "Automatically computed and stored."
+        ),
+    )
+    link_23_state = fields.Selection(
+        string="State",
+        related="link_23_id.state",
+        help=(
+            "Workflow state of the linked Trial Balance worksheet. "
+            "Read-only and follows the linked record."
+        ),
+    )
+    link_23_conclusion_id = fields.Many2one(
+        string="Conclusion ID",
+        related="link_23_id.conclusion_id",
+        help=(
+            "Conclusion from the Trial Balance worksheet. Read-only, "
+            "mirrors the linked record."
+        ),
+    )
+    link_23_conclusion = fields.Text(
+        string="Conclusion",
+        related="link_23_id.conclusion",
+        help=(
+            "Conclusion on the Trial Balance worksheet. Read-only, "
+            "mirrors the linked record."
+        ),
+    )
+
+    # Preliminary Analytic Procedure
+    # LINK - 24 c8740d4
+    @api.depends(
+        "general_audit_id",
+    )
+    def _compute_link_24_id(self):
+        """Populate ``link_24_id`` from open/done Preliminary Analytic
+        Procedure worksheets.
+
+        Searches ``general_audit_ws_c8740d4`` records sharing the same
+        ``general_audit_id`` with ``state`` in ``["open", "done"]`` -- same
+        criteria pattern as ``_compute_link_5_id``, plus ``limit=1``:
+        this worksheet type may allow more than one open/done record
+        per audit (``allowed_audit=True``), so the first match by
+        default order is used instead of raising on multiple results.
+        """
+        for record in self:
+            result = False
+            obj = self.env["general_audit_ws_c8740d4"]
+            criteria = [
+                ("general_audit_id", "=", record.general_audit_id.id),
+                ("state", "in", ["open", "done"]),
+            ]
+            link_24_id = obj.search(criteria, limit=1)
+            if link_24_id:
+                result = link_24_id.id
+            record.link_24_id = result
+
+    link_24_id = fields.Many2one(
+        string="Preliminary Analytic Procedure",
+        comodel_name="general_audit_ws_c8740d4",
+        compute_sudo=True,
+        compute="_compute_link_24_id",
+        store=True,
+        help=(
+            "Link to worksheet (Preliminary Analytic Procedure) for "
+            "this General Audit. Automatically computed and stored."
+        ),
+    )
+    link_24_state = fields.Selection(
+        string="State",
+        related="link_24_id.state",
+        help=(
+            "Workflow state of the linked Preliminary Analytic "
+            "Procedure worksheet. Read-only and follows the linked "
+            "record."
+        ),
+    )
+    link_24_conclusion_id = fields.Many2one(
+        string="Conclusion ID",
+        related="link_24_id.conclusion_id",
+        help=(
+            "Conclusion from the Preliminary Analytic Procedure "
+            "worksheet. Read-only, mirrors the linked record."
+        ),
+    )
+    link_24_conclusion = fields.Text(
+        string="Conclusion",
+        related="link_24_id.conclusion",
+        help=(
+            "Conclusion on the Preliminary Analytic Procedure "
+            "worksheet. Read-only, mirrors the linked record."
+        ),
+    )
+
+    # Preliminary Analytic Procedure - Vertical & Horizontal Analysis
+    # LINK - 25 b32655a
+    @api.depends(
+        "general_audit_id",
+    )
+    def _compute_link_25_id(self):
+        """Populate ``link_25_id`` from open/done Preliminary Analytic
+        Procedure - Vertical & Horizontal Analysis worksheets.
+
+        Searches ``general_audit_ws_b32655a`` records sharing the same
+        ``general_audit_id`` with ``state`` in ``["open", "done"]`` -- same
+        criteria pattern as ``_compute_link_5_id``, plus ``limit=1``:
+        this worksheet type may allow more than one open/done record
+        per audit (``allowed_audit=True``), so the first match by
+        default order is used instead of raising on multiple results.
+        """
+        for record in self:
+            result = False
+            obj = self.env["general_audit_ws_b32655a"]
+            criteria = [
+                ("general_audit_id", "=", record.general_audit_id.id),
+                ("state", "in", ["open", "done"]),
+            ]
+            link_25_id = obj.search(criteria, limit=1)
+            if link_25_id:
+                result = link_25_id.id
+            record.link_25_id = result
+
+    link_25_id = fields.Many2one(
+        string="Preliminary Analytic Procedure - Vertical & Horizontal Analysis",
+        comodel_name="general_audit_ws_b32655a",
+        compute_sudo=True,
+        compute="_compute_link_25_id",
+        store=True,
+        help=(
+            "Link to worksheet (Preliminary Analytic Procedure - "
+            "Vertical & Horizontal Analysis) for this General Audit. "
+            "Automatically computed and stored."
+        ),
+    )
+    link_25_state = fields.Selection(
+        string="State",
+        related="link_25_id.state",
+        help=(
+            "Workflow state of the linked Preliminary Analytic "
+            "Procedure - Vertical & Horizontal Analysis worksheet. "
+            "Read-only and follows the linked record."
+        ),
+    )
+    link_25_conclusion_id = fields.Many2one(
+        string="Conclusion ID",
+        related="link_25_id.conclusion_id",
+        help=(
+            "Conclusion from the Preliminary Analytic Procedure - "
+            "Vertical & Horizontal Analysis worksheet. Read-only, "
+            "mirrors the linked record."
+        ),
+    )
+    link_25_conclusion = fields.Text(
+        string="Conclusion",
+        related="link_25_id.conclusion",
+        help=(
+            "Conclusion on the Preliminary Analytic Procedure - "
+            "Vertical & Horizontal Analysis worksheet. Read-only, "
+            "mirrors the linked record."
+        ),
+    )
+
+    # Preliminary Analytic Procedure - Ratio Analysis
+    # LINK - 26 d4289e4
+    @api.depends(
+        "general_audit_id",
+    )
+    def _compute_link_26_id(self):
+        """Populate ``link_26_id`` from open/done Preliminary Analytic
+        Procedure - Ratio Analysis worksheets.
+
+        Searches ``general_audit_ws_d4289e4`` records sharing the same
+        ``general_audit_id`` with ``state`` in ``["open", "done"]`` -- same
+        criteria pattern as ``_compute_link_5_id``, plus ``limit=1``:
+        this worksheet type may allow more than one open/done record
+        per audit (``allowed_audit=True``), so the first match by
+        default order is used instead of raising on multiple results.
+        """
+        for record in self:
+            result = False
+            obj = self.env["general_audit_ws_d4289e4"]
+            criteria = [
+                ("general_audit_id", "=", record.general_audit_id.id),
+                ("state", "in", ["open", "done"]),
+            ]
+            link_26_id = obj.search(criteria, limit=1)
+            if link_26_id:
+                result = link_26_id.id
+            record.link_26_id = result
+
+    link_26_id = fields.Many2one(
+        string="Preliminary Analytic Procedure - Ratio Analysis",
+        comodel_name="general_audit_ws_d4289e4",
+        compute_sudo=True,
+        compute="_compute_link_26_id",
+        store=True,
+        help=(
+            "Link to worksheet (Preliminary Analytic Procedure - Ratio "
+            "Analysis) for this General Audit. Automatically computed "
+            "and stored."
+        ),
+    )
+    link_26_state = fields.Selection(
+        string="State",
+        related="link_26_id.state",
+        help=(
+            "Workflow state of the linked Preliminary Analytic "
+            "Procedure - Ratio Analysis worksheet. Read-only and "
+            "follows the linked record."
+        ),
+    )
+    link_26_conclusion_id = fields.Many2one(
+        string="Conclusion ID",
+        related="link_26_id.conclusion_id",
+        help=(
+            "Conclusion from the Preliminary Analytic Procedure - Ratio "
+            "Analysis worksheet. Read-only, mirrors the linked record."
+        ),
+    )
+    link_26_conclusion = fields.Text(
+        string="Conclusion",
+        related="link_26_id.conclusion",
+        help=(
+            "Conclusion on the Preliminary Analytic Procedure - Ratio "
+            "Analysis worksheet. Read-only, mirrors the linked record."
+        ),
+    )
+
+    # General Information and Legal Aspect
+    # LINK - 27 ddf034c
+    @api.depends(
+        "general_audit_id",
+    )
+    def _compute_link_27_id(self):
+        """Populate ``link_27_id`` from open/done General Information and Legal
+        Aspect worksheets.
+
+        Searches ``general_audit_ws_ddf034c`` records sharing the same
+        ``general_audit_id`` with ``state`` in ``["open", "done"]`` -- same
+        criteria pattern as ``_compute_link_5_id``, plus ``limit=1``:
+        this worksheet type may allow more than one open/done record
+        per audit (``allowed_audit=True``), so the first match by
+        default order is used instead of raising on multiple results.
+        """
+        for record in self:
+            result = False
+            obj = self.env["general_audit_ws_ddf034c"]
+            criteria = [
+                ("general_audit_id", "=", record.general_audit_id.id),
+                ("state", "in", ["open", "done"]),
+            ]
+            link_27_id = obj.search(criteria, limit=1)
+            if link_27_id:
+                result = link_27_id.id
+            record.link_27_id = result
+
+    link_27_id = fields.Many2one(
+        string="General Information and Legal Aspect",
+        comodel_name="general_audit_ws_ddf034c",
+        compute_sudo=True,
+        compute="_compute_link_27_id",
+        store=True,
+        help=(
+            "Link to worksheet (General Information and Legal Aspect) "
+            "for this General Audit. Automatically computed and stored."
+        ),
+    )
+    link_27_state = fields.Selection(
+        string="State",
+        related="link_27_id.state",
+        help=(
+            "Workflow state of the linked General Information and Legal "
+            "Aspect worksheet. Read-only and follows the linked record."
+        ),
+    )
+    link_27_conclusion_id = fields.Many2one(
+        string="Conclusion ID",
+        related="link_27_id.conclusion_id",
+        help=(
+            "Conclusion from the General Information and Legal Aspect "
+            "worksheet. Read-only, mirrors the linked record."
+        ),
+    )
+    link_27_conclusion = fields.Text(
+        string="Conclusion",
+        related="link_27_id.conclusion",
+        help=(
+            "Conclusion on the General Information and Legal Aspect "
+            "worksheet. Read-only, mirrors the linked record."
+        ),
+    )
+
+    # Structure Organization and Responsibility
+    # LINK - 28 e78a3c6
+    @api.depends(
+        "general_audit_id",
+    )
+    def _compute_link_28_id(self):
+        """Populate ``link_28_id`` from open/done Structure Organization and
+        Responsibility worksheets.
+
+        Searches ``general_audit_ws_e78a3c6`` records sharing the same
+        ``general_audit_id`` with ``state`` in ``["open", "done"]`` -- same
+        criteria pattern as ``_compute_link_5_id``, plus ``limit=1``:
+        this worksheet type may allow more than one open/done record
+        per audit (``allowed_audit=True``), so the first match by
+        default order is used instead of raising on multiple results.
+        """
+        for record in self:
+            result = False
+            obj = self.env["general_audit_ws_e78a3c6"]
+            criteria = [
+                ("general_audit_id", "=", record.general_audit_id.id),
+                ("state", "in", ["open", "done"]),
+            ]
+            link_28_id = obj.search(criteria, limit=1)
+            if link_28_id:
+                result = link_28_id.id
+            record.link_28_id = result
+
+    link_28_id = fields.Many2one(
+        string="Structure Organization and Responsibility",
+        comodel_name="general_audit_ws_e78a3c6",
+        compute_sudo=True,
+        compute="_compute_link_28_id",
+        store=True,
+        help=(
+            "Link to worksheet (Structure Organization and "
+            "Responsibility) for this General Audit. Automatically "
+            "computed and stored."
+        ),
+    )
+    link_28_state = fields.Selection(
+        string="State",
+        related="link_28_id.state",
+        help=(
+            "Workflow state of the linked Structure Organization and "
+            "Responsibility worksheet. Read-only and follows the linked "
+            "record."
+        ),
+    )
+    link_28_conclusion_id = fields.Many2one(
+        string="Conclusion ID",
+        related="link_28_id.conclusion_id",
+        help=(
+            "Conclusion from the Structure Organization and "
+            "Responsibility worksheet. Read-only, mirrors the linked "
+            "record."
+        ),
+    )
+    link_28_conclusion = fields.Text(
+        string="Conclusion",
+        related="link_28_id.conclusion",
+        help=(
+            "Conclusion on the Structure Organization and "
+            "Responsibility worksheet. Read-only, mirrors the linked "
+            "record."
+        ),
+    )
+
+    # Understanding of Relevant Regulation
+    # LINK - 29 a13a30e
+    @api.depends(
+        "general_audit_id",
+    )
+    def _compute_link_29_id(self):
+        """Populate ``link_29_id`` from open/done Understanding of Relevant
+        Regulation worksheets.
+
+        Searches ``general_audit_ws_a13a30e`` records sharing the same
+        ``general_audit_id`` with ``state`` in ``["open", "done"]`` -- same
+        criteria pattern as ``_compute_link_5_id``, plus ``limit=1``:
+        this worksheet type may allow more than one open/done record
+        per audit (``allowed_audit=True``), so the first match by
+        default order is used instead of raising on multiple results.
+        """
+        for record in self:
+            result = False
+            obj = self.env["general_audit_ws_a13a30e"]
+            criteria = [
+                ("general_audit_id", "=", record.general_audit_id.id),
+                ("state", "in", ["open", "done"]),
+            ]
+            link_29_id = obj.search(criteria, limit=1)
+            if link_29_id:
+                result = link_29_id.id
+            record.link_29_id = result
+
+    link_29_id = fields.Many2one(
+        string="Understanding of Relevant Regulation",
+        comodel_name="general_audit_ws_a13a30e",
+        compute_sudo=True,
+        compute="_compute_link_29_id",
+        store=True,
+        help=(
+            "Link to worksheet (Understanding of Relevant Regulation) "
+            "for this General Audit. Automatically computed and stored."
+        ),
+    )
+    link_29_state = fields.Selection(
+        string="State",
+        related="link_29_id.state",
+        help=(
+            "Workflow state of the linked Understanding of Relevant "
+            "Regulation worksheet. Read-only and follows the linked "
+            "record."
+        ),
+    )
+    link_29_conclusion_id = fields.Many2one(
+        string="Conclusion ID",
+        related="link_29_id.conclusion_id",
+        help=(
+            "Conclusion from the Understanding of Relevant Regulation "
+            "worksheet. Read-only, mirrors the linked record."
+        ),
+    )
+    link_29_conclusion = fields.Text(
+        string="Conclusion",
+        related="link_29_id.conclusion",
+        help=(
+            "Conclusion on the Understanding of Relevant Regulation "
+            "worksheet. Read-only, mirrors the linked record."
+        ),
+    )
+
+    # Going Concern Analysis
+    # LINK - 30 c0d0898
+    @api.depends(
+        "general_audit_id",
+    )
+    def _compute_link_30_id(self):
+        """Populate ``link_30_id`` from open/done Going Concern Analysis
+        worksheets.
+
+        Searches ``general_audit_ws_c0d0898`` records sharing the same
+        ``general_audit_id`` with ``state`` in ``["open", "done"]`` -- same
+        criteria pattern as ``_compute_link_5_id``, plus ``limit=1``:
+        this worksheet type may allow more than one open/done record
+        per audit (``allowed_audit=True``), so the first match by
+        default order is used instead of raising on multiple results.
+        """
+        for record in self:
+            result = False
+            obj = self.env["general_audit_ws_c0d0898"]
+            criteria = [
+                ("general_audit_id", "=", record.general_audit_id.id),
+                ("state", "in", ["open", "done"]),
+            ]
+            link_30_id = obj.search(criteria, limit=1)
+            if link_30_id:
+                result = link_30_id.id
+            record.link_30_id = result
+
+    link_30_id = fields.Many2one(
+        string="Going Concern Analysis",
+        comodel_name="general_audit_ws_c0d0898",
+        compute_sudo=True,
+        compute="_compute_link_30_id",
+        store=True,
+        help=(
+            "Link to worksheet (Going Concern Analysis) for this "
+            "General Audit. Automatically computed and stored."
+        ),
+    )
+    link_30_state = fields.Selection(
+        string="State",
+        related="link_30_id.state",
+        help=(
+            "Workflow state of the linked Going Concern Analysis "
+            "worksheet. Read-only and follows the linked record."
+        ),
+    )
+    link_30_conclusion_id = fields.Many2one(
+        string="Conclusion ID",
+        related="link_30_id.conclusion_id",
+        help=(
+            "Conclusion from the Going Concern Analysis worksheet. "
+            "Read-only, mirrors the linked record."
+        ),
+    )
+    link_30_conclusion = fields.Text(
+        string="Conclusion",
+        related="link_30_id.conclusion",
+        help=(
+            "Conclusion on the Going Concern Analysis worksheet. Read- "
+            "only, mirrors the linked record."
+        ),
+    )
+
+    # Understanding of Preparation of Financial Statement
+    # LINK - 31 f6a227
+    @api.depends(
+        "general_audit_id",
+    )
+    def _compute_link_31_id(self):
+        """Populate ``link_31_id`` from open/done Understanding of Preparation
+        of Financial Statement worksheets.
+
+        Searches ``general_audit_ws_f6a227`` records sharing the same
+        ``general_audit_id`` with ``state`` in ``["open", "done"]`` -- same
+        criteria pattern as ``_compute_link_5_id``, plus ``limit=1``:
+        this worksheet type may allow more than one open/done record
+        per audit (``allowed_audit=True``), so the first match by
+        default order is used instead of raising on multiple results.
+        """
+        for record in self:
+            result = False
+            obj = self.env["general_audit_ws_f6a227"]
+            criteria = [
+                ("general_audit_id", "=", record.general_audit_id.id),
+                ("state", "in", ["open", "done"]),
+            ]
+            link_31_id = obj.search(criteria, limit=1)
+            if link_31_id:
+                result = link_31_id.id
+            record.link_31_id = result
+
+    link_31_id = fields.Many2one(
+        string="Understanding of Preparation of Financial Statement",
+        comodel_name="general_audit_ws_f6a227",
+        compute_sudo=True,
+        compute="_compute_link_31_id",
+        store=True,
+        help=(
+            "Link to worksheet (Understanding of Preparation of "
+            "Financial Statement) for this General Audit. Automatically "
+            "computed and stored."
+        ),
+    )
+    link_31_state = fields.Selection(
+        string="State",
+        related="link_31_id.state",
+        help=(
+            "Workflow state of the linked Understanding of Preparation "
+            "of Financial Statement worksheet. Read-only and follows "
+            "the linked record."
+        ),
+    )
+    link_31_conclusion_id = fields.Many2one(
+        string="Conclusion ID",
+        related="link_31_id.conclusion_id",
+        help=(
+            "Conclusion from the Understanding of Preparation of "
+            "Financial Statement worksheet. Read-only, mirrors the "
+            "linked record."
+        ),
+    )
+    link_31_conclusion = fields.Text(
+        string="Conclusion",
+        related="link_31_id.conclusion",
+        help=(
+            "Conclusion on the Understanding of Preparation of "
+            "Financial Statement worksheet. Read-only, mirrors the "
+            "linked record."
+        ),
+    )
+
+    # Fraud Factor Analysis
+    # LINK - 32 c0e0eec
+    @api.depends(
+        "general_audit_id",
+    )
+    def _compute_link_32_id(self):
+        """Populate ``link_32_id`` from open/done Fraud Factor Analysis
+        worksheets.
+
+        Searches ``general_audit_ws_c0e0eec`` records sharing the same
+        ``general_audit_id`` with ``state`` in ``["open", "done"]`` -- same
+        criteria pattern as ``_compute_link_5_id``, plus ``limit=1``:
+        this worksheet type may allow more than one open/done record
+        per audit (``allowed_audit=True``), so the first match by
+        default order is used instead of raising on multiple results.
+        """
+        for record in self:
+            result = False
+            obj = self.env["general_audit_ws_c0e0eec"]
+            criteria = [
+                ("general_audit_id", "=", record.general_audit_id.id),
+                ("state", "in", ["open", "done"]),
+            ]
+            link_32_id = obj.search(criteria, limit=1)
+            if link_32_id:
+                result = link_32_id.id
+            record.link_32_id = result
+
+    link_32_id = fields.Many2one(
+        string="Fraud Factor Analysis",
+        comodel_name="general_audit_ws_c0e0eec",
+        compute_sudo=True,
+        compute="_compute_link_32_id",
+        store=True,
+        help=(
+            "Link to worksheet (Fraud Factor Analysis) for this General "
+            "Audit. Automatically computed and stored."
+        ),
+    )
+    link_32_state = fields.Selection(
+        string="State",
+        related="link_32_id.state",
+        help=(
+            "Workflow state of the linked Fraud Factor Analysis "
+            "worksheet. Read-only and follows the linked record."
+        ),
+    )
+    link_32_conclusion_id = fields.Many2one(
+        string="Conclusion ID",
+        related="link_32_id.conclusion_id",
+        help=(
+            "Conclusion from the Fraud Factor Analysis worksheet. Read- "
+            "only, mirrors the linked record."
+        ),
+    )
+    link_32_conclusion = fields.Text(
+        string="Conclusion",
+        related="link_32_id.conclusion",
+        help=(
+            "Conclusion on the Fraud Factor Analysis worksheet. Read- "
+            "only, mirrors the linked record."
+        ),
+    )
+
+    # Inherent Risk - Account Level
+    # LINK - 33 a418d89
+    @api.depends(
+        "general_audit_id",
+    )
+    def _compute_link_33_id(self):
+        """Populate ``link_33_id`` from open/done Inherent Risk - Account Level
+        worksheets.
+
+        Searches ``general_audit_ws_a418d89`` records sharing the same
+        ``general_audit_id`` with ``state`` in ``["open", "done"]`` -- same
+        criteria pattern as ``_compute_link_5_id``, plus ``limit=1``:
+        this worksheet type may allow more than one open/done record
+        per audit (``allowed_audit=True``), so the first match by
+        default order is used instead of raising on multiple results.
+        """
+        for record in self:
+            result = False
+            obj = self.env["general_audit_ws_a418d89"]
+            criteria = [
+                ("general_audit_id", "=", record.general_audit_id.id),
+                ("state", "in", ["open", "done"]),
+            ]
+            link_33_id = obj.search(criteria, limit=1)
+            if link_33_id:
+                result = link_33_id.id
+            record.link_33_id = result
+
+    link_33_id = fields.Many2one(
+        string="Inherent Risk - Account Level",
+        comodel_name="general_audit_ws_a418d89",
+        compute_sudo=True,
+        compute="_compute_link_33_id",
+        store=True,
+        help=(
+            "Link to worksheet (Inherent Risk - Account Level) for this "
+            "General Audit. Automatically computed and stored."
+        ),
+    )
+    link_33_state = fields.Selection(
+        string="State",
+        related="link_33_id.state",
+        help=(
+            "Workflow state of the linked Inherent Risk - Account Level "
+            "worksheet. Read-only and follows the linked record."
+        ),
+    )
+    link_33_conclusion_id = fields.Many2one(
+        string="Conclusion ID",
+        related="link_33_id.conclusion_id",
+        help=(
+            "Conclusion from the Inherent Risk - Account Level "
+            "worksheet. Read-only, mirrors the linked record."
+        ),
+    )
+    link_33_conclusion = fields.Text(
+        string="Conclusion",
+        related="link_33_id.conclusion",
+        help=(
+            "Conclusion on the Inherent Risk - Account Level worksheet. "
+            "Read-only, mirrors the linked record."
+        ),
+    )
+
+    # ROMM
+    # LINK - 34 de417a6
+    @api.depends(
+        "general_audit_id",
+    )
+    def _compute_link_34_id(self):
+        """Populate ``link_34_id`` from open/done ROMM worksheets.
+
+        Searches ``general_audit_ws_de417a6`` records sharing the same
+        ``general_audit_id`` with ``state`` in ``["open", "done"]`` -- same
+        criteria pattern as ``_compute_link_5_id``, plus ``limit=1``:
+        this worksheet type may allow more than one open/done record
+        per audit (``allowed_audit=True``), so the first match by
+        default order is used instead of raising on multiple results.
+        """
+        for record in self:
+            result = False
+            obj = self.env["general_audit_ws_de417a6"]
+            criteria = [
+                ("general_audit_id", "=", record.general_audit_id.id),
+                ("state", "in", ["open", "done"]),
+            ]
+            link_34_id = obj.search(criteria, limit=1)
+            if link_34_id:
+                result = link_34_id.id
+            record.link_34_id = result
+
+    link_34_id = fields.Many2one(
+        string="ROMM",
+        comodel_name="general_audit_ws_de417a6",
+        compute_sudo=True,
+        compute="_compute_link_34_id",
+        store=True,
+        help=(
+            "Link to worksheet (ROMM) for this General Audit. "
+            "Automatically computed and stored."
+        ),
+    )
+    link_34_state = fields.Selection(
+        string="State",
+        related="link_34_id.state",
+        help=(
+            "Workflow state of the linked ROMM worksheet. Read-only and "
+            "follows the linked record."
+        ),
+    )
+    link_34_conclusion_id = fields.Many2one(
+        string="Conclusion ID",
+        related="link_34_id.conclusion_id",
+        help=(
+            "Conclusion from the ROMM worksheet. Read-only, mirrors the "
+            "linked record."
+        ),
+    )
+    link_34_conclusion = fields.Text(
+        string="Conclusion",
+        related="link_34_id.conclusion",
+        help=(
+            "Conclusion on the ROMM worksheet. Read-only, mirrors the " "linked record."
+        ),
+    )
+
+    # ROMM - Financial Statement Level
+    # LINK - 35 c165170
+    @api.depends(
+        "general_audit_id",
+    )
+    def _compute_link_35_id(self):
+        """Populate ``link_35_id`` from open/done ROMM - Financial Statement
+        Level worksheets.
+
+        Searches ``general_audit_ws_c165170`` records sharing the same
+        ``general_audit_id`` with ``state`` in ``["open", "done"]`` -- same
+        criteria pattern as ``_compute_link_5_id``, plus ``limit=1``:
+        this worksheet type may allow more than one open/done record
+        per audit (``allowed_audit=True``), so the first match by
+        default order is used instead of raising on multiple results.
+        """
+        for record in self:
+            result = False
+            obj = self.env["general_audit_ws_c165170"]
+            criteria = [
+                ("general_audit_id", "=", record.general_audit_id.id),
+                ("state", "in", ["open", "done"]),
+            ]
+            link_35_id = obj.search(criteria, limit=1)
+            if link_35_id:
+                result = link_35_id.id
+            record.link_35_id = result
+
+    link_35_id = fields.Many2one(
+        string="ROMM - Financial Statement Level",
+        comodel_name="general_audit_ws_c165170",
+        compute_sudo=True,
+        compute="_compute_link_35_id",
+        store=True,
+        help=(
+            "Link to worksheet (ROMM - Financial Statement Level) for "
+            "this General Audit. Automatically computed and stored."
+        ),
+    )
+    link_35_state = fields.Selection(
+        string="State",
+        related="link_35_id.state",
+        help=(
+            "Workflow state of the linked ROMM - Financial Statement "
+            "Level worksheet. Read-only and follows the linked record."
+        ),
+    )
+    link_35_conclusion_id = fields.Many2one(
+        string="Conclusion ID",
+        related="link_35_id.conclusion_id",
+        help=(
+            "Conclusion from the ROMM - Financial Statement Level "
+            "worksheet. Read-only, mirrors the linked record."
+        ),
+    )
+    link_35_conclusion = fields.Text(
+        string="Conclusion",
+        related="link_35_id.conclusion",
+        help=(
+            "Conclusion on the ROMM - Financial Statement Level "
+            "worksheet. Read-only, mirrors the linked record."
+        ),
+    )
+
+    # ROMM - Account Level
+    # LINK - 36 d66d87a
+    @api.depends(
+        "general_audit_id",
+    )
+    def _compute_link_36_id(self):
+        """Populate ``link_36_id`` from open/done ROMM - Account Level
+        worksheets.
+
+        Searches ``general_audit_ws_d66d87a`` records sharing the same
+        ``general_audit_id`` with ``state`` in ``["open", "done"]`` -- same
+        criteria pattern as ``_compute_link_5_id``, plus ``limit=1``:
+        this worksheet type may allow more than one open/done record
+        per audit (``allowed_audit=True``), so the first match by
+        default order is used instead of raising on multiple results.
+        """
+        for record in self:
+            result = False
+            obj = self.env["general_audit_ws_d66d87a"]
+            criteria = [
+                ("general_audit_id", "=", record.general_audit_id.id),
+                ("state", "in", ["open", "done"]),
+            ]
+            link_36_id = obj.search(criteria, limit=1)
+            if link_36_id:
+                result = link_36_id.id
+            record.link_36_id = result
+
+    link_36_id = fields.Many2one(
+        string="ROMM - Account Level",
+        comodel_name="general_audit_ws_d66d87a",
+        compute_sudo=True,
+        compute="_compute_link_36_id",
+        store=True,
+        help=(
+            "Link to worksheet (ROMM - Account Level) for this General "
+            "Audit. Automatically computed and stored."
+        ),
+    )
+    link_36_state = fields.Selection(
+        string="State",
+        related="link_36_id.state",
+        help=(
+            "Workflow state of the linked ROMM - Account Level "
+            "worksheet. Read-only and follows the linked record."
+        ),
+    )
+    link_36_conclusion_id = fields.Many2one(
+        string="Conclusion ID",
+        related="link_36_id.conclusion_id",
+        help=(
+            "Conclusion from the ROMM - Account Level worksheet. Read- "
+            "only, mirrors the linked record."
+        ),
+    )
+    link_36_conclusion = fields.Text(
+        string="Conclusion",
+        related="link_36_id.conclusion",
+        help=(
+            "Conclusion on the ROMM - Account Level worksheet. Read- "
+            "only, mirrors the linked record."
+        ),
+    )
+
+    # Team Communication - Risk Assessment
+    # LINK - 37 b1f820c
+    @api.depends(
+        "general_audit_id",
+    )
+    def _compute_link_37_id(self):
+        """Populate ``link_37_id`` from open/done Team Communication - Risk
+        Assessment worksheets.
+
+        Searches ``general_audit_ws_b1f820c`` records sharing the same
+        ``general_audit_id`` with ``state`` in ``["open", "done"]`` -- same
+        criteria pattern as ``_compute_link_5_id``, plus ``limit=1``:
+        this worksheet type may allow more than one open/done record
+        per audit (``allowed_audit=True``), so the first match by
+        default order is used instead of raising on multiple results.
+        """
+        for record in self:
+            result = False
+            obj = self.env["general_audit_ws_b1f820c"]
+            criteria = [
+                ("general_audit_id", "=", record.general_audit_id.id),
+                ("state", "in", ["open", "done"]),
+            ]
+            link_37_id = obj.search(criteria, limit=1)
+            if link_37_id:
+                result = link_37_id.id
+            record.link_37_id = result
+
+    link_37_id = fields.Many2one(
+        string="Team Communication - Risk Assessment",
+        comodel_name="general_audit_ws_b1f820c",
+        compute_sudo=True,
+        compute="_compute_link_37_id",
+        store=True,
+        help=(
+            "Link to worksheet (Team Communication - Risk Assessment) "
+            "for this General Audit. Automatically computed and stored."
+        ),
+    )
+    link_37_state = fields.Selection(
+        string="State",
+        related="link_37_id.state",
+        help=(
+            "Workflow state of the linked Team Communication - Risk "
+            "Assessment worksheet. Read-only and follows the linked "
+            "record."
+        ),
+    )
+    link_37_conclusion_id = fields.Many2one(
+        string="Conclusion ID",
+        related="link_37_id.conclusion_id",
+        help=(
+            "Conclusion from the Team Communication - Risk Assessment "
+            "worksheet. Read-only, mirrors the linked record."
+        ),
+    )
+    link_37_conclusion = fields.Text(
+        string="Conclusion",
+        related="link_37_id.conclusion",
+        help=(
+            "Conclusion on the Team Communication - Risk Assessment "
+            "worksheet. Read-only, mirrors the linked record."
+        ),
+    )
+
+    # Communication with Management
+    # LINK - 38 b3ff42f
+    @api.depends(
+        "general_audit_id",
+    )
+    def _compute_link_38_id(self):
+        """Populate ``link_38_id`` from open/done Communication with Management
+        worksheets.
+
+        Searches ``general_audit_ws_b3ff42f`` records sharing the same
+        ``general_audit_id`` with ``state`` in ``["open", "done"]`` -- same
+        criteria pattern as ``_compute_link_5_id``, plus ``limit=1``:
+        this worksheet type may allow more than one open/done record
+        per audit (``allowed_audit=True``), so the first match by
+        default order is used instead of raising on multiple results.
+        """
+        for record in self:
+            result = False
+            obj = self.env["general_audit_ws_b3ff42f"]
+            criteria = [
+                ("general_audit_id", "=", record.general_audit_id.id),
+                ("state", "in", ["open", "done"]),
+            ]
+            link_38_id = obj.search(criteria, limit=1)
+            if link_38_id:
+                result = link_38_id.id
+            record.link_38_id = result
+
+    link_38_id = fields.Many2one(
+        string="Communication with Management",
+        comodel_name="general_audit_ws_b3ff42f",
+        compute_sudo=True,
+        compute="_compute_link_38_id",
+        store=True,
+        help=(
+            "Link to worksheet (Communication with Management) for this "
+            "General Audit. Automatically computed and stored."
+        ),
+    )
+    link_38_state = fields.Selection(
+        string="State",
+        related="link_38_id.state",
+        help=(
+            "Workflow state of the linked Communication with Management "
+            "worksheet. Read-only and follows the linked record."
+        ),
+    )
+    link_38_conclusion_id = fields.Many2one(
+        string="Conclusion ID",
+        related="link_38_id.conclusion_id",
+        help=(
+            "Conclusion from the Communication with Management "
+            "worksheet. Read-only, mirrors the linked record."
+        ),
+    )
+    link_38_conclusion = fields.Text(
+        string="Conclusion",
+        related="link_38_id.conclusion",
+        help=(
+            "Conclusion on the Communication with Management worksheet. "
+            "Read-only, mirrors the linked record."
+        ),
+    )
+
+    # Communication with TCWG
+    # LINK - 39 c94e287
+    @api.depends(
+        "general_audit_id",
+    )
+    def _compute_link_39_id(self):
+        """Populate ``link_39_id`` from open/done Communication with TCWG
+        worksheets.
+
+        Searches ``general_audit_ws_c94e287`` records sharing the same
+        ``general_audit_id`` with ``state`` in ``["open", "done"]`` -- same
+        criteria pattern as ``_compute_link_5_id``, plus ``limit=1``:
+        this worksheet type may allow more than one open/done record
+        per audit (``allowed_audit=True``), so the first match by
+        default order is used instead of raising on multiple results.
+        """
+        for record in self:
+            result = False
+            obj = self.env["general_audit_ws_c94e287"]
+            criteria = [
+                ("general_audit_id", "=", record.general_audit_id.id),
+                ("state", "in", ["open", "done"]),
+            ]
+            link_39_id = obj.search(criteria, limit=1)
+            if link_39_id:
+                result = link_39_id.id
+            record.link_39_id = result
+
+    link_39_id = fields.Many2one(
+        string="Communication with TCWG",
+        comodel_name="general_audit_ws_c94e287",
+        compute_sudo=True,
+        compute="_compute_link_39_id",
+        store=True,
+        help=(
+            "Link to worksheet (Communication with TCWG) for this "
+            "General Audit. Automatically computed and stored."
+        ),
+    )
+    link_39_state = fields.Selection(
+        string="State",
+        related="link_39_id.state",
+        help=(
+            "Workflow state of the linked Communication with TCWG "
+            "worksheet. Read-only and follows the linked record."
+        ),
+    )
+    link_39_conclusion_id = fields.Many2one(
+        string="Conclusion ID",
+        related="link_39_id.conclusion_id",
+        help=(
+            "Conclusion from the Communication with TCWG worksheet. "
+            "Read-only, mirrors the linked record."
+        ),
+    )
+    link_39_conclusion = fields.Text(
+        string="Conclusion",
+        related="link_39_id.conclusion",
+        help=(
+            "Conclusion on the Communication with TCWG worksheet. Read- "
+            "only, mirrors the linked record."
+        ),
+    )
+
+    # Use of Internal Auditor's Work Result
+    # LINK - 40 d133f46
+    @api.depends(
+        "general_audit_id",
+    )
+    def _compute_link_40_id(self):
+        """Populate ``link_40_id`` from open/done Use of Internal Auditor's
+        Work Result worksheets.
+
+        Searches ``general_audit_ws_d133f46`` records sharing the same
+        ``general_audit_id`` with ``state`` in ``["open", "done"]`` -- same
+        criteria pattern as ``_compute_link_5_id``, plus ``limit=1``:
+        this worksheet type may allow more than one open/done record
+        per audit (``allowed_audit=True``), so the first match by
+        default order is used instead of raising on multiple results.
+        """
+        for record in self:
+            result = False
+            obj = self.env["general_audit_ws_d133f46"]
+            criteria = [
+                ("general_audit_id", "=", record.general_audit_id.id),
+                ("state", "in", ["open", "done"]),
+            ]
+            link_40_id = obj.search(criteria, limit=1)
+            if link_40_id:
+                result = link_40_id.id
+            record.link_40_id = result
+
+    link_40_id = fields.Many2one(
+        string="Use of Internal Auditor's Work Result",
+        comodel_name="general_audit_ws_d133f46",
+        compute_sudo=True,
+        compute="_compute_link_40_id",
+        store=True,
+        help=(
+            "Link to worksheet (Use of Internal Auditor's Work Result) "
+            "for this General Audit. Automatically computed and stored."
+        ),
+    )
+    link_40_state = fields.Selection(
+        string="State",
+        related="link_40_id.state",
+        help=(
+            "Workflow state of the linked Use of Internal Auditor's "
+            "Work Result worksheet. Read-only and follows the linked "
+            "record."
+        ),
+    )
+    link_40_conclusion_id = fields.Many2one(
+        string="Conclusion ID",
+        related="link_40_id.conclusion_id",
+        help=(
+            "Conclusion from the Use of Internal Auditor's Work Result "
+            "worksheet. Read-only, mirrors the linked record."
+        ),
+    )
+    link_40_conclusion = fields.Text(
+        string="Conclusion",
+        related="link_40_id.conclusion",
+        help=(
+            "Conclusion on the Use of Internal Auditor's Work Result "
+            "worksheet. Read-only, mirrors the linked record."
+        ),
+    )
+
     def action_reload_links(self):
         for record in self.sudo():
             record._reload_links()
@@ -1230,6 +2982,32 @@ class GeneralAuditWSfbbe0f8(models.Model):
         self._compute_link_12_ids()
         self._compute_link_13_id()
         self._compute_link_14_ids()
+        self._compute_link_15_id()
+        self._compute_link_16_id()
+        self._compute_link_17_id()
+        self._compute_link_18_id()
+        self._compute_link_19_id()
+        self._compute_link_20_id()
+        self._compute_link_21_id()
+        self._compute_link_22_id()
+        self._compute_link_23_id()
+        self._compute_link_24_id()
+        self._compute_link_25_id()
+        self._compute_link_26_id()
+        self._compute_link_27_id()
+        self._compute_link_28_id()
+        self._compute_link_29_id()
+        self._compute_link_30_id()
+        self._compute_link_31_id()
+        self._compute_link_32_id()
+        self._compute_link_33_id()
+        self._compute_link_34_id()
+        self._compute_link_35_id()
+        self._compute_link_36_id()
+        self._compute_link_37_id()
+        self._compute_link_38_id()
+        self._compute_link_39_id()
+        self._compute_link_40_id()
 
     def _get_fields_required_before_confirm(self):
         _super = super(GeneralAuditWSfbbe0f8, self)
@@ -1269,6 +3047,36 @@ class GeneralAuditWSfbbe0f8(models.Model):
             "link_12_ids": _("Significant Account"),
             "link_13_id": _("Audit Working Plan"),
             "link_14_ids": _("Data Collection"),
+            "link_15_id": _(
+                "Acceptance and Continuance of Client " "Relationships Analysis"
+            ),
+            "link_16_id": _("Previous Financial Reporting Issues"),
+            "link_17_id": _("Management Integrity"),
+            "link_18_id": _("Communication with Previous Auditor"),
+            "link_19_id": _("Engagement Letter"),
+            "link_20_id": _("Assignment Letter"),
+            "link_21_id": _("Independence Statement"),
+            "link_22_id": _("Client Assistance Package"),
+            "link_23_id": _("Trial Balance"),
+            "link_24_id": _("Preliminary Analytic Procedure"),
+            "link_25_id": _(
+                "Preliminary Analytic Procedure - Vertical & " "Horizontal Analysis"
+            ),
+            "link_26_id": _("Preliminary Analytic Procedure - Ratio Analysis"),
+            "link_27_id": _("General Information and Legal Aspect"),
+            "link_28_id": _("Structure Organization and Responsibility"),
+            "link_29_id": _("Understanding of Relevant Regulation"),
+            "link_30_id": _("Going Concern Analysis"),
+            "link_31_id": _("Understanding of Preparation of Financial " "Statement"),
+            "link_32_id": _("Fraud Factor Analysis"),
+            "link_33_id": _("Inherent Risk - Account Level"),
+            "link_34_id": _("ROMM"),
+            "link_35_id": _("ROMM - Financial Statement Level"),
+            "link_36_id": _("ROMM - Account Level"),
+            "link_37_id": _("Team Communication - Risk Assessment"),
+            "link_38_id": _("Communication with Management"),
+            "link_39_id": _("Communication with TCWG"),
+            "link_40_id": _("Use of Internal Auditor's Work Result"),
         }
 
     @api.model
