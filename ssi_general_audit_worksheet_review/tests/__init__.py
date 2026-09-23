@@ -3,6 +3,7 @@
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl-3.0-standalone.html).
 
 from . import test_general_audit_ws_a025441
+from . import test_general_audit_ws_a8c54f3_links
 from . import test_general_audit_ws_bcc0d76
 from . import test_general_audit_ws_cae598e
 from . import test_general_audit_ws_checklist
