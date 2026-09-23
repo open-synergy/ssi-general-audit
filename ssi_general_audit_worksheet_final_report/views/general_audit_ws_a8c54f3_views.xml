@@ -47,18 +47,16 @@
                         attrs="{'readonly': [('state', '!=', 'open')]}"
                     />
                 </xpath>
-                <xpath expr="//notebook" position="before">
-                    <button
-                        name="action_reload_links"
-                        type="object"
-                        string="Reload"
-                        class="oe_highlight"
-                        icon="fa-refresh"
-                        attrs="{'invisible': [('state', 'not in', ['open'])]}"
-                    />
-                </xpath>
                 <xpath expr="//page[1]" position="before">
                     <page name="links" string="Links">
+                        <button
+                            name="action_reload_links"
+                            type="object"
+                            string="Reload"
+                            class="oe_highlight"
+                            icon="fa-refresh"
+                            attrs="{'invisible': [('state', 'not in', ['open'])]}"
+                        />
                         <group name="activity_1" string="General Ledger">
                             <label for="link_1_id" string="# Worksheet" />
                             <div class="o_row">
