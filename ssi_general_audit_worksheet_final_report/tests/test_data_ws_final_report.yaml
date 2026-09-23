@@ -2710,14 +2710,20 @@ scenarios:
           model_name: "general_audit_ws_a8c54f3"
 
       - step: "Create a worksheet using that uncategorized type, prepared by the user"
+        # NOTE: type_id (not parent_type_id) is what must be set to the
+        # uncategorized type here. general_audit_worksheet_mixin.write()
+        # unconditionally re-syncs parent_type_id from type_id on every
+        # write (see _update_parent_worksheet()), so setting them to
+        # DIFFERENT values here would silently lose parent_type_id's
+        # override the moment anything writes to this record again
+        # (e.g. sequence assignment right after create).
         action: "create"
         model: "general_audit_ws_a8c54f3"
         save_as: "uncategorized_worksheet"
         as_user: "base.user_admin"
         values:
           general_audit_id: "REC: audit.id"
-          type_id: "REC: ws_type_a8c54f3.id"
-          parent_type_id: "REC: type_no_category.id"
+          type_id: "REC: type_no_category.id"
           user_id: "REC: uncategorized_member_user.id"
           preparation_time: 6
 

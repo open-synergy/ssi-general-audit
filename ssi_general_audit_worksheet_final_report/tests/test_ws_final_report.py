@@ -109,6 +109,28 @@ class TestWSFinalReport(YamlTransactionCase):
         ws_type_b66777d = self.env.ref(
             "ssi_general_audit_worksheet_final_report.worksheet_type_b66777d"
         )
+        # general_audit_worksheet_mixin._check_unique_general_audit()
+        # rejects a second record sharing (general_audit_id, type_id)
+        # unless that type's allowed_audit=True (worksheet_type_a8c54f3
+        # is not). review_worksheet and the "different employee"
+        # worksheet below need their OWN distinct type_id -- of the
+        # SAME model_name -- so they can coexist with prep_worksheet on
+        # the same "audit".
+        WorksheetType = self.env["general_audit_worksheet_type"]
+        ws_type_a8c54f3_review = WorksheetType.create(
+            {
+                "name": "Test Type - Source Worksheets Review",
+                "code": "/",
+                "model_name": "general_audit_ws_a8c54f3",
+            }
+        )
+        ws_type_a8c54f3_other_employee = WorksheetType.create(
+            {
+                "name": "Test Type - Source Worksheets Other Employee",
+                "code": "/",
+                "model_name": "general_audit_ws_a8c54f3",
+            }
+        )
 
         member_user = self.env["res.users"].create(
             {
@@ -149,7 +171,7 @@ class TestWSFinalReport(YamlTransactionCase):
         review_worksheet = self.env["general_audit_ws_a8c54f3"].create(
             {
                 "general_audit_id": audit.id,
-                "type_id": ws_type_a8c54f3.id,
+                "type_id": ws_type_a8c54f3_review.id,
             }
         )
         review_worksheet.write({"reviewer_id": member_user.id, "review_time": 6})
@@ -158,7 +180,7 @@ class TestWSFinalReport(YamlTransactionCase):
         self.env["general_audit_ws_a8c54f3"].create(
             {
                 "general_audit_id": audit.id,
-                "type_id": ws_type_a8c54f3.id,
+                "type_id": ws_type_a8c54f3_other_employee.id,
                 "user_id": other_user.id,
                 "preparation_time": 2,
             }

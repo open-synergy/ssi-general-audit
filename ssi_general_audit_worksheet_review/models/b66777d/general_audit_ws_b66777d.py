@@ -6,6 +6,15 @@ from odoo import api, fields, models
 
 
 class GeneralAuditWSb66777d(models.Model):
+    """Extends ``general_audit_ws_b66777d`` with ``draft_opinion_id``.
+
+    Defined in THIS module (``ssi_general_audit_worksheet_review``,
+    the owner of ``general_audit_ws_fc75636``) rather than in
+    ``ssi_general_audit_worksheet_final_report`` itself -- see
+    ``_compute_draft_opinion_id``'s docstring below for why declaring
+    the field there would risk a permanently unresolved comodel.
+    """
+
     _inherit = "general_audit_ws_b66777d"
 
     @api.depends("general_audit_id")
