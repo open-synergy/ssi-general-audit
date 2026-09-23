@@ -2255,19 +2255,29 @@ scenarios:
 
   # ------------------------------------------------------------------
   # general_audit_ws_b66777d - Final Team Allocations (issue #383,
-  # revision 2 -- open question #2 answered "yes, break down per audit
-  # phase"): action_populate_team_allocation() sums preparation_time +
-  # review_time, from every general_audit_worksheet of the same
+  # revision 3 -- design revision requested after browser review:
+  # "Total"/"AWP Total"/"Difference" are worksheet-wide aggregates,
+  # not per-row columns anymore -- general_audit_ws_b66777d.team_
+  # allocation itself now only carries the four realized phase
+  # columns). action_populate_team_allocation() sums preparation_time
+  # + review_time, from every general_audit_worksheet of the same
   # engagement, per hr.employee AND per audit phase, where the phase
   # comes from each worksheet's own parent_type_id.category_id -- NOT
-  # a flat single number per worksheet. Two worksheets in DIFFERENT
-  # categories (PE and RA) for the same Team Member prove the
-  # breakdown lands in the right bucket, not just the right total
-  # (positive)
+  # a flat single number per worksheet. TWO Team Members, each
+  # contributing to a DIFFERENT pair of phases (PE/RA for the first,
+  # RR/Reporting for the second), prove: (1) each row's own breakdown
+  # lands in the right bucket, and (2) the parent worksheet's
+  # total_pe_allocation/total_ra_allocation/total_rr_allocation/
+  # total_reporting_allocation/total_allocation are the SUM ACROSS
+  # BOTH ROWS, not a copy of a single row (positive). AWP is not
+  # installed in this module's own test suite, so every
+  # awp_total_*_allocation is the best-effort 0 (see
+  # _get_awp_worksheet's docstring) and every diff_*_allocation
+  # equals the matching total_*_allocation.
   # ------------------------------------------------------------------
   - name:
-      "Worksheet b66777d - action_populate_team_allocation breaks down
-      preparation/review time per Team Member and audit phase"
+      "Worksheet b66777d - action_populate_team_allocation aggregates per-row realized
+      phases into worksheet-wide Total/AWP Total/Difference"
     steps:
       - step: "Get PE (Pre-Engagement) worksheet type category"
         action: "ref"
@@ -2278,6 +2288,16 @@ scenarios:
         action: "ref"
         xml_id: "ssi_general_audit.worksheet_type_category_ra"
         save_as: "category_ra"
+
+      - step: "Get RE (Risk Responses) worksheet type category"
+        action: "ref"
+        xml_id: "ssi_general_audit.worksheet_type_category_rr"
+        save_as: "category_rr"
+
+      - step: "Get WR (Windup & Reporting) worksheet type category"
+        action: "ref"
+        xml_id: "ssi_general_audit.worksheet_type_category_wr"
+        save_as: "category_wr"
 
       - step: "Create a worksheet type in the PE category"
         action: "create"
@@ -2301,7 +2321,29 @@ scenarios:
           model_name: "general_audit_ws_a8c54f3"
           category_id: "REC: category_ra.id"
 
-      - step: "Create team member user"
+      - step: "Create a worksheet type in the RE (Risk Responses) category"
+        action: "create"
+        model: "general_audit_worksheet_type"
+        save_as: "type_rr"
+        as_user: "base.user_admin"
+        values:
+          name: "Final Team Allocations - Test Type RE"
+          code: "/"
+          model_name: "general_audit_ws_a8c54f3"
+          category_id: "REC: category_rr.id"
+
+      - step: "Create a worksheet type in the WR (Windup & Reporting) category"
+        action: "create"
+        model: "general_audit_worksheet_type"
+        save_as: "type_wr"
+        as_user: "base.user_admin"
+        values:
+          name: "Final Team Allocations - Test Type WR"
+          code: "/"
+          model_name: "general_audit_ws_a8c54f3"
+          category_id: "REC: category_wr.id"
+
+      - step: "Create first team member user (PE/RA)"
         action: "create"
         model: "res.users"
         save_as: "team_member_user"
@@ -2311,7 +2353,7 @@ scenarios:
           login: "team_allocation_test_user@example.com"
           email: "team_allocation_test_user@example.com"
 
-      - step: "Link the team member user to a fresh employee"
+      - step: "Link the first team member user to a fresh employee"
         action: "create"
         model: "hr.employee"
         save_as: "team_member_employee"
@@ -2319,6 +2361,25 @@ scenarios:
         values:
           name: "Test Team Member - Final Team Allocations"
           user_id: "REC: team_member_user.id"
+
+      - step: "Create second team member user (RE/WR)"
+        action: "create"
+        model: "res.users"
+        save_as: "second_member_user"
+        as_user: "base.user_admin"
+        values:
+          name: "Team Allocation Test User 2"
+          login: "team_allocation_test_user_2@example.com"
+          email: "team_allocation_test_user_2@example.com"
+
+      - step: "Link the second team member user to a fresh employee"
+        action: "create"
+        model: "hr.employee"
+        save_as: "second_member_employee"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Team Member 2 - Final Team Allocations"
+          user_id: "REC: second_member_user.id"
 
       - step: "Create worksheet b66777d - this is the row's own worksheet"
         action: "create"
@@ -2329,7 +2390,7 @@ scenarios:
           general_audit_id: "REC: audit.id"
           type_id: "REC: ws_type_b66777d.id"
 
-      - step: "Create a PE-category worksheet prepared by the team member"
+      - step: "Create a PE-category worksheet prepared by the first team member"
         action: "create"
         model: "general_audit_ws_a8c54f3"
         save_as: "alloc_worksheet_pe"
@@ -2359,6 +2420,36 @@ scenarios:
           reviewer_id: "REC: team_member_user.id"
           review_time: 5
 
+      - step: "Create a RE-category worksheet prepared by the second team member"
+        action: "create"
+        model: "general_audit_ws_a8c54f3"
+        save_as: "alloc_worksheet_rr"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_a8c54f3.id"
+          parent_type_id: "REC: type_rr.id"
+          user_id: "REC: second_member_user.id"
+          preparation_time: 3
+
+      - step: "Create a fourth worksheet, in the WR category"
+        action: "create"
+        model: "general_audit_ws_a8c54f3"
+        save_as: "alloc_worksheet_wr"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_a8c54f3.id"
+          parent_type_id: "REC: type_wr.id"
+
+      - step: "Set the WR-category worksheet's reviewer and review_time"
+        action: "write"
+        target: "alloc_worksheet_wr"
+        as_user: "base.user_admin"
+        values:
+          reviewer_id: "REC: second_member_user.id"
+          review_time: 2
+
       - step: "Assert team_allocation_ids is empty before Populate"
         action: "assert"
         target: "alloc_worksheet"
@@ -2379,16 +2470,16 @@ scenarios:
         target: "alloc_worksheet"
         method: "invalidate_cache"
 
-      - step: "Assert exactly one team_allocation_ids row was created"
+      - step: "Assert exactly two team_allocation_ids rows were created"
         action: "assert"
         target: "alloc_worksheet"
         asserts:
           team_allocation_ids:
             type: "o2m"
             check: "count"
-            expected_count: 1
+            expected_count: 2
 
-      - step: "Find the created row for the team member"
+      - step: "Find the created row for the first team member"
         action: "search"
         model: "general_audit_ws_b66777d.team_allocation"
         domain:
@@ -2397,12 +2488,20 @@ scenarios:
         save_as: "alloc_row"
         expect_count: 1
 
+      - step: "Find the created row for the second team member"
+        action: "search"
+        model: "general_audit_ws_b66777d.team_allocation"
+        domain:
+          - ["worksheet_id", "=", "REC: alloc_worksheet.id"]
+          - ["team_id", "=", "REC: second_member_employee.id"]
+        save_as: "alloc_row_2"
+        expect_count: 1
+
       - step:
-          "Assert the row puts the 8 preparation hours into pe_allocation and the 5
-          review hours into ra_allocation (not summed flat into one number) -- and the
-          other two phases stay 0; AWP is not installed in this module's own test suite
-          (see _get_awp_team_allocation_line's docstring), so every awp_* field is the
-          best-effort 0 and diff_allocation equals total_allocation"
+          "Assert the first row puts the 8 preparation hours into pe_allocation and the
+          5 review hours into ra_allocation (not summed flat into one number) -- the
+          other two phases stay 0. Total/AWP Total/Difference are no longer columns on
+          this row model (moved to the parent worksheet, asserted below)"
         action: "assert"
         target: "alloc_row"
         asserts:
@@ -2418,27 +2517,81 @@ scenarios:
           reporting_allocation:
             type: "value"
             expected: 0
+
+      - step:
+          "Assert the second row puts the 3 preparation hours into rr_allocation and the
+          2 review hours into reporting_allocation -- the other two phases stay 0"
+        action: "assert"
+        target: "alloc_row_2"
+        asserts:
+          pe_allocation:
+            type: "value"
+            expected: 0
+          ra_allocation:
+            type: "value"
+            expected: 0
+          rr_allocation:
+            type: "value"
+            expected: 3
+          reporting_allocation:
+            type: "value"
+            expected: 2
+
+      - step:
+          "Assert the parent worksheet's total_*_allocation fields are the SUM across
+          BOTH rows (8+0=8, 5+0=5, 0+3=3, 0+2=2, grand total 18) -- not a copy of either
+          single row. AWP is not installed in this module's own test suite, so every
+          awp_total_*_allocation is the best-effort 0 (see _get_awp_worksheet's
+          docstring) and every diff_*_allocation equals the matching total_*_allocation"
+        action: "assert"
+        target: "alloc_worksheet"
+        refresh: true
+        asserts:
+          total_pe_allocation:
+            type: "value"
+            expected: 8
+          total_ra_allocation:
+            type: "value"
+            expected: 5
+          total_rr_allocation:
+            type: "value"
+            expected: 3
+          total_reporting_allocation:
+            type: "value"
+            expected: 2
           total_allocation:
             type: "value"
-            expected: 13
-          awp_pe_allocation:
+            expected: 18
+          awp_total_pe_allocation:
             type: "value"
             expected: 0
-          awp_ra_allocation:
+          awp_total_ra_allocation:
             type: "value"
             expected: 0
-          awp_rr_allocation:
+          awp_total_rr_allocation:
             type: "value"
             expected: 0
-          awp_reporting_allocation:
+          awp_total_reporting_allocation:
             type: "value"
             expected: 0
           awp_total_allocation:
             type: "value"
             expected: 0
+          diff_pe_allocation:
+            type: "value"
+            expected: 8
+          diff_ra_allocation:
+            type: "value"
+            expected: 5
+          diff_rr_allocation:
+            type: "value"
+            expected: 3
+          diff_reporting_allocation:
+            type: "value"
+            expected: 2
           diff_allocation:
             type: "value"
-            expected: 13
+            expected: 18
 
   # ------------------------------------------------------------------
   # general_audit_ws_b66777d - Final Team Allocations (issue #383):
@@ -2493,9 +2646,9 @@ scenarios:
 
       - step:
           "Assert no error was raised and no row exists for the idle Team Member -- AWP
-          is not installed in this module's own test suite, so a missing Audit Working
-          Plan row for a contributing member would likewise resolve to a 0 diff rather
-          than error (see _get_awp_team_allocation_line's docstring)"
+          is not installed in this module's own test suite, so the parent worksheet's
+          own awp_total_*_allocation fields would likewise resolve to best-effort 0
+          rather than error (see _get_awp_worksheet's docstring)"
         action: "search"
         model: "general_audit_ws_b66777d.team_allocation"
         domain:
@@ -2589,9 +2742,11 @@ scenarios:
         expect_count: 1
 
       - step:
-          "Assert the row exists (they did record time) but every phase column, and
-          therefore Total Allocation, is 0 -- the 6 preparation hours are not
-          attributable to any phase since the worksheet's type has no category_id"
+          "Assert the row exists (they did record time) but every phase column is 0 --
+          the 6 preparation hours are not attributable to any phase since the
+          worksheet's type has no category_id. Total Allocation is no longer a column on
+          this row model (moved to the parent worksheet); it is asserted below instead,
+          on uncategorized_alloc_worksheet's own total_allocation"
         action: "assert"
         target: "uncategorized_row"
         asserts:
@@ -2605,6 +2760,27 @@ scenarios:
             type: "value"
             expected: 0
           reporting_allocation:
+            type: "value"
+            expected: 0
+
+      - step:
+          "Assert the parent worksheet's total_allocation is likewise 0 -- the row
+          exists (contributing employee) but every phase, and therefore the grand total,
+          is 0 since the worksheet's type has no category_id"
+        action: "assert"
+        target: "uncategorized_alloc_worksheet"
+        refresh: true
+        asserts:
+          total_pe_allocation:
+            type: "value"
+            expected: 0
+          total_ra_allocation:
+            type: "value"
+            expected: 0
+          total_rr_allocation:
+            type: "value"
+            expected: 0
+          total_reporting_allocation:
             type: "value"
             expected: 0
           total_allocation:

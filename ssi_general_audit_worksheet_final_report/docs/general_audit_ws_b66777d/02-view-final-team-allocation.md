@@ -36,19 +36,22 @@
      Allocation**, **Windup & Reporting Allocation**: sum of Preparation Time + Review
      Time, per phase, across this engagement's worksheets attributed to this Team Member
      — the phase of each worksheet comes from its own Worksheet Type Category.
-   - **Total Allocation**: the sum of the four phase columns above.
-   - **AWP Total Allocation**: this Team Member's planned total hours from the same
-     engagement's Audit Working Plan, when available (0 otherwise).
-   - **Difference vs AWP**: Total Allocation minus AWP Total Allocation.
-   - The row's form view additionally shows the four AWP phase columns (AWP
-     Pre-Engagement/Risk Assessment/Risk Responses/Windup & Reporting Allocation) the
-     realized phase columns are compared against.
+   - Below the table, three side-by-side groups show the same figures aggregated across
+     **every** row (not per employee), matching the Audit Working Plan's own layout:
+     - **Total (Independent Auditor Report)**: sum of every Team Member's realized
+       Pre-Engagement/Risk Assessment/Risk Responses/Windup & Reporting/grand total
+       allocation.
+     - **Total (AWP)**: this engagement's planned totals from the same engagement's
+       Audit Working Plan (best-effort 0 when not available).
+     - **Difference**: Total (Independent Auditor Report) minus Total (AWP), per phase
+       and grand total.
    - Because Populate always re-reads every worksheet's current data from scratch,
      clicking it again after Preparation/Review Time is filled in later (e.g. for an
      engagement that was already in progress when this feature was introduced) always
-     picks up the latest values — this doubles as the "Reload" behaviour for stale data.
-5. Review the table. All columns are read-only; there is no manual add/edit/delete on
-   this tab.
+     picks up the latest values, including the three aggregate groups below the table —
+     this doubles as the "Reload" behaviour for stale data.
+5. Review the table and the three aggregate groups below it. All fields are read-only;
+   there is no manual add/edit/delete on this tab.
 
 ## Post-Condition
 

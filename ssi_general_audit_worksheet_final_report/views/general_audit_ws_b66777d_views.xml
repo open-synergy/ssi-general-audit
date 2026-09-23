@@ -133,9 +133,6 @@
                                 <field name="ra_allocation" readonly="1" />
                                 <field name="rr_allocation" readonly="1" />
                                 <field name="reporting_allocation" readonly="1" />
-                                <field name="total_allocation" readonly="1" />
-                                <field name="awp_total_allocation" readonly="1" />
-                                <field name="diff_allocation" readonly="1" />
                             </tree>
                             <form>
                                 <group>
@@ -144,19 +141,107 @@
                                     <field name="ra_allocation" readonly="1" />
                                     <field name="rr_allocation" readonly="1" />
                                     <field name="reporting_allocation" readonly="1" />
-                                    <field name="total_allocation" readonly="1" />
-                                    <field name="awp_pe_allocation" readonly="1" />
-                                    <field name="awp_ra_allocation" readonly="1" />
-                                    <field name="awp_rr_allocation" readonly="1" />
-                                    <field
-                                        name="awp_reporting_allocation"
-                                        readonly="1"
-                                    />
-                                    <field name="awp_total_allocation" readonly="1" />
-                                    <field name="diff_allocation" readonly="1" />
                                 </group>
                             </form>
                         </field>
+                        <group name="final_team_allocation_totals" colspan="4" col="3">
+                            <group
+                                name="final_team_allocation_total"
+                                string="Total (Independent Auditor Report)"
+                                colspan="1"
+                                col="2"
+                            >
+                                <field
+                                    name="total_pe_allocation"
+                                    string="Pre-Engagement"
+                                    readonly="1"
+                                />
+                                <field
+                                    name="total_ra_allocation"
+                                    string="Risk Assessment"
+                                    readonly="1"
+                                />
+                                <field
+                                    name="total_rr_allocation"
+                                    string="Risk Responses"
+                                    readonly="1"
+                                />
+                                <field
+                                    name="total_reporting_allocation"
+                                    string="Windup &amp; Reporting"
+                                    readonly="1"
+                                />
+                                <field
+                                    name="total_allocation"
+                                    string="Total"
+                                    readonly="1"
+                                />
+                            </group>
+                            <group
+                                name="final_team_allocation_awp_total"
+                                string="Total (AWP)"
+                                colspan="1"
+                                col="2"
+                            >
+                                <field
+                                    name="awp_total_pe_allocation"
+                                    string="Pre-Engagement"
+                                    readonly="1"
+                                />
+                                <field
+                                    name="awp_total_ra_allocation"
+                                    string="Risk Assessment"
+                                    readonly="1"
+                                />
+                                <field
+                                    name="awp_total_rr_allocation"
+                                    string="Risk Responses"
+                                    readonly="1"
+                                />
+                                <field
+                                    name="awp_total_reporting_allocation"
+                                    string="Windup &amp; Reporting"
+                                    readonly="1"
+                                />
+                                <field
+                                    name="awp_total_allocation"
+                                    string="Total"
+                                    readonly="1"
+                                />
+                            </group>
+                            <group
+                                name="final_team_allocation_diff"
+                                string="Difference"
+                                colspan="1"
+                                col="2"
+                            >
+                                <field
+                                    name="diff_pe_allocation"
+                                    string="Pre-Engagement"
+                                    readonly="1"
+                                />
+                                <field
+                                    name="diff_ra_allocation"
+                                    string="Risk Assessment"
+                                    readonly="1"
+                                />
+                                <field
+                                    name="diff_rr_allocation"
+                                    string="Risk Responses"
+                                    readonly="1"
+                                />
+                                <field
+                                    name="diff_reporting_allocation"
+                                    string="Windup &amp; Reporting"
+                                    readonly="1"
+                                />
+                                <field
+                                    name="diff_allocation"
+                                    string="Total"
+                                    readonly="1"
+                                />
+                            </group>
+                        </group>
                     </page>
                 </xpath>
             </data>

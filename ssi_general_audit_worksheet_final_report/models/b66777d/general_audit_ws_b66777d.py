@@ -2,7 +2,7 @@
 # Copyright 2025 PT. Simetri Sinergi Indonesia
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl-3.0-standalone.html).
 
-from odoo import fields, models
+from odoo import api, fields, models
 
 from odoo.addons.ssi_decorator import ssi_decorator
 
@@ -307,6 +307,252 @@ class GeneralAuditWSb66777d(models.Model):
         ),
     )
 
+    @api.depends(
+        "team_allocation_ids",
+        "team_allocation_ids.pe_allocation",
+        "team_allocation_ids.ra_allocation",
+        "team_allocation_ids.rr_allocation",
+        "team_allocation_ids.reporting_allocation",
+    )
+    def _compute_team_allocation_total(self):
+        """Aggregate ``team_allocation_ids``' realized phases, worksheet-wide.
+
+        Mirrors ``general_audit_ws_cbbbaf4``'s own
+        ``_compute_total_manhour()`` (Audit Working Plan): this is the
+        worksheet-level "Total" the KKA layout shows once for the
+        whole engagement, not once per Team Member -- see the
+        docstring of ``general_audit_ws_b66777d.team_allocation``
+        (row model) for why the per-row total was removed.
+
+        :return: None
+        """
+        for record in self:
+            pe = ra = rr = reporting = 0
+            for line in record.team_allocation_ids:
+                pe += line.pe_allocation
+                ra += line.ra_allocation
+                rr += line.rr_allocation
+                reporting += line.reporting_allocation
+            record.total_pe_allocation = pe
+            record.total_ra_allocation = ra
+            record.total_rr_allocation = rr
+            record.total_reporting_allocation = reporting
+            record.total_allocation = pe + ra + rr + reporting
+
+    total_pe_allocation = fields.Integer(
+        string="Total Pre-Engagement Allocation",
+        compute="_compute_team_allocation_total",
+        store=True,
+        compute_sudo=True,
+        help=(
+            "Sum of team_allocation_ids.pe_allocation across every "
+            "Team Member of this Independent Auditor's Report -- the "
+            '"Total (Independent Auditor Report)" figure, worksheet-'
+            "wide, not per employee."
+        ),
+    )
+    total_ra_allocation = fields.Integer(
+        string="Total Risk Assessment Allocation",
+        compute="_compute_team_allocation_total",
+        store=True,
+        compute_sudo=True,
+        help=(
+            "Sum of team_allocation_ids.ra_allocation across every "
+            "Team Member of this Independent Auditor's Report -- the "
+            '"Total (Independent Auditor Report)" figure, worksheet-'
+            "wide, not per employee."
+        ),
+    )
+    total_rr_allocation = fields.Integer(
+        string="Total Risk Responses Allocation",
+        compute="_compute_team_allocation_total",
+        store=True,
+        compute_sudo=True,
+        help=(
+            "Sum of team_allocation_ids.rr_allocation across every "
+            "Team Member of this Independent Auditor's Report -- the "
+            '"Total (Independent Auditor Report)" figure, worksheet-'
+            "wide, not per employee."
+        ),
+    )
+    total_reporting_allocation = fields.Integer(
+        string="Total Windup & Reporting Allocation",
+        compute="_compute_team_allocation_total",
+        store=True,
+        compute_sudo=True,
+        help=(
+            "Sum of team_allocation_ids.reporting_allocation across "
+            "every Team Member of this Independent Auditor's Report -- "
+            'the "Total (Independent Auditor Report)" figure, '
+            "worksheet-wide, not per employee."
+        ),
+    )
+    total_allocation = fields.Integer(
+        string="Total Allocation",
+        compute="_compute_team_allocation_total",
+        store=True,
+        compute_sudo=True,
+        help=(
+            "total_pe_allocation + total_ra_allocation + "
+            "total_rr_allocation + total_reporting_allocation -- the "
+            'grand "Total (Independent Auditor Report)" figure.'
+        ),
+    )
+    awp_total_pe_allocation = fields.Integer(
+        string="AWP Total Pre-Engagement Allocation",
+        readonly=True,
+        help=(
+            "Best-effort copy of this engagement's Audit Working "
+            "Plan (general_audit_ws_cbbbaf4) total_pe_manhour -- 0 "
+            "when the Audit Working Plan module is not installed, or "
+            "no open/done AWP worksheet exists yet for this "
+            "engagement. Written (not computed) by "
+            "_populate_awp_total_allocation(), called from "
+            "_populate_team_allocation() -- refreshed every time the "
+            "Populate button is clicked, same as team_allocation_ids "
+            "itself."
+        ),
+    )
+    awp_total_ra_allocation = fields.Integer(
+        string="AWP Total Risk Assessment Allocation",
+        readonly=True,
+        help=(
+            "Best-effort copy of this engagement's Audit Working "
+            "Plan (general_audit_ws_cbbbaf4) total_ra_manhour -- 0 on "
+            "the same best-effort conditions as "
+            "awp_total_pe_allocation."
+        ),
+    )
+    awp_total_rr_allocation = fields.Integer(
+        string="AWP Total Risk Responses Allocation",
+        readonly=True,
+        help=(
+            "Best-effort copy of this engagement's Audit Working "
+            "Plan (general_audit_ws_cbbbaf4) total_rr_manhour -- 0 on "
+            "the same best-effort conditions as "
+            "awp_total_pe_allocation."
+        ),
+    )
+    awp_total_reporting_allocation = fields.Integer(
+        string="AWP Total Windup & Reporting Allocation",
+        readonly=True,
+        help=(
+            "Best-effort copy of this engagement's Audit Working "
+            "Plan (general_audit_ws_cbbbaf4) total_reporting_manhour "
+            "-- 0 on the same best-effort conditions as "
+            "awp_total_pe_allocation."
+        ),
+    )
+    awp_total_allocation = fields.Integer(
+        string="AWP Total Allocation",
+        readonly=True,
+        help=(
+            "Best-effort copy of this engagement's Audit Working "
+            "Plan (general_audit_ws_cbbbaf4) total_manhour -- 0 on "
+            "the same best-effort conditions as "
+            "awp_total_pe_allocation."
+        ),
+    )
+
+    @api.depends(
+        "total_pe_allocation",
+        "awp_total_pe_allocation",
+        "total_ra_allocation",
+        "awp_total_ra_allocation",
+        "total_rr_allocation",
+        "awp_total_rr_allocation",
+        "total_reporting_allocation",
+        "awp_total_reporting_allocation",
+        "total_allocation",
+        "awp_total_allocation",
+    )
+    def _compute_team_allocation_diff(self):
+        """Compute worksheet-wide realized-vs-planned differences.
+
+        Safe to depend directly on ``awp_total_*`` even though those
+        are plain (non-computed) stored fields written by
+        ``_populate_awp_total_allocation()``, not by an ``@api.depends``
+        chain: both sides of the subtraction belong to ``self``, so
+        this never triggers the cross-model ``comodel_name`` resolution
+        risk documented above ``opinion``.
+
+        :return: None
+        """
+        for record in self:
+            record.diff_pe_allocation = (
+                record.total_pe_allocation - record.awp_total_pe_allocation
+            )
+            record.diff_ra_allocation = (
+                record.total_ra_allocation - record.awp_total_ra_allocation
+            )
+            record.diff_rr_allocation = (
+                record.total_rr_allocation - record.awp_total_rr_allocation
+            )
+            record.diff_reporting_allocation = (
+                record.total_reporting_allocation
+                - record.awp_total_reporting_allocation
+            )
+            record.diff_allocation = (
+                record.total_allocation - record.awp_total_allocation
+            )
+
+    diff_pe_allocation = fields.Integer(
+        string="Difference Pre-Engagement Allocation",
+        compute="_compute_team_allocation_diff",
+        store=True,
+        compute_sudo=True,
+        help=(
+            "total_pe_allocation minus awp_total_pe_allocation. "
+            "Positive means the team worked more Pre-Engagement hours "
+            "than planned; negative means less."
+        ),
+    )
+    diff_ra_allocation = fields.Integer(
+        string="Difference Risk Assessment Allocation",
+        compute="_compute_team_allocation_diff",
+        store=True,
+        compute_sudo=True,
+        help=(
+            "total_ra_allocation minus awp_total_ra_allocation. "
+            "Positive means the team worked more Risk Assessment "
+            "hours than planned; negative means less."
+        ),
+    )
+    diff_rr_allocation = fields.Integer(
+        string="Difference Risk Responses Allocation",
+        compute="_compute_team_allocation_diff",
+        store=True,
+        compute_sudo=True,
+        help=(
+            "total_rr_allocation minus awp_total_rr_allocation. "
+            "Positive means the team worked more Risk Responses hours "
+            "than planned; negative means less."
+        ),
+    )
+    diff_reporting_allocation = fields.Integer(
+        string="Difference Windup & Reporting Allocation",
+        compute="_compute_team_allocation_diff",
+        store=True,
+        compute_sudo=True,
+        help=(
+            "total_reporting_allocation minus "
+            "awp_total_reporting_allocation. Positive means the team "
+            "worked more Windup & Reporting hours than planned; "
+            "negative means less."
+        ),
+    )
+    diff_allocation = fields.Integer(
+        string="Difference Allocation",
+        compute="_compute_team_allocation_diff",
+        store=True,
+        compute_sudo=True,
+        help=(
+            "total_allocation minus awp_total_allocation -- the grand "
+            '"Difference" figure. Positive means the team worked '
+            "more hours than planned overall; negative means less."
+        ),
+    )
+
     def action_populate_team_allocation(self):
         """Button action: (re)populate this worksheet's ``team_allocation_ids``.
 
@@ -366,6 +612,16 @@ class GeneralAuditWSb66777d(models.Model):
         only), so without ``sudo()`` this would raise ``AccessError``
         for every user, including the one clicking Populate.
 
+        Also refreshes this worksheet's own AWP total fields
+        (``awp_total_pe_allocation`` etc., via
+        ``_populate_awp_total_allocation()``) so the "Total (AWP)"
+        group shown next to the tree stays in step with the latest
+        Audit Working Plan data every time Populate is clicked --
+        this worksheet's own realized totals (``total_pe_allocation``
+        etc.) and their Difference need no such call, since those are
+        plain computed fields that recompute on their own whenever
+        ``team_allocation_ids`` changes.
+
         :return: None
         """
         self.ensure_one()
@@ -375,6 +631,7 @@ class GeneralAuditWSb66777d(models.Model):
             TeamAllocation.create(
                 self._prepare_team_allocation_vals(employee_id, times)
             )
+        self._populate_awp_total_allocation()
 
     def _compute_team_allocation_totals(self):
         """Aggregate preparation/review time per ``hr.employee`` & phase.
@@ -428,6 +685,13 @@ class GeneralAuditWSb66777d(models.Model):
     def _prepare_team_allocation_vals(self, employee_id, times):
         """Build the values of one ``team_allocation_ids`` row.
 
+        No planned (AWP) figures are included here: since issue #383's
+        design revision, "Total"/"AWP Total"/"Difference" are all
+        worksheet-wide aggregates (``total_pe_allocation`` etc.,
+        ``awp_total_pe_allocation`` etc.), not per-row columns -- see
+        ``general_audit_ws_b66777d.team_allocation``'s docstring and
+        ``_populate_awp_total_allocation()`` below.
+
         Extension point: override to add fields to each row created
         by ``_populate_team_allocation()``.
 
@@ -443,7 +707,6 @@ class GeneralAuditWSb66777d(models.Model):
         :rtype: dict
         """
         self.ensure_one()
-        awp_line = self._get_awp_team_allocation_line(employee_id)
         return {
             "worksheet_id": self.id,
             "team_id": employee_id,
@@ -451,20 +714,15 @@ class GeneralAuditWSb66777d(models.Model):
             "ra_allocation": times["ra"],
             "rr_allocation": times["rr"],
             "reporting_allocation": times["reporting"],
-            "awp_pe_allocation": int(awp_line.pe_allocation) if awp_line else 0,
-            "awp_ra_allocation": int(awp_line.ra_allocation) if awp_line else 0,
-            "awp_rr_allocation": int(awp_line.rr_allocation) if awp_line else 0,
-            "awp_reporting_allocation": (
-                int(awp_line.reporting_allocation) if awp_line else 0
-            ),
         }
 
-    def _get_awp_team_allocation_line(self, employee_id):
-        """Best-effort AWP planned allocation line for one employee.
+    def _get_awp_worksheet(self):
+        """Best-effort lookup of this engagement's Audit Working Plan.
 
         Looks up the ``general_audit_ws_cbbbaf4`` (Audit Working Plan)
-        record sharing this worksheet's ``general_audit_id`` and, when
-        found, its ``team_allocation_ids`` row for ``employee_id``.
+        record sharing this worksheet's ``general_audit_id``, whose
+        ``state`` is ``open`` or ``done`` -- a draft/cancelled AWP is
+        not treated as this engagement's planned figures.
 
         ``ssi_general_audit_worksheet_audit_working_plan`` (the module
         providing ``general_audit_ws_cbbbaf4``) neither depends on
@@ -472,19 +730,16 @@ class GeneralAuditWSb66777d(models.Model):
         guaranteed to be registered when this method runs -- checked
         via ``in self.env`` before searching, same pattern as
         ``_populate_final_opinion``. Returns ``None`` (never raises)
-        when the model is not installed, no AWP worksheet exists yet
-        for this engagement, or the AWP has no allocation row for
-        this employee -- callers treat ``None`` as all-zero.
+        when the model is not installed or no matching AWP worksheet
+        exists yet for this engagement -- callers treat ``None`` as
+        all-zero.
 
         Reads with ``sudo()``, same rationale as
         ``_populate_final_opinion``: the two worksheets can be
         assigned to different users within the same engagement.
 
-        :param employee_id: id of the ``hr.employee`` to look up
-        :type employee_id: int
-        :return: the matching AWP team allocation line, or ``None``
-        :rtype: recordset of
-            ``general_audit_ws_cbbbaf4.team_allocation`` or ``None``
+        :return: the matching AWP worksheet, or ``None``
+        :rtype: recordset of ``general_audit_ws_cbbbaf4`` or ``None``
         """
         self.ensure_one()
         if "general_audit_ws_cbbbaf4" not in self.env:
@@ -493,15 +748,49 @@ class GeneralAuditWSb66777d(models.Model):
             self.env["general_audit_ws_cbbbaf4"]
             .sudo()
             .search(
-                [("general_audit_id", "=", self.general_audit_id.id)],
+                [
+                    ("general_audit_id", "=", self.general_audit_id.id),
+                    ("state", "in", ["open", "done"]),
+                ],
                 limit=1,
                 order="id desc",
             )
         )
-        if not awp:
-            return None
-        line = awp.team_allocation_ids.filtered(lambda l: l.team_id.id == employee_id)
-        return line[0] if line else None
+        return awp or None
+
+    def _populate_awp_total_allocation(self):
+        """(Re)fill this worksheet's ``awp_total_*`` fields from the AWP.
+
+        Copies ``general_audit_ws_cbbbaf4``'s own worksheet-wide
+        ``total_pe_manhour``/``total_ra_manhour``/``total_rr_manhour``/
+        ``total_reporting_manhour``/``total_manhour`` (``Float``) into
+        this worksheet's ``awp_total_pe_allocation`` etc. (``Integer``,
+        ``int()``-ed here). These are plain stored fields, NOT
+        ``compute=``, deliberately: a field-level
+        ``fields.Many2one(comodel_name="general_audit_ws_cbbbaf4", ...)``
+        anywhere on this module's models risks the same "_unknown"
+        comodel bug already documented above ``opinion`` for
+        ``draft_opinion_id`` -- resolving the model by string inside
+        this method's body at call time (via
+        ``_get_awp_worksheet()``) is safe because every module is
+        fully loaded by the time a Populate click actually runs.
+
+        Called from ``_populate_team_allocation()`` so these fields
+        are refreshed on every Populate click, same "Reload" semantics
+        as ``team_allocation_ids`` itself -- best-effort all-zero (see
+        ``_get_awp_worksheet()``) when no AWP is available.
+
+        :return: None
+        """
+        self.ensure_one()
+        awp = self._get_awp_worksheet()
+        self.awp_total_pe_allocation = int(awp.total_pe_manhour) if awp else 0
+        self.awp_total_ra_allocation = int(awp.total_ra_manhour) if awp else 0
+        self.awp_total_rr_allocation = int(awp.total_rr_manhour) if awp else 0
+        self.awp_total_reporting_allocation = (
+            int(awp.total_reporting_manhour) if awp else 0
+        )
+        self.awp_total_allocation = int(awp.total_manhour) if awp else 0
 
     def action_populate_detail(self):
         """Button action: (re)populate this worksheet's ``detail_ids``.
