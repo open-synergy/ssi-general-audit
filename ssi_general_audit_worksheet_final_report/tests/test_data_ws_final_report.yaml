@@ -2391,14 +2391,17 @@ scenarios:
           type_id: "REC: ws_type_b66777d.id"
 
       - step: "Create a PE-category worksheet prepared by the first team member"
+        # type_id (not parent_type_id) must be the category-bearing
+        # type: general_audit_worksheet_mixin.write() unconditionally
+        # re-syncs parent_type_id from type_id on every write, so a
+        # separate parent_type_id here would be silently discarded.
         action: "create"
         model: "general_audit_ws_a8c54f3"
         save_as: "alloc_worksheet_pe"
         as_user: "base.user_admin"
         values:
           general_audit_id: "REC: audit.id"
-          type_id: "REC: ws_type_a8c54f3.id"
-          parent_type_id: "REC: type_pe.id"
+          type_id: "REC: type_pe.id"
           user_id: "REC: team_member_user.id"
           preparation_time: 8
 
@@ -2409,8 +2412,7 @@ scenarios:
         as_user: "base.user_admin"
         values:
           general_audit_id: "REC: audit.id"
-          type_id: "REC: ws_type_a8c54f3.id"
-          parent_type_id: "REC: type_ra.id"
+          type_id: "REC: type_ra.id"
 
       - step: "Set the RA-category worksheet's reviewer and review_time"
         action: "write"
@@ -2427,8 +2429,7 @@ scenarios:
         as_user: "base.user_admin"
         values:
           general_audit_id: "REC: audit.id"
-          type_id: "REC: ws_type_a8c54f3.id"
-          parent_type_id: "REC: type_rr.id"
+          type_id: "REC: type_rr.id"
           user_id: "REC: second_member_user.id"
           preparation_time: 3
 
@@ -2439,8 +2440,7 @@ scenarios:
         as_user: "base.user_admin"
         values:
           general_audit_id: "REC: audit.id"
-          type_id: "REC: ws_type_a8c54f3.id"
-          parent_type_id: "REC: type_wr.id"
+          type_id: "REC: type_wr.id"
 
       - step: "Set the WR-category worksheet's reviewer and review_time"
         action: "write"

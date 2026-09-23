@@ -173,6 +173,22 @@ odoo.define(
                     },
                 },
 
+                // 14.0: an opened existing record is READONLY until Edit
+                // is clicked -- unlike Create, which opens editable
+                // directly. See odoo-development-ui-test skill
+                // references/patterns-navigation-and-form.md §E.
+                {
+                    content: "Click the Edit button",
+                    trigger: ".o_form_button_edit",
+                },
+                {
+                    content: "Form is now editable",
+                    trigger: ".o_form_view.o_form_editable",
+                    run: function () {
+                        // Assertion only; do not trigger the default click action.
+                    },
+                },
+
                 // Flow 3 - Open the Draft Audit Opinion tab
                 {
                     content: "Open the Draft Audit Opinion tab",
@@ -338,6 +354,22 @@ odoo.define(
                 {
                     content: "Worksheet form is open",
                     trigger: ".o_form_view",
+                    run: function () {
+                        // Assertion only; do not trigger the default click action.
+                    },
+                },
+
+                // 14.0: an opened existing record is READONLY until Edit
+                // is clicked -- unlike Create, which opens editable
+                // directly. See odoo-development-ui-test skill
+                // references/patterns-navigation-and-form.md §E.
+                {
+                    content: "Click the Edit button",
+                    trigger: ".o_form_button_edit",
+                },
+                {
+                    content: "Form is now editable",
+                    trigger: ".o_form_view.o_form_editable",
                     run: function () {
                         // Assertion only; do not trigger the default click action.
                     },
