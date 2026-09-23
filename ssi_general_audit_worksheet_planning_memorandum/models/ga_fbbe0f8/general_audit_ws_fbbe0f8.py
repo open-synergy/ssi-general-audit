@@ -679,6 +679,16 @@ class GeneralAuditWSfbbe0f8(models.Model):
         "general_audit_id",
     )
     def _compute_link_5_id(self):
+        """Populate ``link_5_id`` from open/done Inherent Risk - Financial
+        Statement Level worksheets.
+
+        Searches ``general_audit_ws_c16abd7`` records sharing the same
+        ``general_audit_id`` with ``state`` in ``["open", "done"]``, plus
+        ``limit=1``: like other worksheet types, more than one open/done
+        record may exist per audit, so the first match by default order is
+        used instead of raising on multiple results (matches the pattern
+        applied to ``_compute_link_15_id`` onward).
+        """
         for record in self:
             result = False
             obj = self.env["general_audit_ws_c16abd7"]
@@ -686,7 +696,7 @@ class GeneralAuditWSfbbe0f8(models.Model):
                 ("general_audit_id", "=", record.general_audit_id.id),
                 ("state", "in", ["open", "done"]),
             ]
-            link_5_id = obj.search(criteria)
+            link_5_id = obj.search(criteria, limit=1)
             if link_5_id:
                 result = link_5_id.id
             record.link_5_id = result
@@ -736,6 +746,16 @@ class GeneralAuditWSfbbe0f8(models.Model):
         "general_audit_id",
     )
     def _compute_link_6_id(self):
+        """Populate ``link_6_id`` from open/done Team Communication
+        Pre-Engagement worksheets.
+
+        Searches ``general_audit_ws_437fc8f`` records sharing the same
+        ``general_audit_id`` with ``state`` in ``["open", "done"]``, plus
+        ``limit=1``: like other worksheet types, more than one open/done
+        record may exist per audit, so the first match by default order is
+        used instead of raising on multiple results (matches the pattern
+        applied to ``_compute_link_15_id`` onward).
+        """
         for record in self:
             result = False
             obj = self.env["general_audit_ws_437fc8f"]
@@ -743,7 +763,7 @@ class GeneralAuditWSfbbe0f8(models.Model):
                 ("general_audit_id", "=", record.general_audit_id.id),
                 ("state", "in", ["open", "done"]),
             ]
-            link_6_id = obj.search(criteria)
+            link_6_id = obj.search(criteria, limit=1)
             if link_6_id:
                 result = link_6_id.id
             record.link_6_id = result
@@ -793,6 +813,16 @@ class GeneralAuditWSfbbe0f8(models.Model):
         "general_audit_id",
     )
     def _compute_link_7_id(self):
+        """Populate ``link_7_id`` from open/done Main Business Activity
+        Process worksheets.
+
+        Searches ``general_audit_ws_ae11f7e`` records sharing the same
+        ``general_audit_id`` with ``state`` in ``["open", "done"]``, plus
+        ``limit=1``: like other worksheet types, more than one open/done
+        record may exist per audit, so the first match by default order is
+        used instead of raising on multiple results (matches the pattern
+        applied to ``_compute_link_15_id`` onward).
+        """
         for record in self:
             result = False
             obj = self.env["general_audit_ws_ae11f7e"]
@@ -800,7 +830,7 @@ class GeneralAuditWSfbbe0f8(models.Model):
                 ("general_audit_id", "=", record.general_audit_id.id),
                 ("state", "in", ["open", "done"]),
             ]
-            link_7_id = obj.search(criteria)
+            link_7_id = obj.search(criteria, limit=1)
             if link_7_id:
                 result = link_7_id.id
             record.link_7_id = result
@@ -850,6 +880,16 @@ class GeneralAuditWSfbbe0f8(models.Model):
         "general_audit_id",
     )
     def _compute_link_8_id(self):
+        """Populate ``link_8_id`` from open/done Control Risk - Entity Level
+        worksheets.
+
+        Searches ``general_audit_ws_b59b886`` records sharing the same
+        ``general_audit_id`` with ``state`` in ``["open", "done"]``, plus
+        ``limit=1``: like other worksheet types, more than one open/done
+        record may exist per audit, so the first match by default order is
+        used instead of raising on multiple results (matches the pattern
+        applied to ``_compute_link_15_id`` onward).
+        """
         for record in self:
             result = False
             obj = self.env["general_audit_ws_b59b886"]
@@ -857,7 +897,7 @@ class GeneralAuditWSfbbe0f8(models.Model):
                 ("general_audit_id", "=", record.general_audit_id.id),
                 ("state", "in", ["open", "done"]),
             ]
-            link_8_id = obj.search(criteria)
+            link_8_id = obj.search(criteria, limit=1)
             if link_8_id:
                 result = link_8_id.id
             record.link_8_id = result
@@ -908,6 +948,16 @@ class GeneralAuditWSfbbe0f8(models.Model):
         "general_audit_id",
     )
     def _compute_link_9_id(self):
+        """Populate ``link_9_id`` from open/done Competency, availability,
+        and independency of assignment team worksheets.
+
+        Searches ``general_audit_ws_b9d8a5c`` records sharing the same
+        ``general_audit_id`` with ``state`` in ``["open", "done"]``, plus
+        ``limit=1``: like other worksheet types, more than one open/done
+        record may exist per audit, so the first match by default order is
+        used instead of raising on multiple results (matches the pattern
+        applied to ``_compute_link_15_id`` onward).
+        """
         for record in self:
             result = False
             obj = self.env["general_audit_ws_b9d8a5c"]
@@ -915,7 +965,7 @@ class GeneralAuditWSfbbe0f8(models.Model):
                 ("general_audit_id", "=", record.general_audit_id.id),
                 ("state", "in", ["open", "done"]),
             ]
-            link_9_id = obj.search(criteria)
+            link_9_id = obj.search(criteria, limit=1)
             if link_9_id:
                 result = link_9_id.id
             record.link_9_id = result
@@ -966,6 +1016,16 @@ class GeneralAuditWSfbbe0f8(models.Model):
         "general_audit_id",
     )
     def _compute_link_10_id(self):
+        """Populate ``link_10_id`` from open/done External Communication
+        worksheets.
+
+        Searches ``general_audit_ws_ae48e68`` records sharing the same
+        ``general_audit_id`` with ``state`` in ``["open", "done"]``, plus
+        ``limit=1``: like other worksheet types, more than one open/done
+        record may exist per audit, so the first match by default order is
+        used instead of raising on multiple results (matches the pattern
+        applied to ``_compute_link_15_id`` onward).
+        """
         for record in self:
             result = False
             obj = self.env["general_audit_ws_ae48e68"]
@@ -973,7 +1033,7 @@ class GeneralAuditWSfbbe0f8(models.Model):
                 ("general_audit_id", "=", record.general_audit_id.id),
                 ("state", "in", ["open", "done"]),
             ]
-            link_10_id = obj.search(criteria)
+            link_10_id = obj.search(criteria, limit=1)
             if link_10_id:
                 result = link_10_id.id
             record.link_10_id = result
@@ -1085,6 +1145,16 @@ class GeneralAuditWSfbbe0f8(models.Model):
         "general_audit_id",
     )
     def _compute_link_13_id(self):
+        """Populate ``link_13_id`` from open/done Audit Working Plan
+        worksheets.
+
+        Searches ``general_audit_ws_cbbbaf4`` records sharing the same
+        ``general_audit_id`` with ``state`` in ``["open", "done"]``, plus
+        ``limit=1``: like other worksheet types, more than one open/done
+        record may exist per audit, so the first match by default order is
+        used instead of raising on multiple results (matches the pattern
+        applied to ``_compute_link_15_id`` onward).
+        """
         for record in self:
             result = False
             obj = self.env["general_audit_ws_cbbbaf4"]
@@ -1092,7 +1162,7 @@ class GeneralAuditWSfbbe0f8(models.Model):
                 ("general_audit_id", "=", record.general_audit_id.id),
                 ("state", "in", ["open", "done"]),
             ]
-            link_13_id = obj.search(criteria)
+            link_13_id = obj.search(criteria, limit=1)
             if link_13_id:
                 result = link_13_id.id
             record.link_13_id = result
