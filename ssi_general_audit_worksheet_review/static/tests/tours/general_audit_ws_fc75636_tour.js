@@ -420,9 +420,14 @@ odoo.define(
                     extra_trigger: ".o_form_view",
                 },
                 {
-                    content: "No error dialog appeared after Populate",
+                    content: "Opinion field is still present after Populate",
+                    // NOTE: not ".o_form_view:not(:has(.modal))" -- the
+                    // Summernote editor mounted in this pane ships its
+                    // OWN hidden .modal dialogs (Insert Image, Insert
+                    // Link, Keyboard Shortcuts), so that selector never
+                    // matches once this field is in edit mode, with or
+                    // without a real error dialog open.
                     trigger: ".tab-pane.active .o_field_widget[name='opinion']",
-                    extra_trigger: ".o_form_view:not(:has(.modal))",
                     run: function () {
                         // Assertion only; do not trigger the default click action.
                     },
