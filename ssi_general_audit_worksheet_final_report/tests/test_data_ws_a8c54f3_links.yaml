@@ -1,0 +1,283 @@
+options:
+  auto_refresh: true
+
+setup:
+  steps:
+    - step: "Create client partner"
+      action: "create"
+      model: "res.partner"
+      save_as: "client"
+      as_user: "base.user_admin"
+      values:
+        name: "Test Audit Client - a8c54f3 Links"
+        is_company: true
+
+    - step: "Create accountant partner"
+      action: "create"
+      model: "res.partner"
+      save_as: "accountant"
+      as_user: "base.user_admin"
+      values:
+        name: "Test Audit Accountant - a8c54f3 Links"
+
+    - step: "Get config parameter model"
+      action: "search"
+      model: "ir.config_parameter"
+      domain: []
+      save_as: "config_parameter"
+      limit: 1
+
+    - step: "Allow enough CPA licenses for this scenario"
+      action: "call"
+      target: "config_parameter"
+      method: "set_param"
+      args:
+        - "ssi_general_audit.max_number_of_cpa_license"
+        - "100"
+
+    - step: "Get CPA license id category"
+      action: "ref"
+      xml_id: "ssi_partner_identification_cpa_license.partner_identification_accountant_cpa_license"
+      save_as: "cpa_category"
+
+    - step: "Grant accountant a CPA license"
+      action: "create"
+      model: "res.partner.id_number"
+      save_as: "cpa_license"
+      as_user: "base.user_admin"
+      values:
+        partner_id: "REC: accountant.id"
+        category_id: "REC: cpa_category.id"
+        name: "CPA-A8C54F3LINKS-0001"
+
+    - step: "Create account type set"
+      action: "create"
+      model: "client_account_type_set"
+      save_as: "account_type_set"
+      as_user: "base.user_admin"
+      values:
+        name: "Test Account Type Set - a8c54f3 Links"
+        code: "/"
+
+    - step: "Create financial accounting standard"
+      action: "create"
+      model: "accountant.financial_accounting_standard"
+      save_as: "standard"
+      as_user: "base.user_admin"
+      values:
+        name: "Test Financial Accounting Standard - a8c54f3 Links"
+        code: "/"
+
+    - step: "Create general audit"
+      action: "create"
+      model: "general_audit"
+      save_as: "audit"
+      as_user: "base.user_admin"
+      values:
+        title: "Test General Audit - a8c54f3 Links"
+        partner_id: "REC: client.id"
+        accountant_id: "REC: accountant.id"
+        account_type_set_id: "REC: account_type_set.id"
+        financial_accounting_standard_id: "REC: standard.id"
+        date_start: 2026-01-01
+        date_end: 2026-12-31
+        need_interim: false
+        need_previous: false
+        num_of_consecutive_audit_firm: 1
+        num_of_consecutive_audit_accountant: 1
+
+    - step: "Open general audit"
+      action: "call"
+      target: "audit"
+      method: "action_open"
+      as_user: "base.user_admin"
+
+    - step: "Assert general audit open"
+      action: "assert"
+      target: "audit"
+      asserts:
+        state:
+          type: "value"
+          expected: "open"
+
+    - step: "Get worksheet type a8c54f3"
+      action: "ref"
+      xml_id: "ssi_general_audit_worksheet_final_report.worksheet_type_a8c54f3"
+      save_as: "ws_type_a8c54f3"
+
+    - step: "Get worksheet type d209914"
+      action: "ref"
+      xml_id: "ssi_general_audit_worksheet_client_package.worksheet_type_d209914"
+      save_as: "ws_type_d209914"
+
+    - step: "Get worksheet type ab19fd4"
+      action: "ref"
+      xml_id: "ssi_general_audit_worksheet_audit_result.worksheet_type_ab19fd4"
+      save_as: "ws_type_ab19fd4"
+
+scenarios:
+  # Positive: link_1 (General Ledger, d209914) resolves once its
+  # source worksheet is open, and link_1_conclusion mirrors the
+  # source worksheet's own conclusion.
+  - name: "Compute link_1 from open General Ledger worksheet (d209914)"
+    steps:
+      - step: "Create worksheet d209914"
+        action: "create"
+        model: "general_audit_ws_d209914"
+        save_as: "ws_d209914"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_d209914.id"
+
+      - step: "Open worksheet d209914"
+        action: "call"
+        target: "ws_d209914"
+        method: "action_open"
+        as_user: "base.user_admin"
+
+      - step: "Create conclusion for worksheet type d209914"
+        action: "create"
+        model: "general_audit_worksheet_conclusion"
+        save_as: "conclusion_d209914"
+        as_user: "base.user_admin"
+        values:
+          name: "General Ledger reconciled (link_1 test)"
+          code: "/"
+          type_id: "REC: ws_type_d209914.id"
+
+      - step: "Fill conclusion on ws_d209914"
+        action: "write"
+        target: "ws_d209914"
+        as_user: "base.user_admin"
+        values:
+          conclusion_id: "REC: conclusion_d209914.id"
+          conclusion: "General ledger movements agree to the trial balance."
+
+      - step: "Create worksheet a8c54f3 on the same general audit"
+        action: "create"
+        model: "general_audit_ws_a8c54f3"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_a8c54f3.id"
+
+      - step: "Assert link_1_id resolved and link_1_state is open"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          link_1_id:
+            type: "m2o"
+            expected: "REC: ws_d209914"
+          link_1_state:
+            type: "value"
+            expected: "open"
+
+      - step: "Assert link_1_conclusion mirrors ws_d209914 conclusion"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          link_1_conclusion:
+            type: "value"
+            expected: "General ledger movements agree to the trial balance."
+
+  # Positive: action_reload_links picks up a state change on the
+  # source worksheet (link_28, Audit Result Formulation / ab19fd4)
+  # that happened AFTER the a8c54f3 record was first created.
+  - name: "action_reload_links refreshes link_28_state to done"
+    steps:
+      - step: "Create worksheet ab19fd4"
+        action: "create"
+        model: "general_audit_ws_ab19fd4"
+        save_as: "ws_ab19fd4"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_ab19fd4.id"
+
+      - step: "Open worksheet ab19fd4"
+        action: "call"
+        target: "ws_ab19fd4"
+        method: "action_open"
+        as_user: "base.user_admin"
+
+      - step: "Create worksheet a8c54f3 on the same general audit"
+        action: "create"
+        model: "general_audit_ws_a8c54f3"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_a8c54f3.id"
+
+      - step: "Assert link_28_id resolved and link_28_state is open"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          link_28_id:
+            type: "m2o"
+            expected: "REC: ws_ab19fd4"
+          link_28_state:
+            type: "value"
+            expected: "open"
+
+      # ws_ab19fd4 is driven straight to "done" with a direct `write`
+      # on `state`, not the full action_confirm/action_approve_
+      # approval chain: confirming it for real would exercise its OWN
+      # workflow (upstream a0319a2/d33420f worksheets, approval
+      # templates), which belongs to
+      # ssi_general_audit_worksheet_audit_result's own test suite.
+      # This scenario only needs a concrete state change to happen
+      # AFTER a8c54f3 was created, so action_reload_links has
+      # something to pick up.
+      - step: "Move ws_ab19fd4 straight to done"
+        action: "write"
+        target: "ws_ab19fd4"
+        as_user: "base.user_admin"
+        values:
+          state: "done"
+
+      - step: "Assert ws_ab19fd4 is done"
+        action: "assert"
+        target: "ws_ab19fd4"
+        asserts:
+          state:
+            type: "value"
+            expected: "done"
+
+      - step: "Call action_reload_links on a8c54f3"
+        action: "call"
+        target: "worksheet"
+        method: "action_reload_links"
+        as_user: "base.user_admin"
+
+      - step: "Assert link_28_state now reflects done"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          link_28_state:
+            type: "value"
+            expected: "done"
+
+  # Negative: without an Independent Auditor Report worksheet
+  # (b66777d, link_48) for this general audit, link_48_id must stay
+  # empty rather than raise.
+  - name: "link_48 stays empty without a b66777d worksheet"
+    steps:
+      - step: "Create worksheet a8c54f3 with no b66777d sibling"
+        action: "create"
+        model: "general_audit_ws_a8c54f3"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_a8c54f3.id"
+
+      - step: "Assert link_48_id is empty"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          link_48_id:
+            type: "value"
+            operator: "is_falsy"

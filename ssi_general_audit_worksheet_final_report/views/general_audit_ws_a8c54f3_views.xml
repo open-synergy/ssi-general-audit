@@ -47,6 +47,749 @@
                         attrs="{'readonly': [('state', '!=', 'open')]}"
                     />
                 </xpath>
+                <xpath expr="//notebook" position="before">
+                    <button
+                        name="action_reload_links"
+                        type="object"
+                        string="Reload"
+                        class="oe_highlight"
+                        icon="fa-refresh"
+                        attrs="{'invisible': [('state', 'not in', ['open'])]}"
+                    />
+                </xpath>
+                <xpath expr="//page[1]" position="before">
+                    <page name="links" string="Links">
+                        <group name="activity_1" string="General Ledger">
+                            <label for="link_1_id" string="# Worksheet" />
+                            <div class="o_row">
+                                <field
+                                    name="link_1_id"
+                                    class="oe_inline"
+                                    force_save="1"
+                                />
+                                <label
+                                    for="link_1_state"
+                                    string="State"
+                                    style="font-weight: bold;"
+                                />
+                                <field name="link_1_state" class="oe_inline" />
+                            </div>
+                            <field name="link_1_conclusion" string="Conclusion" />
+                        </group>
+                        <group name="activity_2" string="Subledger">
+                            <label for="link_2_id" string="# Worksheet" />
+                            <div class="o_row">
+                                <field
+                                    name="link_2_id"
+                                    class="oe_inline"
+                                    force_save="1"
+                                />
+                                <label
+                                    for="link_2_state"
+                                    string="State"
+                                    style="font-weight: bold;"
+                                />
+                                <field name="link_2_state" class="oe_inline" />
+                            </div>
+                            <field name="link_2_conclusion" string="Conclusion" />
+                        </group>
+                        <group name="activity_3" string="Test of Control">
+                            <label for="link_3_id" string="# Worksheet" />
+                            <div class="o_row">
+                                <field
+                                    name="link_3_id"
+                                    class="oe_inline"
+                                    force_save="1"
+                                />
+                                <label
+                                    for="link_3_state"
+                                    string="State"
+                                    style="font-weight: bold;"
+                                />
+                                <field name="link_3_state" class="oe_inline" />
+                            </div>
+                            <field name="link_3_conclusion" string="Conclusion" />
+                        </group>
+                        <group name="activity_4" string="Analytical Procedures - Cycle">
+                            <label for="link_4_id" string="# Worksheet" />
+                            <div class="o_row">
+                                <field
+                                    name="link_4_id"
+                                    class="oe_inline"
+                                    force_save="1"
+                                />
+                                <label
+                                    for="link_4_state"
+                                    string="State"
+                                    style="font-weight: bold;"
+                                />
+                                <field name="link_4_state" class="oe_inline" />
+                            </div>
+                            <field name="link_4_conclusion" string="Conclusion" />
+                        </group>
+                        <group name="activity_5" string="Key Audit Procedures">
+                            <label for="link_5_id" string="# Worksheet" />
+                            <div class="o_row">
+                                <field
+                                    name="link_5_id"
+                                    class="oe_inline"
+                                    force_save="1"
+                                />
+                                <label
+                                    for="link_5_state"
+                                    string="State"
+                                    style="font-weight: bold;"
+                                />
+                                <field name="link_5_state" class="oe_inline" />
+                            </div>
+                            <field name="link_5_conclusion" string="Conclusion" />
+                        </group>
+                        <group name="activity_6" string="Test Planning">
+                            <label for="link_6_id" string="# Worksheet" />
+                            <div class="o_row">
+                                <field
+                                    name="link_6_id"
+                                    class="oe_inline"
+                                    force_save="1"
+                                />
+                                <label
+                                    for="link_6_state"
+                                    string="State"
+                                    style="font-weight: bold;"
+                                />
+                                <field name="link_6_state" class="oe_inline" />
+                            </div>
+                            <field name="link_6_conclusion" string="Conclusion" />
+                        </group>
+                        <group name="activity_7" string="Sample Determination">
+                            <label for="link_7_id" string="# Worksheet" />
+                            <div class="o_row">
+                                <field
+                                    name="link_7_id"
+                                    class="oe_inline"
+                                    force_save="1"
+                                />
+                                <label
+                                    for="link_7_state"
+                                    string="State"
+                                    style="font-weight: bold;"
+                                />
+                                <field name="link_7_state" class="oe_inline" />
+                            </div>
+                            <field name="link_7_conclusion" string="Conclusion" />
+                        </group>
+                        <group name="activity_8" string="Test of Detail">
+                            <label for="link_8_id" string="# Worksheet" />
+                            <div class="o_row">
+                                <field
+                                    name="link_8_id"
+                                    class="oe_inline"
+                                    force_save="1"
+                                />
+                                <label
+                                    for="link_8_state"
+                                    string="State"
+                                    style="font-weight: bold;"
+                                />
+                                <field name="link_8_state" class="oe_inline" />
+                            </div>
+                            <field name="link_8_conclusion" string="Conclusion" />
+                        </group>
+                        <group name="activity_9" string="Vouching Audit Procedure">
+                            <label for="link_9_id" string="# Worksheet" />
+                            <div class="o_row">
+                                <field
+                                    name="link_9_id"
+                                    class="oe_inline"
+                                    force_save="1"
+                                />
+                                <label
+                                    for="link_9_state"
+                                    string="State"
+                                    style="font-weight: bold;"
+                                />
+                                <field name="link_9_state" class="oe_inline" />
+                            </div>
+                            <field name="link_9_conclusion" string="Conclusion" />
+                        </group>
+                        <group name="activity_10" string="Physical Check">
+                            <label for="link_10_id" string="# Worksheet" />
+                            <div class="o_row">
+                                <field
+                                    name="link_10_id"
+                                    class="oe_inline"
+                                    force_save="1"
+                                />
+                                <label
+                                    for="link_10_state"
+                                    string="State"
+                                    style="font-weight: bold;"
+                                />
+                                <field name="link_10_state" class="oe_inline" />
+                            </div>
+                            <field name="link_10_conclusion" string="Conclusion" />
+                        </group>
+                        <group name="activity_11" string="Observation Audit Procedure">
+                            <label for="link_11_id" string="# Worksheet" />
+                            <div class="o_row">
+                                <field
+                                    name="link_11_id"
+                                    class="oe_inline"
+                                    force_save="1"
+                                />
+                                <label
+                                    for="link_11_state"
+                                    string="State"
+                                    style="font-weight: bold;"
+                                />
+                                <field name="link_11_state" class="oe_inline" />
+                            </div>
+                            <field name="link_11_conclusion" string="Conclusion" />
+                        </group>
+                        <group name="activity_12" string="Confirmation Audit Procedure">
+                            <label for="link_12_id" string="# Worksheet" />
+                            <div class="o_row">
+                                <field
+                                    name="link_12_id"
+                                    class="oe_inline"
+                                    force_save="1"
+                                />
+                                <label
+                                    for="link_12_state"
+                                    string="State"
+                                    style="font-weight: bold;"
+                                />
+                                <field name="link_12_state" class="oe_inline" />
+                            </div>
+                            <field name="link_12_conclusion" string="Conclusion" />
+                        </group>
+                        <group name="activity_13" string="Recompute Audit Procedure">
+                            <label for="link_13_id" string="# Worksheet" />
+                            <div class="o_row">
+                                <field
+                                    name="link_13_id"
+                                    class="oe_inline"
+                                    force_save="1"
+                                />
+                                <label
+                                    for="link_13_state"
+                                    string="State"
+                                    style="font-weight: bold;"
+                                />
+                                <field name="link_13_state" class="oe_inline" />
+                            </div>
+                            <field name="link_13_conclusion" string="Conclusion" />
+                        </group>
+                        <group
+                            name="activity_14"
+                            string="Reperformance Audit Procedure"
+                        >
+                            <label for="link_14_id" string="# Worksheet" />
+                            <div class="o_row">
+                                <field
+                                    name="link_14_id"
+                                    class="oe_inline"
+                                    force_save="1"
+                                />
+                                <label
+                                    for="link_14_state"
+                                    string="State"
+                                    style="font-weight: bold;"
+                                />
+                                <field name="link_14_state" class="oe_inline" />
+                            </div>
+                            <field name="link_14_conclusion" string="Conclusion" />
+                        </group>
+                        <group
+                            name="activity_15"
+                            string="Plausible Relationship Audit Procedure"
+                        >
+                            <label for="link_15_id" string="# Worksheet" />
+                            <div class="o_row">
+                                <field
+                                    name="link_15_id"
+                                    class="oe_inline"
+                                    force_save="1"
+                                />
+                                <label
+                                    for="link_15_state"
+                                    string="State"
+                                    style="font-weight: bold;"
+                                />
+                                <field name="link_15_state" class="oe_inline" />
+                            </div>
+                            <field name="link_15_conclusion" string="Conclusion" />
+                        </group>
+                        <group name="activity_16" string="Comparative Audit Procedure">
+                            <label for="link_16_id" string="# Worksheet" />
+                            <div class="o_row">
+                                <field
+                                    name="link_16_id"
+                                    class="oe_inline"
+                                    force_save="1"
+                                />
+                                <label
+                                    for="link_16_state"
+                                    string="State"
+                                    style="font-weight: bold;"
+                                />
+                                <field name="link_16_state" class="oe_inline" />
+                            </div>
+                            <field name="link_16_conclusion" string="Conclusion" />
+                        </group>
+                        <group name="activity_17" string="Inquiry Audit Procedures">
+                            <label for="link_17_id" string="# Worksheet" />
+                            <div class="o_row">
+                                <field
+                                    name="link_17_id"
+                                    class="oe_inline"
+                                    force_save="1"
+                                />
+                                <label
+                                    for="link_17_state"
+                                    string="State"
+                                    style="font-weight: bold;"
+                                />
+                                <field name="link_17_state" class="oe_inline" />
+                            </div>
+                            <field name="link_17_conclusion" string="Conclusion" />
+                        </group>
+                        <group name="activity_18" string="Accounting Estimation">
+                            <label for="link_18_id" string="# Worksheet" />
+                            <div class="o_row">
+                                <field
+                                    name="link_18_id"
+                                    class="oe_inline"
+                                    force_save="1"
+                                />
+                                <label
+                                    for="link_18_state"
+                                    string="State"
+                                    style="font-weight: bold;"
+                                />
+                                <field name="link_18_state" class="oe_inline" />
+                            </div>
+                            <field name="link_18_conclusion" string="Conclusion" />
+                        </group>
+                        <group name="activity_19" string="Related Party Transaction">
+                            <label for="link_19_id" string="# Worksheet" />
+                            <div class="o_row">
+                                <field
+                                    name="link_19_id"
+                                    class="oe_inline"
+                                    force_save="1"
+                                />
+                                <label
+                                    for="link_19_state"
+                                    string="State"
+                                    style="font-weight: bold;"
+                                />
+                                <field name="link_19_state" class="oe_inline" />
+                            </div>
+                            <field name="link_19_conclusion" string="Conclusion" />
+                        </group>
+                        <group name="activity_20" string="Subsequent Event">
+                            <label for="link_20_id" string="# Worksheet" />
+                            <div class="o_row">
+                                <field
+                                    name="link_20_id"
+                                    class="oe_inline"
+                                    force_save="1"
+                                />
+                                <label
+                                    for="link_20_state"
+                                    string="State"
+                                    style="font-weight: bold;"
+                                />
+                                <field name="link_20_state" class="oe_inline" />
+                            </div>
+                            <field name="link_20_conclusion" string="Conclusion" />
+                        </group>
+                        <group name="activity_21" string="Going Concern">
+                            <label for="link_21_id" string="# Worksheet" />
+                            <div class="o_row">
+                                <field
+                                    name="link_21_id"
+                                    class="oe_inline"
+                                    force_save="1"
+                                />
+                                <label
+                                    for="link_21_state"
+                                    string="State"
+                                    style="font-weight: bold;"
+                                />
+                                <field name="link_21_state" class="oe_inline" />
+                            </div>
+                            <field name="link_21_conclusion" string="Conclusion" />
+                        </group>
+                        <group name="activity_22" string="Auditor Expert">
+                            <label for="link_22_id" string="# Worksheet" />
+                            <div class="o_row">
+                                <field
+                                    name="link_22_id"
+                                    class="oe_inline"
+                                    force_save="1"
+                                />
+                                <label
+                                    for="link_22_state"
+                                    string="State"
+                                    style="font-weight: bold;"
+                                />
+                                <field name="link_22_state" class="oe_inline" />
+                            </div>
+                            <field name="link_22_conclusion" string="Conclusion" />
+                        </group>
+                        <group name="activity_23" string="Management Expert">
+                            <label for="link_23_id" string="# Worksheet" />
+                            <div class="o_row">
+                                <field
+                                    name="link_23_id"
+                                    class="oe_inline"
+                                    force_save="1"
+                                />
+                                <label
+                                    for="link_23_state"
+                                    string="State"
+                                    style="font-weight: bold;"
+                                />
+                                <field name="link_23_state" class="oe_inline" />
+                            </div>
+                            <field name="link_23_conclusion" string="Conclusion" />
+                        </group>
+                        <group name="activity_24" string="Commitment and Contingent">
+                            <label for="link_24_id" string="# Worksheet" />
+                            <div class="o_row">
+                                <field
+                                    name="link_24_id"
+                                    class="oe_inline"
+                                    force_save="1"
+                                />
+                                <label
+                                    for="link_24_state"
+                                    string="State"
+                                    style="font-weight: bold;"
+                                />
+                                <field name="link_24_state" class="oe_inline" />
+                            </div>
+                            <field name="link_24_conclusion" string="Conclusion" />
+                        </group>
+                        <group name="activity_25" string="Lead Schedule - Account">
+                            <label for="link_25_id" string="# Worksheet" />
+                            <div class="o_row">
+                                <field
+                                    name="link_25_id"
+                                    class="oe_inline"
+                                    force_save="1"
+                                />
+                                <label
+                                    for="link_25_state"
+                                    string="State"
+                                    style="font-weight: bold;"
+                                />
+                                <field name="link_25_state" class="oe_inline" />
+                            </div>
+                            <field name="link_25_conclusion" string="Conclusion" />
+                        </group>
+                        <group name="activity_26" string="Worksheet">
+                            <label for="link_26_id" string="# Worksheet" />
+                            <div class="o_row">
+                                <field
+                                    name="link_26_id"
+                                    class="oe_inline"
+                                    force_save="1"
+                                />
+                                <label
+                                    for="link_26_state"
+                                    string="State"
+                                    style="font-weight: bold;"
+                                />
+                                <field name="link_26_state" class="oe_inline" />
+                            </div>
+                            <field name="link_26_conclusion" string="Conclusion" />
+                        </group>
+                        <group name="activity_27" string="Population">
+                            <label for="link_27_id" string="# Worksheet" />
+                            <div class="o_row">
+                                <field
+                                    name="link_27_id"
+                                    class="oe_inline"
+                                    force_save="1"
+                                />
+                                <label
+                                    for="link_27_state"
+                                    string="State"
+                                    style="font-weight: bold;"
+                                />
+                                <field name="link_27_state" class="oe_inline" />
+                            </div>
+                            <field name="link_27_conclusion" string="Conclusion" />
+                        </group>
+                        <group name="activity_28" string="Audit Result Formulation">
+                            <label for="link_28_id" string="# Worksheet" />
+                            <div class="o_row">
+                                <field
+                                    name="link_28_id"
+                                    class="oe_inline"
+                                    force_save="1"
+                                />
+                                <label
+                                    for="link_28_state"
+                                    string="State"
+                                    style="font-weight: bold;"
+                                />
+                                <field name="link_28_state" class="oe_inline" />
+                            </div>
+                            <field name="link_28_conclusion" string="Conclusion" />
+                        </group>
+                        <group
+                            name="activity_29"
+                            string="Findings That Influence Opinion"
+                        >
+                            <label for="link_29_id" string="# Worksheet" />
+                            <div class="o_row">
+                                <field
+                                    name="link_29_id"
+                                    class="oe_inline"
+                                    force_save="1"
+                                />
+                                <label
+                                    for="link_29_state"
+                                    string="State"
+                                    style="font-weight: bold;"
+                                />
+                                <field name="link_29_state" class="oe_inline" />
+                            </div>
+                            <field name="link_29_conclusion" string="Conclusion" />
+                        </group>
+                        <group name="activity_30" string="Control Deficiencies">
+                            <label for="link_30_id" string="# Worksheet" />
+                            <div class="o_row">
+                                <field
+                                    name="link_30_id"
+                                    class="oe_inline"
+                                    force_save="1"
+                                />
+                                <label
+                                    for="link_30_state"
+                                    string="State"
+                                    style="font-weight: bold;"
+                                />
+                                <field name="link_30_state" class="oe_inline" />
+                            </div>
+                            <field name="link_30_conclusion" string="Conclusion" />
+                        </group>
+                        <group name="activity_31" string="Audit Result Discussion">
+                            <label for="link_31_id" string="# Worksheet" />
+                            <div class="o_row">
+                                <field
+                                    name="link_31_id"
+                                    class="oe_inline"
+                                    force_save="1"
+                                />
+                                <label
+                                    for="link_31_state"
+                                    string="State"
+                                    style="font-weight: bold;"
+                                />
+                                <field name="link_31_state" class="oe_inline" />
+                            </div>
+                            <field name="link_31_conclusion" string="Conclusion" />
+                        </group>
+                        <group name="activity_32" string="Final Materiality">
+                            <label for="link_32_id" string="# Worksheet" />
+                            <div class="o_row">
+                                <field
+                                    name="link_32_id"
+                                    class="oe_inline"
+                                    force_save="1"
+                                />
+                                <label
+                                    for="link_32_state"
+                                    string="State"
+                                    style="font-weight: bold;"
+                                />
+                                <field name="link_32_state" class="oe_inline" />
+                            </div>
+                            <field name="link_32_conclusion" string="Conclusion" />
+                        </group>
+                        <group name="activity_33" string="Final Analytical Procedures">
+                            <label for="link_33_id" string="# Worksheet" />
+                            <div class="o_row">
+                                <field
+                                    name="link_33_id"
+                                    class="oe_inline"
+                                    force_save="1"
+                                />
+                                <label
+                                    for="link_33_state"
+                                    string="State"
+                                    style="font-weight: bold;"
+                                />
+                                <field name="link_33_state" class="oe_inline" />
+                            </div>
+                            <field name="link_33_conclusion" string="Conclusion" />
+                        </group>
+                        <group
+                            name="activity_34"
+                            string="Final Analytical Procedures - Vertical and Horizontal Analysis"
+                        >
+                            <label for="link_34_id" string="# Worksheet" />
+                            <div class="o_row">
+                                <field
+                                    name="link_34_id"
+                                    class="oe_inline"
+                                    force_save="1"
+                                />
+                                <label
+                                    for="link_34_state"
+                                    string="State"
+                                    style="font-weight: bold;"
+                                />
+                                <field name="link_34_state" class="oe_inline" />
+                            </div>
+                            <field name="link_34_conclusion" string="Conclusion" />
+                        </group>
+                        <group
+                            name="activity_35"
+                            string="Final Analytical Procedures - Ratio Analysis"
+                        >
+                            <label for="link_35_id" string="# Worksheet" />
+                            <div class="o_row">
+                                <field
+                                    name="link_35_id"
+                                    class="oe_inline"
+                                    force_save="1"
+                                />
+                                <label
+                                    for="link_35_state"
+                                    string="State"
+                                    style="font-weight: bold;"
+                                />
+                                <field name="link_35_state" class="oe_inline" />
+                            </div>
+                            <field name="link_35_conclusion" string="Conclusion" />
+                        </group>
+                        <group name="activity_36" string="Report Formatting Control">
+                            <label for="link_36_id" string="# Worksheet" />
+                            <div class="o_row">
+                                <field
+                                    name="link_36_id"
+                                    class="oe_inline"
+                                    force_save="1"
+                                />
+                                <label
+                                    for="link_36_state"
+                                    string="State"
+                                    style="font-weight: bold;"
+                                />
+                                <field name="link_36_state" class="oe_inline" />
+                            </div>
+                            <field name="link_36_conclusion" string="Conclusion" />
+                        </group>
+                        <group name="activity_37" string="Draft Financial Statements">
+                            <label for="link_37_id" string="# Worksheet" />
+                            <div class="o_row">
+                                <field
+                                    name="link_37_id"
+                                    class="oe_inline"
+                                    force_save="1"
+                                />
+                                <label
+                                    for="link_37_state"
+                                    string="State"
+                                    style="font-weight: bold;"
+                                />
+                                <field name="link_37_state" class="oe_inline" />
+                            </div>
+                            <field name="link_37_conclusion" string="Conclusion" />
+                        </group>
+                        <group name="activity_38" string="Final Discussion">
+                            <label for="link_38_id" string="# Worksheet" />
+                            <div class="o_row">
+                                <field
+                                    name="link_38_id"
+                                    class="oe_inline"
+                                    force_save="1"
+                                />
+                                <label
+                                    for="link_38_state"
+                                    string="State"
+                                    style="font-weight: bold;"
+                                />
+                                <field name="link_38_state" class="oe_inline" />
+                            </div>
+                            <field name="link_38_conclusion" string="Conclusion" />
+                        </group>
+                        <group name="activity_39" string="Audit Result">
+                            <label for="link_39_id" string="# Worksheet" />
+                            <div class="o_row">
+                                <field
+                                    name="link_39_id"
+                                    class="oe_inline"
+                                    force_save="1"
+                                />
+                                <label
+                                    for="link_39_state"
+                                    string="State"
+                                    style="font-weight: bold;"
+                                />
+                                <field name="link_39_state" class="oe_inline" />
+                            </div>
+                            <field name="link_39_conclusion" string="Conclusion" />
+                        </group>
+                        <group name="activity_40" string="Management Letter">
+                            <label for="link_40_id" string="# Worksheet" />
+                            <div class="o_row">
+                                <field
+                                    name="link_40_id"
+                                    class="oe_inline"
+                                    force_save="1"
+                                />
+                                <label
+                                    for="link_40_state"
+                                    string="State"
+                                    style="font-weight: bold;"
+                                />
+                                <field name="link_40_state" class="oe_inline" />
+                            </div>
+                            <field name="link_40_conclusion" string="Conclusion" />
+                        </group>
+                        <group name="activity_41" string="Management Representation">
+                            <label for="link_41_id" string="# Worksheet" />
+                            <div class="o_row">
+                                <field
+                                    name="link_41_id"
+                                    class="oe_inline"
+                                    force_save="1"
+                                />
+                                <label
+                                    for="link_41_state"
+                                    string="State"
+                                    style="font-weight: bold;"
+                                />
+                                <field name="link_41_state" class="oe_inline" />
+                            </div>
+                            <field name="link_41_conclusion" string="Conclusion" />
+                        </group>
+                        <group name="activity_48" string="Independent Auditor Report">
+                            <label for="link_48_id" string="# Worksheet" />
+                            <div class="o_row">
+                                <field
+                                    name="link_48_id"
+                                    class="oe_inline"
+                                    force_save="1"
+                                />
+                                <label
+                                    for="link_48_state"
+                                    string="State"
+                                    style="font-weight: bold;"
+                                />
+                                <field name="link_48_state" class="oe_inline" />
+                            </div>
+                            <field name="link_48_conclusion" string="Conclusion" />
+                        </group>
+                    </page>
+                </xpath>
             </data>
         </field>
     </record>
