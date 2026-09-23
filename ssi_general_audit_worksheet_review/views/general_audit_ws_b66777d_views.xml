@@ -20,8 +20,10 @@
         <field name="arch" type="xml">
             <data>
                 <xpath expr="//page[@name='final_opinion']/button[1]" position="before">
-                    <label for="draft_opinion_id" string="# Draft Audit Opinion" />
-                    <field name="draft_opinion_id" readonly="1" />
+                    <group col="2">
+                        <label for="draft_opinion_id" string="# Draft Audit Opinion" />
+                        <field name="draft_opinion_id" readonly="1" />
+                    </group>
                 </xpath>
             </data>
         </field>
