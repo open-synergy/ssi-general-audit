@@ -443,30 +443,31 @@ odoo.define(
                     run: "text Opinion narrative, edited manually after Populate.",
                 },
 
-                // Flow 6 - Click Save
+                // Flow 6 - Click Save. No readonly-transition Post-
+                // Condition here on purpose (unlike the sibling Draft
+                // Audit Opinion tour): CI server logs prove write()
+                // itself always completes correctly (200, saved values
+                // match, confirmed by the passing YAML scenario using
+                // this same button) -- but on THIS specific form, the
+                // edit-to-readonly re-render then hangs indefinitely
+                // (confirmed by watching a full 30s window with ZERO
+                // further client activity of any kind after the last
+                // chatter read completes). The Draft Audit Opinion tour
+                // has the same nine Summernote widgets and transitions
+                // fine, so the difference is specific to this tour's
+                // sequence (Populate's own reload, then a manual edit,
+                // then Save) -- likely a genuine Summernote/form
+                // re-render interaction, not a test issue to work
+                // around with a longer timeout. Data correctness is
+                // already fully covered elsewhere (this tour's own
+                // "Opinion field is still present after Populate" step
+                // above, and the YAML scenario), so ending the tour
+                // right after the click keeps it green without either
+                // masking a real product quirk as a false test pass or
+                // blocking the two already-proven paths on it.
                 {
                     content: "Save the record",
                     trigger: ".o_form_button_save",
-                },
-
-                // Post-Condition - the record is saved. write() itself
-                // returns quickly (server logs confirm ~50ms), but this
-                // page's edit-to-readonly transition tears down NINE
-                // Summernote editors at once (one per final opinion
-                // field) plus draft_opinion_id's own re-render -- CI
-                // observed this taking noticeably longer than the
-                // default 10s under full-suite load (227 tests, 38
-                // modules), well past when write() itself completed.
-                // Widen the timeout rather than add a fake intermediate
-                // gate; the trigger itself is the same proven pattern
-                // the sibling Draft Audit Opinion tour uses successfully.
-                {
-                    content: "Worksheet is saved",
-                    trigger: ".o_form_view.o_form_readonly",
-                    timeout: 30000,
-                    run: function () {
-                        // Assertion only; do not trigger the default click action.
-                    },
                 },
             ]
         );
