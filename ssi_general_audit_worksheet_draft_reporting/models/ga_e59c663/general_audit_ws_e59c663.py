@@ -110,7 +110,22 @@ class GeneralAuditWSe59c663(models.Model):
 
             review_page = etree.XML(tmpl._render({}))
             checklist_pages[0].addnext(review_page)
-            res["arch"] = etree.tostring(doc, encoding="unicode")
+
+            # ``review_checklist_ids`` (and its embedded tree/form) is
+            # inserted after every other ``fields_view_get`` override in
+            # the MRO has already run its own postprocessing pass (this
+            # override sits outermost), so it is never picked up by any
+            # of them. Re-run postprocessing here -- mirroring
+            # ``ssi_decorator_mixin.fields_view_get`` -- so the new page
+            # gets ``modifiers`` and its o2m sub-views end up in
+            # ``result["fields"]``, exactly like the "checklist" page.
+            View = self.env["ir.ui.view"]
+            if view_id and res.get("base_model", self._name) != self._name:
+                View = View.with_context(base_model_name=res["base_model"])
+            new_arch, new_fields = View.postprocess_and_fields(doc, self._name)
+            res["arch"] = new_arch
+            new_fields.update(res["fields"])
+            res["fields"] = new_fields
         except Exception as exc:  # noqa: BLE001
             _logger.warning("Failed to insert the review checklist page: %s", exc)
 
