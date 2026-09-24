@@ -71,6 +71,13 @@ ISA 700 / SA 700 — Forming an Opinion and Reporting on Financial Statements;
 ISA 705 / SA 705 — Modifications to the Opinion in the Independent Auditor's Report
 
 
+Work Instruction
+================
+
+* `Create Draft Financial Statements <docs/general_audit_ws_e59c663/index.html>`_
+* `Open Draft Financial Statements <docs/general_audit_ws_e59c663/index.html>`_
+* `Confirm Draft Financial Statements <docs/general_audit_ws_e59c663/index.html>`_
+
 Installation
 ============
 
