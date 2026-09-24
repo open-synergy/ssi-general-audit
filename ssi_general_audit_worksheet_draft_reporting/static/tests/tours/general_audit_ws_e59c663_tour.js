@@ -129,6 +129,26 @@ odoo.define(
                         // Assertion only; do not trigger the default click action.
                     },
                 },
+
+                // Post-Condition - both the Checklist (WR.160.1) and Review
+                // Procedure Checklist (WR.160) tabs are visible on the form,
+                // even though both are still empty at this point.
+                {
+                    content: "The Checklist tab is visible",
+                    trigger:
+                        ".o_notebook .nav-link:contains(Checklist):not(:contains(Review Procedure))",
+                    run: function () {
+                        // Assertion only; do not trigger the default click action.
+                    },
+                },
+                {
+                    content: "The Review Procedure Checklist tab is visible",
+                    trigger:
+                        ".o_notebook .nav-link:contains(Review Procedure Checklist)",
+                    run: function () {
+                        // Assertion only; do not trigger the default click action.
+                    },
+                },
             ]
         );
 
@@ -210,7 +230,8 @@ odoo.define(
                 // Flow 5 - Open the Checklist tab (second tab of the form).
                 {
                     content: "Open the Checklist tab",
-                    trigger: ".o_notebook .nav-link:contains(Checklist)",
+                    trigger:
+                        ".o_notebook .nav-link:contains(Checklist):not(:contains(Review Procedure))",
                     extra_trigger: ".o_form_view",
                 },
 
@@ -272,6 +293,78 @@ odoo.define(
                     trigger:
                         ".tab-pane.active .o_field_widget[name='checklist_ids'] " +
                         ".o_data_row:contains(Report Cover):contains(Present)",
+                    extra_trigger: "body:not(:has(.modal))",
+                    run: function () {
+                        // Assertion only; do not trigger the default click action.
+                    },
+                },
+
+                // Flow 8 - Open the Review Procedure Checklist tab (WR.160).
+                // "Review Procedure Checklist" is a superstring unique to
+                // this tab, so no disambiguation is needed here (unlike the
+                // "Checklist" trigger above).
+                {
+                    content: "Open the Review Procedure Checklist tab",
+                    trigger:
+                        ".o_notebook .nav-link:contains(Review Procedure Checklist)",
+                    extra_trigger: ".o_form_view",
+                },
+
+                // Flow 9 - Click the Populate button. review_checklist_ids
+                // is EMPTY before this click, so a row appearing is a gate
+                // impossible to satisfy beforehand -- same lakmus test as
+                // Flow 6 above (patterns-advanced-gotchas.md §P).
+                {
+                    content: "Click the Populate button (review checklist)",
+                    trigger:
+                        ".tab-pane.active " +
+                        "button[name='action_populate_review_checklist']",
+                    extra_trigger: ".tab-pane.active",
+                },
+                {
+                    content: "Review checklist rows are populated from the master",
+                    trigger:
+                        ".tab-pane.active .o_field_widget[name='review_checklist_ids'] " +
+                        ".o_data_row:contains(Ensure the integrity)",
+                    run: function () {
+                        // Assertion only; do not trigger the default click action.
+                    },
+                },
+
+                // Flow 10 - On the first review checklist row, set the
+                // Option field.
+                {
+                    content: "Open the first review checklist row",
+                    trigger:
+                        ".tab-pane.active .o_field_widget[name='review_checklist_ids'] " +
+                        ".o_data_row:contains(Ensure the integrity) .o_data_cell:first",
+                },
+                {
+                    content: "Review checklist row dialog is open",
+                    trigger: ".o_form_view",
+                    run: function () {
+                        // Assertion only; do not trigger the default click action.
+                    },
+                },
+                {
+                    content: "Select the Yes option",
+                    trigger: ".o_field_widget[name='option_id'] input",
+                    run: "text Yes",
+                },
+                {
+                    content: "Pick Yes from the dropdown",
+                    trigger: ".ui-autocomplete .ui-menu-item a:contains(Yes)",
+                    in_modal: false,
+                },
+                clickDialogSaveStep("Save the review checklist row"),
+
+                // Post-Condition - the row shows the saved answer, and the
+                // dialog is closed.
+                {
+                    content: "The review checklist row shows the saved answer",
+                    trigger:
+                        ".tab-pane.active .o_field_widget[name='review_checklist_ids'] " +
+                        ".o_data_row:contains(Ensure the integrity):contains(Yes)",
                     extra_trigger: "body:not(:has(.modal))",
                     run: function () {
                         // Assertion only; do not trigger the default click action.
@@ -364,6 +457,26 @@ odoo.define(
                     trigger:
                         ".o_statusbar_status .o_arrow_button[data-value='confirm'].btn-primary",
                     extra_trigger: "body:not(:has(.modal))",
+                    run: function () {
+                        // Assertion only; do not trigger the default click action.
+                    },
+                },
+
+                // Post-Condition - both the Checklist (WR.160.1) and Review
+                // Procedure Checklist (WR.160) tabs, and their answers,
+                // remain visible after confirming.
+                {
+                    content: "The Checklist tab is still visible",
+                    trigger:
+                        ".o_notebook .nav-link:contains(Checklist):not(:contains(Review Procedure))",
+                    run: function () {
+                        // Assertion only; do not trigger the default click action.
+                    },
+                },
+                {
+                    content: "The Review Procedure Checklist tab is still visible",
+                    trigger:
+                        ".o_notebook .nav-link:contains(Review Procedure Checklist)",
                     run: function () {
                         // Assertion only; do not trigger the default click action.
                     },

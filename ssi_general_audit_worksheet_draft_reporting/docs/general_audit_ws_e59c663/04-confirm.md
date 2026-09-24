@@ -30,5 +30,6 @@
 
 - Status changes to **Waiting for Approval** (`confirm`).
 - Approval records are created for each approver defined by the approval template.
-- The **Checklist** tab and its answers remain as entered; confirming does not require
-  every checklist row to be answered.
+- The **Checklist** tab (WR.160.1) and the **Review Procedure Checklist** tab (WR.160),
+  along with their answers, remain as entered; confirming does not require every
+  checklist row on either tab to be answered.

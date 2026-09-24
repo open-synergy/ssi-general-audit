@@ -487,9 +487,12 @@ scenarios:
             expected: "done"
 
   # ------------------------------------------------------------------
-  # general_audit_ws_e59c663 - Completeness checklist (WR.160.1) populate
+  # general_audit_ws_e59c663 - Completeness checklist (WR.160.1) and
+  # review procedure checklist (WR.160) populate
   # ------------------------------------------------------------------
-  - name: "Worksheet e59c663 - Completeness checklist populate and workflow to done"
+  - name:
+      "Worksheet e59c663 - Completeness and review checklist populate and workflow to
+      done"
     steps:
       - step: "Create conclusion for e59c663 worksheet type"
         action: "create"
@@ -660,6 +663,145 @@ scenarios:
           - ["worksheet_id", "=", "REC: worksheet.id"]
           - ["item_id", "=", "REC: item_561.id"]
         save_as: "row_561_gone"
+        expect_count: 0
+
+      # ------------------------------------------------------------
+      # Review procedure checklist (WR.160) -- second, manually
+      # inserted checklist page on the same worksheet; independent
+      # of the WR.160.1 completeness checklist tested above.
+      # ------------------------------------------------------------
+      - step: "Populate review checklist from the 11 WR.160 master items"
+        action: "call"
+        target: "worksheet"
+        method: "action_populate_review_checklist"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after first review checklist populate"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Assert exactly 11 review checklist rows were populated"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          review_checklist_ids:
+            type: "o2m"
+            check: "count"
+            expected_count: 11
+
+      - step: "Find master review item a (integrity of the data)"
+        action: "search"
+        model: "general_audit_ws_e59c663.review_item"
+        domain:
+          - ["code", "=", "a"]
+        save_as: "review_item_a"
+        expect_count: 1
+
+      - step: "Find review checklist row generated for item a"
+        action: "search"
+        model: "general_audit_ws_e59c663.review_checklist"
+        domain:
+          - ["worksheet_id", "=", "REC: worksheet.id"]
+          - ["item_id", "=", "REC: review_item_a.id"]
+        save_as: "review_row_a"
+        expect_count: 1
+
+      - step: "Get option Yes"
+        action: "ref"
+        xml_id: "ssi_general_audit.checklist_option_yes"
+        save_as: "option_yes"
+
+      - step: "Answer and comment the review checklist row a"
+        action: "write"
+        target: "review_row_a"
+        as_user: "base.user_admin"
+        values:
+          option_id: "REC: option_yes.id"
+          comment: "Data integrity checked against the trial balance."
+
+      - step: "Assert the review checklist answer and comment were saved"
+        action: "assert"
+        target: "review_row_a"
+        asserts:
+          option_id:
+            type: "m2o"
+            expected: "REC: option_yes"
+          comment:
+            type: "value"
+            expected: "Data integrity checked against the trial balance."
+
+      - step: "Populate review checklist a second time must not duplicate"
+        action: "call"
+        target: "worksheet"
+        method: "action_populate_review_checklist"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after second review checklist populate"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Assert review checklist rows are still exactly 11 (no duplicates)"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          review_checklist_ids:
+            type: "o2m"
+            check: "count"
+            expected_count: 11
+
+      - step:
+          "Assert the review checklist answer for item a survived the second populate"
+        action: "assert"
+        target: "review_row_a"
+        asserts:
+          option_id:
+            type: "m2o"
+            expected: "REC: option_yes"
+
+      - step: "Find master review item c (refers back to WR.160.1)"
+        action: "search"
+        model: "general_audit_ws_e59c663.review_item"
+        domain:
+          - ["code", "=", "c"]
+        save_as: "review_item_c"
+        expect_count: 1
+
+      - step: "Deactivate review item c (removed from the master)"
+        action: "write"
+        target: "review_item_c"
+        as_user: "base.user_admin"
+        values:
+          active: false
+
+      - step: "Populate review checklist again after the master item was deactivated"
+        action: "call"
+        target: "worksheet"
+        method: "action_populate_review_checklist"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after third review checklist populate"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Assert review checklist rows dropped to 10 (orphan row removed)"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          review_checklist_ids:
+            type: "o2m"
+            check: "count"
+            expected_count: 10
+
+      - step: "Assert the review checklist row for item c no longer exists"
+        action: "search"
+        model: "general_audit_ws_e59c663.review_checklist"
+        domain:
+          - ["worksheet_id", "=", "REC: worksheet.id"]
+          - ["item_id", "=", "REC: review_item_c.id"]
+        save_as: "review_row_c_gone"
         expect_count: 0
 
       - step: "Fill required conclusion fields before confirm"

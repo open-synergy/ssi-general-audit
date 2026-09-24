@@ -7,7 +7,8 @@
 > a System Administrator, or a member of group _Draft Financial Statements (e59c663) — Validator_\
 > **State:** `draft` → `open`\
 > **Requires:** `01-create`\
-> **Inline Actions:** `action_populate_checklist` (Populate)
+> **Inline Actions:** `action_populate_checklist` (Populate),
+> `action_populate_review_checklist` (Populate)
 
 ## Pre-Condition
 
@@ -29,6 +30,11 @@
    from the `general_audit_ws_e59c663.item` master.
 7. On the first checklist row, set the **Option** field (Present / Not Present / Not
    Applicable) to confirm the row can be answered.
+8. Open the **Review Procedure Checklist** tab.
+9. Click the **Populate** button to generate the WR.160 review procedure checklist rows
+   from the `general_audit_ws_e59c663.review_item` master.
+10. On the first review checklist row, set the **Option** field (Yes / No) to confirm
+    the row can be answered.
 
 ## Post-Condition
 
@@ -39,6 +45,13 @@
   `general_audit_ws_e59c663.item` master record (48 items as shipped), each row's
   **Item** and code matching the master. Every row can be answered (**Option**: Present
   / Not Present / Not Applicable) and annotated with a **Comment**.
-- Clicking **Populate** again does not duplicate existing rows; it only adds rows for
-  items missing from the checklist and removes rows whose item is no longer active in
-  the master.
+- Clicking **Populate** on the **Checklist** tab again does not duplicate existing rows;
+  it only adds rows for items missing from the checklist and removes rows whose item is
+  no longer active in the master.
+- The **Review Procedure Checklist** tab is populated with one row per active
+  `general_audit_ws_e59c663.review_item` master record (11 items as shipped), each row's
+  **Item** and code matching the master. Every row can be answered (**Option**: Yes /
+  No) and annotated with a **Comment**.
+- Clicking **Populate** on the **Review Procedure Checklist** tab again does not
+  duplicate existing rows; it only adds rows for items missing from the checklist and
+  removes rows whose item is no longer active in the master.
