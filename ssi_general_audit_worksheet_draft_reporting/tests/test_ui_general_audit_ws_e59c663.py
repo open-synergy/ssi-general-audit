@@ -14,12 +14,22 @@ class TestUiGeneralAuditWsE59c663(HttpSavepointCase):
 
     @classmethod
     def setUpClass(cls):
-        """Create an open General Audit plus a draft and an open worksheet.
+        """Create three open General Audits plus a draft and an open worksheet.
 
         ``cls.worksheet_draft`` (state ``draft``) is the Pre-Condition for
         the Open/Start tour, and ``cls.worksheet_open`` (state ``open``) is
-        the Pre-Condition for the Confirm tour. The Create tour needs no
-        worksheet fixture -- it creates one through the UI itself.
+        the Pre-Condition for the Confirm tour. ``cls.audit`` itself is
+        reserved for the Create tour, which selects it by title through
+        the UI and creates its own worksheet against it -- it must stay
+        free of a pre-existing e59c663 worksheet for that to succeed.
+
+        Three separate ``general_audit`` records are needed (one per
+        worksheet-bearing fixture, plus ``cls.audit``) because
+        ``general_audit_worksheet_mixin``'s ``_check_unique_general_audit``
+        constraint allows at most one ``general_audit_ws_e59c663`` per
+        ``general_audit`` -- creating two such worksheets against the same
+        audit, or having the Create tour target an audit that already has
+        one, raises a ValidationError on the offending ``create()``.
         """
         super().setUpClass()
         # user_id is explicit throughout: cls.env runs as SUPERUSER, and the
@@ -85,6 +95,52 @@ class TestUiGeneralAuditWsE59c663(HttpSavepointCase):
         )
         cls.audit.with_user(cls.admin).action_open()
 
+        # Two more separate General Audits -- see the class docstring for
+        # why ``worksheet_draft``/``worksheet_open`` cannot share an audit
+        # with each other or with ``cls.audit`` (reserved for the Create
+        # tour, and left without a pre-existing worksheet).
+        audit_for_draft = (
+            cls.env["general_audit"]
+            .with_user(cls.admin)
+            .create(
+                {
+                    "title": "Test General Audit - E59C663 Tour (Draft Fixture)",
+                    "partner_id": client.id,
+                    "accountant_id": accountant.id,
+                    "account_type_set_id": account_type_set.id,
+                    "financial_accounting_standard_id": standard.id,
+                    "date_start": "2026-01-01",
+                    "date_end": "2026-12-31",
+                    "need_interim": False,
+                    "need_previous": False,
+                    "num_of_consecutive_audit_firm": 1,
+                    "num_of_consecutive_audit_accountant": 1,
+                }
+            )
+        )
+        audit_for_draft.with_user(cls.admin).action_open()
+
+        audit_for_open = (
+            cls.env["general_audit"]
+            .with_user(cls.admin)
+            .create(
+                {
+                    "title": "Test General Audit - E59C663 Tour (Open Fixture)",
+                    "partner_id": client.id,
+                    "accountant_id": accountant.id,
+                    "account_type_set_id": account_type_set.id,
+                    "financial_accounting_standard_id": standard.id,
+                    "date_start": "2026-01-01",
+                    "date_end": "2026-12-31",
+                    "need_interim": False,
+                    "need_previous": False,
+                    "num_of_consecutive_audit_firm": 1,
+                    "num_of_consecutive_audit_accountant": 1,
+                }
+            )
+        )
+        audit_for_open.with_user(cls.admin).action_open()
+
         ws_type = cls.env.ref(
             "ssi_general_audit_worksheet_draft_reporting.worksheet_type_e59c663"
         )
@@ -106,14 +162,14 @@ class TestUiGeneralAuditWsE59c663(HttpSavepointCase):
         cls.worksheet_draft = (
             cls.env["general_audit_ws_e59c663"]
             .with_user(cls.admin)
-            .create({"general_audit_id": cls.audit.id, "type_id": ws_type.id})
+            .create({"general_audit_id": audit_for_draft.id, "type_id": ws_type.id})
         )
 
         # Pre-Condition for the Confirm tour: already started.
         cls.worksheet_open = (
             cls.env["general_audit_ws_e59c663"]
             .with_user(cls.admin)
-            .create({"general_audit_id": cls.audit.id, "type_id": ws_type.id})
+            .create({"general_audit_id": audit_for_open.id, "type_id": ws_type.id})
         )
         cls.worksheet_open.with_user(cls.admin).action_open()
 
