@@ -4,56 +4,6 @@
      License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl-3.0-standalone.html). -->
 <odoo>
 
-    <!-- Rendered by GeneralAuditWSe59c663.fields_view_get (Python, via
-         lxml.etree) and spliced in right after the "checklist" page
-         that mixin.checklist auto-injects. See that method's
-         docstring for why this cannot be a declarative xpath view. -->
-    <template id="general_audit_ws_e59c663_review_checklist_page">
-        <page name="review_checklist" string="Review Procedure Checklist">
-            <button
-                name="action_populate_review_checklist"
-                string="Populate"
-                type="object"
-                icon="fa-refresh"
-                class="oe_highlight"
-                style="margin-right:4px"
-                attrs="{'invisible': [('state', '!=', 'open')]}"
-            />
-            <field name="review_checklist_ids">
-                <tree create="false" delete="false">
-                    <field name="sequence" widget="handle" invisible="1" />
-                    <field
-                        name="item_id"
-                        options="{'no_create': True, 'no_create_edit': True}"
-                        style="white-space: normal; word-wrap: break-word; overflow-wrap: break-word;"
-                    />
-                    <field name="allowed_option_ids" invisible="1" />
-                    <field
-                        name="option_id"
-                        domain="[('id', 'in', allowed_option_ids)]"
-                        options="{'no_create': True, 'no_create_edit': True}"
-                    />
-                    <field name="comment" />
-                </tree>
-                <form>
-                    <sheet>
-                        <group>
-                            <field name="item_id" invisible="1" />
-                            <field name="item_name" />
-                            <field name="allowed_option_ids" invisible="1" />
-                            <field
-                                name="option_id"
-                                domain="[('id', 'in', allowed_option_ids)]"
-                                options="{'no_create': True, 'no_create_edit': True}"
-                            />
-                            <field name="comment" />
-                        </group>
-                    </sheet>
-                </form>
-            </field>
-        </page>
-    </template>
-
     <record id="general_audit_ws_e59c663_view_search" model="ir.ui.view">
         <field name="name">general_audit_ws_e59c663 form</field>
         <field name="model">general_audit_ws_e59c663</field>
@@ -91,6 +41,114 @@
         />
         <field name="arch" type="xml">
             <data>
+                <!-- This page is deliberately NOT named "checklist":
+                     MixinChecklist.fields_view_get() (see
+                     ssi_general_audit/models/checklist/checklist_mixin.py)
+                     always force-moves ANY page literally named
+                     "checklist" to the front of the notebook, even
+                     with _checklist_create_page=False (confirmed by
+                     testing that name here and getting it pinned
+                     first regardless of source order). Named
+                     "completeness_checklist" instead so normal xpath
+                     document order applies and this page can be
+                     placed second, after "review_checklist" (order
+                     verified against the LIVE resolved arch via
+                     fields_view_get()). -->
+                <xpath expr="//page[@name='standard_audit']" position="before">
+                    <page name="review_checklist" string="Review Procedure Checklist">
+                        <button
+                            name="action_populate_review_checklist"
+                            string="Populate"
+                            type="object"
+                            icon="fa-refresh"
+                            class="oe_highlight"
+                            style="margin-right:4px"
+                            attrs="{'invisible': [('state', '!=', 'open')]}"
+                        />
+                        <field name="review_checklist_ids">
+                            <tree create="false" delete="false">
+                                <field name="sequence" widget="handle" invisible="1" />
+                                <field
+                                    name="item_id"
+                                    options="{'no_create': True, 'no_create_edit': True}"
+                                    style="white-space: normal; word-wrap: break-word; overflow-wrap: break-word;"
+                                />
+                                <field name="allowed_option_ids" invisible="1" />
+                                <field
+                                    name="option_id"
+                                    domain="[('id', 'in', allowed_option_ids)]"
+                                    options="{'no_create': True, 'no_create_edit': True}"
+                                />
+                                <field name="comment" />
+                            </tree>
+                            <form>
+                                <sheet>
+                                    <group>
+                                        <field name="item_id" invisible="1" />
+                                        <field name="item_name" />
+                                        <field
+                                            name="allowed_option_ids"
+                                            invisible="1"
+                                        />
+                                        <field
+                                            name="option_id"
+                                            domain="[('id', 'in', allowed_option_ids)]"
+                                            options="{'no_create': True, 'no_create_edit': True}"
+                                        />
+                                        <field name="comment" />
+                                    </group>
+                                </sheet>
+                            </form>
+                        </field>
+                    </page>
+                    <page
+                        name="completeness_checklist"
+                        string="Completeness of financial statements cheklist"
+                    >
+                        <button
+                            name="action_populate_checklist"
+                            string="Populate"
+                            type="object"
+                            icon="fa-refresh"
+                            class="oe_highlight"
+                            style="margin-right:4px"
+                            attrs="{'invisible': [('state', '!=', 'open')]}"
+                        />
+                        <field name="checklist_ids">
+                            <tree create="false" delete="false">
+                                <field name="sequence" widget="handle" invisible="1" />
+                                <field
+                                    name="item_id"
+                                    options="{'no_create': True, 'no_create_edit': True}"
+                                    style="white-space: normal; word-wrap: break-word; overflow-wrap: break-word;"
+                                />
+                                <field name="allowed_option_ids" invisible="1" />
+                                <field
+                                    name="option_id"
+                                    domain="[('id', 'in', allowed_option_ids)]"
+                                    options="{'no_create': True, 'no_create_edit': True}"
+                                />
+                            </tree>
+                            <form>
+                                <sheet>
+                                    <group>
+                                        <field name="item_id" invisible="1" />
+                                        <field name="item_name" />
+                                        <field
+                                            name="allowed_option_ids"
+                                            invisible="1"
+                                        />
+                                        <field
+                                            name="option_id"
+                                            domain="[('id', 'in', allowed_option_ids)]"
+                                            options="{'no_create': True, 'no_create_edit': True}"
+                                        />
+                                    </group>
+                                </sheet>
+                            </form>
+                        </field>
+                    </page>
+                </xpath>
             </data>
         </field>
     </record>

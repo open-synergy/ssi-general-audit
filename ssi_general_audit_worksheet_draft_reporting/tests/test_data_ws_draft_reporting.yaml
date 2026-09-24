@@ -532,7 +532,7 @@ scenarios:
             type: "value"
             expected: "open"
 
-      - step: "Populate checklist from the 48 WR.160.1 master items"
+      - step: "Populate checklist from the 47 WR.160.1 master items"
         action: "call"
         target: "worksheet"
         method: "action_populate_checklist"
@@ -543,14 +543,14 @@ scenarios:
         target: "worksheet"
         method: "invalidate_cache"
 
-      - step: "Assert exactly 48 checklist rows were populated"
+      - step: "Assert exactly 47 checklist rows were populated"
         action: "assert"
         target: "worksheet"
         asserts:
           checklist_ids:
             type: "o2m"
             check: "count"
-            expected_count: 48
+            expected_count: 47
 
       - step: "Find master item COVER (Report Cover)"
         action: "search"
@@ -604,14 +604,14 @@ scenarios:
         target: "worksheet"
         method: "invalidate_cache"
 
-      - step: "Assert checklist rows are still exactly 48 (no duplicates)"
+      - step: "Assert checklist rows are still exactly 47 (no duplicates)"
         action: "assert"
         target: "worksheet"
         asserts:
           checklist_ids:
             type: "o2m"
             check: "count"
-            expected_count: 48
+            expected_count: 47
 
       - step: "Assert the COVER answer survived the second populate"
         action: "assert"
@@ -647,14 +647,14 @@ scenarios:
         target: "worksheet"
         method: "invalidate_cache"
 
-      - step: "Assert checklist rows dropped to 47 (orphan row removed)"
+      - step: "Assert checklist rows dropped to 46 (orphan row removed)"
         action: "assert"
         target: "worksheet"
         asserts:
           checklist_ids:
             type: "o2m"
             check: "count"
-            expected_count: 47
+            expected_count: 46
 
       - step: "Assert the checklist row for item 5.6.1 no longer exists"
         action: "search"
@@ -670,7 +670,7 @@ scenarios:
       # inserted checklist page on the same worksheet; independent
       # of the WR.160.1 completeness checklist tested above.
       # ------------------------------------------------------------
-      - step: "Populate review checklist from the 11 WR.160 master items"
+      - step: "Populate review checklist from the 8 WR.160 master items"
         action: "call"
         target: "worksheet"
         method: "action_populate_review_checklist"
@@ -681,24 +681,24 @@ scenarios:
         target: "worksheet"
         method: "invalidate_cache"
 
-      - step: "Assert exactly 11 review checklist rows were populated"
+      - step: "Assert exactly 8 review checklist rows were populated"
         action: "assert"
         target: "worksheet"
         asserts:
           review_checklist_ids:
             type: "o2m"
             check: "count"
-            expected_count: 11
+            expected_count: 8
 
-      - step: "Find master review item a (integrity of the data)"
+      - step: "Find master review item a.1 (footing and cross-footing)"
         action: "search"
         model: "general_audit_ws_e59c663.review_item"
         domain:
-          - ["code", "=", "a"]
+          - ["code", "=", "a.1"]
         save_as: "review_item_a"
         expect_count: 1
 
-      - step: "Find review checklist row generated for item a"
+      - step: "Find review checklist row generated for item a.1"
         action: "search"
         model: "general_audit_ws_e59c663.review_checklist"
         domain:
@@ -712,7 +712,7 @@ scenarios:
         xml_id: "ssi_general_audit.checklist_option_yes"
         save_as: "option_yes"
 
-      - step: "Answer and comment the review checklist row a"
+      - step: "Answer and comment the review checklist row a.1"
         action: "write"
         target: "review_row_a"
         as_user: "base.user_admin"
@@ -742,17 +742,17 @@ scenarios:
         target: "worksheet"
         method: "invalidate_cache"
 
-      - step: "Assert review checklist rows are still exactly 11 (no duplicates)"
+      - step: "Assert review checklist rows are still exactly 8 (no duplicates)"
         action: "assert"
         target: "worksheet"
         asserts:
           review_checklist_ids:
             type: "o2m"
             check: "count"
-            expected_count: 11
+            expected_count: 8
 
       - step:
-          "Assert the review checklist answer for item a survived the second populate"
+          "Assert the review checklist answer for item a.1 survived the second populate"
         action: "assert"
         target: "review_row_a"
         asserts:
@@ -786,14 +786,14 @@ scenarios:
         target: "worksheet"
         method: "invalidate_cache"
 
-      - step: "Assert review checklist rows dropped to 10 (orphan row removed)"
+      - step: "Assert review checklist rows dropped to 7 (orphan row removed)"
         action: "assert"
         target: "worksheet"
         asserts:
           review_checklist_ids:
             type: "o2m"
             check: "count"
-            expected_count: 10
+            expected_count: 7
 
       - step: "Assert the review checklist row for item c no longer exists"
         action: "search"

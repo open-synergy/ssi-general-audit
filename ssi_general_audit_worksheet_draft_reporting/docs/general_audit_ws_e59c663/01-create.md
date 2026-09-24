@@ -25,7 +25,7 @@
 ## Post-Condition
 
 - A new record is created in **Draft** status.
-- The **Checklist** tab (WR.160.1 completeness checklist) and the **Review Procedure
-  Checklist** tab (WR.160 review procedure checklist) are both visible on the form, but
-  both are still empty — they are only populated after the worksheet is opened (see
-  `08-open`).
+- The **Review Procedure Checklist** tab (WR.160 review procedure checklist, shown
+  first) and the **Completeness of financial statements cheklist** tab (WR.160.1
+  completeness checklist, shown second) are both visible on the form, but both are still
+  empty — they are only populated after the worksheet is opened (see `08-open`).
