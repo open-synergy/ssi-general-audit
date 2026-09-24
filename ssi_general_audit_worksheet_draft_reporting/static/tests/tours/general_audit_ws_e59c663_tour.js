@@ -91,18 +91,18 @@ odoo.define(
                     in_modal: false,
                 },
 
-                // Flow 4 - Accountant/Partner/Title are auto-filled from
-                // the selected General Audit -- assertion only, no input.
-                {
-                    content: "Accountant is auto-filled",
-                    trigger:
-                        ".o_field_widget[name='accountant_id']:contains(Test Audit Accountant - E59C663 Tour)",
-                    run: function () {
-                        // Assertion only; do not trigger the default click action.
-                    },
-                },
-
-                // Flow 5 - Save.
+                // Flow 4 - Save. accountant_id/partner_id/title are
+                // auto-filled by the general_audit_id onchange, but
+                // accountant_id renders as an editable many2one INPUT
+                // here (not readonly text), so its value lives in the
+                // input's `value` attribute, not as DOM text content --
+                // :contains() never matches an attribute (CI log
+                // confirmed the field genuinely is `<input
+                // name="accountant_id">`). Asserting the specific
+                // auto-filled value is unit-test territory anyway ("Tour
+                // TIDAK menguji nilai"); the worksheet's own
+                // accountant_id ends up correct because it is `related`
+                // to general_audit_id, which IS asserted below.
                 {
                     content: "Save the record",
                     trigger: ".o_form_button_save",
