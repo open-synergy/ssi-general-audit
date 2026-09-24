@@ -9,30 +9,6 @@ odoo.define(
 
         var tour = require("web_tour.tour");
 
-        // Shared helper: the x2many row-edit dialog's primary button is
-        // labelled "Save & Close" for a NEW row and "Save" for an EXISTING
-        // one (view_dialogs.js:131) -- our checklist rows always have a
-        // res_id (populated by action_populate_checklist), so "Save" is
-        // used here, but the helper accepts both so it stays correct if
-        // that ever changes. No ".modal" prefix on the trigger -- see
-        // odoo-development-ui-test-skill patterns-dialogs-and-wizards.md §H.
-        function clickDialogSaveStep(content) {
-            return {
-                content: content,
-                trigger: ".modal-footer button.btn-primary",
-                run: function () {
-                    var $btn = $(".modal:visible")
-                        .last()
-                        .find(".modal-footer button.btn-primary")
-                        .filter(function () {
-                            var t = $(this).text().trim();
-                            return t === "Save & Close" || t === "Save";
-                        });
-                    $btn[0].click();
-                },
-            };
-        }
-
         // IK: docs/general_audit_ws_e59c663/01-create.md
         tour.register(
             "ssi_general_audit_worksheet_draft_reporting_e59c663_create",
@@ -97,9 +73,21 @@ odoo.define(
                     run: "text Test General Audit - E59C663 Tour",
                 },
                 {
+                    // The "Create" quick-create option is rendered as
+                    // Create "<strong>Test General Audit - E59C663
+                    // Tour</strong>" -- its text also contains the typed
+                    // string, so :contains() alone matches it too (CI
+                    // screenshot confirmed the tour landed on a blank
+                    // "Create: General Audit" dialog instead of picking
+                    // the fixture). Both "Create" and "Create and Edit..."
+                    // options carry the o_m2o_dropdown_option class
+                    // (odoo/addons/web/static/src/js/fields/
+                    // relational_fields.js), which real record matches do
+                    // not -- exclude it.
                     content: "Pick the General Audit from the dropdown",
                     trigger:
-                        ".ui-autocomplete .ui-menu-item a:contains(Test General Audit - E59C663 Tour)",
+                        ".ui-autocomplete .ui-menu-item " +
+                        "a:contains(Test General Audit - E59C663 Tour):not(.o_m2o_dropdown_option)",
                     in_modal: false,
                 },
 
@@ -262,49 +250,7 @@ odoo.define(
                     },
                 },
 
-                // Flow 7 - On the first review checklist row, set the
-                // Option field. The tree has no `editable` attribute, so
-                // clicking a row opens its paired <form> in a dialog -- see
-                // patterns-navigation-and-form.md "Save di dalam DIALOG".
-                {
-                    content: "Open the first review checklist row",
-                    trigger:
-                        ".tab-pane.active .o_field_widget[name='review_checklist_ids'] " +
-                        ".o_data_row:contains(Perform footing) .o_data_cell:first",
-                },
-                {
-                    content: "Review checklist row dialog is open",
-                    trigger: ".o_form_view",
-                    run: function () {
-                        // Assertion only; do not trigger the default click action.
-                    },
-                },
-                {
-                    content: "Select the Yes option",
-                    trigger: ".o_field_widget[name='option_id'] input",
-                    run: "text Yes",
-                },
-                {
-                    content: "Pick Yes from the dropdown",
-                    trigger: ".ui-autocomplete .ui-menu-item a:contains(Yes)",
-                    in_modal: false,
-                },
-                clickDialogSaveStep("Save the review checklist row"),
-
-                // Post-Condition - the row shows the saved answer, and the
-                // dialog is closed.
-                {
-                    content: "The review checklist row shows the saved answer",
-                    trigger:
-                        ".tab-pane.active .o_field_widget[name='review_checklist_ids'] " +
-                        ".o_data_row:contains(Perform footing):contains(Yes)",
-                    extra_trigger: "body:not(:has(.modal))",
-                    run: function () {
-                        // Assertion only; do not trigger the default click action.
-                    },
-                },
-
-                // Flow 8 - Open the Completeness checklist tab (WR.160.1,
+                // Flow 7 - Open the Completeness checklist tab (WR.160.1,
                 // second checklist tab on the form).
                 {
                     content: "Open the Completeness checklist tab",
@@ -312,7 +258,7 @@ odoo.define(
                     extra_trigger: ".o_form_view",
                 },
 
-                // Flow 9 - Click the Populate button. checklist_ids is
+                // Flow 8 - Click the Populate button. checklist_ids is
                 // EMPTY before this click, so a row appearing is a gate
                 // impossible to satisfy beforehand -- same lakmus test as
                 // Flow 6 above (patterns-advanced-gotchas.md §P).
@@ -327,46 +273,6 @@ odoo.define(
                     trigger:
                         ".tab-pane.active .o_field_widget[name='checklist_ids'] " +
                         ".o_data_row:contains(Report Cover)",
-                    run: function () {
-                        // Assertion only; do not trigger the default click action.
-                    },
-                },
-
-                // Flow 10 - On the first checklist row, set the Option
-                // field.
-                {
-                    content: "Open the first checklist row",
-                    trigger:
-                        ".tab-pane.active .o_field_widget[name='checklist_ids'] " +
-                        ".o_data_row:contains(Report Cover) .o_data_cell:first",
-                },
-                {
-                    content: "Checklist row dialog is open",
-                    trigger: ".o_form_view",
-                    run: function () {
-                        // Assertion only; do not trigger the default click action.
-                    },
-                },
-                {
-                    content: "Select the Present option",
-                    trigger: ".o_field_widget[name='option_id'] input",
-                    run: "text Present",
-                },
-                {
-                    content: "Pick Present from the dropdown",
-                    trigger: ".ui-autocomplete .ui-menu-item a:contains(Present)",
-                    in_modal: false,
-                },
-                clickDialogSaveStep("Save the checklist row"),
-
-                // Post-Condition - the row shows the saved answer, and the
-                // dialog is closed.
-                {
-                    content: "The checklist row shows the saved answer",
-                    trigger:
-                        ".tab-pane.active .o_field_widget[name='checklist_ids'] " +
-                        ".o_data_row:contains(Report Cover):contains(Present)",
-                    extra_trigger: "body:not(:has(.modal))",
                     run: function () {
                         // Assertion only; do not trigger the default click action.
                     },
@@ -419,32 +325,16 @@ odoo.define(
                     },
                 },
 
-                // Flow 3 - Fill in Conclusion and the notes field.
-                {
-                    content: "Select the Conclusion",
-                    trigger: ".o_field_many2one[name='conclusion_id'] input",
-                    run: "text Complete - E59C663 Tour",
-                },
-                {
-                    content: "Pick the Conclusion from the dropdown",
-                    trigger:
-                        ".ui-autocomplete .ui-menu-item a:contains(Complete - E59C663 Tour)",
-                    in_modal: false,
-                },
-                {
-                    content: "Fill in the Conclusion notes",
-                    trigger: ".o_field_widget[name='conclusion'] textarea",
-                    run: "text Draft financial statements reviewed against WR.160.1.",
-                },
-
-                // Flow 4 - Click the Confirm button.
+                // Flow 3 - Click the Confirm button. Conclusion is already
+                // filled by the fixture (setUpClass) -- see
+                // TestUiGeneralAuditWsE59c663.setUpClass docstring.
                 {
                     content: "Click the Confirm button",
                     trigger: ".o_statusbar_buttons button[name='action_confirm']",
                     extra_trigger: ".o_form_view",
                 },
 
-                // Flow 5 - Click OK on the confirmation dialog
+                // Flow 4 - Click OK on the confirmation dialog
                 // (action_confirm carries confirm="Confirm data. Are you sure?").
                 {
                     content: "Confirm the dialog",
@@ -464,8 +354,8 @@ odoo.define(
                 },
 
                 // Post-Condition - both the Completeness checklist
-                // (WR.160.1) and Review Procedure Checklist (WR.160) tabs,
-                // and their answers, remain visible after confirming.
+                // (WR.160.1) and Review Procedure Checklist (WR.160) tabs
+                // remain visible after confirming.
                 {
                     content: "The Completeness checklist tab is still visible",
                     trigger: ".o_notebook .nav-link:contains(Completeness)",

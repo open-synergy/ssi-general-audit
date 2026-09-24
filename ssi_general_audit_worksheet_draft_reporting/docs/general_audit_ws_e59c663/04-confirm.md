@@ -11,6 +11,8 @@
 ## Pre-Condition
 
 - **Record:** Status is **On Progress** (`open`).
+- **Record:** **Conclusion** and its notes field are filled (not required before
+  confirming, but normally filled in first).
 - **Config:** An active `policy.template` for this model grants `confirm_ok` for state
   `open` to the actor.
 - **Config:** An active `approval.template` for this model matches this record and has
@@ -21,8 +23,8 @@
 
 1. Open the **Windup & Reporting > Draft Reporting > Draft Financial Statements** menu.
 2. Open the record to confirm.
-3. On the **Conclusion** group, fill in **Conclusion** and the notes field, if not
-   already filled.
+3. If not already filled, fill in **Conclusion** and its notes field on the
+   **Conclusion** group.
 4. Click the **Confirm** button.
 5. Click **OK** on the confirmation dialog.
 

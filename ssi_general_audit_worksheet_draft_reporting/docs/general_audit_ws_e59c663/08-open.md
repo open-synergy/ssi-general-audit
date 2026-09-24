@@ -28,13 +28,9 @@
 5. Open the **Review Procedure Checklist** tab.
 6. Click the **Populate** button to generate the WR.160 review procedure checklist rows
    from the `general_audit_ws_e59c663.review_item` master.
-7. On the first review checklist row, set the **Option** field (Yes / No) to confirm the
-   row can be answered.
-8. Open the **Completeness of financial statements cheklist** tab.
-9. Click the **Populate** button to generate the WR.160.1 completeness checklist rows
+7. Open the **Completeness of financial statements cheklist** tab.
+8. Click the **Populate** button to generate the WR.160.1 completeness checklist rows
    from the `general_audit_ws_e59c663.item` master.
-10. On the first checklist row, set the **Option** field (Present / Not Present / Not
-    Applicable) to confirm the row can be answered.
 
 ## Post-Condition
 
@@ -44,14 +40,15 @@
 - The **Review Procedure Checklist** tab is populated with one row per active
   `general_audit_ws_e59c663.review_item` master record (8 items as shipped), each row's
   **Item** and code matching the master. Every row can be answered (**Option**: Yes /
-  No).
+  No) by opening it.
 - Clicking **Populate** on the **Review Procedure Checklist** tab again does not
   duplicate existing rows; it only adds rows for items missing from the checklist and
   removes rows whose item is no longer active in the master.
 - The **Completeness of financial statements cheklist** tab is populated with one row
   per active `general_audit_ws_e59c663.item` master record (47 items as shipped), each
   row's **Item** and code matching the master. Every row can be answered (**Option**:
-  Present / Not Present / Not Applicable) and annotated with a **Comment**.
+  Present / Not Present / Not Applicable) and annotated with a **Comment** by opening
+  it.
 - Clicking **Populate** on the **Completeness of financial statements cheklist** tab
   again does not duplicate existing rows; it only adds rows for items missing from the
   checklist and removes rows whose item is no longer active in the master.

@@ -30,6 +30,11 @@ class TestUiGeneralAuditWsE59c663(HttpSavepointCase):
         ``general_audit`` -- creating two such worksheets against the same
         audit, or having the Create tour target an audit that already has
         one, raises a ValidationError on the offending ``create()``.
+
+        ``cls.worksheet_open`` also has its ``conclusion_id``/``conclusion``
+        pre-filled here (below), so the Confirm tour only has to click the
+        Confirm button rather than select a value from the ``conclusion_id``
+        many2one dropdown itself.
         """
         super().setUpClass()
         # user_id is explicit throughout: cls.env runs as SUPERUSER, and the
@@ -180,6 +185,21 @@ class TestUiGeneralAuditWsE59c663(HttpSavepointCase):
             .create({"general_audit_id": audit_for_open.id, "type_id": ws_type.id})
         )
         cls.worksheet_open.with_user(cls.admin).action_open()
+
+        # Pre-filled here rather than through the Confirm tour: selecting
+        # ``conclusion_id`` from its dropdown was found to leave the
+        # many2one widget without an <input> in the CI browser -- see the
+        # PR discussion for ssi-general-audit#391/#392. The Confirm tour's
+        # actual scope is the Confirm button and workflow transition;
+        # asserting a specific selected/saved value is unit-test territory
+        # (odoo-development-ui-test skill scope: "Tour TIDAK menguji
+        # nilai"), so the value is set directly here instead.
+        cls.worksheet_open.with_user(cls.admin).write(
+            {
+                "conclusion_id": cls.conclusion.id,
+                "conclusion": "Draft financial statements reviewed against WR.160.1.",
+            }
+        )
 
         cls.worksheet_draft.invalidate_cache()
         cls.worksheet_open.invalidate_cache()
