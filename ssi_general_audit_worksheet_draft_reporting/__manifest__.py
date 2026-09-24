@@ -20,6 +20,7 @@
         "data/master/general_audit_worksheet_conclusion.xml",
         "data/master/general_audit_ws_bbbdfe7_item.xml",
         "data/master/general_audit_ws_de69c2f_item.xml",
+        "data/master/general_audit_ws_e59c663_item.xml",
         # b555edd - Report Formatting Control
         "security/res_group/general_audit_ws_b555edd.xml",
         "security/ir_rule/general_audit_ws_b555edd.xml",
@@ -36,6 +37,7 @@
         "data/policy_template/general_audit_ws_e59c663.xml",
         "data/approval_template/general_audit_ws_e59c663.xml",
         "views/ga_e59c663/general_audit_ws_e59c663_views.xml",
+        "views/ga_e59c663/general_audit_ws_e59c663_item_views.xml",
         # de69c2f - Final Discussion
         "security/res_group/general_audit_ws_de69c2f.xml",
         "security/ir_rule/general_audit_ws_de69c2f.xml",
