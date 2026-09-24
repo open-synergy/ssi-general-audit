@@ -712,24 +712,20 @@ scenarios:
         xml_id: "ssi_general_audit.checklist_option_yes"
         save_as: "option_yes"
 
-      - step: "Answer and comment the review checklist row a.1"
+      - step: "Answer the review checklist row a.1"
         action: "write"
         target: "review_row_a"
         as_user: "base.user_admin"
         values:
           option_id: "REC: option_yes.id"
-          comment: "Data integrity checked against the trial balance."
 
-      - step: "Assert the review checklist answer and comment were saved"
+      - step: "Assert the review checklist answer was saved"
         action: "assert"
         target: "review_row_a"
         asserts:
           option_id:
             type: "m2o"
             expected: "REC: option_yes"
-          comment:
-            type: "value"
-            expected: "Data integrity checked against the trial balance."
 
       - step: "Populate review checklist a second time must not duplicate"
         action: "call"

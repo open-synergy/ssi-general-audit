@@ -44,7 +44,7 @@
 - The **Review Procedure Checklist** tab is populated with one row per active
   `general_audit_ws_e59c663.review_item` master record (8 items as shipped), each row's
   **Item** and code matching the master. Every row can be answered (**Option**: Yes /
-  No) and annotated with a **Comment**.
+  No).
 - Clicking **Populate** on the **Review Procedure Checklist** tab again does not
   duplicate existing rows; it only adds rows for items missing from the checklist and
   removes rows whose item is no longer active in the master.

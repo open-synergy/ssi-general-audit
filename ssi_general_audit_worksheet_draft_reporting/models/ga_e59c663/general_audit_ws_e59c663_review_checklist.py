@@ -9,8 +9,8 @@ class GeneralAuditWsE59c663ReviewChecklist(models.Model):
     """Review procedure checklist line for the Draft Financial
     Statements worksheet.
 
-    Stores the auditor's answer (Yes/No) and any comments/attachments
-    for one review procedure item (WR.160). Lines are populated via
+    Stores the auditor's answer (Yes/No) and any attachments for one
+    review procedure item (WR.160). Lines are populated via
     ``action_populate_review_checklist`` (defined on
     ``general_audit_ws_e59c663``) from the
     ``general_audit_ws_e59c663.review_item`` master.
@@ -34,9 +34,6 @@ class GeneralAuditWsE59c663ReviewChecklist(models.Model):
         comodel_name="general_audit_ws_e59c663.review_item",
         required=True,
         help="Review procedure item that must be answered on this line.",
-    )
-    comment = fields.Text(
-        help="Additional comment or explanation for this checklist item.",
     )
     attachment_ids = fields.Many2many(
         comodel_name="ir.attachment",
