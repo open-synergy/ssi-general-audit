@@ -6,3 +6,4 @@ from . import test_general_audit
 from . import test_general_audit_reload_account
 from . import test_import_adjustment_entry_detail
 from . import test_client_adjustment_entry_detail
+from . import test_import_client_account
