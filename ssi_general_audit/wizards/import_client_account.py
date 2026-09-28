@@ -130,18 +130,23 @@ computing this preview.""",
         another active account of the same partner are still created,
         but flagged in the returned notification.
 
+        Duplicate-name warnings are collected in a local ``warnings``
+        list, never on ``self`` — a ``TransientModel`` recordset is
+        slotted (``models.py``), so it cannot hold plain instance
+        attributes.
+
         :return: an ``ir.actions.client`` displaying the import result
         """
         self.ensure_one()
-        self._duplicate_name_warnings = []
+        warnings = []
         rows = self._read_csv_rows()
         if self.has_header and rows:
             rows = rows[1:]
         counter = {"imported": 0, "updated": 0, "skipped": 0}
         for row in rows:
-            result = self._import_client_account(row)
+            result = self._import_client_account(row, warnings)
             counter[result] += 1
-        return self._prepare_import_notification(counter)
+        return self._prepare_import_notification(counter, warnings)
 
     def _get_type_id(self, row):
         if len(row) < 4 or not row[3]:
@@ -149,16 +154,18 @@ computing this preview.""",
         types = self.env["client_account_type"].search([("code", "=", row[3])], limit=1)
         return types.id if types else False
 
-    def _check_duplicate_name(self, row):
+    def _check_duplicate_name(self, row, warnings):
         """Record a warning when a new account's name collides.
 
-        Appends ``(code, name)`` to ``self._duplicate_name_warnings``
-        when an active ``client_account`` already exists for the same
-        partner with the same name (case-insensitive) but a different
-        code. Does not block creation — the caller still creates the
-        new account.
+        Appends ``(code, name)`` to the caller's local ``warnings``
+        list when an active ``client_account`` already exists for the
+        same partner with the same name (case-insensitive) but a
+        different code. Does not block creation — the caller still
+        creates the new account.
 
         :param row: CSV row about to be created as a new account
+        :param warnings: local list accumulating ``(code, name)``
+            duplicate-name pairs, owned by ``button_import``
         """
         self.ensure_one()
         name = row[1] if len(row) > 1 else False
@@ -174,10 +181,10 @@ computing this preview.""",
                 account.name
                 and account.name.strip().casefold() == name.strip().casefold()
             ):
-                self._duplicate_name_warnings.append((row[0], name))
+                warnings.append((row[0], name))
                 break
 
-    def _import_client_account(self, row):
+    def _import_client_account(self, row, warnings):
         """Import or update a single CSV row into ``client_account``.
 
         Skips the row (returns ``"skipped"``) when
@@ -187,6 +194,8 @@ computing this preview.""",
         ``_check_duplicate_name`` without blocking the creation.
 
         :param row: one parsed CSV row (list of column strings)
+        :param warnings: local list accumulating ``(code, name)``
+            duplicate-name pairs, owned by ``button_import``
         :return: ``"imported"``, ``"updated"``, or ``"skipped"``
         """
         self.ensure_one()
@@ -205,7 +214,7 @@ computing this preview.""",
                 account.write({"type_id": type_id})
             result = "updated"
         else:
-            self._check_duplicate_name(row)
+            self._check_duplicate_name(row, warnings)
             account = Account.create(
                 {
                     "code": row[0],
@@ -231,11 +240,13 @@ computing this preview.""",
             )
         return result
 
-    def _prepare_import_notification(self, counter):
+    def _prepare_import_notification(self, counter, warnings):
         """Build the closing ``display_notification`` action.
 
         :param counter: dict with ``imported``/``updated``/``skipped``
             row counts
+        :param warnings: local list of ``(code, name)`` duplicate-name
+            pairs collected by ``button_import``
         :return: an ``ir.actions.client`` dict of type
             ``display_notification``
         """
@@ -244,7 +255,6 @@ computing this preview.""",
             _("%(imported)s imported, %(updated)s updated, %(skipped)s skipped.")
             % counter
         ]
-        warnings = self._duplicate_name_warnings
         if warnings:
             shown = warnings[:5]
             pairs = ", ".join("%s/%s" % (code, name) for code, name in shown)
