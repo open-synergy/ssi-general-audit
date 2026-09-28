@@ -208,6 +208,24 @@ msgid "# Worksheet"
 msgstr ""
 
 #. module: ssi_general_audit
+#: code:addons/ssi_general_audit/wizards/import_client_account.py:0
+#, python-format
+msgid "%(imported)s imported, %(updated)s updated, %(skipped)s skipped."
+msgstr ""
+
+#. module: ssi_general_audit
+#: code:addons/ssi_general_audit/wizards/import_client_account.py:0
+#, python-format
+msgid "(no client)"
+msgstr ""
+
+#. module: ssi_general_audit
+#: code:addons/ssi_general_audit/wizards/import_client_account.py:0
+#, python-format
+msgid "...and %s more."
+msgstr ""
+
+#. module: ssi_general_audit
 #: model:checklist.option_set,name:ssi_general_audit.checklist_option_set_11
 msgid "2 Options (Adequate/Inadequate)"
 msgstr ""
@@ -1966,6 +1984,15 @@ msgid "Client that owns this account."
 msgstr ""
 
 #. module: ssi_general_audit
+#: code:addons/ssi_general_audit/wizards/import_client_account.py:0
+#, python-format
+msgid ""
+"Client: %(client)s\n"
+"Valid rows: %(valid)s\n"
+"Rows to be skipped: %(skipped)s"
+msgstr ""
+
+#. module: ssi_general_audit
 #: model:ir.actions.act_window,name:ssi_general_audit.client_account_mapping_action
 #: model:ir.ui.menu,name:ssi_general_audit.client_account_mapping_menu
 msgid "CoA and Mapping"
@@ -2846,6 +2873,12 @@ msgid "Duplicate code not allowed"
 msgstr ""
 
 #. module: ssi_general_audit
+#: code:addons/ssi_general_audit/wizards/import_client_account.py:0
+#, python-format
+msgid "Duplicate name warning for: %s"
+msgstr ""
+
+#. module: ssi_general_audit
 #: code:addons/ssi_general_audit/models/client_account/client_account_mapping.py:0
 #: code:addons/ssi_general_audit/models/client_trial_balance/client_trial_balance.py:0
 #: code:addons/ssi_general_audit/models/general_audit/general_audit.py:0
@@ -3188,6 +3221,23 @@ msgstr ""
 #: model:ir.model.fields,field_description:ssi_general_audit.field_import_client_account__data
 #: model:ir.model.fields,field_description:ssi_general_audit.field_import_trial_balance_detail__data
 msgid "File"
+msgstr ""
+
+#. module: ssi_general_audit
+#: model:ir.model.fields,field_description:ssi_general_audit.field_import_client_account__has_header
+msgid "File Has Header Row"
+msgstr ""
+
+#. module: ssi_general_audit
+#: model:ir.model.fields,help:ssi_general_audit.field_import_client_account__has_header
+msgid ""
+"File Has Header Row\n"
+"\n"
+"* When checked (the default), the first row of the uploaded file is\n"
+"  always skipped without being checked, since it is assumed to be a\n"
+"  column header.\n"
+"* Uncheck this if the uploaded file does not start with a header row,\n"
+"  so every row (including the first) is validated and imported."
 msgstr ""
 
 #. module: ssi_general_audit
@@ -3925,9 +3975,27 @@ msgid "Import Adjustment Entry Detail"
 msgstr ""
 
 #. module: ssi_general_audit
+#: code:addons/ssi_general_audit/wizards/import_client_account.py:0
 #: model:ir.actions.act_window,name:ssi_general_audit.import_client_account_action
 #: model:ir.model,name:ssi_general_audit.model_import_client_account
+#, python-format
 msgid "Import Client Account"
+msgstr ""
+
+#. module: ssi_general_audit
+#: model:ir.model.fields,field_description:ssi_general_audit.field_import_client_account__import_summary
+msgid "Import Preview"
+msgstr ""
+
+#. module: ssi_general_audit
+#: model:ir.model.fields,help:ssi_general_audit.field_import_client_account__import_summary
+msgid ""
+"Import Preview\n"
+"\n"
+"Preview computed from the uploaded file before the Import button is\n"
+"pressed: the client name and how many rows are valid versus will be\n"
+"skipped (empty/header/over-length code). No record is created while\n"
+"computing this preview."
 msgstr ""
 
 #. module: ssi_general_audit
