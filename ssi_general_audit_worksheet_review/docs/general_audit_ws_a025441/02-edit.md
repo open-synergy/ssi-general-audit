@@ -1,8 +1,9 @@
-# Edit Financial Statement Disclosure (a025441)
+# Edit Financial Statement Disclosure - Detail (a025441)
 
 > **Module:** ssi*general_audit_worksheet_review **Model:** `general_audit_ws_a025441` >
-> **Menu:** Windup & Reporting > Review > Financial Statement Disclosure **Actor:** user
-> in group \_Financial Statement Disclosure (a025441) — User* (or higher)
+> **Menu:** Windup & Reporting > Review > Financial Statement Disclosure > Financial
+> Statement Disclosure - Detail **Actor:** user in group \_Financial Statement
+> Disclosure (a025441) — User* (or higher)
 
 ## Pre-Condition
 
@@ -25,7 +26,8 @@
 
 ## Flow
 
-1. Open the **Windup & Reporting > Review > Financial Statement Disclosure** menu.
+1. Open the **Windup & Reporting > Review > Financial Statement Disclosure > Financial
+   Statement Disclosure - Detail** menu.
 2. Open the worksheet to fill in. The **Financial Accounting Standard** field (below
    Reviewer) shows which checklist variant applies.
 3. Click the **Edit** button.

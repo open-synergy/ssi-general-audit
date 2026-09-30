@@ -19,14 +19,14 @@ class GeneralAuditWSa8c54f3(models.Model):
 
     _inherit = "general_audit_ws_a8c54f3"
 
-    # Financial Statement Disclosure Review
+    # Financial Statement Disclosure
     # LINK - 42 be62e79
     @api.depends(
         "general_audit_id",
     )
     def _compute_link_42_id(self):
         """Populate ``link_42_id`` from open/done Financial Statement
-        Disclosure Review worksheets.
+        Disclosure worksheets.
 
         Searches ``general_audit_ws_be62e79`` records sharing the same
         ``general_audit_id`` with ``state`` in ``["open", "done"]``, plus
@@ -47,14 +47,14 @@ class GeneralAuditWSa8c54f3(models.Model):
             record.link_42_id = result
 
     link_42_id = fields.Many2one(
-        string="Financial Statement Disclosure Review",
+        string="Financial Statement Disclosure",
         comodel_name="general_audit_ws_be62e79",
         compute_sudo=True,
         compute="_compute_link_42_id",
         store=True,
         help=(
-            "Link to worksheet (Financial Statement Disclosure Review) for "
-            "this General Audit. Automatically computed and stored."
+            "Link to worksheet (Financial Statement Disclosure) for this "
+            "General Audit. Automatically computed and stored."
         ),
     )
     link_42_state = fields.Selection(
@@ -62,34 +62,34 @@ class GeneralAuditWSa8c54f3(models.Model):
         related="link_42_id.state",
         help=(
             "Workflow state of the linked Financial Statement Disclosure "
-            "Review worksheet. Read-only and follows the linked record."
+            "worksheet. Read-only and follows the linked record."
         ),
     )
     link_42_conclusion_id = fields.Many2one(
         string="Conclusion ID",
         related="link_42_id.conclusion_id",
         help=(
-            "Conclusion from the Financial Statement Disclosure Review "
-            "worksheet. Read-only, mirrors the linked record."
+            "Conclusion from the Financial Statement Disclosure worksheet. "
+            "Read-only, mirrors the linked record."
         ),
     )
     link_42_conclusion = fields.Text(
         string="Conclusion",
         related="link_42_id.conclusion",
         help=(
-            "Conclusion on the Financial Statement Disclosure Review "
-            "worksheet. Read-only, mirrors the linked record."
+            "Conclusion on the Financial Statement Disclosure worksheet. "
+            "Read-only, mirrors the linked record."
         ),
     )
 
-    # Financial Statement Disclosure
+    # Financial Statement Disclosure - Detail
     # LINK - 43 a025441
     @api.depends(
         "general_audit_id",
     )
     def _compute_link_43_id(self):
         """Populate ``link_43_id`` from open/done Financial Statement
-        Disclosure worksheets.
+        Disclosure - Detail worksheets.
 
         Searches ``general_audit_ws_a025441`` records sharing the same
         ``general_audit_id`` with ``state`` in ``["open", "done"]``, plus
@@ -110,38 +110,39 @@ class GeneralAuditWSa8c54f3(models.Model):
             record.link_43_id = result
 
     link_43_id = fields.Many2one(
-        string="Financial Statement Disclosure",
+        string="Financial Statement Disclosure - Detail",
         comodel_name="general_audit_ws_a025441",
         compute_sudo=True,
         compute="_compute_link_43_id",
         store=True,
         help=(
-            "Link to worksheet (Financial Statement Disclosure) for this "
-            "General Audit. Automatically computed and stored."
+            "Link to worksheet (Financial Statement Disclosure - Detail) "
+            "for this General Audit. Automatically computed and stored."
         ),
     )
     link_43_state = fields.Selection(
         string="State",
         related="link_43_id.state",
         help=(
-            "Workflow state of the linked Financial Statement Disclosure "
-            "worksheet. Read-only and follows the linked record."
+            "Workflow state of the linked Financial Statement "
+            "Disclosure - Detail worksheet. Read-only and follows the "
+            "linked record."
         ),
     )
     link_43_conclusion_id = fields.Many2one(
         string="Conclusion ID",
         related="link_43_id.conclusion_id",
         help=(
-            "Conclusion from the Financial Statement Disclosure worksheet. "
-            "Read-only, mirrors the linked record."
+            "Conclusion from the Financial Statement Disclosure - Detail "
+            "worksheet. Read-only, mirrors the linked record."
         ),
     )
     link_43_conclusion = fields.Text(
         string="Conclusion",
         related="link_43_id.conclusion",
         help=(
-            "Conclusion on the Financial Statement Disclosure worksheet. "
-            "Read-only, mirrors the linked record."
+            "Conclusion on the Financial Statement Disclosure - Detail "
+            "worksheet. Read-only, mirrors the linked record."
         ),
     )
 
@@ -424,8 +425,8 @@ class GeneralAuditWSa8c54f3(models.Model):
         result = super()._get_custom_field_labels()
         result.update(
             {
-                "link_42_id": _("Financial Statement Disclosure Review"),
-                "link_43_id": _("Financial Statement Disclosure"),
+                "link_42_id": _("Financial Statement Disclosure"),
+                "link_43_id": _("Financial Statement Disclosure - Detail"),
                 "link_44_id": _("Audit Quality"),
                 "link_45_id": _("Audit Evidence Evaluation"),
                 "link_46_id": _("Audit Evidence Evaluation Detail"),
