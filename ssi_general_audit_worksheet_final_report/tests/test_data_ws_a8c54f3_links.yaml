@@ -116,12 +116,13 @@ setup:
       save_as: "ws_type_ab19fd4"
 
 scenarios:
-  # Positive: link_1 (General Ledger, d209914) resolves once its
-  # source worksheet is open, and link_1_conclusion mirrors the
-  # source worksheet's own conclusion.
-  - name: "Compute link_1 from open General Ledger worksheet (d209914)"
+  # Positive: link_1_ids (General Ledger, d209914) lists EVERY open
+  # worksheet of the same general audit, because that worksheet type
+  # allows more than one worksheet per audit. A draft worksheet is
+  # not listed.
+  - name: "Compute link_1_ids from all open General Ledger worksheets (d209914)"
     steps:
-      - step: "Create worksheet d209914"
+      - step: "Create first worksheet d209914"
         action: "create"
         model: "general_audit_ws_d209914"
         save_as: "ws_d209914"
@@ -130,29 +131,35 @@ scenarios:
           general_audit_id: "REC: audit.id"
           type_id: "REC: ws_type_d209914.id"
 
-      - step: "Open worksheet d209914"
+      - step: "Open first worksheet d209914"
         action: "call"
         target: "ws_d209914"
         method: "action_open"
         as_user: "base.user_admin"
 
-      - step: "Create conclusion for worksheet type d209914"
+      - step: "Create second worksheet d209914"
         action: "create"
-        model: "general_audit_worksheet_conclusion"
-        save_as: "conclusion_d209914"
+        model: "general_audit_ws_d209914"
+        save_as: "ws_d209914_second"
         as_user: "base.user_admin"
         values:
-          name: "General Ledger reconciled (link_1 test)"
-          code: "/"
+          general_audit_id: "REC: audit.id"
           type_id: "REC: ws_type_d209914.id"
 
-      - step: "Fill conclusion on ws_d209914"
-        action: "write"
-        target: "ws_d209914"
+      - step: "Open second worksheet d209914"
+        action: "call"
+        target: "ws_d209914_second"
+        method: "action_open"
+        as_user: "base.user_admin"
+
+      - step: "Create third worksheet d209914 and leave it in draft"
+        action: "create"
+        model: "general_audit_ws_d209914"
+        save_as: "ws_d209914_draft"
         as_user: "base.user_admin"
         values:
-          conclusion_id: "REC: conclusion_d209914.id"
-          conclusion: "General ledger movements agree to the trial balance."
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_d209914.id"
 
       - step: "Create worksheet a8c54f3 on the same general audit"
         action: "create"
@@ -163,24 +170,39 @@ scenarios:
           general_audit_id: "REC: audit.id"
           type_id: "REC: ws_type_a8c54f3.id"
 
-      - step: "Assert link_1_id resolved and link_1_state is open"
+      - step: "Assert link_1_ids lists both open worksheets and not the draft"
         action: "assert"
         target: "worksheet"
         asserts:
-          link_1_id:
-            type: "m2o"
-            expected: "REC: ws_d209914"
-          link_1_state:
-            type: "value"
-            expected: "open"
+          link_1_ids:
+            type: "m2m"
+            check: "exact"
+            expected_records:
+              - "REC: ws_d209914"
+              - "REC: ws_d209914_second"
 
-      - step: "Assert link_1_conclusion mirrors ws_d209914 conclusion"
+  # Negative: a type that allows one worksheet per audit stays Many2one
+  # and a general audit without worksheets of a Many2many type gives
+  # an empty list.
+  - name: "link_3_ids is empty when the audit has no Test of Control worksheet"
+    steps:
+      - step: "Create worksheet a8c54f3 on the same general audit"
+        action: "create"
+        model: "general_audit_ws_a8c54f3"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_a8c54f3.id"
+
+      - step: "Assert link_3_ids is empty"
         action: "assert"
         target: "worksheet"
         asserts:
-          link_1_conclusion:
-            type: "value"
-            expected: "General ledger movements agree to the trial balance."
+          link_3_ids:
+            type: "m2m"
+            check: "count"
+            expected_count: 0
 
   # Positive: action_reload_links picks up a state change on the
   # source worksheet (link_28, Audit Result Formulation / ab19fd4)

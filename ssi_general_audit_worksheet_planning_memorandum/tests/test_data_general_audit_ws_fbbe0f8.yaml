@@ -159,6 +159,11 @@ setup:
       xml_id: "ssi_general_audit_worksheet_acceptance_continuance.worksheet_type_806c4e1"
       save_as: "ws_type_806c4e1"
 
+    - step: "Get worksheet type b32655a"
+      action: "ref"
+      xml_id: "ssi_general_audit_worksheet_preliminary_analytic_procedure.worksheet_type_b32655a"
+      save_as: "ws_type_b32655a"
+
     - step: "Get worksheet type ae48e68"
       action: "ref"
       xml_id: "ssi_general_audit_worksheet_external_communication.worksheet_type_ae48e68"
@@ -247,9 +252,10 @@ scenarios:
           link_8_id:
             type: "value"
             operator: "is_falsy"
-          link_9_id:
-            type: "value"
-            operator: "is_falsy"
+          link_9_ids:
+            type: "m2m"
+            check: "count"
+            expected_count: 0
           link_10_id:
             type: "value"
             operator: "is_falsy"
@@ -268,18 +274,22 @@ scenarios:
             type: "m2m"
             check: "count"
             expected_count: 0
-          link_15_id:
-            type: "value"
-            operator: "is_falsy"
-          link_16_id:
-            type: "value"
-            operator: "is_falsy"
-          link_17_id:
-            type: "value"
-            operator: "is_falsy"
-          link_18_id:
-            type: "value"
-            operator: "is_falsy"
+          link_15_ids:
+            type: "m2m"
+            check: "count"
+            expected_count: 0
+          link_16_ids:
+            type: "m2m"
+            check: "count"
+            expected_count: 0
+          link_17_ids:
+            type: "m2m"
+            check: "count"
+            expected_count: 0
+          link_18_ids:
+            type: "m2m"
+            check: "count"
+            expected_count: 0
           link_19_id:
             type: "value"
             operator: "is_falsy"
@@ -292,18 +302,21 @@ scenarios:
           link_22_id:
             type: "value"
             operator: "is_falsy"
-          link_23_id:
-            type: "value"
-            operator: "is_falsy"
+          link_23_ids:
+            type: "m2m"
+            check: "count"
+            expected_count: 0
           link_24_id:
             type: "value"
             operator: "is_falsy"
-          link_25_id:
-            type: "value"
-            operator: "is_falsy"
-          link_26_id:
-            type: "value"
-            operator: "is_falsy"
+          link_25_ids:
+            type: "m2m"
+            check: "count"
+            expected_count: 0
+          link_26_ids:
+            type: "m2m"
+            check: "count"
+            expected_count: 0
           link_27_id:
             type: "value"
             operator: "is_falsy"
@@ -862,9 +875,11 @@ scenarios:
           link_8_id:
             type: "m2o"
             expected: "REC: ws_b59b886"
-          link_9_id:
-            type: "m2o"
-            expected: "REC: ws_b9d8a5c"
+          link_9_ids:
+            type: "m2m"
+            check: "exact"
+            expected_records:
+              - "REC: ws_b9d8a5c"
           link_10_id:
             type: "m2o"
             expected: "REC: ws_ae48e68"
@@ -1269,11 +1284,10 @@ scenarios:
 
   # ------------------------------------------------------------------
   # link_15 (Acceptance and Continuance of Client Relationships
-  # Analysis, general_audit_ws_806c4e1) - open sets link_15_id/
-  # link_15_conclusion, done (via action_reload_links) sets
-  # link_15_state. Representative of the Many2one link_15..link_40
-  # pattern added for issue #385 (all 26 share the exact same
-  # _compute_link_N_id shape as link_5..link_13).
+  # Analysis, general_audit_ws_806c4e1) - an open worksheet is listed
+  # in link_15_ids, and it stays listed once it is done (via
+  # action_reload_links). link_15 is a Many2many because the worksheet
+  # type allows more than one worksheet per audit.
   #
   # ws_806c4e1 is driven to "done" with a direct `write` on `state`
   # instead of the full action_confirm/action_approve_approval chain:
@@ -1317,16 +1331,15 @@ scenarios:
           general_audit_id: "REC: audit.id"
           type_id: "REC: ws_type_fbbe0f8.id"
 
-      - step: "Assert link_15_id resolved and link_15_state is open"
+      - step: "Assert link_15_ids lists the open worksheet"
         action: "assert"
         target: "worksheet"
         asserts:
-          link_15_id:
-            type: "m2o"
-            expected: "REC: ws_806c4e1"
-          link_15_state:
-            type: "value"
-            expected: "open"
+          link_15_ids:
+            type: "m2m"
+            check: "exact"
+            expected_records:
+              - "REC: ws_806c4e1"
 
       - step: "Create conclusion for worksheet type 806c4e1"
         action: "create"
@@ -1347,17 +1360,6 @@ scenarios:
           conclusion: "Acceptance and continuance analysis completed for link_15 test."
           risk: "low"
           client_relationship: "yes"
-
-      - step: "Assert link_15_conclusion mirrors ws_806c4e1 conclusion"
-        action: "assert"
-        target: "worksheet"
-        asserts:
-          link_15_conclusion:
-            type: "value"
-            expected: "Acceptance and continuance analysis completed for link_15 test."
-          link_15_conclusion_id:
-            type: "m2o"
-            expected: "REC: conclusion_806c4e1"
 
       - step: "Move ws_806c4e1 straight to done (see header comment above)"
         action: "write"
@@ -1390,13 +1392,73 @@ scenarios:
         target: "worksheet"
         method: "invalidate_cache"
 
-      - step: "Assert link_15_state now reflects done"
+      - step: "Assert link_15_ids still lists the worksheet once it is done"
         action: "assert"
         target: "worksheet"
         asserts:
-          link_15_state:
-            type: "value"
-            expected: "done"
+          link_15_ids:
+            type: "m2m"
+            check: "exact"
+            expected_records:
+              - "REC: ws_806c4e1"
+
+  # ------------------------------------------------------------------
+  # link_25 (Preliminary Analytic Procedure - Vertical & Horizontal
+  # Analysis, general_audit_ws_b32655a) - the worksheet type allows
+  # more than one worksheet per audit, so link_25_ids lists every
+  # open worksheet and skips a draft one.
+  # ------------------------------------------------------------------
+  - name: "link_25_ids lists every open b32655a worksheet of the audit"
+    steps:
+      - step: "Create first worksheet b32655a"
+        action: "create"
+        model: "general_audit_ws_b32655a"
+        save_as: "ws_b32655a"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_b32655a.id"
+
+      - step: "Open first worksheet b32655a"
+        action: "call"
+        target: "ws_b32655a"
+        method: "action_open"
+        as_user: "base.user_admin"
+
+      - step: "Create second worksheet b32655a"
+        action: "create"
+        model: "general_audit_ws_b32655a"
+        save_as: "ws_b32655a_second"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_b32655a.id"
+
+      - step: "Open second worksheet b32655a"
+        action: "call"
+        target: "ws_b32655a_second"
+        method: "action_open"
+        as_user: "base.user_admin"
+
+      - step: "Create worksheet fbbe0f8 on the same general audit"
+        action: "create"
+        model: "general_audit_ws_fbbe0f8"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_fbbe0f8.id"
+
+      - step: "Assert link_25_ids lists both open worksheets"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          link_25_ids:
+            type: "m2m"
+            check: "exact"
+            expected_records:
+              - "REC: ws_b32655a"
+              - "REC: ws_b32655a_second"
 
   # ------------------------------------------------------------------
   # link_35 (ROMM - Financial Statement Level, general_audit_ws_c165170)
