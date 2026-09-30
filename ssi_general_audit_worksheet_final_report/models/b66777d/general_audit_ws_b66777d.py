@@ -330,7 +330,7 @@ class GeneralAuditWSb66777d(models.Model):
         :return: None
         """
         for record in self:
-            pe = ra = rr = reporting = 0
+            pe = ra = rr = reporting = 0.0
             for line in record.team_allocation_ids:
                 pe += line.pe_allocation
                 ra += line.ra_allocation
@@ -342,7 +342,8 @@ class GeneralAuditWSb66777d(models.Model):
             record.total_reporting_allocation = reporting
             record.total_allocation = pe + ra + rr + reporting
 
-    total_pe_allocation = fields.Integer(
+    total_pe_allocation = fields.Float(
+        digits=(16, 2),
         string="Total Pre-Engagement Allocation",
         compute="_compute_team_allocation_total",
         store=True,
@@ -352,9 +353,11 @@ class GeneralAuditWSb66777d(models.Model):
             "Team Member of this Independent Auditor's Report -- the "
             '"Total (Independent Auditor Report)" figure, worksheet-'
             "wide, not per employee."
+            " Expressed in hours."
         ),
     )
-    total_ra_allocation = fields.Integer(
+    total_ra_allocation = fields.Float(
+        digits=(16, 2),
         string="Total Risk Assessment Allocation",
         compute="_compute_team_allocation_total",
         store=True,
@@ -364,9 +367,11 @@ class GeneralAuditWSb66777d(models.Model):
             "Team Member of this Independent Auditor's Report -- the "
             '"Total (Independent Auditor Report)" figure, worksheet-'
             "wide, not per employee."
+            " Expressed in hours."
         ),
     )
-    total_rr_allocation = fields.Integer(
+    total_rr_allocation = fields.Float(
+        digits=(16, 2),
         string="Total Risk Responses Allocation",
         compute="_compute_team_allocation_total",
         store=True,
@@ -376,9 +381,11 @@ class GeneralAuditWSb66777d(models.Model):
             "Team Member of this Independent Auditor's Report -- the "
             '"Total (Independent Auditor Report)" figure, worksheet-'
             "wide, not per employee."
+            " Expressed in hours."
         ),
     )
-    total_reporting_allocation = fields.Integer(
+    total_reporting_allocation = fields.Float(
+        digits=(16, 2),
         string="Total Windup & Reporting Allocation",
         compute="_compute_team_allocation_total",
         store=True,
@@ -388,9 +395,11 @@ class GeneralAuditWSb66777d(models.Model):
             "every Team Member of this Independent Auditor's Report -- "
             'the "Total (Independent Auditor Report)" figure, '
             "worksheet-wide, not per employee."
+            " Expressed in hours."
         ),
     )
-    total_allocation = fields.Integer(
+    total_allocation = fields.Float(
+        digits=(16, 2),
         string="Total Allocation",
         compute="_compute_team_allocation_total",
         store=True,
@@ -399,9 +408,11 @@ class GeneralAuditWSb66777d(models.Model):
             "total_pe_allocation + total_ra_allocation + "
             "total_rr_allocation + total_reporting_allocation -- the "
             'grand "Total (Independent Auditor Report)" figure.'
+            " Expressed in hours."
         ),
     )
-    awp_total_pe_allocation = fields.Integer(
+    awp_total_pe_allocation = fields.Float(
+        digits=(16, 2),
         string="AWP Total Pre-Engagement Allocation",
         readonly=True,
         help=(
@@ -414,9 +425,11 @@ class GeneralAuditWSb66777d(models.Model):
             "_populate_team_allocation() -- refreshed every time the "
             "Populate button is clicked, same as team_allocation_ids "
             "itself."
+            " Expressed in hours."
         ),
     )
-    awp_total_ra_allocation = fields.Integer(
+    awp_total_ra_allocation = fields.Float(
+        digits=(16, 2),
         string="AWP Total Risk Assessment Allocation",
         readonly=True,
         help=(
@@ -424,9 +437,11 @@ class GeneralAuditWSb66777d(models.Model):
             "Plan (general_audit_ws_cbbbaf4) total_ra_manhour -- 0 on "
             "the same best-effort conditions as "
             "awp_total_pe_allocation."
+            " Expressed in hours."
         ),
     )
-    awp_total_rr_allocation = fields.Integer(
+    awp_total_rr_allocation = fields.Float(
+        digits=(16, 2),
         string="AWP Total Risk Responses Allocation",
         readonly=True,
         help=(
@@ -434,9 +449,11 @@ class GeneralAuditWSb66777d(models.Model):
             "Plan (general_audit_ws_cbbbaf4) total_rr_manhour -- 0 on "
             "the same best-effort conditions as "
             "awp_total_pe_allocation."
+            " Expressed in hours."
         ),
     )
-    awp_total_reporting_allocation = fields.Integer(
+    awp_total_reporting_allocation = fields.Float(
+        digits=(16, 2),
         string="AWP Total Windup & Reporting Allocation",
         readonly=True,
         help=(
@@ -444,9 +461,11 @@ class GeneralAuditWSb66777d(models.Model):
             "Plan (general_audit_ws_cbbbaf4) total_reporting_manhour "
             "-- 0 on the same best-effort conditions as "
             "awp_total_pe_allocation."
+            " Expressed in hours."
         ),
     )
-    awp_total_allocation = fields.Integer(
+    awp_total_allocation = fields.Float(
+        digits=(16, 2),
         string="AWP Total Allocation",
         readonly=True,
         help=(
@@ -454,6 +473,7 @@ class GeneralAuditWSb66777d(models.Model):
             "Plan (general_audit_ws_cbbbaf4) total_manhour -- 0 on "
             "the same best-effort conditions as "
             "awp_total_pe_allocation."
+            " Expressed in hours."
         ),
     )
 
@@ -499,7 +519,8 @@ class GeneralAuditWSb66777d(models.Model):
                 record.total_allocation - record.awp_total_allocation
             )
 
-    diff_pe_allocation = fields.Integer(
+    diff_pe_allocation = fields.Float(
+        digits=(16, 2),
         string="Difference Pre-Engagement Allocation",
         compute="_compute_team_allocation_diff",
         store=True,
@@ -508,9 +529,11 @@ class GeneralAuditWSb66777d(models.Model):
             "total_pe_allocation minus awp_total_pe_allocation. "
             "Positive means the team worked more Pre-Engagement hours "
             "than planned; negative means less."
+            " Expressed in hours."
         ),
     )
-    diff_ra_allocation = fields.Integer(
+    diff_ra_allocation = fields.Float(
+        digits=(16, 2),
         string="Difference Risk Assessment Allocation",
         compute="_compute_team_allocation_diff",
         store=True,
@@ -519,9 +542,11 @@ class GeneralAuditWSb66777d(models.Model):
             "total_ra_allocation minus awp_total_ra_allocation. "
             "Positive means the team worked more Risk Assessment "
             "hours than planned; negative means less."
+            " Expressed in hours."
         ),
     )
-    diff_rr_allocation = fields.Integer(
+    diff_rr_allocation = fields.Float(
+        digits=(16, 2),
         string="Difference Risk Responses Allocation",
         compute="_compute_team_allocation_diff",
         store=True,
@@ -530,9 +555,11 @@ class GeneralAuditWSb66777d(models.Model):
             "total_rr_allocation minus awp_total_rr_allocation. "
             "Positive means the team worked more Risk Responses hours "
             "than planned; negative means less."
+            " Expressed in hours."
         ),
     )
-    diff_reporting_allocation = fields.Integer(
+    diff_reporting_allocation = fields.Float(
+        digits=(16, 2),
         string="Difference Windup & Reporting Allocation",
         compute="_compute_team_allocation_diff",
         store=True,
@@ -542,9 +569,11 @@ class GeneralAuditWSb66777d(models.Model):
             "awp_total_reporting_allocation. Positive means the team "
             "worked more Windup & Reporting hours than planned; "
             "negative means less."
+            " Expressed in hours."
         ),
     )
-    diff_allocation = fields.Integer(
+    diff_allocation = fields.Float(
+        digits=(16, 2),
         string="Difference Allocation",
         compute="_compute_team_allocation_diff",
         store=True,
@@ -553,6 +582,7 @@ class GeneralAuditWSb66777d(models.Model):
             "total_allocation minus awp_total_allocation -- the grand "
             '"Difference" figure. Positive means the team worked '
             "more hours than planned overall; negative means less."
+            " Expressed in hours."
         ),
     )
 
@@ -650,10 +680,16 @@ class GeneralAuditWSb66777d(models.Model):
         as some worksheet -- categorized or not -- recorded time for
         them.
 
+        ``preparation_time`` and ``review_time`` are recorded in
+        minutes; each bucket is summed in minutes first and divided
+        by 60 once at the end, so the returned figures are hours and
+        no rounding error accumulates across worksheets.
+
         :return: mapping of ``hr.employee`` id to a four-key dict,
-            ``{"pe": int, "ra": int, "rr": int, "reporting": int}``,
-            summed across every ``general_audit_worksheet`` sharing
-            this worksheet's ``general_audit_id``
+            ``{"pe": float, "ra": float, "rr": float, "reporting":
+            float}`` in hours, summed across every
+            ``general_audit_worksheet`` sharing this worksheet's
+            ``general_audit_id``
         :rtype: dict
         """
         self.ensure_one()
@@ -683,7 +719,10 @@ class GeneralAuditWSb66777d(models.Model):
                 )
                 if category_field:
                     entry[category_field] += worksheet.review_time
-        return totals
+        return {
+            employee_id: {phase: minutes / 60.0 for phase, minutes in entry.items()}
+            for employee_id, entry in totals.items()
+        }
 
     def _prepare_team_allocation_vals(self, employee_id, times):
         """Build the values of one ``team_allocation_ids`` row.
@@ -701,9 +740,9 @@ class GeneralAuditWSb66777d(models.Model):
         :param employee_id: id of the ``hr.employee`` this row
             aggregates
         :type employee_id: int
-        :param times: ``{"pe": int, "ra": int, "rr": int,
-            "reporting": int}`` totals for this employee, as built by
-            ``_compute_team_allocation_totals()``
+        :param times: ``{"pe": float, "ra": float, "rr": float,
+            "reporting": float}`` totals in hours for this employee,
+            as built by ``_compute_team_allocation_totals()``
         :type times: dict
         :return: dict of ``general_audit_ws_b66777d.team_allocation``
             values
@@ -767,8 +806,8 @@ class GeneralAuditWSb66777d(models.Model):
         Copies ``general_audit_ws_cbbbaf4``'s own worksheet-wide
         ``total_pe_manhour``/``total_ra_manhour``/``total_rr_manhour``/
         ``total_reporting_manhour``/``total_manhour`` (``Float``) into
-        this worksheet's ``awp_total_pe_allocation`` etc. (``Integer``,
-        ``int()``-ed here). These are plain stored fields, NOT
+        this worksheet's ``awp_total_pe_allocation`` etc. (``Float``,
+        hours, copied as is). These are plain stored fields, NOT
         ``compute=``, deliberately: a field-level
         ``fields.Many2one(comodel_name="general_audit_ws_cbbbaf4", ...)``
         anywhere on this module's models risks the same "_unknown"
@@ -787,13 +826,13 @@ class GeneralAuditWSb66777d(models.Model):
         """
         self.ensure_one()
         awp = self._get_awp_worksheet()
-        self.awp_total_pe_allocation = int(awp.total_pe_manhour) if awp else 0
-        self.awp_total_ra_allocation = int(awp.total_ra_manhour) if awp else 0
-        self.awp_total_rr_allocation = int(awp.total_rr_manhour) if awp else 0
+        self.awp_total_pe_allocation = awp.total_pe_manhour if awp else 0.0
+        self.awp_total_ra_allocation = awp.total_ra_manhour if awp else 0.0
+        self.awp_total_rr_allocation = awp.total_rr_manhour if awp else 0.0
         self.awp_total_reporting_allocation = (
-            int(awp.total_reporting_manhour) if awp else 0
+            awp.total_reporting_manhour if awp else 0.0
         )
-        self.awp_total_allocation = int(awp.total_manhour) if awp else 0
+        self.awp_total_allocation = awp.total_manhour if awp else 0.0
 
     def action_populate_detail(self):
         """Button action: (re)populate this worksheet's ``detail_ids``.

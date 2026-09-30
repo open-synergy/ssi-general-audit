@@ -36,6 +36,9 @@
      Allocation**, **Windup & Reporting Allocation**: sum of Preparation Time + Review
      Time, per phase, across this engagement's worksheets attributed to this Team Member
      — the phase of each worksheet comes from its own Worksheet Type Category.
+     Preparation Time and Review Time are recorded in minutes; every figure on this tab
+     is shown in **hours** (decimal, two places), and a blue note at the top of the tab
+     says so.
    - Below the table, three side-by-side groups show the same figures aggregated across
      **every** row (not per employee), matching the Audit Working Plan's own layout:
      - **Total (Independent Auditor Report)**: sum of every Team Member's realized

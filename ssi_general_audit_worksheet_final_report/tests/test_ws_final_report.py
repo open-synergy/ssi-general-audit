@@ -286,3 +286,110 @@ class TestWSFinalReport(YamlTransactionCase):
             set(worksheet._prepare_final_opinion_vals(draft)),
             set(field_names) - {"opinion", "basis_for_opinion"},
         )
+
+    def _create_allocation_fixture(self, suffix, category_xmlid):
+        """Build one b66777d worksheet and one Team Member fixture.
+
+        Fixture built in Python (P10: shared setup for the Python-only
+        test methods that assert hour conversion, the YAML registry
+        does not survive into a plain ``TransactionCase`` method).
+
+        :param str suffix: text appended to record names
+        :param category_xmlid: xml id of the worksheet type category
+            the contributing worksheets get, or ``False`` for none
+        :return: tuple of the b66777d worksheet, the Team Member
+            employee, the Team Member user and a callable creating a
+            contributing worksheet with its own worksheet type
+        :rtype: tuple
+        """
+        audit = self._create_general_audit_for_source_worksheets(suffix)
+        ws_type_b66777d = self.env.ref(
+            "ssi_general_audit_worksheet_final_report.worksheet_type_b66777d"
+        )
+        category = self.env.ref(category_xmlid) if category_xmlid else False
+        user = self.env["res.users"].create(
+            {
+                "name": "Allocation Hours User - %s" % suffix,
+                "login": "allocation_hours_%s@example.com" % suffix,
+                "email": "allocation_hours_%s@example.com" % suffix,
+            }
+        )
+        employee = self.env["hr.employee"].create(
+            {"name": "Allocation Hours Employee - %s" % suffix, "user_id": user.id}
+        )
+        worksheet = self.env["general_audit_ws_b66777d"].create(
+            {"general_audit_id": audit.id, "type_id": ws_type_b66777d.id}
+        )
+
+        def create_contributing_worksheet(index):
+            """Create one a8c54f3 worksheet with its own type.
+
+            :param int index: distinguishes the type name
+            :return: the created worksheet
+            :rtype: recordset
+            """
+            ws_type = self.env["general_audit_worksheet_type"].create(
+                {
+                    "name": "Allocation Hours Type %s - %s" % (index, suffix),
+                    "code": "/",
+                    "model_name": "general_audit_ws_a8c54f3",
+                    "category_id": category.id if category else False,
+                }
+            )
+            return self.env["general_audit_ws_a8c54f3"].create(
+                {"general_audit_id": audit.id, "type_id": ws_type.id}
+            )
+
+        return worksheet, employee, user, create_contributing_worksheet
+
+    def test_compute_team_allocation_totals_hours(self):
+        """Assert preparation and review minutes come back as hours.
+
+        Pure Python -- trigger P1 (L-01: ``action: call`` in YAML
+        discards a method's return value, so the dict returned by
+        ``_compute_team_allocation_totals`` can never be asserted from
+        YAML). One employee prepares a Pre-Engagement worksheet for 90
+        minutes and reviews another for 30 minutes; the Pre-Engagement
+        bucket must be 2.0 hours and the other phases 0.0. Minutes
+        that are multiples of 30 keep every figure exact in binary
+        floating point, so ``assertEqual`` is safe. Populating then
+        must store 2.0 on the row and on the worksheet total.
+
+        :return: nothing; asserts the returned dict and stored values
+        """
+        worksheet, employee, user, create_ws = self._create_allocation_fixture(
+            "Hours", "ssi_general_audit.worksheet_type_category_pe"
+        )
+        create_ws(1).write({"user_id": user.id, "preparation_time": 90})
+        create_ws(2).write({"reviewer_id": user.id, "review_time": 30})
+
+        self.assertEqual(
+            worksheet._compute_team_allocation_totals(),
+            {employee.id: {"pe": 2.0, "ra": 0.0, "rr": 0.0, "reporting": 0.0}},
+        )
+
+        worksheet.action_populate_team_allocation()
+
+        self.assertEqual(worksheet.team_allocation_ids.pe_allocation, 2.0)
+        self.assertEqual(worksheet.total_allocation, 2.0)
+
+    def test_compute_team_allocation_totals_no_category(self):
+        """Assert a worksheet without a phase adds no hours to any bucket.
+
+        Pure Python -- trigger P1 (L-01: the dict returned by
+        ``_compute_team_allocation_totals`` cannot be asserted from
+        YAML). The contributing worksheet type has no category, so its
+        90 minutes are not attributable to a phase; the employee still
+        gets an entry, with every phase at 0.0.
+
+        :return: nothing; asserts the returned dict
+        """
+        worksheet, employee, user, create_ws = self._create_allocation_fixture(
+            "NoCategory", False
+        )
+        create_ws(1).write({"user_id": user.id, "preparation_time": 90})
+
+        self.assertEqual(
+            worksheet._compute_team_allocation_totals(),
+            {employee.id: {"pe": 0.0, "ra": 0.0, "rr": 0.0, "reporting": 0.0}},
+        )

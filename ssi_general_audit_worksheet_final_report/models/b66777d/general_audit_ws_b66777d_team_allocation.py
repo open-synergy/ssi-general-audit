@@ -10,7 +10,8 @@ class GeneralAuditWsB66777dTeamAllocation(models.Model):
 
     Stores, per ``hr.employee``, the REALIZED effort (``preparation_time``
     + ``review_time``, summed across every ``general_audit_worksheet`` of
-    this engagement) broken down by the same four audit phases used by
+    this engagement) in hours -- those source times are minutes and are
+    divided by 60 -- broken down by the same four audit phases used by
     the Audit Working Plan (``general_audit_ws_cbbbaf4.team_allocation``):
     Pre-Engagement (PE), Risk Assessment (RA), Risk Responses (RR) and
     Windup & Reporting (Reporting). The phase of a contributing worksheet
@@ -77,7 +78,8 @@ class GeneralAuditWsB66777dTeamAllocation(models.Model):
             "the equivalent PLANNED row, which stays user-editable)."
         ),
     )
-    pe_allocation = fields.Integer(
+    pe_allocation = fields.Float(
+        digits=(16, 2),
         string="Pre-Engagement Allocation",
         readonly=True,
         help=(
@@ -87,9 +89,11 @@ class GeneralAuditWsB66777dTeamAllocation(models.Model):
             "Pre-Engagement (ssi_general_audit.worksheet_type_"
             "category_pe). Contributes to the parent worksheet's "
             "total_pe_allocation."
+            " Expressed in hours."
         ),
     )
-    ra_allocation = fields.Integer(
+    ra_allocation = fields.Float(
+        digits=(16, 2),
         string="Risk Assessment Allocation",
         readonly=True,
         help=(
@@ -99,9 +103,11 @@ class GeneralAuditWsB66777dTeamAllocation(models.Model):
             "Risk Assessment (ssi_general_audit.worksheet_type_"
             "category_ra). Contributes to the parent worksheet's "
             "total_ra_allocation."
+            " Expressed in hours."
         ),
     )
-    rr_allocation = fields.Integer(
+    rr_allocation = fields.Float(
+        digits=(16, 2),
         string="Risk Responses Allocation",
         readonly=True,
         help=(
@@ -111,9 +117,11 @@ class GeneralAuditWsB66777dTeamAllocation(models.Model):
             "Risk Responses (ssi_general_audit.worksheet_type_"
             "category_rr, code RE). Contributes to the parent "
             "worksheet's total_rr_allocation."
+            " Expressed in hours."
         ),
     )
-    reporting_allocation = fields.Integer(
+    reporting_allocation = fields.Float(
+        digits=(16, 2),
         string="Windup & Reporting Allocation",
         readonly=True,
         help=(
@@ -123,6 +131,7 @@ class GeneralAuditWsB66777dTeamAllocation(models.Model):
             "Windup & Reporting (ssi_general_audit.worksheet_type_"
             "category_wr). Contributes to the parent worksheet's "
             "total_reporting_allocation."
+            " Expressed in hours."
         ),
     )
 
