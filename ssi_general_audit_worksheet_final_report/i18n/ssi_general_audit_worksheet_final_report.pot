@@ -197,6 +197,11 @@ msgid "All"
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_final_report
+#: model_terms:ir.ui.view,arch_db:ssi_general_audit_worksheet_final_report.general_audit_ws_b66777d_view_form
+msgid "All allocation figures on this tab are in hours."
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_final_report
 #: model:ir.model.fields,help:ssi_general_audit_worksheet_final_report.field_general_audit_ws_f3ed115__checklist_ids
 msgid "All checklist line records associated with this worksheet."
 msgstr ""
@@ -499,7 +504,7 @@ msgstr ""
 msgid ""
 "Best-effort copy of this engagement's Audit Working Plan "
 "(general_audit_ws_cbbbaf4) total_manhour -- 0 on the same best-effort "
-"conditions as awp_total_pe_allocation."
+"conditions as awp_total_pe_allocation. Expressed in hours."
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_final_report
@@ -510,7 +515,7 @@ msgid ""
 " module is not installed, or no open/done AWP worksheet exists yet for this "
 "engagement. Written (not computed) by _populate_awp_total_allocation(), "
 "called from _populate_team_allocation() -- refreshed every time the Populate"
-" button is clicked, same as team_allocation_ids itself."
+" button is clicked, same as team_allocation_ids itself. Expressed in hours."
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_final_report
@@ -518,7 +523,7 @@ msgstr ""
 msgid ""
 "Best-effort copy of this engagement's Audit Working Plan "
 "(general_audit_ws_cbbbaf4) total_ra_manhour -- 0 on the same best-effort "
-"conditions as awp_total_pe_allocation."
+"conditions as awp_total_pe_allocation. Expressed in hours."
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_final_report
@@ -526,7 +531,7 @@ msgstr ""
 msgid ""
 "Best-effort copy of this engagement's Audit Working Plan "
 "(general_audit_ws_cbbbaf4) total_reporting_manhour -- 0 on the same best-"
-"effort conditions as awp_total_pe_allocation."
+"effort conditions as awp_total_pe_allocation. Expressed in hours."
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_final_report
@@ -534,7 +539,7 @@ msgstr ""
 msgid ""
 "Best-effort copy of this engagement's Audit Working Plan "
 "(general_audit_ws_cbbbaf4) total_rr_manhour -- 0 on the same best-effort "
-"conditions as awp_total_pe_allocation."
+"conditions as awp_total_pe_allocation. Expressed in hours."
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_final_report
@@ -3321,7 +3326,7 @@ msgid ""
 "of this engagement, attributed to this Team Member, whose "
 "parent_type_id.category_id is Pre-Engagement "
 "(ssi_general_audit.worksheet_type_category_pe). Contributes to the parent "
-"worksheet's total_pe_allocation."
+"worksheet's total_pe_allocation. Expressed in hours."
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_final_report
@@ -3331,7 +3336,7 @@ msgid ""
 "of this engagement, attributed to this Team Member, whose "
 "parent_type_id.category_id is Risk Assessment "
 "(ssi_general_audit.worksheet_type_category_ra). Contributes to the parent "
-"worksheet's total_ra_allocation."
+"worksheet's total_ra_allocation. Expressed in hours."
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_final_report
@@ -3341,7 +3346,7 @@ msgid ""
 "of this engagement, attributed to this Team Member, whose "
 "parent_type_id.category_id is Risk Responses "
 "(ssi_general_audit.worksheet_type_category_rr, code RE). Contributes to the "
-"parent worksheet's total_rr_allocation."
+"parent worksheet's total_rr_allocation. Expressed in hours."
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_final_report
@@ -3351,7 +3356,7 @@ msgid ""
 "of this engagement, attributed to this Team Member, whose "
 "parent_type_id.category_id is Windup & Reporting "
 "(ssi_general_audit.worksheet_type_category_wr). Contributes to the parent "
-"worksheet's total_reporting_allocation."
+"worksheet's total_reporting_allocation. Expressed in hours."
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_final_report
@@ -3359,7 +3364,7 @@ msgstr ""
 msgid ""
 "Sum of team_allocation_ids.pe_allocation across every Team Member of this "
 "Independent Auditor's Report -- the \"Total (Independent Auditor Report)\" "
-"figure, worksheet-wide, not per employee."
+"figure, worksheet-wide, not per employee. Expressed in hours."
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_final_report
@@ -3367,7 +3372,7 @@ msgstr ""
 msgid ""
 "Sum of team_allocation_ids.ra_allocation across every Team Member of this "
 "Independent Auditor's Report -- the \"Total (Independent Auditor Report)\" "
-"figure, worksheet-wide, not per employee."
+"figure, worksheet-wide, not per employee. Expressed in hours."
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_final_report
@@ -3375,7 +3380,7 @@ msgstr ""
 msgid ""
 "Sum of team_allocation_ids.reporting_allocation across every Team Member of "
 "this Independent Auditor's Report -- the \"Total (Independent Auditor "
-"Report)\" figure, worksheet-wide, not per employee."
+"Report)\" figure, worksheet-wide, not per employee. Expressed in hours."
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_final_report
@@ -3383,7 +3388,7 @@ msgstr ""
 msgid ""
 "Sum of team_allocation_ids.rr_allocation across every Team Member of this "
 "Independent Auditor's Report -- the \"Total (Independent Auditor Report)\" "
-"figure, worksheet-wide, not per employee."
+"figure, worksheet-wide, not per employee. Expressed in hours."
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_final_report
@@ -3981,7 +3986,7 @@ msgstr ""
 msgid ""
 "total_allocation minus awp_total_allocation -- the grand \"Difference\" "
 "figure. Positive means the team worked more hours than planned overall; "
-"negative means less."
+"negative means less. Expressed in hours."
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_final_report
@@ -3989,21 +3994,23 @@ msgstr ""
 msgid ""
 "total_pe_allocation + total_ra_allocation + total_rr_allocation + "
 "total_reporting_allocation -- the grand \"Total (Independent Auditor "
-"Report)\" figure."
+"Report)\" figure. Expressed in hours."
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_final_report
 #: model:ir.model.fields,help:ssi_general_audit_worksheet_final_report.field_general_audit_ws_b66777d__diff_pe_allocation
 msgid ""
 "total_pe_allocation minus awp_total_pe_allocation. Positive means the team "
-"worked more Pre-Engagement hours than planned; negative means less."
+"worked more Pre-Engagement hours than planned; negative means less. "
+"Expressed in hours."
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_final_report
 #: model:ir.model.fields,help:ssi_general_audit_worksheet_final_report.field_general_audit_ws_b66777d__diff_ra_allocation
 msgid ""
 "total_ra_allocation minus awp_total_ra_allocation. Positive means the team "
-"worked more Risk Assessment hours than planned; negative means less."
+"worked more Risk Assessment hours than planned; negative means less. "
+"Expressed in hours."
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_final_report
@@ -4011,12 +4018,13 @@ msgstr ""
 msgid ""
 "total_reporting_allocation minus awp_total_reporting_allocation. Positive "
 "means the team worked more Windup & Reporting hours than planned; negative "
-"means less."
+"means less. Expressed in hours."
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_final_report
 #: model:ir.model.fields,help:ssi_general_audit_worksheet_final_report.field_general_audit_ws_b66777d__diff_rr_allocation
 msgid ""
 "total_rr_allocation minus awp_total_rr_allocation. Positive means the team "
-"worked more Risk Responses hours than planned; negative means less."
+"worked more Risk Responses hours than planned; negative means less. "
+"Expressed in hours."
 msgstr ""
