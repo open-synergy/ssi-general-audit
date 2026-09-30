@@ -18,18 +18,21 @@ odoo.define(
             },
             [
                 // Flow 1 - Open the Windup & Reporting > Review >
-                // Financial Statement Disclosure menu.
+                // Financial Statement Disclosure > Financial Statement
+                // Disclosure - Detail menu.
                 //
                 // "Review" (level 2) has children (Financial Statement
                 // Disclosure, Audit Evidence), so it renders as a
                 // clickable dropdown-toggle section. "Financial
                 // Statement Disclosure" (level 3, menu_general_audit_
-                // final_disclosure) also has a child
-                // (general_audit_ws_a025441_menu), so it renders as an
+                // final_disclosure) also has children
+                // (general_audit_ws_be62e79_menu and
+                // general_audit_ws_a025441_menu), so it renders as an
                 // unclickable grouping header WITHOUT data-menu-xmlid --
                 // it gets no step of its own. The leaf
-                // (general_audit_ws_a025441_menu, level 4) is a clickable
-                // item inside the "Review" dropdown. See
+                // (general_audit_ws_a025441_menu, level 4, named
+                // "Financial Statement Disclosure - Detail") is a
+                // clickable item inside the "Review" dropdown. See
                 // odoo-development-ui-test skill
                 // references/patterns-navigation-and-form.md §A.
                 tour.stepUtils.showAppsMenuItem(),
@@ -45,7 +48,7 @@ odoo.define(
                         "[data-menu-xmlid='ssi_general_audit.menu_general_audit_review']",
                 },
                 {
-                    content: "Open the Financial Statement Disclosure menu",
+                    content: "Open the Financial Statement Disclosure - Detail menu",
                     trigger:
                         ".o_menu_sections " +
                         "[data-menu-xmlid='ssi_general_audit_worksheet_review" +
@@ -55,10 +58,11 @@ odoo.define(
                     // Gate: wait for the TARGET action, not just any list
                     // view -- clicking Review lands on its first
                     // sub-menu first.
-                    content: "Financial Statement Disclosure list is displayed",
+                    content:
+                        "Financial Statement Disclosure - Detail list is displayed",
                     trigger:
                         ".o_control_panel .breadcrumb-item.active" +
-                        ":contains(Financial Statement Disclosure)",
+                        ":contains(Financial Statement Disclosure - Detail)",
                     extra_trigger: ".o_list_view",
                     run: function () {
                         // Assertion only; do not trigger the default click action.
