@@ -2259,7 +2259,9 @@ scenarios:
   # "Total"/"AWP Total"/"Difference" are worksheet-wide aggregates,
   # not per-row columns anymore -- general_audit_ws_b66777d.team_
   # allocation itself now only carries the four realized phase
-  # columns). action_populate_team_allocation() sums preparation_time
+  # columns). preparation_time/review_time are entered in MINUTES and the
+  # allocation fields are HOURS (minutes / 60).
+  # action_populate_team_allocation() sums preparation_time
   # + review_time, from every general_audit_worksheet of the same
   # engagement, per hr.employee AND per audit phase, where the phase
   # comes from each worksheet's own parent_type_id.category_id -- NOT
@@ -2403,7 +2405,7 @@ scenarios:
           general_audit_id: "REC: audit.id"
           type_id: "REC: type_pe.id"
           user_id: "REC: team_member_user.id"
-          preparation_time: 8
+          preparation_time: 480
 
       - step: "Create a second worksheet, in the RA category"
         action: "create"
@@ -2420,7 +2422,7 @@ scenarios:
         as_user: "base.user_admin"
         values:
           reviewer_id: "REC: team_member_user.id"
-          review_time: 5
+          review_time: 300
 
       - step: "Create a RE-category worksheet prepared by the second team member"
         action: "create"
@@ -2431,7 +2433,7 @@ scenarios:
           general_audit_id: "REC: audit.id"
           type_id: "REC: type_rr.id"
           user_id: "REC: second_member_user.id"
-          preparation_time: 3
+          preparation_time: 180
 
       - step: "Create a fourth worksheet, in the WR category"
         action: "create"
@@ -2448,7 +2450,7 @@ scenarios:
         as_user: "base.user_admin"
         values:
           reviewer_id: "REC: second_member_user.id"
-          review_time: 2
+          review_time: 120
 
       - step: "Assert team_allocation_ids is empty before Populate"
         action: "assert"
@@ -2498,10 +2500,11 @@ scenarios:
         expect_count: 1
 
       - step:
-          "Assert the first row puts the 8 preparation hours into pe_allocation and the
-          5 review hours into ra_allocation (not summed flat into one number) -- the
-          other two phases stay 0. Total/AWP Total/Difference are no longer columns on
-          this row model (moved to the parent worksheet, asserted below)"
+          "Assert the first row puts the 8 preparation hours (480 minutes) into
+          pe_allocation and the 5 review hours (300 minutes) into ra_allocation (not
+          summed flat into one number) -- the other two phases stay 0. Total/AWP
+          Total/Difference are no longer columns on this row model (moved to the parent
+          worksheet, asserted below)"
         action: "assert"
         target: "alloc_row"
         asserts:
@@ -2519,8 +2522,9 @@ scenarios:
             expected: 0
 
       - step:
-          "Assert the second row puts the 3 preparation hours into rr_allocation and the
-          2 review hours into reporting_allocation -- the other two phases stay 0"
+          "Assert the second row puts the 3 preparation hours (180 minutes) into
+          rr_allocation and the 2 review hours (120 minutes) into reporting_allocation
+          -- the other two phases stay 0"
         action: "assert"
         target: "alloc_row_2"
         asserts:
