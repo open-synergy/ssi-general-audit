@@ -3,6 +3,7 @@
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl-3.0-standalone.html).
 
 from odoo import api, fields, models
+from odoo.tools import is_html_empty
 
 from odoo.addons.ssi_decorator import ssi_decorator
 
@@ -258,10 +259,12 @@ class GeneralAuditWSb66777d(models.Model):
         """Build the ``write()`` values copied from a fc75636 record.
 
         Only includes a key when this worksheet's matching final
-        field is currently falsy (``False``/``None``/empty HTML
-        string) -- fields already filled (manually or by a previous
-        Populate click) are excluded so ``_populate_final_opinion()``
-        never overwrites them.
+        field is currently empty per ``is_html_empty`` (``False``,
+        ``None``, an empty string, or HTML holding only formatting
+        tags such as the ``<p><br></p>`` the web editor saves for a
+        blank field) -- fields already filled (manually or by a
+        previous Populate click) are excluded so
+        ``_populate_final_opinion()`` never overwrites them.
 
         Extension point: override to add fields to the copy performed
         by ``_populate_final_opinion()``.
@@ -290,7 +293,7 @@ class GeneralAuditWSb66777d(models.Model):
         return {
             field_name: value
             for field_name, value in candidates.items()
-            if not self[field_name]
+            if is_html_empty(self[field_name])
         }
 
     team_allocation_ids = fields.One2many(

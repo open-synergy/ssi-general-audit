@@ -2,6 +2,8 @@
 # Copyright 2026 PT. Simetri Sinergi Indonesia
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl-3.0-standalone.html).
 
+from types import SimpleNamespace
+
 from odoo_yaml_test import YamlTransactionCase
 
 from odoo.tests import tagged
@@ -219,4 +221,68 @@ class TestWSFinalReport(YamlTransactionCase):
                 prep_worksheet.worksheet_id.id,
                 review_worksheet.worksheet_id.id,
             },
+        )
+
+    def test_prepare_final_opinion_vals_blank_html(self):
+        """Assert blank-looking HTML fields count as empty for infill.
+
+        Pure Python -- trigger P1 (L-01: ``action: call`` in YAML
+        discards a method's return value, so the dict returned by
+        ``_prepare_final_opinion_vals`` can never be asserted from
+        YAML). The draft is a ``SimpleNamespace`` stand-in carrying
+        the nine ``draft_*`` attributes, because the model that
+        normally supplies it lives in a module this one does not
+        depend on. First worksheet: every narrative field holds
+        ``<p><br></p>``, ``<p></p>``, ``<br>``, an empty string or
+        ``False``; all nine keys must come back. Second worksheet:
+        one field holds real text and one holds a list; neither key
+        may come back.
+
+        :return: nothing; asserts the key sets of the returned dicts
+        """
+        field_names = [
+            "opinion",
+            "basis_for_opinion",
+            "key_audit_matters",
+            "other_information",
+            "responsibilities_of_management",
+            "auditor_responsibilities",
+            "other_legal_regulatory",
+            "emphasis_of_matter",
+            "other_matter",
+        ]
+        draft = SimpleNamespace(
+            **{"draft_%s" % name: "<p>Draft %s</p>" % name for name in field_names}
+        )
+        ws_type = self.env.ref(
+            "ssi_general_audit_worksheet_final_report.worksheet_type_b66777d"
+        )
+        audit = self._create_general_audit_for_source_worksheets("Blank HTML Opinion")
+        worksheet = self.env["general_audit_ws_b66777d"].create(
+            {"general_audit_id": audit.id, "type_id": ws_type.id}
+        )
+        worksheet.write(
+            {
+                "opinion": "<p><br></p>",
+                "basis_for_opinion": "<p><br></p>",
+                "key_audit_matters": "<p></p>",
+                "other_information": "<br>",
+                "auditor_responsibilities": "",
+            }
+        )
+
+        self.assertEqual(
+            set(worksheet._prepare_final_opinion_vals(draft)), set(field_names)
+        )
+
+        worksheet.write(
+            {
+                "opinion": "<p>Manual text</p>",
+                "basis_for_opinion": "<ul><li>Manual item</li></ul>",
+            }
+        )
+
+        self.assertEqual(
+            set(worksheet._prepare_final_opinion_vals(draft)),
+            set(field_names) - {"opinion", "basis_for_opinion"},
         )
