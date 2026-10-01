@@ -205,6 +205,29 @@ scenarios:
           type: "UserError"
           message_contains: "already exists"
 
+      - step: "Create adjusting CoA with a code that differs only by spaces and case"
+        action: "create"
+        model: "client_adjusting_coa"
+        save_as: "coa_spaces"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          detail_ids:
+            - - 0
+              - 0
+              - code: " old-1 "
+                name: "Duplicate With Spaces"
+                type_id: "REC: type_used.id"
+
+      - step: "Confirm must reject a code that differs only by spaces and case"
+        action: "call"
+        target: "coa_spaces"
+        method: "action_confirm"
+        as_user: "base.user_admin"
+        expect_error:
+          type: "UserError"
+          message_contains: "already exists"
+
       - step: "Create adjusting CoA with a type outside the type set"
         action: "create"
         model: "client_adjusting_coa"

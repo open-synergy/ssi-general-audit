@@ -61,7 +61,7 @@ class ClientAdjustingCoaDetail(models.Model):
         self.ensure_one()
         return {
             "partner_id": self.coa_id.partner_id.id,
-            "code": self.code,
-            "name": self.name,
+            "code": (self.code or "").strip(),
+            "name": (self.name or "").strip(),
             "type_id": self.type_id.id,
         }

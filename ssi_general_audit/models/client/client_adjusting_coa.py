@@ -220,27 +220,32 @@ class ClientAdjustingCoa(models.Model):
 
         Rejects an empty document, a code repeated on two lines, a code
         that already exists in the client's chart of accounts, and a
-        type outside the account type set of the audit.
+        type outside the account type set of the audit. Codes are
+        compared without surrounding spaces and without regard to case,
+        because codes already stored for a client can carry spaces.
 
         :raises UserError: when one of the rules above is violated
         """
         self.ensure_one()
         if not self.detail_ids:
             raise UserError(self._get_error_message(_("No line is defined")))
-        codes = self.detail_ids.mapped("code")
+        codes = [self._normalize_code(code) for code in self.detail_ids.mapped("code")]
         if len(codes) != len(set(codes)):
             raise UserError(self._get_error_message(_("A code is used twice")))
-        existing = self.env["client_account"].search(
-            [
-                ("partner_id", "=", self.partner_id.id),
-                ("code", "in", codes),
-            ]
+        existing_codes = {
+            self._normalize_code(account.code)
+            for account in self.env["client_account"].search(
+                [("partner_id", "=", self.partner_id.id)]
+            )
+        }
+        duplicated = self.detail_ids.filtered(
+            lambda line: self._normalize_code(line.code) in existing_codes
         )
-        if existing:
+        if duplicated:
             raise UserError(
                 self._get_error_message(
                     _("Account code %s already exists for this client")
-                    % (", ".join(existing.mapped("code")))
+                    % (", ".join(duplicated.mapped("code")))
                 )
             )
         invalid = self.detail_ids.filtered(
@@ -253,6 +258,15 @@ class ClientAdjustingCoa(models.Model):
                     % (", ".join(invalid.mapped("code")))
                 )
             )
+
+    @api.model
+    def _normalize_code(self, code):
+        """Return a code ready for comparison.
+
+        :param code: account code as typed or as stored
+        :return: the code without surrounding spaces, in upper case
+        """
+        return (code or "").strip().upper()
 
     def _get_error_message(self, problem):
         """Build the structured ``UserError`` text of this model.
