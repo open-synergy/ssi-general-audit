@@ -10,8 +10,8 @@ class GeneralAuditWsF3ed115Item(models.Model):
 
     Master-data model for the checklist items used in the Final
     Communication With TCWG worksheet. Grouped by
-    ``general_audit_ws_f3ed115.category``. Content is intentionally
-    left empty until the checklist is formulated by the user.
+    ``general_audit_ws_f3ed115.category``. The default checklist is
+    shipped as module data.
     """
 
     _name = "general_audit_ws_f3ed115.item"
