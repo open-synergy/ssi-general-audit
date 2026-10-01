@@ -23,6 +23,7 @@
         "ssi_operating_unit_mixin",
         "ssi_decorator",
         "ssi_partner_identification_cpa_license",
+        "web_tour",
     ],
     "data": [
         "views/assets.xml",

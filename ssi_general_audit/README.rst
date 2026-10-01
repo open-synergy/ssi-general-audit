@@ -173,6 +173,16 @@ Client
 ``client_adjustment_entry.detail``
     Baris debit/kredit dalam satu jurnal penyesuaian audit.
 
+``client_adjusting_coa``
+    Dokumen penambahan akun klien baru pada audit yang sedang berjalan,
+    misalnya akun yang baru dibutuhkan saat menyusun jurnal penyesuaian.
+    Setelah disetujui (done), akun dibuat dan dimasukkan ke audit secara
+    inkremental; hanya worksheet mulai dari "Worksheet" dan sesudahnya
+    yang menerima akun baru. Status: draft → confirm → done.
+
+``client_adjusting_coa.detail``
+    Baris akun baru (kode, nama, tipe) dalam satu dokumen Adjusting CoA.
+
 ``client_business_process``
     Siklus bisnis klien (SA 315): mis. Siklus Pendapatan, Siklus Pembelian.
 
@@ -229,6 +239,13 @@ ketergantungan (dependency) bagi seluruh modul worksheet berikut:
 - ``ssi_general_audit_worksheet_final_materiality``
 - ``ssi_general_audit_worksheet_draft_reporting``
 - dan lainnya
+
+Work Instruction
+================
+
+* `Create Adjusting CoA <docs/client_adjusting_coa/index.html>`_
+* `Confirm Adjusting CoA <docs/client_adjusting_coa/index.html>`_
+* `Approve Adjusting CoA <docs/client_adjusting_coa/index.html>`_
 
 Installation
 ============
