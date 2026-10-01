@@ -372,3 +372,18 @@ class GeneralAuditWSff42fdc(models.Model):
             if record.general_audit_id:
                 opinion_date = record.financial_statement_opinion_date
                 record.general_audit_id.write({"opinion_date": opinion_date})
+
+    def _add_accounts_to_worksheet(self, accounts):
+        """Load the account groups of accounts added to the audit.
+
+        Called by ``general_audit._add_account``. Delegates to
+        ``_load_posture``, which only adds a posture line for a group
+        new to the worksheet and recomputes the Total lines, so the
+        existing lines are kept.
+
+        :param accounts: ``client_account`` recordset just added to the
+            audit
+        :return: nothing
+        """
+        self.ensure_one()
+        self._load_posture()
