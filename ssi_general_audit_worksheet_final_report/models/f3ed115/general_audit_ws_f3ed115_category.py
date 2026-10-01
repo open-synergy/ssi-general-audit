@@ -9,9 +9,8 @@ class GeneralAuditWsF3ed115Category(models.Model):
     Master: Final Communication With TCWG Checklist Category (f3ed115).
 
     Provides a configurable category used to group items in the Final
-    Communication With TCWG checklist (f3ed115). Items and category
-    contents are intentionally left empty until the actual checklist
-    content is formulated.
+    Communication With TCWG checklist (f3ed115). The default categories
+    are shipped as module data.
     """
 
     _name = "general_audit_ws_f3ed115.category"

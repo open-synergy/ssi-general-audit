@@ -40,6 +40,8 @@
         "data/general_audit_worksheet_type_data.xml",
         # MASTER DATA
         "data/master/general_audit_worksheet_conclusion.xml",
+        "data/master/general_audit_ws_f3ed115_category.xml",
+        "data/master/general_audit_ws_f3ed115_item.xml",
         # a8c54f3
         "security/res_group/general_audit_ws_a8c54f3.xml",
         "security/ir_rule/general_audit_ws_a8c54f3.xml",

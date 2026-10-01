@@ -1182,14 +1182,12 @@ scenarios:
   # ------------------------------------------------------------------
   # general_audit_ws_f3ed115 - checklist_ids populate (positive)
   #
-  # This module intentionally ships no master data for
-  # general_audit_ws_f3ed115.item (content not yet formulated by the
-  # user), so calling action_populate_checklist here must not error
-  # out and must simply leave checklist_ids empty -- there is nothing
-  # in the item master to populate from. This locks in that
-  # "populate on an empty item master is a safe no-op" behaviour.
+  # The module ships 4 categories and 15 Yes/No items for
+  # general_audit_ws_f3ed115.item, so action_populate_checklist
+  # fills checklist_ids with 15 rows, and a second call is
+  # idempotent (the mixin only creates rows for missing items).
   # ------------------------------------------------------------------
-  - name: "Worksheet f3ed115 - action_populate_checklist with empty item master"
+  - name: "Worksheet f3ed115 - action_populate_checklist creates 15 rows"
     steps:
       - step: "Create worksheet f3ed115"
         action: "create"
@@ -1220,7 +1218,7 @@ scenarios:
             check: "count"
             expected_count: 0
 
-      - step: "Call action_populate_checklist against an empty item master"
+      - step: "Call action_populate_checklist"
         action: "call"
         target: "checklist_worksheet"
         method: "action_populate_checklist"
@@ -1231,22 +1229,34 @@ scenarios:
         target: "checklist_worksheet"
         method: "invalidate_cache"
 
-      - step: "Assert worksheet still saved without error"
-        action: "assert"
-        target: "checklist_worksheet"
-        asserts:
-          id:
-            type: "value"
-            operator: "is_truthy"
-
-      - step: "Assert checklist_ids is still empty after Populate"
+      - step: "Assert checklist_ids has 15 rows after Populate"
         action: "assert"
         target: "checklist_worksheet"
         asserts:
           checklist_ids:
             type: "o2m"
             check: "count"
-            expected_count: 0
+            expected_count: 15
+
+      - step: "Call action_populate_checklist a second time"
+        action: "call"
+        target: "checklist_worksheet"
+        method: "action_populate_checklist"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after the second Populate"
+        action: "call"
+        target: "checklist_worksheet"
+        method: "invalidate_cache"
+
+      - step: "Assert checklist_ids is still 15 rows (no duplicates)"
+        action: "assert"
+        target: "checklist_worksheet"
+        asserts:
+          checklist_ids:
+            type: "o2m"
+            check: "count"
+            expected_count: 15
 
   # ------------------------------------------------------------------
   # worksheet_type_f3ed115 - rename (negative + code/model_name stable)
