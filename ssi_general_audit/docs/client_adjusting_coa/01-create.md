@@ -13,6 +13,10 @@
   account type of each new account.
 - **Access:** User belongs to the _User_ group of the **Adjusting CoA** workflow
   category.
+- **Access:** User belongs to a data ownership group of the **Adjusting CoA** category
+  (_Operating Unit_, _Company_, _Company and All Child Companies_, or _All_). Without it
+  the record rules refuse the new document unless the user is the Responsible, the
+  Reviewer, or the responsible or reviewer of the General Audit.
 
 ## Flow
 
