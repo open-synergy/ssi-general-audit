@@ -30,9 +30,13 @@ class GeneralAudit(models.Model):
 
     _name = "general_audit"
     _description = "General Audit"
-    # Worksheet type sequence of "Worksheet" (b26d482): the first worksheet
-    # after Adjusting Journal Entry that receives accounts added later.
-    _add_account_cutoff_sequence = 520
+    # Worksheet type "Worksheet" (b26d482): the first worksheet after
+    # Adjusting Journal Entry that receives accounts added later. Its
+    # sequence is read when needed, so a re-ordering of worksheet types
+    # moves the cut-off with it.
+    _add_account_cutoff_type_xmlid = (
+        "ssi_general_audit_worksheet_lead_schedule.worksheet_type_b26d482"
+    )
     _inherit = [
         "mixin.transaction_done",
         "mixin.transaction_confirm",
@@ -1001,6 +1005,23 @@ class GeneralAudit(models.Model):
                 [("general_audit_id", "=", self.id)]
             ).action_load_detail()
 
+    def _get_add_account_cutoff_sequence(self):
+        """Return the sequence from which worksheets receive new accounts.
+
+        Read from the worksheet type ``_add_account_cutoff_type_xmlid``
+        at call time, never stored, so it follows any change of that
+        type's sequence.
+
+        :return: the sequence, or ``False`` when the cut-off type does
+            not exist (its module is not installed)
+        """
+        cutoff_type = self.env.ref(
+            self._add_account_cutoff_type_xmlid, raise_if_not_found=False
+        )
+        if not cutoff_type:
+            return False
+        return cutoff_type.sequence
+
     def _add_account(self, accounts):
         """Add client accounts to the running audit incrementally.
 
@@ -1012,9 +1033,10 @@ class GeneralAudit(models.Model):
         a type or group that is new to the audit, re-link of the
         adjustment entry lines that use the accounts, then a call to
         ``_add_accounts_to_worksheet`` on each worksheet whose type
-        sequence is at or after ``_add_account_cutoff_sequence`` and
-        that is not ``done``, found through the ``model_name`` of the
-        worksheet type.
+        sequence is at or after the cut-off (see
+        ``_get_add_account_cutoff_sequence``) and that is not ``done``,
+        found through the ``model_name`` of the worksheet type. When
+        the cut-off type does not exist no worksheet is touched.
 
         Worksheets before the cut-off are never touched, so a type that
         is new to the audit gets no risk assessment in them, and Lead
@@ -1107,9 +1129,12 @@ Solution: Only add accounts of the client of the audit
         lines._compute_detail_id()
 
         # Worksheets at or after the cut-off
+        cutoff = self._get_add_account_cutoff_sequence()
+        if cutoff is False:
+            return True
         types = self.env["general_audit_worksheet_type"].search(
             [
-                ("sequence", ">=", self._add_account_cutoff_sequence),
+                ("sequence", ">=", cutoff),
                 ("model_name", "!=", False),
             ]
         )
