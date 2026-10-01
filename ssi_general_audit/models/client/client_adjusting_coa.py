@@ -144,6 +144,47 @@ class ClientAdjustingCoa(models.Model):
         readonly=True,
         help="Audit period end date.",
     )
+    interim_date_start = fields.Date(
+        string="Interim Start Date",
+        related="general_audit_id.interim_date_start",
+        compute_sudo=True,
+        store=True,
+        readonly=True,
+        help="Interim period start date.",
+    )
+    interim_date_end = fields.Date(
+        string="Interim End Date",
+        related="general_audit_id.interim_date_end",
+        compute_sudo=True,
+        store=True,
+        readonly=True,
+        help="Interim period end date.",
+    )
+    previous_date_start = fields.Date(
+        string="Previous Start Date",
+        related="general_audit_id.previous_date_start",
+        compute_sudo=True,
+        store=True,
+        readonly=True,
+        help="Previous period start date.",
+    )
+    previous_date_end = fields.Date(
+        string="Previous End Date",
+        related="general_audit_id.previous_date_end",
+        compute_sudo=True,
+        store=True,
+        readonly=True,
+        help="Previous period end date.",
+    )
+    currency_id = fields.Many2one(
+        string="Currency",
+        comodel_name="res.currency",
+        related="general_audit_id.currency_id",
+        compute_sudo=True,
+        store=True,
+        readonly=True,
+        help="Currency used for this audit.",
+    )
     account_type_set_id = fields.Many2one(
         string="Account Type Set",
         related="general_audit_id.account_type_set_id",
