@@ -30,6 +30,9 @@ class GeneralAudit(models.Model):
 
     _name = "general_audit"
     _description = "General Audit"
+    # Worksheet type sequence of "Worksheet" (b26d482): the first worksheet
+    # after Adjusting Journal Entry that receives accounts added later.
+    _add_account_cutoff_sequence = 520
     _inherit = [
         "mixin.transaction_done",
         "mixin.transaction_confirm",
@@ -997,6 +1000,132 @@ class GeneralAudit(models.Model):
             self.env["general_audit_ws_f9a2c3d"].search(
                 [("general_audit_id", "=", self.id)]
             ).action_load_detail()
+
+    def _add_account(self, accounts):
+        """Add client accounts to the running audit incrementally.
+
+        Used by ``client_adjusting_coa`` when the document is done.
+        Idempotent: an account already in the audit is skipped, and
+        nothing is deleted or rebuilt. Steps: account mapping line,
+        ``general_audit.detail``, ``general_audit.standard_detail`` (with
+        its trial balance lines) and ``general_audit.group_detail`` for
+        a type or group that is new to the audit, re-link of the
+        adjustment entry lines that use the accounts, then a call to
+        ``_add_accounts_to_worksheet`` on each worksheet whose type
+        sequence is at or after ``_add_account_cutoff_sequence`` and
+        that is not ``done``, found through the ``model_name`` of the
+        worksheet type.
+
+        Worksheets before the cut-off are never touched, so a type that
+        is new to the audit gets no risk assessment in them, and Lead
+        Schedule - Account does not list the new account.
+
+        :param accounts: ``client_account`` recordset of this client
+        :return: True
+        :raises UserError: when an account belongs to another client
+        """
+        self.ensure_one()
+        self = self.sudo()
+        accounts = accounts.sudo()
+        if accounts.filtered(lambda a: a.partner_id != self.partner_id):
+            error_message = _(
+                """
+Context: Add account to general audit
+Database ID: %s
+Problem: An account belongs to another client
+Solution: Only add accounts of the client of the audit
+"""
+                % (self.id)
+            )
+            raise UserError(error_message)
+
+        # Mapping line
+        mapping = self.account_mapping_id
+        if mapping:
+            missing = accounts - mapping.detail_ids.mapped("account_id")
+            for account in missing:
+                self.env["client_account_mapping.detail"].create(
+                    {
+                        "mapping_id": mapping.id,
+                        "account_id": account.id,
+                    }
+                )
+
+        # Audit detail
+        for account in accounts - self.detail_ids.mapped("account_id"):
+            self.env["general_audit.detail"].create(
+                {
+                    "general_audit_id": self.id,
+                    "account_id": account.id,
+                }
+            )
+
+        # Standard detail, with trial balance lines, for a new type
+        new_standard = self.env["general_audit.standard_detail"]
+        for acc_type in accounts.mapped("type_id") - self.standard_detail_ids.mapped(
+            "type_id"
+        ):
+            standard = new_standard.create(
+                {
+                    "general_audit_id": self.id,
+                    "type_id": acc_type.id,
+                }
+            )
+            new_standard |= standard
+            for trial_balance in self.trial_balance_ids:
+                self.env["client_trial_balance.standard_detail"].create(
+                    {
+                        "trial_balance_id": trial_balance.id,
+                        "standard_detail_id": standard.id,
+                    }
+                )
+        if new_standard:
+            new_standard._compute_standard_line()
+            new_standard._compute_standard_adjustment_id()
+            new_standard._compute_extrapolation_balance()
+            new_standard._compute_adjusted_extrapolation_balance()
+            new_standard._compute_adjustment_audited_balance()
+            new_standard._compute_average()
+
+        # Group detail for a new group
+        groups = accounts.mapped("type_id.group_id")
+        for group in groups - self.group_detail_ids.mapped("group_id"):
+            self.env["general_audit.group_detail"].create(
+                {
+                    "general_audit_id": self.id,
+                    "group_id": group.id,
+                }
+            )
+
+        # Re-link the adjustment lines that use the new accounts
+        lines = self.env["client_adjustment_entry.detail"].search(
+            [
+                ("entry_id.general_audit_id", "=", self.id),
+                ("account_id", "in", accounts.ids),
+            ]
+        )
+        lines._compute_detail_id()
+
+        # Worksheets at or after the cut-off
+        types = self.env["general_audit_worksheet_type"].search(
+            [
+                ("sequence", ">=", self._add_account_cutoff_sequence),
+                ("model_name", "!=", False),
+            ]
+        )
+        for worksheet_type in types:
+            if worksheet_type.model_name not in self.env:
+                continue
+            worksheets = self.env[worksheet_type.model_name].search(
+                [
+                    ("general_audit_id", "=", self.id),
+                    ("type_id", "=", worksheet_type.id),
+                    ("state", "!=", "done"),
+                ]
+            )
+            for worksheet in worksheets:
+                worksheet._add_accounts_to_worksheet(accounts)
+        return True
 
     def action_reload_standard_account(self):
         for record in self.sudo():
