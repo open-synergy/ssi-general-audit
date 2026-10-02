@@ -98,6 +98,29 @@ msgid ""
 msgstr ""
 
 #. module: ssi_general_audit
+#: code:addons/ssi_general_audit/models/general_audit/general_audit.py:0
+#, python-format
+msgid ""
+"\n"
+"Context: Add account to general audit\n"
+"Database ID: %s\n"
+"Problem: An account belongs to another client\n"
+"Solution: Only add accounts of the client of the audit\n"
+msgstr ""
+
+#. module: ssi_general_audit
+#: code:addons/ssi_general_audit/models/client/client_adjusting_coa.py:0
+#, python-format
+msgid ""
+"\n"
+"Context: Confirm Adjusting CoA\n"
+"Database ID: %s\n"
+"Problem: %s\n"
+"Solution: Fix the lines of the document, or ask the administrator to add\n"
+"    the account type to the master data first\n"
+msgstr ""
+
+#. module: ssi_general_audit
 #: code:addons/ssi_general_audit/wizards/import_adjustment_entry_detail.py:0
 #, python-format
 msgid ""
@@ -116,6 +139,11 @@ msgid "# Account Mapping"
 msgstr ""
 
 #. module: ssi_general_audit
+#: model:ir.model.fields,field_description:ssi_general_audit.field_client_adjusting_coa_detail__coa_id
+msgid "# Adjusting CoA"
+msgstr ""
+
+#. module: ssi_general_audit
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_adjustment_entry_detail__entry_id
 #: model:ir.model.fields,field_description:ssi_general_audit.field_import_adjustment_entry_detail__entry_id
 msgid "# Adjustment Entry"
@@ -128,6 +156,7 @@ msgstr ""
 
 #. module: ssi_general_audit
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_account_mapping__name
+#: model:ir.model.fields,field_description:ssi_general_audit.field_client_adjusting_coa__name
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_adjustment_entry__name
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_trial_balance__name
 #: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit__name
@@ -148,6 +177,7 @@ msgstr ""
 
 #. module: ssi_general_audit
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_account_mapping__general_audit_id
+#: model:ir.model.fields,field_description:ssi_general_audit.field_client_adjusting_coa__general_audit_id
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_adjustment_entry__general_audit_id
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_trial_balance__general_audit_id
 #: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit_account_adjustment__general_audit_id
@@ -355,6 +385,12 @@ msgid "<span>Worksheet Summary</span>"
 msgstr ""
 
 #. module: ssi_general_audit
+#: code:addons/ssi_general_audit/models/client/client_adjusting_coa.py:0
+#, python-format
+msgid "A code is used twice"
+msgstr ""
+
+#. module: ssi_general_audit
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_adjustment_entry_detail__aje_code
 msgid "AJE Code"
 msgstr ""
@@ -379,6 +415,7 @@ msgstr ""
 
 #. module: ssi_general_audit
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_account_mapping_detail__account_id
+#: model:ir.model.fields,field_description:ssi_general_audit.field_client_adjusting_coa_detail__account_id
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_adjustment_entry_detail__account_id
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_trial_balance_detail__account_id
 #: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit_account_adjustment__account_id
@@ -455,6 +492,7 @@ msgstr ""
 #. module: ssi_general_audit
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_account_type_computation_item__account_type_set_id
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_account_type_set__name
+#: model:ir.model.fields,field_description:ssi_general_audit.field_client_adjusting_coa__account_type_set_id
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_trial_balance__account_type_set_id
 #: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit__account_type_set_id
 msgid "Account Type Set"
@@ -473,6 +511,12 @@ msgstr ""
 #: model:ir.ui.menu,name:ssi_general_audit.client_account_type_menu
 #: model_terms:ir.ui.view,arch_db:ssi_general_audit.client_account_type_set_view_form
 msgid "Account Types"
+msgstr ""
+
+#. module: ssi_general_audit
+#: code:addons/ssi_general_audit/models/client/client_adjusting_coa.py:0
+#, python-format
+msgid "Account code %s already exists for this client"
 msgstr ""
 
 #. module: ssi_general_audit
@@ -522,6 +566,24 @@ msgid "Account type must be unique per General Audit."
 msgstr ""
 
 #. module: ssi_general_audit
+#: code:addons/ssi_general_audit/models/client/client_adjusting_coa.py:0
+#, python-format
+msgid "Account type of code %s is not in the account type set"
+msgstr ""
+
+#. module: ssi_general_audit
+#: model:ir.model.fields,help:ssi_general_audit.field_client_adjusting_coa_detail__type_id
+msgid ""
+"Account type of the new account. Must belong to the account type set of the "
+"audit."
+msgstr ""
+
+#. module: ssi_general_audit
+#: model:ir.model.fields,help:ssi_general_audit.field_client_adjusting_coa__account_type_set_id
+msgid "Account type set of the audit; line types must belong to it."
+msgstr ""
+
+#. module: ssi_general_audit
 #: model:ir.model.fields,help:ssi_general_audit.field_general_audit_worksheet__account_type_set_id
 #: model:ir.model.fields,help:ssi_general_audit.field_general_audit_worksheet_mixin__account_type_set_id
 msgid "Account type set used by the linked General Audit."
@@ -558,10 +620,25 @@ msgid "Account types present in this audit's standard details."
 msgstr ""
 
 #. module: ssi_general_audit
+#: model:ir.model.fields,help:ssi_general_audit.field_client_adjusting_coa__allowed_type_ids
+msgid "Account types that can be used on the lines of this document."
+msgstr ""
+
+#. module: ssi_general_audit
 #: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit_worksheet__accountant_id
 #: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit_worksheet_mixin__accountant_id
 #: model_terms:ir.ui.view,arch_db:ssi_general_audit.general_audit_worksheet_mixin_view_search
 msgid "Accountant"
+msgstr ""
+
+#. module: ssi_general_audit
+#: model:ir.model,name:ssi_general_audit.model_client_adjusting_coa
+msgid "Accountant Client Adjusting CoA"
+msgstr ""
+
+#. module: ssi_general_audit
+#: model:ir.model,name:ssi_general_audit.model_client_adjusting_coa_detail
+msgid "Accountant Client Adjusting CoA Detail"
 msgstr ""
 
 #. module: ssi_general_audit
@@ -714,6 +791,12 @@ msgid "Accounts"
 msgstr ""
 
 #. module: ssi_general_audit
+#: code:addons/ssi_general_audit/models/client/client_adjusting_coa.py:0
+#, python-format
+msgid "Accounts added to the audit: %s"
+msgstr ""
+
+#. module: ssi_general_audit
 #: model:client_account_type,name:ssi_general_audit.client_account_type_20_597425bb
 msgid "Accruals and other payable"
 msgstr ""
@@ -741,6 +824,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_account_mapping__message_needaction
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_account_type__message_needaction
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_account_type_set__message_needaction
+#: model:ir.model.fields,field_description:ssi_general_audit.field_client_adjusting_coa__message_needaction
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_adjustment_entry__message_needaction
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_business_process__message_needaction
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_financial_ratio__message_needaction
@@ -787,6 +871,7 @@ msgstr ""
 
 #. module: ssi_general_audit
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_account_mapping__active_approval_ids
+#: model:ir.model.fields,field_description:ssi_general_audit.field_client_adjusting_coa__active_approval_ids
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_adjustment_entry__active_approval_ids
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_trial_balance__active_approval_ids
 #: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit__active_approval_ids
@@ -797,6 +882,7 @@ msgstr ""
 
 #. module: ssi_general_audit
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_account_mapping__active_approver_partner_ids
+#: model:ir.model.fields,field_description:ssi_general_audit.field_client_adjusting_coa__active_approver_partner_ids
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_adjustment_entry__active_approver_partner_ids
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_trial_balance__active_approver_partner_ids
 #: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit__active_approver_partner_ids
@@ -807,6 +893,7 @@ msgstr ""
 
 #. module: ssi_general_audit
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_account_mapping__active_approver_user_ids
+#: model:ir.model.fields,field_description:ssi_general_audit.field_client_adjusting_coa__active_approver_user_ids
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_adjustment_entry__active_approver_user_ids
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_trial_balance__active_approver_user_ids
 #: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit__active_approver_user_ids
@@ -823,6 +910,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_account_mapping__activity_ids
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_account_type__activity_ids
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_account_type_set__activity_ids
+#: model:ir.model.fields,field_description:ssi_general_audit.field_client_adjusting_coa__activity_ids
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_adjustment_entry__activity_ids
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_business_process__activity_ids
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_financial_ratio__activity_ids
@@ -852,6 +940,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_account_mapping__activity_exception_decoration
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_account_type__activity_exception_decoration
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_account_type_set__activity_exception_decoration
+#: model:ir.model.fields,field_description:ssi_general_audit.field_client_adjusting_coa__activity_exception_decoration
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_adjustment_entry__activity_exception_decoration
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_business_process__activity_exception_decoration
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_financial_ratio__activity_exception_decoration
@@ -887,6 +976,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_account_mapping__activity_state
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_account_type__activity_state
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_account_type_set__activity_state
+#: model:ir.model.fields,field_description:ssi_general_audit.field_client_adjusting_coa__activity_state
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_adjustment_entry__activity_state
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_business_process__activity_state
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_financial_ratio__activity_state
@@ -916,6 +1006,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_account_mapping__activity_type_icon
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_account_type__activity_type_icon
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_account_type_set__activity_type_icon
+#: model:ir.model.fields,field_description:ssi_general_audit.field_client_adjusting_coa__activity_type_icon
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_adjustment_entry__activity_type_icon
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_business_process__activity_type_icon
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_financial_ratio__activity_type_icon
@@ -980,6 +1071,14 @@ msgstr ""
 #. module: ssi_general_audit
 #: model:ir.model.fields,help:ssi_general_audit.field_general_audit_group_detail__extrapolation_balance
 msgid "Adjusted extrapolation balance aggregated for this group."
+msgstr ""
+
+#. module: ssi_general_audit
+#: model:ir.actions.act_window,name:ssi_general_audit.client_adjusting_coa_action
+#: model:ir.module.category,name:ssi_general_audit.adjusting_coa_data_module_category
+#: model:ir.module.category,name:ssi_general_audit.adjusting_coa_workflow_module_category
+#: model:ir.ui.menu,name:ssi_general_audit.adjusting_coa_menu
+msgid "Adjusting CoA"
 msgstr ""
 
 #. module: ssi_general_audit
@@ -1120,6 +1219,7 @@ msgstr ""
 #. module: ssi_general_audit
 #: model:res.groups,name:ssi_general_audit.adjustment_entry_all_group
 #: model:res.groups,name:ssi_general_audit.client_account_mapping_all_group
+#: model:res.groups,name:ssi_general_audit.client_adjusting_coa_all_group
 #: model:res.groups,name:ssi_general_audit.general_audit_all_group
 #: model:res.groups,name:ssi_general_audit.trial_balance_all_group
 msgid "All"
@@ -1128,6 +1228,11 @@ msgstr ""
 #. module: ssi_general_audit
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_trial_balance__allowed_type_ids
 msgid "Allowed Account Type"
+msgstr ""
+
+#. module: ssi_general_audit
+#: model:ir.model.fields,field_description:ssi_general_audit.field_client_adjusting_coa__allowed_type_ids
+msgid "Allowed Account Types"
 msgstr ""
 
 #. module: ssi_general_audit
@@ -1142,6 +1247,7 @@ msgstr ""
 
 #. module: ssi_general_audit
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_account_mapping__allowed_policy_template_ids
+#: model:ir.model.fields,field_description:ssi_general_audit.field_client_adjusting_coa__allowed_policy_template_ids
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_adjustment_entry__allowed_policy_template_ids
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_trial_balance__allowed_policy_template_ids
 #: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit__allowed_policy_template_ids
@@ -1213,6 +1319,7 @@ msgstr ""
 
 #. module: ssi_general_audit
 #: model:ir.model.fields,help:ssi_general_audit.field_client_account_mapping__approval_template_id
+#: model:ir.model.fields,help:ssi_general_audit.field_client_adjusting_coa__approval_template_id
 #: model:ir.model.fields,help:ssi_general_audit.field_client_adjustment_entry__approval_template_id
 #: model:ir.model.fields,help:ssi_general_audit.field_client_trial_balance__approval_template_id
 #: model:ir.model.fields,help:ssi_general_audit.field_general_audit__approval_template_id
@@ -1223,6 +1330,7 @@ msgstr ""
 
 #. module: ssi_general_audit
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_account_mapping__approval_template_id
+#: model:ir.model.fields,field_description:ssi_general_audit.field_client_adjusting_coa__approval_template_id
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_adjustment_entry__approval_template_id
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_trial_balance__approval_template_id
 #: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit__approval_template_id
@@ -1233,6 +1341,7 @@ msgstr ""
 
 #. module: ssi_general_audit
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_account_mapping__approval_ids
+#: model:ir.model.fields,field_description:ssi_general_audit.field_client_adjusting_coa__approval_ids
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_adjustment_entry__approval_ids
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_trial_balance__approval_ids
 #: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit__approval_ids
@@ -1243,6 +1352,7 @@ msgstr ""
 
 #. module: ssi_general_audit
 #: model:ir.model.fields,help:ssi_general_audit.field_client_account_mapping__approve_ok
+#: model:ir.model.fields,help:ssi_general_audit.field_client_adjusting_coa__approve_ok
 #: model:ir.model.fields,help:ssi_general_audit.field_client_adjustment_entry__approve_ok
 #: model:ir.model.fields,help:ssi_general_audit.field_client_trial_balance__approve_ok
 #: model:ir.model.fields,help:ssi_general_audit.field_general_audit__approve_ok
@@ -1256,6 +1366,7 @@ msgstr ""
 
 #. module: ssi_general_audit
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_account_mapping__approved
+#: model:ir.model.fields,field_description:ssi_general_audit.field_client_adjusting_coa__approved
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_adjustment_entry__approved
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_trial_balance__approved
 #: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit__approved
@@ -1272,6 +1383,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_account_mapping__message_attachment_count
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_account_type__message_attachment_count
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_account_type_set__message_attachment_count
+#: model:ir.model.fields,field_description:ssi_general_audit.field_client_adjusting_coa__message_attachment_count
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_adjustment_entry__message_attachment_count
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_business_process__message_attachment_count
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_financial_ratio__message_attachment_count
@@ -1373,6 +1485,7 @@ msgstr ""
 
 #. module: ssi_general_audit
 #: model:ir.model.fields,help:ssi_general_audit.field_client_account_mapping__date_end
+#: model:ir.model.fields,help:ssi_general_audit.field_client_adjusting_coa__date_end
 #: model:ir.model.fields,help:ssi_general_audit.field_client_adjustment_entry__date_end
 #: model:ir.model.fields,help:ssi_general_audit.field_client_trial_balance__date_end
 #: model:ir.model.fields,help:ssi_general_audit.field_general_audit__date_end
@@ -1383,6 +1496,7 @@ msgstr ""
 
 #. module: ssi_general_audit
 #: model:ir.model.fields,help:ssi_general_audit.field_client_account_mapping__date_start
+#: model:ir.model.fields,help:ssi_general_audit.field_client_adjusting_coa__date_start
 #: model:ir.model.fields,help:ssi_general_audit.field_client_adjustment_entry__date_start
 #: model:ir.model.fields,help:ssi_general_audit.field_client_trial_balance__date_start
 #: model:ir.model.fields,help:ssi_general_audit.field_general_audit__date_start
@@ -1622,6 +1736,7 @@ msgstr ""
 
 #. module: ssi_general_audit
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_account_mapping__approve_ok
+#: model:ir.model.fields,field_description:ssi_general_audit.field_client_adjusting_coa__approve_ok
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_adjustment_entry__approve_ok
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_trial_balance__approve_ok
 #: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit__approve_ok
@@ -1638,6 +1753,7 @@ msgstr ""
 
 #. module: ssi_general_audit
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_account_mapping__cancel_ok
+#: model:ir.model.fields,field_description:ssi_general_audit.field_client_adjusting_coa__cancel_ok
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_adjustment_entry__cancel_ok
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_trial_balance__cancel_ok
 #: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit__cancel_ok
@@ -1648,6 +1764,7 @@ msgstr ""
 
 #. module: ssi_general_audit
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_account_mapping__confirm_ok
+#: model:ir.model.fields,field_description:ssi_general_audit.field_client_adjusting_coa__confirm_ok
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_adjustment_entry__confirm_ok
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_trial_balance__confirm_ok
 #: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit__confirm_ok
@@ -1658,6 +1775,7 @@ msgstr ""
 
 #. module: ssi_general_audit
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_account_mapping__done_ok
+#: model:ir.model.fields,field_description:ssi_general_audit.field_client_adjusting_coa__done_ok
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_adjustment_entry__done_ok
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_trial_balance__done_ok
 #: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit__done_ok
@@ -1668,6 +1786,7 @@ msgstr ""
 
 #. module: ssi_general_audit
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_account_mapping__manual_number_ok
+#: model:ir.model.fields,field_description:ssi_general_audit.field_client_adjusting_coa__manual_number_ok
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_adjustment_entry__manual_number_ok
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_trial_balance__manual_number_ok
 #: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit__manual_number_ok
@@ -1678,6 +1797,7 @@ msgstr ""
 
 #. module: ssi_general_audit
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_account_mapping__reject_ok
+#: model:ir.model.fields,field_description:ssi_general_audit.field_client_adjusting_coa__reject_ok
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_adjustment_entry__reject_ok
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_trial_balance__reject_ok
 #: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit__reject_ok
@@ -1688,6 +1808,7 @@ msgstr ""
 
 #. module: ssi_general_audit
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_account_mapping__restart_ok
+#: model:ir.model.fields,field_description:ssi_general_audit.field_client_adjusting_coa__restart_ok
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_adjustment_entry__restart_ok
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_trial_balance__restart_ok
 #: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit__restart_ok
@@ -1698,6 +1819,7 @@ msgstr ""
 
 #. module: ssi_general_audit
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_account_mapping__restart_approval_ok
+#: model:ir.model.fields,field_description:ssi_general_audit.field_client_adjusting_coa__restart_approval_ok
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_adjustment_entry__restart_approval_ok
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_trial_balance__restart_approval_ok
 #: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit__restart_approval_ok
@@ -1724,6 +1846,7 @@ msgstr ""
 
 #. module: ssi_general_audit
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_account_mapping__cancel_reason_id
+#: model:ir.model.fields,field_description:ssi_general_audit.field_client_adjusting_coa__cancel_reason_id
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_adjustment_entry__cancel_reason_id
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_trial_balance__cancel_reason_id
 #: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit__cancel_reason_id
@@ -1734,6 +1857,7 @@ msgstr ""
 
 #. module: ssi_general_audit
 #: model:ir.model.fields,help:ssi_general_audit.field_client_account_mapping__cancel_ok
+#: model:ir.model.fields,help:ssi_general_audit.field_client_adjusting_coa__cancel_ok
 #: model:ir.model.fields,help:ssi_general_audit.field_client_adjustment_entry__cancel_ok
 #: model:ir.model.fields,help:ssi_general_audit.field_client_trial_balance__cancel_ok
 #: model:ir.model.fields,help:ssi_general_audit.field_general_audit__cancel_ok
@@ -1927,6 +2051,11 @@ msgid "Client account code."
 msgstr ""
 
 #. module: ssi_general_audit
+#: model:ir.model.fields,help:ssi_general_audit.field_client_adjusting_coa_detail__account_id
+msgid "Client account created when the document is done."
+msgstr ""
+
+#. module: ssi_general_audit
 #: model:ir.model.fields,help:ssi_general_audit.field_client_trial_balance_detail__account_id
 msgid "Client account for this line."
 msgstr ""
@@ -1979,6 +2108,11 @@ msgid "Client company for this audit."
 msgstr ""
 
 #. module: ssi_general_audit
+#: model:ir.model.fields,help:ssi_general_audit.field_client_adjusting_coa__partner_id
+msgid "Client company that owns the new accounts."
+msgstr ""
+
+#. module: ssi_general_audit
 #: model:ir.model.fields,help:ssi_general_audit.field_client_account__partner_id
 msgid "Client that owns this account."
 msgstr ""
@@ -2006,6 +2140,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_account_mapping_detail__code
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_account_type__code
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_account_type_set__code
+#: model:ir.model.fields,field_description:ssi_general_audit.field_client_adjusting_coa_detail__code
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_business_process__code
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_financial_ratio__code
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_relevant_account_type__code
@@ -2021,6 +2156,11 @@ msgstr ""
 #: model:ir.model.fields,field_description:ssi_general_audit.field_trial_balance_computation_item__code
 #: model_terms:ir.ui.view,arch_db:ssi_general_audit.client_financial_ratio_view_form
 msgid "Code"
+msgstr ""
+
+#. module: ssi_general_audit
+#: model:ir.model.fields,help:ssi_general_audit.field_client_adjusting_coa_detail__code
+msgid "Code of the new account. Must be unique for the client."
 msgstr ""
 
 #. module: ssi_general_audit
@@ -2047,6 +2187,7 @@ msgstr ""
 
 #. module: ssi_general_audit
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_account_mapping__company_id
+#: model:ir.model.fields,field_description:ssi_general_audit.field_client_adjusting_coa__company_id
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_adjustment_entry__company_id
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_trial_balance__company_id
 #: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit__company_id
@@ -2054,6 +2195,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit_worksheet_mixin__company_id
 #: model:res.groups,name:ssi_general_audit.adjustment_entry_company_group
 #: model:res.groups,name:ssi_general_audit.client_account_mapping_company_group
+#: model:res.groups,name:ssi_general_audit.client_adjusting_coa_company_group
 #: model:res.groups,name:ssi_general_audit.general_audit_company_group
 #: model:res.groups,name:ssi_general_audit.trial_balance_company_group
 msgid "Company"
@@ -2061,6 +2203,7 @@ msgstr ""
 
 #. module: ssi_general_audit
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_account_mapping__company_partner_id
+#: model:ir.model.fields,field_description:ssi_general_audit.field_client_adjusting_coa__company_partner_id
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_adjustment_entry__company_partner_id
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_trial_balance__company_partner_id
 #: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit__company_partner_id
@@ -2072,6 +2215,7 @@ msgstr ""
 #. module: ssi_general_audit
 #: model:res.groups,name:ssi_general_audit.adjustment_entry_company_child_group
 #: model:res.groups,name:ssi_general_audit.client_account_mapping_company_child_group
+#: model:res.groups,name:ssi_general_audit.client_adjusting_coa_company_child_group
 #: model:res.groups,name:ssi_general_audit.general_audit_company_child_group
 #: model:res.groups,name:ssi_general_audit.trial_balance_company_child_group
 msgid "Company and All Child Companies"
@@ -2079,6 +2223,7 @@ msgstr ""
 
 #. module: ssi_general_audit
 #: model:ir.model.fields,help:ssi_general_audit.field_client_account_mapping__company_id
+#: model:ir.model.fields,help:ssi_general_audit.field_client_adjusting_coa__company_id
 #: model:ir.model.fields,help:ssi_general_audit.field_client_adjustment_entry__company_id
 #: model:ir.model.fields,help:ssi_general_audit.field_client_trial_balance__company_id
 #: model:ir.model.fields,help:ssi_general_audit.field_general_audit__company_id
@@ -2223,6 +2368,7 @@ msgstr ""
 
 #. module: ssi_general_audit
 #: model:ir.model.fields,help:ssi_general_audit.field_client_account_mapping__confirm_ok
+#: model:ir.model.fields,help:ssi_general_audit.field_client_adjusting_coa__confirm_ok
 #: model:ir.model.fields,help:ssi_general_audit.field_client_adjustment_entry__confirm_ok
 #: model:ir.model.fields,help:ssi_general_audit.field_client_trial_balance__confirm_ok
 #: model:ir.model.fields,help:ssi_general_audit.field_general_audit__confirm_ok
@@ -2317,6 +2463,8 @@ msgstr ""
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_account_type__create_uid
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_account_type_computation_item__create_uid
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_account_type_set__create_uid
+#: model:ir.model.fields,field_description:ssi_general_audit.field_client_adjusting_coa__create_uid
+#: model:ir.model.fields,field_description:ssi_general_audit.field_client_adjusting_coa_detail__create_uid
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_adjustment_entry__create_uid
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_adjustment_entry_detail__create_uid
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_business_process__create_uid
@@ -2361,6 +2509,8 @@ msgstr ""
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_account_type__create_date
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_account_type_computation_item__create_date
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_account_type_set__create_date
+#: model:ir.model.fields,field_description:ssi_general_audit.field_client_adjusting_coa__create_date
+#: model:ir.model.fields,field_description:ssi_general_audit.field_client_adjusting_coa_detail__create_date
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_adjustment_entry__create_date
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_adjustment_entry_detail__create_date
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_business_process__create_date
@@ -2440,6 +2590,7 @@ msgstr ""
 
 #. module: ssi_general_audit
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_account_mapping__currency_id
+#: model:ir.model.fields,field_description:ssi_general_audit.field_client_adjusting_coa__currency_id
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_adjustment_entry__currency_id
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_adjustment_entry_detail__currency_id
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_trial_balance__currency_id
@@ -2501,6 +2652,7 @@ msgstr ""
 
 #. module: ssi_general_audit
 #: model:ir.model.fields,help:ssi_general_audit.field_client_account_mapping__currency_id
+#: model:ir.model.fields,help:ssi_general_audit.field_client_adjusting_coa__currency_id
 #: model:ir.model.fields,help:ssi_general_audit.field_client_adjustment_entry__currency_id
 msgid "Currency used for this audit."
 msgstr ""
@@ -2745,7 +2897,9 @@ msgid "Detailed description or notes about the item."
 msgstr ""
 
 #. module: ssi_general_audit
+#: model:ir.model.fields,field_description:ssi_general_audit.field_client_adjusting_coa__detail_ids
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_adjustment_entry__detail_ids
+#: model_terms:ir.ui.view,arch_db:ssi_general_audit.client_adjusting_coa_view_form
 #: model_terms:ir.ui.view,arch_db:ssi_general_audit.client_adjustment_entry_view_form
 msgid "Details"
 msgstr ""
@@ -2775,6 +2929,8 @@ msgstr ""
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_account_type__display_name
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_account_type_computation_item__display_name
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_account_type_set__display_name
+#: model:ir.model.fields,field_description:ssi_general_audit.field_client_adjusting_coa__display_name
+#: model:ir.model.fields,field_description:ssi_general_audit.field_client_adjusting_coa_detail__display_name
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_adjustment_entry__display_name
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_adjustment_entry_detail__display_name
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_business_process__display_name
@@ -2844,6 +3000,7 @@ msgstr ""
 
 #. module: ssi_general_audit
 #: model:ir.model.fields,help:ssi_general_audit.field_client_account_mapping__done_ok
+#: model:ir.model.fields,help:ssi_general_audit.field_client_adjusting_coa__done_ok
 #: model:ir.model.fields,help:ssi_general_audit.field_client_adjustment_entry__done_ok
 #: model:ir.model.fields,help:ssi_general_audit.field_client_trial_balance__done_ok
 #: model:ir.model.fields,help:ssi_general_audit.field_general_audit__done_ok
@@ -2962,6 +3119,7 @@ msgstr ""
 
 #. module: ssi_general_audit
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_account_mapping__date_end
+#: model:ir.model.fields,field_description:ssi_general_audit.field_client_adjusting_coa__date_end
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_adjustment_entry__date_end
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_trial_balance__date_end
 #: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit__date_end
@@ -3356,6 +3514,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_account_mapping__message_follower_ids
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_account_type__message_follower_ids
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_account_type_set__message_follower_ids
+#: model:ir.model.fields,field_description:ssi_general_audit.field_client_adjusting_coa__message_follower_ids
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_adjustment_entry__message_follower_ids
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_business_process__message_follower_ids
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_financial_ratio__message_follower_ids
@@ -3385,6 +3544,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_account_mapping__message_channel_ids
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_account_type__message_channel_ids
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_account_type_set__message_channel_ids
+#: model:ir.model.fields,field_description:ssi_general_audit.field_client_adjusting_coa__message_channel_ids
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_adjustment_entry__message_channel_ids
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_business_process__message_channel_ids
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_financial_ratio__message_channel_ids
@@ -3414,6 +3574,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_account_mapping__message_partner_ids
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_account_type__message_partner_ids
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_account_type_set__message_partner_ids
+#: model:ir.model.fields,field_description:ssi_general_audit.field_client_adjusting_coa__message_partner_ids
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_adjustment_entry__message_partner_ids
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_business_process__message_partner_ids
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_financial_ratio__message_partner_ids
@@ -3443,6 +3604,7 @@ msgstr ""
 #: model:ir.model.fields,help:ssi_general_audit.field_client_account_mapping__activity_type_icon
 #: model:ir.model.fields,help:ssi_general_audit.field_client_account_type__activity_type_icon
 #: model:ir.model.fields,help:ssi_general_audit.field_client_account_type_set__activity_type_icon
+#: model:ir.model.fields,help:ssi_general_audit.field_client_adjusting_coa__activity_type_icon
 #: model:ir.model.fields,help:ssi_general_audit.field_client_adjustment_entry__activity_type_icon
 #: model:ir.model.fields,help:ssi_general_audit.field_client_business_process__activity_type_icon
 #: model:ir.model.fields,help:ssi_general_audit.field_client_financial_ratio__activity_type_icon
@@ -3596,6 +3758,11 @@ msgid "General Audit that owns this standard detail line."
 msgstr ""
 
 #. module: ssi_general_audit
+#: model:ir.model.fields,help:ssi_general_audit.field_client_adjusting_coa__general_audit_id
+msgid "General Audit that receives the new accounts."
+msgstr ""
+
+#. module: ssi_general_audit
 #: model:ir.model.fields,help:ssi_general_audit.field_general_audit_worksheet_control_required__general_audit_id
 msgid "General Audit that requires this worksheet type."
 msgstr ""
@@ -3690,6 +3857,8 @@ msgstr ""
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_account_type__id
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_account_type_computation_item__id
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_account_type_set__id
+#: model:ir.model.fields,field_description:ssi_general_audit.field_client_adjusting_coa__id
+#: model:ir.model.fields,field_description:ssi_general_audit.field_client_adjusting_coa_detail__id
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_adjustment_entry__id
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_adjustment_entry_detail__id
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_business_process__id
@@ -3748,6 +3917,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_account_mapping__activity_exception_icon
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_account_type__activity_exception_icon
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_account_type_set__activity_exception_icon
+#: model:ir.model.fields,field_description:ssi_general_audit.field_client_adjusting_coa__activity_exception_icon
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_adjustment_entry__activity_exception_icon
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_business_process__activity_exception_icon
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_financial_ratio__activity_exception_icon
@@ -3777,6 +3947,7 @@ msgstr ""
 #: model:ir.model.fields,help:ssi_general_audit.field_client_account_mapping__activity_exception_icon
 #: model:ir.model.fields,help:ssi_general_audit.field_client_account_type__activity_exception_icon
 #: model:ir.model.fields,help:ssi_general_audit.field_client_account_type_set__activity_exception_icon
+#: model:ir.model.fields,help:ssi_general_audit.field_client_adjusting_coa__activity_exception_icon
 #: model:ir.model.fields,help:ssi_general_audit.field_client_adjustment_entry__activity_exception_icon
 #: model:ir.model.fields,help:ssi_general_audit.field_client_business_process__activity_exception_icon
 #: model:ir.model.fields,help:ssi_general_audit.field_client_financial_ratio__activity_exception_icon
@@ -3825,6 +3996,8 @@ msgstr ""
 #: model:ir.model.fields,help:ssi_general_audit.field_client_account_type__message_unread
 #: model:ir.model.fields,help:ssi_general_audit.field_client_account_type_set__message_needaction
 #: model:ir.model.fields,help:ssi_general_audit.field_client_account_type_set__message_unread
+#: model:ir.model.fields,help:ssi_general_audit.field_client_adjusting_coa__message_needaction
+#: model:ir.model.fields,help:ssi_general_audit.field_client_adjusting_coa__message_unread
 #: model:ir.model.fields,help:ssi_general_audit.field_client_adjustment_entry__message_needaction
 #: model:ir.model.fields,help:ssi_general_audit.field_client_adjustment_entry__message_unread
 #: model:ir.model.fields,help:ssi_general_audit.field_client_business_process__message_needaction
@@ -3872,6 +4045,7 @@ msgstr ""
 #: model:ir.model.fields,help:ssi_general_audit.field_client_account_mapping__message_has_error
 #: model:ir.model.fields,help:ssi_general_audit.field_client_account_type__message_has_error
 #: model:ir.model.fields,help:ssi_general_audit.field_client_account_type_set__message_has_error
+#: model:ir.model.fields,help:ssi_general_audit.field_client_adjusting_coa__message_has_error
 #: model:ir.model.fields,help:ssi_general_audit.field_client_adjustment_entry__message_has_error
 #: model:ir.model.fields,help:ssi_general_audit.field_client_business_process__message_has_error
 #: model:ir.model.fields,help:ssi_general_audit.field_client_financial_ratio__message_has_error
@@ -4188,6 +4362,7 @@ msgstr ""
 
 #. module: ssi_general_audit
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_account_mapping__interim_date_end
+#: model:ir.model.fields,field_description:ssi_general_audit.field_client_adjusting_coa__interim_date_end
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_adjustment_entry__interim_date_end
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_trial_balance__interim_date_end
 #: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit__interim_date_end
@@ -4214,6 +4389,7 @@ msgstr ""
 
 #. module: ssi_general_audit
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_account_mapping__interim_date_start
+#: model:ir.model.fields,field_description:ssi_general_audit.field_client_adjusting_coa__interim_date_start
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_adjustment_entry__interim_date_start
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_trial_balance__interim_date_start
 #: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit__interim_date_start
@@ -4231,6 +4407,7 @@ msgstr ""
 
 #. module: ssi_general_audit
 #: model:ir.model.fields,help:ssi_general_audit.field_client_account_mapping__interim_date_end
+#: model:ir.model.fields,help:ssi_general_audit.field_client_adjusting_coa__interim_date_end
 #: model:ir.model.fields,help:ssi_general_audit.field_client_adjustment_entry__interim_date_end
 #: model:ir.model.fields,help:ssi_general_audit.field_client_trial_balance__interim_date_end
 msgid "Interim period end date."
@@ -4238,6 +4415,7 @@ msgstr ""
 
 #. module: ssi_general_audit
 #: model:ir.model.fields,help:ssi_general_audit.field_client_account_mapping__interim_date_start
+#: model:ir.model.fields,help:ssi_general_audit.field_client_adjusting_coa__interim_date_start
 #: model:ir.model.fields,help:ssi_general_audit.field_client_adjustment_entry__interim_date_start
 #: model:ir.model.fields,help:ssi_general_audit.field_client_trial_balance__interim_date_start
 msgid "Interim period start date."
@@ -4316,6 +4494,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_account_mapping__message_is_follower
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_account_type__message_is_follower
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_account_type_set__message_is_follower
+#: model:ir.model.fields,field_description:ssi_general_audit.field_client_adjusting_coa__message_is_follower
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_adjustment_entry__message_is_follower
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_business_process__message_is_follower
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_financial_ratio__message_is_follower
@@ -4374,6 +4553,8 @@ msgstr ""
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_account_type____last_update
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_account_type_computation_item____last_update
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_account_type_set____last_update
+#: model:ir.model.fields,field_description:ssi_general_audit.field_client_adjusting_coa____last_update
+#: model:ir.model.fields,field_description:ssi_general_audit.field_client_adjusting_coa_detail____last_update
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_adjustment_entry____last_update
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_adjustment_entry_detail____last_update
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_business_process____last_update
@@ -4429,6 +4610,8 @@ msgstr ""
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_account_type__write_uid
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_account_type_computation_item__write_uid
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_account_type_set__write_uid
+#: model:ir.model.fields,field_description:ssi_general_audit.field_client_adjusting_coa__write_uid
+#: model:ir.model.fields,field_description:ssi_general_audit.field_client_adjusting_coa_detail__write_uid
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_adjustment_entry__write_uid
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_adjustment_entry_detail__write_uid
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_business_process__write_uid
@@ -4473,6 +4656,8 @@ msgstr ""
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_account_type__write_date
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_account_type_computation_item__write_date
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_account_type_set__write_date
+#: model:ir.model.fields,field_description:ssi_general_audit.field_client_adjusting_coa__write_date
+#: model:ir.model.fields,field_description:ssi_general_audit.field_client_adjusting_coa_detail__write_date
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_adjustment_entry__write_date
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_adjustment_entry_detail__write_date
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_business_process__write_date
@@ -4646,6 +4831,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_account_mapping__message_main_attachment_id
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_account_type__message_main_attachment_id
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_account_type_set__message_main_attachment_id
+#: model:ir.model.fields,field_description:ssi_general_audit.field_client_adjusting_coa__message_main_attachment_id
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_adjustment_entry__message_main_attachment_id
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_business_process__message_main_attachment_id
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_financial_ratio__message_main_attachment_id
@@ -4694,6 +4880,7 @@ msgstr ""
 
 #. module: ssi_general_audit
 #: model:ir.model.fields,help:ssi_general_audit.field_client_account_mapping__manual_number_ok
+#: model:ir.model.fields,help:ssi_general_audit.field_client_adjusting_coa__manual_number_ok
 #: model:ir.model.fields,help:ssi_general_audit.field_client_adjustment_entry__manual_number_ok
 #: model:ir.model.fields,help:ssi_general_audit.field_client_trial_balance__manual_number_ok
 #: model:ir.model.fields,help:ssi_general_audit.field_general_audit__manual_number_ok
@@ -4823,6 +5010,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_account_mapping__message_has_error
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_account_type__message_has_error
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_account_type_set__message_has_error
+#: model:ir.model.fields,field_description:ssi_general_audit.field_client_adjusting_coa__message_has_error
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_adjustment_entry__message_has_error
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_business_process__message_has_error
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_financial_ratio__message_has_error
@@ -4852,6 +5040,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_account_mapping__message_ids
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_account_type__message_ids
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_account_type_set__message_ids
+#: model:ir.model.fields,field_description:ssi_general_audit.field_client_adjusting_coa__message_ids
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_adjustment_entry__message_ids
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_business_process__message_ids
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_financial_ratio__message_ids
@@ -4916,6 +5105,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_account_mapping__my_activity_date_deadline
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_account_type__my_activity_date_deadline
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_account_type_set__my_activity_date_deadline
+#: model:ir.model.fields,field_description:ssi_general_audit.field_client_adjusting_coa__my_activity_date_deadline
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_adjustment_entry__my_activity_date_deadline
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_business_process__my_activity_date_deadline
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_financial_ratio__my_activity_date_deadline
@@ -4943,6 +5133,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_account__name
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_account_group__name
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_account_type__name
+#: model:ir.model.fields,field_description:ssi_general_audit.field_client_adjusting_coa_detail__name
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_business_process__name
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_financial_ratio__name
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_relevant_account_type__name
@@ -4962,6 +5153,11 @@ msgstr ""
 #. module: ssi_general_audit
 #: model:ir.model.fields,help:ssi_general_audit.field_client_account_type_set__name
 msgid "Name of the client account type set."
+msgstr ""
+
+#. module: ssi_general_audit
+#: model:ir.model.fields,help:ssi_general_audit.field_client_adjusting_coa_detail__name
+msgid "Name of the new account."
 msgstr ""
 
 #. module: ssi_general_audit
@@ -4996,6 +5192,7 @@ msgstr ""
 
 #. module: ssi_general_audit
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_account_mapping__need_validation
+#: model:ir.model.fields,field_description:ssi_general_audit.field_client_adjusting_coa__need_validation
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_adjustment_entry__need_validation
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_trial_balance__need_validation
 #: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit__need_validation
@@ -5099,6 +5296,11 @@ msgid "Net effect of adjustments on the group based on normal balance."
 msgstr ""
 
 #. module: ssi_general_audit
+#: model:ir.model.fields,help:ssi_general_audit.field_client_adjusting_coa__detail_ids
+msgid "New accounts to be added to the audit."
+msgstr ""
+
+#. module: ssi_general_audit
 #: model:ir.model.fields,field_description:ssi_general_audit.field_checklist_option__activity_date_deadline
 #: model:ir.model.fields,field_description:ssi_general_audit.field_checklist_option_set__activity_date_deadline
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_account__activity_date_deadline
@@ -5106,6 +5308,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_account_mapping__activity_date_deadline
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_account_type__activity_date_deadline
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_account_type_set__activity_date_deadline
+#: model:ir.model.fields,field_description:ssi_general_audit.field_client_adjusting_coa__activity_date_deadline
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_adjustment_entry__activity_date_deadline
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_business_process__activity_date_deadline
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_financial_ratio__activity_date_deadline
@@ -5135,6 +5338,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_account_mapping__activity_summary
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_account_type__activity_summary
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_account_type_set__activity_summary
+#: model:ir.model.fields,field_description:ssi_general_audit.field_client_adjusting_coa__activity_summary
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_adjustment_entry__activity_summary
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_business_process__activity_summary
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_financial_ratio__activity_summary
@@ -5164,6 +5368,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_account_mapping__activity_type_id
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_account_type__activity_type_id
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_account_type_set__activity_type_id
+#: model:ir.model.fields,field_description:ssi_general_audit.field_client_adjusting_coa__activity_type_id
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_adjustment_entry__activity_type_id
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_business_process__activity_type_id
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_financial_ratio__activity_type_id
@@ -5187,6 +5392,7 @@ msgstr ""
 
 #. module: ssi_general_audit
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_account_mapping__next_approval_ids
+#: model:ir.model.fields,field_description:ssi_general_audit.field_client_adjusting_coa__next_approval_ids
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_adjustment_entry__next_approval_ids
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_trial_balance__next_approval_ids
 #: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit__next_approval_ids
@@ -5198,6 +5404,12 @@ msgstr ""
 #. module: ssi_general_audit
 #: model:checklist.option,name:ssi_general_audit.checklist_option_no
 msgid "No"
+msgstr ""
+
+#. module: ssi_general_audit
+#: code:addons/ssi_general_audit/models/client/client_adjusting_coa.py:0
+#, python-format
+msgid "No line is defined"
 msgstr ""
 
 #. module: ssi_general_audit
@@ -5298,6 +5510,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_account_mapping__note
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_account_type__note
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_account_type_set__note
+#: model:ir.model.fields,field_description:ssi_general_audit.field_client_adjusting_coa__note
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_adjustment_entry__note
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_business_process__note
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_financial_ratio__note
@@ -5343,6 +5556,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_account_mapping__message_needaction_counter
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_account_type__message_needaction_counter
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_account_type_set__message_needaction_counter
+#: model:ir.model.fields,field_description:ssi_general_audit.field_client_adjusting_coa__message_needaction_counter
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_adjustment_entry__message_needaction_counter
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_business_process__message_needaction_counter
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_financial_ratio__message_needaction_counter
@@ -5392,6 +5606,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_account_mapping__message_has_error_counter
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_account_type__message_has_error_counter
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_account_type_set__message_has_error_counter
+#: model:ir.model.fields,field_description:ssi_general_audit.field_client_adjusting_coa__message_has_error_counter
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_adjustment_entry__message_has_error_counter
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_business_process__message_has_error_counter
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_financial_ratio__message_has_error_counter
@@ -5426,6 +5641,7 @@ msgstr ""
 #: model:ir.model.fields,help:ssi_general_audit.field_client_account_mapping__message_needaction_counter
 #: model:ir.model.fields,help:ssi_general_audit.field_client_account_type__message_needaction_counter
 #: model:ir.model.fields,help:ssi_general_audit.field_client_account_type_set__message_needaction_counter
+#: model:ir.model.fields,help:ssi_general_audit.field_client_adjusting_coa__message_needaction_counter
 #: model:ir.model.fields,help:ssi_general_audit.field_client_adjustment_entry__message_needaction_counter
 #: model:ir.model.fields,help:ssi_general_audit.field_client_business_process__message_needaction_counter
 #: model:ir.model.fields,help:ssi_general_audit.field_client_financial_ratio__message_needaction_counter
@@ -5455,6 +5671,7 @@ msgstr ""
 #: model:ir.model.fields,help:ssi_general_audit.field_client_account_mapping__message_has_error_counter
 #: model:ir.model.fields,help:ssi_general_audit.field_client_account_type__message_has_error_counter
 #: model:ir.model.fields,help:ssi_general_audit.field_client_account_type_set__message_has_error_counter
+#: model:ir.model.fields,help:ssi_general_audit.field_client_adjusting_coa__message_has_error_counter
 #: model:ir.model.fields,help:ssi_general_audit.field_client_adjustment_entry__message_has_error_counter
 #: model:ir.model.fields,help:ssi_general_audit.field_client_business_process__message_has_error_counter
 #: model:ir.model.fields,help:ssi_general_audit.field_client_financial_ratio__message_has_error_counter
@@ -5484,6 +5701,7 @@ msgstr ""
 #: model:ir.model.fields,help:ssi_general_audit.field_client_account_mapping__message_unread_counter
 #: model:ir.model.fields,help:ssi_general_audit.field_client_account_type__message_unread_counter
 #: model:ir.model.fields,help:ssi_general_audit.field_client_account_type_set__message_unread_counter
+#: model:ir.model.fields,help:ssi_general_audit.field_client_adjusting_coa__message_unread_counter
 #: model:ir.model.fields,help:ssi_general_audit.field_client_adjustment_entry__message_unread_counter
 #: model:ir.model.fields,help:ssi_general_audit.field_client_business_process__message_unread_counter
 #: model:ir.model.fields,help:ssi_general_audit.field_client_financial_ratio__message_unread_counter
@@ -5593,6 +5811,7 @@ msgstr ""
 
 #. module: ssi_general_audit
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_account_mapping__operating_unit_id
+#: model:ir.model.fields,field_description:ssi_general_audit.field_client_adjusting_coa__operating_unit_id
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_adjustment_entry__operating_unit_id
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_trial_balance__operating_unit_id
 #: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit__operating_unit_id
@@ -5600,8 +5819,10 @@ msgstr ""
 #: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit_worksheet_mixin__operating_unit_id
 #: model:res.groups,name:ssi_general_audit.adjustment_entry_ou_group
 #: model:res.groups,name:ssi_general_audit.client_account_mapping_ou_group
+#: model:res.groups,name:ssi_general_audit.client_adjusting_coa_ou_group
 #: model:res.groups,name:ssi_general_audit.general_audit_ou_group
 #: model:res.groups,name:ssi_general_audit.trial_balance_ou_group
+#: model_terms:ir.ui.view,arch_db:ssi_general_audit.client_adjusting_coa_view_search
 #: model_terms:ir.ui.view,arch_db:ssi_general_audit.client_adjustment_entry_view_search
 #: model_terms:ir.ui.view,arch_db:ssi_general_audit.client_trial_balance_view_search
 #: model_terms:ir.ui.view,arch_db:ssi_general_audit.general_audit_view_search
@@ -5895,6 +6116,11 @@ msgid "Parent"
 msgstr ""
 
 #. module: ssi_general_audit
+#: model:ir.model.fields,help:ssi_general_audit.field_client_adjusting_coa_detail__coa_id
+msgid "Parent Adjusting CoA document this line belongs to."
+msgstr ""
+
+#. module: ssi_general_audit
 #: model:ir.model.fields,help:ssi_general_audit.field_client_trial_balance_detail__trial_balance_id
 #: model:ir.model.fields,help:ssi_general_audit.field_client_trial_balance_group_detail__trial_balance_id
 #: model:ir.model.fields,help:ssi_general_audit.field_client_trial_balance_standard_detail__trial_balance_id
@@ -5934,6 +6160,7 @@ msgstr ""
 
 #. module: ssi_general_audit
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_account_mapping__partner_id
+#: model:ir.model.fields,field_description:ssi_general_audit.field_client_adjusting_coa__partner_id
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_adjustment_entry__partner_id
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_trial_balance__partner_id
 #: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit_worksheet__partner_id
@@ -5982,6 +6209,7 @@ msgstr ""
 
 #. module: ssi_general_audit
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_account_mapping__policy_template_id
+#: model:ir.model.fields,field_description:ssi_general_audit.field_client_adjusting_coa__policy_template_id
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_adjustment_entry__policy_template_id
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_trial_balance__policy_template_id
 #: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit__policy_template_id
@@ -6120,6 +6348,7 @@ msgstr ""
 
 #. module: ssi_general_audit
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_account_mapping__previous_date_end
+#: model:ir.model.fields,field_description:ssi_general_audit.field_client_adjusting_coa__previous_date_end
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_adjustment_entry__previous_date_end
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_trial_balance__previous_date_end
 #: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit__previous_date_end
@@ -6136,6 +6365,7 @@ msgstr ""
 
 #. module: ssi_general_audit
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_account_mapping__previous_date_start
+#: model:ir.model.fields,field_description:ssi_general_audit.field_client_adjusting_coa__previous_date_start
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_adjustment_entry__previous_date_start
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_trial_balance__previous_date_start
 #: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit__previous_date_start
@@ -6153,6 +6383,7 @@ msgstr ""
 
 #. module: ssi_general_audit
 #: model:ir.model.fields,help:ssi_general_audit.field_client_account_mapping__previous_date_end
+#: model:ir.model.fields,help:ssi_general_audit.field_client_adjusting_coa__previous_date_end
 #: model:ir.model.fields,help:ssi_general_audit.field_client_adjustment_entry__previous_date_end
 #: model:ir.model.fields,help:ssi_general_audit.field_client_trial_balance__previous_date_end
 msgid "Previous period end date."
@@ -6160,6 +6391,7 @@ msgstr ""
 
 #. module: ssi_general_audit
 #: model:ir.model.fields,help:ssi_general_audit.field_client_account_mapping__previous_date_start
+#: model:ir.model.fields,help:ssi_general_audit.field_client_adjusting_coa__previous_date_start
 #: model:ir.model.fields,help:ssi_general_audit.field_client_adjustment_entry__previous_date_start
 #: model:ir.model.fields,help:ssi_general_audit.field_client_trial_balance__previous_date_start
 msgid "Previous period start date."
@@ -6321,6 +6553,7 @@ msgstr ""
 
 #. module: ssi_general_audit
 #: model:ir.model.fields,help:ssi_general_audit.field_client_account_mapping__reject_ok
+#: model:ir.model.fields,help:ssi_general_audit.field_client_adjusting_coa__reject_ok
 #: model:ir.model.fields,help:ssi_general_audit.field_client_adjustment_entry__reject_ok
 #: model:ir.model.fields,help:ssi_general_audit.field_client_trial_balance__reject_ok
 #: model:ir.model.fields,help:ssi_general_audit.field_general_audit__reject_ok
@@ -6334,6 +6567,7 @@ msgstr ""
 
 #. module: ssi_general_audit
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_account_mapping__rejected
+#: model:ir.model.fields,field_description:ssi_general_audit.field_client_adjusting_coa__rejected
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_adjustment_entry__rejected
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_trial_balance__rejected
 #: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit__rejected
@@ -6422,6 +6656,7 @@ msgstr ""
 
 #. module: ssi_general_audit
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_account_mapping__user_id
+#: model:ir.model.fields,field_description:ssi_general_audit.field_client_adjusting_coa__user_id
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_adjustment_entry__user_id
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_trial_balance__user_id
 #: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit__user_id
@@ -6440,6 +6675,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_account_mapping__activity_user_id
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_account_type__activity_user_id
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_account_type_set__activity_user_id
+#: model:ir.model.fields,field_description:ssi_general_audit.field_client_adjusting_coa__activity_user_id
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_adjustment_entry__activity_user_id
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_business_process__activity_user_id
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_financial_ratio__activity_user_id
@@ -6463,6 +6699,7 @@ msgstr ""
 
 #. module: ssi_general_audit
 #: model:ir.model.fields,help:ssi_general_audit.field_client_account_mapping__restart_approval_ok
+#: model:ir.model.fields,help:ssi_general_audit.field_client_adjusting_coa__restart_approval_ok
 #: model:ir.model.fields,help:ssi_general_audit.field_client_adjustment_entry__restart_approval_ok
 #: model:ir.model.fields,help:ssi_general_audit.field_client_trial_balance__restart_approval_ok
 #: model:ir.model.fields,help:ssi_general_audit.field_general_audit__restart_approval_ok
@@ -6476,6 +6713,7 @@ msgstr ""
 
 #. module: ssi_general_audit
 #: model:ir.model.fields,help:ssi_general_audit.field_client_account_mapping__restart_ok
+#: model:ir.model.fields,help:ssi_general_audit.field_client_adjusting_coa__restart_ok
 #: model:ir.model.fields,help:ssi_general_audit.field_client_adjustment_entry__restart_ok
 #: model:ir.model.fields,help:ssi_general_audit.field_client_trial_balance__restart_ok
 #: model:ir.model.fields,help:ssi_general_audit.field_general_audit__restart_ok
@@ -6574,6 +6812,7 @@ msgstr ""
 
 #. module: ssi_general_audit
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_account_mapping__reviewer_id
+#: model:ir.model.fields,field_description:ssi_general_audit.field_client_adjusting_coa__reviewer_id
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_adjustment_entry__reviewer_id
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_trial_balance__reviewer_id
 #: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit__reviewer_id
@@ -6857,6 +7096,7 @@ msgstr ""
 
 #. module: ssi_general_audit
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_account_mapping__date_start
+#: model:ir.model.fields,field_description:ssi_general_audit.field_client_adjusting_coa__date_start
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_adjustment_entry__date_start
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_trial_balance__date_start
 #: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit__date_start
@@ -6902,6 +7142,7 @@ msgstr ""
 
 #. module: ssi_general_audit
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_account_mapping__state
+#: model:ir.model.fields,field_description:ssi_general_audit.field_client_adjusting_coa__state
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_adjustment_entry__state
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_trial_balance__state
 #: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit__state
@@ -6924,6 +7165,7 @@ msgstr ""
 #: model:ir.model.fields,help:ssi_general_audit.field_client_account_mapping__activity_state
 #: model:ir.model.fields,help:ssi_general_audit.field_client_account_type__activity_state
 #: model:ir.model.fields,help:ssi_general_audit.field_client_account_type_set__activity_state
+#: model:ir.model.fields,help:ssi_general_audit.field_client_adjusting_coa__activity_state
 #: model:ir.model.fields,help:ssi_general_audit.field_client_adjustment_entry__activity_state
 #: model:ir.model.fields,help:ssi_general_audit.field_client_business_process__activity_state
 #: model:ir.model.fields,help:ssi_general_audit.field_client_financial_ratio__activity_state
@@ -7351,6 +7593,7 @@ msgstr ""
 
 #. module: ssi_general_audit
 #: model:ir.model.fields,help:ssi_general_audit.field_client_account_mapping__name
+#: model:ir.model.fields,help:ssi_general_audit.field_client_adjusting_coa__name
 #: model:ir.model.fields,help:ssi_general_audit.field_client_adjustment_entry__name
 #: model:ir.model.fields,help:ssi_general_audit.field_client_trial_balance__name
 #: model:ir.model.fields,help:ssi_general_audit.field_general_audit__name
@@ -7454,6 +7697,7 @@ msgstr ""
 #. module: ssi_general_audit
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_account__type_id
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_account_mapping_detail__type_id
+#: model:ir.model.fields,field_description:ssi_general_audit.field_client_adjusting_coa_detail__type_id
 #: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit_worksheet_conclusion__type_id
 #: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit_worksheet_control__type_id
 #: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit_worksheet_control_additional__type_id
@@ -7487,6 +7731,7 @@ msgstr ""
 #: model:ir.model.fields,help:ssi_general_audit.field_client_account_mapping__activity_exception_decoration
 #: model:ir.model.fields,help:ssi_general_audit.field_client_account_type__activity_exception_decoration
 #: model:ir.model.fields,help:ssi_general_audit.field_client_account_type_set__activity_exception_decoration
+#: model:ir.model.fields,help:ssi_general_audit.field_client_adjusting_coa__activity_exception_decoration
 #: model:ir.model.fields,help:ssi_general_audit.field_client_adjustment_entry__activity_exception_decoration
 #: model:ir.model.fields,help:ssi_general_audit.field_client_business_process__activity_exception_decoration
 #: model:ir.model.fields,help:ssi_general_audit.field_client_financial_ratio__activity_exception_decoration
@@ -7570,6 +7815,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_account_mapping__message_unread
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_account_type__message_unread
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_account_type_set__message_unread
+#: model:ir.model.fields,field_description:ssi_general_audit.field_client_adjusting_coa__message_unread
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_adjustment_entry__message_unread
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_business_process__message_unread
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_financial_ratio__message_unread
@@ -7599,6 +7845,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_account_mapping__message_unread_counter
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_account_type__message_unread_counter
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_account_type_set__message_unread_counter
+#: model:ir.model.fields,field_description:ssi_general_audit.field_client_adjusting_coa__message_unread_counter
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_adjustment_entry__message_unread_counter
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_business_process__message_unread_counter
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_financial_ratio__message_unread_counter
@@ -7628,6 +7875,7 @@ msgstr ""
 #. module: ssi_general_audit
 #: model:res.groups,name:ssi_general_audit.adjustment_entry_user_group
 #: model:res.groups,name:ssi_general_audit.client_account_mapping_user_group
+#: model:res.groups,name:ssi_general_audit.client_adjusting_coa_user_group
 #: model:res.groups,name:ssi_general_audit.general_audit_user_group
 #: model:res.groups,name:ssi_general_audit.trial_balance_user_group
 msgid "User"
@@ -7635,6 +7883,7 @@ msgstr ""
 
 #. module: ssi_general_audit
 #: model:ir.model.fields,help:ssi_general_audit.field_client_account_mapping__user_id
+#: model:ir.model.fields,help:ssi_general_audit.field_client_adjusting_coa__user_id
 #: model:ir.model.fields,help:ssi_general_audit.field_client_adjustment_entry__user_id
 #: model:ir.model.fields,help:ssi_general_audit.field_client_trial_balance__user_id
 #: model:ir.model.fields,help:ssi_general_audit.field_general_audit__user_id
@@ -7650,6 +7899,7 @@ msgstr ""
 
 #. module: ssi_general_audit
 #: model:ir.model.fields,help:ssi_general_audit.field_client_account_mapping__reviewer_id
+#: model:ir.model.fields,help:ssi_general_audit.field_client_adjusting_coa__reviewer_id
 #: model:ir.model.fields,help:ssi_general_audit.field_client_adjustment_entry__reviewer_id
 #: model:ir.model.fields,help:ssi_general_audit.field_client_trial_balance__reviewer_id
 #: model:ir.model.fields,help:ssi_general_audit.field_general_audit__reviewer_id
@@ -7670,6 +7920,7 @@ msgstr ""
 
 #. module: ssi_general_audit
 #: model:ir.model.fields,help:ssi_general_audit.field_client_account_mapping__active_approver_user_ids
+#: model:ir.model.fields,help:ssi_general_audit.field_client_adjusting_coa__active_approver_user_ids
 #: model:ir.model.fields,help:ssi_general_audit.field_client_adjustment_entry__active_approver_user_ids
 #: model:ir.model.fields,help:ssi_general_audit.field_client_trial_balance__active_approver_user_ids
 #: model:ir.model.fields,help:ssi_general_audit.field_general_audit__active_approver_user_ids
@@ -7691,6 +7942,7 @@ msgstr ""
 #. module: ssi_general_audit
 #: model:res.groups,name:ssi_general_audit.adjustment_entry_validator_group
 #: model:res.groups,name:ssi_general_audit.client_account_mapping_validator_group
+#: model:res.groups,name:ssi_general_audit.client_adjusting_coa_validator_group
 #: model:res.groups,name:ssi_general_audit.general_audit_validator_group
 #: model:res.groups,name:ssi_general_audit.trial_balance_validator_group
 msgid "Validator"
@@ -7699,6 +7951,7 @@ msgstr ""
 #. module: ssi_general_audit
 #: model:res.groups,name:ssi_general_audit.adjustment_entry_viewer_group
 #: model:res.groups,name:ssi_general_audit.client_account_mapping_viewer_group
+#: model:res.groups,name:ssi_general_audit.client_adjusting_coa_viewer_group
 #: model:res.groups,name:ssi_general_audit.general_audit_viewer_group
 #: model:res.groups,name:ssi_general_audit.trial_balance_viewer_group
 msgid "Viewer"
@@ -7722,6 +7975,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_account_mapping__website_message_ids
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_account_type__website_message_ids
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_account_type_set__website_message_ids
+#: model:ir.model.fields,field_description:ssi_general_audit.field_client_adjusting_coa__website_message_ids
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_adjustment_entry__website_message_ids
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_business_process__website_message_ids
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_financial_ratio__website_message_ids
@@ -7751,6 +8005,7 @@ msgstr ""
 #: model:ir.model.fields,help:ssi_general_audit.field_client_account_mapping__website_message_ids
 #: model:ir.model.fields,help:ssi_general_audit.field_client_account_type__website_message_ids
 #: model:ir.model.fields,help:ssi_general_audit.field_client_account_type_set__website_message_ids
+#: model:ir.model.fields,help:ssi_general_audit.field_client_adjusting_coa__website_message_ids
 #: model:ir.model.fields,help:ssi_general_audit.field_client_adjustment_entry__website_message_ids
 #: model:ir.model.fields,help:ssi_general_audit.field_client_business_process__website_message_ids
 #: model:ir.model.fields,help:ssi_general_audit.field_client_financial_ratio__website_message_ids
