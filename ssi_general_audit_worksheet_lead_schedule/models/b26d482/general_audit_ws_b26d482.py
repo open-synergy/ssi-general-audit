@@ -165,3 +165,18 @@ class GeneralAuditWSb26d482(models.Model):
         )
         if details_to_remove:
             details_to_remove.unlink()
+
+    def _add_accounts_to_worksheet(self, accounts):
+        """Load accounts added to the audit after it started.
+
+        Called by ``general_audit._add_account``. Delegates to
+        ``_load_detail``, which only adds the missing lines and removes
+        the ones whose account left the audit, so existing lines are
+        kept.
+
+        :param accounts: ``client_account`` recordset just added to the
+            audit
+        :return: nothing
+        """
+        self.ensure_one()
+        self._load_detail()

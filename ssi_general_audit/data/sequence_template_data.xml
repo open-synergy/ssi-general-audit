@@ -76,6 +76,30 @@
 </record>
 </data>
 
+<!-- Adjusting CoA -->
+<data noupdate="1">
+<record id="sequence_template_adjusting_coa" model="sequence.template">
+    <field name="name">Standard</field>
+    <field name="model_id" ref="ssi_general_audit.model_client_adjusting_coa" />
+    <field name="sequence" eval="100" />
+    <field name="initial_string">/</field>
+    <field
+                name="sequence_field_id"
+                search="[('model_id.model','=','client_adjusting_coa'),('name','=','name')]"
+            />
+    <field
+                name="date_field_id"
+                search="[('model_id.model','=','client_adjusting_coa'),('name','=','date_start')]"
+            />
+    <field name="computation_method">use_python</field>
+    <field name="python_code">result=True</field>
+    <field name="sequence_id" ref="sequence_adjusting_coa" />
+    <field name="sequence_selection_method">use_sequence</field>
+    <field name="add_custom_prefix" eval="0" />
+    <field name="add_custom_suffix" eval="0" />
+</record>
+</data>
+
 <!-- Trial Balance -->
 <data noupdate="1">
 <record id="sequence_template_client_account_mapping" model="sequence.template">

@@ -388,3 +388,19 @@ class GeneralAuditWorksheetMixin(models.AbstractModel):
         self.ensure_one()
         if not self.review_date:
             self.review_date = fields.Date.today()
+
+    def _add_accounts_to_worksheet(self, accounts):
+        """Load newly added client accounts into this worksheet.
+
+        Extension point called by ``general_audit._add_account`` for
+        every worksheet of the audit whose type sequence is at or after
+        the cut-off and that is not ``done``. The default does nothing;
+        a concrete worksheet that builds lines from the audit accounts
+        overrides it. An override must be incremental and must never
+        delete or rebuild lines that already exist.
+
+        :param accounts: ``client_account`` recordset just added to the
+            audit
+        :return: nothing
+        """
+        self.ensure_one()

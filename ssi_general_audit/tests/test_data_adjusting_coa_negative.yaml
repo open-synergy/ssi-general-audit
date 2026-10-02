@@ -1,0 +1,297 @@
+options:
+  auto_refresh: true
+
+scenarios:
+  - name: "client_adjusting_coa - confirm rejects invalid lines"
+    steps:
+      - step: "Get config parameter model"
+        action: "search"
+        model: "ir.config_parameter"
+        domain: []
+        save_as: "config_parameter"
+        limit: 1
+
+      - step: "Allow enough CPA licenses for this scenario"
+        action: "call"
+        target: "config_parameter"
+        method: "set_param"
+        args:
+          - "ssi_general_audit.max_number_of_cpa_license"
+          - "100"
+
+      - step: "Create client partner"
+        action: "create"
+        model: "res.partner"
+        save_as: "client"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Client - Adjusting CoA Negative"
+          is_company: true
+
+      - step: "Create accountant partner"
+        action: "create"
+        model: "res.partner"
+        save_as: "accountant"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Accountant - Adjusting CoA Negative"
+
+      - step: "Get CPA license id category"
+        action: "ref"
+        xml_id: "ssi_partner_identification_cpa_license.partner_identification_accountant_cpa_license"
+        save_as: "cpa_category"
+
+      - step: "Grant accountant a CPA license"
+        action: "create"
+        model: "res.partner.id_number"
+        save_as: "cpa_license"
+        as_user: "base.user_admin"
+        values:
+          partner_id: "REC: accountant.id"
+          category_id: "REC: cpa_category.id"
+          name: "CPA-ADCOA-0002"
+
+      - step: "Create account group"
+        action: "create"
+        model: "client_account_group"
+        save_as: "group"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Group - Adjusting CoA Negative"
+          code: "/"
+          sequence: 1
+          normal_balance: "dr"
+
+      - step: "Create type already used by the audit"
+        action: "create"
+        model: "client_account_type"
+        save_as: "type_used"
+        as_user: "base.user_admin"
+        values:
+          name: "Cash - Adjusting CoA Negative"
+          code: "/"
+          group_id: "REC: group.id"
+          sequence: 1
+          normal_balance: "dr"
+
+      - step: "Create type new to the audit but inside the type set"
+        action: "create"
+        model: "client_account_type"
+        save_as: "type_new"
+        as_user: "base.user_admin"
+        values:
+          name: "Deferred Tax - Adjusting CoA Negative"
+          code: "/"
+          group_id: "REC: group.id"
+          sequence: 2
+          normal_balance: "dr"
+
+      - step: "Create type outside the type set"
+        action: "create"
+        model: "client_account_type"
+        save_as: "type_outside"
+        as_user: "base.user_admin"
+        values:
+          name: "Outside - Adjusting CoA Negative"
+          code: "/"
+          group_id: "REC: group.id"
+          sequence: 3
+          normal_balance: "dr"
+
+      - step: "Create account type set with two types"
+        action: "create"
+        model: "client_account_type_set"
+        save_as: "account_type_set"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Account Type Set - Adjusting CoA Negative"
+          code: "/"
+          detail_ids: [[6, 0, ["REC: type_used.id", "REC: type_new.id"]]]
+
+      - step: "Create financial accounting standard"
+        action: "create"
+        model: "accountant.financial_accounting_standard"
+        save_as: "standard"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Financial Accounting Standard - Adjusting CoA Negative"
+          code: "/"
+
+      - step: "Create general audit"
+        action: "create"
+        model: "general_audit"
+        save_as: "audit"
+        as_user: "base.user_admin"
+        values:
+          title: "Test General Audit - Adjusting CoA Negative"
+          partner_id: "REC: client.id"
+          accountant_id: "REC: accountant.id"
+          account_type_set_id: "REC: account_type_set.id"
+          financial_accounting_standard_id: "REC: standard.id"
+          date_start: 2026-01-01
+          date_end: 2026-12-31
+          need_interim: false
+          need_previous: false
+          num_of_consecutive_audit_firm: 1
+          num_of_consecutive_audit_accountant: 1
+
+      - step: "Open general audit"
+        action: "call"
+        target: "audit"
+        method: "action_open"
+        as_user: "base.user_admin"
+
+      - step: "Create existing client account"
+        action: "create"
+        model: "client_account"
+        save_as: "account_old"
+        as_user: "base.user_admin"
+        values:
+          name: "Kas Existing - Adjusting CoA Negative"
+          code: "OLD-1"
+          partner_id: "REC: client.id"
+          type_id: "REC: type_used.id"
+
+      - step: "Create client account mapping"
+        action: "create"
+        model: "client_account_mapping"
+        save_as: "mapping"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+
+      - step: "Create mapping detail line"
+        action: "create"
+        model: "client_account_mapping.detail"
+        save_as: "mapping_detail"
+        as_user: "base.user_admin"
+        values:
+          mapping_id: "REC: mapping.id"
+          account_id: "REC: account_old.id"
+          type_id: "REC: type_used.id"
+
+      - step: "Load audit accounts"
+        action: "call"
+        target: "audit"
+        method: "action_reload_account"
+        as_user: "base.user_admin"
+
+      - step: "Load audit standard accounts"
+        action: "call"
+        target: "audit"
+        method: "action_reload_standard_account"
+        as_user: "base.user_admin"
+
+      - step: "Create adjusting CoA with a code that already exists"
+        action: "create"
+        model: "client_adjusting_coa"
+        save_as: "coa_dup"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          detail_ids:
+            - - 0
+              - 0
+              - code: "OLD-1"
+                name: "Duplicate Of Existing"
+                type_id: "REC: type_used.id"
+
+      - step: "Confirm must reject a code that already exists"
+        action: "call"
+        target: "coa_dup"
+        method: "action_confirm"
+        as_user: "base.user_admin"
+        expect_error:
+          type: "UserError"
+          message_contains: "already exists"
+
+      - step: "Create adjusting CoA with a code that differs only by spaces and case"
+        action: "create"
+        model: "client_adjusting_coa"
+        save_as: "coa_spaces"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          detail_ids:
+            - - 0
+              - 0
+              - code: " old-1 "
+                name: "Duplicate With Spaces"
+                type_id: "REC: type_used.id"
+
+      - step: "Confirm must reject a code that differs only by spaces and case"
+        action: "call"
+        target: "coa_spaces"
+        method: "action_confirm"
+        as_user: "base.user_admin"
+        expect_error:
+          type: "UserError"
+          message_contains: "already exists"
+
+      - step: "Create adjusting CoA with a type outside the type set"
+        action: "create"
+        model: "client_adjusting_coa"
+        save_as: "coa_out"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          detail_ids:
+            - - 0
+              - 0
+              - code: "OUT-1"
+                name: "Outside Type"
+                type_id: "REC: type_outside.id"
+
+      - step: "Confirm must reject a type outside the type set"
+        action: "call"
+        target: "coa_out"
+        method: "action_confirm"
+        as_user: "base.user_admin"
+        expect_error:
+          type: "UserError"
+          message_contains: "not in the account type set"
+
+      - step: "Create adjusting CoA with a repeated code"
+        action: "create"
+        model: "client_adjusting_coa"
+        save_as: "coa_rep"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          detail_ids:
+            - - 0
+              - 0
+              - code: "REP-1"
+                name: "Repeated One"
+                type_id: "REC: type_used.id"
+            - - 0
+              - 0
+              - code: "REP-1"
+                name: "Repeated Two"
+                type_id: "REC: type_used.id"
+
+      - step: "Confirm must reject a code used twice"
+        action: "call"
+        target: "coa_rep"
+        method: "action_confirm"
+        as_user: "base.user_admin"
+        expect_error:
+          type: "UserError"
+          message_contains: "used twice"
+
+      - step: "Create adjusting CoA without any line"
+        action: "create"
+        model: "client_adjusting_coa"
+        save_as: "coa_empty"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+
+      - step: "Confirm must reject a document without line"
+        action: "call"
+        target: "coa_empty"
+        method: "action_confirm"
+        as_user: "base.user_admin"
+        expect_error:
+          type: "UserError"
+          message_contains: "No line"

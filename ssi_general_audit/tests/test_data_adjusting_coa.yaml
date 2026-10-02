@@ -1,0 +1,301 @@
+options:
+  auto_refresh: true
+
+scenarios:
+  - name: "client_adjusting_coa - done adds accounts to the audit"
+    steps:
+      - step: "Get config parameter model"
+        action: "search"
+        model: "ir.config_parameter"
+        domain: []
+        save_as: "config_parameter"
+        limit: 1
+
+      - step: "Allow enough CPA licenses for this scenario"
+        action: "call"
+        target: "config_parameter"
+        method: "set_param"
+        args:
+          - "ssi_general_audit.max_number_of_cpa_license"
+          - "100"
+
+      - step: "Create client partner"
+        action: "create"
+        model: "res.partner"
+        save_as: "client"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Client - Adjusting CoA"
+          is_company: true
+
+      - step: "Create accountant partner"
+        action: "create"
+        model: "res.partner"
+        save_as: "accountant"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Accountant - Adjusting CoA"
+
+      - step: "Get CPA license id category"
+        action: "ref"
+        xml_id: "ssi_partner_identification_cpa_license.partner_identification_accountant_cpa_license"
+        save_as: "cpa_category"
+
+      - step: "Grant accountant a CPA license"
+        action: "create"
+        model: "res.partner.id_number"
+        save_as: "cpa_license"
+        as_user: "base.user_admin"
+        values:
+          partner_id: "REC: accountant.id"
+          category_id: "REC: cpa_category.id"
+          name: "CPA-ADCOA-0001"
+
+      - step: "Create account group"
+        action: "create"
+        model: "client_account_group"
+        save_as: "group"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Group - Adjusting CoA"
+          code: "/"
+          sequence: 1
+          normal_balance: "dr"
+
+      - step: "Create type already used by the audit"
+        action: "create"
+        model: "client_account_type"
+        save_as: "type_used"
+        as_user: "base.user_admin"
+        values:
+          name: "Cash - Adjusting CoA"
+          code: "/"
+          group_id: "REC: group.id"
+          sequence: 1
+          normal_balance: "dr"
+
+      - step: "Create type new to the audit but inside the type set"
+        action: "create"
+        model: "client_account_type"
+        save_as: "type_new"
+        as_user: "base.user_admin"
+        values:
+          name: "Deferred Tax - Adjusting CoA"
+          code: "/"
+          group_id: "REC: group.id"
+          sequence: 2
+          normal_balance: "dr"
+
+      - step: "Create type outside the type set"
+        action: "create"
+        model: "client_account_type"
+        save_as: "type_outside"
+        as_user: "base.user_admin"
+        values:
+          name: "Outside - Adjusting CoA"
+          code: "/"
+          group_id: "REC: group.id"
+          sequence: 3
+          normal_balance: "dr"
+
+      - step: "Create account type set with two types"
+        action: "create"
+        model: "client_account_type_set"
+        save_as: "account_type_set"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Account Type Set - Adjusting CoA"
+          code: "/"
+          detail_ids: [[6, 0, ["REC: type_used.id", "REC: type_new.id"]]]
+
+      - step: "Create financial accounting standard"
+        action: "create"
+        model: "accountant.financial_accounting_standard"
+        save_as: "standard"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Financial Accounting Standard - Adjusting CoA"
+          code: "/"
+
+      - step: "Create general audit"
+        action: "create"
+        model: "general_audit"
+        save_as: "audit"
+        as_user: "base.user_admin"
+        values:
+          title: "Test General Audit - Adjusting CoA"
+          partner_id: "REC: client.id"
+          accountant_id: "REC: accountant.id"
+          account_type_set_id: "REC: account_type_set.id"
+          financial_accounting_standard_id: "REC: standard.id"
+          date_start: 2026-01-01
+          date_end: 2026-12-31
+          need_interim: false
+          need_previous: false
+          num_of_consecutive_audit_firm: 1
+          num_of_consecutive_audit_accountant: 1
+
+      - step: "Open general audit"
+        action: "call"
+        target: "audit"
+        method: "action_open"
+        as_user: "base.user_admin"
+
+      - step: "Create existing client account"
+        action: "create"
+        model: "client_account"
+        save_as: "account_old"
+        as_user: "base.user_admin"
+        values:
+          name: "Kas Existing - Adjusting CoA"
+          code: "OLD-1"
+          partner_id: "REC: client.id"
+          type_id: "REC: type_used.id"
+
+      - step: "Create client account mapping"
+        action: "create"
+        model: "client_account_mapping"
+        save_as: "mapping"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+
+      - step: "Create mapping detail line"
+        action: "create"
+        model: "client_account_mapping.detail"
+        save_as: "mapping_detail"
+        as_user: "base.user_admin"
+        values:
+          mapping_id: "REC: mapping.id"
+          account_id: "REC: account_old.id"
+          type_id: "REC: type_used.id"
+
+      - step: "Load audit accounts"
+        action: "call"
+        target: "audit"
+        method: "action_reload_account"
+        as_user: "base.user_admin"
+
+      - step: "Load audit standard accounts"
+        action: "call"
+        target: "audit"
+        method: "action_reload_standard_account"
+        as_user: "base.user_admin"
+
+      - step: "Assert audit starts with one account and one standard type"
+        action: "assert"
+        target: "audit"
+        asserts:
+          detail_ids:
+            type: "o2m"
+            check: "count"
+            expected_count: 1
+          standard_detail_ids:
+            type: "o2m"
+            check: "count"
+            expected_count: 1
+
+      - step: "Create a second general audit of the same client"
+        action: "create"
+        model: "general_audit"
+        save_as: "audit_other"
+        as_user: "base.user_admin"
+        values:
+          title: "Test General Audit - Other Period"
+          partner_id: "REC: client.id"
+          accountant_id: "REC: accountant.id"
+          account_type_set_id: "REC: account_type_set.id"
+          financial_accounting_standard_id: "REC: standard.id"
+          date_start: 2025-01-01
+          date_end: 2025-12-31
+          need_interim: false
+          need_previous: false
+          num_of_consecutive_audit_firm: 1
+          num_of_consecutive_audit_accountant: 1
+
+      - step: "Open the second general audit"
+        action: "call"
+        target: "audit_other"
+        method: "action_open"
+        as_user: "base.user_admin"
+
+      - step: "Create adjusting CoA with a used type and a new type"
+        action: "create"
+        model: "client_adjusting_coa"
+        save_as: "coa"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          detail_ids:
+            - - 0
+              - 0
+              - code: "NEW-1"
+                name: "New Account Used Type"
+                type_id: "REC: type_used.id"
+            - - 0
+              - 0
+              - code: "NEW-2"
+                name: "New Account New Type"
+                type_id: "REC: type_new.id"
+
+      - step: "Confirm adjusting CoA"
+        action: "call"
+        target: "coa"
+        method: "action_confirm"
+        as_user: "base.user_admin"
+        asserts:
+          state:
+            type: "value"
+            expected: "confirm"
+
+      - step: "Approve adjusting CoA"
+        action: "call"
+        target: "coa"
+        method: "action_approve_approval"
+        as_user: "base.user_admin"
+        asserts:
+          state:
+            type: "value"
+            expected: "done"
+
+      - step: "Assert both accounts joined the audit detail"
+        action: "assert"
+        target: "audit"
+        asserts:
+          detail_ids:
+            type: "o2m"
+            check: "count"
+            expected_count: 3
+
+      - step: "Assert the new type got a standard detail"
+        action: "assert"
+        target: "audit"
+        asserts:
+          standard_detail_ids:
+            type: "o2m"
+            check: "count"
+            expected_count: 2
+
+      - step: "Assert the other audit of the same client was not touched"
+        action: "search"
+        model: "general_audit.detail"
+        domain:
+          - ["general_audit_id", "=", "REC: audit_other.id"]
+        save_as: "other_audit_details"
+        expect_count: 0
+
+      - step: "Find the account created for NEW-2"
+        action: "search"
+        model: "client_account"
+        domain: [["code", "=", "NEW-2"], ["partner_id", "=", "REC: client.id"]]
+        save_as: "account_new"
+        limit: 1
+
+      - step: "Assert the new account has its type and is on the audit"
+        action: "assert"
+        target: "account_new"
+        asserts:
+          type_id:
+            type: "m2o"
+            check: "equals"
+            expected: "REC: type_new"

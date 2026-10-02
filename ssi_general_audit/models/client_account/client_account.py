@@ -4,6 +4,7 @@
 
 from odoo import _, api, fields, models
 from odoo.exceptions import UserError
+from odoo.osv import expression
 
 
 class ClientAccount(models.Model):
@@ -86,3 +87,35 @@ class ClientAccount(models.Model):
             count_duplicate = self.search_count(criteria)
             if count_duplicate > 0:
                 raise UserError(error_msg)
+
+    @api.model
+    def _name_search(
+        self, name, args=None, operator="ilike", limit=100, name_get_uid=None
+    ):
+        """Search client accounts by code as well as by name.
+
+        Used by the autocomplete of every Many2one that points to
+        ``client_account``, so typing part of a code finds the account.
+        A negative operator or an empty text keeps the default search.
+
+        :param name: text typed by the user
+        :param args: extra domain restricting the result
+        :param operator: comparison operator applied to code and name
+        :param limit: maximum number of records
+        :param name_get_uid: user used to read the display names
+        :return: list of ids of the matching accounts
+        """
+        if not name or operator in expression.NEGATIVE_TERM_OPERATORS:
+            return super(ClientAccount, self)._name_search(
+                name,
+                args=args,
+                operator=operator,
+                limit=limit,
+                name_get_uid=name_get_uid,
+            )
+        domain = ["|", ("code", operator, name), ("name", operator, name)]
+        return self._search(
+            expression.AND([domain, args or []]),
+            limit=limit,
+            access_rights_uid=name_get_uid,
+        )

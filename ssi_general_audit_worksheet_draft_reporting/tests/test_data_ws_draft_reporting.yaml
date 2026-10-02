@@ -2875,3 +2875,121 @@ scenarios:
             type: "value"
             operator: "lt"
             expected: "REC: posture_comprehensive_profit_order.sequence"
+
+  - name:
+      "Posture ff42fdc - group of an account added later is loaded without losing lines"
+    steps:
+      - step: "Create client account type for T001"
+        action: "create"
+        model: "client_account_type"
+        save_as: "account_type_t001"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Account Type T001 - Added Later"
+          code: "/"
+          group_id: "REC: group_t001.id"
+          normal_balance: "dr"
+          python_code: "result = 0.0"
+
+      - step: "Create client account type for T002"
+        action: "create"
+        model: "client_account_type"
+        save_as: "account_type_t002"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Account Type T002 - Added Later"
+          code: "/"
+          group_id: "REC: group_t002.id"
+          normal_balance: "dr"
+          python_code: "result = 0.0"
+
+      - step: "Create client account for T001"
+        action: "create"
+        model: "client_account"
+        save_as: "account_t001"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Client Account T001 - Added Later"
+          code: "ACC-T001-LATER"
+          partner_id: "REC: client.id"
+          type_id: "REC: account_type_t001.id"
+
+      - step: "Create client account for T002, new to the audit"
+        action: "create"
+        model: "client_account"
+        save_as: "account_t002"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Client Account T002 - Added Later"
+          code: "ACC-T002-LATER"
+          partner_id: "REC: client.id"
+          type_id: "REC: account_type_t002.id"
+
+      - step: "Create client account mapping for the audit"
+        action: "create"
+        model: "client_account_mapping"
+        save_as: "mapping"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+
+      - step: "Map the T001 account only"
+        action: "create"
+        model: "client_account_mapping.detail"
+        save_as: "mapping_detail_t001"
+        as_user: "base.user_admin"
+        values:
+          mapping_id: "REC: mapping.id"
+          account_id: "REC: account_t001.id"
+          type_id: "REC: account_type_t001.id"
+
+      - step: "Reload general audit accounts from the mapping"
+        action: "call"
+        target: "audit"
+        method: "action_reload_account"
+        as_user: "base.user_admin"
+
+      - step: "Create worksheet ff42fdc"
+        action: "create"
+        model: "general_audit_ws_ff42fdc"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_ff42fdc.id"
+
+      - step: "Open worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_open"
+        as_user: "base.user_admin"
+
+      - step: "Load posture"
+        action: "call"
+        target: "worksheet"
+        method: "action_load_posture"
+        as_user: "base.user_admin"
+
+      - step: "Assert one group line and nine total lines before the account is added"
+        action: "search"
+        model: "general_audit_ws_ff42fdc.posture"
+        domain:
+          - ["worksheet_id", "=", "REC: worksheet.id"]
+        save_as: "postures_before"
+        expect_count: 10
+
+      - step: "Add the T002 account to the audit"
+        action: "call"
+        target: "audit"
+        method: "_add_account"
+        as_user: "base.user_admin"
+        args:
+          - "REC: account_t002"
+
+      - step: "Assert a posture line was added for the new group and the others kept"
+        action: "search"
+        model: "general_audit_ws_ff42fdc.posture"
+        domain:
+          - ["worksheet_id", "=", "REC: worksheet.id"]
+        save_as: "postures_after"
+        expect_count: 11

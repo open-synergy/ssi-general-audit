@@ -7,4 +7,6 @@ from . import (
     client_business_process,
     client_adjustment_entry,
     client_adjustment_entry_detail,
+    client_adjusting_coa,
+    client_adjusting_coa_detail,
 )
