@@ -294,6 +294,110 @@ odoo.define(
             ]
         );
 
+        // IK: docs/general_audit_ws_fc75636/03-fill-final-audit-opinion.md
+        tour.register(
+            "ssi_general_audit_worksheet_review_fc75636_fill_final_audit_opinion",
+            {
+                test: true,
+                url: "/web",
+            },
+            [
+                // Flow 1 - Open the Windup & Reporting > Final Report >
+                // Proposed Audit Opinion menu.
+                tour.stepUtils.showAppsMenuItem(),
+                {
+                    content: "Open the Windup & Reporting app",
+                    trigger:
+                        '.o_app[data-menu-xmlid="ssi_general_audit.menu_wind_up_reporting_root"]',
+                },
+                {
+                    content: "Open the Final Report menu",
+                    trigger:
+                        ".o_menu_sections " +
+                        '[data-menu-xmlid="ssi_general_audit.menu_general_audit_final_report"]',
+                },
+                {
+                    content: "Open the Proposed Audit Opinion menu",
+                    trigger:
+                        ".o_menu_sections " +
+                        "[data-menu-xmlid='ssi_general_audit_worksheet_review" +
+                        ".general_audit_ws_fc75636_menu']",
+                },
+                {
+                    content: "Proposed Audit Opinion list is displayed",
+                    trigger:
+                        ".o_control_panel .breadcrumb-item.active" +
+                        ":contains(Proposed Audit Opinion)",
+                    extra_trigger: ".o_list_view",
+                    run: function () {
+                        // Assertion only; do not trigger the default click action.
+                    },
+                },
+
+                // Flow 2 - Open the worksheet to fill the final opinion for
+                {
+                    content: "Open the worksheet",
+                    trigger: ".o_list_view .o_data_row:first .o_data_cell:first",
+                    extra_trigger: ".o_list_view",
+                },
+                {
+                    content: "Worksheet form is open",
+                    trigger: ".o_form_view",
+                    run: function () {
+                        // Assertion only; do not trigger the default click action.
+                    },
+                },
+
+                // Flow 3 - Click the Edit button (14.0: an opened existing
+                // record is readonly until Edit is clicked).
+                {
+                    content: "Click the Edit button",
+                    trigger: ".o_form_button_edit",
+                },
+                {
+                    content: "Form is now editable",
+                    trigger: ".o_form_view.o_form_editable",
+                    run: function () {
+                        // Assertion only; do not trigger the default click action.
+                    },
+                },
+
+                // Flow 4 - Fill in Final Audit Opinion and Final Opinion Date
+                {
+                    content: "Fill in the Final Audit Opinion field",
+                    trigger: ".o_field_many2one[name='final_audit_opinion_id'] input",
+                    run: "text Unqualified Opinion - FC75636 Tour",
+                },
+                {
+                    content: "Pick the opinion from the dropdown",
+                    trigger:
+                        ".ui-autocomplete .ui-menu-item a" +
+                        ":contains(Unqualified Opinion - FC75636 Tour)",
+                    in_modal: false,
+                },
+                {
+                    content: "Fill in the Final Opinion Date field",
+                    trigger: ".o_field_widget[name='final_opinion_date'] input",
+                    run: "text 03/31/2026",
+                },
+
+                // Flow 5 - Click Save
+                {
+                    content: "Save the record",
+                    trigger: ".o_form_button_save",
+                },
+
+                // Post-Condition - the record is saved
+                {
+                    content: "Worksheet is saved",
+                    trigger: ".o_form_view.o_form_readonly",
+                    run: function () {
+                        // Assertion only; do not trigger the default click action.
+                    },
+                },
+            ]
+        );
+
         // IK (ssi_general_audit_worksheet_final_report module):
         // docs/general_audit_ws_b66777d/01-fill-final-opinion.md
         //

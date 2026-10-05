@@ -79,3 +79,63 @@ class GeneralAuditWSb66777d(models.Model):
             "the fc75636 record is created after this worksheet."
         ),
     )
+
+    audit_opinion_id = fields.Many2one(
+        string="Audit Opinion",
+        comodel_name="accountant.opinion",
+        related="draft_opinion_id.final_audit_opinion_id",
+        readonly=True,
+        help=(
+            "Audit opinion taken from the Final Audit Opinion of the "
+            "Proposed Audit Opinion (fc75636) worksheet of this same "
+            "engagement. Read-only."
+        ),
+    )
+    audit_opinion_date = fields.Date(
+        string="Opinion Date",
+        related="draft_opinion_id.final_opinion_date",
+        readonly=True,
+        help=(
+            "Date of the audit opinion taken from the Final Opinion "
+            "Date of the Proposed Audit Opinion (fc75636) worksheet of "
+            "this same engagement. Read-only."
+        ),
+    )
+
+    @api.model_create_multi
+    def create(self, vals_list):
+        """Create worksheets and push their opinion to the audit.
+
+        :param list vals_list: values of the worksheets to create
+        :return: the created worksheets
+        :rtype: recordset
+        """
+        records = super().create(vals_list)
+        records.mapped("general_audit_id")._sync_opinion_from_audit_report()
+        return records
+
+    def write(self, vals):
+        """Write worksheets and push the opinion to the audit.
+
+        The push only runs when ``state`` or ``general_audit_id`` is
+        written.
+
+        :param dict vals: values to write
+        :return: the result of the parent ``write``
+        :rtype: bool
+        """
+        result = super().write(vals)
+        if {"state", "general_audit_id"} & set(vals):
+            self.mapped("general_audit_id")._sync_opinion_from_audit_report()
+        return result
+
+    def unlink(self):
+        """Delete worksheets and refresh the opinion of their audits.
+
+        :return: the result of the parent ``unlink``
+        :rtype: bool
+        """
+        audits = self.mapped("general_audit_id")
+        result = super().unlink()
+        audits._sync_opinion_from_audit_report()
+        return result

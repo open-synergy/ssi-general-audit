@@ -28,4 +28,26 @@
             </data>
         </field>
     </record>
+
+    <!-- Adds the audit_opinion_id / audit_opinion_date fields (defined
+         in models/b66777d/general_audit_ws_b66777d.py of THIS module)
+         right above the Conclusion group. Both are read-only. -->
+    <record id="general_audit_ws_b66777d_view_form_audit_opinion" model="ir.ui.view">
+        <field name="name">general_audit_ws_b66777d form - audit_opinion</field>
+        <field name="model">general_audit_ws_b66777d</field>
+        <field
+            name="inherit_id"
+            ref="ssi_general_audit_worksheet_final_report.general_audit_ws_b66777d_view_form"
+        />
+        <field name="arch" type="xml">
+            <data>
+                <xpath expr="//group[@name='conclusion']" position="before">
+                    <group name="audit_opinion" colspan="4" col="2">
+                        <field name="audit_opinion_id" readonly="1" />
+                        <field name="audit_opinion_date" readonly="1" />
+                    </group>
+                </xpath>
+            </data>
+        </field>
+    </record>
 </odoo>
