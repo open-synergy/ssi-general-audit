@@ -41,5 +41,7 @@
   duplicated), with its computed amounts refreshed. Total rows are never removed.
 - The **Audit Opinion** tab and its fields are unaffected. That tab shows three sections
   — Opinion on Financial Statement, Opinion on Compliance with Laws and Regulations, and
-  Opinion on Compliance with Internal Control — each with an opinion and a date; the two
-  Compliance sections are local to this worksheet and are not changed by Reload.
+  Opinion on Compliance with Internal Control — each with an opinion and a date; the
+  Opinion on Financial Statement is read-only and shows the opinion and date of the
+  General Audit, and the two Compliance sections are local to this worksheet. None of
+  them is changed by Reload.

@@ -1183,7 +1183,7 @@ scenarios:
             expected: "done"
 
   # ------------------------------------------------------------------
-  # general_audit_ws_ff42fdc - Opinion propagation + workflow to done
+  # general_audit_ws_ff42fdc - Opinion mirror + workflow to done
   # ------------------------------------------------------------------
   - name: "Worksheet ff42fdc - Opinion propagation and workflow to done"
     steps:
@@ -1234,17 +1234,22 @@ scenarios:
             type: "value"
             expected: "open"
 
-      - step: "Write opinion and opinion date on worksheet"
+      # The Opinion on Financial Statement fields are read-only mirrors
+      # of general_audit.opinion_id / .opinion_date: the General Audit
+      # fills them from the Independent Auditor Report, and this
+      # worksheet only shows them.
+      - step: "Write opinion and opinion date on the general audit"
         action: "write"
-        target: "worksheet"
+        target: "audit"
         as_user: "base.user_admin"
         values:
-          financial_statement_opinion_id: "REC: opinion.id"
-          financial_statement_opinion_date: 2026-03-31
+          opinion_id: "REC: opinion.id"
+          opinion_date: 2026-03-31
 
-      - step: "Assert opinion fields saved on worksheet"
+      - step: "Assert the worksheet shows the general audit opinion"
         action: "assert"
         target: "worksheet"
+        refresh: true
         asserts:
           financial_statement_opinion_id:
             type: "m2o"
@@ -1253,13 +1258,26 @@ scenarios:
             type: "value"
             expected: 2026-03-31
 
-      # The worksheet fields are related to general_audit.opinion_id /
-      # .opinion_date, whose targets are readonly=True at the Python field
-      # level, so Odoo never generates the automatic related inverse (see
-      # odoo/fields.py Field._setup_related_full). The worksheet therefore
-      # declares explicit inverse methods; these asserts guard that the
-      # write-through documented on the model really happens.
-      - step: "Assert opinion propagated to the general audit"
+      # Negative - the worksheet no longer writes back to the General
+      # Audit, so a value written on the worksheet must NOT reach
+      # general_audit.opinion_id / .opinion_date.
+      - step: "Create another opinion for the negative check"
+        action: "create"
+        model: "accountant.opinion"
+        save_as: "opinion_other"
+        as_user: "base.user_admin"
+        values:
+          name: "Other Opinion - Read-only Check"
+          code: "/"
+
+      - step: "Write another opinion directly on the worksheet"
+        action: "write"
+        target: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          financial_statement_opinion_id: "REC: opinion_other.id"
+
+      - step: "Assert the general audit opinion is not changed"
         action: "assert"
         target: "audit"
         refresh: true
@@ -1273,7 +1291,7 @@ scenarios:
 
       # Positive (Opini) - compliance_law_opinion_id / .._date and
       # compliance_internal_control_opinion_id / .._date are LOCAL to
-      # the worksheet (unlike financial_statement_opinion_id above),
+      # the worksheet (unlike the General Audit opinion mirrored above),
       # so writing them must NOT touch general_audit.opinion_id /
       # .opinion_date at all.
       - step: "Create compliance-with-laws opinion"

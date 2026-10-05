@@ -10,13 +10,13 @@ class GeneralAuditWSff42fdc(models.Model):
 
     Records and formalises the final audit opinion for the engagement:
     * ``financial_statement_opinion_id`` — the type of opinion issued
-      (e.g., Unmodified, Qualified, Adverse, Disclaimer), linked to and
-      stored back on the General Audit record.
+      (e.g., Unmodified, Qualified, Adverse, Disclaimer), read-only and
+      taken from the General Audit record.
     * ``financial_statement_opinion_date`` — the date of the opinion,
-      also synchronised with the General Audit record.
+      also read-only and taken from the General Audit record.
 
     It also records two further opinions, local to this worksheet only
-    (not written back to the General Audit):
+    (not linked to the General Audit):
     * ``compliance_law_opinion_id`` / ``compliance_law_opinion_date`` --
       opinion on compliance with laws and regulations.
     * ``compliance_internal_control_opinion_id`` /
@@ -89,25 +89,19 @@ class GeneralAuditWSff42fdc(models.Model):
         string="Opinion on Financial Statement",
         related="general_audit_id.opinion_id",
         store=True,
-        readonly=False,
-        inverse="_inverse_financial_statement_opinion_id",
-        states={
-            "open": [("readonly", False)],
-        },
-        help="Audit opinion issued for the engagement. Writing this "
-        "field also updates ``opinion_id`` on the General Audit.",
+        readonly=True,
+        help="Audit opinion issued for the engagement. Taken from the "
+        "General Audit, which fills it from the Independent Auditor "
+        "Report; read-only here.",
     )
     financial_statement_opinion_date = fields.Date(
         string="Date of Opinion on Financial Statement",
         related="general_audit_id.opinion_date",
         store=True,
-        readonly=False,
-        inverse="_inverse_financial_statement_opinion_date",
-        states={
-            "open": [("readonly", False)],
-        },
-        help="Date of the audit opinion. Writing this field also "
-        "updates ``opinion_date`` on the General Audit.",
+        readonly=True,
+        help="Date of the audit opinion. Taken from the General Audit, "
+        "which fills it from the Independent Auditor Report; read-only "
+        "here.",
     )
     compliance_law_opinion_id = fields.Many2one(
         comodel_name="accountant.opinion",
@@ -333,45 +327,6 @@ class GeneralAuditWSff42fdc(models.Model):
                 posture.sequence = order_index[key] * 10
             else:
                 posture.sequence = unmatched_sequence[posture.id]
-
-    def _inverse_financial_statement_opinion_id(self):
-        """Write ``financial_statement_opinion_id`` back to the audit.
-
-        Odoo attaches the automatic related-field inverse only when
-        neither the related field nor its target is ``readonly`` at the
-        Python level (``Field._setup_related_full``). The target here,
-        ``general_audit.opinion_id``, is declared ``readonly=True`` and
-        is unlocked for the form through ``states`` only (``states``
-        drives the view, not ``Field.readonly``), so no inverse is ever
-        generated and the value would be kept on the worksheet alone.
-        This explicit inverse restores the write-through documented on
-        the model.
-
-        Side effect: writes ``opinion_id`` on the linked
-        ``general_audit`` record. The write is done with ``sudo()``
-        because worksheet users are not required to hold write access
-        on ``general_audit`` itself.
-        """
-        for record in self.sudo():
-            if record.general_audit_id:
-                opinion = record.financial_statement_opinion_id
-                record.general_audit_id.write({"opinion_id": opinion.id})
-
-    def _inverse_financial_statement_opinion_date(self):
-        """Write ``financial_statement_opinion_date`` back to the audit.
-
-        Counterpart of ``_inverse_financial_statement_opinion_id`` for
-        ``general_audit.opinion_date``, which is readonly at the Python
-        level for the same reason and therefore also needs an explicit
-        inverse.
-
-        Side effect: writes ``opinion_date`` on the linked
-        ``general_audit`` record, with ``sudo()`` for the same reason.
-        """
-        for record in self.sudo():
-            if record.general_audit_id:
-                opinion_date = record.financial_statement_opinion_date
-                record.general_audit_id.write({"opinion_date": opinion_date})
 
     def _add_accounts_to_worksheet(self, accounts):
         """Load the account groups of accounts added to the audit.
