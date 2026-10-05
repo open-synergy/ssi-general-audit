@@ -74,11 +74,12 @@
         "data/sequence_template/general_audit_ws_fc75636.xml",
         "data/policy_template/general_audit_ws_fc75636.xml",
         "data/approval_template/general_audit_ws_fc75636.xml",
+        "menu.xml",
         "views/ga_fc75636/general_audit_ws_fc75636_views.xml",
         "views/ga_fc75636/general_audit_ws_fc75636_item_views.xml",
         "views/ga_fc75636/general_audit_ws_fc75636_category_views.xml",
         "security/ir.model.access.csv",
-        # b66777d - draft_opinion_id extension (Independen Auditor Report,
+        # b66777d - draft_opinion_id extension (Independent Auditor Report,
         # owned by ssi_general_audit_worksheet_final_report)
         "views/general_audit_ws_b66777d_views.xml",
         # a8c54f3 - link_42_id..link_47_id extension (Audit Final
