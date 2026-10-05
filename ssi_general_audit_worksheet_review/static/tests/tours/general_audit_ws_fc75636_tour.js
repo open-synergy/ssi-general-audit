@@ -313,7 +313,7 @@ odoo.define(
             },
             [
                 // Flow 1 - Open the Windup & Reporting > Final Report >
-                // Independen Auditor Report menu.
+                // Independent Auditor Report menu.
                 tour.stepUtils.showAppsMenuItem(),
                 {
                     content: "Open the Windup & Reporting app",
@@ -327,17 +327,17 @@ odoo.define(
                         '[data-menu-xmlid="ssi_general_audit.menu_general_audit_final_report"]',
                 },
                 {
-                    content: "Open the Independen Auditor Report menu",
+                    content: "Open the Independent Auditor Report menu",
                     trigger:
                         ".o_menu_sections " +
                         "[data-menu-xmlid='ssi_general_audit_worksheet_final_report" +
                         ".general_audit_ws_b66777d_menu']",
                 },
                 {
-                    content: "Independen Auditor Report list is displayed",
+                    content: "Independent Auditor Report list is displayed",
                     trigger:
                         ".o_control_panel .breadcrumb-item.active" +
-                        ":contains(Independen Auditor Report)",
+                        ":contains(Independent Auditor Report)",
                     extra_trigger: ".o_list_view",
                     run: function () {
                         // Assertion only; do not trigger the default click action.

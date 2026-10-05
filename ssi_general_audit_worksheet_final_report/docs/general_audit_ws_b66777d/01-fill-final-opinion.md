@@ -1,19 +1,20 @@
-# Fill Final Audit Opinion — Independen Auditor Report (b66777d)
+# Fill Final Audit Opinion — Independent Auditor Report (b66777d)
 
 > **Module:** `ssi_general_audit_worksheet_final_report`
 >
 > **Model:** `general_audit_ws_b66777d`
 >
-> **Menu:** Windup & Reporting > Final Report > Independen Auditor Report
+> **Menu:** Windup & Reporting > Final Report > Independent Auditor Report
 >
-> **Actor:** user in group _Independen Auditor Report (b66777d) — User_
+> **Actor:** user in group _Independent Auditor Report (b66777d) — User_
 >
 > **State:** open
 
 ## Pre-Condition
 
 - **Record:** Status is **On Progress**.
-- **Access:** User is in group _Independen Auditor Report (b66777d) — User_ (or higher).
+- **Access:** User is in group _Independent Auditor Report (b66777d) — User_ (or
+  higher).
 - **Data:** For the **Populate** button to fill in a value, the same engagement (General
   Audit) must already have a **Proposed Audit Opinion** worksheet (`fc75636`, module
   `ssi_general_audit_worksheet_review`) that is Open or Done, with its **Draft Audit
@@ -22,7 +23,7 @@
 
 ## Flow
 
-1. Open the **Windup & Reporting > Final Report > Independen Auditor Report** menu.
+1. Open the **Windup & Reporting > Final Report > Independent Auditor Report** menu.
 2. Open the worksheet to fill the final audit opinion for.
 3. Open the **Final Audit Opinion** tab (placed right after the **Details** tab). At the
    top, the read-only **Draft Audit Opinion** field shows the same engagement's Proposed

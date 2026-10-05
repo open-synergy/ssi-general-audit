@@ -55,7 +55,7 @@ class GeneralAuditWSb66777d(models.Model):
     """
 
     _name = "general_audit_ws_b66777d"
-    _description = "Independen Auditor Report (b66777d)"
+    _description = "Independent Auditor Report (b66777d)"
     _inherit = [
         "general_audit_worksheet_mixin",
     ]

@@ -1,19 +1,20 @@
-# View Final Team Allocations — Independen Auditor Report (b66777d)
+# View Final Team Allocations — Independent Auditor Report (b66777d)
 
 > **Module:** `ssi_general_audit_worksheet_final_report`
 >
 > **Model:** `general_audit_ws_b66777d`
 >
-> **Menu:** Windup & Reporting > Final Report > Independen Auditor Report
+> **Menu:** Windup & Reporting > Final Report > Independent Auditor Report
 >
-> **Actor:** user in group _Independen Auditor Report (b66777d) — User_
+> **Actor:** user in group _Independent Auditor Report (b66777d) — User_
 >
 > **State:** open
 
 ## Pre-Condition
 
 - **Record:** Status is **On Progress**.
-- **Access:** User is in group _Independen Auditor Report (b66777d) — User_ (or higher).
+- **Access:** User is in group _Independent Auditor Report (b66777d) — User_ (or
+  higher).
 - **Data:** For the **Populate** button to fill in rows, at least one worksheet of the
   same engagement (General Audit) must have its **Preparation Time** and/or **Review
   Time** filled in, its Responsible/Reviewer user must be linked to an Employee, and
@@ -24,7 +25,7 @@
 
 ## Flow
 
-1. Open the **Windup & Reporting > Final Report > Independen Auditor Report** menu.
+1. Open the **Windup & Reporting > Final Report > Independent Auditor Report** menu.
 2. Open the worksheet to view the final team allocations for.
 3. Open the **Final Team Allocations** tab (placed right after the **Final Audit
    Opinion** tab).
