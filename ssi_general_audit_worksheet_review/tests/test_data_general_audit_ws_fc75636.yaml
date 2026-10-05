@@ -805,3 +805,247 @@ scenarios:
           parent_id.name:
             type: "value"
             expected: "Final Report"
+
+  # ------------------------------------------------------------------
+  # final_audit_opinion_id / final_opinion_date (fc75636) - positive:
+  # saved on the worksheet, mirrored read-only on the Independent
+  # Auditor Report (b66777d) of the engagement, and copied to the
+  # General Audit once that report is open. A later change of the
+  # opinion follows through.
+  # ------------------------------------------------------------------
+  - name: "Final audit opinion fc75636 - mirrored to b66777d and General Audit"
+    options: {auto_refresh: true}
+    steps:
+      - step: "Get worksheet type b66777d"
+        action: "ref"
+        xml_id: "ssi_general_audit_worksheet_final_report.worksheet_type_b66777d"
+        save_as: "ws_type_b66777d"
+
+      - step: "Create a second accountant opinion"
+        action: "create"
+        model: "accountant.opinion"
+        save_as: "opinion_2"
+        as_user: "base.user_admin"
+        values:
+          name: "Qualified Opinion - fc75636"
+          code: "/"
+
+      - step: "Create worksheet fc75636"
+        action: "create"
+        model: "general_audit_ws_fc75636"
+        save_as: "final_source"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_fc75636.id"
+
+      - step: "Open worksheet fc75636"
+        action: "call"
+        target: "final_source"
+        method: "action_open"
+        as_user: "base.user_admin"
+
+      - step: "Write the final audit opinion and its date"
+        action: "write"
+        target: "final_source"
+        as_user: "base.user_admin"
+        values:
+          final_audit_opinion_id: "REC: opinion.id"
+          final_opinion_date: 2026-03-31
+
+      - step: "Assert both fields are saved on fc75636"
+        action: "assert"
+        target: "final_source"
+        asserts:
+          final_audit_opinion_id:
+            type: "m2o"
+            expected: "REC: opinion"
+          final_opinion_date:
+            type: "value"
+            expected: 2026-03-31
+
+      - step: "Create worksheet b66777d for the same engagement"
+        action: "create"
+        model: "general_audit_ws_b66777d"
+        save_as: "final_report"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_b66777d.id"
+
+      - step: "Assert b66777d mirrors the opinion and its date"
+        action: "assert"
+        target: "final_report"
+        asserts:
+          audit_opinion_id:
+            type: "m2o"
+            expected: "REC: opinion"
+          audit_opinion_date:
+            type: "value"
+            expected: 2026-03-31
+
+      - step: "Open worksheet b66777d"
+        action: "call"
+        target: "final_report"
+        method: "action_open"
+        as_user: "base.user_admin"
+
+      - step: "Assert the General Audit received the opinion and date"
+        action: "assert"
+        target: "audit"
+        asserts:
+          opinion_id:
+            type: "m2o"
+            expected: "REC: opinion"
+          opinion_date:
+            type: "value"
+            expected: 2026-03-31
+
+      - step: "Change the final audit opinion on fc75636"
+        action: "write"
+        target: "final_source"
+        as_user: "base.user_admin"
+        values:
+          final_audit_opinion_id: "REC: opinion_2.id"
+
+      - step: "Assert the General Audit follows the new opinion"
+        action: "assert"
+        target: "audit"
+        asserts:
+          opinion_id:
+            type: "m2o"
+            expected: "REC: opinion_2"
+
+  # ------------------------------------------------------------------
+  # General Audit opinion - empty until the Independent Auditor Report
+  # has one: an opinion left on the audit (for example typed in before
+  # this automation) is emptied as soon as the engagement has no open
+  # or done report that backs it, and is filled again once it has.
+  # ------------------------------------------------------------------
+  - name: "General Audit opinion - empty until the report has an opinion"
+    options: {auto_refresh: true}
+    steps:
+      - step: "Get worksheet type b66777d"
+        action: "ref"
+        xml_id: "ssi_general_audit_worksheet_final_report.worksheet_type_b66777d"
+        save_as: "ws_type_b66777d"
+
+      - step: "Create an opinion left over on the audit"
+        action: "create"
+        model: "accountant.opinion"
+        save_as: "manual_opinion"
+        as_user: "base.user_admin"
+        values:
+          name: "Manual Opinion - fc75636"
+          code: "/"
+
+      - step: "Create a separate general audit"
+        action: "create"
+        model: "general_audit"
+        save_as: "audit_manual"
+        as_user: "base.user_admin"
+        values:
+          title: "Test General Audit - fc75636 manual opinion"
+          partner_id: "REC: client.id"
+          accountant_id: "REC: accountant.id"
+          account_type_set_id: "REC: account_type_set.id"
+          financial_accounting_standard_id: "REC: fas.id"
+          date_start: 2026-01-01
+          date_end: 2026-12-31
+          need_interim: false
+          need_previous: false
+          num_of_consecutive_audit_firm: 1
+          num_of_consecutive_audit_accountant: 1
+
+      - step: "Open the separate general audit"
+        action: "call"
+        target: "audit_manual"
+        method: "action_open"
+        as_user: "base.user_admin"
+
+      - step: "Leave an opinion and its date on the general audit"
+        action: "write"
+        target: "audit_manual"
+        as_user: "base.user_admin"
+        values:
+          opinion_id: "REC: manual_opinion.id"
+          opinion_date: 2026-02-15
+
+      - step: "Create worksheet fc75636 with a final opinion"
+        action: "create"
+        model: "general_audit_ws_fc75636"
+        save_as: "manual_source"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit_manual.id"
+          type_id: "REC: ws_type_fc75636.id"
+
+      - step: "Open worksheet fc75636"
+        action: "call"
+        target: "manual_source"
+        method: "action_open"
+        as_user: "base.user_admin"
+
+      - step: "Write the final opinion and its date on fc75636"
+        action: "write"
+        target: "manual_source"
+        as_user: "base.user_admin"
+        values:
+          final_audit_opinion_id: "REC: opinion.id"
+          final_opinion_date: 2026-03-31
+
+      - step: "Assert the opinion is empty with no b66777d yet"
+        action: "assert"
+        target: "audit_manual"
+        asserts:
+          opinion_id:
+            type: "value"
+            operator: "is_falsy"
+          opinion_date:
+            type: "value"
+            operator: "is_falsy"
+
+      - step: "Create worksheet b66777d"
+        action: "create"
+        model: "general_audit_ws_b66777d"
+        save_as: "manual_report"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit_manual.id"
+          type_id: "REC: ws_type_b66777d.id"
+
+      - step: "Open worksheet b66777d"
+        action: "call"
+        target: "manual_report"
+        method: "action_open"
+        as_user: "base.user_admin"
+
+      - step: "Assert the opinion now comes from b66777d"
+        action: "assert"
+        target: "audit_manual"
+        asserts:
+          opinion_id:
+            type: "m2o"
+            expected: "REC: opinion"
+          opinion_date:
+            type: "value"
+            expected: 2026-03-31
+
+      - step: "Empty the final opinion on fc75636"
+        action: "write"
+        target: "manual_source"
+        as_user: "base.user_admin"
+        values:
+          final_audit_opinion_id: false
+          final_opinion_date: false
+
+      - step: "Assert the opinion is emptied again"
+        action: "assert"
+        target: "audit_manual"
+        asserts:
+          opinion_id:
+            type: "value"
+            operator: "is_falsy"
+          opinion_date:
+            type: "value"
+            operator: "is_falsy"

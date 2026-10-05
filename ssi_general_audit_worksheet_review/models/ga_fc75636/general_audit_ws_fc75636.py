@@ -153,6 +153,34 @@ class GeneralAuditWSfc75636(models.Model):
         help="Checklist lines for this worksheet.",
     )
 
+    # Final Audit Opinion
+    final_audit_opinion_id = fields.Many2one(
+        string="Final Audit Opinion",
+        comodel_name="accountant.opinion",
+        readonly=True,
+        states={
+            "open": [("readonly", False)],
+        },
+        help=(
+            "Audit opinion the auditor settles on for the engagement, "
+            "chosen from the same opinions as the Audit Final "
+            "Memorandum. Shown read-only on the Independent Auditor "
+            "Report and copied to the General Audit opinion."
+        ),
+    )
+    final_opinion_date = fields.Date(
+        string="Final Opinion Date",
+        readonly=True,
+        states={
+            "open": [("readonly", False)],
+        },
+        help=(
+            "Date of the final audit opinion. Shown read-only on the "
+            "Independent Auditor Report and copied to the General "
+            "Audit opinion date."
+        ),
+    )
+
     # Draft Audit Opinion
     draft_opinion = fields.Html(
         string="Opinion",
@@ -335,3 +363,49 @@ class GeneralAuditWSfc75636(models.Model):
         """
         self.ensure_one()
         self._compute_audit_final_memorandum_id()
+
+    @api.model_create_multi
+    def create(self, vals_list):
+        """Create worksheets and push their final opinion to the audit.
+
+        :param list vals_list: values of the worksheets to create
+        :return: the created worksheets
+        :rtype: recordset
+        """
+        records = super().create(vals_list)
+        records._sync_final_opinion_to_audit()
+        return records
+
+    def write(self, vals):
+        """Write worksheets and push a changed final opinion to the audit.
+
+        The push only runs when ``final_audit_opinion_id``,
+        ``final_opinion_date`` or ``state`` is written.
+
+        :param dict vals: values to write
+        :return: the result of the parent ``write``
+        :rtype: bool
+        """
+        result = super().write(vals)
+        if {"final_audit_opinion_id", "final_opinion_date", "state"} & set(vals):
+            self._sync_final_opinion_to_audit()
+        return result
+
+    def unlink(self):
+        """Delete worksheets and refresh the opinion of their audits.
+
+        :return: the result of the parent ``unlink``
+        :rtype: bool
+        """
+        audits = self.mapped("general_audit_id")
+        result = super().unlink()
+        audits._sync_opinion_from_audit_report()
+        return result
+
+    def _sync_final_opinion_to_audit(self):
+        """Refresh the opinion of the General Audit of each worksheet.
+
+        :return: None; calls ``_sync_opinion_from_audit_report`` on the
+            General Audit of every record in ``self``.
+        """
+        self.mapped("general_audit_id")._sync_opinion_from_audit_report()

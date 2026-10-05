@@ -41,6 +41,12 @@
         />
         <field name="arch" type="xml">
             <data>
+                <xpath expr="//group[@name='conclusion']" position="before">
+                    <group name="final_opinion" colspan="4" col="2">
+                        <field name="final_audit_opinion_id" />
+                        <field name="final_opinion_date" />
+                    </group>
+                </xpath>
                 <xpath expr="//page[@name='note']" position="before">
                     <page name="checklist" string="Checklist">
                         <button

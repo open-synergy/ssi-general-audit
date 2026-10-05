@@ -192,6 +192,22 @@ class TestUiGeneralAuditWsFc75636(HttpSavepointCase):
             login="admin",
         )
 
+    def test_fill_final_audit_opinion(self):
+        """Run the Fill Final Audit Opinion tour.
+
+        The opinion the tour picks from the dropdown is created in
+        ``setUpClass`` (``Unqualified Opinion - FC75636 Tour``). The
+        tour checks the form only; the values themselves are asserted
+        by the YAML scenarios.
+
+        IK: docs/general_audit_ws_fc75636/03-fill-final-audit-opinion.md
+        """
+        self.start_tour(
+            "/web",
+            "ssi_general_audit_worksheet_review_fc75636_fill_final_audit_opinion",
+            login="admin",
+        )
+
     def test_fill_final_opinion(self):
         """Run the b66777d Fill Final Audit Opinion tour.
 
