@@ -754,3 +754,54 @@ scenarios:
           other_matter:
             type: "value"
             operator: "is_falsy"
+
+  # ------------------------------------------------------------------
+  # fc75636 configuration menus - moved under Final Report > Proposed
+  # Audit Opinion and renamed (the menu XML ids stay unchanged).
+  # ------------------------------------------------------------------
+  - name: "Configuration menus fc75636 - under Final Report > Proposed Audit Opinion"
+    steps:
+      - step: "Get the Category menu"
+        action: "ref"
+        xml_id: "ssi_general_audit_worksheet_review.general_audit_ws_fc75636_category_menu"
+        save_as: "category_menu"
+
+      - step: "Get the Checklists menu"
+        action: "ref"
+        xml_id: "ssi_general_audit_worksheet_review.general_audit_ws_fc75636_item_menu"
+        save_as: "item_menu"
+
+      - step: "Get the Proposed Audit Opinion parent menu"
+        action: "ref"
+        xml_id: "ssi_general_audit_worksheet_review.menu_configuration_proposed_audit_opinion"
+        save_as: "parent_menu"
+
+      - step: "Assert Category menu name and parent"
+        action: "assert"
+        target: "category_menu"
+        asserts:
+          name:
+            type: "value"
+            expected: "Proposed Audit Opinion Category"
+          parent_id.name:
+            type: "value"
+            expected: "Proposed Audit Opinion"
+
+      - step: "Assert Checklists menu name and parent"
+        action: "assert"
+        target: "item_menu"
+        asserts:
+          name:
+            type: "value"
+            expected: "Proposed Audit Opinion Checklists"
+          parent_id.name:
+            type: "value"
+            expected: "Proposed Audit Opinion"
+
+      - step: "Assert the parent menu sits under Final Report"
+        action: "assert"
+        target: "parent_menu"
+        asserts:
+          parent_id.name:
+            type: "value"
+            expected: "Final Report"
