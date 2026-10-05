@@ -108,14 +108,10 @@
                     expr="/form/sheet/div[@class='oe_left']/div[@class='oe_title']/h1"
                     position="after"
                 >
-                <h2>
-                    <label for="opinion_id" string="Opinion:" />
-                    <field name="opinion_id" class="oe_inline" />
-                </h2>
-                <h2>
-                    <label for="opinion_date" string="Opinion Date:" />
-                    <field name="opinion_date" class="oe_inline" />
-                </h2>
+                <group name="opinion" col="2">
+                    <field name="opinion_id" string="Opinion" />
+                    <field name="opinion_date" string="Opinion Date" />
+                </group>
             </xpath>
             <xpath expr="//field[@name='user_id']" position="after">
                 <field name="service_id" />
