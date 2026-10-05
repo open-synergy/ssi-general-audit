@@ -6,6 +6,13 @@ from odoo import fields, models
 
 
 class GeneralAudit(models.Model):
+    """Extends ``general_audit`` with an opinion that mirrors its report.
+
+    ``opinion_id`` and ``opinion_date`` are read-only and follow the
+    Independent Auditor Report of the engagement, see
+    ``_sync_opinion_from_audit_report``.
+    """
+
     _inherit = "general_audit"
 
     # The opinion and its date now come from the Independent Auditor

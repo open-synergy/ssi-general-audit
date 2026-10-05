@@ -1049,3 +1049,50 @@ scenarios:
           opinion_date:
             type: "value"
             operator: "is_falsy"
+
+      - step: "Write the final opinion on fc75636 again"
+        action: "write"
+        target: "manual_source"
+        as_user: "base.user_admin"
+        values:
+          final_audit_opinion_id: "REC: opinion.id"
+          final_opinion_date: 2026-03-31
+
+      - step: "Create a draft worksheet fc75636 to delete"
+        action: "create"
+        model: "general_audit_ws_fc75636"
+        save_as: "draft_source"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit_manual.id"
+          type_id: "REC: ws_type_fc75636.id"
+
+      - step: "Create a draft worksheet b66777d to delete"
+        action: "create"
+        model: "general_audit_ws_b66777d"
+        save_as: "draft_report"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit_manual.id"
+          type_id: "REC: ws_type_b66777d.id"
+
+      - step: "Delete the draft worksheet fc75636"
+        action: "unlink"
+        target: "draft_source"
+        as_user: "base.user_admin"
+
+      - step: "Delete the draft worksheet b66777d"
+        action: "unlink"
+        target: "draft_report"
+        as_user: "base.user_admin"
+
+      - step: "Assert deleting draft worksheets keeps the opinion"
+        action: "assert"
+        target: "audit_manual"
+        asserts:
+          opinion_id:
+            type: "m2o"
+            expected: "REC: opinion"
+          opinion_date:
+            type: "value"
+            expected: 2026-03-31
