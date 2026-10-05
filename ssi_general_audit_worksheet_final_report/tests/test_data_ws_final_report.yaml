@@ -1298,6 +1298,59 @@ scenarios:
             expected: "general_audit_ws_f3ed115"
 
   # ------------------------------------------------------------------
+  # worksheet_type_b66777d / menus - label "Independent Auditor Report"
+  # (negative: the old "Independen" spelling is gone, positive: the
+  # worksheet type, the KKA menu and the Final Report configuration
+  # menu order after Review, sequence 270).
+  # ------------------------------------------------------------------
+  - name: "Worksheet type b66777d - renamed to Independent Auditor Report"
+    steps:
+      - step: "Search worksheet type by the old name 'Independen Auditor Report'"
+        action: "search"
+        model: "general_audit_worksheet_type"
+        domain:
+          - ["name", "=", "Independen Auditor Report"]
+        save_as: "old_name_search"
+        expect_count: 0
+
+      - step: "Assert worksheet type keeps its code and has the new name"
+        action: "assert"
+        target: "ws_type_b66777d"
+        asserts:
+          name:
+            type: "value"
+            expected: "Independent Auditor Report"
+          code:
+            type: "value"
+            expected: "B66777D"
+
+      - step: "Get the b66777d worksheet menu"
+        action: "ref"
+        xml_id: "ssi_general_audit_worksheet_final_report.general_audit_ws_b66777d_menu"
+        save_as: "ws_b66777d_menu"
+
+      - step: "Assert the b66777d worksheet menu has the new name"
+        action: "assert"
+        target: "ws_b66777d_menu"
+        asserts:
+          name:
+            type: "value"
+            expected: "Independent Auditor Report"
+
+      - step: "Get the Final Report configuration menu"
+        action: "ref"
+        xml_id: "ssi_general_audit_worksheet_final_report.menu_configuration_final_report"
+        save_as: "final_report_config_menu"
+
+      - step: "Assert Final Report configuration menu is ordered after Review"
+        action: "assert"
+        target: "final_report_config_menu"
+        asserts:
+          sequence:
+            type: "value"
+            expected: 280
+
+  # ------------------------------------------------------------------
   # general_audit_ws_b66777d - Details tab (issue #362, revision 2):
   # NOT auto-populated on create() any more -- detail_ids only fills
   # when the "Populate" button (action_populate_detail) is clicked.
