@@ -1058,13 +1058,39 @@ scenarios:
           final_audit_opinion_id: "REC: opinion.id"
           final_opinion_date: 2026-03-31
 
+      # A worksheet type can only be linked once per General Audit, so the
+      # draft worksheets to delete live on a third General Audit.
+      - step: "Create a third general audit for the draft worksheets"
+        action: "create"
+        model: "general_audit"
+        save_as: "audit_drafts"
+        as_user: "base.user_admin"
+        values:
+          title: "Test General Audit - fc75636 draft worksheets"
+          partner_id: "REC: client.id"
+          accountant_id: "REC: accountant.id"
+          account_type_set_id: "REC: account_type_set.id"
+          financial_accounting_standard_id: "REC: fas.id"
+          date_start: 2026-01-01
+          date_end: 2026-12-31
+          need_interim: false
+          need_previous: false
+          num_of_consecutive_audit_firm: 1
+          num_of_consecutive_audit_accountant: 1
+
+      - step: "Open the third general audit"
+        action: "call"
+        target: "audit_drafts"
+        method: "action_open"
+        as_user: "base.user_admin"
+
       - step: "Create a draft worksheet fc75636 to delete"
         action: "create"
         model: "general_audit_ws_fc75636"
         save_as: "draft_source"
         as_user: "base.user_admin"
         values:
-          general_audit_id: "REC: audit_manual.id"
+          general_audit_id: "REC: audit_drafts.id"
           type_id: "REC: ws_type_fc75636.id"
 
       - step: "Create a draft worksheet b66777d to delete"
@@ -1073,7 +1099,7 @@ scenarios:
         save_as: "draft_report"
         as_user: "base.user_admin"
         values:
-          general_audit_id: "REC: audit_manual.id"
+          general_audit_id: "REC: audit_drafts.id"
           type_id: "REC: ws_type_b66777d.id"
 
       - step: "Delete the draft worksheet fc75636"
@@ -1086,7 +1112,18 @@ scenarios:
         target: "draft_report"
         as_user: "base.user_admin"
 
-      - step: "Assert deleting draft worksheets keeps the opinion"
+      - step: "Assert deleting draft worksheets leaves both opinions as they were"
+        action: "assert"
+        target: "audit_drafts"
+        asserts:
+          opinion_id:
+            type: "value"
+            operator: "is_falsy"
+          opinion_date:
+            type: "value"
+            operator: "is_falsy"
+
+      - step: "Assert the opinion of the first audit is unchanged"
         action: "assert"
         target: "audit_manual"
         asserts:
