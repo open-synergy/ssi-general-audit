@@ -14,6 +14,39 @@ msgstr ""
 "Plural-Forms: \n"
 
 #. module: ssi_general_audit_worksheet_draft_reporting
+#: code:addons/ssi_general_audit_worksheet_draft_reporting/models/ga_ff42fdc/general_audit_ws_ff42fdc_layout_line.py:0
+#, python-format
+msgid ""
+"\n"
+"Context: Configure the Posture Report layout\n"
+"Database ID: %s\n"
+"Problem: The layout already has a line for this Account Group or Total Type\n"
+"Solution: Edit the existing line instead of adding another one\n"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_draft_reporting
+#: code:addons/ssi_general_audit_worksheet_draft_reporting/models/ga_ff42fdc/general_audit_ws_ff42fdc_layout_line.py:0
+#, python-format
+msgid ""
+"\n"
+"Context: Set layout line type\n"
+"Database ID: %s\n"
+"Problem: Account Group layout lines require an Account Group\n"
+"Solution: Set the Account Group, or change the line to Total\n"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_draft_reporting
+#: code:addons/ssi_general_audit_worksheet_draft_reporting/models/ga_ff42fdc/general_audit_ws_ff42fdc_layout_line.py:0
+#, python-format
+msgid ""
+"\n"
+"Context: Set layout line type\n"
+"Database ID: %s\n"
+"Problem: Total layout lines require a Total Type\n"
+"Solution: Set the Total Type, or change the line to Account Group\n"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_draft_reporting
 #: code:addons/ssi_general_audit_worksheet_draft_reporting/models/ga_ff42fdc/general_audit_ws_ff42fdc_posture.py:0
 #, python-format
 msgid ""
@@ -83,8 +116,10 @@ msgid "Accoount Type Set"
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_draft_reporting
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_draft_reporting.field_general_audit_ws_ff42fdc_layout_line__group_id
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_draft_reporting.field_general_audit_ws_ff42fdc_posture__group_id
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_draft_reporting.field_general_audit_ws_ff42fdc_total_formula__group_id
+#: model:ir.model.fields.selection,name:ssi_general_audit_worksheet_draft_reporting.selection__general_audit_ws_ff42fdc_layout_line__line_type__group
 #: model:ir.model.fields.selection,name:ssi_general_audit_worksheet_draft_reporting.selection__general_audit_ws_ff42fdc_posture__line_type__group
 msgid "Account Group"
 msgstr ""
@@ -97,6 +132,13 @@ msgstr ""
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_draft_reporting.field_general_audit_ws_e59c663__account_type_ids
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_draft_reporting.field_general_audit_ws_ff42fdc__account_type_ids
 msgid "Account Types"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_draft_reporting
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_draft_reporting.field_general_audit_ws_ff42fdc_layout_line__group_id
+msgid ""
+"Account group shown by this row. Required for Account Group rows; left empty"
+" for Total rows."
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_draft_reporting
@@ -261,6 +303,11 @@ msgstr ""
 #. module: ssi_general_audit_worksheet_draft_reporting
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_draft_reporting.field_general_audit_ws_ff42fdc_posture__adjustment_debit
 msgid "Adjustment (Debit)"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_draft_reporting
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_draft_reporting.field_general_audit_ws_ff42fdc_posture__adjustment_visible
+msgid "Adjustment Visible"
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_draft_reporting
@@ -741,9 +788,10 @@ msgid "Compliance with Laws and Regulations"
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_draft_reporting
+#: model:ir.model.fields.selection,name:ssi_general_audit_worksheet_draft_reporting.selection__general_audit_ws_ff42fdc_layout_line__total_type__comprehensive_profit
 #: model:ir.model.fields.selection,name:ssi_general_audit_worksheet_draft_reporting.selection__general_audit_ws_ff42fdc_posture__total_type__comprehensive_profit
 #: model:ir.model.fields.selection,name:ssi_general_audit_worksheet_draft_reporting.selection__general_audit_ws_ff42fdc_total_formula__total_type__comprehensive_profit
-msgid "Comprehensive Profit"
+msgid "Comprehensive Income"
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_draft_reporting
@@ -864,6 +912,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_draft_reporting.field_general_audit_ws_e59c663_review_checklist__create_uid
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_draft_reporting.field_general_audit_ws_e59c663_review_item__create_uid
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_draft_reporting.field_general_audit_ws_ff42fdc__create_uid
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_draft_reporting.field_general_audit_ws_ff42fdc_layout_line__create_uid
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_draft_reporting.field_general_audit_ws_ff42fdc_posture__create_uid
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_draft_reporting.field_general_audit_ws_ff42fdc_total_formula__create_uid
 msgid "Created by"
@@ -886,6 +935,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_draft_reporting.field_general_audit_ws_e59c663_review_checklist__create_date
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_draft_reporting.field_general_audit_ws_e59c663_review_item__create_date
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_draft_reporting.field_general_audit_ws_ff42fdc__create_date
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_draft_reporting.field_general_audit_ws_ff42fdc_layout_line__create_date
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_draft_reporting.field_general_audit_ws_ff42fdc_posture__create_date
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_draft_reporting.field_general_audit_ws_ff42fdc_total_formula__create_date
 msgid "Created on"
@@ -1043,6 +1093,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_draft_reporting.field_general_audit_ws_e59c663_review_checklist__display_name
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_draft_reporting.field_general_audit_ws_e59c663_review_item__display_name
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_draft_reporting.field_general_audit_ws_ff42fdc__display_name
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_draft_reporting.field_general_audit_ws_ff42fdc_layout_line__display_name
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_draft_reporting.field_general_audit_ws_ff42fdc_posture__display_name
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_draft_reporting.field_general_audit_ws_ff42fdc_total_formula__display_name
 msgid "Display Name"
@@ -1067,6 +1118,13 @@ msgstr ""
 #: model:ir.model.fields,help:ssi_general_audit_worksheet_draft_reporting.field_general_audit_ws_e59c663_review_checklist__sequence
 msgid ""
 "Display order copied from the master item; can be adjusted if required."
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_draft_reporting
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_draft_reporting.field_general_audit_ws_ff42fdc_layout_line__sequence
+msgid ""
+"Display order of the row in the Posture Report. Applied to a worksheet when "
+"its posture is reloaded."
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_draft_reporting
@@ -1289,6 +1347,13 @@ msgid "Fair value estimation"
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_draft_reporting
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_draft_reporting.field_general_audit_ws_ff42fdc_posture__adjustment_visible
+msgid ""
+"False for a Total line whose layout line has Show Adjustment unticked: its "
+"adjustment columns are zero and hidden."
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_draft_reporting
 #: model:general_audit_worksheet_type,name:ssi_general_audit_worksheet_draft_reporting.worksheet_type_de69c2f
 #: model:ir.actions.act_window,name:ssi_general_audit_worksheet_draft_reporting.general_audit_ws_de69c2f_action
 #: model:ir.ui.menu,name:ssi_general_audit_worksheet_draft_reporting.general_audit_ws_de69c2f_menu
@@ -1442,6 +1507,7 @@ msgid "General Audit to which this worksheet belongs."
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_draft_reporting
+#: model:ir.model.fields.selection,name:ssi_general_audit_worksheet_draft_reporting.selection__general_audit_ws_ff42fdc_layout_line__total_type__gross_profit
 #: model:ir.model.fields.selection,name:ssi_general_audit_worksheet_draft_reporting.selection__general_audit_ws_ff42fdc_posture__total_type__gross_profit
 #: model:ir.model.fields.selection,name:ssi_general_audit_worksheet_draft_reporting.selection__general_audit_ws_ff42fdc_total_formula__total_type__gross_profit
 msgid "Gross Profit"
@@ -1493,6 +1559,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_draft_reporting.field_general_audit_ws_e59c663_review_checklist__id
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_draft_reporting.field_general_audit_ws_e59c663_review_item__id
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_draft_reporting.field_general_audit_ws_ff42fdc__id
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_draft_reporting.field_general_audit_ws_ff42fdc_layout_line__id
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_draft_reporting.field_general_audit_ws_ff42fdc_posture__id
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_draft_reporting.field_general_audit_ws_ff42fdc_total_formula__id
 msgid "ID"
@@ -1707,6 +1774,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_draft_reporting.field_general_audit_ws_e59c663_review_checklist____last_update
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_draft_reporting.field_general_audit_ws_e59c663_review_item____last_update
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_draft_reporting.field_general_audit_ws_ff42fdc____last_update
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_draft_reporting.field_general_audit_ws_ff42fdc_layout_line____last_update
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_draft_reporting.field_general_audit_ws_ff42fdc_posture____last_update
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_draft_reporting.field_general_audit_ws_ff42fdc_total_formula____last_update
 msgid "Last Modified on"
@@ -1729,6 +1797,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_draft_reporting.field_general_audit_ws_e59c663_review_checklist__write_uid
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_draft_reporting.field_general_audit_ws_e59c663_review_item__write_uid
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_draft_reporting.field_general_audit_ws_ff42fdc__write_uid
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_draft_reporting.field_general_audit_ws_ff42fdc_layout_line__write_uid
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_draft_reporting.field_general_audit_ws_ff42fdc_posture__write_uid
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_draft_reporting.field_general_audit_ws_ff42fdc_total_formula__write_uid
 msgid "Last Updated by"
@@ -1751,6 +1820,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_draft_reporting.field_general_audit_ws_e59c663_review_checklist__write_date
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_draft_reporting.field_general_audit_ws_e59c663_review_item__write_date
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_draft_reporting.field_general_audit_ws_ff42fdc__write_date
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_draft_reporting.field_general_audit_ws_ff42fdc_layout_line__write_date
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_draft_reporting.field_general_audit_ws_ff42fdc_posture__write_date
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_draft_reporting.field_general_audit_ws_ff42fdc_total_formula__write_date
 msgid "Last Updated on"
@@ -1762,7 +1832,9 @@ msgid "Leases"
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_draft_reporting
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_draft_reporting.field_general_audit_ws_ff42fdc_layout_line__line_type
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_draft_reporting.field_general_audit_ws_ff42fdc_posture__line_type
+#: model_terms:ir.ui.view,arch_db:ssi_general_audit_worksheet_draft_reporting.general_audit_ws_ff42fdc_layout_line_view_search
 msgid "Line Type"
 msgstr ""
 
@@ -2177,6 +2249,7 @@ msgid "Offsetting of financial instruments"
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_draft_reporting
+#: model:ir.model.fields.selection,name:ssi_general_audit_worksheet_draft_reporting.selection__general_audit_ws_ff42fdc_layout_line__total_type__operating_profit
 #: model:ir.model.fields.selection,name:ssi_general_audit_worksheet_draft_reporting.selection__general_audit_ws_ff42fdc_posture__total_type__operating_profit
 #: model:ir.model.fields.selection,name:ssi_general_audit_worksheet_draft_reporting.selection__general_audit_ws_ff42fdc_total_formula__total_type__operating_profit
 msgid "Operating Profit"
@@ -2370,6 +2443,12 @@ msgid "Posture Report"
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_draft_reporting
+#: model:ir.actions.act_window,name:ssi_general_audit_worksheet_draft_reporting.general_audit_ws_ff42fdc_layout_line_action
+#: model:ir.ui.menu,name:ssi_general_audit_worksheet_draft_reporting.general_audit_ws_ff42fdc_layout_line_menu
+msgid "Posture Report Layout"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_draft_reporting
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_draft_reporting.field_general_audit_ws_ae598e6__preparation_date
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_draft_reporting.field_general_audit_ws_b555edd__preparation_date
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_draft_reporting.field_general_audit_ws_bbbdfe7__preparation_date
@@ -2420,12 +2499,14 @@ msgid "Principles of consolidation and equity accounting"
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_draft_reporting
+#: model:ir.model.fields.selection,name:ssi_general_audit_worksheet_draft_reporting.selection__general_audit_ws_ff42fdc_layout_line__total_type__profit_after_tax
 #: model:ir.model.fields.selection,name:ssi_general_audit_worksheet_draft_reporting.selection__general_audit_ws_ff42fdc_posture__total_type__profit_after_tax
 #: model:ir.model.fields.selection,name:ssi_general_audit_worksheet_draft_reporting.selection__general_audit_ws_ff42fdc_total_formula__total_type__profit_after_tax
 msgid "Profit After Tax"
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_draft_reporting
+#: model:ir.model.fields.selection,name:ssi_general_audit_worksheet_draft_reporting.selection__general_audit_ws_ff42fdc_layout_line__total_type__profit_before_tax
 #: model:ir.model.fields.selection,name:ssi_general_audit_worksheet_draft_reporting.selection__general_audit_ws_ff42fdc_posture__total_type__profit_before_tax
 #: model:ir.model.fields.selection,name:ssi_general_audit_worksheet_draft_reporting.selection__general_audit_ws_ff42fdc_total_formula__total_type__profit_before_tax
 msgid "Profit Before Tax"
@@ -2735,6 +2816,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_draft_reporting.field_general_audit_ws_e59c663_item__sequence
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_draft_reporting.field_general_audit_ws_e59c663_review_checklist__sequence
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_draft_reporting.field_general_audit_ws_e59c663_review_item__sequence
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_draft_reporting.field_general_audit_ws_ff42fdc_layout_line__sequence
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_draft_reporting.field_general_audit_ws_ff42fdc_posture__sequence
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_draft_reporting.field_general_audit_ws_ff42fdc_total_formula__sequence
 msgid "Sequence"
@@ -2754,6 +2836,11 @@ msgstr ""
 #. module: ssi_general_audit_worksheet_draft_reporting
 #: model:general_audit_ws_e59c663.item,name:ssi_general_audit_worksheet_draft_reporting.general_audit_ws_e59c663_item_32_7be5b6b
 msgid "Share-based payments"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_draft_reporting
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_draft_reporting.field_general_audit_ws_ff42fdc_layout_line__show_adjustment
+msgid "Show Adjustment"
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_draft_reporting
@@ -2943,17 +3030,20 @@ msgid "Title of the General Audit engagement."
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_draft_reporting
+#: model:ir.model.fields.selection,name:ssi_general_audit_worksheet_draft_reporting.selection__general_audit_ws_ff42fdc_layout_line__line_type__total
 #: model:ir.model.fields.selection,name:ssi_general_audit_worksheet_draft_reporting.selection__general_audit_ws_ff42fdc_posture__line_type__total
 msgid "Total"
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_draft_reporting
+#: model:ir.model.fields.selection,name:ssi_general_audit_worksheet_draft_reporting.selection__general_audit_ws_ff42fdc_layout_line__total_type__total_asset
 #: model:ir.model.fields.selection,name:ssi_general_audit_worksheet_draft_reporting.selection__general_audit_ws_ff42fdc_posture__total_type__total_asset
 #: model:ir.model.fields.selection,name:ssi_general_audit_worksheet_draft_reporting.selection__general_audit_ws_ff42fdc_total_formula__total_type__total_asset
 msgid "Total Asset"
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_draft_reporting
+#: model:ir.model.fields.selection,name:ssi_general_audit_worksheet_draft_reporting.selection__general_audit_ws_ff42fdc_layout_line__total_type__total_equity
 #: model:ir.model.fields.selection,name:ssi_general_audit_worksheet_draft_reporting.selection__general_audit_ws_ff42fdc_posture__total_type__total_equity
 #: model:ir.model.fields.selection,name:ssi_general_audit_worksheet_draft_reporting.selection__general_audit_ws_ff42fdc_total_formula__total_type__total_equity
 msgid "Total Equity"
@@ -2970,22 +3060,32 @@ msgid "Total Formula Posture Report"
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_draft_reporting
+#: model:ir.model.fields.selection,name:ssi_general_audit_worksheet_draft_reporting.selection__general_audit_ws_ff42fdc_layout_line__total_type__total_liability
 #: model:ir.model.fields.selection,name:ssi_general_audit_worksheet_draft_reporting.selection__general_audit_ws_ff42fdc_posture__total_type__total_liability
 #: model:ir.model.fields.selection,name:ssi_general_audit_worksheet_draft_reporting.selection__general_audit_ws_ff42fdc_total_formula__total_type__total_liability
 msgid "Total Liability"
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_draft_reporting
+#: model:ir.model.fields.selection,name:ssi_general_audit_worksheet_draft_reporting.selection__general_audit_ws_ff42fdc_layout_line__total_type__total_liability_equity
 #: model:ir.model.fields.selection,name:ssi_general_audit_worksheet_draft_reporting.selection__general_audit_ws_ff42fdc_posture__total_type__total_liability_equity
 #: model:ir.model.fields.selection,name:ssi_general_audit_worksheet_draft_reporting.selection__general_audit_ws_ff42fdc_total_formula__total_type__total_liability_equity
 msgid "Total Liability and Equity"
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_draft_reporting
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_draft_reporting.field_general_audit_ws_ff42fdc_layout_line__total_type
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_draft_reporting.field_general_audit_ws_ff42fdc_posture__total_type
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_draft_reporting.field_general_audit_ws_ff42fdc_total_formula__total_type
 #: model_terms:ir.ui.view,arch_db:ssi_general_audit_worksheet_draft_reporting.general_audit_ws_ff42fdc_total_formula_view_search
 msgid "Total Type"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_draft_reporting
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_draft_reporting.field_general_audit_ws_ff42fdc_layout_line__total_type
+msgid ""
+"Total row shown by this row. Required for Total rows; left empty for Account"
+" Group rows."
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_draft_reporting
@@ -3214,6 +3314,15 @@ msgid "Website communication history"
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_draft_reporting
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_draft_reporting.field_general_audit_ws_ff42fdc_layout_line__show_adjustment
+msgid ""
+"Whether a Total row shows its Adjustment (Debit) and Adjustment (Credit) "
+"columns. Untick it for rows whose signed subtotals make the adjustment "
+"columns meaningless, such as the profit and loss subtotals. Ignored for "
+"Account Group rows."
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_draft_reporting
 #: model:ir.model.fields,help:ssi_general_audit_worksheet_draft_reporting.field_general_audit_ws_ff42fdc_total_formula__sign
 msgid ""
 "Whether this group's amount is added to or subtracted from the Total row."
@@ -3224,6 +3333,13 @@ msgstr ""
 msgid ""
 "Whether this line summarises one account group, or is one of the nine fixed "
 "Total/Subtotal rows."
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_draft_reporting
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_draft_reporting.field_general_audit_ws_ff42fdc_layout_line__line_type
+msgid ""
+"Whether this row of the report is an Account Group row or one of the fixed "
+"Total rows."
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_draft_reporting
@@ -3267,6 +3383,11 @@ msgstr ""
 #. module: ssi_general_audit_worksheet_draft_reporting
 #: model:ir.model,name:ssi_general_audit_worksheet_draft_reporting.model_general_audit_ws_ff42fdc_posture
 msgid "Worksheet (ff42fdc) - Posture Line"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_draft_reporting
+#: model:ir.model,name:ssi_general_audit_worksheet_draft_reporting.model_general_audit_ws_ff42fdc_layout_line
+msgid "Worksheet (ff42fdc) - Posture Report Layout Line"
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_draft_reporting
