@@ -12,17 +12,17 @@ class TestWSDraftReporting(YamlTransactionCase):
     """Scenario tests for the ``ssi_general_audit_worksheet_draft_reporting``
     worksheets."""
 
-    # Every ``client_account_group`` code referenced by
-    # ``general_audit_ws_ff42fdc._POSTURE_LINE_ORDER`` as a "group" line,
-    # mapped to its data XML ID in ``ssi_general_audit``. T006 and T008 are
-    # intentionally absent from the layout table, so they are left out here
-    # too.
+    # Every ``client_account_group`` code listed by the seeded
+    # ``general_audit_ws_ff42fdc.layout_line`` records as a "group" line,
+    # mapped to its data XML ID in ``ssi_general_audit``. T008 is not in the
+    # seeded layout, so it is left out here too.
     _GROUP_XML_IDS = {
         "T001": "ssi_general_audit.client_account_group_1_885ef902",
         "T002": "ssi_general_audit.client_account_group_2_becd85c2",
         "T003": "ssi_general_audit.client_account_group_3_8f77474a",
         "T004": "ssi_general_audit.client_account_group_4_8512d9b0",
         "T005": "ssi_general_audit.client_account_group_5_7f3c394c",
+        "T006": "ssi_general_audit.client_account_group_6_76ade538",
         "T007": "ssi_general_audit.client_account_group_7_fd2a0509",
         "T009": "ssi_general_audit.client_account_group_9_7849ad25",
         "T010": "ssi_general_audit.client_account_group_10_04a8da99",
@@ -126,7 +126,7 @@ class TestWSDraftReporting(YamlTransactionCase):
         Maps one ``client_account`` per code in ``_GROUP_XML_IDS`` onto
         the General Audit (via ``client_account_mapping`` +
         ``action_reload_account``), so ``detail_ids.account_id.group_id``
-        covers every "group" entry of ``_POSTURE_LINE_ORDER``. No trial
+        covers every "group" entry of the seeded layout. No trial
         balance/adjustment data is created: this fixture is only used to
         assert the count/sequence/order of ``posture_ids``, never the
         Unaudited/Audited amounts, so the amounts are left at zero.
@@ -180,7 +180,7 @@ class TestWSDraftReporting(YamlTransactionCase):
         fix, reading ``worksheet.posture_ids`` right after a single
         ``action_load_posture()`` call returned the lines in creation
         order (every newly created Account Group line, then every newly
-        created Total line) instead of ``_POSTURE_LINE_ORDER`` order,
+        created Total line) instead of layout order,
         because ``Many2one._update_inverses`` (``odoo/fields.py``)
         appends newly created records to the worksheet's already-cached
         ``posture_ids`` tuple instead of re-querying with
@@ -193,8 +193,9 @@ class TestWSDraftReporting(YamlTransactionCase):
 
         worksheet.action_load_posture()
 
+        layout = self.env["general_audit_ws_ff42fdc.layout_line"].search([])
         order_index = {
-            key: position for position, key in enumerate(worksheet._POSTURE_LINE_ORDER)
+            line._layout_key(): position for position, line in enumerate(layout)
         }
         expected_count = len(self._GROUP_XML_IDS) + 9
         self.assertEqual(len(worksheet.posture_ids), expected_count)
@@ -265,3 +266,71 @@ class TestWSDraftReporting(YamlTransactionCase):
 
         sequences = worksheet.posture_ids.mapped("sequence")
         self.assertEqual(sequences, sorted(sequences))
+
+    def _posture_sequence_by_code(self, worksheet):
+        """Map each posture line code to its ``sequence``.
+
+        :param recordset worksheet: the ff42fdc worksheet
+        :return: ``{code: sequence}``, where ``code`` is the group code
+            for Account Group lines and the total type for Total lines
+        :rtype: dict
+        """
+        return {
+            posture._posture_line_order_key()[1]: posture.sequence
+            for posture in worksheet.posture_ids
+        }
+
+    def test_layout_places_other_equity_between_capital_and_retained(self):
+        """The seeded layout puts T006 between T005 and T007.
+
+        Pure Python -- trigger P3 (L-06: order assertion).
+
+        :return: nothing; asserts the relative order of three groups
+        """
+        worksheet = self._create_ff42fdc_worksheet_with_all_groups()
+
+        worksheet.action_load_posture()
+
+        sequence = self._posture_sequence_by_code(worksheet)
+        self.assertLess(sequence["T005"], sequence["T006"])
+        self.assertLess(sequence["T006"], sequence["T007"])
+
+    def test_layout_change_reorders_posture_on_reload(self):
+        """Editing a layout line changes the order after the next Reload.
+
+        Pure Python -- trigger P3 (L-06: order assertion). Moves T006
+        to the top of the layout and reloads a worksheet that was
+        already loaded.
+
+        :return: nothing; asserts T006 becomes the first posture line
+        """
+        worksheet = self._create_ff42fdc_worksheet_with_all_groups()
+        worksheet.action_load_posture()
+        layout_t006 = self.env["general_audit_ws_ff42fdc.layout_line"].search(
+            [("line_type", "=", "group"), ("group_id.code", "=", "T006")]
+        )
+        layout_t006.sequence = -10
+
+        worksheet.action_load_posture()
+
+        sequence = self._posture_sequence_by_code(worksheet)
+        self.assertEqual(sequence["T006"], min(sequence.values()))
+        self.assertEqual(worksheet.posture_ids[0].group_id.code, "T006")
+
+    def test_group_missing_from_layout_is_shown_last(self):
+        """A group without a layout line is still shown, after all others.
+
+        Pure Python -- trigger P3 (L-06: order assertion). Deletes the
+        T006 layout line, which stands for a group added later.
+
+        :return: nothing; asserts T006 is the last posture line
+        """
+        self.env["general_audit_ws_ff42fdc.layout_line"].search(
+            [("line_type", "=", "group"), ("group_id.code", "=", "T006")]
+        ).unlink()
+        worksheet = self._create_ff42fdc_worksheet_with_all_groups()
+
+        worksheet.action_load_posture()
+
+        sequence = self._posture_sequence_by_code(worksheet)
+        self.assertEqual(sequence["T006"], max(sequence.values()))

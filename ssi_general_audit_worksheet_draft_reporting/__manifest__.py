@@ -4,7 +4,7 @@
 # pylint: disable=locally-disabled, manifest-required-author
 {
     "name": "General Audit Worksheet - Draft Reporting",
-    "version": "14.0.1.4.1",
+    "version": "14.0.1.4.2",
     "website": "https://simetri-sinergi.id",
     "author": "OpenSynergy Indonesia, PT. Simetri Sinergi Indonesia",
     "license": "AGPL-3",
@@ -57,7 +57,9 @@
         "data/policy_template/general_audit_ws_ff42fdc.xml",
         "data/approval_template/general_audit_ws_ff42fdc.xml",
         "data/master/general_audit_ws_ff42fdc_total_formula.xml",
+        "data/master/general_audit_ws_ff42fdc_layout_line.xml",
         "views/ga_ff42fdc/general_audit_ws_ff42fdc_total_formula_views.xml",
+        "views/ga_ff42fdc/general_audit_ws_ff42fdc_layout_line_views.xml",
         "views/ga_ff42fdc/general_audit_ws_ff42fdc_views.xml",
         # ae598e6 - Management Letter
         "security/res_group/general_audit_ws_ae598e6.xml",

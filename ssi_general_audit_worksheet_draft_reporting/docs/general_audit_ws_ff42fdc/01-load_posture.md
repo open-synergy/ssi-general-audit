@@ -33,9 +33,16 @@
     to that group. **Previous** sums the previous-period balance of the same accounts.
   - Nine fixed **Total** rows (Total Asset, Total Liability, Total Equity, Total
     Liability and Equity, Gross Profit, Operating Profit, Profit Before Tax, Profit
-    After Tax, Comprehensive Profit), interleaved right after their component Account
+    After Tax, Comprehensive Income), interleaved right after their component Account
     Group rows and shown in **bold**. Total rows always appear, even when their
     component account groups have no data.
+  - A Total row shows the plain sums of the debit and credit adjustments of its
+    component account groups. The Adjustment (Debit) and Adjustment (Credit) columns are
+    blank on the profit and loss subtotals (Gross Profit, Operating Profit, Profit
+    Before Tax, Profit After Tax, Comprehensive Income); this is set per row with **Show
+    Adjustment** in **Posture Report Layout**.
+  - The rows follow the order set in **Posture Report Layout** (Configuration menu); an
+    account group that is not listed there is shown after all listed rows.
 - An Account Group row is removed if its account group no longer has any account
   registered on the General Audit; a row for a group still in use is kept as is (not
   duplicated), with its computed amounts refreshed. Total rows are never removed.
