@@ -12,6 +12,7 @@
     "depends": [
         "ssi_general_audit",
         "ssi_general_audit_worksheet_control_risk",
+        "ssi_general_audit_worksheet_acceptance_continuance",
     ],
     "data": [
         "security/ir_module_category_data.xml",
