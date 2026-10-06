@@ -28,7 +28,7 @@ class GeneralAuditWSff42fdc(models.Model):
     group plus nine fixed Total/Subtotal lines (Total Asset, Total
     Liability, Total Equity, Total Liability and Equity, Gross Profit,
     Operating Profit, Profit Before Tax, Profit After Tax,
-    Comprehensive Profit), summarising Unaudited, Adjustment
+    Comprehensive Income), summarising Unaudited, Adjustment
     (Debit/Credit), Audited, and Previous amounts. Use
     ``action_load_posture`` to synchronise the posture lines with the
     account groups in use on the General Audit.
@@ -49,39 +49,6 @@ class GeneralAuditWSff42fdc(models.Model):
     ]
     _type_xml_id = (
         "ssi_general_audit_worksheet_draft_reporting." "worksheet_type_ff42fdc"
-    )
-
-    # Fixed display order of posture_ids: (line_type, code) pairs, where
-    # code is group_id.code for "group" lines and total_type for
-    # "total" lines. Position in this list drives `sequence` via
-    # `_resequence_posture_lines` -- Total rows are interleaved right
-    # after their last component group, per the WR.170.1 reference
-    # sheet layout.
-    _POSTURE_LINE_ORDER = (
-        ("group", "T001"),
-        ("group", "T002"),
-        ("total", "total_asset"),
-        ("group", "T003"),
-        ("group", "T004"),
-        ("total", "total_liability"),
-        ("group", "T005"),
-        ("group", "T007"),
-        ("total", "total_equity"),
-        ("total", "total_liability_equity"),
-        ("group", "T009"),
-        ("group", "T011"),
-        ("total", "gross_profit"),
-        ("group", "T012"),
-        ("total", "operating_profit"),
-        ("group", "T010"),
-        ("group", "T013"),
-        ("total", "profit_before_tax"),
-        ("group", "T014"),
-        ("total", "profit_after_tax"),
-        # T015 (Other Comprehensive Income) contributes to
-        # `comprehensive_profit`, so it is interleaved right here.
-        ("group", "T015"),
-        ("total", "comprehensive_profit"),
     )
 
     financial_statement_opinion_id = fields.Many2one(
@@ -213,7 +180,7 @@ class GeneralAuditWSff42fdc(models.Model):
            *cache* only (``Integer.convert_to_cache(None, ...)``) --
            the column itself is left ``NULL`` in the database, since
            ``sequence`` is absent from the ``INSERT``. Whichever line
-           happens to land on position 0 of ``_POSTURE_LINE_ORDER``
+           happens to land on position 0 of the layout
            (target ``sequence == 0``) then makes
            ``posture.sequence = 0`` in ``_resequence_posture_lines`` a
            no-op: ``Field.write()`` skips fields whose new value
@@ -225,7 +192,7 @@ class GeneralAuditWSff42fdc(models.Model):
            reappears at the *end* of any fresh, correctly-flushed
            ``search()``, not at the front where a real ``0`` belongs.
            ``-1`` can never collide with a real target (every position
-           in ``_POSTURE_LINE_ORDER``, and every unmatched fallback in
+           in the layout, and every unmatched fallback in
            ``_resequence_posture_lines``, computes to ``>= 0``), so the
            assignment is always a genuine change and always reaches
            the database.
@@ -295,28 +262,28 @@ class GeneralAuditWSff42fdc(models.Model):
         self.invalidate_cache(fnames=["posture_ids"], ids=self.ids)
 
     def _resequence_posture_lines(self):
-        """Assign ``sequence`` on ``posture_ids`` for the fixed layout.
+        """Assign ``sequence`` on ``posture_ids`` from the layout.
 
-        Lines whose ``(line_type, code)`` pair is listed in
-        ``_POSTURE_LINE_ORDER`` are placed at ten times their position
-        in that list, leaving gaps between them. A group line whose
-        account group is not part of the formula table (a custom
-        ``client_account_group`` code, outside T001-T015) is placed
-        after every listed line, ordered by the group's own
-        ``sequence``/``id``, so the table still renders
-        deterministically.
+        The layout is the ``general_audit_ws_ff42fdc.layout_line``
+        master data. Lines whose ``(line_type, code)`` pair is listed
+        there are placed at ten times their position in the layout,
+        leaving gaps between them. A line whose account group is not
+        listed (for example a group added later) is placed after every
+        listed line, ordered by the group's own ``sequence``/``id``, so
+        the table still renders deterministically.
 
         :return: nothing; writes ``sequence`` on every line of
             ``posture_ids``
         """
         self.ensure_one()
-        order_index = {
-            key: position for position, key in enumerate(self._POSTURE_LINE_ORDER)
-        }
+        layout = self.env["general_audit_ws_ff42fdc.layout_line"].sudo().search([])
+        order_index = {}
+        for position, layout_line in enumerate(layout):
+            order_index.setdefault(layout_line._layout_key(), position)
         unmatched = self.posture_ids.filtered(
             lambda p: p._posture_line_order_key() not in order_index
         ).sorted(key=lambda p: (p.group_id.sequence, p.group_id.id))
-        fallback_base = len(self._POSTURE_LINE_ORDER) * 10
+        fallback_base = len(layout) * 10
         unmatched_sequence = {
             posture.id: fallback_base + position * 10
             for position, posture in enumerate(unmatched)

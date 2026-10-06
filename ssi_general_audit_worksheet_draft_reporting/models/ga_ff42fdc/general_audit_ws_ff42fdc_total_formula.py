@@ -34,7 +34,7 @@ class GeneralAuditWsFf42fdcTotalFormula(models.Model):
             ("operating_profit", "Operating Profit"),
             ("profit_before_tax", "Profit Before Tax"),
             ("profit_after_tax", "Profit After Tax"),
-            ("comprehensive_profit", "Comprehensive Profit"),
+            ("comprehensive_profit", "Comprehensive Income"),
         ],
         required=True,
         help="Which fixed Total/Subtotal row this component " "contributes to.",

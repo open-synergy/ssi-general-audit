@@ -70,7 +70,7 @@ class GeneralAuditWsFf42fdcPosture(models.Model):
             ("operating_profit", "Operating Profit"),
             ("profit_before_tax", "Profit Before Tax"),
             ("profit_after_tax", "Profit After Tax"),
-            ("comprehensive_profit", "Comprehensive Profit"),
+            ("comprehensive_profit", "Comprehensive Income"),
         ],
         help="Which fixed Total/Subtotal row this line represents. "
         "Only set for Total lines.",
@@ -111,6 +111,15 @@ class GeneralAuditWsFf42fdcPosture(models.Model):
         store=True,
         compute_sudo=True,
         help="Sum of Adjustment Credit for every account under this " "group.",
+    )
+    adjustment_visible = fields.Boolean(
+        string="Adjustment Visible",
+        compute="_compute_amounts",
+        store=True,
+        compute_sudo=True,
+        help="False for a Total line whose layout line has Show "
+        "Adjustment unticked: its adjustment columns are zero and "
+        "hidden.",
     )
     audited = fields.Monetary(
         string="Audited",
@@ -155,6 +164,12 @@ class GeneralAuditWsFf42fdcPosture(models.Model):
         rather than raising. The per-row ``audited_balance`` already
         accounts for the account's normal balance side, so it is
         summed directly without being recomputed here.
+        Adjustment columns of a Total line are the plain sums of the
+        debit and credit adjustments of its component groups, without
+        applying the formula sign, because a debit adjustment on an
+        expense group is still a debit to equity. A Total line whose
+        layout line has ``show_adjustment`` unticked keeps both columns
+        at zero and gets ``adjustment_visible`` False.
 
         Reading the formula table is not itself a reactive dependency
         of this compute: editing
@@ -165,7 +180,8 @@ class GeneralAuditWsFf42fdcPosture(models.Model):
         adjustment data already requires a reload.
 
         :return: nothing; assigns ``unaudited``, ``adjustment_debit``,
-            ``adjustment_credit``, ``audited``, and ``previous``
+            ``adjustment_credit``, ``adjustment_visible``, ``audited``,
+            and ``previous``
         """
         formula_model = self.env["general_audit_ws_ff42fdc.total_formula"]
         for record in self:
@@ -174,6 +190,7 @@ class GeneralAuditWsFf42fdcPosture(models.Model):
             result_adjustment_credit = 0.0
             result_audited = 0.0
             result_previous = 0.0
+            result_adjustment_visible = True
             all_details = record.worksheet_id.general_audit_id.detail_ids
             if record.line_type == "group" and record.group_id:
                 details = all_details.filtered(
@@ -188,6 +205,20 @@ class GeneralAuditWsFf42fdcPosture(models.Model):
                 formula_lines = formula_model.search(
                     [("total_type", "=", record.total_type)]
                 )
+                layout_line = (
+                    self.env["general_audit_ws_ff42fdc.layout_line"]
+                    .sudo()
+                    .search(
+                        [
+                            ("line_type", "=", "total"),
+                            ("total_type", "=", record.total_type),
+                        ],
+                        limit=1,
+                    )
+                )
+                result_adjustment_visible = (
+                    layout_line.show_adjustment if layout_line else True
+                )
                 for formula_line in formula_lines:
                     sign = 1 if formula_line.sign == "add" else -1
                     group = formula_line.group_id
@@ -197,12 +228,13 @@ class GeneralAuditWsFf42fdcPosture(models.Model):
                     result_unaudited += sign * sum(
                         group_details.mapped("home_statement_balance")
                     )
-                    result_adjustment_debit += sign * sum(
-                        group_details.mapped("adjustment_debit")
-                    )
-                    result_adjustment_credit += sign * sum(
-                        group_details.mapped("adjustment_credit")
-                    )
+                    if result_adjustment_visible:
+                        result_adjustment_debit += sum(
+                            group_details.mapped("adjustment_debit")
+                        )
+                        result_adjustment_credit += sum(
+                            group_details.mapped("adjustment_credit")
+                        )
                     result_audited += sign * sum(
                         group_details.mapped("audited_balance")
                     )
@@ -214,12 +246,13 @@ class GeneralAuditWsFf42fdcPosture(models.Model):
             record.adjustment_credit = result_adjustment_credit
             record.audited = result_audited
             record.previous = result_previous
+            record.adjustment_visible = result_adjustment_visible
 
     def _posture_line_order_key(self):
         """Return the key this line is looked up by in the layout table.
 
         Used by ``general_audit_ws_ff42fdc._resequence_posture_lines``
-        to match this line against ``_POSTURE_LINE_ORDER``.
+        to match this line against the layout lines.
 
         :return: a ``(line_type, code)`` tuple, where ``code`` is
             ``group_id.code`` for Account Group lines and

@@ -2085,6 +2085,527 @@ scenarios:
         save_as: "postures_after_reload"
         expect_count: 14
 
+  - name:
+      "Posture ff42fdc - Adjustment hidden and Total Equity carries Comprehensive Income"
+    steps:
+      - step: "Create client account type for T012 (Operating Expense)"
+        action: "create"
+        model: "client_account_type"
+        save_as: "account_type_t012"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Account Type T012 - Adjustment Hidden"
+          code: "/"
+          group_id: "REC: group_t012.id"
+          normal_balance: "dr"
+          python_code: "result = 0.0"
+
+      - step: "Create client account for T012"
+        action: "create"
+        model: "client_account"
+        save_as: "account_t012"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Client Account T012 - Adjustment Hidden"
+          code: "ACC-T012-ADJHIDDEN"
+          partner_id: "REC: client.id"
+          type_id: "REC: account_type_t012.id"
+
+      - step: "Create client account mapping for the audit"
+        action: "create"
+        model: "client_account_mapping"
+        save_as: "mapping"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+
+      - step: "Map client account T012"
+        action: "create"
+        model: "client_account_mapping.detail"
+        save_as: "mapping_detail_t012"
+        as_user: "base.user_admin"
+        values:
+          mapping_id: "REC: mapping.id"
+          account_id: "REC: account_t012.id"
+
+      - step: "Reload general audit accounts from the mapping"
+        action: "call"
+        target: "audit"
+        method: "action_reload_account"
+        as_user: "base.user_admin"
+
+      - step: "Create home trial balance"
+        action: "create"
+        model: "client_trial_balance"
+        save_as: "tb_home"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          trial_balance_type: "home"
+
+      - step: "Home trial balance line for T012 (debit 100,000)"
+        action: "create"
+        model: "client_trial_balance.detail"
+        save_as: "tb_home_detail_t012"
+        as_user: "base.user_admin"
+        values:
+          trial_balance_id: "REC: tb_home.id"
+          account_id: "REC: account_t012.id"
+          debit: 100000.0
+
+      - step: "Create adjustment entry"
+        action: "create"
+        model: "client_adjustment_entry"
+        save_as: "adj_entry"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          adjustment_type: "propose"
+
+      - step: "Adjustment line - T012 debit 10,000"
+        action: "create"
+        model: "client_adjustment_entry.detail"
+        save_as: "adj_line_t012_dr"
+        as_user: "base.user_admin"
+        values:
+          entry_id: "REC: adj_entry.id"
+          account_id: "REC: account_t012.id"
+          name: "Adjustment debit T012"
+          debit: 10000.0
+
+      - step: "Adjustment line - T012 credit 10,000"
+        action: "create"
+        model: "client_adjustment_entry.detail"
+        save_as: "adj_line_t012_cr"
+        as_user: "base.user_admin"
+        values:
+          entry_id: "REC: adj_entry.id"
+          account_id: "REC: account_t012.id"
+          name: "Adjustment credit T012"
+          credit: 10000.0
+
+      - step: "Confirm adjustment entry (debit 10,000 = credit 10,000)"
+        action: "call"
+        target: "adj_entry"
+        method: "action_confirm"
+        as_user: "base.user_admin"
+        # WAJIB dua-duanya: asserts MENJALANKAN _refresh, refresh: true
+        # MENGIZINKANNYA (_should_refresh v0.5.0) -- tanpa ini approve_ok
+        # terbaca basi milik action_confirm (test-traps.md T-04).
+        refresh: true
+        asserts:
+          state:
+            type: "value"
+            expected: "confirm"
+
+      - step: "Approve adjustment entry"
+        action: "call"
+        target: "adj_entry"
+        method: "action_approve_approval"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after approving adjustment entry"
+        action: "call"
+        target: "adj_entry"
+        method: "invalidate_cache"
+
+      - step: "Assert adjustment entry done"
+        action: "assert"
+        target: "adj_entry"
+        asserts:
+          state:
+            type: "value"
+            expected: "done"
+
+      - step: "Create worksheet ff42fdc for posture"
+        action: "create"
+        model: "general_audit_ws_ff42fdc"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_ff42fdc.id"
+
+      - step: "Open worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_open"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after opening worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Assert no posture line before loading"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          posture_ids:
+            type: "o2m"
+            check: "count"
+            expected_count: 0
+
+      - step: "Load posture"
+        action: "call"
+        target: "worksheet"
+        method: "action_load_posture"
+        as_user: "base.user_admin"
+
+      # 5 Account Group lines (T001, T002, T009, T011, T012 have
+      # accounts registered) + 9 fixed Total lines, which always
+      # exist regardless of data.
+      - step: "Find posture line for t012"
+        action: "search"
+        model: "general_audit_ws_ff42fdc.posture"
+        domain:
+          - ["worksheet_id", "=", "REC: worksheet.id"]
+          - ["line_type", "=", "group"]
+          - ["group_id", "=", "REC: group_t012.id"]
+        save_as: "posture_t012"
+        limit: 1
+
+      - step: "Find posture line for gross_profit"
+        action: "search"
+        model: "general_audit_ws_ff42fdc.posture"
+        domain:
+          - ["worksheet_id", "=", "REC: worksheet.id"]
+          - ["line_type", "=", "total"]
+          - ["total_type", "=", "gross_profit"]
+        save_as: "posture_gross_profit"
+        limit: 1
+
+      - step: "Find posture line for operating_profit"
+        action: "search"
+        model: "general_audit_ws_ff42fdc.posture"
+        domain:
+          - ["worksheet_id", "=", "REC: worksheet.id"]
+          - ["line_type", "=", "total"]
+          - ["total_type", "=", "operating_profit"]
+        save_as: "posture_operating_profit"
+        limit: 1
+
+      - step: "Find posture line for profit_before_tax"
+        action: "search"
+        model: "general_audit_ws_ff42fdc.posture"
+        domain:
+          - ["worksheet_id", "=", "REC: worksheet.id"]
+          - ["line_type", "=", "total"]
+          - ["total_type", "=", "profit_before_tax"]
+        save_as: "posture_profit_before_tax"
+        limit: 1
+
+      - step: "Find posture line for profit_after_tax"
+        action: "search"
+        model: "general_audit_ws_ff42fdc.posture"
+        domain:
+          - ["worksheet_id", "=", "REC: worksheet.id"]
+          - ["line_type", "=", "total"]
+          - ["total_type", "=", "profit_after_tax"]
+        save_as: "posture_profit_after_tax"
+        limit: 1
+
+      - step: "Find posture line for comprehensive_profit"
+        action: "search"
+        model: "general_audit_ws_ff42fdc.posture"
+        domain:
+          - ["worksheet_id", "=", "REC: worksheet.id"]
+          - ["line_type", "=", "total"]
+          - ["total_type", "=", "comprehensive_profit"]
+        save_as: "posture_comprehensive_profit"
+        limit: 1
+
+      - step: "Find posture line for total_equity"
+        action: "search"
+        model: "general_audit_ws_ff42fdc.posture"
+        domain:
+          - ["worksheet_id", "=", "REC: worksheet.id"]
+          - ["line_type", "=", "total"]
+          - ["total_type", "=", "total_equity"]
+        save_as: "posture_total_equity"
+        limit: 1
+
+      - step: "Find posture line for total_liability_equity"
+        action: "search"
+        model: "general_audit_ws_ff42fdc.posture"
+        domain:
+          - ["worksheet_id", "=", "REC: worksheet.id"]
+          - ["line_type", "=", "total"]
+          - ["total_type", "=", "total_liability_equity"]
+        save_as: "posture_total_liability_equity"
+        limit: 1
+
+      # Negative - the Account Group line keeps its own adjustment sums.
+      - step: "Assert T012 group line keeps its adjustment amounts"
+        action: "assert"
+        target: "posture_t012"
+        asserts:
+          unaudited:
+            type: "value"
+            expected: 100000.0
+          adjustment_debit:
+            type: "value"
+            expected: 10000.0
+          adjustment_credit:
+            type: "value"
+            expected: 10000.0
+          audited:
+            type: "value"
+            expected: 100000.0
+
+      # Positive - gross_profit is a profit and loss subtotal, whose layout line
+      # hides the adjustment columns.
+      - step: "Assert gross_profit has no adjustment amounts"
+        action: "assert"
+        target: "posture_gross_profit"
+        asserts:
+          adjustment_debit:
+            type: "value"
+            expected: 0.0
+          adjustment_credit:
+            type: "value"
+            expected: 0.0
+
+      # Positive - operating_profit is a profit and loss subtotal, whose layout line
+      # hides the adjustment columns.
+      - step: "Assert operating_profit has no adjustment amounts"
+        action: "assert"
+        target: "posture_operating_profit"
+        asserts:
+          adjustment_debit:
+            type: "value"
+            expected: 0.0
+          adjustment_credit:
+            type: "value"
+            expected: 0.0
+
+      # Positive - profit_before_tax is a profit and loss subtotal, whose layout line
+      # hides the adjustment columns.
+      - step: "Assert profit_before_tax has no adjustment amounts"
+        action: "assert"
+        target: "posture_profit_before_tax"
+        asserts:
+          adjustment_debit:
+            type: "value"
+            expected: 0.0
+          adjustment_credit:
+            type: "value"
+            expected: 0.0
+
+      # Positive - profit_after_tax is a profit and loss subtotal, whose layout line
+      # hides the adjustment columns.
+      - step: "Assert profit_after_tax has no adjustment amounts"
+        action: "assert"
+        target: "posture_profit_after_tax"
+        asserts:
+          adjustment_debit:
+            type: "value"
+            expected: 0.0
+          adjustment_credit:
+            type: "value"
+            expected: 0.0
+
+      # Positive - comprehensive_profit is a profit and loss subtotal, whose layout line
+      # hides the adjustment columns.
+      - step: "Assert comprehensive_profit has no adjustment amounts"
+        action: "assert"
+        target: "posture_comprehensive_profit"
+        asserts:
+          adjustment_debit:
+            type: "value"
+            expected: 0.0
+          adjustment_credit:
+            type: "value"
+            expected: 0.0
+
+      # Positive - total_equity sums the debit and credit adjustments of its
+      # components at face value, without flipping them by the formula
+      # sign (T012 is a subtracted component).
+      - step: "Assert total_equity shows face-value adjustment amounts"
+        action: "assert"
+        target: "posture_total_equity"
+        asserts:
+          adjustment_debit:
+            type: "value"
+            expected: 10000.0
+          adjustment_credit:
+            type: "value"
+            expected: 10000.0
+          adjustment_visible:
+            type: "value"
+            expected: true
+
+      # Positive - total_liability_equity sums the debit and credit adjustments of its
+      # components at face value, without flipping them by the formula
+      # sign (T012 is a subtracted component).
+      - step: "Assert total_liability_equity shows face-value adjustment amounts"
+        action: "assert"
+        target: "posture_total_liability_equity"
+        asserts:
+          adjustment_debit:
+            type: "value"
+            expected: 10000.0
+          adjustment_credit:
+            type: "value"
+            expected: 10000.0
+          adjustment_visible:
+            type: "value"
+            expected: true
+
+      # Positive - Total Equity and Total Liability and Equity carry
+      # the Comprehensive Income components (T012 is subtracted).
+      - step: "Assert total_equity carries the T012 component"
+        action: "assert"
+        target: "posture_total_equity"
+        asserts:
+          unaudited:
+            type: "value"
+            expected: -100000.0
+          audited:
+            type: "value"
+            expected: -100000.0
+
+      - step: "Assert total_liability_equity carries the T012 component"
+        action: "assert"
+        target: "posture_total_liability_equity"
+        asserts:
+          unaudited:
+            type: "value"
+            expected: -100000.0
+          audited:
+            type: "value"
+            expected: -100000.0
+
+      # Positive - the visibility flag follows the formula: a Total whose
+      # formula subtracts a group has no adjustment columns, a plain
+      # Total keeps them, and Account Group lines always keep them.
+      - step: "Find posture line for total_asset"
+        action: "search"
+        model: "general_audit_ws_ff42fdc.posture"
+        domain:
+          - ["worksheet_id", "=", "REC: worksheet.id"]
+          - ["line_type", "=", "total"]
+          - ["total_type", "=", "total_asset"]
+        save_as: "posture_total_asset"
+        limit: 1
+
+      - step: "Assert adjustment visibility per line"
+        action: "assert"
+        target: "posture_total_asset"
+        asserts:
+          adjustment_visible:
+            type: "value"
+            expected: true
+
+      - step: "Assert Account Group line keeps adjustment visible"
+        action: "assert"
+        target: "posture_t012"
+        asserts:
+          adjustment_visible:
+            type: "value"
+            expected: true
+
+      - step: "Assert total_equity keeps adjustment visible"
+        action: "assert"
+        target: "posture_total_equity"
+        asserts:
+          adjustment_visible:
+            type: "value"
+            expected: true
+
+      - step: "Assert operating_profit hides adjustment"
+        action: "assert"
+        target: "posture_operating_profit"
+        asserts:
+          adjustment_visible:
+            type: "value"
+            expected: false
+
+      # Positive - the layout flag takes effect on Reload: unticking
+      # Show Adjustment on Total Asset hides its adjustment columns.
+      - step: "Find the layout line of total_asset"
+        action: "search"
+        model: "general_audit_ws_ff42fdc.layout_line"
+        domain:
+          - ["line_type", "=", "total"]
+          - ["total_type", "=", "total_asset"]
+        save_as: "layout_total_asset"
+        limit: 1
+
+      - step: "Untick Show Adjustment on the total_asset layout line"
+        action: "write"
+        target: "layout_total_asset"
+        as_user: "base.user_admin"
+        values:
+          show_adjustment: false
+
+      - step: "Reload posture after the layout edit"
+        action: "call"
+        target: "worksheet"
+        method: "action_load_posture"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache of the total_asset posture line"
+        action: "call"
+        target: "posture_total_asset"
+        method: "invalidate_cache"
+
+      - step: "Assert total_asset now hides adjustment"
+        action: "assert"
+        target: "posture_total_asset"
+        asserts:
+          adjustment_visible:
+            type: "value"
+            expected: false
+
+  # ------------------------------------------------------------------
+  # general_audit_ws_ff42fdc.layout_line - configurable master data
+  # ------------------------------------------------------------------
+  - name: "Posture ff42fdc - Layout line rejects invalid and duplicate rows"
+    steps:
+      - step: "Account Group layout line without group is rejected"
+        action: "create"
+        model: "general_audit_ws_ff42fdc.layout_line"
+        as_user: "base.user_admin"
+        expect_error:
+          type: "ValidationError"
+          message_contains: "require an Account Group"
+        values:
+          line_type: "group"
+          sequence: 999
+
+      - step: "Total layout line without total type is rejected"
+        action: "create"
+        model: "general_audit_ws_ff42fdc.layout_line"
+        as_user: "base.user_admin"
+        expect_error:
+          type: "ValidationError"
+          message_contains: "require a Total Type"
+        values:
+          line_type: "total"
+          sequence: 999
+
+      - step: "A second layout line for the same Total Type is rejected"
+        action: "create"
+        model: "general_audit_ws_ff42fdc.layout_line"
+        as_user: "base.user_admin"
+        expect_error:
+          type: "ValidationError"
+          message_contains: "already has a line"
+        values:
+          line_type: "total"
+          total_type: "total_asset"
+          sequence: 999
+
+      - step: "Seeded layout has a line for Other Equity (T006)"
+        action: "search"
+        model: "general_audit_ws_ff42fdc.layout_line"
+        domain:
+          - ["line_type", "=", "group"]
+          - ["group_id.code", "=", "T006"]
+        save_as: "layout_t006"
+        expect_count: 1
+
   # ------------------------------------------------------------------
   # general_audit_ws_b555edd - Cancel and restart
   # ------------------------------------------------------------------
@@ -2702,7 +3223,7 @@ scenarios:
   # ------------------------------------------------------------------
   # general_audit_ws_ff42fdc.posture - T015 (Other Comprehensive Income)
   # interleaved between the Total lines profit_after_tax and
-  # comprehensive_profit (HT/26/000736; _POSTURE_LINE_ORDER)
+  # comprehensive_profit (HT/26/000736; layout)
   # ------------------------------------------------------------------
   - name:
       "Posture ff42fdc - T015 sits between Profit After Tax and Comprehensive Profit"
@@ -2875,7 +3396,7 @@ scenarios:
 
       # Positive (Sasaran) - the T015 group line's sequence sits
       # strictly between profit_after_tax and comprehensive_profit,
-      # per _POSTURE_LINE_ORDER (HT/26/000736).
+      # per the layout (HT/26/000736).
       - step: "Assert T015 group posture line sits after Profit After Tax"
         action: "assert"
         target: "posture_t015_order"

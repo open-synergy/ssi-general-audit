@@ -68,9 +68,16 @@
                                     attrs="{'invisible': [('line_type', '=', 'group')]}"
                                 />
                                 <field name="currency_id" invisible="1" />
+                                <field name="adjustment_visible" invisible="1" />
                                 <field name="unaudited" />
-                                <field name="adjustment_debit" />
-                                <field name="adjustment_credit" />
+                                <field
+                                    name="adjustment_debit"
+                                    attrs="{'invisible': [('adjustment_visible', '=', False)]}"
+                                />
+                                <field
+                                    name="adjustment_credit"
+                                    attrs="{'invisible': [('adjustment_visible', '=', False)]}"
+                                />
                                 <field name="audited" />
                                 <field name="previous" />
                             </tree>
@@ -87,9 +94,19 @@
                                             attrs="{'invisible': [('line_type', '=', 'group')]}"
                                         />
                                         <field name="currency_id" invisible="1" />
+                                        <field
+                                            name="adjustment_visible"
+                                            invisible="1"
+                                        />
                                         <field name="unaudited" />
-                                        <field name="adjustment_debit" />
-                                        <field name="adjustment_credit" />
+                                        <field
+                                            name="adjustment_debit"
+                                            attrs="{'invisible': [('adjustment_visible', '=', False)]}"
+                                        />
+                                        <field
+                                            name="adjustment_credit"
+                                            attrs="{'invisible': [('adjustment_visible', '=', False)]}"
+                                        />
                                         <field name="audited" />
                                         <field name="previous" />
                                     </group>
