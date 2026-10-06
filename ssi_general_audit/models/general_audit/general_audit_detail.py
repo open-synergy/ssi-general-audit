@@ -337,3 +337,40 @@ class GeneralAuditDetail(models.Model):
         currency_field="currency_id",
         help="End period balance after applying adjustments.",
     )
+
+    @api.model_create_multi
+    def create(self, vals_list):
+        """Create audit details and link the matching adjustment lines.
+
+        ``client_adjustment_entry.detail.detail_id`` is a stored compute
+        that does not depend on ``general_audit.detail``. Lines whose
+        detail did not exist yet, or was deleted by an account reload,
+        would otherwise stay unlinked and be excluded from
+        ``adjustment_dr`` and ``adjustment_cr``.
+
+        :param vals_list: list of values for the new audit details
+        :return: the created ``general_audit.detail`` records
+        """
+        details = super().create(vals_list)
+        details._link_adjustment_lines()
+        return details
+
+    def _link_adjustment_lines(self):
+        """Recompute ``detail_id`` of unlinked adjustment lines.
+
+        Only lines of the same engagement and account that currently
+        have no ``detail_id`` are recomputed; linked lines are left alone.
+
+        :return: ``None``
+        """
+        AdjustmentLine = self.env["client_adjustment_entry.detail"].sudo()
+        for record in self:
+            lines = AdjustmentLine.search(
+                [
+                    ("entry_id.general_audit_id", "=", record.general_audit_id.id),
+                    ("account_id", "=", record.account_id.id),
+                    ("detail_id", "=", False),
+                ]
+            )
+            if lines:
+                self.env.add_to_compute(AdjustmentLine._fields["detail_id"], lines)
