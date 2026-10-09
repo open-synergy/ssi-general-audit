@@ -1,9 +1,13 @@
 # Edit Financial Statement Disclosure - Detail (a025441)
 
-> **Module:** ssi*general_audit_worksheet_review **Model:** `general_audit_ws_a025441` >
+> **Module:** `ssi_general_audit_worksheet_review`
+>
+> **Model:** `general_audit_ws_a025441`
+>
 > **Menu:** Windup & Reporting > Review > Financial Statement Disclosure > Financial
-> Statement Disclosure - Detail **Actor:** user in group \_Financial Statement
-> Disclosure (a025441) — User* (or higher)
+> Statement Disclosure - Detail
+>
+> **Actor:** user in group _Financial Statement Disclosure (a025441) — User_ (or higher)
 
 ## Pre-Condition
 
