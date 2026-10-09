@@ -1,6 +1,6 @@
 # Fill Data and Generate Examination Data — Test of Detail
 
-> **Module:** ssi_general_audit_worksheet_test_of_detail
+> **Module:** `ssi_general_audit_worksheet_test_of_detail`
 >
 > **Model:** `general_audit_ws_b4f8e1a`
 >
