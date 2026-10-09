@@ -1,0 +1,566 @@
+options:
+  auto_refresh: true
+
+scenarios:
+  - name: "general_audit_ws_c3b9e71 - uncorrected AJE analysis"
+    steps:
+      - step: "Get config parameter model"
+        action: "search"
+        model: "ir.config_parameter"
+        domain: []
+        save_as: "config_parameter"
+        limit: 1
+
+      - step: "Allow enough CPA licenses for this scenario"
+        action: "call"
+        target: "config_parameter"
+        method: "set_param"
+        args:
+          - "ssi_general_audit.max_number_of_cpa_license"
+          - "100"
+
+      - step: "Create client partner"
+        action: "create"
+        model: "res.partner"
+        save_as: "client"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Client - Uncorrected AJE Analysis"
+          is_company: true
+
+      - step: "Create accountant partner"
+        action: "create"
+        model: "res.partner"
+        save_as: "accountant"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Accountant - Uncorrected AJE Analysis"
+
+      - step: "Get CPA license id category"
+        action: "ref"
+        xml_id: "ssi_partner_identification_cpa_license.partner_identification_accountant_cpa_license"
+        save_as: "cpa_category"
+
+      - step: "Grant accountant a CPA license"
+        action: "create"
+        model: "res.partner.id_number"
+        save_as: "cpa_license"
+        as_user: "base.user_admin"
+        values:
+          partner_id: "REC: accountant.id"
+          category_id: "REC: cpa_category.id"
+          name: "CPA-UNCAJE-0001"
+
+      - step: "Create account type set"
+        action: "create"
+        model: "client_account_type_set"
+        save_as: "account_type_set"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Account Type Set - Uncorrected AJE Analysis"
+          code: "/"
+
+      - step: "Create financial accounting standard"
+        action: "create"
+        model: "accountant.financial_accounting_standard"
+        save_as: "standard"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Financial Accounting Standard - Uncorrected AJE Analysis"
+          code: "/"
+
+      - step: "Create general audit"
+        action: "create"
+        model: "general_audit"
+        save_as: "audit"
+        as_user: "base.user_admin"
+        values:
+          title: "Test General Audit - Uncorrected AJE Analysis"
+          partner_id: "REC: client.id"
+          accountant_id: "REC: accountant.id"
+          account_type_set_id: "REC: account_type_set.id"
+          financial_accounting_standard_id: "REC: standard.id"
+          date_start: 2026-01-01
+          date_end: 2026-12-31
+          need_interim: false
+          need_previous: false
+          num_of_consecutive_audit_firm: 1
+          num_of_consecutive_audit_accountant: 1
+
+      - step: "Open general audit"
+        action: "call"
+        target: "audit"
+        method: "action_open"
+        as_user: "base.user_admin"
+
+      - step: "Create asset account group"
+        action: "create"
+        model: "client_account_group"
+        save_as: "group_as"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Group asset - Uncorrected AJE Analysis"
+          code: "/"
+          sequence: 1
+          normal_balance: "dr"
+          report_category: "asset"
+
+      - step: "Create asset account type"
+        action: "create"
+        model: "client_account_type"
+        save_as: "type_as"
+        as_user: "base.user_admin"
+        values:
+          name: "Type asset - Uncorrected AJE Analysis"
+          code: "/"
+          group_id: "REC: group_as.id"
+          sequence: 1
+          normal_balance: "dr"
+
+      - step: "Create asset account"
+        action: "create"
+        model: "client_account"
+        save_as: "account_as"
+        as_user: "base.user_admin"
+        values:
+          name: "Account asset - Uncorrected AJE Analysis"
+          code: "ACCASUNC"
+          partner_id: "REC: client.id"
+          type_id: "REC: type_as.id"
+
+      - step: "Create asset group detail of the audit"
+        action: "create"
+        model: "general_audit.group_detail"
+        save_as: "group_detail_as"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          group_id: "REC: group_as.id"
+
+      - step: "Create asset standard detail of the audit"
+        action: "create"
+        model: "general_audit.standard_detail"
+        save_as: "standard_detail_as"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: type_as.id"
+          sequence: 1
+
+      - step: "Create revenue account group"
+        action: "create"
+        model: "client_account_group"
+        save_as: "group_rv"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Group revenue - Uncorrected AJE Analysis"
+          code: "/"
+          sequence: 2
+          normal_balance: "cr"
+          report_category: "profit_loss"
+
+      - step: "Create revenue account type"
+        action: "create"
+        model: "client_account_type"
+        save_as: "type_rv"
+        as_user: "base.user_admin"
+        values:
+          name: "Type revenue - Uncorrected AJE Analysis"
+          code: "/"
+          group_id: "REC: group_rv.id"
+          sequence: 2
+          normal_balance: "cr"
+
+      - step: "Create revenue account"
+        action: "create"
+        model: "client_account"
+        save_as: "account_rv"
+        as_user: "base.user_admin"
+        values:
+          name: "Account revenue - Uncorrected AJE Analysis"
+          code: "ACCRVUNC"
+          partner_id: "REC: client.id"
+          type_id: "REC: type_rv.id"
+
+      - step: "Create revenue group detail of the audit"
+        action: "create"
+        model: "general_audit.group_detail"
+        save_as: "group_detail_rv"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          group_id: "REC: group_rv.id"
+
+      - step: "Create revenue standard detail of the audit"
+        action: "create"
+        model: "general_audit.standard_detail"
+        save_as: "standard_detail_rv"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: type_rv.id"
+          sequence: 2
+
+      - step: "Create expense account group"
+        action: "create"
+        model: "client_account_group"
+        save_as: "group_ex"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Group expense - Uncorrected AJE Analysis"
+          code: "/"
+          sequence: 3
+          normal_balance: "dr"
+          report_category: "profit_loss"
+
+      - step: "Create expense account type"
+        action: "create"
+        model: "client_account_type"
+        save_as: "type_ex"
+        as_user: "base.user_admin"
+        values:
+          name: "Type expense - Uncorrected AJE Analysis"
+          code: "/"
+          group_id: "REC: group_ex.id"
+          sequence: 3
+          normal_balance: "dr"
+
+      - step: "Create expense account"
+        action: "create"
+        model: "client_account"
+        save_as: "account_ex"
+        as_user: "base.user_admin"
+        values:
+          name: "Account expense - Uncorrected AJE Analysis"
+          code: "ACCEXUNC"
+          partner_id: "REC: client.id"
+          type_id: "REC: type_ex.id"
+
+      - step: "Create expense group detail of the audit"
+        action: "create"
+        model: "general_audit.group_detail"
+        save_as: "group_detail_ex"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          group_id: "REC: group_ex.id"
+
+      - step: "Create expense standard detail of the audit"
+        action: "create"
+        model: "general_audit.standard_detail"
+        save_as: "standard_detail_ex"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: type_ex.id"
+          sequence: 3
+
+      - step: "Create uncorrected revenue entry"
+        action: "create"
+        model: "client_adjustment_entry"
+        save_as: "entry_u1"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          adjustment_type: "propose"
+          corrected: false
+
+      - step: "Create line 1 of the uncorrected revenue entry"
+        action: "create"
+        model: "client_adjustment_entry.detail"
+        save_as: "line_u1_1"
+        as_user: "base.user_admin"
+        values:
+          entry_id: "REC: entry_u1.id"
+          account_id: "REC: account_as.id"
+          name: "uncorrected revenue line 1"
+          debit: 100.0
+          credit: 0.0
+
+      - step: "Create line 2 of the uncorrected revenue entry"
+        action: "create"
+        model: "client_adjustment_entry.detail"
+        save_as: "line_u1_2"
+        as_user: "base.user_admin"
+        values:
+          entry_id: "REC: entry_u1.id"
+          account_id: "REC: account_rv.id"
+          name: "uncorrected revenue line 2"
+          debit: 0.0
+          credit: 100.0
+
+      - step: "Mark the uncorrected revenue entry as done"
+        action: "write"
+        target: "entry_u1"
+        as_user: "base.user_admin"
+        values:
+          state: "done"
+
+      - step: "Create uncorrected expense entry"
+        action: "create"
+        model: "client_adjustment_entry"
+        save_as: "entry_u2"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          adjustment_type: "propose"
+          corrected: false
+
+      - step: "Create line 1 of the uncorrected expense entry"
+        action: "create"
+        model: "client_adjustment_entry.detail"
+        save_as: "line_u2_1"
+        as_user: "base.user_admin"
+        values:
+          entry_id: "REC: entry_u2.id"
+          account_id: "REC: account_ex.id"
+          name: "uncorrected expense line 1"
+          debit: 30.0
+          credit: 0.0
+
+      - step: "Create line 2 of the uncorrected expense entry"
+        action: "create"
+        model: "client_adjustment_entry.detail"
+        save_as: "line_u2_2"
+        as_user: "base.user_admin"
+        values:
+          entry_id: "REC: entry_u2.id"
+          account_id: "REC: account_as.id"
+          name: "uncorrected expense line 2"
+          debit: 0.0
+          credit: 30.0
+
+      - step: "Mark the uncorrected expense entry as done"
+        action: "write"
+        target: "entry_u2"
+        as_user: "base.user_admin"
+        values:
+          state: "done"
+
+      - step: "Create corrected entry"
+        action: "create"
+        model: "client_adjustment_entry"
+        save_as: "entry_c1"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          adjustment_type: "propose"
+          corrected: true
+
+      - step: "Create line 1 of the corrected entry"
+        action: "create"
+        model: "client_adjustment_entry.detail"
+        save_as: "line_c1_1"
+        as_user: "base.user_admin"
+        values:
+          entry_id: "REC: entry_c1.id"
+          account_id: "REC: account_as.id"
+          name: "corrected line 1"
+          debit: 500.0
+          credit: 0.0
+
+      - step: "Create line 2 of the corrected entry"
+        action: "create"
+        model: "client_adjustment_entry.detail"
+        save_as: "line_c1_2"
+        as_user: "base.user_admin"
+        values:
+          entry_id: "REC: entry_c1.id"
+          account_id: "REC: account_rv.id"
+          name: "corrected line 2"
+          debit: 0.0
+          credit: 500.0
+
+      - step: "Mark the corrected entry as done"
+        action: "write"
+        target: "entry_c1"
+        as_user: "base.user_admin"
+        values:
+          state: "done"
+
+      - step: "Create the Specific Materiality worksheet"
+        action: "create"
+        model: "general_audit_ws_6dcda0e"
+        save_as: "specific_materiality"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          materiality_type: "pm"
+
+      - step: "Set the Performance Materiality base"
+        action: "write"
+        target: "specific_materiality"
+        as_user: "base.user_admin"
+        values:
+          base: 50.0
+
+      - step: "Create mapping line of the as account type"
+        action: "create"
+        model: "general_audit_ws_6dcda0e_materiality_mapping"
+        save_as: "mapping_as"
+        as_user: "base.user_admin"
+        values:
+          worksheet_id: "REC: specific_materiality.id"
+          standard_detail_id: "REC: standard_detail_as.id"
+
+      - step: "Set the balance of the as mapping line"
+        action: "write"
+        target: "mapping_as"
+        as_user: "base.user_admin"
+        values:
+          balance: 1000.0
+
+      - step: "Create mapping line of the rv account type"
+        action: "create"
+        model: "general_audit_ws_6dcda0e_materiality_mapping"
+        save_as: "mapping_rv"
+        as_user: "base.user_admin"
+        values:
+          worksheet_id: "REC: specific_materiality.id"
+          standard_detail_id: "REC: standard_detail_rv.id"
+
+      - step: "Set the balance of the rv mapping line"
+        action: "write"
+        target: "mapping_rv"
+        as_user: "base.user_admin"
+        values:
+          balance: 400.0
+
+      - step: "Create mapping line of the ex account type"
+        action: "create"
+        model: "general_audit_ws_6dcda0e_materiality_mapping"
+        save_as: "mapping_ex"
+        as_user: "base.user_admin"
+        values:
+          worksheet_id: "REC: specific_materiality.id"
+          standard_detail_id: "REC: standard_detail_ex.id"
+
+      - step: "Set the balance of the ex mapping line"
+        action: "write"
+        target: "mapping_ex"
+        as_user: "base.user_admin"
+        values:
+          balance: 0.0
+
+      - step: "Create the Uncorrected AJE Analysis worksheet"
+        action: "create"
+        model: "general_audit_ws_c3b9e71"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          tax_rate: 20.0
+
+      - step: "Open the worksheet to build the group lines"
+        action: "call"
+        target: "worksheet"
+        method: "action_open"
+        as_user: "base.user_admin"
+
+      - step: "Assert the worksheet links the uncorrected entries only"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          uncorrected_entry_ids:
+            type: "m2m"
+            check: "exact"
+            expected_records:
+              - "REC: entry_u1"
+              - "REC: entry_u2"
+
+      - step: "Assert Performance Materiality comes from Specific Materiality"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          performance_materiality:
+            type: "value"
+            expected: 50.0
+
+      - step: "Fetch the asset group line"
+        action: "search"
+        model: "general_audit_ws_c3b9e71.group_line"
+        domain:
+          - ["worksheet_id", "=", "REC: worksheet.id"]
+          - ["group_id", "=", "REC: group_as.id"]
+        save_as: "line_as"
+        limit: 1
+
+      - step: "Assert the asset line counts only uncorrected entries"
+        action: "assert"
+        target: "line_as"
+        asserts:
+          balance:
+            type: "value"
+            expected: 1000.0
+          uncorrected_amount:
+            type: "value"
+            expected: 70.0
+
+      - step: "Fetch the revenue group line"
+        action: "search"
+        model: "general_audit_ws_c3b9e71.group_line"
+        domain:
+          - ["worksheet_id", "=", "REC: worksheet.id"]
+          - ["group_id", "=", "REC: group_rv.id"]
+        save_as: "line_rv"
+        limit: 1
+
+      - step: "Assert the revenue line uncorrected amount"
+        action: "assert"
+        target: "line_rv"
+        asserts:
+          uncorrected_amount:
+            type: "value"
+            expected: 100.0
+
+      - step: "Fetch the expense group line"
+        action: "search"
+        model: "general_audit_ws_c3b9e71.group_line"
+        domain:
+          - ["worksheet_id", "=", "REC: worksheet.id"]
+          - ["group_id", "=", "REC: group_ex.id"]
+        save_as: "line_ex"
+        limit: 1
+
+      - step: "Assert a zero balance gives a zero percentage of balance"
+        action: "assert"
+        target: "line_ex"
+        asserts:
+          uncorrected_amount:
+            type: "value"
+            expected: 30.0
+          pct_of_balance:
+            type: "value"
+            expected: 0.0
+
+      - step: "Assert the impact and the conclusion"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          pre_tax_impact:
+            type: "value"
+            expected: 70.0
+          post_tax_impact:
+            type: "value"
+            expected: 56.0
+          materiality_conclusion:
+            type: "value"
+            expected: "material"
+
+      - step: "Raise the tax rate"
+        action: "write"
+        target: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          tax_rate: 50.0
+
+      - step: "Assert the after-tax impact follows the tax rate"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          post_tax_impact:
+            type: "value"
+            expected: 35.0
+          materiality_conclusion:
+            type: "value"
+            expected: "not_material"
