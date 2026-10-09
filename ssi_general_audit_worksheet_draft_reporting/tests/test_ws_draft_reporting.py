@@ -2,6 +2,8 @@
 # Copyright 2026 PT. Simetri Sinergi Indonesia
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 
+from unittest import mock
+
 from odoo_yaml_test import YamlTransactionCase
 
 from odoo.tests import tagged
@@ -334,3 +336,146 @@ class TestWSDraftReporting(YamlTransactionCase):
 
         sequence = self._posture_sequence_by_code(worksheet)
         self.assertEqual(sequence["T006"], max(sequence.values()))
+
+    def _create_b555edd_worksheet(self, suffix, need_previous=False):
+        """Create a ``general_audit_ws_b555edd`` on a fresh General Audit.
+
+        :param str suffix: text that keeps the fixtures distinguishable
+        :param bool need_previous: whether the audit keeps a previous period
+        :return: the worksheet record
+        :rtype: recordset
+        """
+        audit = self._create_general_audit_for_posture(suffix)
+        if need_previous:
+            audit.need_previous = True
+        ws_type = self.env.ref(
+            "ssi_general_audit_worksheet_draft_reporting.worksheet_type_b555edd"
+        )
+        return self.env["general_audit_ws_b555edd"].create(
+            {"general_audit_id": audit.id, "type_id": ws_type.id}
+        )
+
+    def _equity_source(self):
+        """Build a fake ``_get_equity_source`` result.
+
+        Retained earnings opens at 500 and closes at 480 before profit;
+        profit is 100 and OCI is 10.
+
+        :return: the dict ``_get_equity_source`` would return
+        :rtype: dict
+        """
+        retained = self.env.ref(
+            "ssi_general_audit_worksheet_draft_reporting."
+            "general_audit_ws_b555edd_equity_component_retained_earnings"
+        )
+        return {
+            "profit": 100.0,
+            "oci": 10.0,
+            "components": {retained.id: (500.0, 480.0)},
+        }
+
+    def test_equity_reload_allocates_profit_and_oci(self):
+        """Reload gives profit to retained earnings and OCI to the OCI line.
+
+        Pure Python -- trigger P6 (L-15: no mock/patch in YAML; the
+        trial balance behind ``_get_equity_source`` is replaced by a
+        fixed result). Every line must add up, so no other movement is
+        left unexplained.
+
+        :return: nothing; asserts the retained earnings and OCI lines
+        """
+        worksheet = self._create_b555edd_worksheet("EquityAlloc")
+        with mock.patch.object(
+            type(worksheet), "_get_equity_source", return_value=self._equity_source()
+        ):
+            worksheet.action_reload_account()
+
+        lines = worksheet.equity_line_ids
+        retained = lines.filtered(lambda r: r.component_id.receive_profit)
+        oci = lines.filtered(lambda r: r.component_id.receive_oci)
+        self.assertEqual(len(retained), 1)
+        self.assertEqual(retained.profit, 100.0)
+        self.assertEqual(retained.closing_balance, 580.0)
+        self.assertEqual(retained.other_movement, -20.0)
+        self.assertEqual(oci.oci, 10.0)
+        self.assertEqual(oci.closing_balance, 10.0)
+        self.assertEqual(oci.other_movement, 0.0)
+        self.assertEqual(sum(lines.mapped("profit")), 100.0)
+
+    def test_equity_owner_transaction_explains_other_movement(self):
+        """A typed-in dividend removes the matching other movement.
+
+        Pure Python -- trigger P6 (L-15: no mock/patch in YAML; the
+        source figures are fixed). Retained earnings leaves 20 of
+        movement unexplained; a dividend of -20 explains it, and Reload
+        again throws the typed-in value away.
+
+        :return: nothing; asserts other movement and the manual flag
+        """
+        worksheet = self._create_b555edd_worksheet("EquityDividend")
+        with mock.patch.object(
+            type(worksheet), "_get_equity_source", return_value=self._equity_source()
+        ):
+            worksheet.action_reload_account()
+            retained = worksheet.equity_line_ids.filtered(
+                lambda r: r.component_id.receive_profit
+            )
+            retained.dividend = -20.0
+
+            self.assertEqual(retained.other_movement, 0.0)
+            self.assertTrue(worksheet.equity_has_manual)
+
+            worksheet.action_reload_account()
+
+        retained = worksheet.equity_line_ids.filtered(
+            lambda r: r.component_id.receive_profit
+        )
+        self.assertEqual(retained.dividend, 0.0)
+        self.assertEqual(retained.other_movement, -20.0)
+        self.assertFalse(worksheet.equity_has_manual)
+
+    def test_equity_previous_period_lines_follow_need_previous(self):
+        """Previous period lines exist only when the audit keeps one.
+
+        Pure Python -- trigger P6 (L-15: no mock/patch in YAML; the
+        source figures are fixed). The same source is used for both
+        periods, so the check is about the line count only.
+
+        :return: nothing; asserts the line count per period
+        """
+        components = self.env["general_audit_ws_b555edd.equity_component"].search_count(
+            []
+        )
+        without = self._create_b555edd_worksheet("EquityNoPrev")
+        with_previous = self._create_b555edd_worksheet("EquityPrev", need_previous=True)
+        for worksheet in (without, with_previous):
+            with mock.patch.object(
+                type(worksheet),
+                "_get_equity_source",
+                return_value=self._equity_source(),
+            ):
+                worksheet.action_reload_account()
+
+        self.assertEqual(len(without.equity_current_ids), components)
+        self.assertEqual(len(without.equity_previous_ids), 0)
+        self.assertEqual(len(with_previous.equity_current_ids), components)
+        self.assertEqual(len(with_previous.equity_previous_ids), components)
+
+    def test_equity_reload_without_standard_details(self):
+        """Reload on an audit without standard details gives empty lines.
+
+        Pure Python -- trigger P6 (L-15: the real ``_get_equity_source``
+        is called inside a test that also patches nothing else, so the
+        fixture must be built programmatically). No account type means
+        every figure is zero and nothing raises.
+
+        :return: nothing; asserts zero figures on every line
+        """
+        worksheet = self._create_b555edd_worksheet("EquityEmpty")
+
+        worksheet.action_reload_account()
+
+        lines = worksheet.equity_line_ids
+        self.assertTrue(lines)
+        self.assertFalse(any(lines.mapped("closing_balance")))
+        self.assertFalse(any(lines.mapped("other_movement")))

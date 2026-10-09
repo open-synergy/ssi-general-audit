@@ -19,6 +19,7 @@
         # MASTER DATA
         "data/master/general_audit_worksheet_conclusion.xml",
         "data/master/general_audit_ws_bbbdfe7_item.xml",
+        "data/master/general_audit_ws_b555edd_equity_component.xml",
         "data/master/general_audit_ws_de69c2f_item.xml",
         "data/master/general_audit_ws_e59c663_item.xml",
         "data/master/general_audit_ws_e59c663_review_item.xml",
@@ -80,6 +81,7 @@
         "views/ga_bbbdfe7/general_audit_ws_bbbdfe7_item_views.xml",
         "security/ir.model.access.csv",
         "views/assets.xml",
+        "views/ga_b555edd/general_audit_ws_b555edd_equity_component_views.xml",
     ],
     "demo": [],
 }

@@ -46,13 +46,23 @@
                         name="statement_of_financial_position"
                         string="Statement of Financial Position"
                     >
+                        <field name="equity_has_manual" invisible="1" />
                         <button
                             name="action_reload_account"
                             type="object"
                             string="Reload"
                             class="oe_highlight"
                             icon="fa-refresh"
-                            attrs="{'invisible': [('state', 'not in', ['draft', 'open'])]}"
+                            attrs="{'invisible': ['|', ('state', 'not in', ['draft', 'open']), ('equity_has_manual', '=', True)]}"
+                        />
+                        <button
+                            name="action_reload_account"
+                            type="object"
+                            string="Reload"
+                            class="oe_highlight"
+                            icon="fa-refresh"
+                            confirm="Reload clears the owner transactions typed in the equity tab. Are you sure?"
+                            attrs="{'invisible': ['|', ('state', 'not in', ['draft', 'open']), ('equity_has_manual', '=', False)]}"
                         />
                         <field name="sfp_detail_ids" nolabel="1">
                             <tree create="false" delete="false" edit="false">
@@ -81,7 +91,16 @@
                             string="Reload"
                             class="oe_highlight"
                             icon="fa-refresh"
-                            attrs="{'invisible': [('state', 'not in', ['draft', 'open'])]}"
+                            attrs="{'invisible': ['|', ('state', 'not in', ['draft', 'open']), ('equity_has_manual', '=', True)]}"
+                        />
+                        <button
+                            name="action_reload_account"
+                            type="object"
+                            string="Reload"
+                            class="oe_highlight"
+                            icon="fa-refresh"
+                            confirm="Reload clears the owner transactions typed in the equity tab. Are you sure?"
+                            attrs="{'invisible': ['|', ('state', 'not in', ['draft', 'open']), ('equity_has_manual', '=', False)]}"
                         />
                         <field name="soci_detail_ids" nolabel="1">
                             <tree create="false" delete="false" edit="false">
@@ -96,6 +115,157 @@
                                     <field name="currency_id" invisible="1" />
                                     <field name="current_balance" />
                                     <field name="previous_balance" />
+                                </group>
+                            </form>
+                        </field>
+                    </page>
+                    <page
+                        name="statement_of_changes_in_equity"
+                        string="Statement of Changes in Equity"
+                    >
+                        <button
+                            name="action_reload_account"
+                            type="object"
+                            string="Reload"
+                            class="oe_highlight"
+                            icon="fa-refresh"
+                            attrs="{'invisible': ['|', ('state', 'not in', ['draft', 'open']), ('equity_has_manual', '=', True)]}"
+                        />
+                        <button
+                            name="action_reload_account"
+                            type="object"
+                            string="Reload"
+                            class="oe_highlight"
+                            icon="fa-refresh"
+                            confirm="Reload clears the owner transactions typed in the equity tab. Are you sure?"
+                            attrs="{'invisible': ['|', ('state', 'not in', ['draft', 'open']), ('equity_has_manual', '=', False)]}"
+                        />
+                        <div class="alert alert-info" role="alert">
+                            <p>
+                                Opening and closing balances come from the trial
+                                balance, summed by account type for each equity
+                                component. Profit goes to Retained Earnings and OCI
+                                to Other Comprehensive Income.
+                            </p>
+                            <p>
+                                Type in the owner transactions yourself, signed by
+                                their effect on the component:
+                            </p>
+                            <ul>
+                                <li>
+                                    <b>Issuance of Shares</b>: shares issued to the
+                                    owners, on the share capital or paid in capital
+                                    line. Positive when equity increases. Support it
+                                    with the deed or the shareholders' resolution.
+                                </li>
+                                <li>
+                                    <b>Treasury Shares</b>: shares bought back or
+                                    reissued, on the treasury shares line. Negative
+                                    when bought back, positive when reissued.
+                                </li>
+                                <li>
+                                    <b>Addition of Reserves</b>: amount moved to
+                                    reserves, on the reserve line. Enter the matching
+                                    negative amount on the retained earnings line.
+                                </li>
+                                <li>
+                                    <b>Dividends</b>: dividends declared, on the
+                                    retained earnings line as a negative amount,
+                                    because they reduce equity.
+                                </li>
+                            </ul>
+                            <p>
+                                Other Movement = Closing Balance - (Opening Balance
+                                + Profit + OCI + owner transactions). It is 0 when
+                                the whole movement is explained. Reload replaces
+                                every figure, including the ones you typed in.
+                            </p>
+                        </div>
+                        <separator string="Current Period" />
+                        <field name="equity_current_ids" nolabel="1">
+                            <tree create="false" delete="false" editable="bottom">
+                                <field name="component_id" readonly="1" />
+                                <field name="currency_id" invisible="1" />
+                                <field name="state" invisible="1" />
+                                <field name="opening_balance" />
+                                <field name="profit" />
+                                <field name="oci" />
+                                <field
+                                    name="issuance"
+                                    attrs="{'readonly': [('state', 'not in', ['draft', 'open'])]}"
+                                />
+                                <field
+                                    name="treasury"
+                                    attrs="{'readonly': [('state', 'not in', ['draft', 'open'])]}"
+                                />
+                                <field
+                                    name="reserve"
+                                    attrs="{'readonly': [('state', 'not in', ['draft', 'open'])]}"
+                                />
+                                <field
+                                    name="dividend"
+                                    attrs="{'readonly': [('state', 'not in', ['draft', 'open'])]}"
+                                />
+                                <field name="other_movement" />
+                                <field name="closing_balance" />
+                            </tree>
+                            <form>
+                                <group>
+                                    <field name="component_id" />
+                                    <field name="currency_id" invisible="1" />
+                                    <field name="opening_balance" />
+                                    <field name="profit" />
+                                    <field name="oci" />
+                                    <field name="issuance" />
+                                    <field name="treasury" />
+                                    <field name="reserve" />
+                                    <field name="dividend" />
+                                    <field name="other_movement" />
+                                    <field name="closing_balance" />
+                                </group>
+                            </form>
+                        </field>
+                        <separator string="Previous Period" />
+                        <field name="equity_previous_ids" nolabel="1">
+                            <tree create="false" delete="false" editable="bottom">
+                                <field name="component_id" readonly="1" />
+                                <field name="currency_id" invisible="1" />
+                                <field name="state" invisible="1" />
+                                <field name="opening_balance" />
+                                <field name="profit" />
+                                <field name="oci" />
+                                <field
+                                    name="issuance"
+                                    attrs="{'readonly': [('state', 'not in', ['draft', 'open'])]}"
+                                />
+                                <field
+                                    name="treasury"
+                                    attrs="{'readonly': [('state', 'not in', ['draft', 'open'])]}"
+                                />
+                                <field
+                                    name="reserve"
+                                    attrs="{'readonly': [('state', 'not in', ['draft', 'open'])]}"
+                                />
+                                <field
+                                    name="dividend"
+                                    attrs="{'readonly': [('state', 'not in', ['draft', 'open'])]}"
+                                />
+                                <field name="other_movement" />
+                                <field name="closing_balance" />
+                            </tree>
+                            <form>
+                                <group>
+                                    <field name="component_id" />
+                                    <field name="currency_id" invisible="1" />
+                                    <field name="opening_balance" />
+                                    <field name="profit" />
+                                    <field name="oci" />
+                                    <field name="issuance" />
+                                    <field name="treasury" />
+                                    <field name="reserve" />
+                                    <field name="dividend" />
+                                    <field name="other_movement" />
+                                    <field name="closing_balance" />
                                 </group>
                             </form>
                         </field>

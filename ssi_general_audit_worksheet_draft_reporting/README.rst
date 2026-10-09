@@ -54,6 +54,8 @@ The worksheets in this module cover the following phase activities:
 - ``general_audit_ws_ae598e6.influence`` — Finding line in Management Letter
 - ``general_audit_ws_ae598e6.control``   — Control deficiency line in Management Letter
 - ``general_audit_ws_b555edd``           — Report Formatting Control
+- ``general_audit_ws_b555edd.equity_component`` — Equity component master
+- ``general_audit_ws_b555edd.equity_line`` — Statement of changes in equity line
 - ``general_audit_ws_bbbdfe7``           — Management Representation
 - ``general_audit_ws_bbbdfe7.checklist`` — Representation checklist line
 - ``general_audit_ws_bbbdfe7.item``      — Representation checklist item master

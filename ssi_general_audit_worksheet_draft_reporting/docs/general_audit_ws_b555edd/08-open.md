@@ -30,6 +30,12 @@
 6. Click the **Reload** button to fill both statement tabs from the General Audit's
    standard account type lines.
 7. Open the **Statement of Comprehensive Income** tab to review its lines.
+8. Open the **Statement of Changes in Equity** tab. **Reload** also fills this tab, one
+   row per equity component, first for the current period and then for the previous
+   period.
+9. Optionally type the owner transactions on a row: **Issuance of Shares**, **Treasury
+   Shares**, **Addition of Reserves** and **Dividends**, entered as the amount that
+   changes the component (a dividend is negative).
 
 ## Post-Condition
 
@@ -41,6 +47,17 @@
   equity), each with its **Current Balance** and **Previous Balance**.
 - **Statement of Comprehensive Income** lists the rows of account groups T009-T015
   (revenue, expenses and other comprehensive income) in the same way.
+- **Statement of Changes in Equity** lists, per period, one row per equity component
+  with **Opening Balance**, **Profit**, **OCI**, the four owner transactions, **Other
+  Movement** and **Closing Balance**. Profit goes to Retained Earnings and OCI to Other
+  Comprehensive Income. **Other Movement** is the part of the movement that profit, OCI
+  and the typed-in owner transactions do not explain; it becomes 0 once the owner
+  transactions are filled in. The previous period section has rows only when the General
+  Audit keeps a previous period. The figures assume a trial balance before closing
+  entries; when profit is already inside the Retained Earnings balance, that row shows
+  the profit as **Other Movement**.
+- Clicking **Reload** when owner transactions are typed in asks for confirmation first,
+  because Reload clears them.
 - Clicking **Reload** again does not duplicate rows; it removes the previous rows and
   creates them again from the General Audit. **Reload** is visible only while the
   worksheet is **Draft** or **On Progress**.
