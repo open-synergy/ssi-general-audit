@@ -21,7 +21,25 @@
                         optional="hide"
                     />
             </xpath>
+            <xpath expr="//filter[@name='dom_draft']" position="before">
+                <filter
+                        name="dom_corrected"
+                        string="Corrected"
+                        domain="[('corrected','=',True)]"
+                    />
+                <filter
+                        name="dom_uncorrected"
+                        string="Uncorrected"
+                        domain="[('corrected','=',False)]"
+                    />
+                <separator />
+            </xpath>
             <xpath expr="//filter[@name='grp_company']" position="after">
+                <filter
+                        name="grp_corrected"
+                        string="Corrected"
+                        context="{'group_by':'corrected'}"
+                    />
                 <filter
                         name="grp_ou"
                         string="Operating Unit"
@@ -57,6 +75,7 @@
                     <field name="date_end" />
                     <field name="account_type_set_id" />
                     <field name="adjustment_type" />
+                    <field name="corrected" />
                 </xpath>
             </data>
         </field>
@@ -85,6 +104,7 @@
                     <field name="account_type_set_id" />
                     <field name="currency_id" />
                     <field name="adjustment_type" />
+                    <field name="corrected" />
                 </xpath>
                 <xpath expr="//group[@name='header_right']" position="inside">
                     <field name="date_start" />

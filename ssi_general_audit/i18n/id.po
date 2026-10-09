@@ -7196,6 +7196,7 @@ msgstr "Total Penyesuaian Debit"
 #. module: ssi_general_audit
 #: model:trial_balance_computation_item,name:ssi_general_audit.trial_balance_computation_item_1_d0b0cb3e
 #, fuzzy
+#: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit__aje_total_asset
 msgid "Total Asset"
 msgstr "Total Debit"
 
@@ -7980,6 +7981,156 @@ msgstr ""
 "\tSilakan tinjau lembar kerja yang sudah ada dan pastikan jumlah rekaman "
 "yang ditautkan sesuai \n"
 "\tdengan batas maksimum atau hubungi administrator Anda."
+
+#. module: ssi_general_audit
+#: model:ir.model.fields,field_description:ssi_general_audit.field_client_adjustment_entry__corrected
+#: model_terms:ir.ui.view,arch_db:ssi_general_audit.client_adjustment_entry_view_search
+msgid "Corrected"
+msgstr "Dikoreksi"
+
+#. module: ssi_general_audit
+#: model:ir.model.fields,help:ssi_general_audit.field_client_adjustment_entry__corrected
+msgid ""
+"Check if the client corrected (booked) this adjustment. Only corrected "
+"adjustments are counted in the Adjustment figures of the audit worksheets. "
+"Uncorrected adjustments are analysed separately as unadjusted "
+"misstatements."
+msgstr ""
+"Centang bila klien mengoreksi (membukukan) penyesuaian ini. Hanya "
+"penyesuaian yang dikoreksi yang dihitung pada angka Adjustment di KKA. "
+"Penyesuaian yang tidak dikoreksi dianalisis terpisah sebagai salah saji "
+"yang tidak dikoreksi."
+
+#. module: ssi_general_audit
+#: model_terms:ir.ui.view,arch_db:ssi_general_audit.client_adjustment_entry_view_search
+msgid "Uncorrected"
+msgstr "Tidak Dikoreksi"
+
+#. module: ssi_general_audit
+#: model:ir.model.fields,field_description:ssi_general_audit.field_client_account_group__report_category
+msgid "Report Category"
+msgstr "Kategori Laporan"
+
+#. module: ssi_general_audit
+#: model:ir.model.fields.selection,name:ssi_general_audit.selection__client_account_group__report_category__asset
+#: model:ir.model.fields,field_description:ssi_general_audit.field_client_adjustment_entry_detail__impact_asset
+msgid "Asset"
+msgstr "Aset"
+
+#. module: ssi_general_audit
+#: model:ir.model.fields.selection,name:ssi_general_audit.selection__client_account_group__report_category__liability
+msgid "Liability"
+msgstr "Liabilitas"
+
+#. module: ssi_general_audit
+#: model:ir.model.fields.selection,name:ssi_general_audit.selection__client_account_group__report_category__equity
+msgid "Equity"
+msgstr "Ekuitas"
+
+#. module: ssi_general_audit
+#: model:ir.model.fields.selection,name:ssi_general_audit.selection__client_account_group__report_category__profit_loss
+#: model:ir.model.fields,field_description:ssi_general_audit.field_client_adjustment_entry_detail__impact_profit_loss
+msgid "Profit & Loss"
+msgstr "Laba Rugi"
+
+#. module: ssi_general_audit
+#: model:ir.model.fields,field_description:ssi_general_audit.field_client_adjustment_entry_detail__impact_liability
+msgid "Liabilities"
+msgstr "Liabilitas"
+
+#. module: ssi_general_audit
+#: model:ir.model.fields,field_description:ssi_general_audit.field_client_adjustment_entry_detail__impact_equity
+msgid "Equities"
+msgstr "Ekuitas"
+
+#. module: ssi_general_audit
+#: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit__aje_summary_line_ids
+#: model_terms:ir.ui.view,arch_db:ssi_general_audit.general_audit_view_form
+msgid "AJE Summaries"
+msgstr "Ringkasan AJE"
+
+#. module: ssi_general_audit
+#: model_terms:ir.ui.view,arch_db:ssi_general_audit.general_audit_view_form
+#: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit__aje_total_liability
+msgid "Total Liabilities"
+msgstr "Total Liabilitas"
+
+#. module: ssi_general_audit
+#: model_terms:ir.ui.view,arch_db:ssi_general_audit.general_audit_view_form
+#: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit__aje_total_equity
+msgid "Total Equities"
+msgstr "Total Ekuitas"
+
+#. module: ssi_general_audit
+#: model_terms:ir.ui.view,arch_db:ssi_general_audit.general_audit_view_form
+#: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit__aje_total_profit_loss
+msgid "Total Profit & Loss"
+msgstr "Total Laba Rugi"
+
+#. module: ssi_general_audit
+#: model:ir.model.fields,help:ssi_general_audit.field_client_adjustment_entry_detail__corrected
+msgid "Whether the parent adjustment entry is corrected by the client."
+msgstr "Apakah entri penyesuaian induk dikoreksi oleh klien."
+
+#. module: ssi_general_audit
+#: model:ir.model.fields,help:ssi_general_audit.field_client_adjustment_entry_detail__impact_asset
+msgid "Impact on assets: debit minus credit, for accounts whose group has the Asset report category."
+msgstr "Dampak ke aset: debit dikurangi kredit, untuk akun yang grupnya berkategori laporan Asset."
+
+#. module: ssi_general_audit
+#: model:ir.model.fields,help:ssi_general_audit.field_client_adjustment_entry_detail__impact_liability
+msgid "Impact on liabilities: credit minus debit, for accounts whose group has the Liability report category."
+msgstr "Dampak ke liabilitas: kredit dikurangi debit, untuk akun yang grupnya berkategori laporan Liability."
+
+#. module: ssi_general_audit
+#: model:ir.model.fields,help:ssi_general_audit.field_client_adjustment_entry_detail__impact_equity
+msgid "Impact on equity: credit minus debit, for accounts whose group has the Equity report category."
+msgstr "Dampak ke ekuitas: kredit dikurangi debit, untuk akun yang grupnya berkategori laporan Equity."
+
+#. module: ssi_general_audit
+#: model:ir.model.fields,help:ssi_general_audit.field_client_adjustment_entry_detail__impact_profit_loss
+msgid "Impact on profit and loss: credit minus debit, for accounts whose group has the Profit & Loss report category."
+msgstr "Dampak ke laba rugi: kredit dikurangi debit, untuk akun yang grupnya berkategori laporan Profit & Loss."
+
+#. module: ssi_general_audit
+#: model:ir.model.fields,help:ssi_general_audit.field_client_account_group__report_category
+msgid "Financial statement category of the accounts under this group. Used to summarise the impact of adjustment entries (AJE Summaries). Leave empty to exclude the group from the impact columns."
+msgstr "Kategori laporan keuangan dari akun-akun pada grup ini. Dipakai untuk meringkas dampak entri penyesuaian (Ringkasan AJE). Kosongkan untuk mengeluarkan grup dari kolom dampak."
+
+#. module: ssi_general_audit
+#: model:ir.model.fields,help:ssi_general_audit.field_general_audit__aje_summary_line_ids
+msgid "Lines of the done and corrected adjustment entries of this audit, with their impact on the financial statement categories."
+msgstr "Baris entri penyesuaian berstatus done dan dikoreksi pada audit ini, beserta dampaknya ke kategori laporan keuangan."
+
+#. module: ssi_general_audit
+#: model:ir.model.fields,help:ssi_general_audit.field_general_audit__aje_total_asset
+msgid "Total asset impact of the AJE Summaries lines."
+msgstr "Total dampak aset dari baris AJE Summaries."
+
+#. module: ssi_general_audit
+#: model:ir.model.fields,help:ssi_general_audit.field_general_audit__aje_total_liability
+msgid "Total liability impact of the AJE Summaries lines."
+msgstr "Total dampak liabilitas dari baris AJE Summaries."
+
+#. module: ssi_general_audit
+#: model:ir.model.fields,help:ssi_general_audit.field_general_audit__aje_total_equity
+msgid "Total equity impact of the AJE Summaries lines."
+msgstr "Total dampak ekuitas dari baris AJE Summaries."
+
+#. module: ssi_general_audit
+#: model:ir.model.fields,help:ssi_general_audit.field_general_audit__aje_total_profit_loss
+msgid "Total profit and loss impact of the AJE Summaries lines."
+msgstr "Total dampak laba rugi dari baris AJE Summaries."
+
+#. module: ssi_general_audit
+#: model_terms:ir.ui.view,arch_db:ssi_general_audit.general_audit_view_form
+msgid "Totals"
+msgstr "Total"
+
+#. module: ssi_general_audit
+#: model_terms:ir.ui.view,arch_db:ssi_general_audit.general_audit_view_form
+msgid "Only corrected adjustment entries in Done state are listed."
+msgstr "Hanya entri penyesuaian yang dikoreksi dan berstatus Done yang ditampilkan."
 
 #~ msgid "Assigned Attachments"
 #~ msgstr "Lampiran yang Ditugaskan"

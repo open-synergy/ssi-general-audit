@@ -1,0 +1,384 @@
+options:
+  auto_refresh: true
+
+scenarios:
+  - name: "client_adjustment_entry.detail - impact columns and AJE summary lines"
+    steps:
+      - step: "Get config parameter model"
+        action: "search"
+        model: "ir.config_parameter"
+        domain: []
+        save_as: "config_parameter"
+        limit: 1
+
+      - step: "Allow enough CPA licenses for this scenario"
+        action: "call"
+        target: "config_parameter"
+        method: "set_param"
+        args:
+          - "ssi_general_audit.max_number_of_cpa_license"
+          - "100"
+
+      - step: "Create client partner"
+        action: "create"
+        model: "res.partner"
+        save_as: "client"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Client - AJE Summary"
+          is_company: true
+
+      - step: "Create accountant partner"
+        action: "create"
+        model: "res.partner"
+        save_as: "accountant"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Accountant - AJE Summary"
+
+      - step: "Get CPA license id category"
+        action: "ref"
+        xml_id: "ssi_partner_identification_cpa_license.partner_identification_accountant_cpa_license"
+        save_as: "cpa_category"
+
+      - step: "Grant accountant a CPA license"
+        action: "create"
+        model: "res.partner.id_number"
+        save_as: "cpa_license"
+        as_user: "base.user_admin"
+        values:
+          partner_id: "REC: accountant.id"
+          category_id: "REC: cpa_category.id"
+          name: "CPA-AJESUM-0001"
+
+      - step: "Create account type set"
+        action: "create"
+        model: "client_account_type_set"
+        save_as: "account_type_set"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Account Type Set - AJE Summary"
+          code: "/"
+
+      - step: "Create financial accounting standard"
+        action: "create"
+        model: "accountant.financial_accounting_standard"
+        save_as: "standard"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Financial Accounting Standard - AJE Summary"
+          code: "/"
+
+      - step: "Create general audit"
+        action: "create"
+        model: "general_audit"
+        save_as: "audit"
+        as_user: "base.user_admin"
+        values:
+          title: "Test General Audit - AJE Summary"
+          partner_id: "REC: client.id"
+          accountant_id: "REC: accountant.id"
+          account_type_set_id: "REC: account_type_set.id"
+          financial_accounting_standard_id: "REC: standard.id"
+          date_start: 2026-01-01
+          date_end: 2026-12-31
+          need_interim: false
+          need_previous: false
+          num_of_consecutive_audit_firm: 1
+          num_of_consecutive_audit_accountant: 1
+
+      - step: "Open general audit"
+        action: "call"
+        target: "audit"
+        method: "action_open"
+        as_user: "base.user_admin"
+
+      - step: "Create asset account group"
+        action: "create"
+        model: "client_account_group"
+        save_as: "group_asset"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Group Asset - AJE Summary"
+          code: "/"
+          sequence: 1
+          normal_balance: "dr"
+          report_category: "asset"
+
+      - step: "Create equity account group"
+        action: "create"
+        model: "client_account_group"
+        save_as: "group_equity"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Group Equity - AJE Summary"
+          code: "/"
+          sequence: 2
+          normal_balance: "cr"
+          report_category: "equity"
+
+      - step: "Create account group without report category"
+        action: "create"
+        model: "client_account_group"
+        save_as: "group_none"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Group Unclassified - AJE Summary"
+          code: "/"
+          sequence: 3
+          normal_balance: "dr"
+
+      - step: "Create asset account type"
+        action: "create"
+        model: "client_account_type"
+        save_as: "type_asset"
+        as_user: "base.user_admin"
+        values:
+          name: "Cash - AJE Summary"
+          code: "/"
+          group_id: "REC: group_asset.id"
+          sequence: 1
+          normal_balance: "dr"
+
+      - step: "Create equity account type"
+        action: "create"
+        model: "client_account_type"
+        save_as: "type_equity"
+        as_user: "base.user_admin"
+        values:
+          name: "Capital - AJE Summary"
+          code: "/"
+          group_id: "REC: group_equity.id"
+          sequence: 2
+          normal_balance: "cr"
+
+      - step: "Create unclassified account type"
+        action: "create"
+        model: "client_account_type"
+        save_as: "type_none"
+        as_user: "base.user_admin"
+        values:
+          name: "Other - AJE Summary"
+          code: "/"
+          group_id: "REC: group_none.id"
+          sequence: 3
+          normal_balance: "dr"
+
+      - step: "Create asset account"
+        action: "create"
+        model: "client_account"
+        save_as: "account_asset"
+        as_user: "base.user_admin"
+        values:
+          name: "Kas Test - AJE Summary"
+          code: "KASSUM"
+          partner_id: "REC: client.id"
+          type_id: "REC: type_asset.id"
+
+      - step: "Create equity account"
+        action: "create"
+        model: "client_account"
+        save_as: "account_equity"
+        as_user: "base.user_admin"
+        values:
+          name: "Modal Test - AJE Summary"
+          code: "MODSUM"
+          partner_id: "REC: client.id"
+          type_id: "REC: type_equity.id"
+
+      - step: "Create unclassified account"
+        action: "create"
+        model: "client_account"
+        save_as: "account_none"
+        as_user: "base.user_admin"
+        values:
+          name: "Lain Test - AJE Summary"
+          code: "LAINSUM"
+          partner_id: "REC: client.id"
+          type_id: "REC: type_none.id"
+
+      - step: "Create corrected entry"
+        action: "create"
+        model: "client_adjustment_entry"
+        save_as: "entry_1"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          adjustment_type: "propose"
+
+      - step: "Create asset debit line"
+        action: "create"
+        model: "client_adjustment_entry.detail"
+        save_as: "line_asset_dr"
+        as_user: "base.user_admin"
+        values:
+          entry_id: "REC: entry_1.id"
+          account_id: "REC: account_asset.id"
+          name: "Asset debit"
+          debit: 100.0
+          credit: 0.0
+
+      - step: "Create equity credit line"
+        action: "create"
+        model: "client_adjustment_entry.detail"
+        save_as: "line_equity_cr"
+        as_user: "base.user_admin"
+        values:
+          entry_id: "REC: entry_1.id"
+          account_id: "REC: account_equity.id"
+          name: "Equity credit"
+          debit: 0.0
+          credit: 100.0
+
+      - step: "Create uncorrected entry"
+        action: "create"
+        model: "client_adjustment_entry"
+        save_as: "entry_2"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          adjustment_type: "propose"
+          corrected: false
+
+      - step: "Create asset credit line of the uncorrected entry"
+        action: "create"
+        model: "client_adjustment_entry.detail"
+        save_as: "line_asset_cr"
+        as_user: "base.user_admin"
+        values:
+          entry_id: "REC: entry_2.id"
+          account_id: "REC: account_asset.id"
+          name: "Asset credit"
+          debit: 0.0
+          credit: 30.0
+
+      - step: "Create unclassified debit line of the uncorrected entry"
+        action: "create"
+        model: "client_adjustment_entry.detail"
+        save_as: "line_none_dr"
+        as_user: "base.user_admin"
+        values:
+          entry_id: "REC: entry_2.id"
+          account_id: "REC: account_none.id"
+          name: "Unclassified debit"
+          debit: 30.0
+          credit: 0.0
+
+      - step: "Create draft entry that must stay out of the summary"
+        action: "create"
+        model: "client_adjustment_entry"
+        save_as: "entry_draft"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          adjustment_type: "propose"
+
+      - step: "Create line of the draft entry"
+        action: "create"
+        model: "client_adjustment_entry.detail"
+        save_as: "line_draft"
+        as_user: "base.user_admin"
+        values:
+          entry_id: "REC: entry_draft.id"
+          account_id: "REC: account_asset.id"
+          name: "Draft line"
+          debit: 5.0
+          credit: 0.0
+
+      - step: "Mark the corrected entry as done"
+        action: "write"
+        target: "entry_1"
+        as_user: "base.user_admin"
+        values:
+          state: "done"
+
+      - step: "Mark the uncorrected entry as done"
+        action: "write"
+        target: "entry_2"
+        as_user: "base.user_admin"
+        values:
+          state: "done"
+
+      - step: "Assert asset debit line impact"
+        action: "assert"
+        target: "line_asset_dr"
+        asserts:
+          impact_asset:
+            type: "value"
+            expected: 100.0
+          impact_equity:
+            type: "value"
+            expected: 0.0
+
+      - step: "Assert asset credit line impact is negative"
+        action: "assert"
+        target: "line_asset_cr"
+        asserts:
+          impact_asset:
+            type: "value"
+            expected: -30.0
+
+      - step: "Assert equity credit line impact"
+        action: "assert"
+        target: "line_equity_cr"
+        asserts:
+          impact_equity:
+            type: "value"
+            expected: 100.0
+          impact_asset:
+            type: "value"
+            expected: 0.0
+
+      - step: "Assert unclassified line has no impact"
+        action: "assert"
+        target: "line_none_dr"
+        asserts:
+          impact_asset:
+            type: "value"
+            expected: 0.0
+          impact_liability:
+            type: "value"
+            expected: 0.0
+          impact_equity:
+            type: "value"
+            expected: 0.0
+          impact_profit_loss:
+            type: "value"
+            expected: 0.0
+
+      - step: "Assert the summary holds the lines of the done corrected entries only"
+        action: "assert"
+        target: "audit"
+        asserts:
+          aje_summary_line_ids:
+            type: "m2m"
+            check: "count"
+            expected_count: 2
+
+      - step: "Assert neither the draft nor the uncorrected lines are in the summary"
+        action: "assert"
+        target: "audit"
+        asserts:
+          aje_summary_line_ids:
+            type: "m2m"
+            check: "exact"
+            expected_records:
+              - "REC: line_asset_dr"
+              - "REC: line_equity_cr"
+
+      - step: "Assert the totals per category"
+        action: "assert"
+        target: "audit"
+        asserts:
+          aje_total_asset:
+            type: "value"
+            expected: 100.0
+          aje_total_liability:
+            type: "value"
+            expected: 0.0
+          aje_total_equity:
+            type: "value"
+            expected: 100.0
+          aje_total_profit_loss:
+            type: "value"
+            expected: 0.0

@@ -19,6 +19,7 @@ class ClientAdjustmentEntryDetail(models.Model):
 
     _name = "client_adjustment_entry.detail"
     _description = "Accountant Client Adjustment Entry Detail"
+    _order = "entry_id, id"
 
     aje_code = fields.Char(
         string="AJE Code",
@@ -75,6 +76,80 @@ class ClientAdjustmentEntryDetail(models.Model):
         currency_field="currency_id",
         help="Amount to credit. Use 0 if none.",
     )
+    corrected = fields.Boolean(
+        string="Corrected",
+        related="entry_id.corrected",
+        store=False,
+        readonly=True,
+        help="Whether the parent adjustment entry is corrected by the client.",
+    )
+    impact_asset = fields.Monetary(
+        string="Asset",
+        compute="_compute_impact",
+        store=False,
+        compute_sudo=True,
+        currency_field="currency_id",
+        help="Impact on assets: debit minus credit, for accounts whose "
+        "group has the Asset report category.",
+    )
+    impact_liability = fields.Monetary(
+        string="Liabilities",
+        compute="_compute_impact",
+        store=False,
+        compute_sudo=True,
+        currency_field="currency_id",
+        help="Impact on liabilities: credit minus debit, for accounts whose "
+        "group has the Liability report category.",
+    )
+    impact_equity = fields.Monetary(
+        string="Equities",
+        compute="_compute_impact",
+        store=False,
+        compute_sudo=True,
+        currency_field="currency_id",
+        help="Impact on equity: credit minus debit, for accounts whose "
+        "group has the Equity report category.",
+    )
+    impact_profit_loss = fields.Monetary(
+        string="Profit & Loss",
+        compute="_compute_impact",
+        store=False,
+        compute_sudo=True,
+        currency_field="currency_id",
+        help="Impact on profit and loss: credit minus debit, for accounts "
+        "whose group has the Profit & Loss report category.",
+    )
+
+    @api.depends(
+        "debit",
+        "credit",
+        "account_id.type_id.group_id.report_category",
+    )
+    def _compute_impact(self):
+        """Split the line amount into the four report category impacts.
+
+        Assets take debit minus credit; liabilities, equity and profit
+        and loss take credit minus debit. A line whose account group has
+        no report category contributes zero to every impact column.
+
+        :return: ``None``
+        """
+        for record in self:
+            category = record.account_id.type_id.group_id.report_category
+            result = {
+                "asset": 0.0,
+                "liability": 0.0,
+                "equity": 0.0,
+                "profit_loss": 0.0,
+            }
+            if category == "asset":
+                result["asset"] = record.debit - record.credit
+            elif category:
+                result[category] = record.credit - record.debit
+            record.impact_asset = result["asset"]
+            record.impact_liability = result["liability"]
+            record.impact_equity = result["equity"]
+            record.impact_profit_loss = result["profit_loss"]
 
     @api.depends(
         "account_id",

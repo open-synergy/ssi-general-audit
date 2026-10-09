@@ -114,11 +114,15 @@ class GeneralAuditStandardDetail(models.Model):
     @api.depends(
         "general_audit_id.adjustment_entry_ids",
         "general_audit_id.adjustment_entry_ids.state",
+        "general_audit_id.adjustment_entry_ids.corrected",
         "general_audit_id.adjustment_entry_ids.detail_ids.account_id",
         "general_audit_id.adjustment_entry_ids.detail_ids.debit",
         "general_audit_id.adjustment_entry_ids.detail_ids.credit",
     )
     def _compute_standard_adjustment_id(self):
+        # The adjustment views are raw SQL: write pending changes first.
+        self.env["client_adjustment_entry"].flush()
+        self.env["client_adjustment_entry.detail"].flush()
         StandardAdjustment = self.env["general_audit.adjustment"]
         for record in self:
             result = False

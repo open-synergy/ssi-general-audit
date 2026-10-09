@@ -367,6 +367,36 @@
                         </tree>
                     </field>
                 </page>
+                <page name="aje_summary" string="AJE Summaries">
+                    <div class="alert alert-info" role="alert">
+                        Only corrected adjustment entries in Done state are listed.
+                    </div>
+                    <field name="aje_summary_line_ids" nolabel="1" colspan="4">
+                        <tree create="false" edit="false" delete="false">
+                            <field name="entry_id" optional="hide" />
+                            <field name="aje_code" />
+                            <field name="account_id" />
+                            <field name="name" />
+                            <field name="currency_id" invisible="1" />
+                            <field name="debit" sum="Total Debit" />
+                            <field name="credit" sum="Total Credit" />
+                            <field name="corrected" optional="hide" />
+                            <field name="impact_asset" sum="Total Asset" />
+                            <field name="impact_liability" sum="Total Liabilities" />
+                            <field name="impact_equity" sum="Total Equities" />
+                            <field
+                                    name="impact_profit_loss"
+                                    sum="Total Profit &amp; Loss"
+                                />
+                        </tree>
+                    </field>
+                    <group name="aje_total" string="Totals">
+                        <field name="aje_total_asset" />
+                        <field name="aje_total_liability" />
+                        <field name="aje_total_equity" />
+                        <field name="aje_total_profit_loss" />
+                    </group>
+                </page>
             </xpath>
         </data>
     </field>
