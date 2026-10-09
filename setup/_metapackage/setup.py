@@ -47,6 +47,7 @@ setuptools.setup(
         'odoo14-addon-ssi_general_audit_worksheet_test_of_detail',
         'odoo14-addon-ssi_general_audit_worksheet_test_planning',
         'odoo14-addon-ssi_general_audit_worksheet_trial_balance',
+        'odoo14-addon-ssi_general_audit_worksheet_uncorrected_aje_analysis',
         'odoo14-addon-ssi_general_audit_worksheet_understanding_entity',
     ],
     classifiers=[

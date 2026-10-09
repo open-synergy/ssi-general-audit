@@ -182,6 +182,7 @@ addon | version | maintainers | summary
 [ssi_general_audit_worksheet_test_of_detail](ssi_general_audit_worksheet_test_of_detail/) | 14.0.1.5.1 |  | General Audit Worksheet - Test of Detail
 [ssi_general_audit_worksheet_test_planning](ssi_general_audit_worksheet_test_planning/) | 14.0.1.2.0 |  | General Audit Worksheet - Test Planning
 [ssi_general_audit_worksheet_trial_balance](ssi_general_audit_worksheet_trial_balance/) | 14.0.1.0.3 |  | General Audit Worksheet - Trial Balance
+[ssi_general_audit_worksheet_uncorrected_aje_analysis](ssi_general_audit_worksheet_uncorrected_aje_analysis/) | 14.0.1.0.0 |  | General Audit Worksheet - Uncorrected AJE Analysis
 [ssi_general_audit_worksheet_understanding_entity](ssi_general_audit_worksheet_understanding_entity/) | 14.0.1.16.0 |  | General Audit Worksheet - Understanding Entity and It's Environment
 
 [//]: # (end addons)
