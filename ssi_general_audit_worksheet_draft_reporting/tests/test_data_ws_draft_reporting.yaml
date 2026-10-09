@@ -3532,3 +3532,148 @@ scenarios:
           - ["worksheet_id", "=", "REC: worksheet.id"]
         save_as: "postures_after"
         expect_count: 11
+
+  # ------------------------------------------------------------------
+  # general_audit_ws_b555edd - Reload fills the two statement tabs
+  # ------------------------------------------------------------------
+  - name:
+      "Worksheet b555edd - action_reload_account fills and splits the statement tabs"
+    steps:
+      - step: "Create account type for T001 (Statement of Financial Position)"
+        action: "create"
+        model: "client_account_type"
+        save_as: "type_sfp"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Account Type T001 - Report Formatting"
+          code: "/"
+          group_id: "REC: group_t001.id"
+          normal_balance: "dr"
+          python_code: "result = 0.0"
+
+      - step: "Create account type for T009 (Statement of Comprehensive Income)"
+        action: "create"
+        model: "client_account_type"
+        save_as: "type_soci"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Account Type T009 - Report Formatting"
+          code: "/"
+          group_id: "REC: group_t009.id"
+          normal_balance: "cr"
+          python_code: "result = 0.0"
+
+      - step: "Create standard detail for the T001 type"
+        action: "create"
+        model: "general_audit.standard_detail"
+        save_as: "standard_detail_sfp"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: type_sfp.id"
+
+      - step: "Create standard detail for the T009 type"
+        action: "create"
+        model: "general_audit.standard_detail"
+        save_as: "standard_detail_soci"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: type_soci.id"
+
+      - step: "Create worksheet b555edd"
+        action: "create"
+        model: "general_audit_ws_b555edd"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_b555edd.id"
+
+      - step: "Click Reload"
+        action: "call"
+        target: "worksheet"
+        method: "action_reload_account"
+        as_user: "base.user_admin"
+
+      - step: "Assert one line per standard detail, split by account group"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          detail_ids:
+            type: "o2m"
+            check: "count"
+            expected_count: 2
+          sfp_detail_ids:
+            type: "o2m"
+            check: "count"
+            expected_count: 1
+          soci_detail_ids:
+            type: "o2m"
+            check: "count"
+            expected_count: 1
+
+      - step: "Click Reload a second time"
+        action: "call"
+        target: "worksheet"
+        method: "action_reload_account"
+        as_user: "base.user_admin"
+
+      - step: "Assert Reload did not duplicate the lines"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          detail_ids:
+            type: "o2m"
+            check: "count"
+            expected_count: 2
+
+      - step: "Find the line of the T001 standard detail"
+        action: "search"
+        model: "general_audit_ws_b555edd.detail"
+        domain:
+          - ["worksheet_id", "=", "REC: worksheet.id"]
+          - ["standard_detail_id", "=", "REC: standard_detail_sfp.id"]
+        save_as: "line_sfp"
+        limit: 1
+
+      - step: "Assert the line mirrors its standard detail"
+        action: "assert"
+        target: "line_sfp"
+        asserts:
+          current_balance:
+            type: "value"
+            expected: "EVAL: 0.0"
+          type_id:
+            type: "m2o"
+            expected: "REC: type_sfp.id"
+          group_id:
+            type: "m2o"
+            expected: "REC: group_t001.id"
+
+  - name:
+      "Worksheet b555edd - action_reload_account with no standard details (negative)"
+    steps:
+      - step: "Create worksheet b555edd for an audit without standard details"
+        action: "create"
+        model: "general_audit_ws_b555edd"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_b555edd.id"
+
+      - step: "Click Reload"
+        action: "call"
+        target: "worksheet"
+        method: "action_reload_account"
+        as_user: "base.user_admin"
+
+      - step: "Assert both statement tabs stay empty without an error"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          detail_ids:
+            type: "o2m"
+            check: "count"
+            expected_count: 0

@@ -41,6 +41,66 @@
         />
         <field name="arch" type="xml">
             <data>
+                <xpath expr="//page[1]" position="before">
+                    <page
+                        name="statement_of_financial_position"
+                        string="Statement of Financial Position"
+                    >
+                        <button
+                            name="action_reload_account"
+                            type="object"
+                            string="Reload"
+                            class="oe_highlight"
+                            icon="fa-refresh"
+                            attrs="{'invisible': [('state', 'not in', ['draft', 'open'])]}"
+                        />
+                        <field name="sfp_detail_ids" nolabel="1">
+                            <tree create="false" delete="false" edit="false">
+                                <field name="type_id" />
+                                <field name="currency_id" invisible="1" />
+                                <field name="current_balance" />
+                                <field name="previous_balance" />
+                            </tree>
+                            <form>
+                                <group>
+                                    <field name="type_id" />
+                                    <field name="currency_id" invisible="1" />
+                                    <field name="current_balance" />
+                                    <field name="previous_balance" />
+                                </group>
+                            </form>
+                        </field>
+                    </page>
+                    <page
+                        name="statement_of_comprehensive_income"
+                        string="Statement of Comprehensive Income"
+                    >
+                        <button
+                            name="action_reload_account"
+                            type="object"
+                            string="Reload"
+                            class="oe_highlight"
+                            icon="fa-refresh"
+                            attrs="{'invisible': [('state', 'not in', ['draft', 'open'])]}"
+                        />
+                        <field name="soci_detail_ids" nolabel="1">
+                            <tree create="false" delete="false" edit="false">
+                                <field name="type_id" />
+                                <field name="currency_id" invisible="1" />
+                                <field name="current_balance" />
+                                <field name="previous_balance" />
+                            </tree>
+                            <form>
+                                <group>
+                                    <field name="type_id" />
+                                    <field name="currency_id" invisible="1" />
+                                    <field name="current_balance" />
+                                    <field name="previous_balance" />
+                                </group>
+                            </form>
+                        </field>
+                    </page>
+                </xpath>
             </data>
         </field>
     </record>
