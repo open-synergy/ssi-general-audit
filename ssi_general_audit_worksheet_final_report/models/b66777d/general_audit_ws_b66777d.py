@@ -727,12 +727,12 @@ class GeneralAuditWSb66777d(models.Model):
     def _prepare_team_allocation_vals(self, employee_id, times):
         """Build the values of one ``team_allocation_ids`` row.
 
-        No planned (AWP) figures are included here: since issue #383's
-        design revision, "Total"/"AWP Total"/"Difference" are all
-        worksheet-wide aggregates (``total_pe_allocation`` etc.,
-        ``awp_total_pe_allocation`` etc.), not per-row columns -- see
-        ``general_audit_ws_b66777d.team_allocation``'s docstring and
-        ``_populate_awp_total_allocation()`` below.
+        No planned (AWP) figures are included here: "AWP Total" and
+        "Difference" are worksheet-wide aggregates
+        (``awp_total_pe_allocation`` etc.), not per-row columns -- see
+        ``_populate_awp_total_allocation()`` below. Only the Role is
+        copied from the Audit Working Plan, looked up by employee
+        (see ``_get_awp_role()``).
 
         Extension point: override to add fields to each row created
         by ``_populate_team_allocation()``.
@@ -756,7 +756,31 @@ class GeneralAuditWSb66777d(models.Model):
             "ra_allocation": times["ra"],
             "rr_allocation": times["rr"],
             "reporting_allocation": times["reporting"],
+            "role_id": self._get_awp_role(employee_id).id,
         }
+
+    def _get_awp_role(self, employee_id):
+        """Look up an employee's Role in this engagement's Audit Working Plan.
+
+        Best-effort like ``_get_awp_worksheet()``: never raises, and
+        returns an empty recordset when the Audit Working Plan is not
+        installed, does not exist yet, or does not list the employee.
+        When the employee is listed more than once, the first row by
+        ``sequence`` wins.
+
+        :param employee_id: id of the ``hr.employee`` to look up
+        :type employee_id: int
+        :return: the Role of that employee in the Audit Working Plan
+        :rtype: recordset of ``team_role``
+        """
+        self.ensure_one()
+        awp = self._get_awp_worksheet()
+        if not awp:
+            return self.env["team_role"]
+        line = awp.team_allocation_ids.filtered(
+            lambda r: r.team_id.id == employee_id and r.role_id
+        )[:1]
+        return line.role_id
 
     def _get_awp_worksheet(self):
         """Best-effort lookup of this engagement's Audit Working Plan.

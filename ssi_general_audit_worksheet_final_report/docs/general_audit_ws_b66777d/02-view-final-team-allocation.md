@@ -33,6 +33,9 @@
    who has Preparation Time and/or Review Time recorded on any worksheet of the same
    engagement, showing:
    - **Team Member**: the employee.
+   - **Role**: the employee's role in the Audit Working Plan of the same engagement;
+     empty when there is no open or done Audit Working Plan or the employee is not
+     listed in it.
    - **Pre-Engagement Allocation**, **Risk Assessment Allocation**, **Risk Responses
      Allocation**, **Windup & Reporting Allocation**: sum of Preparation Time + Review
      Time, per phase, across this engagement's worksheets attributed to this Team Member
@@ -40,6 +43,8 @@
      Preparation Time and Review Time are recorded in minutes; every figure on this tab
      is shown in **hours** (decimal, two places), and a blue note at the top of the tab
      says so.
+   - **Total Allocation**: the sum of the four phase allocations of the row, shown as
+     the last column.
    - Below the table, three side-by-side groups show the same figures aggregated across
      **every** row (not per employee), matching the Audit Working Plan's own layout:
      - **Total (Independent Auditor Report)**: sum of every Team Member's realized

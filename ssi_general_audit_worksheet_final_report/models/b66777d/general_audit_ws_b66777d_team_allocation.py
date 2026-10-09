@@ -2,7 +2,7 @@
 # Copyright 2026 PT. Simetri Sinergi Indonesia
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl-3.0-standalone.html).
 
-from odoo import _, fields, models
+from odoo import _, api, fields, models
 
 
 class GeneralAuditWsB66777dTeamAllocation(models.Model):
@@ -21,13 +21,11 @@ class GeneralAuditWsB66777dTeamAllocation(models.Model):
     data.xml``), NOT from a flat single number per worksheet -- see
     ``general_audit_ws_b66777d._compute_team_allocation_totals()``.
 
-    Total, AWP Total and Difference are deliberately NOT columns on
-    this row: they are not meaningful per employee, only in aggregate
-    across the whole engagement -- matching how the Audit Working
-    Plan's own KKA shows its "Total"/"Difference" figures once for the
-    whole worksheet, not once per Team Member. Those fifteen fields
-    (``total_pe_allocation`` etc., ``awp_total_pe_allocation`` etc.,
-    ``diff_pe_allocation`` etc.) live on the parent
+    Each row also shows the Team Member's Role (copied from the
+    Audit Working Plan row of the same employee, empty when there is
+    none) and Total Allocation (the sum of the four phases).
+    Total (all rows), AWP Total and Difference are aggregates across
+    the whole engagement and live on the parent
     ``general_audit_ws_b66777d`` worksheet instead -- see that model's
     ``_compute_team_allocation_total()``,
     ``_populate_awp_total_allocation()`` and
@@ -76,6 +74,18 @@ class GeneralAuditWsB66777dTeamAllocation(models.Model):
             "is a system-populated aggregation, never manually entered "
             "(see general_audit_ws_cbbbaf4.team_allocation.team_id for "
             "the equivalent PLANNED row, which stays user-editable)."
+        ),
+    )
+    role_id = fields.Many2one(
+        string="Role",
+        comodel_name="team_role",
+        readonly=True,
+        ondelete="restrict",
+        help=(
+            "Engagement role of the Team Member, copied from the Audit "
+            "Working Plan row of the same employee when Populate runs. "
+            "Empty when the engagement has no open or done Audit "
+            "Working Plan or the employee is not listed in it."
         ),
     )
     pe_allocation = fields.Float(
@@ -132,6 +142,38 @@ class GeneralAuditWsB66777dTeamAllocation(models.Model):
             "category_wr). Contributes to the parent worksheet's "
             "total_reporting_allocation."
             " Expressed in hours."
+        ),
+    )
+
+    @api.depends(
+        "pe_allocation",
+        "ra_allocation",
+        "rr_allocation",
+        "reporting_allocation",
+    )
+    def _compute_total_allocation(self):
+        """Sum the four phase allocations of each row.
+
+        :return: None
+        """
+        for record in self:
+            record.total_allocation = (
+                record.pe_allocation
+                + record.ra_allocation
+                + record.rr_allocation
+                + record.reporting_allocation
+            )
+
+    total_allocation = fields.Float(
+        digits=(16, 2),
+        string="Total Allocation",
+        compute="_compute_total_allocation",
+        store=True,
+        compute_sudo=True,
+        help=(
+            "Sum of the Pre-Engagement, Risk Assessment, Risk Responses "
+            "and Windup & Reporting allocations of this Team Member. "
+            "Expressed in hours."
         ),
     )
 
