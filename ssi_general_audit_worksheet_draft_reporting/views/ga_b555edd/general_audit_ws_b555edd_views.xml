@@ -46,14 +46,14 @@
                         name="statement_of_financial_position"
                         string="Statement of Financial Position"
                     >
-                        <field name="equity_has_manual" invisible="1" />
+                        <field name="reload_needs_confirm" invisible="1" />
                         <button
                             name="action_reload_account"
                             type="object"
                             string="Reload"
                             class="oe_highlight"
                             icon="fa-refresh"
-                            attrs="{'invisible': ['|', ('state', 'not in', ['draft', 'open']), ('equity_has_manual', '=', True)]}"
+                            attrs="{'invisible': ['|', ('state', 'not in', ['draft', 'open']), ('reload_needs_confirm', '=', True)]}"
                         />
                         <button
                             name="action_reload_account"
@@ -61,8 +61,8 @@
                             string="Reload"
                             class="oe_highlight"
                             icon="fa-refresh"
-                            confirm="Reload clears the owner transactions typed in the equity tab. Are you sure?"
-                            attrs="{'invisible': ['|', ('state', 'not in', ['draft', 'open']), ('equity_has_manual', '=', False)]}"
+                            confirm="Reload clears the figures you typed in on the equity and cash flow tabs. Are you sure?"
+                            attrs="{'invisible': ['|', ('state', 'not in', ['draft', 'open']), ('reload_needs_confirm', '=', False)]}"
                         />
                         <field name="sfp_detail_ids" nolabel="1">
                             <tree create="false" delete="false" edit="false">
@@ -91,7 +91,7 @@
                             string="Reload"
                             class="oe_highlight"
                             icon="fa-refresh"
-                            attrs="{'invisible': ['|', ('state', 'not in', ['draft', 'open']), ('equity_has_manual', '=', True)]}"
+                            attrs="{'invisible': ['|', ('state', 'not in', ['draft', 'open']), ('reload_needs_confirm', '=', True)]}"
                         />
                         <button
                             name="action_reload_account"
@@ -99,8 +99,8 @@
                             string="Reload"
                             class="oe_highlight"
                             icon="fa-refresh"
-                            confirm="Reload clears the owner transactions typed in the equity tab. Are you sure?"
-                            attrs="{'invisible': ['|', ('state', 'not in', ['draft', 'open']), ('equity_has_manual', '=', False)]}"
+                            confirm="Reload clears the figures you typed in on the equity and cash flow tabs. Are you sure?"
+                            attrs="{'invisible': ['|', ('state', 'not in', ['draft', 'open']), ('reload_needs_confirm', '=', False)]}"
                         />
                         <field name="soci_detail_ids" nolabel="1">
                             <tree create="false" delete="false" edit="false">
@@ -129,7 +129,7 @@
                             string="Reload"
                             class="oe_highlight"
                             icon="fa-refresh"
-                            attrs="{'invisible': ['|', ('state', 'not in', ['draft', 'open']), ('equity_has_manual', '=', True)]}"
+                            attrs="{'invisible': ['|', ('state', 'not in', ['draft', 'open']), ('reload_needs_confirm', '=', True)]}"
                         />
                         <button
                             name="action_reload_account"
@@ -137,8 +137,8 @@
                             string="Reload"
                             class="oe_highlight"
                             icon="fa-refresh"
-                            confirm="Reload clears the owner transactions typed in the equity tab. Are you sure?"
-                            attrs="{'invisible': ['|', ('state', 'not in', ['draft', 'open']), ('equity_has_manual', '=', False)]}"
+                            confirm="Reload clears the figures you typed in on the equity and cash flow tabs. Are you sure?"
+                            attrs="{'invisible': ['|', ('state', 'not in', ['draft', 'open']), ('reload_needs_confirm', '=', False)]}"
                         />
                         <div class="alert alert-info" role="alert">
                             <p>
@@ -266,6 +266,103 @@
                                     <field name="dividend" />
                                     <field name="other_movement" />
                                     <field name="closing_balance" />
+                                </group>
+                            </form>
+                        </field>
+                    </page>
+                    <page
+                        name="statement_of_cash_flows"
+                        string="Statement of Cash Flows"
+                    >
+                        <button
+                            name="action_reload_account"
+                            type="object"
+                            string="Reload"
+                            class="oe_highlight"
+                            icon="fa-refresh"
+                            attrs="{'invisible': ['|', ('state', 'not in', ['draft', 'open']), ('reload_needs_confirm', '=', True)]}"
+                        />
+                        <button
+                            name="action_reload_account"
+                            type="object"
+                            string="Reload"
+                            class="oe_highlight"
+                            icon="fa-refresh"
+                            confirm="Reload clears the figures you typed in on the equity and cash flow tabs. Are you sure?"
+                            attrs="{'invisible': ['|', ('state', 'not in', ['draft', 'open']), ('reload_needs_confirm', '=', False)]}"
+                        />
+                        <div class="alert alert-info" role="alert">
+                            <p>
+                                Indirect method. Reload starts from the profit before
+                                tax, adds back the non-cash items, then adds the
+                                change of each working capital account: an increase
+                                of an asset is a cash outflow, an increase of a
+                                liability is a cash inflow.
+                            </p>
+                            <p>
+                                Investing and financing rows come from the change of
+                                the related asset, borrowing and share accounts.
+                                Rows without a calculation (for example Dividends
+                                paid) are typed in by you: inflow positive, outflow
+                                negative.
+                            </p>
+                            <p>
+                                Difference = computed closing cash - closing cash
+                                of the trial balance. It is 0 when every cash
+                                movement is mapped; otherwise something is still
+                                missing. Reload replaces every figure, including the
+                                ones you typed in.
+                            </p>
+                        </div>
+                        <separator string="Current Period" />
+                        <field name="cashflow_current_ids" nolabel="1">
+                            <tree
+                                create="false"
+                                delete="false"
+                                editable="bottom"
+                                decoration-bf="section == 'summary'"
+                            >
+                                <field name="item_id" readonly="1" />
+                                <field name="section" invisible="1" />
+                                <field name="calc_type" invisible="1" />
+                                <field name="currency_id" invisible="1" />
+                                <field name="state" invisible="1" />
+                                <field
+                                    name="amount"
+                                    attrs="{'readonly': ['|', ('calc_type', '!=', 'manual'), ('state', 'not in', ['draft', 'open'])]}"
+                                />
+                            </tree>
+                            <form>
+                                <group>
+                                    <field name="item_id" />
+                                    <field name="currency_id" invisible="1" />
+                                    <field name="amount" />
+                                </group>
+                            </form>
+                        </field>
+                        <separator string="Previous Period" />
+                        <field name="cashflow_previous_ids" nolabel="1">
+                            <tree
+                                create="false"
+                                delete="false"
+                                editable="bottom"
+                                decoration-bf="section == 'summary'"
+                            >
+                                <field name="item_id" readonly="1" />
+                                <field name="section" invisible="1" />
+                                <field name="calc_type" invisible="1" />
+                                <field name="currency_id" invisible="1" />
+                                <field name="state" invisible="1" />
+                                <field
+                                    name="amount"
+                                    attrs="{'readonly': ['|', ('calc_type', '!=', 'manual'), ('state', 'not in', ['draft', 'open'])]}"
+                                />
+                            </tree>
+                            <form>
+                                <group>
+                                    <field name="item_id" />
+                                    <field name="currency_id" invisible="1" />
+                                    <field name="amount" />
                                 </group>
                             </form>
                         </field>

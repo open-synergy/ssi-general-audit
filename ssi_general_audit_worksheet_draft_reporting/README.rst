@@ -56,6 +56,8 @@ The worksheets in this module cover the following phase activities:
 - ``general_audit_ws_b555edd``           — Report Formatting Control
 - ``general_audit_ws_b555edd.equity_component`` — Equity component master
 - ``general_audit_ws_b555edd.equity_line`` — Statement of changes in equity line
+- ``general_audit_ws_b555edd.cashflow_item`` — Cash flow item master
+- ``general_audit_ws_b555edd.cashflow_line`` — Statement of cash flows line
 - ``general_audit_ws_bbbdfe7``           — Management Representation
 - ``general_audit_ws_bbbdfe7.checklist`` — Representation checklist line
 - ``general_audit_ws_bbbdfe7.item``      — Representation checklist item master

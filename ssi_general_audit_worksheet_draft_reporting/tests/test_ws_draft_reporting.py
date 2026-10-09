@@ -2,11 +2,28 @@
 # Copyright 2026 PT. Simetri Sinergi Indonesia
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 
+from types import SimpleNamespace
 from unittest import mock
 
 from odoo_yaml_test import YamlTransactionCase
 
 from odoo.tests import tagged
+
+
+class _FakeDetail(SimpleNamespace):
+    """Stand-in for a ``general_audit.standard_detail`` row.
+
+    Gives ``detail[field]`` access on top of attribute access, as the
+    cash flow computation reads balances by field name.
+    """
+
+    def __getitem__(self, key):
+        """Return the attribute called ``key``.
+
+        :param str key: name of the balance field
+        :return: its value
+        """
+        return getattr(self, key)
 
 
 @tagged("post_install", "-at_install")
@@ -479,3 +496,199 @@ class TestWSDraftReporting(YamlTransactionCase):
         self.assertTrue(lines)
         self.assertFalse(any(lines.mapped("closing_balance")))
         self.assertFalse(any(lines.mapped("other_movement")))
+
+    _CF_PREFIX = (
+        "ssi_general_audit_worksheet_draft_reporting."
+        "general_audit_ws_b555edd_cashflow_item_"
+    )
+
+    def _cf_item(self, key):
+        """Return a seeded cash flow item by the end of its XML ID.
+
+        :param str key: for example ``ar`` or ``capex``
+        :return: the ``general_audit_ws_b555edd.cashflow_item`` record
+        :rtype: recordset
+        """
+        return self.env.ref(self._CF_PREFIX + key)
+
+    def _cf_lines(self, worksheet, period="current"):
+        """Map the cash flow lines of a period by the item XML ID suffix.
+
+        :param recordset worksheet: the ``general_audit_ws_b555edd``
+        :param str period: ``current`` or ``previous``
+        :return: ``{"ar": line, ...}``
+        :rtype: dict
+        """
+        lines = worksheet.cashflow_line_ids.filtered(lambda r: r.period == period)
+        result = {}
+        for line in lines:
+            xml = self.env["ir.model.data"].search(
+                [
+                    ("model", "=", "general_audit_ws_b555edd.cashflow_item"),
+                    ("res_id", "=", line.item_id.id),
+                ],
+                limit=1,
+            )
+            result[xml.name[len("general_audit_ws_b555edd_cashflow_item_") :]] = line
+        return result
+
+    def _cf_reload(self, worksheet, amounts):
+        """Reload ``worksheet`` with a fixed cash flow source.
+
+        :param recordset worksheet: the ``general_audit_ws_b555edd``
+        :param dict amounts: ``{item XML ID suffix: amount}``
+        :return: the current period lines, see ``_cf_lines``
+        :rtype: dict
+        """
+        source = {self._cf_item(key).id: value for key, value in amounts.items()}
+        with mock.patch.object(
+            type(worksheet), "_get_cashflow_source", return_value=source
+        ):
+            worksheet.action_reload_account()
+        return self._cf_lines(worksheet)
+
+    def test_cashflow_amounts_follow_balance_sides(self):
+        """Balance changes are cash flows by the normal balance side.
+
+        Pure Python -- trigger P6 (L-15: no mock/patch in YAML; the
+        standard details are stand-ins carrying chosen balances, since a
+        real trial balance for every account type is too heavy to build).
+        Receivables rise by 100 (outflow), payables rise by 40 (inflow),
+        fixed assets rise by 50 with 30 depreciation (outflow of 80),
+        and interest expense of 20 is added back then paid.
+
+        :return: nothing; asserts the computed amounts
+        """
+        worksheet = self._create_b555edd_worksheet("CashflowAmounts")
+
+        def detail(xml_id, opening, closing):
+            """Build a stand-in standard detail for an account type."""
+            return _FakeDetail(
+                type_id=self.env.ref("ssi_general_audit." + xml_id),
+                home_statement_opening_balance=opening,
+                audited_balance=closing,
+                previous_opening_balance=0.0,
+                previous_balance=0.0,
+            )
+
+        details = [
+            detail("client_account_type_2_4fbd7be2", 100.0, 200.0),
+            detail("client_account_type_19_17733e6d", 50.0, 90.0),
+            detail("client_account_type_14_e160db3b", 1000.0, 1050.0),
+            detail("client_account_type_53_88b4482b", 0.0, 30.0),
+            detail("client_account_type_54_c3a5a82b", 0.0, 20.0),
+            detail("client_account_type_1_e046f813", 300.0, 400.0),
+        ]
+        items = self.env["general_audit_ws_b555edd.cashflow_item"].search([])
+
+        amounts = worksheet._compute_cashflow_amounts(items, details, "current")
+
+        def amount(key):
+            """Return the computed amount of a seeded item."""
+            return amounts[self._cf_item(key).id]
+
+        self.assertEqual(amount("ar"), -100.0)
+        self.assertEqual(amount("ap"), 40.0)
+        self.assertEqual(amount("capex"), -80.0)
+        self.assertEqual(amount("interest_expense"), 20.0)
+        self.assertEqual(amount("interest_paid"), -20.0)
+        self.assertEqual(amount("depreciation"), 30.0)
+        self.assertEqual(amount("cash_opening"), 300.0)
+        self.assertEqual(amount("cash_closing_tb"), 400.0)
+
+    def test_cashflow_totals_and_cash_difference(self):
+        """Summary lines add up and a typed-in amount refreshes them.
+
+        Pure Python -- trigger P6 (L-15: no mock/patch in YAML; the
+        calculated amounts are fixed). Operating -60, investing -80 and
+        financing +20 give a net change of -120, so opening cash 300
+        becomes 180 against 280 in the trial balance (difference -100).
+        Typing dividends paid of -10 moves the difference to -110.
+
+        :return: nothing; asserts the summary lines before and after
+        """
+        worksheet = self._create_b555edd_worksheet("CashflowTotals")
+        lines = self._cf_reload(
+            worksheet,
+            {
+                "ar": -100.0,
+                "ap": 40.0,
+                "capex": -80.0,
+                "share_capital": 20.0,
+                "cash_opening": 300.0,
+                "cash_closing_tb": 280.0,
+            },
+        )
+
+        self.assertEqual(lines["operating_total"].amount, -60.0)
+        self.assertEqual(lines["investing_total"].amount, -80.0)
+        self.assertEqual(lines["financing_total"].amount, 20.0)
+        self.assertEqual(lines["net_change"].amount, -120.0)
+        self.assertEqual(lines["cash_closing_computed"].amount, 180.0)
+        self.assertEqual(lines["cash_difference"].amount, -100.0)
+
+        lines["dividend_paid"].amount = -10.0
+
+        lines = self._cf_lines(worksheet)
+        self.assertEqual(lines["financing_total"].amount, 10.0)
+        self.assertEqual(lines["cash_difference"].amount, -110.0)
+        self.assertTrue(worksheet.cashflow_has_manual)
+        self.assertTrue(worksheet.reload_needs_confirm)
+
+    def test_cashflow_reload_discards_manual_amounts(self):
+        """Reload again throws away the typed-in amounts.
+
+        Pure Python -- trigger P6 (L-15: no mock/patch in YAML; the
+        calculated amounts are fixed). A dividend paid typed in is gone
+        after the next Reload, and the confirmation flag goes off.
+
+        :return: nothing; asserts the manual line and the flags
+        """
+        worksheet = self._create_b555edd_worksheet("CashflowReload")
+        lines = self._cf_reload(worksheet, {"ar": -100.0})
+        lines["dividend_paid"].amount = -10.0
+
+        lines = self._cf_reload(worksheet, {"ar": -100.0})
+
+        self.assertEqual(lines["dividend_paid"].amount, 0.0)
+        self.assertFalse(worksheet.cashflow_has_manual)
+        self.assertFalse(worksheet.reload_needs_confirm)
+
+    def test_cashflow_previous_period_lines_follow_need_previous(self):
+        """Previous period cash flow lines exist only when kept.
+
+        Pure Python -- trigger P6 (L-15: no mock/patch in YAML; the
+        calculated amounts are fixed). The same source serves both
+        periods, so only the line count is checked.
+
+        :return: nothing; asserts the line count per period
+        """
+        items = self.env["general_audit_ws_b555edd.cashflow_item"].search_count([])
+        without = self._create_b555edd_worksheet("CashflowNoPrev")
+        with_previous = self._create_b555edd_worksheet(
+            "CashflowPrev", need_previous=True
+        )
+        for worksheet in (without, with_previous):
+            self._cf_reload(worksheet, {"ar": -100.0})
+
+        self.assertEqual(len(without.cashflow_current_ids), items)
+        self.assertEqual(len(without.cashflow_previous_ids), 0)
+        self.assertEqual(len(with_previous.cashflow_previous_ids), items)
+
+    def test_cashflow_reload_without_standard_details(self):
+        """Reload on an audit without standard details gives zero lines.
+
+        Pure Python -- trigger P1 (L-01: the fixture is built
+        programmatically and the amounts of every line are read back).
+        No account type means every amount and the cash difference are
+        zero, and nothing raises.
+
+        :return: nothing; asserts zero amounts on every line
+        """
+        worksheet = self._create_b555edd_worksheet("CashflowEmpty")
+
+        worksheet.action_reload_account()
+
+        lines = worksheet.cashflow_line_ids
+        self.assertTrue(lines)
+        self.assertFalse(any(lines.mapped("amount")))

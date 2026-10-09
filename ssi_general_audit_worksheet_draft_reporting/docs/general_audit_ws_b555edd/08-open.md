@@ -36,6 +36,11 @@
 9. Optionally type the owner transactions on a row: **Issuance of Shares**, **Treasury
    Shares**, **Addition of Reserves** and **Dividends**, entered as the amount that
    changes the component (a dividend is negative).
+10. Open the **Statement of Cash Flows** tab. **Reload** also fills this tab, for the
+    current period and, when the General Audit keeps one, the previous period.
+11. Type in the rows that have no calculation, such as **Dividends paid** and **Gain on
+    sale of fixed assets** (inflow positive, outflow negative). The totals and the
+    **Difference** row refresh as soon as you save the amount.
 
 ## Post-Condition
 
@@ -56,8 +61,16 @@
   Audit keeps a previous period. The figures assume a trial balance before closing
   entries; when profit is already inside the Retained Earnings balance, that row shows
   the profit as **Other Movement**.
-- Clicking **Reload** when owner transactions are typed in asks for confirmation first,
-  because Reload clears them.
+- **Statement of Cash Flows** lists the operating (profit before tax, non-cash
+  adjustments, working capital changes, interest and tax paid), investing and financing
+  rows, then the total of each section, the net change in cash, the opening cash, the
+  computed closing cash, the closing cash of the trial balance and their **Difference**.
+  The method is indirect. An increase of an asset account is a cash outflow and an
+  increase of a liability or equity account is a cash inflow. A **Difference** other
+  than 0 means some cash movement is not mapped to a row yet; the mapping is kept in
+  **Configuration > Account & Computation > Cash Flow Item**.
+- Clicking **Reload** when owner transactions or cash flow amounts are typed in asks for
+  confirmation first, because Reload clears them.
 - Clicking **Reload** again does not duplicate rows; it removes the previous rows and
   creates them again from the General Audit. **Reload** is visible only while the
   worksheet is **Draft** or **On Progress**.
