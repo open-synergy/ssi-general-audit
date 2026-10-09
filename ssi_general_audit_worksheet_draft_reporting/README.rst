@@ -74,6 +74,9 @@ ISA 705 / SA 705 — Modifications to the Opinion in the Independent Auditor's R
 Work Instruction
 ================
 
+* `Create Report Formatting Control <docs/general_audit_ws_b555edd/index.html>`_
+* `Open Report Formatting Control <docs/general_audit_ws_b555edd/index.html>`_
+* `Confirm Report Formatting Control <docs/general_audit_ws_b555edd/index.html>`_
 * `Create Draft Financial Statements <docs/general_audit_ws_e59c663/index.html>`_
 * `Open Draft Financial Statements <docs/general_audit_ws_e59c663/index.html>`_
 * `Confirm Draft Financial Statements <docs/general_audit_ws_e59c663/index.html>`_
