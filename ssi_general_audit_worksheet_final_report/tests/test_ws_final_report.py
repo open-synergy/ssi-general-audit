@@ -409,7 +409,8 @@ class TestWSFinalReport(YamlTransactionCase):
         Audit Working Plan module is not a dependency, so a
         ``SimpleNamespace`` stand-in carries ``team_allocation_ids``
         and the YAML scenario registry cannot inject it). The stand-in
-        lists the employee with a Manager role; Populate must copy it
+        is not stored, since Populate unlinks the worksheet's own rows,
+        and lists the employee with a Manager role; Populate must copy it
         onto the new row.
 
         :return: nothing; asserts the role on the created row
@@ -419,10 +420,16 @@ class TestWSFinalReport(YamlTransactionCase):
         )
         create_ws(1).write({"user_id": user.id, "preparation_time": 60})
         role = self.env["team_role"].create({"name": "Test Manager Role"})
-        awp_line = self.env["general_audit_ws_b66777d.team_allocation"].create(
-            {"worksheet_id": worksheet.id, "team_id": employee.id, "role_id": role.id}
+        lines = mock.MagicMock()
+        lines.__getitem__.return_value = SimpleNamespace(role_id=role)
+        awp = SimpleNamespace(
+            team_allocation_ids=SimpleNamespace(filtered=lambda func: lines),
+            total_pe_manhour=0.0,
+            total_ra_manhour=0.0,
+            total_rr_manhour=0.0,
+            total_reporting_manhour=0.0,
+            total_manhour=0.0,
         )
-        awp = SimpleNamespace(team_allocation_ids=awp_line)
 
         with mock.patch.object(type(worksheet), "_get_awp_worksheet", return_value=awp):
             worksheet.action_populate_team_allocation()
