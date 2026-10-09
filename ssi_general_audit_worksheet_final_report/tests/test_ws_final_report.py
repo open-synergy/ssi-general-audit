@@ -3,6 +3,7 @@
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl-3.0-standalone.html).
 
 from types import SimpleNamespace
+from unittest import mock
 
 from odoo_yaml_test import YamlTransactionCase
 
@@ -372,6 +373,61 @@ class TestWSFinalReport(YamlTransactionCase):
 
         self.assertEqual(worksheet.team_allocation_ids.pe_allocation, 2.0)
         self.assertEqual(worksheet.total_allocation, 2.0)
+
+    def test_team_allocation_total_and_empty_role(self):
+        """Assert the row total sums the phases and Role is empty.
+
+        Pure Python -- trigger P1 (L-01: the fixture needs prepared
+        worksheets whose hours are asserted per row after Populate).
+        90 minutes of Pre-Engagement work gives 1.5 hours on the row;
+        no Audit Working Plan exists in this module's own suite, so
+        Role stays empty and Populate does not raise. A later write
+        of another phase must recompute the stored total.
+
+        :return: nothing; asserts the stored total and the role
+        """
+        worksheet, employee, user, create_ws = self._create_allocation_fixture(
+            "RowTotal", "ssi_general_audit.worksheet_type_category_pe"
+        )
+        create_ws(1).write({"user_id": user.id, "preparation_time": 90})
+
+        worksheet.action_populate_team_allocation()
+
+        row = worksheet.team_allocation_ids
+        self.assertEqual(row.team_id, employee)
+        self.assertEqual(row.total_allocation, 1.5)
+        self.assertFalse(row.role_id)
+
+        row.sudo().write({"ra_allocation": 2.5})
+
+        self.assertEqual(row.total_allocation, 4.0)
+
+    def test_team_allocation_role_from_awp(self):
+        """Assert Populate copies the Role of the employee from the AWP.
+
+        Pure Python -- trigger P6 (L-15: no mock/patch in YAML; the
+        Audit Working Plan module is not a dependency, so a
+        ``SimpleNamespace`` stand-in carries ``team_allocation_ids``
+        and the YAML scenario registry cannot inject it). The stand-in
+        lists the employee with a Manager role; Populate must copy it
+        onto the new row.
+
+        :return: nothing; asserts the role on the created row
+        """
+        worksheet, employee, user, create_ws = self._create_allocation_fixture(
+            "RoleAwp", "ssi_general_audit.worksheet_type_category_pe"
+        )
+        create_ws(1).write({"user_id": user.id, "preparation_time": 60})
+        role = self.env["team_role"].create({"name": "Test Manager Role"})
+        awp_line = self.env["general_audit_ws_b66777d.team_allocation"].create(
+            {"worksheet_id": worksheet.id, "team_id": employee.id, "role_id": role.id}
+        )
+        awp = SimpleNamespace(team_allocation_ids=awp_line)
+
+        with mock.patch.object(type(worksheet), "_get_awp_worksheet", return_value=awp):
+            worksheet.action_populate_team_allocation()
+
+        self.assertEqual(worksheet.team_allocation_ids.role_id, role)
 
     def test_compute_team_allocation_totals_no_category(self):
         """Assert a worksheet without a phase adds no hours to any bucket.
