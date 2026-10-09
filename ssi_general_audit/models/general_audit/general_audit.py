@@ -447,6 +447,92 @@ class GeneralAudit(models.Model):
         readonly=True,
         help="Adjustment entry documents created for this audit.",
     )
+    aje_summary_line_ids = fields.Many2many(
+        string="AJE Summaries",
+        comodel_name="client_adjustment_entry.detail",
+        compute="_compute_aje_summary_line_ids",
+        store=False,
+        compute_sudo=True,
+        help="Lines of the done and corrected adjustment entries of this "
+        "audit, with their impact on the financial statement categories.",
+    )
+
+    @api.depends(
+        "adjustment_entry_ids",
+        "adjustment_entry_ids.state",
+        "adjustment_entry_ids.corrected",
+        "adjustment_entry_ids.detail_ids",
+    )
+    def _compute_aje_summary_line_ids(self):
+        """Collect the lines of the done, corrected entries of each audit.
+
+        :return: ``None``
+        """
+        Detail = self.env["client_adjustment_entry.detail"]
+        for record in self:
+            result = Detail.browse()
+            if record.id:
+                result = Detail.search(
+                    [
+                        ("entry_id.general_audit_id", "=", record.id),
+                        ("entry_id.state", "=", "done"),
+                        ("entry_id.corrected", "=", True),
+                    ]
+                )
+            record.aje_summary_line_ids = result
+
+    aje_total_asset = fields.Monetary(
+        string="Total Asset",
+        compute="_compute_aje_total",
+        store=False,
+        compute_sudo=True,
+        currency_field="currency_id",
+        help="Total asset impact of the AJE Summaries lines.",
+    )
+    aje_total_liability = fields.Monetary(
+        string="Total Liabilities",
+        compute="_compute_aje_total",
+        store=False,
+        compute_sudo=True,
+        currency_field="currency_id",
+        help="Total liability impact of the AJE Summaries lines.",
+    )
+    aje_total_equity = fields.Monetary(
+        string="Total Equities",
+        compute="_compute_aje_total",
+        store=False,
+        compute_sudo=True,
+        currency_field="currency_id",
+        help="Total equity impact of the AJE Summaries lines.",
+    )
+    aje_total_profit_loss = fields.Monetary(
+        string="Total Profit & Loss",
+        compute="_compute_aje_total",
+        store=False,
+        compute_sudo=True,
+        currency_field="currency_id",
+        help="Total profit and loss impact of the AJE Summaries lines.",
+    )
+
+    @api.depends(
+        "adjustment_entry_ids.state",
+        "adjustment_entry_ids.corrected",
+        "adjustment_entry_ids.detail_ids.debit",
+        "adjustment_entry_ids.detail_ids.credit",
+        "adjustment_entry_ids.detail_ids.account_id",
+    )
+    def _compute_aje_total(self):
+        """Sum the impact columns of the AJE Summaries lines per category.
+
+        :return: ``None``
+        """
+        for record in self:
+            lines = record.aje_summary_line_ids
+            record.aje_total_asset = sum(lines.mapped("impact_asset"))
+            record.aje_total_liability = sum(lines.mapped("impact_liability"))
+            record.aje_total_equity = sum(lines.mapped("impact_equity"))
+            record.aje_total_profit_loss = sum(lines.mapped("impact_profit_loss"))
+
     account_type_ids = fields.Many2many(
         string="Account Types",
         comodel_name="client_account_type",

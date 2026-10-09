@@ -202,11 +202,15 @@ class GeneralAuditDetail(models.Model):
     @api.depends(
         "general_audit_id.adjustment_entry_ids",
         "general_audit_id.adjustment_entry_ids.state",
+        "general_audit_id.adjustment_entry_ids.corrected",
         "general_audit_id.adjustment_entry_ids.detail_ids.account_id",
         "general_audit_id.adjustment_entry_ids.detail_ids.debit",
         "general_audit_id.adjustment_entry_ids.detail_ids.credit",
     )
     def _compute_adjustment_id(self):
+        # The adjustment views are raw SQL: write pending changes first.
+        self.env["client_adjustment_entry"].flush()
+        self.env["client_adjustment_entry.detail"].flush()
         StandardAdjustment = self.env["general_audit.account_adjustment"]
         for record in self:
             result = False
@@ -231,20 +235,43 @@ class GeneralAuditDetail(models.Model):
 
     adjustment_debit = fields.Monetary(
         string="Adjustment Debit",
-        related="adjustment_id.debit",
+        compute="_compute_adjustment_amount",
         compute_sudo=True,
         store=True,
         currency_field="currency_id",
-        help="Total debit adjustments for this account.",
+        help="Total debit adjustments for this account, from corrected "
+        "adjustment entries only.",
     )
     adjustment_credit = fields.Monetary(
         string="Adjustment Credit",
-        related="adjustment_id.credit",
+        compute="_compute_adjustment_amount",
         compute_sudo=True,
         store=True,
         currency_field="currency_id",
-        help="Total credit adjustments for this account.",
+        help="Total credit adjustments for this account, from corrected "
+        "adjustment entries only.",
     )
+
+    @api.depends(
+        "adjustment_line_ids",
+        "adjustment_line_ids.debit",
+        "adjustment_line_ids.credit",
+        "adjustment_line_ids.entry_id.corrected",
+    )
+    def _compute_adjustment_amount(self):
+        """Sum the debit and credit of the corrected adjustment lines.
+
+        Every entry state counts, as in the adjustment summary views; only
+        entries that the client did not correct are left out.
+
+        :return: ``None``
+        """
+        for record in self:
+            lines = record.adjustment_line_ids.filtered(
+                lambda line: line.entry_id.corrected
+            )
+            record.adjustment_debit = sum(lines.mapped("debit"))
+            record.adjustment_credit = sum(lines.mapped("credit"))
 
     adjustment_line_ids = fields.One2many(
         string="Adjustment Lines",
@@ -284,23 +311,16 @@ class GeneralAuditDetail(models.Model):
         "adjustment_line_ids",
         "adjustment_line_ids.entry_id",
         "adjustment_line_ids.entry_id.state",
+        "adjustment_line_ids.entry_id.corrected",
     )
     def _compute_adjustment_ids(self):
         for record in self:
-            adjustment_entries = record.adjustment_line_ids.mapped("entry_id").filtered(
-                lambda entry: entry.state == "done"
+            lines = record.adjustment_line_ids.filtered(
+                lambda line: line.entry_id.state == "done" and line.entry_id.corrected
             )
-            record.adjustment_ids = adjustment_entries
-            record.adjustment_dr = sum(
-                record.adjustment_line_ids.filtered(
-                    lambda line: line.entry_id.state == "done"
-                ).mapped("debit")
-            )
-            record.adjustment_cr = sum(
-                record.adjustment_line_ids.filtered(
-                    lambda line: line.entry_id.state == "done"
-                ).mapped("credit")
-            )
+            record.adjustment_ids = lines.mapped("entry_id")
+            record.adjustment_dr = sum(lines.mapped("debit"))
+            record.adjustment_cr = sum(lines.mapped("credit"))
 
     @api.depends(
         "adjustment_id",

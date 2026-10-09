@@ -70,7 +70,7 @@ class GeneralAuditAdjustment(models.Model):
 
     def _where(self):
         where_str = """
-        WHERE 1 = 1
+        WHERE b.corrected = true
         """
         return where_str
 

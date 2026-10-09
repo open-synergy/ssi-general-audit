@@ -202,6 +202,21 @@ class ClientAdjustmentEntry(models.Model):
         },
         help="Type of adjustment: proposed by auditor or booked by client.",
     )
+    corrected = fields.Boolean(
+        string="Corrected",
+        default=True,
+        required=True,
+        readonly=True,
+        states={
+            "draft": [
+                ("readonly", False),
+            ],
+        },
+        help="Check if the client corrected (booked) this adjustment. "
+        "Only corrected adjustments are counted in the Adjustment "
+        "figures of the audit worksheets. Uncorrected adjustments are "
+        "analysed separately as unadjusted misstatements.",
+    )
     detail_ids = fields.One2many(
         string="Details",
         comodel_name="client_adjustment_entry.detail",

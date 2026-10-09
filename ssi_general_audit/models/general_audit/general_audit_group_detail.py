@@ -245,11 +245,15 @@ class GeneralAuditGroupDetail(models.Model):
     @api.depends(
         "general_audit_id.adjustment_entry_ids",
         "general_audit_id.adjustment_entry_ids.state",
+        "general_audit_id.adjustment_entry_ids.corrected",
         "general_audit_id.adjustment_entry_ids.detail_ids.account_id",
         "general_audit_id.adjustment_entry_ids.detail_ids.debit",
         "general_audit_id.adjustment_entry_ids.detail_ids.credit",
     )
     def _compute_adjustment_id(self):
+        # The adjustment views are raw SQL: write pending changes first.
+        self.env["client_adjustment_entry"].flush()
+        self.env["client_adjustment_entry.detail"].flush()
         StandardAdjustment = self.env["general_audit.group_adjustment"]
         for record in self:
             result = False
@@ -291,6 +295,7 @@ class GeneralAuditGroupDetail(models.Model):
     @api.depends(
         "general_audit_id.adjustment_entry_ids",
         "general_audit_id.adjustment_entry_ids.state",
+        "general_audit_id.adjustment_entry_ids.corrected",
         "general_audit_id.adjustment_entry_ids.detail_ids.account_id",
         "general_audit_id.adjustment_entry_ids.detail_ids.debit",
         "general_audit_id.adjustment_entry_ids.detail_ids.credit",
@@ -301,7 +306,7 @@ class GeneralAuditGroupDetail(models.Model):
             debit = credit = 0.0
             ga = record.general_audit_id
             for adjustment in ga.adjustment_entry_ids.filtered(
-                lambda r: r.state == "done"
+                lambda r: r.state == "done" and r.corrected
             ):
                 for detail in adjustment.detail_ids.filtered(
                     lambda r: r.account_id.group_id.id == record.group_id.id

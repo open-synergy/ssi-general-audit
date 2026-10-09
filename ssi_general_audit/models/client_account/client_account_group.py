@@ -39,3 +39,17 @@ class ClientAccountGroup(models.Model):
         default="dr",
         help="Default normal balance for accounts under this group.",
     )
+    report_category = fields.Selection(
+        string="Report Category",
+        selection=[
+            ("asset", "Asset"),
+            ("liability", "Liability"),
+            ("equity", "Equity"),
+            ("profit_loss", "Profit & Loss"),
+        ],
+        required=False,
+        help="Financial statement category of the accounts under this "
+        "group. Used to summarise the impact of adjustment entries "
+        "(AJE Summaries). Leave empty to exclude the group from the "
+        "impact columns.",
+    )
