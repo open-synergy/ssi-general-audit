@@ -1,0 +1,135 @@
+<?xml version="1.0" ?>
+<!-- Copyright 2025 OpenSynergy Indonesia
+     Copyright 2025 PT. Simetri Sinergi Indonesia
+     License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl-3.0-standalone.html). -->
+<odoo>
+
+    <record id="general_audit_ws_c3b9e71_view_search" model="ir.ui.view">
+        <field name="name">general_audit_ws_c3b9e71 form</field>
+        <field name="model">general_audit_ws_c3b9e71</field>
+        <field
+            name="inherit_id"
+            ref="ssi_general_audit.general_audit_worksheet_mixin_view_search"
+        />
+        <field name="mode">primary</field>
+        <field name="arch" type="xml">
+            <data />
+        </field>
+    </record>
+
+    <record id="general_audit_ws_c3b9e71_view_tree" model="ir.ui.view">
+        <field name="name">general_audit_ws_c3b9e71 tree</field>
+        <field name="model">general_audit_ws_c3b9e71</field>
+        <field name="mode">primary</field>
+        <field
+            name="inherit_id"
+            ref="ssi_general_audit.general_audit_worksheet_mixin_view_tree"
+        />
+        <field name="arch" type="xml">
+            <data>
+                <xpath expr="//field[@name='general_audit_id']" position="after">
+                    <field name="currency_id" invisible="1" />
+                    <field name="performance_materiality" />
+                    <field name="post_tax_impact" />
+                    <field name="materiality_conclusion" />
+                </xpath>
+
+            </data>
+        </field>
+    </record>
+
+    <record id="general_audit_ws_c3b9e71_view_form" model="ir.ui.view">
+        <field name="name">general_audit_ws_c3b9e71 form</field>
+        <field name="model">general_audit_ws_c3b9e71</field>
+        <field name="mode">primary</field>
+        <field
+            name="inherit_id"
+            ref="ssi_general_audit.general_audit_worksheet_mixin_view_form"
+        />
+        <field name="arch" type="xml">
+            <data>
+                <xpath expr="//group[@name='header_center']" position="inside">
+                </xpath>
+                <xpath expr="//page[1]" position="before">
+                    <page name="analysis" string="Analysis">
+                        <group name="analysis_1" colspan="4" col="2">
+                            <field name="performance_materiality" />
+                            <field name="tax_rate" />
+                        </group>
+                        <button
+                            name="action_reload_group"
+                            string="Reload Groups"
+                            type="object"
+                            icon="fa-refresh"
+                            class="oe_highlight"
+                            attrs="{'invisible': [('state', '!=', 'open')]}"
+                        />
+                        <field name="group_line_ids" nolabel="1">
+                            <tree create="false" edit="false" delete="false">
+                                <field name="currency_id" invisible="1" />
+                                <field name="group_id" />
+                                <field name="balance" />
+                                <field name="uncorrected_amount" />
+                                <field name="pct_of_balance" widget="percentage" />
+                                <field name="pct_of_pm" widget="percentage" />
+                            </tree>
+                            <form>
+                                <group>
+                                    <field name="currency_id" invisible="1" />
+                                    <field name="group_id" />
+                                    <field name="balance" />
+                                    <field name="uncorrected_amount" />
+                                    <field name="pct_of_balance" widget="percentage" />
+                                    <field name="pct_of_pm" widget="percentage" />
+                                </group>
+                            </form>
+                        </field>
+                        <group name="analysis_2" colspan="4" col="2">
+                            <field name="pre_tax_impact" />
+                            <field name="post_tax_impact" />
+                            <field name="materiality_conclusion" />
+                        </group>
+                    </page>
+                    <page name="uncorrected_entry" string="Links">
+                        <button
+                            name="action_view_uncorrected_entry"
+                            string="Open Uncorrected AJE"
+                            type="object"
+                            icon="fa-external-link"
+                            class="oe_highlight"
+                        />
+                        <field
+                            name="uncorrected_entry_ids"
+                            nolabel="1"
+                            context="{'tree_view_ref': 'ssi_general_audit_worksheet_uncorrected_aje_analysis.client_adjustment_entry_readonly_view_tree', 'form_view_ref': 'ssi_general_audit_worksheet_uncorrected_aje_analysis.client_adjustment_entry_readonly_view_form'}"
+                        >
+                            <tree create="false" delete="false">
+                                <field name="name" />
+                                <field name="adjustment_type" />
+                                <field name="date_start" />
+                                <field name="date_end" />
+                                <field name="state" />
+                            </tree>
+                        </field>
+                    </page>
+                </xpath>
+            </data>
+        </field>
+    </record>
+
+    <record id="general_audit_ws_c3b9e71_action" model="ir.actions.act_window">
+        <field name="name">Uncorrected AJE Analysis</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">general_audit_ws_c3b9e71</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+    <menuitem
+        id="general_audit_ws_c3b9e71_menu"
+        name="Uncorrected AJE Analysis"
+        parent="ssi_general_audit.menu_rr_result"
+        action="general_audit_ws_c3b9e71_action"
+        sequence="3"
+        groups="general_audit_ws_c3b9e71_viewer_group"
+    />
+</odoo>
