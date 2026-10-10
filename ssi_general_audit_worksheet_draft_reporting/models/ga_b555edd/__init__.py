@@ -5,4 +5,8 @@
 from . import (
     general_audit_ws_b555edd,
     general_audit_ws_b555edd_detail,
+    general_audit_ws_b555edd_equity_component,
+    general_audit_ws_b555edd_equity_line,
+    general_audit_ws_b555edd_cashflow_item,
+    general_audit_ws_b555edd_cashflow_line,
 )

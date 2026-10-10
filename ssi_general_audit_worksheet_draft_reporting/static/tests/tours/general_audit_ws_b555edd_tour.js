@@ -251,6 +251,37 @@ odoo.define(
                         // Assertion only; do not trigger the default click action.
                     },
                 },
+
+                // Flow 7 - Open the Statement of Changes in Equity tab.
+                {
+                    content: "Open the Statement of Changes in Equity tab",
+                    trigger:
+                        ".o_notebook .nav-link:contains(Statement of Changes in Equity)",
+                    extra_trigger: ".o_form_view",
+                },
+                {
+                    content: "The equity lines table is displayed",
+                    trigger:
+                        ".tab-pane.active .o_field_widget[name='equity_current_ids']",
+                    run: function () {
+                        // Assertion only; do not trigger the default click action.
+                    },
+                },
+
+                // Flow 8 - Open the Statement of Cash Flows tab.
+                {
+                    content: "Open the Statement of Cash Flows tab",
+                    trigger: ".o_notebook .nav-link:contains(Statement of Cash Flows)",
+                    extra_trigger: ".o_form_view",
+                },
+                {
+                    content: "The cash flow lines table is displayed",
+                    trigger:
+                        ".tab-pane.active .o_field_widget[name='cashflow_current_ids']",
+                    run: function () {
+                        // Assertion only; do not trigger the default click action.
+                    },
+                },
             ]
         );
 

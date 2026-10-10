@@ -1,0 +1,602 @@
+<?xml version="1.0" ?>
+<!-- Copyright 2025 OpenSynergy Indonesia
+     Copyright 2025 PT. Simetri Sinergi Indonesia
+     License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl-3.0-standalone.html). -->
+<odoo noupdate="1">
+
+    <record
+        id="general_audit_ws_b555edd_cashflow_item_pbt"
+        model="general_audit_ws_b555edd.cashflow_item"
+    >
+        <field name="name">Profit before tax</field>
+        <field name="sequence" eval="10" />
+        <field name="section">operating_adjustment</field>
+        <field name="calc_type">profit_before_tax</field>
+        <field name="sign">add</field>
+    </record>
+
+    <record
+        id="general_audit_ws_b555edd_cashflow_item_depreciation"
+        model="general_audit_ws_b555edd.cashflow_item"
+    >
+        <field name="name">Depreciation and amortization expense</field>
+        <field name="sequence" eval="20" />
+        <field name="section">operating_adjustment</field>
+        <field name="calc_type">pl_amount</field>
+        <field name="sign">add</field>
+        <field
+            name="type_ids"
+            eval="[(6, 0, [ref('ssi_general_audit.client_account_type_53_88b4482b')])]"
+        />
+    </record>
+
+    <record
+        id="general_audit_ws_b555edd_cashflow_item_interest_expense"
+        model="general_audit_ws_b555edd.cashflow_item"
+    >
+        <field name="name">Interest expense</field>
+        <field name="sequence" eval="30" />
+        <field name="section">operating_adjustment</field>
+        <field name="calc_type">pl_amount</field>
+        <field name="sign">add</field>
+        <field
+            name="type_ids"
+            eval="[(6, 0, [ref('ssi_general_audit.client_account_type_54_c3a5a82b')])]"
+        />
+    </record>
+
+    <record
+        id="general_audit_ws_b555edd_cashflow_item_associate_profit"
+        model="general_audit_ws_b555edd.cashflow_item"
+    >
+        <field
+            name="name"
+        >Share of the profit or loss of associates and joint ventures</field>
+        <field name="sequence" eval="40" />
+        <field name="section">operating_adjustment</field>
+        <field name="calc_type">pl_amount</field>
+        <field name="sign">subtract</field>
+        <field
+            name="type_ids"
+            eval="[(6, 0, [ref('ssi_general_audit.client_account_type_49_9e35de7e')])]"
+        />
+    </record>
+
+    <record
+        id="general_audit_ws_b555edd_cashflow_item_gain_asset_sale"
+        model="general_audit_ws_b555edd.cashflow_item"
+    >
+        <field name="name">Gain on sale of fixed assets</field>
+        <field name="sequence" eval="50" />
+        <field name="section">operating_adjustment</field>
+        <field name="calc_type">manual</field>
+        <field name="sign">add</field>
+    </record>
+
+    <record
+        id="general_audit_ws_b555edd_cashflow_item_ar"
+        model="general_audit_ws_b555edd.cashflow_item"
+    >
+        <field name="name">(Increase)/decrease in trade receivable</field>
+        <field name="sequence" eval="60" />
+        <field name="section">working_capital</field>
+        <field name="calc_type">balance_change</field>
+        <field name="sign">add</field>
+        <field
+            name="type_ids"
+            eval="[(6, 0, [ref('ssi_general_audit.client_account_type_2_4fbd7be2')])]"
+        />
+    </record>
+
+    <record
+        id="general_audit_ws_b555edd_cashflow_item_contract_asset"
+        model="general_audit_ws_b555edd.cashflow_item"
+    >
+        <field name="name">(Increase)/decrease in contract asset</field>
+        <field name="sequence" eval="70" />
+        <field name="section">working_capital</field>
+        <field name="calc_type">balance_change</field>
+        <field name="sign">add</field>
+        <field
+            name="type_ids"
+            eval="[(6, 0, [ref('ssi_general_audit.client_account_type_3_11680e89')])]"
+        />
+    </record>
+
+    <record
+        id="general_audit_ws_b555edd_cashflow_item_financial_asset"
+        model="general_audit_ws_b555edd.cashflow_item"
+    >
+        <field name="name">(Increase)/decrease in financial asset</field>
+        <field name="sequence" eval="80" />
+        <field name="section">working_capital</field>
+        <field name="calc_type">balance_change</field>
+        <field name="sign">add</field>
+        <field
+            name="type_ids"
+            eval="[(6, 0, [ref('ssi_general_audit.client_account_type_4_f991c5fc')])]"
+        />
+    </record>
+
+    <record
+        id="general_audit_ws_b555edd_cashflow_item_derivative"
+        model="general_audit_ws_b555edd.cashflow_item"
+    >
+        <field
+            name="name"
+        >(Increase)/decrease in derivative financial instrument</field>
+        <field name="sequence" eval="90" />
+        <field name="section">working_capital</field>
+        <field name="calc_type">balance_change</field>
+        <field name="sign">add</field>
+        <field
+            name="type_ids"
+            eval="[(6, 0, [ref('ssi_general_audit.client_account_type_5_2bfc3b7c')])]"
+        />
+    </record>
+
+    <record
+        id="general_audit_ws_b555edd_cashflow_item_inventory"
+        model="general_audit_ws_b555edd.cashflow_item"
+    >
+        <field name="name">(Increase)/decrease in inventory</field>
+        <field name="sequence" eval="100" />
+        <field name="section">working_capital</field>
+        <field name="calc_type">balance_change</field>
+        <field name="sign">add</field>
+        <field
+            name="type_ids"
+            eval="[(6, 0, [ref('ssi_general_audit.client_account_type_6_c2b67101')])]"
+        />
+    </record>
+
+    <record
+        id="general_audit_ws_b555edd_cashflow_item_prepayment"
+        model="general_audit_ws_b555edd.cashflow_item"
+    >
+        <field name="name">(Increase)/decrease in prepayment</field>
+        <field name="sequence" eval="110" />
+        <field name="section">working_capital</field>
+        <field name="calc_type">balance_change</field>
+        <field name="sign">add</field>
+        <field
+            name="type_ids"
+            eval="[(6, 0, [ref('ssi_general_audit.client_account_type_7_baf0bb46')])]"
+        />
+    </record>
+
+    <record
+        id="general_audit_ws_b555edd_cashflow_item_prepaid_tax"
+        model="general_audit_ws_b555edd.cashflow_item"
+    >
+        <field name="name">(Increase)/decrease in prepaid tax</field>
+        <field name="sequence" eval="120" />
+        <field name="section">working_capital</field>
+        <field name="calc_type">balance_change</field>
+        <field name="sign">add</field>
+        <field
+            name="type_ids"
+            eval="[(6, 0, [ref('ssi_general_audit.client_account_type_8_8db46758')])]"
+        />
+    </record>
+
+    <record
+        id="general_audit_ws_b555edd_cashflow_item_other_current_asset"
+        model="general_audit_ws_b555edd.cashflow_item"
+    >
+        <field name="name">(Increase)/decrease in other current asset</field>
+        <field name="sequence" eval="130" />
+        <field name="section">working_capital</field>
+        <field name="calc_type">balance_change</field>
+        <field name="sign">add</field>
+        <field
+            name="type_ids"
+            eval="[(6, 0, [ref('ssi_general_audit.client_account_type_9_5611af0d'), ref('ssi_general_audit.client_account_type_10_cee94b2f')])]"
+        />
+    </record>
+
+    <record
+        id="general_audit_ws_b555edd_cashflow_item_ap"
+        model="general_audit_ws_b555edd.cashflow_item"
+    >
+        <field name="name">Increase/(decrease) in trade payable</field>
+        <field name="sequence" eval="140" />
+        <field name="section">working_capital</field>
+        <field name="calc_type">balance_change</field>
+        <field name="sign">add</field>
+        <field
+            name="type_ids"
+            eval="[(6, 0, [ref('ssi_general_audit.client_account_type_19_17733e6d')])]"
+        />
+    </record>
+
+    <record
+        id="general_audit_ws_b555edd_cashflow_item_accrual"
+        model="general_audit_ws_b555edd.cashflow_item"
+    >
+        <field name="name">Increase/(decrease) in accruals and other payable</field>
+        <field name="sequence" eval="150" />
+        <field name="section">working_capital</field>
+        <field name="calc_type">balance_change</field>
+        <field name="sign">add</field>
+        <field
+            name="type_ids"
+            eval="[(6, 0, [ref('ssi_general_audit.client_account_type_20_597425bb')])]"
+        />
+    </record>
+
+    <record
+        id="general_audit_ws_b555edd_cashflow_item_contract_liability"
+        model="general_audit_ws_b555edd.cashflow_item"
+    >
+        <field name="name">Increase/(decrease) in contract liability</field>
+        <field name="sequence" eval="160" />
+        <field name="section">working_capital</field>
+        <field name="calc_type">balance_change</field>
+        <field name="sign">add</field>
+        <field
+            name="type_ids"
+            eval="[(6, 0, [ref('ssi_general_audit.client_account_type_21_990bf488')])]"
+        />
+    </record>
+
+    <record
+        id="general_audit_ws_b555edd_cashflow_item_overdraft"
+        model="general_audit_ws_b555edd.cashflow_item"
+    >
+        <field name="name">Increase/(decrease) in bank overdraft</field>
+        <field name="sequence" eval="170" />
+        <field name="section">working_capital</field>
+        <field name="calc_type">balance_change</field>
+        <field name="sign">add</field>
+        <field
+            name="type_ids"
+            eval="[(6, 0, [ref('ssi_general_audit.client_account_type_22_d5223579')])]"
+        />
+    </record>
+
+    <record
+        id="general_audit_ws_b555edd_cashflow_item_provision"
+        model="general_audit_ws_b555edd.cashflow_item"
+    >
+        <field name="name">Increase/(decrease) in provision</field>
+        <field name="sequence" eval="180" />
+        <field name="section">working_capital</field>
+        <field name="calc_type">balance_change</field>
+        <field name="sign">add</field>
+        <field
+            name="type_ids"
+            eval="[(6, 0, [ref('ssi_general_audit.client_account_type_23_22497283')])]"
+        />
+    </record>
+
+    <record
+        id="general_audit_ws_b555edd_cashflow_item_employee_benefit"
+        model="general_audit_ws_b555edd.cashflow_item"
+    >
+        <field name="name">Increase/(decrease) in employee benefit liability</field>
+        <field name="sequence" eval="190" />
+        <field name="section">working_capital</field>
+        <field name="calc_type">balance_change</field>
+        <field name="sign">add</field>
+        <field
+            name="type_ids"
+            eval="[(6, 0, [ref('ssi_general_audit.client_account_type_24_82afe2e2'), ref('ssi_general_audit.client_account_type_33_a02a5a95')])]"
+        />
+    </record>
+
+    <record
+        id="general_audit_ws_b555edd_cashflow_item_taxes_payable"
+        model="general_audit_ws_b555edd.cashflow_item"
+    >
+        <field name="name">Increase/(decrease) in taxes payable</field>
+        <field name="sequence" eval="200" />
+        <field name="section">working_capital</field>
+        <field name="calc_type">balance_change</field>
+        <field name="sign">add</field>
+        <field
+            name="type_ids"
+            eval="[(6, 0, [ref('ssi_general_audit.client_account_type_25_e9a2eb79')])]"
+        />
+    </record>
+
+    <record
+        id="general_audit_ws_b555edd_cashflow_item_disposal_liability"
+        model="general_audit_ws_b555edd.cashflow_item"
+    >
+        <field
+            name="name"
+        >Increase/(decrease) in liabilities included in disposal groups</field>
+        <field name="sequence" eval="210" />
+        <field name="section">working_capital</field>
+        <field name="calc_type">balance_change</field>
+        <field name="sign">add</field>
+        <field
+            name="type_ids"
+            eval="[(6, 0, [ref('ssi_general_audit.client_account_type_26_9b9eff6b')])]"
+        />
+    </record>
+
+    <record
+        id="general_audit_ws_b555edd_cashflow_item_other_current_liability"
+        model="general_audit_ws_b555edd.cashflow_item"
+    >
+        <field name="name">Increase/(decrease) in other current liability</field>
+        <field name="sequence" eval="220" />
+        <field name="section">working_capital</field>
+        <field name="calc_type">balance_change</field>
+        <field name="sign">add</field>
+        <field
+            name="type_ids"
+            eval="[(6, 0, [ref('ssi_general_audit.client_account_type_27_53ff0cff'), ref('ssi_general_audit.client_account_type_28_e30f1cdd')])]"
+        />
+    </record>
+
+    <record
+        id="general_audit_ws_b555edd_cashflow_item_interest_paid"
+        model="general_audit_ws_b555edd.cashflow_item"
+    >
+        <field name="name">Interest paid</field>
+        <field name="sequence" eval="230" />
+        <field name="section">operating_other</field>
+        <field name="calc_type">pl_amount</field>
+        <field name="sign">subtract</field>
+        <field
+            name="type_ids"
+            eval="[(6, 0, [ref('ssi_general_audit.client_account_type_54_c3a5a82b')])]"
+        />
+    </record>
+
+    <record
+        id="general_audit_ws_b555edd_cashflow_item_tax_paid"
+        model="general_audit_ws_b555edd.cashflow_item"
+    >
+        <field name="name">Corporate income tax paid</field>
+        <field name="sequence" eval="240" />
+        <field name="section">operating_other</field>
+        <field name="calc_type">pl_amount</field>
+        <field name="sign">subtract</field>
+        <field
+            name="type_ids"
+            eval="[(6, 0, [ref('ssi_general_audit.client_account_type_57_d50912ee')])]"
+        />
+    </record>
+
+    <record
+        id="general_audit_ws_b555edd_cashflow_item_capex"
+        model="general_audit_ws_b555edd.cashflow_item"
+    >
+        <field name="name">Acquisition of fixed and intangible assets</field>
+        <field name="sequence" eval="250" />
+        <field name="section">investing</field>
+        <field name="calc_type">capex</field>
+        <field name="sign">add</field>
+        <field
+            name="type_ids"
+            eval="[(6, 0, [ref('ssi_general_audit.client_account_type_14_e160db3b'), ref('ssi_general_audit.client_account_type_15_ccdcd5fb'), ref('ssi_general_audit.client_account_type_16_b74bf4a8'), ref('ssi_general_audit.client_account_type_17_6facc72d')])]"
+        />
+        <field
+            name="reference_type_ids"
+            eval="[(6, 0, [ref('ssi_general_audit.client_account_type_53_88b4482b')])]"
+        />
+    </record>
+
+    <record
+        id="general_audit_ws_b555edd_cashflow_item_investment_associate"
+        model="general_audit_ws_b555edd.cashflow_item"
+    >
+        <field name="name">Investment in associates and joint ventures</field>
+        <field name="sequence" eval="260" />
+        <field name="section">investing</field>
+        <field name="calc_type">balance_change</field>
+        <field name="sign">add</field>
+        <field
+            name="type_ids"
+            eval="[(6, 0, [ref('ssi_general_audit.client_account_type_11_2628cc26'), ref('ssi_general_audit.client_account_type_12_c50cff3a')])]"
+        />
+    </record>
+
+    <record
+        id="general_audit_ws_b555edd_cashflow_item_other_noncurrent_asset"
+        model="general_audit_ws_b555edd.cashflow_item"
+    >
+        <field name="name">Other non-current assets</field>
+        <field name="sequence" eval="270" />
+        <field name="section">investing</field>
+        <field name="calc_type">balance_change</field>
+        <field name="sign">add</field>
+        <field
+            name="type_ids"
+            eval="[(6, 0, [ref('ssi_general_audit.client_account_type_18_ac7609e5')])]"
+        />
+    </record>
+
+    <record
+        id="general_audit_ws_b555edd_cashflow_item_borrowing"
+        model="general_audit_ws_b555edd.cashflow_item"
+    >
+        <field name="name">Proceeds from/(repayment of) bank borrowing</field>
+        <field name="sequence" eval="280" />
+        <field name="section">financing</field>
+        <field name="calc_type">balance_change</field>
+        <field name="sign">add</field>
+        <field
+            name="type_ids"
+            eval="[(6, 0, [ref('ssi_general_audit.client_account_type_29_ed04dbe6')])]"
+        />
+    </record>
+
+    <record
+        id="general_audit_ws_b555edd_cashflow_item_lease"
+        model="general_audit_ws_b555edd.cashflow_item"
+    >
+        <field name="name">Payment of finance lease liability</field>
+        <field name="sequence" eval="290" />
+        <field name="section">financing</field>
+        <field name="calc_type">balance_change</field>
+        <field name="sign">add</field>
+        <field
+            name="type_ids"
+            eval="[(6, 0, [ref('ssi_general_audit.client_account_type_30_6c64e64b')])]"
+        />
+    </record>
+
+    <record
+        id="general_audit_ws_b555edd_cashflow_item_other_borrowing"
+        model="general_audit_ws_b555edd.cashflow_item"
+    >
+        <field
+            name="name"
+        >Other long-term borrowing, convertible bond and subordinated loan</field>
+        <field name="sequence" eval="300" />
+        <field name="section">financing</field>
+        <field name="calc_type">balance_change</field>
+        <field name="sign">add</field>
+        <field
+            name="type_ids"
+            eval="[(6, 0, [ref('ssi_general_audit.client_account_type_31_771a06a0'), ref('ssi_general_audit.client_account_type_32_231ac0b9'), ref('ssi_general_audit.client_account_type_35_e19e0dce')])]"
+        />
+    </record>
+
+    <record
+        id="general_audit_ws_b555edd_cashflow_item_share_capital"
+        model="general_audit_ws_b555edd.cashflow_item"
+    >
+        <field
+            name="name"
+        >Proceeds from issuance of shares, net of treasury shares</field>
+        <field name="sequence" eval="310" />
+        <field name="section">financing</field>
+        <field name="calc_type">balance_change</field>
+        <field name="sign">add</field>
+        <field
+            name="type_ids"
+            eval="[(6, 0, [ref('ssi_general_audit.client_account_type_37_eaf27dc8'), ref('ssi_general_audit.client_account_type_38_d5ae9315'), ref('ssi_general_audit.client_account_type_39_fc15e9b7')])]"
+        />
+    </record>
+
+    <record
+        id="general_audit_ws_b555edd_cashflow_item_dividend_paid"
+        model="general_audit_ws_b555edd.cashflow_item"
+    >
+        <field name="name">Dividends paid</field>
+        <field name="sequence" eval="320" />
+        <field name="section">financing</field>
+        <field name="calc_type">manual</field>
+        <field name="sign">add</field>
+    </record>
+
+    <record
+        id="general_audit_ws_b555edd_cashflow_item_other_financing"
+        model="general_audit_ws_b555edd.cashflow_item"
+    >
+        <field name="name">Other financing activities</field>
+        <field name="sequence" eval="330" />
+        <field name="section">financing</field>
+        <field name="calc_type">manual</field>
+        <field name="sign">add</field>
+    </record>
+
+    <record
+        id="general_audit_ws_b555edd_cashflow_item_operating_total"
+        model="general_audit_ws_b555edd.cashflow_item"
+    >
+        <field name="name">Net cash flows from operating activities</field>
+        <field name="sequence" eval="340" />
+        <field name="section">summary</field>
+        <field name="calc_type">operating_total</field>
+        <field name="sign">add</field>
+    </record>
+
+    <record
+        id="general_audit_ws_b555edd_cashflow_item_investing_total"
+        model="general_audit_ws_b555edd.cashflow_item"
+    >
+        <field name="name">Net cash flows from investing activities</field>
+        <field name="sequence" eval="350" />
+        <field name="section">summary</field>
+        <field name="calc_type">investing_total</field>
+        <field name="sign">add</field>
+    </record>
+
+    <record
+        id="general_audit_ws_b555edd_cashflow_item_financing_total"
+        model="general_audit_ws_b555edd.cashflow_item"
+    >
+        <field name="name">Net cash flows from financing activities</field>
+        <field name="sequence" eval="360" />
+        <field name="section">summary</field>
+        <field name="calc_type">financing_total</field>
+        <field name="sign">add</field>
+    </record>
+
+    <record
+        id="general_audit_ws_b555edd_cashflow_item_net_change"
+        model="general_audit_ws_b555edd.cashflow_item"
+    >
+        <field name="name">Net increase/(decrease) in cash and cash equivalents</field>
+        <field name="sequence" eval="370" />
+        <field name="section">summary</field>
+        <field name="calc_type">net_change</field>
+        <field name="sign">add</field>
+    </record>
+
+    <record
+        id="general_audit_ws_b555edd_cashflow_item_cash_opening"
+        model="general_audit_ws_b555edd.cashflow_item"
+    >
+        <field
+            name="name"
+        >Cash and cash equivalents at the beginning of the period</field>
+        <field name="sequence" eval="380" />
+        <field name="section">summary</field>
+        <field name="calc_type">cash_opening</field>
+        <field name="sign">add</field>
+        <field
+            name="type_ids"
+            eval="[(6, 0, [ref('ssi_general_audit.client_account_type_1_e046f813')])]"
+        />
+    </record>
+
+    <record
+        id="general_audit_ws_b555edd_cashflow_item_cash_closing_computed"
+        model="general_audit_ws_b555edd.cashflow_item"
+    >
+        <field
+            name="name"
+        >Cash and cash equivalents at the end of the period (computed)</field>
+        <field name="sequence" eval="390" />
+        <field name="section">summary</field>
+        <field name="calc_type">cash_closing_computed</field>
+        <field name="sign">add</field>
+    </record>
+
+    <record
+        id="general_audit_ws_b555edd_cashflow_item_cash_closing_tb"
+        model="general_audit_ws_b555edd.cashflow_item"
+    >
+        <field
+            name="name"
+        >Cash and cash equivalents at the end of the period (trial balance)</field>
+        <field name="sequence" eval="400" />
+        <field name="section">summary</field>
+        <field name="calc_type">cash_closing_tb</field>
+        <field name="sign">add</field>
+        <field
+            name="type_ids"
+            eval="[(6, 0, [ref('ssi_general_audit.client_account_type_1_e046f813')])]"
+        />
+    </record>
+
+    <record
+        id="general_audit_ws_b555edd_cashflow_item_cash_difference"
+        model="general_audit_ws_b555edd.cashflow_item"
+    >
+        <field name="name">Difference between computed and trial balance cash</field>
+        <field name="sequence" eval="410" />
+        <field name="section">summary</field>
+        <field name="calc_type">cash_difference</field>
+        <field name="sign">add</field>
+    </record>
+
+</odoo>
