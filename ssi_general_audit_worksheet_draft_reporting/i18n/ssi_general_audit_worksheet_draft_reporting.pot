@@ -98,7 +98,9 @@ msgstr ""
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_draft_reporting.field_general_audit_ws_ae598e6_control__worksheet_id
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_draft_reporting.field_general_audit_ws_ae598e6_influence__worksheet_id
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_draft_reporting.field_general_audit_ws_b555edd__worksheet_id
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_draft_reporting.field_general_audit_ws_b555edd_cashflow_line__worksheet_id
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_draft_reporting.field_general_audit_ws_b555edd_detail__worksheet_id
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_draft_reporting.field_general_audit_ws_b555edd_equity_line__worksheet_id
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_draft_reporting.field_general_audit_ws_bbbdfe7__worksheet_id
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_draft_reporting.field_general_audit_ws_bbbdfe7_checklist__worksheet_id
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_draft_reporting.field_general_audit_ws_de69c2f__worksheet_id
@@ -109,6 +111,39 @@ msgstr ""
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_draft_reporting.field_general_audit_ws_ff42fdc__worksheet_id
 #: model_terms:ir.ui.view,arch_db:ssi_general_audit_worksheet_draft_reporting.general_audit_ws_de69c2f_view_form
 msgid "# Worksheet"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_draft_reporting
+#: model_terms:ir.ui.view,arch_db:ssi_general_audit_worksheet_draft_reporting.general_audit_ws_b555edd_view_form
+msgid ""
+"<b>Addition of Reserves</b>: amount moved to\n"
+"                                    reserves, on the reserve line. Enter the matching\n"
+"                                    negative amount on the retained earnings line."
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_draft_reporting
+#: model_terms:ir.ui.view,arch_db:ssi_general_audit_worksheet_draft_reporting.general_audit_ws_b555edd_view_form
+msgid ""
+"<b>Dividends</b>: dividends declared, on the\n"
+"                                    retained earnings line as a negative amount,\n"
+"                                    because they reduce equity."
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_draft_reporting
+#: model_terms:ir.ui.view,arch_db:ssi_general_audit_worksheet_draft_reporting.general_audit_ws_b555edd_view_form
+msgid ""
+"<b>Issuance of Shares</b>: shares issued to the\n"
+"                                    owners, on the share capital or paid in capital\n"
+"                                    line. Positive when equity increases. Support it\n"
+"                                    with the deed or the shareholders' resolution."
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_draft_reporting
+#: model_terms:ir.ui.view,arch_db:ssi_general_audit_worksheet_draft_reporting.general_audit_ws_b555edd_view_form
+msgid ""
+"<b>Treasury Shares</b>: shares bought back or\n"
+"                                    reissued, on the treasury shares line. Negative\n"
+"                                    when bought back, positive when reissued."
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_draft_reporting
@@ -139,6 +174,8 @@ msgstr ""
 #. module: ssi_general_audit_worksheet_draft_reporting
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_draft_reporting.field_general_audit_ws_ae598e6__account_type_ids
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_draft_reporting.field_general_audit_ws_b555edd__account_type_ids
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_draft_reporting.field_general_audit_ws_b555edd_cashflow_item__type_ids
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_draft_reporting.field_general_audit_ws_b555edd_equity_component__type_ids
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_draft_reporting.field_general_audit_ws_bbbdfe7__account_type_ids
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_draft_reporting.field_general_audit_ws_de69c2f__account_type_ids
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_draft_reporting.field_general_audit_ws_e59c663__account_type_ids
@@ -176,6 +213,13 @@ msgstr ""
 #: model:ir.model.fields,help:ssi_general_audit_worksheet_draft_reporting.field_general_audit_ws_e59c663__account_type_ids
 #: model:ir.model.fields,help:ssi_general_audit_worksheet_draft_reporting.field_general_audit_ws_ff42fdc__account_type_ids
 msgid "Account types available in the linked General Audit."
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_draft_reporting
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_draft_reporting.field_general_audit_ws_b555edd_cashflow_item__reference_type_ids
+msgid ""
+"Account types whose period balance is added to the change of the mapped "
+"types, for example depreciation for asset acquisitions."
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_draft_reporting
@@ -307,6 +351,11 @@ msgid "Activity Type Icon"
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_draft_reporting
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_draft_reporting.field_general_audit_ws_b555edd_equity_line__reserve
+msgid "Addition of Reserves"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_draft_reporting
 #: model:ir.model.fields,help:ssi_general_audit_worksheet_draft_reporting.field_general_audit_ws_bbbdfe7_checklist__comment
 #: model:ir.model.fields,help:ssi_general_audit_worksheet_draft_reporting.field_general_audit_ws_e59c663_checklist__comment
 msgid "Additional comment or explanation for this checklist item."
@@ -355,6 +404,16 @@ msgstr ""
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_draft_reporting.field_general_audit_ws_e59c663__allowed_policy_template_ids
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_draft_reporting.field_general_audit_ws_ff42fdc__allowed_policy_template_ids
 msgid "Allowed Policy Templates"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_draft_reporting
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_draft_reporting.field_general_audit_ws_b555edd_cashflow_line__amount
+msgid "Amount"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_draft_reporting
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_draft_reporting.field_general_audit_ws_b555edd_equity_line__reserve
+msgid "Appropriation to reserves; typed in by the auditor."
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_draft_reporting
@@ -530,6 +589,21 @@ msgid "Audited client company."
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_draft_reporting
+#: model:ir.model.fields.selection,name:ssi_general_audit_worksheet_draft_reporting.selection__general_audit_ws_b555edd_cashflow_item__calc_type__balance_change
+msgid "Balance Change"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_draft_reporting
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_draft_reporting.field_general_audit_ws_b555edd_equity_line__closing_balance
+msgid "Balance of the component at the end of the period."
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_draft_reporting
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_draft_reporting.field_general_audit_ws_b555edd_equity_line__opening_balance
+msgid "Balance of the component at the start of the period."
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_draft_reporting
 #: model:ir.model.fields,help:ssi_general_audit_worksheet_draft_reporting.field_general_audit_ws_b555edd_detail__previous_balance
 msgid "Balance of the previous period."
 msgstr ""
@@ -552,6 +626,12 @@ msgstr ""
 #. module: ssi_general_audit_worksheet_draft_reporting
 #: model:general_audit_ws_e59c663.item,name:ssi_general_audit_worksheet_draft_reporting.general_audit_ws_e59c663_item_47_4901185
 msgid "Business combinations"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_draft_reporting
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_draft_reporting.field_general_audit_ws_b555edd_cashflow_item__calc_type
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_draft_reporting.field_general_audit_ws_b555edd_cashflow_line__calc_type
+msgid "Calculation"
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_draft_reporting
@@ -673,14 +753,70 @@ msgid "Capital management"
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_draft_reporting
+#: model:ir.model.fields.selection,name:ssi_general_audit_worksheet_draft_reporting.selection__general_audit_ws_b555edd_cashflow_item__calc_type__cash_difference
+msgid "Cash Difference"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_draft_reporting
+#: model:ir.actions.act_window,name:ssi_general_audit_worksheet_draft_reporting.general_audit_ws_b555edd_cashflow_item_action
+#: model:ir.ui.menu,name:ssi_general_audit_worksheet_draft_reporting.general_audit_ws_b555edd_cashflow_item_menu
+msgid "Cash Flow Item"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_draft_reporting
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_draft_reporting.field_general_audit_ws_b555edd__cashflow_line_ids
+msgid "Cash Flow Lines"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_draft_reporting
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_draft_reporting.field_general_audit_ws_b555edd__cashflow_current_ids
+msgid "Cash Flows - Current Period"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_draft_reporting
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_draft_reporting.field_general_audit_ws_b555edd__cashflow_previous_ids
+msgid "Cash Flows - Previous Period"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_draft_reporting
 #: model:general_audit_ws_e59c663.item,name:ssi_general_audit_worksheet_draft_reporting.general_audit_ws_e59c663_item_14_4347c7f
 msgid "Cash and cash equivalents"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_draft_reporting
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_draft_reporting.field_general_audit_ws_b555edd_cashflow_line__item_id
+msgid "Cash flow item this line reports."
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_draft_reporting
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_draft_reporting.field_general_audit_ws_b555edd__cashflow_current_ids
+msgid "Cash flow lines of the current period."
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_draft_reporting
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_draft_reporting.field_general_audit_ws_b555edd__cashflow_previous_ids
+msgid "Cash flow lines of the previous period."
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_draft_reporting
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_draft_reporting.field_general_audit_ws_b555edd_cashflow_line__amount
+msgid "Cash inflow (positive) or outflow (negative)."
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_draft_reporting
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_draft_reporting.field_general_audit_ws_ae598e6_control__cause
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_draft_reporting.field_general_audit_ws_ae598e6_influence__cause
 msgid "Cause"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_draft_reporting
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_draft_reporting.field_general_audit_ws_b555edd__equity_current_ids
+msgid "Changes in Equity - Current Period"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_draft_reporting
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_draft_reporting.field_general_audit_ws_b555edd__equity_previous_ids
+msgid "Changes in Equity - Previous Period"
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_draft_reporting
@@ -726,6 +862,21 @@ msgstr ""
 msgid ""
 "Client account group summarised by this posture line. Required for Account "
 "Group lines; left empty for Total lines."
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_draft_reporting
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_draft_reporting.field_general_audit_ws_b555edd_equity_line__closing_balance
+msgid "Closing Balance"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_draft_reporting
+#: model:ir.model.fields.selection,name:ssi_general_audit_worksheet_draft_reporting.selection__general_audit_ws_b555edd_cashflow_item__calc_type__cash_closing_computed
+msgid "Closing Cash (Computed)"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_draft_reporting
+#: model:ir.model.fields.selection,name:ssi_general_audit_worksheet_draft_reporting.selection__general_audit_ws_b555edd_cashflow_item__calc_type__cash_closing_tb
+msgid "Closing Cash (Trial Balance)"
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_draft_reporting
@@ -812,6 +963,11 @@ msgstr ""
 #: model:general_audit_ws_de69c2f.item,name:ssi_general_audit_worksheet_draft_reporting.general_audit_ws_de69c2f_item_3_00e6e302
 #: model_terms:ir.ui.view,arch_db:ssi_general_audit_worksheet_draft_reporting.general_audit_ws_ae598e6_view_form
 msgid "Compliance with Laws and Regulations"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_draft_reporting
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_draft_reporting.field_general_audit_ws_b555edd_equity_line__component_id
+msgid "Component"
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_draft_reporting
@@ -927,7 +1083,11 @@ msgstr ""
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_draft_reporting.field_general_audit_ws_ae598e6_control__create_uid
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_draft_reporting.field_general_audit_ws_ae598e6_influence__create_uid
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_draft_reporting.field_general_audit_ws_b555edd__create_uid
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_draft_reporting.field_general_audit_ws_b555edd_cashflow_item__create_uid
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_draft_reporting.field_general_audit_ws_b555edd_cashflow_line__create_uid
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_draft_reporting.field_general_audit_ws_b555edd_detail__create_uid
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_draft_reporting.field_general_audit_ws_b555edd_equity_component__create_uid
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_draft_reporting.field_general_audit_ws_b555edd_equity_line__create_uid
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_draft_reporting.field_general_audit_ws_bbbdfe7__create_uid
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_draft_reporting.field_general_audit_ws_bbbdfe7_checklist__create_uid
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_draft_reporting.field_general_audit_ws_bbbdfe7_item__create_uid
@@ -951,7 +1111,11 @@ msgstr ""
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_draft_reporting.field_general_audit_ws_ae598e6_control__create_date
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_draft_reporting.field_general_audit_ws_ae598e6_influence__create_date
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_draft_reporting.field_general_audit_ws_b555edd__create_date
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_draft_reporting.field_general_audit_ws_b555edd_cashflow_item__create_date
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_draft_reporting.field_general_audit_ws_b555edd_cashflow_line__create_date
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_draft_reporting.field_general_audit_ws_b555edd_detail__create_date
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_draft_reporting.field_general_audit_ws_b555edd_equity_component__create_date
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_draft_reporting.field_general_audit_ws_b555edd_equity_line__create_date
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_draft_reporting.field_general_audit_ws_bbbdfe7__create_date
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_draft_reporting.field_general_audit_ws_bbbdfe7_checklist__create_date
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_draft_reporting.field_general_audit_ws_bbbdfe7_item__create_date
@@ -995,7 +1159,9 @@ msgstr ""
 #. module: ssi_general_audit_worksheet_draft_reporting
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_draft_reporting.field_general_audit_ws_ae598e6__currency_id
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_draft_reporting.field_general_audit_ws_b555edd__currency_id
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_draft_reporting.field_general_audit_ws_b555edd_cashflow_line__currency_id
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_draft_reporting.field_general_audit_ws_b555edd_detail__currency_id
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_draft_reporting.field_general_audit_ws_b555edd_equity_line__currency_id
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_draft_reporting.field_general_audit_ws_bbbdfe7__currency_id
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_draft_reporting.field_general_audit_ws_de69c2f__currency_id
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_draft_reporting.field_general_audit_ws_e59c663__currency_id
@@ -1005,7 +1171,9 @@ msgid "Currency"
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_draft_reporting
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_draft_reporting.field_general_audit_ws_b555edd_cashflow_line__currency_id
 #: model:ir.model.fields,help:ssi_general_audit_worksheet_draft_reporting.field_general_audit_ws_b555edd_detail__currency_id
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_draft_reporting.field_general_audit_ws_b555edd_equity_line__currency_id
 msgid "Currency of the amounts; taken from the General Audit."
 msgstr ""
 
@@ -1027,6 +1195,13 @@ msgstr ""
 #. module: ssi_general_audit_worksheet_draft_reporting
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_draft_reporting.field_general_audit_ws_b555edd_detail__current_balance
 msgid "Current Balance"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_draft_reporting
+#: model:ir.model.fields.selection,name:ssi_general_audit_worksheet_draft_reporting.selection__general_audit_ws_b555edd_cashflow_line__period__current
+#: model:ir.model.fields.selection,name:ssi_general_audit_worksheet_draft_reporting.selection__general_audit_ws_b555edd_equity_line__period__current
+#: model_terms:ir.ui.view,arch_db:ssi_general_audit_worksheet_draft_reporting.general_audit_ws_b555edd_view_form
+msgid "Current Period"
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_draft_reporting
@@ -1132,11 +1307,25 @@ msgid "Details"
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_draft_reporting
+#: model_terms:ir.ui.view,arch_db:ssi_general_audit_worksheet_draft_reporting.general_audit_ws_b555edd_view_form
+msgid ""
+"Difference = computed closing cash - closing cash\n"
+"                                of the trial balance. It is 0 when every cash\n"
+"                                movement is mapped; otherwise something is still\n"
+"                                missing. Reload replaces every figure, including the\n"
+"                                ones you typed in."
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_draft_reporting
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_draft_reporting.field_general_audit_ws_ae598e6__display_name
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_draft_reporting.field_general_audit_ws_ae598e6_control__display_name
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_draft_reporting.field_general_audit_ws_ae598e6_influence__display_name
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_draft_reporting.field_general_audit_ws_b555edd__display_name
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_draft_reporting.field_general_audit_ws_b555edd_cashflow_item__display_name
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_draft_reporting.field_general_audit_ws_b555edd_cashflow_line__display_name
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_draft_reporting.field_general_audit_ws_b555edd_detail__display_name
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_draft_reporting.field_general_audit_ws_b555edd_equity_component__display_name
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_draft_reporting.field_general_audit_ws_b555edd_equity_line__display_name
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_draft_reporting.field_general_audit_ws_bbbdfe7__display_name
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_draft_reporting.field_general_audit_ws_bbbdfe7_checklist__display_name
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_draft_reporting.field_general_audit_ws_bbbdfe7_item__display_name
@@ -1153,6 +1342,11 @@ msgstr ""
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_draft_reporting.field_general_audit_ws_ff42fdc_posture__display_name
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_draft_reporting.field_general_audit_ws_ff42fdc_total_formula__display_name
 msgid "Display Name"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_draft_reporting
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_draft_reporting.field_general_audit_ws_b555edd_cashflow_item__sequence
+msgid "Display and calculation order of the row."
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_draft_reporting
@@ -1174,6 +1368,11 @@ msgstr ""
 #: model:ir.model.fields,help:ssi_general_audit_worksheet_draft_reporting.field_general_audit_ws_e59c663_review_checklist__sequence
 msgid ""
 "Display order copied from the master item; can be adjusted if required."
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_draft_reporting
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_draft_reporting.field_general_audit_ws_b555edd_equity_component__sequence
+msgid "Display order of the component on the statement."
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_draft_reporting
@@ -1199,6 +1398,16 @@ msgid ""
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_draft_reporting
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_draft_reporting.field_general_audit_ws_b555edd_equity_line__sequence
+msgid "Display order, copied from the component."
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_draft_reporting
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_draft_reporting.field_general_audit_ws_b555edd_cashflow_line__sequence
+msgid "Display order, copied from the item."
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_draft_reporting
 #: model:ir.model.fields,help:ssi_general_audit_worksheet_draft_reporting.field_general_audit_ws_b555edd_detail__sequence
 msgid "Display order: account group sequence, then type sequence."
 msgstr ""
@@ -1206,6 +1415,16 @@ msgstr ""
 #. module: ssi_general_audit_worksheet_draft_reporting
 #: model:general_audit_ws_e59c663.item,name:ssi_general_audit_worksheet_draft_reporting.general_audit_ws_e59c663_item_38_abb9d90
 msgid "Dividend distribution"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_draft_reporting
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_draft_reporting.field_general_audit_ws_b555edd_equity_line__dividend
+msgid "Dividends"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_draft_reporting
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_draft_reporting.field_general_audit_ws_b555edd_equity_line__dividend
+msgid "Dividends distributed; typed in by the auditor."
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_draft_reporting
@@ -1391,10 +1610,36 @@ msgid ""
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_draft_reporting
+#: model:ir.actions.act_window,name:ssi_general_audit_worksheet_draft_reporting.general_audit_ws_b555edd_equity_component_action
+#: model:ir.ui.menu,name:ssi_general_audit_worksheet_draft_reporting.general_audit_ws_b555edd_equity_component_menu
+msgid "Equity Component"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_draft_reporting
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_draft_reporting.field_general_audit_ws_b555edd__equity_line_ids
+msgid "Equity Lines"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_draft_reporting
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_draft_reporting.field_general_audit_ws_b555edd_equity_line__component_id
+msgid "Equity component this line reports."
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_draft_reporting
 #: model:general_audit_ws_e59c663.review_item,name:ssi_general_audit_worksheet_draft_reporting.general_audit_ws_e59c663_review_item_4_9d51e37
 msgid ""
 "Equity figures in the statement of financial position agree with the ending "
 "balance figures in the statement of changes in equity"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_draft_reporting
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_draft_reporting.field_general_audit_ws_b555edd__equity_current_ids
+msgid "Equity lines of the current period."
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_draft_reporting
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_draft_reporting.field_general_audit_ws_b555edd__equity_previous_ids
+msgid "Equity lines of the previous period."
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_draft_reporting
@@ -1482,8 +1727,18 @@ msgid ""
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_draft_reporting
+#: model:ir.model.fields.selection,name:ssi_general_audit_worksheet_draft_reporting.selection__general_audit_ws_b555edd_cashflow_item__section__financing
+msgid "Financing"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_draft_reporting
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_draft_reporting.field_general_audit_ws_ae598e6__influence_ids
 msgid "Findings That Influence Opinion"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_draft_reporting
+#: model:ir.model.fields.selection,name:ssi_general_audit_worksheet_draft_reporting.selection__general_audit_ws_b555edd_cashflow_item__calc_type__capex
+msgid "Fixed Asset Acquisition"
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_draft_reporting
@@ -1580,6 +1835,16 @@ msgid "Group structure"
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_draft_reporting
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_draft_reporting.field_general_audit_ws_b555edd__cashflow_has_manual
+msgid "Has Manual Cash Flow Input"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_draft_reporting
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_draft_reporting.field_general_audit_ws_b555edd__equity_has_manual
+msgid "Has Manual Equity Input"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_draft_reporting
 #: model:general_audit_ws_bbbdfe7.item,name:ssi_general_audit_worksheet_draft_reporting.general_audit_ws_bbbdfe7_item_1_97c64425
 msgid ""
 "Has management provided a written representation that they have fulfilled "
@@ -1604,11 +1869,31 @@ msgid ""
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_draft_reporting
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_draft_reporting.field_general_audit_ws_b555edd_cashflow_line__calc_type
+msgid "How the amount is obtained."
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_draft_reporting
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_draft_reporting.field_general_audit_ws_b555edd_cashflow_item__calc_type
+msgid ""
+"How the amount is obtained. Profit or Loss Amount takes the period balance "
+"of the mapped types. Balance Change takes the change of their balance: an "
+"increase of an asset is a cash outflow, an increase of a liability or equity"
+" is a cash inflow. Fixed Asset Acquisition is the change of the mapped asset"
+" types plus the period expense of the reference types. Manual rows are typed"
+" in by the auditor."
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_draft_reporting
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_draft_reporting.field_general_audit_ws_ae598e6__id
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_draft_reporting.field_general_audit_ws_ae598e6_control__id
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_draft_reporting.field_general_audit_ws_ae598e6_influence__id
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_draft_reporting.field_general_audit_ws_b555edd__id
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_draft_reporting.field_general_audit_ws_b555edd_cashflow_item__id
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_draft_reporting.field_general_audit_ws_b555edd_cashflow_line__id
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_draft_reporting.field_general_audit_ws_b555edd_detail__id
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_draft_reporting.field_general_audit_ws_b555edd_equity_component__id
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_draft_reporting.field_general_audit_ws_b555edd_equity_line__id
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_draft_reporting.field_general_audit_ws_bbbdfe7__id
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_draft_reporting.field_general_audit_ws_bbbdfe7_checklist__id
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_draft_reporting.field_general_audit_ws_bbbdfe7_item__id
@@ -1719,6 +2004,16 @@ msgid "Impairment of non-financial assets"
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_draft_reporting
+#: model_terms:ir.ui.view,arch_db:ssi_general_audit_worksheet_draft_reporting.general_audit_ws_b555edd_view_form
+msgid ""
+"Indirect method. Reload starts from the profit before\n"
+"                                tax, adds back the non-cash items, then adds the\n"
+"                                change of each working capital account: an increase\n"
+"                                of an asset is a cash outflow, an increase of a\n"
+"                                liability is a cash inflow."
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_draft_reporting
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_draft_reporting.field_general_audit_ws_ae598e6_influence__influence_id
 msgid "Influence"
 msgstr ""
@@ -1759,6 +2054,21 @@ msgid "Inventories"
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_draft_reporting
+#: model:ir.model.fields.selection,name:ssi_general_audit_worksheet_draft_reporting.selection__general_audit_ws_b555edd_cashflow_item__section__investing
+msgid "Investing"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_draft_reporting
+#: model_terms:ir.ui.view,arch_db:ssi_general_audit_worksheet_draft_reporting.general_audit_ws_b555edd_view_form
+msgid ""
+"Investing and financing rows come from the change of\n"
+"                                the related asset, borrowing and share accounts.\n"
+"                                Rows without a calculation (for example Dividends\n"
+"                                paid) are typed in by you: inflow positive, outflow\n"
+"                                negative."
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_draft_reporting
 #: model:general_audit_ws_e59c663.item,name:ssi_general_audit_worksheet_draft_reporting.general_audit_ws_e59c663_item_22_d0bf487
 msgid "Investment property"
 msgstr ""
@@ -1792,6 +2102,12 @@ msgid ""
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_draft_reporting
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_draft_reporting.field_general_audit_ws_b555edd_equity_line__issuance
+msgid "Issuance of Shares"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_draft_reporting
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_draft_reporting.field_general_audit_ws_b555edd_cashflow_line__item_id
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_draft_reporting.field_general_audit_ws_bbbdfe7_checklist__item_name
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_draft_reporting.field_general_audit_ws_de69c2f_checklist__item_name
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_draft_reporting.field_general_audit_ws_e59c663_checklist__item_name
@@ -1824,7 +2140,11 @@ msgstr ""
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_draft_reporting.field_general_audit_ws_ae598e6_control____last_update
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_draft_reporting.field_general_audit_ws_ae598e6_influence____last_update
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_draft_reporting.field_general_audit_ws_b555edd____last_update
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_draft_reporting.field_general_audit_ws_b555edd_cashflow_item____last_update
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_draft_reporting.field_general_audit_ws_b555edd_cashflow_line____last_update
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_draft_reporting.field_general_audit_ws_b555edd_detail____last_update
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_draft_reporting.field_general_audit_ws_b555edd_equity_component____last_update
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_draft_reporting.field_general_audit_ws_b555edd_equity_line____last_update
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_draft_reporting.field_general_audit_ws_bbbdfe7____last_update
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_draft_reporting.field_general_audit_ws_bbbdfe7_checklist____last_update
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_draft_reporting.field_general_audit_ws_bbbdfe7_item____last_update
@@ -1848,7 +2168,11 @@ msgstr ""
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_draft_reporting.field_general_audit_ws_ae598e6_control__write_uid
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_draft_reporting.field_general_audit_ws_ae598e6_influence__write_uid
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_draft_reporting.field_general_audit_ws_b555edd__write_uid
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_draft_reporting.field_general_audit_ws_b555edd_cashflow_item__write_uid
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_draft_reporting.field_general_audit_ws_b555edd_cashflow_line__write_uid
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_draft_reporting.field_general_audit_ws_b555edd_detail__write_uid
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_draft_reporting.field_general_audit_ws_b555edd_equity_component__write_uid
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_draft_reporting.field_general_audit_ws_b555edd_equity_line__write_uid
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_draft_reporting.field_general_audit_ws_bbbdfe7__write_uid
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_draft_reporting.field_general_audit_ws_bbbdfe7_checklist__write_uid
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_draft_reporting.field_general_audit_ws_bbbdfe7_item__write_uid
@@ -1872,7 +2196,11 @@ msgstr ""
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_draft_reporting.field_general_audit_ws_ae598e6_control__write_date
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_draft_reporting.field_general_audit_ws_ae598e6_influence__write_date
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_draft_reporting.field_general_audit_ws_b555edd__write_date
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_draft_reporting.field_general_audit_ws_b555edd_cashflow_item__write_date
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_draft_reporting.field_general_audit_ws_b555edd_cashflow_line__write_date
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_draft_reporting.field_general_audit_ws_b555edd_detail__write_date
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_draft_reporting.field_general_audit_ws_b555edd_equity_component__write_date
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_draft_reporting.field_general_audit_ws_b555edd_equity_line__write_date
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_draft_reporting.field_general_audit_ws_bbbdfe7__write_date
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_draft_reporting.field_general_audit_ws_bbbdfe7_checklist__write_date
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_draft_reporting.field_general_audit_ws_bbbdfe7_item__write_date
@@ -2050,6 +2378,11 @@ msgid "Management Representations"
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_draft_reporting
+#: model:ir.model.fields.selection,name:ssi_general_audit_worksheet_draft_reporting.selection__general_audit_ws_b555edd_cashflow_item__calc_type__manual
+msgid "Manual Entry"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_draft_reporting
 #: model:ir.model.fields,help:ssi_general_audit_worksheet_draft_reporting.field_general_audit_ws_ae598e6__manual_number_ok
 #: model:ir.model.fields,help:ssi_general_audit_worksheet_draft_reporting.field_general_audit_ws_b555edd__manual_number_ok
 #: model:ir.model.fields,help:ssi_general_audit_worksheet_draft_reporting.field_general_audit_ws_bbbdfe7__manual_number_ok
@@ -2105,6 +2438,13 @@ msgid "Messages"
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_draft_reporting
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_draft_reporting.field_general_audit_ws_b555edd_equity_line__other_movement
+msgid ""
+"Movement the profit, OCI and owner transactions do not explain. Zero when "
+"the row adds up."
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_draft_reporting
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_draft_reporting.field_general_audit_ws_ae598e6__my_activity_date_deadline
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_draft_reporting.field_general_audit_ws_b555edd__my_activity_date_deadline
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_draft_reporting.field_general_audit_ws_bbbdfe7__my_activity_date_deadline
@@ -2119,11 +2459,23 @@ msgid "My Activity Deadline"
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_draft_reporting
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_draft_reporting.field_general_audit_ws_b555edd_cashflow_item__name
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_draft_reporting.field_general_audit_ws_b555edd_equity_component__name
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_draft_reporting.field_general_audit_ws_bbbdfe7_item__name
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_draft_reporting.field_general_audit_ws_de69c2f_item__name
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_draft_reporting.field_general_audit_ws_e59c663_item__name
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_draft_reporting.field_general_audit_ws_e59c663_review_item__name
 msgid "Name"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_draft_reporting
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_draft_reporting.field_general_audit_ws_b555edd_equity_component__name
+msgid "Name of the equity component shown on the statement."
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_draft_reporting
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_draft_reporting.field_general_audit_ws_b555edd_cashflow_item__name
+msgid "Name of the row shown on the statement."
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_draft_reporting
@@ -2144,6 +2496,11 @@ msgstr ""
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_draft_reporting.field_general_audit_ws_e59c663__need_validation
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_draft_reporting.field_general_audit_ws_ff42fdc__need_validation
 msgid "Need Validation"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_draft_reporting
+#: model:ir.model.fields.selection,name:ssi_general_audit_worksheet_draft_reporting.selection__general_audit_ws_b555edd_cashflow_item__calc_type__net_change
+msgid "Net Change in Cash"
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_draft_reporting
@@ -2298,6 +2655,11 @@ msgid "Number of unread messages"
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_draft_reporting
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_draft_reporting.field_general_audit_ws_b555edd_equity_line__oci
+msgid "OCI"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_draft_reporting
 #: model:ir.model.fields,help:ssi_general_audit_worksheet_draft_reporting.field_general_audit_ws_ae598e6_control__condition
 #: model:ir.model.fields,help:ssi_general_audit_worksheet_draft_reporting.field_general_audit_ws_ae598e6_influence__condition
 msgid "Observed condition as recorded on the underlying detail."
@@ -2314,8 +2676,52 @@ msgid "Offsetting of financial instruments"
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_draft_reporting
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_draft_reporting.field_general_audit_ws_b555edd__cashflow_line_ids
+msgid "One line per cash flow item and period."
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_draft_reporting
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_draft_reporting.field_general_audit_ws_b555edd__equity_line_ids
+msgid "One line per equity component and period."
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_draft_reporting
 #: model:ir.model.fields,help:ssi_general_audit_worksheet_draft_reporting.field_general_audit_ws_b555edd__detail_ids
 msgid "One line per standard account type of the General Audit."
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_draft_reporting
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_draft_reporting.field_general_audit_ws_b555edd_equity_line__opening_balance
+msgid "Opening Balance"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_draft_reporting
+#: model:ir.model.fields.selection,name:ssi_general_audit_worksheet_draft_reporting.selection__general_audit_ws_b555edd_cashflow_item__calc_type__cash_opening
+msgid "Opening Cash"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_draft_reporting
+#: model_terms:ir.ui.view,arch_db:ssi_general_audit_worksheet_draft_reporting.general_audit_ws_b555edd_view_form
+msgid ""
+"Opening and closing balances come from the trial\n"
+"                                balance, summed by account type for each equity\n"
+"                                component. Profit goes to Retained Earnings and OCI\n"
+"                                to Other Comprehensive Income."
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_draft_reporting
+#: model:ir.model.fields.selection,name:ssi_general_audit_worksheet_draft_reporting.selection__general_audit_ws_b555edd_cashflow_item__section__operating_adjustment
+msgid "Operating - Adjustments"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_draft_reporting
+#: model:ir.model.fields.selection,name:ssi_general_audit_worksheet_draft_reporting.selection__general_audit_ws_b555edd_cashflow_item__section__operating_other
+msgid "Operating - Interest and Tax"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_draft_reporting
+#: model:ir.model.fields.selection,name:ssi_general_audit_worksheet_draft_reporting.selection__general_audit_ws_b555edd_cashflow_item__section__working_capital
+msgid "Operating - Working Capital"
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_draft_reporting
@@ -2428,6 +2834,32 @@ msgid "Ordering number controlling the display order (lower comes first)."
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_draft_reporting
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_draft_reporting.field_general_audit_ws_b555edd_equity_line__other_movement
+msgid "Other Movement"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_draft_reporting
+#: model_terms:ir.ui.view,arch_db:ssi_general_audit_worksheet_draft_reporting.general_audit_ws_b555edd_view_form
+msgid ""
+"Other Movement = Closing Balance - (Opening Balance\n"
+"                                + Profit + OCI + owner transactions). It is 0 when\n"
+"                                the whole movement is explained. Reload replaces\n"
+"                                every figure, including the ones you typed in."
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_draft_reporting
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_draft_reporting.field_general_audit_ws_b555edd_equity_component__receive_oci
+msgid ""
+"Other comprehensive income of the period is allocated to this component. "
+"Flag exactly one component."
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_draft_reporting
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_draft_reporting.field_general_audit_ws_b555edd_equity_line__oci
+msgid "Other comprehensive income of the period, if received."
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_draft_reporting
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_draft_reporting.field_general_audit_ws_ae598e6__parent_type_id
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_draft_reporting.field_general_audit_ws_b555edd__parent_type_id
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_draft_reporting.field_general_audit_ws_bbbdfe7__parent_type_id
@@ -2466,6 +2898,16 @@ msgid "Parent worksheet to which this finding line belongs."
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_draft_reporting
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_draft_reporting.field_general_audit_ws_b555edd_cashflow_line__section
+msgid "Part of the statement the line belongs to."
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_draft_reporting
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_draft_reporting.field_general_audit_ws_b555edd_cashflow_item__section
+msgid "Part of the statement the row belongs to."
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_draft_reporting
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_draft_reporting.field_general_audit_ws_ae598e6__partner_id
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_draft_reporting.field_general_audit_ws_b555edd__partner_id
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_draft_reporting.field_general_audit_ws_bbbdfe7__partner_id
@@ -2486,6 +2928,22 @@ msgstr ""
 #. module: ssi_general_audit_worksheet_draft_reporting
 #: model:general_audit_ws_e59c663.review_item,name:ssi_general_audit_worksheet_draft_reporting.general_audit_ws_e59c663_review_item_2_c40b6d1
 msgid "Perform footing and cross-footing for all figures in the report"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_draft_reporting
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_draft_reporting.field_general_audit_ws_b555edd_cashflow_line__period
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_draft_reporting.field_general_audit_ws_b555edd_equity_line__period
+msgid "Period"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_draft_reporting
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_draft_reporting.field_general_audit_ws_b555edd_cashflow_line__period
+msgid "Period the amount belongs to."
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_draft_reporting
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_draft_reporting.field_general_audit_ws_b555edd_equity_line__period
+msgid "Period the amounts belong to."
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_draft_reporting
@@ -2559,6 +3017,13 @@ msgid "Previous End Date"
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_draft_reporting
+#: model:ir.model.fields.selection,name:ssi_general_audit_worksheet_draft_reporting.selection__general_audit_ws_b555edd_cashflow_line__period__previous
+#: model:ir.model.fields.selection,name:ssi_general_audit_worksheet_draft_reporting.selection__general_audit_ws_b555edd_equity_line__period__previous
+#: model_terms:ir.ui.view,arch_db:ssi_general_audit_worksheet_draft_reporting.general_audit_ws_b555edd_view_form
+msgid "Previous Period"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_draft_reporting
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_draft_reporting.field_general_audit_ws_ae598e6__previous_date_start
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_draft_reporting.field_general_audit_ws_b555edd__previous_date_start
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_draft_reporting.field_general_audit_ws_bbbdfe7__previous_date_start
@@ -2574,6 +3039,11 @@ msgid "Principles of consolidation and equity accounting"
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_draft_reporting
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_draft_reporting.field_general_audit_ws_b555edd_equity_line__profit
+msgid "Profit"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_draft_reporting
 #: model:ir.model.fields.selection,name:ssi_general_audit_worksheet_draft_reporting.selection__general_audit_ws_ff42fdc_layout_line__total_type__profit_after_tax
 #: model:ir.model.fields.selection,name:ssi_general_audit_worksheet_draft_reporting.selection__general_audit_ws_ff42fdc_posture__total_type__profit_after_tax
 #: model:ir.model.fields.selection,name:ssi_general_audit_worksheet_draft_reporting.selection__general_audit_ws_ff42fdc_total_formula__total_type__profit_after_tax
@@ -2581,10 +3051,16 @@ msgid "Profit After Tax"
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_draft_reporting
+#: model:ir.model.fields.selection,name:ssi_general_audit_worksheet_draft_reporting.selection__general_audit_ws_b555edd_cashflow_item__calc_type__profit_before_tax
 #: model:ir.model.fields.selection,name:ssi_general_audit_worksheet_draft_reporting.selection__general_audit_ws_ff42fdc_layout_line__total_type__profit_before_tax
 #: model:ir.model.fields.selection,name:ssi_general_audit_worksheet_draft_reporting.selection__general_audit_ws_ff42fdc_posture__total_type__profit_before_tax
 #: model:ir.model.fields.selection,name:ssi_general_audit_worksheet_draft_reporting.selection__general_audit_ws_ff42fdc_total_formula__total_type__profit_before_tax
 msgid "Profit Before Tax"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_draft_reporting
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_draft_reporting.field_general_audit_ws_b555edd_equity_line__profit
+msgid "Profit after tax of the period, if the component receives it."
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_draft_reporting
@@ -2601,6 +3077,18 @@ msgid ""
 "Profit for the year and total comprehensive income for the year in the "
 "statement of changes in equity agree with the figures in the statement of "
 "comprehensive income"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_draft_reporting
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_draft_reporting.field_general_audit_ws_b555edd_equity_component__receive_profit
+msgid ""
+"Profit of the period is allocated to this component. Flag exactly one "
+"component, otherwise the profit is counted more than once."
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_draft_reporting
+#: model:ir.model.fields.selection,name:ssi_general_audit_worksheet_draft_reporting.selection__general_audit_ws_b555edd_cashflow_item__calc_type__pl_amount
+msgid "Profit or Loss Amount"
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_draft_reporting
@@ -2630,8 +3118,23 @@ msgid "Public offering of securities"
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_draft_reporting
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_draft_reporting.field_general_audit_ws_b555edd_equity_component__receive_oci
+msgid "Receive OCI"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_draft_reporting
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_draft_reporting.field_general_audit_ws_b555edd_equity_component__receive_profit
+msgid "Receive Profit"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_draft_reporting
 #: model_terms:ir.ui.view,arch_db:ssi_general_audit_worksheet_draft_reporting.general_audit_ws_ae598e6_view_form
 msgid "Recommendation"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_draft_reporting
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_draft_reporting.field_general_audit_ws_b555edd_cashflow_item__reference_type_ids
+msgid "Reference Account Types"
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_draft_reporting
@@ -2687,6 +3190,18 @@ msgid "Reload"
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_draft_reporting
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_draft_reporting.field_general_audit_ws_b555edd__reload_needs_confirm
+msgid "Reload Needs Confirmation"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_draft_reporting
+#: model_terms:ir.ui.view,arch_db:ssi_general_audit_worksheet_draft_reporting.general_audit_ws_b555edd_view_form
+msgid ""
+"Reload clears the figures you typed in on the equity and cash flow tabs. Are"
+" you sure?"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_draft_reporting
 #: model:general_audit_ws_e59c663.item,name:ssi_general_audit_worksheet_draft_reporting.general_audit_ws_e59c663_item_1_b2640f0
 msgid "Report Cover"
 msgstr ""
@@ -2706,8 +3221,28 @@ msgid "Report Formatting Control (b555edd)"
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_draft_reporting
+#: model:ir.model,name:ssi_general_audit_worksheet_draft_reporting.model_general_audit_ws_b555edd_cashflow_item
+msgid "Report Formatting Control (b555edd) - Cash Flow Item"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_draft_reporting
+#: model:ir.model,name:ssi_general_audit_worksheet_draft_reporting.model_general_audit_ws_b555edd_cashflow_line
+msgid "Report Formatting Control (b555edd) - Cash Flow Line"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_draft_reporting
 #: model:ir.model,name:ssi_general_audit_worksheet_draft_reporting.model_general_audit_ws_b555edd_detail
 msgid "Report Formatting Control (b555edd) - Detail"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_draft_reporting
+#: model:ir.model,name:ssi_general_audit_worksheet_draft_reporting.model_general_audit_ws_b555edd_equity_component
+msgid "Report Formatting Control (b555edd) - Equity Component"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_draft_reporting
+#: model:ir.model,name:ssi_general_audit_worksheet_draft_reporting.model_general_audit_ws_b555edd_equity_line
+msgid "Report Formatting Control (b555edd) - Equity Line"
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_draft_reporting
@@ -2721,7 +3256,9 @@ msgid "Report Formatting Control is inadequate"
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_draft_reporting
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_draft_reporting.field_general_audit_ws_b555edd_cashflow_line__worksheet_id
 #: model:ir.model.fields,help:ssi_general_audit_worksheet_draft_reporting.field_general_audit_ws_b555edd_detail__worksheet_id
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_draft_reporting.field_general_audit_ws_b555edd_equity_line__worksheet_id
 msgid "Report Formatting Control worksheet this line belongs to."
 msgstr ""
 
@@ -2869,6 +3406,13 @@ msgid "Royalty income"
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_draft_reporting
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_draft_reporting.field_general_audit_ws_b555edd_cashflow_item__section
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_draft_reporting.field_general_audit_ws_b555edd_cashflow_line__section
+#: model_terms:ir.ui.view,arch_db:ssi_general_audit_worksheet_draft_reporting.general_audit_ws_b555edd_cashflow_item_view_search
+msgid "Section"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_draft_reporting
 #: model:general_audit_ws_e59c663.item,name:ssi_general_audit_worksheet_draft_reporting.general_audit_ws_e59c663_item_40_c5c160c
 msgid "Segment reporting"
 msgstr ""
@@ -2894,7 +3438,11 @@ msgstr ""
 #. module: ssi_general_audit_worksheet_draft_reporting
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_draft_reporting.field_general_audit_ws_ae598e6_control__sequence
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_draft_reporting.field_general_audit_ws_ae598e6_influence__sequence
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_draft_reporting.field_general_audit_ws_b555edd_cashflow_item__sequence
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_draft_reporting.field_general_audit_ws_b555edd_cashflow_line__sequence
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_draft_reporting.field_general_audit_ws_b555edd_detail__sequence
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_draft_reporting.field_general_audit_ws_b555edd_equity_component__sequence
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_draft_reporting.field_general_audit_ws_b555edd_equity_line__sequence
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_draft_reporting.field_general_audit_ws_bbbdfe7_checklist__sequence
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_draft_reporting.field_general_audit_ws_bbbdfe7_item__sequence
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_draft_reporting.field_general_audit_ws_de69c2f_checklist__sequence
@@ -2926,11 +3474,17 @@ msgid "Share-based payments"
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_draft_reporting
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_draft_reporting.field_general_audit_ws_b555edd_equity_line__issuance
+msgid "Shares issued to the owners; typed in by the auditor."
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_draft_reporting
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_draft_reporting.field_general_audit_ws_ff42fdc_layout_line__show_adjustment
 msgid "Show Adjustment"
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_draft_reporting
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_draft_reporting.field_general_audit_ws_b555edd_cashflow_item__sign
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_draft_reporting.field_general_audit_ws_ff42fdc_total_formula__sign
 msgid "Sign"
 msgstr ""
@@ -2948,6 +3502,16 @@ msgstr ""
 #. module: ssi_general_audit_worksheet_draft_reporting
 #: model:ir.model.fields,help:ssi_general_audit_worksheet_draft_reporting.field_general_audit_ws_b555edd_detail__type_id
 msgid "Standard account type reported on this line."
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_draft_reporting
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_draft_reporting.field_general_audit_ws_b555edd_cashflow_item__type_ids
+msgid "Standard account types the row is computed from."
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_draft_reporting
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_draft_reporting.field_general_audit_ws_b555edd_equity_component__type_ids
+msgid "Standard account types whose balances form this component."
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_draft_reporting
@@ -3029,11 +3593,13 @@ msgstr ""
 
 #. module: ssi_general_audit_worksheet_draft_reporting
 #: model:general_audit_ws_e59c663.item,name:ssi_general_audit_worksheet_draft_reporting.general_audit_ws_e59c663_item_5_4e9674e
+#: model_terms:ir.ui.view,arch_db:ssi_general_audit_worksheet_draft_reporting.general_audit_ws_b555edd_view_form
 msgid "Statement of Cash Flows"
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_draft_reporting
 #: model:general_audit_ws_e59c663.item,name:ssi_general_audit_worksheet_draft_reporting.general_audit_ws_e59c663_item_4_bc68e9b
+#: model_terms:ir.ui.view,arch_db:ssi_general_audit_worksheet_draft_reporting.general_audit_ws_b555edd_view_form
 msgid "Statement of Changes in Equity"
 msgstr ""
 
@@ -3052,6 +3618,12 @@ msgid "Statement of Financial Position"
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_draft_reporting
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_draft_reporting.field_general_audit_ws_b555edd_cashflow_line__state
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_draft_reporting.field_general_audit_ws_b555edd_equity_line__state
+msgid "Status"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_draft_reporting
 #: model:ir.model.fields,help:ssi_general_audit_worksheet_draft_reporting.field_general_audit_ws_ae598e6__activity_state
 #: model:ir.model.fields,help:ssi_general_audit_worksheet_draft_reporting.field_general_audit_ws_b555edd__activity_state
 #: model:ir.model.fields,help:ssi_general_audit_worksheet_draft_reporting.field_general_audit_ws_bbbdfe7__activity_state
@@ -3067,6 +3639,12 @@ msgid ""
 "Overdue: Due date is already passed\n"
 "Today: Activity date is today\n"
 "Planned: Future activities."
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_draft_reporting
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_draft_reporting.field_general_audit_ws_b555edd_cashflow_line__state
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_draft_reporting.field_general_audit_ws_b555edd_equity_line__state
+msgid "Status of the parent worksheet; decides what can be edited."
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_draft_reporting
@@ -3092,6 +3670,11 @@ msgstr ""
 #. module: ssi_general_audit_worksheet_draft_reporting
 #: model:ir.model.fields,help:ssi_general_audit_worksheet_draft_reporting.field_general_audit_ws_ff42fdc_posture__previous
 msgid "Sum of Previous Period Balance for every account under this group."
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_draft_reporting
+#: model:ir.model.fields.selection,name:ssi_general_audit_worksheet_draft_reporting.selection__general_audit_ws_b555edd_cashflow_item__section__summary
+msgid "Summary"
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_draft_reporting
@@ -3151,6 +3734,11 @@ msgid "Total Equity"
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_draft_reporting
+#: model:ir.model.fields.selection,name:ssi_general_audit_worksheet_draft_reporting.selection__general_audit_ws_b555edd_cashflow_item__calc_type__financing_total
+msgid "Total Financing Cash Flow"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_draft_reporting
 #: model:ir.actions.act_window,name:ssi_general_audit_worksheet_draft_reporting.general_audit_ws_ff42fdc_total_formula_action
 msgid "Total Formula"
 msgstr ""
@@ -3158,6 +3746,11 @@ msgstr ""
 #. module: ssi_general_audit_worksheet_draft_reporting
 #: model:ir.ui.menu,name:ssi_general_audit_worksheet_draft_reporting.general_audit_ws_ff42fdc_total_formula_menu
 msgid "Total Formula Posture Report"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_draft_reporting
+#: model:ir.model.fields.selection,name:ssi_general_audit_worksheet_draft_reporting.selection__general_audit_ws_b555edd_cashflow_item__calc_type__investing_total
+msgid "Total Investing Cash Flow"
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_draft_reporting
@@ -3172,6 +3765,11 @@ msgstr ""
 #: model:ir.model.fields.selection,name:ssi_general_audit_worksheet_draft_reporting.selection__general_audit_ws_ff42fdc_posture__total_type__total_liability_equity
 #: model:ir.model.fields.selection,name:ssi_general_audit_worksheet_draft_reporting.selection__general_audit_ws_ff42fdc_total_formula__total_type__total_liability_equity
 msgid "Total Liability and Equity"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_draft_reporting
+#: model:ir.model.fields.selection,name:ssi_general_audit_worksheet_draft_reporting.selection__general_audit_ws_b555edd_cashflow_item__calc_type__operating_total
+msgid "Total Operating Cash Flow"
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_draft_reporting
@@ -3223,6 +3821,31 @@ msgid "Transactions with Non-Controlling Interests"
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_draft_reporting
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_draft_reporting.field_general_audit_ws_b555edd_equity_line__treasury
+msgid "Treasury Shares"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_draft_reporting
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_draft_reporting.field_general_audit_ws_b555edd_equity_line__treasury
+msgid "Treasury share transactions; typed in by the auditor."
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_draft_reporting
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_draft_reporting.field_general_audit_ws_b555edd__reload_needs_confirm
+msgid "True when Reload would discard figures typed in by the user."
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_draft_reporting
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_draft_reporting.field_general_audit_ws_b555edd__cashflow_has_manual
+msgid "True when a manual cash flow amount has been typed in."
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_draft_reporting
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_draft_reporting.field_general_audit_ws_b555edd__equity_has_manual
+msgid "True when an owner transaction has been typed in."
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_draft_reporting
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_draft_reporting.field_general_audit_ws_ae598e6__type_id
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_draft_reporting.field_general_audit_ws_b555edd__type_id
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_draft_reporting.field_general_audit_ws_bbbdfe7__type_id
@@ -3233,6 +3856,13 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:ssi_general_audit_worksheet_draft_reporting.general_audit_ws_de69c2f_item_view_tree
 #: model_terms:ir.ui.view,arch_db:ssi_general_audit_worksheet_draft_reporting.general_audit_ws_de69c2f_view_form
 msgid "Type"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_draft_reporting
+#: model_terms:ir.ui.view,arch_db:ssi_general_audit_worksheet_draft_reporting.general_audit_ws_b555edd_view_form
+msgid ""
+"Type in the owner transactions yourself, signed by\n"
+"                                their effect on the component:"
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_draft_reporting
@@ -3421,6 +4051,11 @@ msgid ""
 "columns. Untick it for rows whose signed subtotals make the adjustment "
 "columns meaningless, such as the profit and loss subtotals. Ignored for "
 "Account Group rows."
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_draft_reporting
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_draft_reporting.field_general_audit_ws_b555edd_cashflow_item__sign
+msgid "Whether the computed amount is added or subtracted."
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_draft_reporting
