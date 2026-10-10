@@ -35,6 +35,7 @@
         "ssi_general_audit_worksheet_lead_schedule",
         "ssi_general_audit_worksheet_specific_procedure",
         "ssi_general_audit_worksheet_expert",
+        "ssi_general_audit_worksheet_uncorrected_aje_analysis",
         # WR
         "ssi_general_audit_worksheet_audit_result",
         "ssi_general_audit_worksheet_final_materiality",
