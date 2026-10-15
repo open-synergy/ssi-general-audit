@@ -221,6 +221,11 @@ setup:
         code: "/"
         type_id: "REC: ws_type.id"
 
+    - step: "Get worksheet type d209914 (General Ledger)"
+      action: "ref"
+      xml_id: "ssi_general_audit_worksheet_client_package.worksheet_type_d209914"
+      save_as: "ws_type_gl"
+
 scenarios:
   # ------------------------------------------------------------------
   # general_audit_ws_de3244b - Create in draft
@@ -792,3 +797,316 @@ scenarios:
           - ["id", "=", "REC: worksheet.id"]
         save_as: "result"
         expect_count: 0
+
+  # ------------------------------------------------------------------
+  # general_audit_ws_de3244b.variable / .comparative
+  # ------------------------------------------------------------------
+  - name: "Variable de3244b - Value is the sum of the selected CSV column"
+    steps:
+      - step: "Create GL worksheet ws_gl_1 (amount 200.00)"
+        action: "create"
+        model: "general_audit_ws_d209914"
+        save_as: "ws_gl_1"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_gl.id"
+          raw_data: |
+            Account,Description,Amount
+            1000,Cash Sales,200.00
+
+      - step: "Create worksheet de3244b"
+        action: "create"
+        model: "general_audit_ws_de3244b"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+
+      - step: "Create variable Realization"
+        action: "create"
+        model: "general_audit_ws_de3244b.variable"
+        save_as: "variable_real"
+        as_user: "base.user_admin"
+        values:
+          worksheet_id: "REC: worksheet.id"
+          name: "Realization"
+          data_mode: "gl"
+          general_ledger_id: "REC: ws_gl_1.id"
+          value_col_number: 3
+
+      - step: "Assert variable value"
+        action: "assert"
+        target: "variable_real"
+        asserts:
+          value:
+            type: "value"
+            expected: 200.0
+
+  - name: "Comparative de3244b - Two comparatives give percentages of realization"
+    steps:
+      - step: "Create GL worksheet ws_gl_real (amount 120.00)"
+        action: "create"
+        model: "general_audit_ws_d209914"
+        save_as: "ws_gl_real"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_gl.id"
+          raw_data: |
+            Account,Description,Amount
+            1000,Realization,120.00
+
+      - step: "Create GL worksheet ws_gl_comp1 (amount 100.00)"
+        action: "create"
+        model: "general_audit_ws_d209914"
+        save_as: "ws_gl_comp1"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_gl.id"
+          raw_data: |
+            Account,Description,Amount
+            1000,Comparative 1,100.00
+
+      - step: "Create GL worksheet ws_gl_comp2 (amount 150.00)"
+        action: "create"
+        model: "general_audit_ws_d209914"
+        save_as: "ws_gl_comp2"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_gl.id"
+          raw_data: |
+            Account,Description,Amount
+            1000,Comparative 2,150.00
+
+      - step: "Create worksheet de3244b"
+        action: "create"
+        model: "general_audit_ws_de3244b"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+
+      - step: "Create variable Realization"
+        action: "create"
+        model: "general_audit_ws_de3244b.variable"
+        save_as: "variable_real"
+        as_user: "base.user_admin"
+        values:
+          worksheet_id: "REC: worksheet.id"
+          name: "Realization"
+          data_mode: "gl"
+          general_ledger_id: "REC: ws_gl_real.id"
+          value_col_number: 3
+
+      - step: "Create variable Comparative 1"
+        action: "create"
+        model: "general_audit_ws_de3244b.variable"
+        save_as: "variable_comp1"
+        as_user: "base.user_admin"
+        values:
+          worksheet_id: "REC: worksheet.id"
+          name: "Comparative 1"
+          data_mode: "gl"
+          general_ledger_id: "REC: ws_gl_comp1.id"
+          value_col_number: 3
+
+      - step: "Create variable Comparative 2"
+        action: "create"
+        model: "general_audit_ws_de3244b.variable"
+        save_as: "variable_comp2"
+        as_user: "base.user_admin"
+        values:
+          worksheet_id: "REC: worksheet.id"
+          name: "Comparative 2"
+          data_mode: "gl"
+          general_ledger_id: "REC: ws_gl_comp2.id"
+          value_col_number: 3
+
+      - step: "Create comparative line"
+        action: "create"
+        model: "general_audit_ws_de3244b.comparative"
+        save_as: "comparative"
+        as_user: "base.user_admin"
+        values:
+          worksheet_id: "REC: worksheet.id"
+          name: "Revenue"
+          realization_variable_id: "REC: variable_real.id"
+          comparative1_variable_id: "REC: variable_comp1.id"
+          comparative2_variable_id: "REC: variable_comp2.id"
+
+      - step: "Assert amounts and percentages"
+        action: "assert"
+        target: "comparative"
+        asserts:
+          realization_amount:
+            type: "value"
+            expected: 120.0
+          comparative1_amount:
+            type: "value"
+            expected: 100.0
+          comparative2_amount:
+            type: "value"
+            expected: 150.0
+          diff1:
+            type: "value"
+            expected: 120.0
+          diff2:
+            type: "value"
+            expected: 80.0
+
+  - name: "Comparative de3244b - Negative amounts give a positive percentage"
+    steps:
+      - step: "Create GL worksheet ws_gl_real (amount -80.00)"
+        action: "create"
+        model: "general_audit_ws_d209914"
+        save_as: "ws_gl_real"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_gl.id"
+          raw_data: |
+            Account,Description,Amount
+            1000,Realization,-80.00
+
+      - step: "Create GL worksheet ws_gl_comp1 (amount -100.00)"
+        action: "create"
+        model: "general_audit_ws_d209914"
+        save_as: "ws_gl_comp1"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_gl.id"
+          raw_data: |
+            Account,Description,Amount
+            1000,Comparative 1,-100.00
+
+      - step: "Create worksheet de3244b"
+        action: "create"
+        model: "general_audit_ws_de3244b"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+
+      - step: "Create variable Realization"
+        action: "create"
+        model: "general_audit_ws_de3244b.variable"
+        save_as: "variable_real"
+        as_user: "base.user_admin"
+        values:
+          worksheet_id: "REC: worksheet.id"
+          name: "Realization"
+          data_mode: "gl"
+          general_ledger_id: "REC: ws_gl_real.id"
+          value_col_number: 3
+
+      - step: "Create variable Comparative 1"
+        action: "create"
+        model: "general_audit_ws_de3244b.variable"
+        save_as: "variable_comp1"
+        as_user: "base.user_admin"
+        values:
+          worksheet_id: "REC: worksheet.id"
+          name: "Comparative 1"
+          data_mode: "gl"
+          general_ledger_id: "REC: ws_gl_comp1.id"
+          value_col_number: 3
+
+      - step: "Create comparative line"
+        action: "create"
+        model: "general_audit_ws_de3244b.comparative"
+        save_as: "comparative"
+        as_user: "base.user_admin"
+        values:
+          worksheet_id: "REC: worksheet.id"
+          name: "Revenue"
+          realization_variable_id: "REC: variable_real.id"
+          comparative1_variable_id: "REC: variable_comp1.id"
+
+      - step: "Assert amounts and percentages"
+        action: "assert"
+        target: "comparative"
+        asserts:
+          diff1:
+            type: "value"
+            expected: 80.0
+          diff2:
+            type: "value"
+            expected: 0.0
+
+  - name: "Comparative de3244b - Zero or missing comparative gives zero percentage"
+    steps:
+      - step: "Create GL worksheet ws_gl_real (amount 120.00)"
+        action: "create"
+        model: "general_audit_ws_d209914"
+        save_as: "ws_gl_real"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_gl.id"
+          raw_data: |
+            Account,Description,Amount
+            1000,Realization,120.00
+
+      - step: "Create worksheet de3244b"
+        action: "create"
+        model: "general_audit_ws_de3244b"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+
+      - step: "Create variable Realization"
+        action: "create"
+        model: "general_audit_ws_de3244b.variable"
+        save_as: "variable_real"
+        as_user: "base.user_admin"
+        values:
+          worksheet_id: "REC: worksheet.id"
+          name: "Realization"
+          data_mode: "gl"
+          general_ledger_id: "REC: ws_gl_real.id"
+          value_col_number: 3
+
+      - step: "Create variable Comparative 1 (zero)"
+        action: "create"
+        model: "general_audit_ws_de3244b.variable"
+        save_as: "variable_comp1"
+        as_user: "base.user_admin"
+        values:
+          worksheet_id: "REC: worksheet.id"
+          name: "Comparative 1 (zero)"
+          data_mode: "gl"
+          value_col_number: 3
+
+      - step: "Create comparative line"
+        action: "create"
+        model: "general_audit_ws_de3244b.comparative"
+        save_as: "comparative"
+        as_user: "base.user_admin"
+        values:
+          worksheet_id: "REC: worksheet.id"
+          name: "Revenue"
+          realization_variable_id: "REC: variable_real.id"
+          comparative1_variable_id: "REC: variable_comp1.id"
+
+      - step: "Assert amounts and percentages"
+        action: "assert"
+        target: "comparative"
+        asserts:
+          comparative1_amount:
+            type: "value"
+            expected: 0.0
+          diff1:
+            type: "value"
+            expected: 0.0
+          diff2:
+            type: "value"
+            expected: 0.0

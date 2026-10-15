@@ -4,6 +4,199 @@
      License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl-3.0-standalone.html). -->
 <odoo>
 
+    <!-- ================================================================
+         VARIABLE MODEL VIEWS
+         ================================================================ -->
+
+    <!-- VARIABLE TREE VIEW -->
+    <record id="general_audit_ws_de3244b_variable_view_tree" model="ir.ui.view">
+        <field name="name">general_audit_ws_de3244b.variable tree</field>
+        <field name="model">general_audit_ws_de3244b.variable</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="sequence" widget="handle" />
+                <field name="name" />
+                <field name="data_mode" />
+                <field name="data_title" />
+                <field name="general_ledger_id" optional="hide" />
+                <field name="subledger_id" optional="hide" />
+                <field name="data_source" optional="hide" />
+                <field name="sample_determination_id" optional="hide" />
+                <field name="value_col_number" />
+                <field name="value" />
+            </tree>
+        </field>
+    </record>
+
+    <!-- VARIABLE FORM VIEW -->
+    <record id="general_audit_ws_de3244b_variable_view_form" model="ir.ui.view">
+        <field name="name">general_audit_ws_de3244b.variable form</field>
+        <field name="model">general_audit_ws_de3244b.variable</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="worksheet_id" invisible="1" />
+                            <field name="sequence" />
+                            <field name="name" />
+                            <field name="value_col_number" />
+                            <field name="thousand_separator" />
+                            <field name="decimal_separator" />
+                            <field name="value" readonly="1" />
+                        </group>
+                        <group string="Data Source">
+                            <field name="data_mode" />
+                            <field name="allowed_general_ledger_ids" invisible="1" />
+                            <field
+                                name="general_ledger_id"
+                                domain="[('id', 'in', allowed_general_ledger_ids)]"
+                                attrs="{'invisible': [('data_mode', '!=', 'gl')]}"
+                            />
+                            <field name="allowed_subledger_ids" invisible="1" />
+                            <field
+                                name="subledger_id"
+                                domain="[('id', 'in', allowed_subledger_ids)]"
+                                attrs="{'invisible': [('data_mode', '!=', 'subledger')]}"
+                            />
+                            <field name="data_source" />
+                            <field
+                                name="allowed_sample_determination_ids"
+                                invisible="1"
+                            />
+                            <field
+                                name="sample_determination_id"
+                                domain="[('id', 'in', allowed_sample_determination_ids)]"
+                                attrs="{'invisible': [('data_source', '!=', 'sample')]}"
+                            />
+                            <field name="data_title" readonly="1" />
+                        </group>
+                    </group>
+                    <group
+                        string="Filter"
+                        attrs="{'invisible': [('data_mode', '=', False)]}"
+                    >
+                        <div colspan="2" class="alert alert-info" role="alert">
+                            <strong>WHERE Clause Guide:</strong>
+                            <ul class="mb-0">
+                                <li
+                                >Spaces &amp; special characters in column names are replaced by
+                                    <code>_</code> (e.g. "Entry Label" → <code
+                                    >Entry_Label</code>)</li>
+                                <li>Contains text:
+                                    <code>Entry_Label LIKE '%FRONT WALL%'</code></li>
+                                <li>Exact match: <code>JRNL = 'INV'</code></li>
+                                <li>Greater / less than: <code>Debit > 1000</code></li>
+                                <li>Combine conditions:
+                                    <code
+                                    >JRNL = 'INV' AND Entry_Label LIKE '%WALL%'</code></li>
+                                <li>Either condition:
+                                    <code>JRNL = 'INV' OR JRNL = 'BILL'</code></li>
+                            </ul>
+                        </div>
+                        <field
+                            name="filter_where_clause"
+                            widget="ace"
+                            colspan="2"
+                            nolabel="1"
+                        />
+                    </group>
+                    <separator
+                        string="Raw Data"
+                        attrs="{'invisible': [('data_mode', '=', False)]}"
+                    />
+                    <field name="raw_data" nolabel="1" widget="csv_table" />
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- VARIABLE ACTION -->
+    <record id="general_audit_ws_de3244b_variable_action" model="ir.actions.act_window">
+        <field name="name">Comparative Variables</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">general_audit_ws_de3244b.variable</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+    <!-- ================================================================
+         COMPARATIVE MODEL VIEWS
+         ================================================================ -->
+
+    <!-- COMPARATIVE TREE VIEW -->
+    <record id="general_audit_ws_de3244b_comparative_view_tree" model="ir.ui.view">
+        <field name="name">general_audit_ws_de3244b.comparative tree</field>
+        <field name="model">general_audit_ws_de3244b.comparative</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="sequence" widget="handle" />
+                <field name="name" />
+                <field name="realization_amount" />
+                <field name="comparative1_amount" />
+                <field name="diff1" />
+                <field name="comparative2_amount" />
+                <field name="diff2" />
+                <field name="result" optional="hide" />
+            </tree>
+        </field>
+    </record>
+
+    <!-- COMPARATIVE FORM VIEW -->
+    <record id="general_audit_ws_de3244b_comparative_view_form" model="ir.ui.view">
+        <field name="name">general_audit_ws_de3244b.comparative form</field>
+        <field name="model">general_audit_ws_de3244b.comparative</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="worksheet_id" invisible="1" />
+                            <field name="sequence" />
+                            <field name="name" />
+                            <field
+                                name="realization_variable_id"
+                                domain="[('worksheet_id', '=', worksheet_id)]"
+                            />
+                            <field
+                                name="comparative1_variable_id"
+                                domain="[('worksheet_id', '=', worksheet_id)]"
+                            />
+                            <field
+                                name="comparative2_variable_id"
+                                domain="[('worksheet_id', '=', worksheet_id)]"
+                            />
+                        </group>
+                        <group string="Values">
+                            <field name="realization_amount" readonly="1" />
+                            <field name="comparative1_amount" readonly="1" />
+                            <field name="diff1" readonly="1" />
+                            <field name="comparative2_amount" readonly="1" />
+                            <field name="diff2" readonly="1" />
+                        </group>
+                    </group>
+                    <group string="Result" colspan="4" col="1">
+                        <field name="result" nolabel="1" widget="html" colspan="1" />
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- COMPARATIVE ACTION -->
+    <record
+        id="general_audit_ws_de3244b_comparative_action"
+        model="ir.actions.act_window"
+    >
+        <field name="name">Comparative Lines</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">general_audit_ws_de3244b.comparative</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+    <!-- ================================================================
+         WORKSHEET VIEWS
+         ================================================================ -->
+
     <record id="general_audit_ws_de3244b_view_search" model="ir.ui.view">
         <field name="name">general_audit_ws_de3244b form</field>
         <field name="model">general_audit_ws_de3244b</field>
@@ -86,6 +279,72 @@
                     />
                 </xpath>
                 <xpath expr="//page[1]" position="before">
+                    <page name="variables" string="Variables">
+                        <div class="mb-2">
+                            <button
+                                name="action_open_variables"
+                                type="object"
+                                string="Open Variables"
+                                class="btn-primary"
+                            />
+                        </div>
+                        <field name="variable_ids" readonly="1" nolabel="1">
+                            <tree create="0" edit="0" delete="0">
+                                <field name="sequence" widget="handle" />
+                                <field name="name" />
+                                <field name="data_mode" />
+                                <field name="general_ledger_id" optional="hide" />
+                                <field name="subledger_id" optional="hide" />
+                                <field name="data_source" optional="hide" />
+                                <field name="sample_determination_id" optional="hide" />
+                                <field name="data_title" />
+                                <field name="value_col_number" />
+                                <field name="value" />
+                            </tree>
+                            <form>
+                                <group>
+                                    <field name="name" />
+                                    <field name="data_mode" />
+                                    <field name="data_title" />
+                                    <field name="value_col_number" />
+                                    <field name="value" />
+                                </group>
+                            </form>
+                        </field>
+                    </page>
+                    <page name="comparatives" string="Comparatives">
+                        <div class="mb-2">
+                            <button
+                                name="action_open_comparatives"
+                                type="object"
+                                string="Open Comparatives"
+                                class="btn-primary"
+                            />
+                        </div>
+                        <field name="comparative_ids" readonly="1" nolabel="1">
+                            <tree create="0" edit="0" delete="0">
+                                <field name="sequence" widget="handle" />
+                                <field name="name" />
+                                <field name="realization_amount" />
+                                <field name="comparative1_amount" />
+                                <field name="diff1" />
+                                <field name="comparative2_amount" />
+                                <field name="diff2" />
+                                <field name="result" optional="hide" />
+                            </tree>
+                            <form>
+                                <group>
+                                    <field name="name" />
+                                    <field name="realization_amount" />
+                                    <field name="comparative1_amount" />
+                                    <field name="diff1" />
+                                    <field name="comparative2_amount" />
+                                    <field name="diff2" />
+                                </group>
+                                <field name="result" />
+                            </form>
+                        </field>
+                    </page>
                 </xpath>
                 <xpath expr="//notebook" position="after">
                     <group string="Worksheet Result" colspan="4" col="1">
