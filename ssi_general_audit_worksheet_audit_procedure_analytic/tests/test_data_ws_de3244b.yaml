@@ -1910,3 +1910,278 @@ scenarios:
   # ------------------------------------------------------------------
   # Delete in draft
   # ------------------------------------------------------------------
+
+  # ------------------------------------------------------------------
+  # general_audit_ws_de3244b.variable - data sources and CSV handling
+  # ------------------------------------------------------------------
+  - name: "Variable de3244b - Subledger population gives title, raw data and value"
+    steps:
+      - step: "Create Subledger worksheet with CSV data"
+        action: "create"
+        model: "general_audit_ws_b5e3d9f"
+        save_as: "ws_subledger"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_subledger.id"
+          title: "AR Ageing"
+          raw_data: |
+            Account,Description,Amount
+            1100,Customer A,500.00
+            1100,Customer B,250.00
+
+      - step: "Create worksheet de3244b"
+        action: "create"
+        model: "general_audit_ws_de3244b"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+
+      - step: "Create variable Subledger Total"
+        action: "create"
+        model: "general_audit_ws_de3244b.variable"
+        save_as: "variable"
+        as_user: "base.user_admin"
+        values:
+          worksheet_id: "REC: worksheet.id"
+          name: "Subledger Total"
+          data_mode: "subledger"
+          subledger_id: "REC: ws_subledger.id"
+          value_col_number: 3
+
+      - step: "Assert variable"
+        action: "assert"
+        target: "variable"
+        asserts:
+          data_title:
+            type: "value"
+            operator: "is_truthy"
+          raw_data:
+            type: "value"
+            operator: "is_truthy"
+          value:
+            type: "value"
+            expected: 750.0
+
+  - name: "Variable de3244b - Sample source with filter gives raw data and value"
+    steps:
+      - step: "Create GL worksheet ws_gl_sd"
+        action: "create"
+        model: "general_audit_ws_d209914"
+        save_as: "ws_gl_sd"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_gl.id"
+          raw_data: |
+            Account,Description,Amount
+            1000,Cash Sales,300.00
+            2000,Bank Fees,150.00
+
+      - step: "Create Sample Determination worksheet matching that GL"
+        action: "create"
+        model: "general_audit_ws_a916660"
+        save_as: "ws_sample_determination"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_sample_determination.id"
+          data_mode: "gl"
+          general_ledger_id: "REC: ws_gl_sd.id"
+
+      - step: "Create worksheet de3244b"
+        action: "create"
+        model: "general_audit_ws_de3244b"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+
+      - step: "Create variable Filtered Sample"
+        action: "create"
+        model: "general_audit_ws_de3244b.variable"
+        save_as: "variable"
+        as_user: "base.user_admin"
+        values:
+          worksheet_id: "REC: worksheet.id"
+          name: "Filtered Sample"
+          data_mode: "gl"
+          general_ledger_id: "REC: ws_gl_sd.id"
+          data_source: "sample"
+          sample_determination_id: "REC: ws_sample_determination.id"
+          filter_where_clause: "Account = '1000'"
+          value_col_number: 3
+
+      - step: "Assert variable"
+        action: "assert"
+        target: "variable"
+        asserts:
+          data_title:
+            type: "value"
+            operator: "is_truthy"
+          raw_data:
+            type: "value"
+            operator: "is_truthy"
+          value:
+            type: "value"
+            expected: 300.0
+
+  - name: "Variable de3244b - Unsafe or invalid where clause keeps all rows"
+    steps:
+      - step: "Create GL worksheet ws_gl_1"
+        action: "create"
+        model: "general_audit_ws_d209914"
+        save_as: "ws_gl_1"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_gl.id"
+          raw_data: |
+            Account,Description,Amount
+            1000,Cash Sales,300.00
+            2000,Bank Fees,150.00
+
+      - step: "Create worksheet de3244b"
+        action: "create"
+        model: "general_audit_ws_de3244b"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+
+      - step: "Create variable Unsafe Filter"
+        action: "create"
+        model: "general_audit_ws_de3244b.variable"
+        save_as: "variable_unsafe"
+        as_user: "base.user_admin"
+        values:
+          worksheet_id: "REC: worksheet.id"
+          name: "Unsafe Filter"
+          data_mode: "gl"
+          general_ledger_id: "REC: ws_gl_1.id"
+          filter_where_clause: "Account = '1000'; DROP TABLE data"
+          value_col_number: 3
+
+      - step: "Create variable Invalid Filter"
+        action: "create"
+        model: "general_audit_ws_de3244b.variable"
+        save_as: "variable_invalid"
+        as_user: "base.user_admin"
+        values:
+          worksheet_id: "REC: worksheet.id"
+          name: "Invalid Filter"
+          data_mode: "gl"
+          general_ledger_id: "REC: ws_gl_1.id"
+          filter_where_clause: "Missing_Column = 1"
+          value_col_number: 3
+
+      - step: "Assert variable_unsafe"
+        action: "assert"
+        target: "variable_unsafe"
+        asserts:
+          value:
+            type: "value"
+            expected: 450.0
+
+      - step: "Assert variable_invalid"
+        action: "assert"
+        target: "variable_invalid"
+        asserts:
+          raw_data:
+            type: "value"
+            operator: "is_truthy"
+          value:
+            type: "value"
+            expected: 450.0
+
+  - name: "Variable de3244b - Empty or non-numeric cells count as zero"
+    steps:
+      - step: "Create GL worksheet ws_gl_1"
+        action: "create"
+        model: "general_audit_ws_d209914"
+        save_as: "ws_gl_1"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_gl.id"
+          raw_data: |
+            Account,Description,Amount
+            1000,Cash Sales,abc
+            2000,Bank Fees,150.00
+            3000,Other,
+
+      - step: "Create worksheet de3244b"
+        action: "create"
+        model: "general_audit_ws_de3244b"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+
+      - step: "Create variable Mixed Cells"
+        action: "create"
+        model: "general_audit_ws_de3244b.variable"
+        save_as: "variable"
+        as_user: "base.user_admin"
+        values:
+          worksheet_id: "REC: worksheet.id"
+          name: "Mixed Cells"
+          data_mode: "gl"
+          general_ledger_id: "REC: ws_gl_1.id"
+          value_col_number: 3
+
+      - step: "Assert variable"
+        action: "assert"
+        target: "variable"
+        asserts:
+          value:
+            type: "value"
+            expected: 150.0
+
+  - name: "Variable de3244b - Filter on data without rows keeps the data"
+    steps:
+      - step: "Create GL worksheet ws_gl_1"
+        action: "create"
+        model: "general_audit_ws_d209914"
+        save_as: "ws_gl_1"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_gl.id"
+          raw_data: |
+            Account,Description,Amount
+
+      - step: "Create worksheet de3244b"
+        action: "create"
+        model: "general_audit_ws_de3244b"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+
+      - step: "Create variable Header Only"
+        action: "create"
+        model: "general_audit_ws_de3244b.variable"
+        save_as: "variable"
+        as_user: "base.user_admin"
+        values:
+          worksheet_id: "REC: worksheet.id"
+          name: "Header Only"
+          data_mode: "gl"
+          general_ledger_id: "REC: ws_gl_1.id"
+          filter_where_clause: "Account = '1000'"
+          value_col_number: 3
+
+      - step: "Assert variable"
+        action: "assert"
+        target: "variable"
+        asserts:
+          value:
+            type: "value"
+            expected: 0.0
