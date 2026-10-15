@@ -221,6 +221,21 @@ setup:
         code: "/"
         type_id: "REC: ws_type.id"
 
+    - step: "Get worksheet type d209914 (General Ledger)"
+      action: "ref"
+      xml_id: "ssi_general_audit_worksheet_client_package.worksheet_type_d209914"
+      save_as: "ws_type_gl"
+
+    - step: "Get worksheet type b5e3d9f (Subledger)"
+      action: "ref"
+      xml_id: "ssi_general_audit_worksheet_client_package.worksheet_type_b5e3d9f"
+      save_as: "ws_type_subledger"
+
+    - step: "Get worksheet type a916660 (Sample Determination)"
+      action: "ref"
+      xml_id: "ssi_general_audit_worksheet_sample_determination.worksheet_type_a916660"
+      save_as: "ws_type_sample_determination"
+
 scenarios:
   # ------------------------------------------------------------------
   # general_audit_ws_de3244b - Create in draft
@@ -792,3 +807,1381 @@ scenarios:
           - ["id", "=", "REC: worksheet.id"]
         save_as: "result"
         expect_count: 0
+
+  # ------------------------------------------------------------------
+  # general_audit_ws_de3244b.variable / .comparative
+  # ------------------------------------------------------------------
+  - name: "Variable de3244b - Value is the sum of the selected CSV column"
+    steps:
+      - step: "Create GL worksheet ws_gl_1 (amount 200.00)"
+        action: "create"
+        model: "general_audit_ws_d209914"
+        save_as: "ws_gl_1"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_gl.id"
+          raw_data: |
+            Account,Description,Amount
+            1000,Cash Sales,200.00
+
+      - step: "Create worksheet de3244b"
+        action: "create"
+        model: "general_audit_ws_de3244b"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+
+      - step: "Create variable Realization"
+        action: "create"
+        model: "general_audit_ws_de3244b.variable"
+        save_as: "variable_real"
+        as_user: "base.user_admin"
+        values:
+          worksheet_id: "REC: worksheet.id"
+          name: "Realization"
+          data_mode: "gl"
+          general_ledger_id: "REC: ws_gl_1.id"
+          value_col_number: 3
+
+      - step: "Assert variable value"
+        action: "assert"
+        target: "variable_real"
+        asserts:
+          value:
+            type: "value"
+            expected: 200.0
+
+  - name: "Comparative de3244b - Two comparatives give percentages of realization"
+    steps:
+      - step: "Create GL worksheet ws_gl_real (amount 120.00)"
+        action: "create"
+        model: "general_audit_ws_d209914"
+        save_as: "ws_gl_real"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_gl.id"
+          raw_data: |
+            Account,Description,Amount
+            1000,Realization,120.00
+
+      - step: "Create GL worksheet ws_gl_comp1 (amount 100.00)"
+        action: "create"
+        model: "general_audit_ws_d209914"
+        save_as: "ws_gl_comp1"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_gl.id"
+          raw_data: |
+            Account,Description,Amount
+            1000,Comparative 1,100.00
+
+      - step: "Create GL worksheet ws_gl_comp2 (amount 150.00)"
+        action: "create"
+        model: "general_audit_ws_d209914"
+        save_as: "ws_gl_comp2"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_gl.id"
+          raw_data: |
+            Account,Description,Amount
+            1000,Comparative 2,150.00
+
+      - step: "Create worksheet de3244b"
+        action: "create"
+        model: "general_audit_ws_de3244b"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+
+      - step: "Create variable Realization"
+        action: "create"
+        model: "general_audit_ws_de3244b.variable"
+        save_as: "variable_real"
+        as_user: "base.user_admin"
+        values:
+          worksheet_id: "REC: worksheet.id"
+          name: "Realization"
+          data_mode: "gl"
+          general_ledger_id: "REC: ws_gl_real.id"
+          value_col_number: 3
+
+      - step: "Create variable Comparative 1"
+        action: "create"
+        model: "general_audit_ws_de3244b.variable"
+        save_as: "variable_comp1"
+        as_user: "base.user_admin"
+        values:
+          worksheet_id: "REC: worksheet.id"
+          name: "Comparative 1"
+          data_mode: "gl"
+          general_ledger_id: "REC: ws_gl_comp1.id"
+          value_col_number: 3
+
+      - step: "Create variable Comparative 2"
+        action: "create"
+        model: "general_audit_ws_de3244b.variable"
+        save_as: "variable_comp2"
+        as_user: "base.user_admin"
+        values:
+          worksheet_id: "REC: worksheet.id"
+          name: "Comparative 2"
+          data_mode: "gl"
+          general_ledger_id: "REC: ws_gl_comp2.id"
+          value_col_number: 3
+
+      - step: "Create comparative line"
+        action: "create"
+        model: "general_audit_ws_de3244b.comparative"
+        save_as: "comparative"
+        as_user: "base.user_admin"
+        values:
+          worksheet_id: "REC: worksheet.id"
+          name: "Revenue"
+          realization_variable_id: "REC: variable_real.id"
+          comparative1_variable_id: "REC: variable_comp1.id"
+          comparative2_variable_id: "REC: variable_comp2.id"
+
+      - step: "Assert amounts and percentages"
+        action: "assert"
+        target: "comparative"
+        asserts:
+          realization_amount:
+            type: "value"
+            expected: 120.0
+          comparative1_amount:
+            type: "value"
+            expected: 100.0
+          comparative2_amount:
+            type: "value"
+            expected: 150.0
+          diff1:
+            type: "value"
+            expected: 120.0
+          diff2:
+            type: "value"
+            expected: 80.0
+
+  - name: "Comparative de3244b - Negative amounts give a positive percentage"
+    steps:
+      - step: "Create GL worksheet ws_gl_real (amount -80.00)"
+        action: "create"
+        model: "general_audit_ws_d209914"
+        save_as: "ws_gl_real"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_gl.id"
+          raw_data: |
+            Account,Description,Amount
+            1000,Realization,-80.00
+
+      - step: "Create GL worksheet ws_gl_comp1 (amount -100.00)"
+        action: "create"
+        model: "general_audit_ws_d209914"
+        save_as: "ws_gl_comp1"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_gl.id"
+          raw_data: |
+            Account,Description,Amount
+            1000,Comparative 1,-100.00
+
+      - step: "Create worksheet de3244b"
+        action: "create"
+        model: "general_audit_ws_de3244b"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+
+      - step: "Create variable Realization"
+        action: "create"
+        model: "general_audit_ws_de3244b.variable"
+        save_as: "variable_real"
+        as_user: "base.user_admin"
+        values:
+          worksheet_id: "REC: worksheet.id"
+          name: "Realization"
+          data_mode: "gl"
+          general_ledger_id: "REC: ws_gl_real.id"
+          value_col_number: 3
+
+      - step: "Create variable Comparative 1"
+        action: "create"
+        model: "general_audit_ws_de3244b.variable"
+        save_as: "variable_comp1"
+        as_user: "base.user_admin"
+        values:
+          worksheet_id: "REC: worksheet.id"
+          name: "Comparative 1"
+          data_mode: "gl"
+          general_ledger_id: "REC: ws_gl_comp1.id"
+          value_col_number: 3
+
+      - step: "Create comparative line"
+        action: "create"
+        model: "general_audit_ws_de3244b.comparative"
+        save_as: "comparative"
+        as_user: "base.user_admin"
+        values:
+          worksheet_id: "REC: worksheet.id"
+          name: "Revenue"
+          realization_variable_id: "REC: variable_real.id"
+          comparative1_variable_id: "REC: variable_comp1.id"
+
+      - step: "Assert amounts and percentages"
+        action: "assert"
+        target: "comparative"
+        asserts:
+          diff1:
+            type: "value"
+            expected: 80.0
+          diff2:
+            type: "value"
+            expected: 0.0
+
+  - name: "Comparative de3244b - Zero or missing comparative gives zero percentage"
+    steps:
+      - step: "Create GL worksheet ws_gl_real (amount 120.00)"
+        action: "create"
+        model: "general_audit_ws_d209914"
+        save_as: "ws_gl_real"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_gl.id"
+          raw_data: |
+            Account,Description,Amount
+            1000,Realization,120.00
+
+      - step: "Create worksheet de3244b"
+        action: "create"
+        model: "general_audit_ws_de3244b"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+
+      - step: "Create variable Realization"
+        action: "create"
+        model: "general_audit_ws_de3244b.variable"
+        save_as: "variable_real"
+        as_user: "base.user_admin"
+        values:
+          worksheet_id: "REC: worksheet.id"
+          name: "Realization"
+          data_mode: "gl"
+          general_ledger_id: "REC: ws_gl_real.id"
+          value_col_number: 3
+
+      - step: "Create variable Comparative 1 (zero)"
+        action: "create"
+        model: "general_audit_ws_de3244b.variable"
+        save_as: "variable_comp1"
+        as_user: "base.user_admin"
+        values:
+          worksheet_id: "REC: worksheet.id"
+          name: "Comparative 1 (zero)"
+          data_mode: "gl"
+          value_col_number: 3
+
+      - step: "Create comparative line"
+        action: "create"
+        model: "general_audit_ws_de3244b.comparative"
+        save_as: "comparative"
+        as_user: "base.user_admin"
+        values:
+          worksheet_id: "REC: worksheet.id"
+          name: "Revenue"
+          realization_variable_id: "REC: variable_real.id"
+          comparative1_variable_id: "REC: variable_comp1.id"
+
+      - step: "Assert amounts and percentages"
+        action: "assert"
+        target: "comparative"
+        asserts:
+          comparative1_amount:
+            type: "value"
+            expected: 0.0
+          diff1:
+            type: "value"
+            expected: 0.0
+          diff2:
+            type: "value"
+            expected: 0.0
+
+  - name: "Variable de3244b - Create with all required fields"
+    steps:
+      - step: "Create worksheet de3244b"
+        action: "create"
+        model: "general_audit_ws_de3244b"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+
+      - step: "Create variable with all required fields filled"
+        action: "create"
+        model: "general_audit_ws_de3244b.variable"
+        save_as: "variable"
+        as_user: "base.user_admin"
+        values:
+          worksheet_id: "REC: worksheet.id"
+          name: "Sales"
+          data_mode: "gl"
+          value_col_number: 2
+          thousand_separator: "."
+          decimal_separator: ","
+
+      - step: "Assert variable stored correctly"
+        action: "assert"
+        target: "variable"
+        asserts:
+          id:
+            type: "value"
+            operator: "is_truthy"
+          name:
+            type: "value"
+            expected: "Sales"
+          data_mode:
+            type: "value"
+            expected: "gl"
+          value_col_number:
+            type: "value"
+            expected: 2
+          thousand_separator:
+            type: "value"
+            expected: "."
+          decimal_separator:
+            type: "value"
+            expected: ","
+
+      - step: "Assert variable is included in worksheet.variable_ids"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          variable_ids:
+            type: "o2m"
+            check: "contains"
+            expected_records:
+              - "REC: variable"
+
+  # ------------------------------------------------------------------
+  # data_title / raw_data / value all empty when there is no data source
+  # ------------------------------------------------------------------
+  - name:
+      "Variable de3244b - Compute data_title/raw_data/value kosong without data source"
+    steps:
+      - step: "Create worksheet de3244b"
+        action: "create"
+        model: "general_audit_ws_de3244b"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+
+      - step: "Create variable without any general_ledger_id/subledger_id"
+        action: "create"
+        model: "general_audit_ws_de3244b.variable"
+        save_as: "variable"
+        as_user: "base.user_admin"
+        values:
+          worksheet_id: "REC: worksheet.id"
+          name: "No Source"
+          data_mode: "gl"
+          value_col_number: 1
+
+      - step: "Assert data_title, raw_data and value are all empty"
+        action: "assert"
+        target: "variable"
+        asserts:
+          data_title:
+            type: "value"
+            operator: "is_falsy"
+          raw_data:
+            type: "value"
+            operator: "is_falsy"
+          value:
+            type: "value"
+            expected: 0.0
+
+  # ------------------------------------------------------------------
+  # allowed_general_ledger_ids
+  # ------------------------------------------------------------------
+  - name: "Variable de3244b - Compute allowed_general_ledger_ids normal"
+    steps:
+      - step: "Create GL worksheet for this audit"
+        action: "create"
+        model: "general_audit_ws_d209914"
+        save_as: "ws_gl"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_gl.id"
+          title: "Sales Ledger"
+
+      - step: "Create worksheet de3244b"
+        action: "create"
+        model: "general_audit_ws_de3244b"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+
+      - step: "Create variable"
+        action: "create"
+        model: "general_audit_ws_de3244b.variable"
+        save_as: "variable"
+        as_user: "base.user_admin"
+        values:
+          worksheet_id: "REC: worksheet.id"
+          name: "Sales"
+          data_mode: "gl"
+          value_col_number: 3
+
+      - step: "Assert allowed_general_ledger_ids contains the GL worksheet"
+        action: "assert"
+        target: "variable"
+        asserts:
+          allowed_general_ledger_ids:
+            type: "m2m"
+            check: "contains"
+            expected_records:
+              - "REC: ws_gl"
+          data_title:
+            type: "value"
+            operator: "is_falsy"
+
+  - name: "Variable de3244b - Compute allowed_general_ledger_ids kosong"
+    steps:
+      - step: "Create worksheet de3244b without any GL worksheet for this audit"
+        action: "create"
+        model: "general_audit_ws_de3244b"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+
+      - step: "Create variable"
+        action: "create"
+        model: "general_audit_ws_de3244b.variable"
+        save_as: "variable"
+        as_user: "base.user_admin"
+        values:
+          worksheet_id: "REC: worksheet.id"
+          name: "Sales"
+          data_mode: "gl"
+          value_col_number: 3
+
+      - step: "Assert allowed_general_ledger_ids is empty"
+        action: "assert"
+        target: "variable"
+        asserts:
+          allowed_general_ledger_ids:
+            type: "m2m"
+            check: "count"
+            expected_count: 0
+
+  # ------------------------------------------------------------------
+  # allowed_subledger_ids
+  # ------------------------------------------------------------------
+  - name: "Variable de3244b - Compute allowed_subledger_ids normal"
+    steps:
+      - step: "Create Subledger worksheet for this audit"
+        action: "create"
+        model: "general_audit_ws_b5e3d9f"
+        save_as: "ws_subledger"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_subledger.id"
+          title: "AR Ageing"
+
+      - step: "Create worksheet de3244b"
+        action: "create"
+        model: "general_audit_ws_de3244b"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+
+      - step: "Create variable"
+        action: "create"
+        model: "general_audit_ws_de3244b.variable"
+        save_as: "variable"
+        as_user: "base.user_admin"
+        values:
+          worksheet_id: "REC: worksheet.id"
+          name: "Receivables"
+          data_mode: "subledger"
+          value_col_number: 3
+
+      - step: "Assert allowed_subledger_ids contains the subledger worksheet"
+        action: "assert"
+        target: "variable"
+        asserts:
+          allowed_subledger_ids:
+            type: "m2m"
+            check: "contains"
+            expected_records:
+              - "REC: ws_subledger"
+
+  - name: "Variable de3244b - Compute allowed_subledger_ids kosong"
+    steps:
+      - step: "Create worksheet de3244b without any Subledger worksheet for this audit"
+        action: "create"
+        model: "general_audit_ws_de3244b"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+
+      - step: "Create variable"
+        action: "create"
+        model: "general_audit_ws_de3244b.variable"
+        save_as: "variable"
+        as_user: "base.user_admin"
+        values:
+          worksheet_id: "REC: worksheet.id"
+          name: "Receivables"
+          data_mode: "subledger"
+          value_col_number: 3
+
+      - step: "Assert allowed_subledger_ids is empty"
+        action: "assert"
+        target: "variable"
+        asserts:
+          allowed_subledger_ids:
+            type: "m2m"
+            check: "count"
+            expected_count: 0
+
+  # ------------------------------------------------------------------
+  # _compute_value - normal, alternate separators, filter_where_clause
+  # ------------------------------------------------------------------
+  - name: "Variable de3244b - Compute value normal (dot thousand, comma decimal)"
+    steps:
+      - step: "Create GL worksheet with CSV data using dot thousand / comma decimal"
+        action: "create"
+        model: "general_audit_ws_d209914"
+        save_as: "ws_gl"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_gl.id"
+          title: "Sales Ledger"
+          raw_data: |
+            Account,Description,Amount
+            1000,Cash Sales,"1.234,56"
+
+      - step: "Create worksheet de3244b"
+        action: "create"
+        model: "general_audit_ws_de3244b"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+
+      - step: "Create variable sourced from the GL worksheet"
+        action: "create"
+        model: "general_audit_ws_de3244b.variable"
+        save_as: "variable"
+        as_user: "base.user_admin"
+        values:
+          worksheet_id: "REC: worksheet.id"
+          name: "Sales"
+          data_mode: "gl"
+          general_ledger_id: "REC: ws_gl.id"
+          value_col_number: 3
+          thousand_separator: "."
+          decimal_separator: ","
+
+      - step: "Assert data_title and value are correctly parsed"
+        action: "assert"
+        target: "variable"
+        asserts:
+          data_title:
+            type: "value"
+            expected: "Sales Ledger"
+          value:
+            type: "value"
+            expected: 1234.56
+
+  - name:
+      "Variable de3244b - Compute value with alternate separators (comma thousand, dot
+      decimal)"
+    steps:
+      - step: "Create GL worksheet with CSV data using comma thousand / dot decimal"
+        action: "create"
+        model: "general_audit_ws_d209914"
+        save_as: "ws_gl"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_gl.id"
+          raw_data: |
+            Account,Description,Amount
+            1000,Cash Sales,"1,234.56"
+
+      - step: "Create worksheet de3244b"
+        action: "create"
+        model: "general_audit_ws_de3244b"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+
+      - step: "Create variable sourced from the GL worksheet"
+        action: "create"
+        model: "general_audit_ws_de3244b.variable"
+        save_as: "variable"
+        as_user: "base.user_admin"
+        values:
+          worksheet_id: "REC: worksheet.id"
+          name: "Sales"
+          data_mode: "gl"
+          general_ledger_id: "REC: ws_gl.id"
+          value_col_number: 3
+          thousand_separator: ","
+          decimal_separator: "."
+
+      - step: "Assert value is correctly parsed"
+        action: "assert"
+        target: "variable"
+        asserts:
+          value:
+            type: "value"
+            expected: 1234.56
+
+  - name: "Variable de3244b - Compute value with filter_where_clause"
+    steps:
+      - step: "Create GL worksheet with a Status column"
+        action: "create"
+        model: "general_audit_ws_d209914"
+        save_as: "ws_gl"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_gl.id"
+          raw_data: |
+            Account,Status,Amount
+            1000,posted,100.00
+            2000,draft,900.00
+
+      - step: "Create worksheet de3244b"
+        action: "create"
+        model: "general_audit_ws_de3244b"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+
+      - step: "Create variable filtered to posted rows only"
+        action: "create"
+        model: "general_audit_ws_de3244b.variable"
+        save_as: "variable"
+        as_user: "base.user_admin"
+        values:
+          worksheet_id: "REC: worksheet.id"
+          name: "Posted Sales"
+          data_mode: "gl"
+          general_ledger_id: "REC: ws_gl.id"
+          value_col_number: 3
+          filter_where_clause: "Status = 'posted'"
+
+      - step: "Assert value only sums the filtered (posted) row"
+        action: "assert"
+        target: "variable"
+        asserts:
+          value:
+            type: "value"
+            expected: 100.0
+
+  # ------------------------------------------------------------------
+  # general_audit_ws_de3244b.relation - realization / div
+  # ------------------------------------------------------------------
+
+  - name: "Variable de3244b - Onchange data_mode clears general_ledger_id"
+    steps:
+      - step: "Create worksheet de3244b to host the variable"
+        action: "create"
+        model: "general_audit_ws_de3244b"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+
+      - step: "Create GL worksheet as a candidate data source"
+        action: "create"
+        model: "general_audit_ws_d209914"
+        save_as: "ws_gl"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_gl.id"
+
+      # Asserting directly on the live (unsaved) Form object trips a
+      # library/Form interaction bug (`hasattr(form, "__len__")` raises
+      # AssertionError instead of returning False), so save the form
+      # first and assert on the resulting record instead. name and
+      # value_col_number (no default) are filled so the save succeeds.
+      - step: "Set data_mode to gl with general_ledger_id, then switch to subledger"
+        action: "form"
+        model: "general_audit_ws_de3244b.variable"
+        save_as: "onchange_variable"
+        as_user: "base.user_admin"
+        ops:
+          - set:
+              worksheet_id: "REC: worksheet"
+          - set:
+              name: "Onchange Test Variable"
+          - set:
+              value_col_number: 1
+          - set:
+              data_mode: "gl"
+          - set:
+              general_ledger_id: "REC: ws_gl"
+          - set:
+              data_mode: "subledger"
+        save: true
+
+      - step: "Assert general_ledger_id was cleared by the onchange"
+        action: "assert"
+        target: "onchange_variable"
+        asserts:
+          general_ledger_id:
+            type: "value"
+            operator: "is_falsy"
+
+  - name: "Variable de3244b - Onchange data_mode clears subledger_id"
+    steps:
+      - step: "Create worksheet de3244b to host the variable"
+        action: "create"
+        model: "general_audit_ws_de3244b"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+
+      - step: "Create Subledger worksheet as a candidate data source"
+        action: "create"
+        model: "general_audit_ws_b5e3d9f"
+        save_as: "ws_subledger"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_subledger.id"
+
+      # Asserting directly on the live (unsaved) Form object trips a
+      # library/Form interaction bug (`hasattr(form, "__len__")` raises
+      # AssertionError instead of returning False), so save the form
+      # first and assert on the resulting record instead. name and
+      # value_col_number (no default) are filled so the save succeeds.
+      - step: "Set data_mode to subledger with subledger_id, then switch to gl"
+        action: "form"
+        model: "general_audit_ws_de3244b.variable"
+        save_as: "onchange_variable"
+        as_user: "base.user_admin"
+        ops:
+          - set:
+              worksheet_id: "REC: worksheet"
+          - set:
+              name: "Onchange Test Variable"
+          - set:
+              value_col_number: 1
+          - set:
+              data_mode: "subledger"
+          - set:
+              subledger_id: "REC: ws_subledger"
+          - set:
+              data_mode: "gl"
+        save: true
+
+      - step: "Assert subledger_id was cleared by the onchange"
+        action: "assert"
+        target: "onchange_variable"
+        asserts:
+          subledger_id:
+            type: "value"
+            operator: "is_falsy"
+
+  # ------------------------------------------------------------------
+  # data_source="sample" / _compute_value from Sample Determination
+  # ------------------------------------------------------------------
+  - name: "Variable de3244b - Compute value from Sample Determination source (positive)"
+    steps:
+      - step: "Create GL worksheet backing the sample determination"
+        action: "create"
+        model: "general_audit_ws_d209914"
+        save_as: "ws_gl_sd"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_gl.id"
+          raw_data: |
+            Account,Description,Amount
+            1000,Cash Sales,300.00
+            2000,Bank Fees,150.00
+
+      - step: "Create Sample Determination worksheet matching that GL"
+        action: "create"
+        model: "general_audit_ws_a916660"
+        save_as: "ws_sample_determination"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_sample_determination.id"
+          data_mode: "gl"
+          general_ledger_id: "REC: ws_gl_sd.id"
+
+      - step: "Create worksheet de3244b"
+        action: "create"
+        model: "general_audit_ws_de3244b"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+
+      - step:
+          "Create variable with data_mode=gl and data_source=sample, sourced from the
+          Sample Determination worksheet"
+        action: "create"
+        model: "general_audit_ws_de3244b.variable"
+        save_as: "variable"
+        as_user: "base.user_admin"
+        values:
+          worksheet_id: "REC: worksheet.id"
+          name: "Total Sample"
+          data_mode: "gl"
+          general_ledger_id: "REC: ws_gl_sd.id"
+          data_source: "sample"
+          sample_determination_id: "REC: ws_sample_determination.id"
+          value_col_number: 3
+
+      - step: "Assert allowed_sample_determination_ids contains the fixture"
+        action: "assert"
+        target: "variable"
+        asserts:
+          allowed_sample_determination_ids:
+            type: "m2m"
+            check: "contains"
+            expected_records:
+              - "REC: ws_sample_determination"
+
+      - step: "Assert data_title and value are taken from the Sample Determination"
+        action: "assert"
+        target: "variable"
+        asserts:
+          data_title:
+            type: "value"
+            expected: "Test General Audit - DE3244B"
+          value:
+            type: "value"
+            expected: 450.0
+
+  - name:
+      "Variable de3244b - Compute allowed_sample_determination_ids kosong (different
+      general_ledger_id)"
+    steps:
+      - step: "Create GL worksheet A (this row's own source)"
+        action: "create"
+        model: "general_audit_ws_d209914"
+        save_as: "ws_gl_a"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_gl.id"
+
+      - step: "Create GL worksheet B (a different source in the same audit)"
+        action: "create"
+        model: "general_audit_ws_d209914"
+        save_as: "ws_gl_b"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_gl.id"
+
+      - step: "Create Sample Determination worksheet matching GL B, not GL A"
+        action: "create"
+        model: "general_audit_ws_a916660"
+        save_as: "ws_sample_determination_other_gl"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_sample_determination.id"
+          data_mode: "gl"
+          general_ledger_id: "REC: ws_gl_b.id"
+
+      - step: "Create worksheet de3244b to host the variable"
+        action: "create"
+        model: "general_audit_ws_de3244b"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+
+      - step: "Set data_mode=gl with general_ledger_id pointing to GL A (not GL B)"
+        action: "form"
+        model: "general_audit_ws_de3244b.variable"
+        save_as: "domain_variable"
+        as_user: "base.user_admin"
+        ops:
+          - set:
+              worksheet_id: "REC: worksheet"
+          - set:
+              name: "Domain Test Variable"
+          - set:
+              value_col_number: 1
+          - set:
+              data_mode: "gl"
+          - set:
+              general_ledger_id: "REC: ws_gl_a"
+        save: true
+
+      - step:
+          "Assert allowed_sample_determination_ids excludes the worksheet matching the
+          other General Ledger -- this is the domain
+          ([('id','in',allowed_sample_determination_ids)]) that the form view uses to
+          restrict the picker; the odoo.tests.common.Form API does not itself enforce
+          m2o domains (only readonly/type), so the restriction is verified at its actual
+          source: the computed field"
+        action: "assert"
+        target: "domain_variable"
+        asserts:
+          allowed_sample_determination_ids:
+            type: "m2m"
+            check: "count"
+            expected_count: 0
+
+  # ------------------------------------------------------------------
+  # general_audit_ws_de3244b.variable - onchange data_source
+  # ------------------------------------------------------------------
+  - name:
+      "Variable de3244b - Onchange data_source keeps general_ledger_id while setting
+      sample_determination_id"
+    steps:
+      - step: "Create worksheet de3244b to host the variable"
+        action: "create"
+        model: "general_audit_ws_de3244b"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+
+      - step: "Create GL worksheet as the row's own source"
+        action: "create"
+        model: "general_audit_ws_d209914"
+        save_as: "ws_gl"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_gl.id"
+
+      - step: "Create Sample Determination worksheet matching that GL"
+        action: "create"
+        model: "general_audit_ws_a916660"
+        save_as: "ws_sample_determination_onchange"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_sample_determination.id"
+          data_mode: "gl"
+          general_ledger_id: "REC: ws_gl.id"
+
+      # Asserting directly on the live (unsaved) Form object trips a
+      # library/Form interaction bug (`hasattr(form, "__len__")` raises
+      # AssertionError instead of returning False), so save the form
+      # first and assert on the resulting record instead. name and
+      # value_col_number (no default) are filled so the save succeeds.
+      - step:
+          "Set data_mode to gl with general_ledger_id, then switch data_source to sample
+          and pick sample_determination_id"
+        action: "form"
+        model: "general_audit_ws_de3244b.variable"
+        save_as: "onchange_variable_sd"
+        as_user: "base.user_admin"
+        ops:
+          - set:
+              worksheet_id: "REC: worksheet"
+          - set:
+              name: "Onchange Test Variable SD"
+          - set:
+              value_col_number: 1
+          - set:
+              data_mode: "gl"
+          - set:
+              general_ledger_id: "REC: ws_gl"
+          - set:
+              data_source: "sample"
+          - set:
+              sample_determination_id: "REC: ws_sample_determination_onchange"
+        save: true
+
+      - step:
+          "Assert general_ledger_id survives the data_source switch and
+          sample_determination_id was set"
+        action: "assert"
+        target: "onchange_variable_sd"
+        asserts:
+          general_ledger_id:
+            type: "m2o"
+            expected: "REC: ws_gl"
+          sample_determination_id:
+            type: "m2o"
+            expected: "REC: ws_sample_determination_onchange"
+
+  - name: "Variable de3244b - Onchange data_source clears sample_determination_id"
+    steps:
+      - step: "Create worksheet de3244b to host the variable"
+        action: "create"
+        model: "general_audit_ws_de3244b"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+
+      - step: "Create GL worksheet as the row's own source"
+        action: "create"
+        model: "general_audit_ws_d209914"
+        save_as: "ws_gl_ds2"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_gl.id"
+
+      - step:
+          "Set data_mode=gl with general_ledger_id and data_source=population, then
+          switch data_source to sample"
+        action: "form"
+        model: "general_audit_ws_de3244b.variable"
+        save_as: "onchange_variable_sd2"
+        as_user: "base.user_admin"
+        ops:
+          - set:
+              worksheet_id: "REC: worksheet"
+          - set:
+              name: "Onchange Test Variable SD2"
+          - set:
+              value_col_number: 1
+          - set:
+              data_mode: "gl"
+          - set:
+              general_ledger_id: "REC: ws_gl_ds2"
+          - set:
+              data_source: "population"
+          - set:
+              data_source: "sample"
+        save: true
+
+      - step: "Assert sample_determination_id was cleared by the onchange"
+        action: "assert"
+        target: "onchange_variable_sd2"
+        asserts:
+          sample_determination_id:
+            type: "value"
+            operator: "is_falsy"
+
+  # ------------------------------------------------------------------
+  # Delete in draft
+  # ------------------------------------------------------------------
+
+  # ------------------------------------------------------------------
+  # general_audit_ws_de3244b.variable - data sources and CSV handling
+  # ------------------------------------------------------------------
+  - name: "Variable de3244b - Subledger population gives title, raw data and value"
+    steps:
+      - step: "Create Subledger worksheet with CSV data"
+        action: "create"
+        model: "general_audit_ws_b5e3d9f"
+        save_as: "ws_subledger"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_subledger.id"
+          title: "AR Ageing"
+          raw_data: |
+            Account,Description,Amount
+            1100,Customer A,500.00
+            1100,Customer B,250.00
+
+      - step: "Create worksheet de3244b"
+        action: "create"
+        model: "general_audit_ws_de3244b"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+
+      - step: "Create variable Subledger Total"
+        action: "create"
+        model: "general_audit_ws_de3244b.variable"
+        save_as: "variable"
+        as_user: "base.user_admin"
+        values:
+          worksheet_id: "REC: worksheet.id"
+          name: "Subledger Total"
+          data_mode: "subledger"
+          subledger_id: "REC: ws_subledger.id"
+          value_col_number: 3
+
+      - step: "Assert variable"
+        action: "assert"
+        target: "variable"
+        asserts:
+          data_title:
+            type: "value"
+            operator: "is_truthy"
+          raw_data:
+            type: "value"
+            operator: "is_truthy"
+          value:
+            type: "value"
+            expected: 750.0
+
+  - name: "Variable de3244b - Sample source with filter gives raw data and value"
+    steps:
+      - step: "Create GL worksheet ws_gl_sd"
+        action: "create"
+        model: "general_audit_ws_d209914"
+        save_as: "ws_gl_sd"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_gl.id"
+          raw_data: |
+            Account,Description,Amount
+            1000,Cash Sales,300.00
+            2000,Bank Fees,150.00
+
+      - step: "Create Sample Determination worksheet matching that GL"
+        action: "create"
+        model: "general_audit_ws_a916660"
+        save_as: "ws_sample_determination"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_sample_determination.id"
+          data_mode: "gl"
+          general_ledger_id: "REC: ws_gl_sd.id"
+
+      - step: "Create worksheet de3244b"
+        action: "create"
+        model: "general_audit_ws_de3244b"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+
+      - step: "Create variable Filtered Sample"
+        action: "create"
+        model: "general_audit_ws_de3244b.variable"
+        save_as: "variable"
+        as_user: "base.user_admin"
+        values:
+          worksheet_id: "REC: worksheet.id"
+          name: "Filtered Sample"
+          data_mode: "gl"
+          general_ledger_id: "REC: ws_gl_sd.id"
+          data_source: "sample"
+          sample_determination_id: "REC: ws_sample_determination.id"
+          filter_where_clause: "Account = '1000'"
+          value_col_number: 3
+
+      - step: "Assert variable"
+        action: "assert"
+        target: "variable"
+        asserts:
+          data_title:
+            type: "value"
+            operator: "is_truthy"
+          raw_data:
+            type: "value"
+            operator: "is_truthy"
+          value:
+            type: "value"
+            expected: 300.0
+
+  - name: "Variable de3244b - Unsafe or invalid where clause keeps all rows"
+    steps:
+      - step: "Create GL worksheet ws_gl_1"
+        action: "create"
+        model: "general_audit_ws_d209914"
+        save_as: "ws_gl_1"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_gl.id"
+          raw_data: |
+            Account,Description,Amount
+            1000,Cash Sales,300.00
+            2000,Bank Fees,150.00
+
+      - step: "Create worksheet de3244b"
+        action: "create"
+        model: "general_audit_ws_de3244b"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+
+      - step: "Create variable Unsafe Filter"
+        action: "create"
+        model: "general_audit_ws_de3244b.variable"
+        save_as: "variable_unsafe"
+        as_user: "base.user_admin"
+        values:
+          worksheet_id: "REC: worksheet.id"
+          name: "Unsafe Filter"
+          data_mode: "gl"
+          general_ledger_id: "REC: ws_gl_1.id"
+          filter_where_clause: "Account = '1000'; DROP TABLE data"
+          value_col_number: 3
+
+      - step: "Create variable Invalid Filter"
+        action: "create"
+        model: "general_audit_ws_de3244b.variable"
+        save_as: "variable_invalid"
+        as_user: "base.user_admin"
+        values:
+          worksheet_id: "REC: worksheet.id"
+          name: "Invalid Filter"
+          data_mode: "gl"
+          general_ledger_id: "REC: ws_gl_1.id"
+          filter_where_clause: "Missing_Column = 1"
+          value_col_number: 3
+
+      - step: "Assert variable_unsafe"
+        action: "assert"
+        target: "variable_unsafe"
+        asserts:
+          value:
+            type: "value"
+            expected: 450.0
+
+      - step: "Assert variable_invalid"
+        action: "assert"
+        target: "variable_invalid"
+        asserts:
+          raw_data:
+            type: "value"
+            operator: "is_truthy"
+          value:
+            type: "value"
+            expected: 450.0
+
+  - name: "Variable de3244b - Empty or non-numeric cells count as zero"
+    steps:
+      - step: "Create GL worksheet ws_gl_1"
+        action: "create"
+        model: "general_audit_ws_d209914"
+        save_as: "ws_gl_1"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_gl.id"
+          raw_data: |
+            Account,Description,Amount
+            1000,Cash Sales,abc
+            2000,Bank Fees,150.00
+            3000,Other,
+
+      - step: "Create worksheet de3244b"
+        action: "create"
+        model: "general_audit_ws_de3244b"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+
+      - step: "Create variable Mixed Cells"
+        action: "create"
+        model: "general_audit_ws_de3244b.variable"
+        save_as: "variable"
+        as_user: "base.user_admin"
+        values:
+          worksheet_id: "REC: worksheet.id"
+          name: "Mixed Cells"
+          data_mode: "gl"
+          general_ledger_id: "REC: ws_gl_1.id"
+          value_col_number: 3
+
+      - step: "Assert variable"
+        action: "assert"
+        target: "variable"
+        asserts:
+          value:
+            type: "value"
+            expected: 150.0
+
+  - name: "Variable de3244b - Filter on data without rows keeps the data"
+    steps:
+      - step: "Create GL worksheet ws_gl_1"
+        action: "create"
+        model: "general_audit_ws_d209914"
+        save_as: "ws_gl_1"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_gl.id"
+          raw_data: |
+            Account,Description,Amount
+
+      - step: "Create worksheet de3244b"
+        action: "create"
+        model: "general_audit_ws_de3244b"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+
+      - step: "Create variable Header Only"
+        action: "create"
+        model: "general_audit_ws_de3244b.variable"
+        save_as: "variable"
+        as_user: "base.user_admin"
+        values:
+          worksheet_id: "REC: worksheet.id"
+          name: "Header Only"
+          data_mode: "gl"
+          general_ledger_id: "REC: ws_gl_1.id"
+          filter_where_clause: "Account = '1000'"
+          value_col_number: 3
+
+      - step: "Assert variable"
+        action: "assert"
+        target: "variable"
+        asserts:
+          value:
+            type: "value"
+            expected: 0.0

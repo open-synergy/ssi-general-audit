@@ -4,4 +4,6 @@
 
 from . import (
     general_audit_ws_de3244b,
+    general_audit_ws_de3244b_variable,
+    general_audit_ws_de3244b_comparative,
 )
