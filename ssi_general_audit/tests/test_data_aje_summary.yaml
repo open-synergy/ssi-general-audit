@@ -197,6 +197,41 @@ scenarios:
           partner_id: "REC: client.id"
           type_id: "REC: type_none.id"
 
+      - step: "Create profit and loss account group"
+        action: "create"
+        model: "client_account_group"
+        save_as: "group_pl"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Group Profit Loss - AJE Summary"
+          code: "/"
+          sequence: 4
+          normal_balance: "cr"
+          report_category: "profit_loss"
+
+      - step: "Create profit and loss account type"
+        action: "create"
+        model: "client_account_type"
+        save_as: "type_pl"
+        as_user: "base.user_admin"
+        values:
+          name: "Revenue - AJE Summary"
+          code: "/"
+          group_id: "REC: group_pl.id"
+          sequence: 4
+          normal_balance: "cr"
+
+      - step: "Create profit and loss account"
+        action: "create"
+        model: "client_account"
+        save_as: "account_pl"
+        as_user: "base.user_admin"
+        values:
+          name: "Pendapatan Test - AJE Summary"
+          code: "PLSUM"
+          partner_id: "REC: client.id"
+          type_id: "REC: type_pl.id"
+
       - step: "Create corrected entry"
         action: "create"
         model: "client_adjustment_entry"
@@ -264,6 +299,52 @@ scenarios:
           debit: 30.0
           credit: 0.0
 
+      - step: "Create profit and loss credit line of the uncorrected entry"
+        action: "create"
+        model: "client_adjustment_entry.detail"
+        save_as: "line_pl_cr"
+        as_user: "base.user_admin"
+        values:
+          entry_id: "REC: entry_2.id"
+          account_id: "REC: account_pl.id"
+          name: "Profit and loss credit"
+          misstatement_type: "projected"
+          debit: 0.0
+          credit: 100.0
+
+      - step: "Create profit and loss debit line of the uncorrected entry"
+        action: "create"
+        model: "client_adjustment_entry.detail"
+        save_as: "line_pl_dr"
+        as_user: "base.user_admin"
+        values:
+          entry_id: "REC: entry_2.id"
+          account_id: "REC: account_pl.id"
+          name: "Profit and loss debit"
+          debit: 40.0
+          credit: 0.0
+
+      - step: "Create second corrected entry with a profit and loss line"
+        action: "create"
+        model: "client_adjustment_entry"
+        save_as: "entry_3"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          adjustment_type: "propose"
+
+      - step: "Create profit and loss credit line of the second corrected entry"
+        action: "create"
+        model: "client_adjustment_entry.detail"
+        save_as: "line_pl_cr_summary"
+        as_user: "base.user_admin"
+        values:
+          entry_id: "REC: entry_3.id"
+          account_id: "REC: account_pl.id"
+          name: "Profit and loss summary credit"
+          debit: 0.0
+          credit: 25.0
+
       - step: "Create draft entry that must stay out of the summary"
         action: "create"
         model: "client_adjustment_entry"
@@ -288,6 +369,13 @@ scenarios:
       - step: "Mark the corrected entry as done"
         action: "write"
         target: "entry_1"
+        as_user: "base.user_admin"
+        values:
+          state: "done"
+
+      - step: "Mark the second corrected entry as done"
+        action: "write"
+        target: "entry_3"
         as_user: "base.user_admin"
         values:
           state: "done"
@@ -329,6 +417,34 @@ scenarios:
             type: "value"
             expected: 0.0
 
+      - step: "Assert profit and loss credit line counts as equity impact"
+        action: "assert"
+        target: "line_pl_cr"
+        asserts:
+          impact_profit_loss:
+            type: "value"
+            expected: 100.0
+          impact_equity:
+            type: "value"
+            expected: 100.0
+          impact_asset:
+            type: "value"
+            expected: 0.0
+          misstatement_type:
+            type: "value"
+            expected: "projected"
+
+      - step: "Assert profit and loss debit line is negative on both columns"
+        action: "assert"
+        target: "line_pl_dr"
+        asserts:
+          impact_profit_loss:
+            type: "value"
+            expected: -40.0
+          impact_equity:
+            type: "value"
+            expected: -40.0
+
       - step: "Assert unclassified line has no impact"
         action: "assert"
         target: "line_none_dr"
@@ -353,7 +469,7 @@ scenarios:
           aje_summary_line_ids:
             type: "m2m"
             check: "count"
-            expected_count: 2
+            expected_count: 3
 
       - step: "Assert neither the draft nor the uncorrected lines are in the summary"
         action: "assert"
@@ -365,6 +481,7 @@ scenarios:
             expected_records:
               - "REC: line_asset_dr"
               - "REC: line_equity_cr"
+              - "REC: line_pl_cr_summary"
 
       - step: "Assert the totals per category"
         action: "assert"
@@ -378,7 +495,7 @@ scenarios:
             expected: 0.0
           aje_total_equity:
             type: "value"
-            expected: 100.0
+            expected: 125.0
           aje_total_profit_loss:
             type: "value"
-            expected: 0.0
+            expected: 25.0

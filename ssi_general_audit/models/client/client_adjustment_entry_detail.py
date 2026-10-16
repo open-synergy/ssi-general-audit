@@ -32,6 +32,17 @@ class ClientAdjustmentEntryDetail(models.Model):
         required=True,
         help="Free-text description of the adjustment line.",
     )
+    misstatement_type = fields.Selection(
+        string="Type Of Misstatement",
+        selection=[
+            ("factual", "Factual Misstatement"),
+            ("judgmental", "Judgmental Misstatement"),
+            ("projected", "Projected Misstatement"),
+        ],
+        help="Kind of misstatement the adjustment line corrects: factual "
+        "(no doubt), judgmental (from accounting estimates or policies) or "
+        "projected (extrapolated from a sample). Empty when not classified.",
+    )
     entry_id = fields.Many2one(
         string="# Adjustment Entry",
         comodel_name="client_adjustment_entry",
@@ -108,7 +119,7 @@ class ClientAdjustmentEntryDetail(models.Model):
         compute_sudo=True,
         currency_field="currency_id",
         help="Impact on equity: credit minus debit, for accounts whose "
-        "group has the Equity report category.",
+        "group has the Equity or the Profit & Loss report category.",
     )
     impact_profit_loss = fields.Monetary(
         string="Profit & Loss",
@@ -129,8 +140,10 @@ class ClientAdjustmentEntryDetail(models.Model):
         """Split the line amount into the four report category impacts.
 
         Assets take debit minus credit; liabilities, equity and profit
-        and loss take credit minus debit. A line whose account group has
-        no report category contributes zero to every impact column.
+        and loss take credit minus debit. A profit and loss line also
+        counts as an equity impact of the same amount, since profit and
+        loss flows into equity. A line whose account group has no report
+        category contributes zero to every impact column.
 
         :return: ``None``
         """
@@ -146,6 +159,8 @@ class ClientAdjustmentEntryDetail(models.Model):
                 result["asset"] = record.debit - record.credit
             elif category:
                 result[category] = record.credit - record.debit
+                if category == "profit_loss":
+                    result["equity"] = result["profit_loss"]
             record.impact_asset = result["asset"]
             record.impact_liability = result["liability"]
             record.impact_equity = result["equity"]

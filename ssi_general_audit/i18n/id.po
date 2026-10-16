@@ -3275,7 +3275,6 @@ msgstr "Diskusi Final"
 
 #. module: ssi_general_audit
 #: model:ir.ui.menu,name:ssi_general_audit.menu_configuration_final_materiality
-#: model:ir.ui.menu,name:ssi_general_audit.menu_general_audit_final_materiality
 msgid "Final Materiality & Analytical Procedures"
 msgstr "Materialitas & Prosedur Analitis Final"
 
@@ -8084,8 +8083,8 @@ msgstr "Dampak ke liabilitas: kredit dikurangi debit, untuk akun yang grupnya be
 
 #. module: ssi_general_audit
 #: model:ir.model.fields,help:ssi_general_audit.field_client_adjustment_entry_detail__impact_equity
-msgid "Impact on equity: credit minus debit, for accounts whose group has the Equity report category."
-msgstr "Dampak ke ekuitas: kredit dikurangi debit, untuk akun yang grupnya berkategori laporan Equity."
+msgid "Impact on equity: credit minus debit, for accounts whose group has the Equity or the Profit & Loss report category."
+msgstr "Dampak ke ekuitas: kredit dikurangi debit, untuk akun yang grupnya berkategori laporan Equity atau Profit & Loss."
 
 #. module: ssi_general_audit
 #: model:ir.model.fields,help:ssi_general_audit.field_client_adjustment_entry_detail__impact_profit_loss
@@ -8131,6 +8130,36 @@ msgstr "Total"
 #: model_terms:ir.ui.view,arch_db:ssi_general_audit.general_audit_view_form
 msgid "Only corrected adjustment entries in Done state are listed."
 msgstr "Hanya entri penyesuaian yang dikoreksi dan berstatus Done yang ditampilkan."
+
+#. module: ssi_general_audit
+#: model:ir.ui.menu,name:ssi_general_audit.menu_general_audit_final_materiality
+msgid "Final Analysis"
+msgstr "Analisis Final"
+
+#. module: ssi_general_audit
+#: model:ir.model.fields,field_description:ssi_general_audit.field_client_adjustment_entry_detail__misstatement_type
+msgid "Type Of Misstatement"
+msgstr "Jenis Salah Saji"
+
+#. module: ssi_general_audit
+#: model:ir.model.fields,help:ssi_general_audit.field_client_adjustment_entry_detail__misstatement_type
+msgid "Kind of misstatement the adjustment line corrects: factual (no doubt), judgmental (from accounting estimates or policies) or projected (extrapolated from a sample). Empty when not classified."
+msgstr "Jenis salah saji yang dikoreksi baris penyesuaian: faktual (tanpa keraguan), judgmental (dari estimasi atau kebijakan akuntansi), atau proyeksi (diekstrapolasi dari sampel). Kosong bila belum diklasifikasikan."
+
+#. module: ssi_general_audit
+#: model:ir.model.fields.selection,name:ssi_general_audit.selection__client_adjustment_entry_detail__misstatement_type__factual
+msgid "Factual Misstatement"
+msgstr "Salah Saji Faktual"
+
+#. module: ssi_general_audit
+#: model:ir.model.fields.selection,name:ssi_general_audit.selection__client_adjustment_entry_detail__misstatement_type__judgmental
+msgid "Judgmental Misstatement"
+msgstr "Salah Saji Judgmental"
+
+#. module: ssi_general_audit
+#: model:ir.model.fields.selection,name:ssi_general_audit.selection__client_adjustment_entry_detail__misstatement_type__projected
+msgid "Projected Misstatement"
+msgstr "Salah Saji Proyeksi"
 
 #~ msgid "Assigned Attachments"
 #~ msgstr "Lampiran yang Ditugaskan"
