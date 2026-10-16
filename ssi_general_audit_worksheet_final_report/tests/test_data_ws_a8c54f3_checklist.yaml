@@ -1,0 +1,307 @@
+options:
+  auto_refresh: true
+
+setup:
+  steps:
+    - step: "Create client partner"
+      action: "create"
+      model: "res.partner"
+      save_as: "client"
+      as_user: "base.user_admin"
+      values:
+        name: "Test Audit Client - a8c54f3 Checklist"
+        is_company: true
+
+    - step: "Create accountant partner"
+      action: "create"
+      model: "res.partner"
+      save_as: "accountant"
+      as_user: "base.user_admin"
+      values:
+        name: "Test Audit Accountant - a8c54f3 Checklist"
+
+    - step: "Get config parameter model"
+      action: "search"
+      model: "ir.config_parameter"
+      domain: []
+      save_as: "config_parameter"
+      limit: 1
+
+    - step: "Allow enough CPA licenses for this scenario"
+      action: "call"
+      target: "config_parameter"
+      method: "set_param"
+      args:
+        - "ssi_general_audit.max_number_of_cpa_license"
+        - "100"
+
+    - step: "Get CPA license id category"
+      action: "ref"
+      xml_id: "ssi_partner_identification_cpa_license.partner_identification_accountant_cpa_license"
+      save_as: "cpa_category"
+
+    - step: "Grant accountant a CPA license"
+      action: "create"
+      model: "res.partner.id_number"
+      save_as: "cpa_license"
+      as_user: "base.user_admin"
+      values:
+        partner_id: "REC: accountant.id"
+        category_id: "REC: cpa_category.id"
+        name: "CPA-A8C54F3CHECKLIST-0001"
+
+    - step: "Create account type set"
+      action: "create"
+      model: "client_account_type_set"
+      save_as: "account_type_set"
+      as_user: "base.user_admin"
+      values:
+        name: "Test Account Type Set - a8c54f3 Checklist"
+        code: "/"
+
+    - step: "Create financial accounting standard"
+      action: "create"
+      model: "accountant.financial_accounting_standard"
+      save_as: "standard"
+      as_user: "base.user_admin"
+      values:
+        name: "Test Financial Accounting Standard - a8c54f3 Checklist"
+        code: "/"
+
+    - step: "Create general audit"
+      action: "create"
+      model: "general_audit"
+      save_as: "audit"
+      as_user: "base.user_admin"
+      values:
+        title: "Test General Audit - a8c54f3 Checklist"
+        partner_id: "REC: client.id"
+        accountant_id: "REC: accountant.id"
+        account_type_set_id: "REC: account_type_set.id"
+        financial_accounting_standard_id: "REC: standard.id"
+        date_start: 2026-01-01
+        date_end: 2026-12-31
+        need_interim: false
+        need_previous: false
+        num_of_consecutive_audit_firm: 1
+        num_of_consecutive_audit_accountant: 1
+
+    - step: "Open general audit"
+      action: "call"
+      target: "audit"
+      method: "action_open"
+      as_user: "base.user_admin"
+
+    - step: "Assert general audit open"
+      action: "assert"
+      target: "audit"
+      asserts:
+        state:
+          type: "value"
+          expected: "open"
+
+    - step: "Get worksheet type a8c54f3"
+      action: "ref"
+      xml_id: "ssi_general_audit_worksheet_final_report.worksheet_type_a8c54f3"
+      save_as: "ws_type_a8c54f3"
+
+scenarios:
+  # Negative: a user without the configurator groups can not change
+  # the checklist master data (items and categories).
+  - name: "Checklist master data is read-only without configurator group"
+    steps:
+      - step: "Create a plain worksheet user"
+        action: "create"
+        model: "res.users"
+        save_as: "plain_user"
+        as_user: "base.user_admin"
+        values:
+          name: "Checklist Plain User a8c54f3"
+          login: "checklist_plain_a8c54f3@example.com"
+          groups_id:
+            - - 6
+              - 0
+              - - "REF: base.group_user"
+                - "REF:
+                  ssi_general_audit_worksheet_final_report.general_audit_ws_a8c54f3_user_group"
+
+      - step: "Get the first checklist item"
+        action: "ref"
+        xml_id: "ssi_general_audit_worksheet_final_report.general_audit_ws_a8c54f3_item_1"
+        save_as: "item_1"
+
+      - step: "Get the first checklist category"
+        action: "ref"
+        xml_id: "ssi_general_audit_worksheet_final_report.general_audit_ws_a8c54f3_category_1"
+        save_as: "category_1"
+
+      - step: "Writing an item as a plain user is rejected"
+        action: "write"
+        target: "item_1"
+        as_user: "plain_user"
+        expect_error:
+          type: "AccessError"
+        values:
+          name: "Changed by a plain user"
+
+      - step: "Writing a category as a plain user is rejected"
+        action: "write"
+        target: "category_1"
+        as_user: "plain_user"
+        expect_error:
+          type: "AccessError"
+        values:
+          name: "Changed by a plain user"
+
+      - step: "Creating a category as a plain user is rejected"
+        action: "create"
+        model: "general_audit_ws_a8c54f3.category"
+        as_user: "plain_user"
+        expect_error:
+          type: "AccessError"
+        values:
+          name: "Category created by a plain user"
+          code: "/"
+
+  # Positive: master data ships 17 categories and 133 items, and
+  # Populate creates one row per item. A second call must not
+  # duplicate rows.
+  - name: "Populate creates 133 checklist rows once"
+    steps:
+      - step: "Create worksheet a8c54f3"
+        action: "create"
+        model: "general_audit_ws_a8c54f3"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_a8c54f3.id"
+
+      - step: "Open worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_open"
+        as_user: "base.user_admin"
+
+      - step: "Call action_populate_checklist"
+        action: "call"
+        target: "worksheet"
+        method: "action_populate_checklist"
+        as_user: "base.user_admin"
+
+      - step: "Assert checklist_ids has 133 rows"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          checklist_ids:
+            type: "o2m"
+            check: "count"
+            expected_count: 133
+
+      - step: "Search rows without a category"
+        action: "search"
+        model: "general_audit_ws_a8c54f3.checklist"
+        domain:
+          - ["worksheet_id", "=", "REC: worksheet.id"]
+          - ["category_id", "=", false]
+        save_as: "rows_without_category"
+        expect_count: 0
+
+      - step: "Call action_populate_checklist a second time"
+        action: "call"
+        target: "worksheet"
+        method: "action_populate_checklist"
+        as_user: "base.user_admin"
+
+      - step: "Assert checklist_ids is still 133 rows"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          checklist_ids:
+            type: "o2m"
+            check: "count"
+            expected_count: 133
+
+  # Positive: Populate follows the master data -- a new item adds a
+  # row, and an item that is archived loses its row.
+  - name: "Populate follows additions and removals in the master data"
+    steps:
+      - step: "Create worksheet a8c54f3"
+        action: "create"
+        model: "general_audit_ws_a8c54f3"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_a8c54f3.id"
+
+      - step: "Open worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_open"
+        as_user: "base.user_admin"
+
+      - step: "Populate the first time"
+        action: "call"
+        target: "worksheet"
+        method: "action_populate_checklist"
+        as_user: "base.user_admin"
+
+      - step: "Get the first checklist category"
+        action: "ref"
+        xml_id: "ssi_general_audit_worksheet_final_report.general_audit_ws_a8c54f3_category_1"
+        save_as: "category_1"
+
+      - step: "Get the shared option set"
+        action: "ref"
+        xml_id: "ssi_general_audit.checklist_option_set_1"
+        save_as: "option_set_1"
+
+      - step: "Add a new item to the master data"
+        action: "create"
+        model: "general_audit_ws_a8c54f3.item"
+        save_as: "new_item"
+        as_user: "base.user_admin"
+        values:
+          name: "Additional item added after the first Populate"
+          code: "/"
+          sequence: 9999
+          category_id: "REC: category_1.id"
+          option_set_id: "REC: option_set_1.id"
+
+      - step: "Populate again"
+        action: "call"
+        target: "worksheet"
+        method: "action_populate_checklist"
+        as_user: "base.user_admin"
+
+      - step: "Assert checklist_ids has 134 rows"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          checklist_ids:
+            type: "o2m"
+            check: "count"
+            expected_count: 134
+
+      - step: "Archive the added item"
+        action: "write"
+        target: "new_item"
+        as_user: "base.user_admin"
+        values:
+          active: false
+
+      - step: "Populate after archiving the item"
+        action: "call"
+        target: "worksheet"
+        method: "action_populate_checklist"
+        as_user: "base.user_admin"
+
+      - step: "Assert checklist_ids is back to 133 rows"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          checklist_ids:
+            type: "o2m"
+            check: "count"
+            expected_count: 133
