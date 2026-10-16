@@ -20,11 +20,11 @@ class GeneralAuditWSbb33b94(models.Model):
     computes the variances between them:
 
     - **Planning** — Overall Materiality (OM), Performance Materiality
-      (PM), and Tolerable Misstatement (TM) derived from the Preliminary
+      (PM), and Clearly Trivial (CT) derived from the Preliminary
       Materiality worksheet used at the planning stage.
-    - **End Period (Unaudited)** — OM / PM / TM recalculated on the
+    - **End Period (Unaudited)** — OM / PM / CT recalculated on the
       end-period (unaudited) trial balance.
-    - **Audited** — Final OM / PM / TM based on the audited trial balance
+    - **Audited** — Final OM / PM / CT based on the audited trial balance
       amounts, set by the auditor as the definitive materiality thresholds.
 
     Variances relative to both the unaudited and planning amounts are
@@ -87,13 +87,13 @@ class GeneralAuditWSbb33b94(models.Model):
         compute_sudo=True,
     )
     planning_tolerable_misstatement_percentage = fields.Float(
-        string="Planning Tolerable Misstatement Percentage (%)",
+        string="Planning Clearly Trivial Percentage (%)",
         compute="_compute_planning",
         store=True,
         compute_sudo=True,
     )
     planning_tolerable_misstatement = fields.Monetary(
-        string="Planning Tolerable Misstatement",
+        string="Planning Clearly Trivial",
         compute="_compute_planning",
         store=True,
         compute_sudo=True,
@@ -143,13 +143,13 @@ class GeneralAuditWSbb33b94(models.Model):
         compute_sudo=True,
     )
     end_period_tolerable_misstatement_percentage = fields.Float(
-        string="End Period Tolerable Misstatement Percentage (%)",
+        string="End Period Clearly Trivial Percentage (%)",
         compute="_compute_end_period",
         store=True,
         compute_sudo=True,
     )
     end_period_tolerable_misstatement = fields.Monetary(
-        string="End Period Tolerable Misstatement",
+        string="End Period Clearly Trivial",
         compute="_compute_end_period",
         store=True,
         compute_sudo=True,
@@ -346,7 +346,7 @@ class GeneralAuditWSbb33b94(models.Model):
         ),
     )
     tolerable_misstatement_percentage = fields.Float(
-        string="Tolerable Misstatement Percentage",
+        string="Clearly Trivial Percentage",
         default=0.0,
         required=False,
         readonly=True,
@@ -358,19 +358,19 @@ class GeneralAuditWSbb33b94(models.Model):
         },
         help=(
             "Percentage of Performance Materiality used to compute the "
-            "Tolerable Misstatement."
+            "Clearly Trivial."
         ),
     )
     tolerable_misstatement = fields.Monetary(
-        string="Tolerable Misstatement",
+        string="Clearly Trivial",
         compute="_compute_materiality",
         compute_sudo=True,
         store=True,
         currency_field="currency_id",
-        help="Computed Tolerable Misstatement amount.",
+        help="Computed Clearly Trivial amount.",
     )
     tolerable_misstatement_consideration = fields.Text(
-        string="Tolerable Misstatement Consideration",
+        string="Clearly Trivial Consideration",
         readonly=True,
         states={
             "open": [
@@ -379,7 +379,7 @@ class GeneralAuditWSbb33b94(models.Model):
         },
         help=(
             "Considerations and professional judgement supporting the "
-            "selected tolerable misstatement percentage."
+            "selected clearly trivial percentage."
         ),
     )
 
@@ -477,50 +477,50 @@ class GeneralAuditWSbb33b94(models.Model):
         ),
     )
 
-    # Tolerable Misstatement Diff
+    # Clearly Trivial Diff
     audited_unaudited_tolerable_misstatement_diff = fields.Monetary(
-        string="Audited vs Uniaudited Tolerable Misstatement Difference",
+        string="Audited vs Uniaudited Clearly Trivial Difference",
         compute="_compute_diff",
         compute_sudo=True,
         store=True,
         currency_field="currency_id",
         help=(
-            "Difference between the Tolerable Misstatement calculated "
+            "Difference between the Clearly Trivial calculated "
             "based on Audited and Uniaudited Financial Statements."
         ),
     )
     audited_unaudited_tolerable_misstatement_diff_percentage = fields.Float(
-        string="Audited vs Uniaudited Tolerable Misstatement Difference (%)",
+        string="Audited vs Uniaudited Clearly Trivial Difference (%)",
         compute="_compute_diff",
         compute_sudo=True,
         store=True,
         help=(
-            "Percentage difference between the Tolerable Misstatement "
+            "Percentage difference between the Clearly Trivial "
             "calculated based on Audited and Uniaudited Financial "
             "Statements."
         ),
     )
     audited_planning_tolerable_misstatement_diff = fields.Monetary(
-        string="Audited vs Planning Tolerable Misstatement Difference",
+        string="Audited vs Planning Clearly Trivial Difference",
         compute="_compute_diff",
         compute_sudo=True,
         store=True,
         currency_field="currency_id",
         help=(
-            "Difference between the Tolerable Misstatement calculated "
+            "Difference between the Clearly Trivial calculated "
             "based on Audited Financial Statements and the Planning "
-            "Tolerable Misstatement."
+            "Clearly Trivial."
         ),
     )
     audited_planning_tolerable_misstatement_diff_percentage = fields.Float(
-        string="Audited vs Planning Tolerable Misstatement Difference (%)",
+        string="Audited vs Planning Clearly Trivial Difference (%)",
         compute="_compute_diff",
         compute_sudo=True,
         store=True,
         help=(
-            "Percentage difference between the Tolerable Misstatement "
+            "Percentage difference between the Clearly Trivial "
             "calculated based on Audited Financial Statements and the "
-            "Planning Tolerable Misstatement."
+            "Planning Clearly Trivial."
         ),
     )
 
@@ -679,7 +679,7 @@ class GeneralAuditWSbb33b94(models.Model):
             else:
                 record.audited_planning_performance_materiality_diff_percentage = 0.0
 
-            # Tolerable Misstatement Diff
+            # Clearly Trivial Diff
             record.audited_unaudited_tolerable_misstatement_diff = (
                 record.tolerable_misstatement - record.end_period_tolerable_misstatement
             )
