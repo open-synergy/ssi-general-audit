@@ -310,7 +310,7 @@ scenarios:
           name: "Profit and loss credit"
           misstatement_type: "projected"
           debit: 0.0
-          credit: 100.0
+          credit: 40.0
 
       - step: "Create profit and loss debit line of the uncorrected entry"
         action: "create"
@@ -373,6 +373,18 @@ scenarios:
         values:
           state: "done"
 
+      - step: "Create asset debit line balancing the second corrected entry"
+        action: "create"
+        model: "client_adjustment_entry.detail"
+        save_as: "line_pl_dr_summary"
+        as_user: "base.user_admin"
+        values:
+          entry_id: "REC: entry_3.id"
+          account_id: "REC: account_asset.id"
+          name: "Asset debit balancing profit and loss"
+          debit: 25.0
+          credit: 0.0
+
       - step: "Mark the second corrected entry as done"
         action: "write"
         target: "entry_3"
@@ -423,10 +435,10 @@ scenarios:
         asserts:
           impact_profit_loss:
             type: "value"
-            expected: 100.0
+            expected: 40.0
           impact_equity:
             type: "value"
-            expected: 100.0
+            expected: 40.0
           impact_asset:
             type: "value"
             expected: 0.0
@@ -469,7 +481,7 @@ scenarios:
           aje_summary_line_ids:
             type: "m2m"
             check: "count"
-            expected_count: 3
+            expected_count: 4
 
       - step: "Assert neither the draft nor the uncorrected lines are in the summary"
         action: "assert"
@@ -482,6 +494,7 @@ scenarios:
               - "REC: line_asset_dr"
               - "REC: line_equity_cr"
               - "REC: line_pl_cr_summary"
+              - "REC: line_pl_dr_summary"
 
       - step: "Assert the totals per category"
         action: "assert"
@@ -489,7 +502,7 @@ scenarios:
         asserts:
           aje_total_asset:
             type: "value"
-            expected: 100.0
+            expected: 125.0
           aje_total_liability:
             type: "value"
             expected: 0.0
