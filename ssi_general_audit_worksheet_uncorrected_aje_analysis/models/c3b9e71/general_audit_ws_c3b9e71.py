@@ -136,9 +136,10 @@ class GeneralAuditWsC3b9e71(models.Model):
         compute="_compute_aggregate",
         store=True,
         compute_sudo=True,
-        help="Gross total of the uncorrected misstatements on asset, "
-        "liability and equity groups: the absolute amount of each group "
-        "is added, nothing is netted.",
+        help="Gross total of the uncorrected adjustment entries: total "
+        "debit plus total credit of their lines, divided by two. A "
+        "balanced entry has equal debit and credit, so this is the total "
+        "of one side; netting both sides would give zero.",
     )
     aggregate_fp_pct_of_pm = fields.Float(
         string="% of Performance Materiality (Financial Position)",
@@ -307,6 +308,7 @@ class GeneralAuditWsC3b9e71(models.Model):
             record.clearly_trivial = final.tolerable_misstatement
 
     @api.depends(
+        "general_audit_id",
         "group_line_ids.uncorrected_amount",
         "group_line_ids.group_id.report_category",
         "group_line_ids.group_id.normal_balance",
@@ -316,26 +318,30 @@ class GeneralAuditWsC3b9e71(models.Model):
     def _compute_aggregate(self):
         """Derive the aggregate quantitative figures of the analysis.
 
-        Profit and loss groups are netted: credit-normal groups add their
-        uncorrected amount and debit-normal groups subtract it. Asset,
-        liability and equity groups are added gross, by absolute amount.
-        Percentages are zero when Performance Materiality is zero.
+        The profit and loss figure nets the profit and loss account
+        groups: credit-normal groups add their uncorrected amount and
+        debit-normal groups subtract it. The financial position figure is
+        the total of one side of the uncorrected adjustment entries: debit
+        plus credit of every line, divided by two. Percentages are zero
+        when Performance Materiality is zero.
 
         :return: ``None``
         """
-        balance_sheet = ("asset", "liability", "equity")
         for record in self:
             pl_amount = 0.0
-            fp_amount = 0.0
             for line in record.group_line_ids:
-                category = line.group_id.report_category
-                if category == "profit_loss":
-                    if line.group_id.normal_balance == "cr":
-                        pl_amount += line.uncorrected_amount
-                    else:
-                        pl_amount -= line.uncorrected_amount
-                elif category in balance_sheet:
-                    fp_amount += abs(line.uncorrected_amount)
+                if line.group_id.report_category != "profit_loss":
+                    continue
+                if line.group_id.normal_balance == "cr":
+                    pl_amount += line.uncorrected_amount
+                else:
+                    pl_amount -= line.uncorrected_amount
+            fp_amount = 0.0
+            if record.general_audit_id:
+                lines = record._get_uncorrected_lines()
+                fp_amount = (
+                    sum(lines.mapped("debit")) + sum(lines.mapped("credit"))
+                ) / 2.0
             net_after_tax = pl_amount * (1.0 - record.tax_rate / 100.0)
             pm = record.performance_materiality
             record.aggregate_pl_misstatement = pl_amount
@@ -366,6 +372,22 @@ class GeneralAuditWsC3b9e71(models.Model):
             result[group.id] = result.get(group.id, 0.0) + mapping.balance
         return result
 
+    def _get_uncorrected_lines(self):
+        """Return the lines of the done, uncorrected adjustment entries.
+
+        :return: lines of the entries of the audit that the client did
+            not correct
+        :rtype: recordset of ``client_adjustment_entry.detail``
+        """
+        self.ensure_one()
+        return self.env["client_adjustment_entry.detail"].search(
+            [
+                ("entry_id.general_audit_id", "=", self.general_audit_id.id),
+                ("entry_id.state", "=", "done"),
+                ("entry_id.corrected", "=", False),
+            ]
+        )
+
     def _get_uncorrected_per_group(self):
         """Sum uncorrected done adjustment lines per account group.
 
@@ -377,13 +399,7 @@ class GeneralAuditWsC3b9e71(models.Model):
         """
         self.ensure_one()
         result = {}
-        lines = self.env["client_adjustment_entry.detail"].search(
-            [
-                ("entry_id.general_audit_id", "=", self.general_audit_id.id),
-                ("entry_id.state", "=", "done"),
-                ("entry_id.corrected", "=", False),
-            ]
-        )
+        lines = self._get_uncorrected_lines()
         for line in lines:
             group = line.account_id.type_id.group_id
             if group.normal_balance == "dr":

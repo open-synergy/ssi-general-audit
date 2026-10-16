@@ -42,9 +42,9 @@
   the **Balance After Misstatement**, and its percentage of the balance and of
   Performance Materiality.
 - **Analysis - Aggregate** is recomputed: the net uncorrected misstatement on profit or
-  loss, the **Net Impact After Tax** using the entered tax rate, and the gross
-  uncorrected misstatement on the statement of financial position, each with its
-  percentage of Performance Materiality.
+  loss, the **Net Impact After Tax** using the entered tax rate, and the total of one
+  side (debit or credit) of the uncorrected Adjusting Journal Entries for the statement
+  of financial position, each with its percentage of Performance Materiality.
 - The **Links** tab lists the Done, uncorrected Adjusting Journal Entries of the audit.
   It updates by itself; only the **Account Groups** table needs **Reload Groups** after
   an entry changes.

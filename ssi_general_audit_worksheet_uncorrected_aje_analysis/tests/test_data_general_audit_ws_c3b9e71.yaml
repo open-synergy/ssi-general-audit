@@ -610,10 +610,10 @@ scenarios:
             expected: 1.12
           aggregate_fp_misstatement:
             type: "value"
-            expected: 70.0
+            expected: 130.0
           aggregate_fp_pct_of_pm:
             type: "value"
-            expected: 1.4
+            expected: 2.6
 
       - step: "Raise the tax rate"
         action: "write"
@@ -667,6 +667,111 @@ scenarios:
         expect_error:
           type: "ValidationError"
           message_contains: "already has an individual analysis line"
+
+      - step: "Create uncorrected reclassification entry inside one group"
+        action: "create"
+        model: "client_adjustment_entry"
+        save_as: "entry_u3"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          adjustment_type: "propose"
+          corrected: false
+
+      - step: "Create debit line of the reclassification entry"
+        action: "create"
+        model: "client_adjustment_entry.detail"
+        save_as: "line_u3_1"
+        as_user: "base.user_admin"
+        values:
+          entry_id: "REC: entry_u3.id"
+          account_id: "REC: account_as.id"
+          name: "reclassification debit"
+          debit: 20.0
+          credit: 0.0
+
+      - step: "Create credit line of the reclassification entry"
+        action: "create"
+        model: "client_adjustment_entry.detail"
+        save_as: "line_u3_2"
+        as_user: "base.user_admin"
+        values:
+          entry_id: "REC: entry_u3.id"
+          account_id: "REC: account_as.id"
+          name: "reclassification credit"
+          debit: 0.0
+          credit: 20.0
+
+      - step: "Mark the reclassification entry as done"
+        action: "write"
+        target: "entry_u3"
+        as_user: "base.user_admin"
+        values:
+          state: "done"
+
+      - step: "Create uncorrected entry that touches profit and loss only"
+        action: "create"
+        model: "client_adjustment_entry"
+        save_as: "entry_u4"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          adjustment_type: "propose"
+          corrected: false
+
+      - step: "Create expense debit line of the profit and loss only entry"
+        action: "create"
+        model: "client_adjustment_entry.detail"
+        save_as: "line_u4_1"
+        as_user: "base.user_admin"
+        values:
+          entry_id: "REC: entry_u4.id"
+          account_id: "REC: account_ex.id"
+          name: "profit and loss only debit"
+          debit: 10.0
+          credit: 0.0
+
+      - step: "Create revenue credit line of the profit and loss only entry"
+        action: "create"
+        model: "client_adjustment_entry.detail"
+        save_as: "line_u4_2"
+        as_user: "base.user_admin"
+        values:
+          entry_id: "REC: entry_u4.id"
+          account_id: "REC: account_rv.id"
+          name: "profit and loss only credit"
+          debit: 0.0
+          credit: 10.0
+
+      - step: "Mark the profit and loss only entry as done"
+        action: "write"
+        target: "entry_u4"
+        as_user: "base.user_admin"
+        values:
+          state: "done"
+
+      - step: "Reload the account groups"
+        action: "call"
+        target: "worksheet"
+        method: "action_reload_group"
+        as_user: "base.user_admin"
+
+      - step: "Assert one side of every uncorrected entry is counted, netting nothing"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          aggregate_fp_misstatement:
+            type: "value"
+            expected: 160.0
+          aggregate_fp_pct_of_pm:
+            type: "value"
+            expected: 3.2
+          aggregate_pl_misstatement:
+            type: "value"
+            expected: 70.0
+          aggregate_pl_net_after_tax:
+            type: "value"
+            expected: 35.0
 
       - step: "Set the Final Performance Materiality percentage to zero"
         action: "write"
