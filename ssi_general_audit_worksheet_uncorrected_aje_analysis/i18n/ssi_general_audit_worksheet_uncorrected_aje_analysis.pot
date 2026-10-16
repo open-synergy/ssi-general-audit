@@ -19,6 +19,11 @@ msgid "# Document"
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_uncorrected_aje_analysis
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_uncorrected_aje_analysis.field_general_audit_ws_c3b9e71__final_materiality_id
+msgid "# Final Materiality"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_uncorrected_aje_analysis
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_uncorrected_aje_analysis.field_general_audit_ws_c3b9e71__general_audit_id
 msgid "# General Audit"
 msgstr ""
@@ -26,17 +31,30 @@ msgstr ""
 #. module: ssi_general_audit_worksheet_uncorrected_aje_analysis
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_uncorrected_aje_analysis.field_general_audit_ws_c3b9e71__worksheet_id
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_uncorrected_aje_analysis.field_general_audit_ws_c3b9e71_group_line__worksheet_id
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_uncorrected_aje_analysis.field_general_audit_ws_c3b9e71_individual_line__worksheet_id
 msgid "# Worksheet"
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_uncorrected_aje_analysis
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_uncorrected_aje_analysis.field_general_audit_ws_c3b9e71_group_line__pct_of_balance
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_uncorrected_aje_analysis.field_general_audit_ws_c3b9e71_individual_line__pct_of_balance
 msgid "% of Group Balance"
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_uncorrected_aje_analysis
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_uncorrected_aje_analysis.field_general_audit_ws_c3b9e71_group_line__pct_of_pm
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_uncorrected_aje_analysis.field_general_audit_ws_c3b9e71_individual_line__pct_of_pm
 msgid "% of Performance Materiality"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_uncorrected_aje_analysis
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_uncorrected_aje_analysis.field_general_audit_ws_c3b9e71__aggregate_fp_pct_of_pm
+msgid "% of Performance Materiality (Financial Position)"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_uncorrected_aje_analysis
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_uncorrected_aje_analysis.field_general_audit_ws_c3b9e71__aggregate_pl_pct_of_pm
+msgid "% of Performance Materiality (Profit or Loss)"
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_uncorrected_aje_analysis
@@ -46,6 +64,7 @@ msgstr ""
 
 #. module: ssi_general_audit_worksheet_uncorrected_aje_analysis
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_uncorrected_aje_analysis.field_general_audit_ws_c3b9e71_group_line__group_id
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_uncorrected_aje_analysis.field_general_audit_ws_c3b9e71_individual_line__group_id
 msgid "Account Group"
 msgstr ""
 
@@ -62,6 +81,20 @@ msgstr ""
 #. module: ssi_general_audit_worksheet_uncorrected_aje_analysis
 #: model:ir.model.fields,help:ssi_general_audit_worksheet_uncorrected_aje_analysis.field_general_audit_ws_c3b9e71_group_line__group_id
 msgid "Account group analysed by this line."
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_uncorrected_aje_analysis
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_uncorrected_aje_analysis.field_general_audit_ws_c3b9e71_individual_line__group_id
+msgid ""
+"Account group analysed by this line. Only groups with uncorrected "
+"misstatements are offered."
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_uncorrected_aje_analysis
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_uncorrected_aje_analysis.field_general_audit_ws_c3b9e71__uncorrected_group_ids
+msgid ""
+"Account groups whose uncorrected misstatement is not zero. Only these groups"
+" can be analysed individually."
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_uncorrected_aje_analysis
@@ -125,11 +158,6 @@ msgid "Activity Type Icon"
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_uncorrected_aje_analysis
-#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_uncorrected_aje_analysis.field_general_audit_ws_c3b9e71__post_tax_impact
-msgid "After-Tax Impact on Profit"
-msgstr ""
-
-#. module: ssi_general_audit_worksheet_uncorrected_aje_analysis
 #: model:res.groups,name:ssi_general_audit_worksheet_uncorrected_aje_analysis.general_audit_ws_c3b9e71_all_group
 msgid "All"
 msgstr ""
@@ -147,6 +175,26 @@ msgstr ""
 #. module: ssi_general_audit_worksheet_uncorrected_aje_analysis
 #: model_terms:ir.ui.view,arch_db:ssi_general_audit_worksheet_uncorrected_aje_analysis.general_audit_ws_c3b9e71_view_form
 msgid "Analysis"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_uncorrected_aje_analysis
+#: model_terms:ir.ui.view,arch_db:ssi_general_audit_worksheet_uncorrected_aje_analysis.general_audit_ws_c3b9e71_view_form
+msgid "Analysis - Aggregate"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_uncorrected_aje_analysis
+#: model_terms:ir.ui.view,arch_db:ssi_general_audit_worksheet_uncorrected_aje_analysis.general_audit_ws_c3b9e71_view_form
+msgid "Analysis - Individual"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_uncorrected_aje_analysis
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_uncorrected_aje_analysis.field_general_audit_ws_c3b9e71__aggregate_qual_other
+msgid "Any other qualitative factor of the aggregate analysis."
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_uncorrected_aje_analysis
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_uncorrected_aje_analysis.field_general_audit_ws_c3b9e71_individual_line__qualitative_other
+msgid "Any other qualitative factor to consider."
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_uncorrected_aje_analysis
@@ -203,8 +251,20 @@ msgid "Audited Balance"
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_uncorrected_aje_analysis
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_uncorrected_aje_analysis.field_general_audit_ws_c3b9e71_group_line__balance_after_misstatement
+msgid ""
+"Audited balance plus the uncorrected misstatement: the balance the group "
+"should have shown."
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_uncorrected_aje_analysis
 #: model:ir.model.fields,help:ssi_general_audit_worksheet_uncorrected_aje_analysis.field_general_audit_ws_c3b9e71__partner_id
 msgid "Audited client company."
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_uncorrected_aje_analysis
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_uncorrected_aje_analysis.field_general_audit_ws_c3b9e71_group_line__balance_after_misstatement
+msgid "Balance After Misstatement"
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_uncorrected_aje_analysis
@@ -266,6 +326,18 @@ msgid ""
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_uncorrected_aje_analysis
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_uncorrected_aje_analysis.field_general_audit_ws_c3b9e71__clearly_trivial
+msgid "Clearly Trivial"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_uncorrected_aje_analysis
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_uncorrected_aje_analysis.field_general_audit_ws_c3b9e71__clearly_trivial
+msgid ""
+"Clearly Trivial threshold of the Final Materiality worksheet. Zero when the "
+"audit has no such worksheet."
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_uncorrected_aje_analysis
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_uncorrected_aje_analysis.field_general_audit_ws_c3b9e71__company_id
 #: model:res.groups,name:ssi_general_audit_worksheet_uncorrected_aje_analysis.general_audit_ws_c3b9e71_company_group
 msgid "Company"
@@ -292,12 +364,20 @@ msgstr ""
 
 #. module: ssi_general_audit_worksheet_uncorrected_aje_analysis
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_uncorrected_aje_analysis.field_general_audit_ws_c3b9e71__conclusion_id
+#: model_terms:ir.ui.view,arch_db:ssi_general_audit_worksheet_uncorrected_aje_analysis.general_audit_ws_c3b9e71_view_form
 msgid "Conclusion"
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_uncorrected_aje_analysis
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_uncorrected_aje_analysis.field_general_audit_ws_c3b9e71__conclusion
 msgid "Conclusion Additional Explanation"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_uncorrected_aje_analysis
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_uncorrected_aje_analysis.field_general_audit_ws_c3b9e71__audit_opinion_impact
+msgid ""
+"Conclusion of the auditor on the effect of the uncorrected misstatements on "
+"the audit opinion."
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_uncorrected_aje_analysis
@@ -314,25 +394,39 @@ msgid ""
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_uncorrected_aje_analysis
+#: code:addons/ssi_general_audit_worksheet_uncorrected_aje_analysis/models/c3b9e71/general_audit_ws_c3b9e71_individual_line.py:0
+#, python-format
+msgid ""
+"Context: Save individual analysis line\n"
+"Database ID: %s\n"
+"Problem: Account group '%s' already has an individual analysis line in this worksheet\n"
+"Solution: Edit the existing line instead of adding another one"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_uncorrected_aje_analysis
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_uncorrected_aje_analysis.field_general_audit_ws_c3b9e71__create_uid
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_uncorrected_aje_analysis.field_general_audit_ws_c3b9e71_group_line__create_uid
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_uncorrected_aje_analysis.field_general_audit_ws_c3b9e71_individual_line__create_uid
 msgid "Created by"
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_uncorrected_aje_analysis
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_uncorrected_aje_analysis.field_general_audit_ws_c3b9e71__create_date
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_uncorrected_aje_analysis.field_general_audit_ws_c3b9e71_group_line__create_date
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_uncorrected_aje_analysis.field_general_audit_ws_c3b9e71_individual_line__create_date
 msgid "Created on"
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_uncorrected_aje_analysis
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_uncorrected_aje_analysis.field_general_audit_ws_c3b9e71__currency_id
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_uncorrected_aje_analysis.field_general_audit_ws_c3b9e71_group_line__currency_id
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_uncorrected_aje_analysis.field_general_audit_ws_c3b9e71_individual_line__currency_id
 msgid "Currency"
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_uncorrected_aje_analysis
 #: model:ir.model.fields,help:ssi_general_audit_worksheet_uncorrected_aje_analysis.field_general_audit_ws_c3b9e71_group_line__currency_id
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_uncorrected_aje_analysis.field_general_audit_ws_c3b9e71_individual_line__currency_id
 msgid "Currency of the amounts, inherited from the worksheet."
 msgstr ""
 
@@ -354,11 +448,13 @@ msgstr ""
 #. module: ssi_general_audit_worksheet_uncorrected_aje_analysis
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_uncorrected_aje_analysis.field_general_audit_ws_c3b9e71__display_name
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_uncorrected_aje_analysis.field_general_audit_ws_c3b9e71_group_line__display_name
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_uncorrected_aje_analysis.field_general_audit_ws_c3b9e71_individual_line__display_name
 msgid "Display Name"
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_uncorrected_aje_analysis
 #: model:ir.model.fields,help:ssi_general_audit_worksheet_uncorrected_aje_analysis.field_general_audit_ws_c3b9e71_group_line__sequence
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_uncorrected_aje_analysis.field_general_audit_ws_c3b9e71_individual_line__sequence
 msgid "Display order inherited from the account group."
 msgstr ""
 
@@ -375,13 +471,6 @@ msgid ""
 "Done policy\n"
 "\n"
 "* If active user can see and execute 'Done' button"
-msgstr ""
-
-#. module: ssi_general_audit_worksheet_uncorrected_aje_analysis
-#: model:ir.model.fields,help:ssi_general_audit_worksheet_uncorrected_aje_analysis.field_general_audit_ws_c3b9e71__pre_tax_impact
-msgid ""
-"Effect of the uncorrected misstatements on profit before tax: credit-normal "
-"profit and loss groups add, debit-normal ones subtract."
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_uncorrected_aje_analysis
@@ -410,6 +499,16 @@ msgid "End date of the previous period."
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_uncorrected_aje_analysis
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_uncorrected_aje_analysis.field_general_audit_ws_c3b9e71_individual_line__follow_up
+msgid "Follow-up"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_uncorrected_aje_analysis
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_uncorrected_aje_analysis.field_general_audit_ws_c3b9e71_individual_line__follow_up
+msgid "Follow-up the auditor plans for this group."
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_uncorrected_aje_analysis
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_uncorrected_aje_analysis.field_general_audit_ws_c3b9e71__message_follower_ids
 msgid "Followers"
 msgstr ""
@@ -435,8 +534,30 @@ msgid "General Audit to which this worksheet belongs."
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_uncorrected_aje_analysis
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_uncorrected_aje_analysis.field_general_audit_ws_c3b9e71__aggregate_fp_misstatement
+msgid ""
+"Gross total of the uncorrected adjustment entries: total debit plus total "
+"credit of their lines, divided by two. A balanced entry has equal debit and "
+"credit, so this is the total of one side; netting both sides would give "
+"zero."
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_uncorrected_aje_analysis
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_uncorrected_aje_analysis.field_general_audit_ws_c3b9e71__aggregate_fp_pct_of_pm
+msgid ""
+"Gross uncorrected misstatement of the financial position divided by "
+"Performance Materiality. Zero when Performance Materiality is zero."
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_uncorrected_aje_analysis
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_uncorrected_aje_analysis.field_general_audit_ws_c3b9e71__uncorrected_group_ids
+msgid "Groups With Uncorrected Misstatement"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_uncorrected_aje_analysis
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_uncorrected_aje_analysis.field_general_audit_ws_c3b9e71__id
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_uncorrected_aje_analysis.field_general_audit_ws_c3b9e71_group_line__id
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_uncorrected_aje_analysis.field_general_audit_ws_c3b9e71_individual_line__id
 msgid "ID"
 msgstr ""
 
@@ -462,10 +583,45 @@ msgid "If checked, some messages have a delivery error."
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_uncorrected_aje_analysis
+#: model:ir.model.fields.selection,name:ssi_general_audit_worksheet_uncorrected_aje_analysis.selection__general_audit_ws_c3b9e71__audit_opinion_impact__immaterial
+msgid "Immaterial misstatement"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_uncorrected_aje_analysis
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_uncorrected_aje_analysis.field_general_audit_ws_c3b9e71__aggregate_qual_profit_loss
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_uncorrected_aje_analysis.field_general_audit_ws_c3b9e71_individual_line__qualitative_profit_loss
+#: model_terms:ir.ui.view,arch_db:ssi_general_audit_worksheet_uncorrected_aje_analysis.general_audit_ws_c3b9e71_view_form
+msgid "Impact on Profit or Loss"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_uncorrected_aje_analysis
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_uncorrected_aje_analysis.field_general_audit_ws_c3b9e71__aggregate_qual_users
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_uncorrected_aje_analysis.field_general_audit_ws_c3b9e71_individual_line__qualitative_users
+msgid "Impact on Users of Financial Statements"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_uncorrected_aje_analysis
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_uncorrected_aje_analysis.field_general_audit_ws_c3b9e71__audit_opinion_impact
+msgid "Impact on the Audit Opinion"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_uncorrected_aje_analysis
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_uncorrected_aje_analysis.field_general_audit_ws_c3b9e71__aggregate_qual_financial_position
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_uncorrected_aje_analysis.field_general_audit_ws_c3b9e71_individual_line__qualitative_financial_position
+#: model_terms:ir.ui.view,arch_db:ssi_general_audit_worksheet_uncorrected_aje_analysis.general_audit_ws_c3b9e71_view_form
+msgid "Impact on the Statement of Financial Position"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_uncorrected_aje_analysis
 #: model:ir.model.fields,help:ssi_general_audit_worksheet_uncorrected_aje_analysis.field_general_audit_ws_c3b9e71__tax_rate
 msgid ""
 "Income tax rate in percent, entered by the auditor. Used to compute the "
-"after-tax effect of the uncorrected misstatements."
+"after-tax effect of the uncorrected misstatements in the aggregate analysis."
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_uncorrected_aje_analysis
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_uncorrected_aje_analysis.field_general_audit_ws_c3b9e71__individual_line_ids
+msgid "Individual Analysis"
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_uncorrected_aje_analysis
@@ -486,19 +642,29 @@ msgstr ""
 #. module: ssi_general_audit_worksheet_uncorrected_aje_analysis
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_uncorrected_aje_analysis.field_general_audit_ws_c3b9e71____last_update
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_uncorrected_aje_analysis.field_general_audit_ws_c3b9e71_group_line____last_update
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_uncorrected_aje_analysis.field_general_audit_ws_c3b9e71_individual_line____last_update
 msgid "Last Modified on"
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_uncorrected_aje_analysis
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_uncorrected_aje_analysis.field_general_audit_ws_c3b9e71__write_uid
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_uncorrected_aje_analysis.field_general_audit_ws_c3b9e71_group_line__write_uid
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_uncorrected_aje_analysis.field_general_audit_ws_c3b9e71_individual_line__write_uid
 msgid "Last Updated by"
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_uncorrected_aje_analysis
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_uncorrected_aje_analysis.field_general_audit_ws_c3b9e71__write_date
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_uncorrected_aje_analysis.field_general_audit_ws_c3b9e71_group_line__write_date
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_uncorrected_aje_analysis.field_general_audit_ws_c3b9e71_individual_line__write_date
 msgid "Last Updated on"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_uncorrected_aje_analysis
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_uncorrected_aje_analysis.field_general_audit_ws_c3b9e71__final_materiality_id
+msgid ""
+"Latest non-cancelled Final Materiality worksheet of this audit. Empty when "
+"the audit has no such worksheet."
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_uncorrected_aje_analysis
@@ -520,20 +686,13 @@ msgid ""
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_uncorrected_aje_analysis
-#: model:ir.model.fields.selection,name:ssi_general_audit_worksheet_uncorrected_aje_analysis.selection__general_audit_ws_c3b9e71__materiality_conclusion__material
-msgid "Material"
+#: model:ir.model.fields.selection,name:ssi_general_audit_worksheet_uncorrected_aje_analysis.selection__general_audit_ws_c3b9e71__audit_opinion_impact__material_pervasive
+msgid "Material and pervasive misstatement"
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_uncorrected_aje_analysis
-#: model:ir.model.fields,help:ssi_general_audit_worksheet_uncorrected_aje_analysis.field_general_audit_ws_c3b9e71__materiality_conclusion
-msgid ""
-"Material when the absolute after-tax impact is greater than Performance "
-"Materiality."
-msgstr ""
-
-#. module: ssi_general_audit_worksheet_uncorrected_aje_analysis
-#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_uncorrected_aje_analysis.field_general_audit_ws_c3b9e71__materiality_conclusion
-msgid "Materiality Conclusion"
+#: model:ir.model.fields.selection,name:ssi_general_audit_worksheet_uncorrected_aje_analysis.selection__general_audit_ws_c3b9e71__audit_opinion_impact__material_not_pervasive
+msgid "Material misstatement, but not pervasive"
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_uncorrected_aje_analysis
@@ -562,10 +721,30 @@ msgid "Need Validation"
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_uncorrected_aje_analysis
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_uncorrected_aje_analysis.field_general_audit_ws_c3b9e71__aggregate_pl_net_after_tax
+msgid "Net Impact After Tax"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_uncorrected_aje_analysis
 #: model:ir.model.fields,help:ssi_general_audit_worksheet_uncorrected_aje_analysis.field_general_audit_ws_c3b9e71_group_line__uncorrected_amount
 msgid ""
 "Net amount of the uncorrected adjustment entries posted to this group, in "
 "the direction of its normal balance."
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_uncorrected_aje_analysis
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_uncorrected_aje_analysis.field_general_audit_ws_c3b9e71__aggregate_pl_misstatement
+msgid ""
+"Net effect of the uncorrected misstatements on profit or loss (revenue less "
+"expense): credit-normal profit and loss groups add, debit-normal ones "
+"subtract."
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_uncorrected_aje_analysis
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_uncorrected_aje_analysis.field_general_audit_ws_c3b9e71__aggregate_pl_pct_of_pm
+msgid ""
+"Net impact after tax divided by Performance Materiality. Zero when "
+"Performance Materiality is zero."
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_uncorrected_aje_analysis
@@ -586,11 +765,6 @@ msgstr ""
 #. module: ssi_general_audit_worksheet_uncorrected_aje_analysis
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_uncorrected_aje_analysis.field_general_audit_ws_c3b9e71__next_approval_ids
 msgid "Next Approvals"
-msgstr ""
-
-#. module: ssi_general_audit_worksheet_uncorrected_aje_analysis
-#: model:ir.model.fields.selection,name:ssi_general_audit_worksheet_uncorrected_aje_analysis.selection__general_audit_ws_c3b9e71__materiality_conclusion__not_material
-msgid "Not Material"
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_uncorrected_aje_analysis
@@ -640,6 +814,24 @@ msgid "Operating Unit"
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_uncorrected_aje_analysis
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_uncorrected_aje_analysis.field_general_audit_ws_c3b9e71__aggregate_qual_other
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_uncorrected_aje_analysis.field_general_audit_ws_c3b9e71_individual_line__qualitative_other
+msgid "Other Qualitative Factor"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_uncorrected_aje_analysis
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_uncorrected_aje_analysis.field_general_audit_ws_c3b9e71__overall_materiality
+msgid "Overall Materiality"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_uncorrected_aje_analysis
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_uncorrected_aje_analysis.field_general_audit_ws_c3b9e71__overall_materiality
+msgid ""
+"Overall Materiality of the Final Materiality worksheet. Zero when the audit "
+"has no such worksheet."
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_uncorrected_aje_analysis
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_uncorrected_aje_analysis.field_general_audit_ws_c3b9e71__parent_type_id
 msgid "Parent Type"
 msgstr ""
@@ -662,8 +854,8 @@ msgstr ""
 #. module: ssi_general_audit_worksheet_uncorrected_aje_analysis
 #: model:ir.model.fields,help:ssi_general_audit_worksheet_uncorrected_aje_analysis.field_general_audit_ws_c3b9e71__performance_materiality
 msgid ""
-"Performance Materiality of the Specific Materiality worksheet of this audit."
-" Zero when the audit has no such worksheet."
+"Performance Materiality of the Final Materiality worksheet. Zero when the "
+"audit has no such worksheet."
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_uncorrected_aje_analysis
@@ -672,13 +864,13 @@ msgid "Policy Template"
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_uncorrected_aje_analysis
-#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_uncorrected_aje_analysis.field_general_audit_ws_c3b9e71__pre_tax_impact
-msgid "Pre-Tax Impact on Profit"
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_uncorrected_aje_analysis.field_general_audit_ws_c3b9e71_individual_line__preliminary_conclusion
+msgid "Preliminary Conclusion"
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_uncorrected_aje_analysis
-#: model:ir.model.fields,help:ssi_general_audit_worksheet_uncorrected_aje_analysis.field_general_audit_ws_c3b9e71__post_tax_impact
-msgid "Pre-tax impact multiplied by one minus the tax rate."
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_uncorrected_aje_analysis.field_general_audit_ws_c3b9e71_individual_line__preliminary_conclusion
+msgid "Preliminary conclusion of the auditor for this group."
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_uncorrected_aje_analysis
@@ -699,6 +891,65 @@ msgstr ""
 #. module: ssi_general_audit_worksheet_uncorrected_aje_analysis
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_uncorrected_aje_analysis.field_general_audit_ws_c3b9e71__previous_date_start
 msgid "Previous Start Date"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_uncorrected_aje_analysis
+#: model_terms:ir.ui.view,arch_db:ssi_general_audit_worksheet_uncorrected_aje_analysis.general_audit_ws_c3b9e71_view_form
+msgid "Qualitative Factor"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_uncorrected_aje_analysis
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_uncorrected_aje_analysis.field_general_audit_ws_c3b9e71__aggregate_qual_profit_loss
+msgid "Qualitative assessment of the aggregate effect on profit or loss."
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_uncorrected_aje_analysis
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_uncorrected_aje_analysis.field_general_audit_ws_c3b9e71__aggregate_qual_financial_position
+msgid ""
+"Qualitative assessment of the aggregate effect on the statement of financial"
+" position."
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_uncorrected_aje_analysis
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_uncorrected_aje_analysis.field_general_audit_ws_c3b9e71__aggregate_qual_users
+msgid ""
+"Qualitative assessment of the aggregate effect on the users of the financial"
+" statements."
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_uncorrected_aje_analysis
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_uncorrected_aje_analysis.field_general_audit_ws_c3b9e71_individual_line__qualitative_profit_loss
+msgid "Qualitative assessment of the effect on profit or loss."
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_uncorrected_aje_analysis
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_uncorrected_aje_analysis.field_general_audit_ws_c3b9e71_individual_line__qualitative_financial_position
+msgid ""
+"Qualitative assessment of the effect on the statement of financial position."
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_uncorrected_aje_analysis
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_uncorrected_aje_analysis.field_general_audit_ws_c3b9e71_individual_line__qualitative_users
+msgid ""
+"Qualitative assessment of the effect on the users of the financial "
+"statements."
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_uncorrected_aje_analysis
+#: model_terms:ir.ui.view,arch_db:ssi_general_audit_worksheet_uncorrected_aje_analysis.general_audit_ws_c3b9e71_view_form
+msgid "Quantification"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_uncorrected_aje_analysis
+#: model_terms:ir.ui.view,arch_db:ssi_general_audit_worksheet_uncorrected_aje_analysis.general_audit_ws_c3b9e71_view_form
+msgid "Quantitative Factor"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_uncorrected_aje_analysis
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_uncorrected_aje_analysis.field_general_audit_ws_c3b9e71__individual_line_ids
+msgid ""
+"Quantitative and qualitative analysis per account group that has uncorrected"
+" misstatements."
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_uncorrected_aje_analysis
@@ -777,6 +1028,7 @@ msgstr ""
 
 #. module: ssi_general_audit_worksheet_uncorrected_aje_analysis
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_uncorrected_aje_analysis.field_general_audit_ws_c3b9e71_group_line__sequence
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_uncorrected_aje_analysis.field_general_audit_ws_c3b9e71_individual_line__sequence
 msgid "Sequence"
 msgstr ""
 
@@ -887,18 +1139,40 @@ msgid "Uncorrected AJE Analysis (c3b9e71) - Group Line"
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_uncorrected_aje_analysis
+#: model:ir.model,name:ssi_general_audit_worksheet_uncorrected_aje_analysis.model_general_audit_ws_c3b9e71_individual_line
+msgid "Uncorrected AJE Analysis (c3b9e71) - Individual Line"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_uncorrected_aje_analysis
 #: model:ir.model.fields,help:ssi_general_audit_worksheet_uncorrected_aje_analysis.field_general_audit_ws_c3b9e71_group_line__worksheet_id
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_uncorrected_aje_analysis.field_general_audit_ws_c3b9e71_individual_line__worksheet_id
 msgid "Uncorrected AJE Analysis worksheet that owns this line."
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_uncorrected_aje_analysis
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_uncorrected_aje_analysis.field_general_audit_ws_c3b9e71_group_line__uncorrected_amount
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_uncorrected_aje_analysis.field_general_audit_ws_c3b9e71_individual_line__uncorrected_amount
 msgid "Uncorrected Misstatement"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_uncorrected_aje_analysis
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_uncorrected_aje_analysis.field_general_audit_ws_c3b9e71__aggregate_fp_misstatement
+msgid "Uncorrected Misstatement (Financial Position)"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_uncorrected_aje_analysis
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_uncorrected_aje_analysis.field_general_audit_ws_c3b9e71__aggregate_pl_misstatement
+msgid "Uncorrected Misstatement (Profit or Loss)"
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_uncorrected_aje_analysis
 #: model:ir.model.fields,help:ssi_general_audit_worksheet_uncorrected_aje_analysis.field_general_audit_ws_c3b9e71__group_line_ids
 msgid "Uncorrected misstatement analysis per account group."
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_uncorrected_aje_analysis
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_uncorrected_aje_analysis.field_general_audit_ws_c3b9e71_individual_line__pct_of_pm
+msgid "Uncorrected misstatement divided by Performance Materiality."
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_uncorrected_aje_analysis
@@ -909,10 +1183,29 @@ msgid ""
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_uncorrected_aje_analysis
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_uncorrected_aje_analysis.field_general_audit_ws_c3b9e71_individual_line__pct_of_balance
+msgid "Uncorrected misstatement divided by the audited balance of the group."
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_uncorrected_aje_analysis
 #: model:ir.model.fields,help:ssi_general_audit_worksheet_uncorrected_aje_analysis.field_general_audit_ws_c3b9e71_group_line__pct_of_balance
 msgid ""
 "Uncorrected misstatement divided by the audited balance. Zero when the "
 "balance is zero."
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_uncorrected_aje_analysis
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_uncorrected_aje_analysis.field_general_audit_ws_c3b9e71_individual_line__uncorrected_amount
+msgid ""
+"Uncorrected misstatement of the account group, read from the group lines of "
+"the worksheet."
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_uncorrected_aje_analysis
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_uncorrected_aje_analysis.field_general_audit_ws_c3b9e71__aggregate_pl_net_after_tax
+msgid ""
+"Uncorrected misstatement on profit or loss multiplied by one minus the tax "
+"rate."
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_uncorrected_aje_analysis
