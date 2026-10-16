@@ -25,9 +25,10 @@
 4. Click **Populate**. This creates one row per active checklist item, ordered by
    category and then by item. Rows that already exist are kept as they are, and rows
    whose item is no longer in the master data are removed.
-5. Click a row to open it, then choose the **Option** (Yes or No) for that item.
-6. Click **Save & Close** to return to the table. Repeat steps 5 and 6 for each item.
-7. Click **Save**.
+5. Click **Edit** to make the worksheet editable.
+6. Click a row to open it, then choose the **Option** (Yes or No) for that item.
+7. Click **Save & Close** to return to the table. Repeat steps 6 and 7 for each item.
+8. Click **Save**.
 
 ## Post-Condition
 

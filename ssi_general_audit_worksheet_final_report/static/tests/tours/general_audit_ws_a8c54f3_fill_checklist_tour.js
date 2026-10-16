@@ -98,7 +98,22 @@ odoo.define(
                     },
                 },
 
-                // Flow 5 - Open the row and choose the Option.
+                // Flow 5 - Click Edit. 14.0: an opened existing record is
+                // READONLY, and Populate (type=object) does not make it
+                // editable, so the row dialog would be readonly too.
+                {
+                    content: "Click the Edit button",
+                    trigger: ".o_form_button_edit",
+                },
+                {
+                    content: "Form is now editable",
+                    trigger: ".o_form_view.o_form_editable",
+                    run: function () {
+                        // Assertion only; do not trigger the default click action.
+                    },
+                },
+
+                // Flow 6 - Open the row and choose the Option.
                 {
                     content: "Open the first checklist row",
                     trigger:
@@ -113,11 +128,11 @@ odoo.define(
                 },
                 {
                     content: "Pick Yes from the dropdown",
-                    trigger: ".ui-autocomplete .ui-menu-item a:contains(Yes)",
+                    trigger: ".ui-autocomplete:visible li a:contains(Yes)",
                     in_modal: false,
                 },
 
-                // Flow 6 - Save & Close.
+                // Flow 7 - Save & Close.
                 {
                     content: "Click Save & Close",
                     trigger: ".modal-footer button.btn-primary",
@@ -134,7 +149,7 @@ odoo.define(
                     },
                 },
 
-                // Flow 7 - Save.
+                // Flow 8 - Save.
                 {
                     content: "Click Save",
                     trigger: ".o_form_button_save",
