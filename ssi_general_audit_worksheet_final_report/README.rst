@@ -51,6 +51,7 @@ the Opinion; ISA 706 / SA 706 — Emphasis-of-Matter Paragraphs
 Work Instruction
 ================
 
+* `Fill Review Checklist <docs/general_audit_ws_a8c54f3/index.html>`_
 * `Fill Final Audit Opinion <docs/general_audit_ws_b66777d/index.html>`_
 
 Installation

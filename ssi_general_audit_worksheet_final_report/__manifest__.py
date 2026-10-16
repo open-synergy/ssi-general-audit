@@ -42,6 +42,8 @@
         "data/master/general_audit_worksheet_conclusion.xml",
         "data/master/general_audit_ws_f3ed115_category.xml",
         "data/master/general_audit_ws_f3ed115_item.xml",
+        "data/master/general_audit_ws_a8c54f3_category.xml",
+        "data/master/general_audit_ws_a8c54f3_item.xml",
         # a8c54f3
         "security/res_group/general_audit_ws_a8c54f3.xml",
         "security/ir_rule/general_audit_ws_a8c54f3.xml",
@@ -71,6 +73,9 @@
         "views/general_audit_ws_f3ed115_views.xml",
         "views/general_audit_ws_f3ed115_category_views.xml",
         "views/general_audit_ws_f3ed115_item_views.xml",
+        # a8c54f3 checklist configuration (parent menu from f3ed115 views)
+        "views/general_audit_ws_a8c54f3_category_views.xml",
+        "views/general_audit_ws_a8c54f3_item_views.xml",
         "security/ir.model.access.csv",
         "views/assets.xml",
     ],

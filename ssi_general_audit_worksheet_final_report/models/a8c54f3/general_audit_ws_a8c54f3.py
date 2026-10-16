@@ -37,6 +37,9 @@ class GeneralAuditWSa8c54f3(models.Model):
     the linked worksheet. ``action_reload_links`` recomputes all 48 on
     demand.
 
+    A **Checklist** tab holds the Final Audit Memorandum review checklist,
+    populated from the ``general_audit_ws_a8c54f3.item`` master data.
+
     **ISA / SA references:** ISA 220 / SA 220 — Quality Control for an
     Audit of Financial Statements; ISA 700 / SA 700 — Forming an Opinion
     and Reporting on Financial Statements
@@ -46,8 +49,18 @@ class GeneralAuditWSa8c54f3(models.Model):
     _description = "Audit Final Memorandum (a8c54f3)"
     _inherit = [
         "general_audit_worksheet_mixin",
+        "mixin.checklist",
     ]
     _type_xml_id = "ssi_general_audit_worksheet_final_report." "worksheet_type_a8c54f3"
+    _checklist_model_name = "general_audit_ws_a8c54f3.checklist"
+    _item_model_name = "general_audit_ws_a8c54f3.item"
+    _checklist_create_page = False
+
+    checklist_ids = fields.One2many(
+        string="Checklist",
+        comodel_name="general_audit_ws_a8c54f3.checklist",
+        help="All checklist line records associated with this worksheet.",
+    )
 
     proposed_audit_opinion_id = fields.Many2one(
         string="Proposed Audit Opinion",
