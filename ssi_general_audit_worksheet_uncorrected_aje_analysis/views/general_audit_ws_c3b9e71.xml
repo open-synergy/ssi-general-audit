@@ -30,10 +30,9 @@
                 <xpath expr="//field[@name='general_audit_id']" position="after">
                     <field name="currency_id" invisible="1" />
                     <field name="performance_materiality" />
-                    <field name="post_tax_impact" />
-                    <field name="materiality_conclusion" />
+                    <field name="aggregate_pl_net_after_tax" />
+                    <field name="audit_opinion_impact" />
                 </xpath>
-
             </data>
         </field>
     </record>
@@ -51,10 +50,12 @@
                 <xpath expr="//group[@name='header_center']" position="inside">
                 </xpath>
                 <xpath expr="//page[1]" position="before">
-                    <page name="analysis" string="Analysis">
-                        <group name="analysis_1" colspan="4" col="2">
+                    <page name="quantification" string="Quantification">
+                        <group name="quantification_1" colspan="4" col="2">
+                            <field name="final_materiality_id" />
+                            <field name="overall_materiality" />
                             <field name="performance_materiality" />
-                            <field name="tax_rate" />
+                            <field name="clearly_trivial" />
                         </group>
                         <button
                             name="action_reload_group"
@@ -70,6 +71,7 @@
                                 <field name="group_id" />
                                 <field name="balance" />
                                 <field name="uncorrected_amount" />
+                                <field name="balance_after_misstatement" />
                                 <field name="pct_of_balance" widget="percentage" />
                                 <field name="pct_of_pm" widget="percentage" />
                             </tree>
@@ -79,15 +81,101 @@
                                     <field name="group_id" />
                                     <field name="balance" />
                                     <field name="uncorrected_amount" />
+                                    <field name="balance_after_misstatement" />
                                     <field name="pct_of_balance" widget="percentage" />
                                     <field name="pct_of_pm" widget="percentage" />
                                 </group>
                             </form>
                         </field>
-                        <group name="analysis_2" colspan="4" col="2">
-                            <field name="pre_tax_impact" />
-                            <field name="post_tax_impact" />
-                            <field name="materiality_conclusion" />
+                    </page>
+                    <page name="analysis" string="Analysis">
+                        <field name="uncorrected_group_ids" invisible="1" />
+                        <group
+                            name="analysis_individual"
+                            string="Analysis - Individual"
+                        >
+                            <field name="individual_line_ids" nolabel="1" colspan="2">
+                                <tree>
+                                    <field name="currency_id" invisible="1" />
+                                    <field
+                                        name="group_id"
+                                        domain="[('id', 'in', parent.uncorrected_group_ids)]"
+                                        options="{'no_create': True}"
+                                    />
+                                    <field name="uncorrected_amount" />
+                                    <field name="pct_of_balance" widget="percentage" />
+                                    <field name="pct_of_pm" widget="percentage" />
+                                    <field name="preliminary_conclusion" />
+                                </tree>
+                                <form>
+                                    <group
+                                        name="quantitative"
+                                        string="Quantitative Factor"
+                                    >
+                                        <field name="currency_id" invisible="1" />
+                                        <field
+                                            name="group_id"
+                                            domain="[('id', 'in', parent.uncorrected_group_ids)]"
+                                            options="{'no_create': True}"
+                                        />
+                                        <field name="uncorrected_amount" />
+                                        <field
+                                            name="pct_of_balance"
+                                            widget="percentage"
+                                        />
+                                        <field name="pct_of_pm" widget="percentage" />
+                                    </group>
+                                    <group
+                                        name="qualitative"
+                                        string="Qualitative Factor"
+                                    >
+                                        <field name="qualitative_profit_loss" />
+                                        <field name="qualitative_financial_position" />
+                                        <field name="qualitative_users" />
+                                        <field name="qualitative_other" />
+                                    </group>
+                                    <group name="conclusion" string="Conclusion">
+                                        <field name="preliminary_conclusion" />
+                                        <field name="follow_up" />
+                                    </group>
+                                </form>
+                            </field>
+                        </group>
+                        <group name="analysis_aggregate" string="Analysis - Aggregate">
+                            <group
+                                name="aggregate_pl"
+                                string="Impact on Profit or Loss"
+                            >
+                                <field name="aggregate_pl_misstatement" />
+                                <field name="tax_rate" />
+                                <field name="aggregate_pl_net_after_tax" />
+                                <field
+                                    name="aggregate_pl_pct_of_pm"
+                                    widget="percentage"
+                                />
+                            </group>
+                            <group
+                                name="aggregate_fp"
+                                string="Impact on the Statement of Financial Position"
+                            >
+                                <field name="aggregate_fp_misstatement" />
+                                <field
+                                    name="aggregate_fp_pct_of_pm"
+                                    widget="percentage"
+                                />
+                            </group>
+                            <group
+                                name="aggregate_qualitative"
+                                string="Qualitative Factor"
+                            >
+                                <field name="aggregate_qual_profit_loss" />
+                                <field name="aggregate_qual_financial_position" />
+                                <field name="aggregate_qual_users" />
+                                <field name="aggregate_qual_other" />
+                            </group>
+                            <group name="aggregate_opinion" string="Conclusion">
+                                <field name="audit_opinion_impact" />
+                            </group>
                         </group>
                     </page>
                     <page name="uncorrected_entry" string="Links">
@@ -127,7 +215,7 @@
     <menuitem
         id="general_audit_ws_c3b9e71_menu"
         name="Uncorrected AJE Analysis"
-        parent="ssi_general_audit.menu_rr_result"
+        parent="ssi_general_audit.menu_general_audit_final_materiality"
         action="general_audit_ws_c3b9e71_action"
         sequence="3"
         groups="general_audit_ws_c3b9e71_viewer_group"

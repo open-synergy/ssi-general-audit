@@ -4,7 +4,7 @@
 # pylint: disable=locally-disabled, manifest-required-author
 {
     "name": "General Audit Worksheet - Uncorrected AJE Analysis",
-    "version": "14.0.1.0.0",
+    "version": "14.0.1.1.0",
     "website": "https://simetri-sinergi.id",
     "author": "OpenSynergy Indonesia, PT. Simetri Sinergi Indonesia",
     "license": "AGPL-3",
@@ -12,6 +12,7 @@
     "depends": [
         "ssi_general_audit",
         "ssi_general_audit_worksheet_preliminary_materiality",
+        "ssi_general_audit_worksheet_final_materiality",
     ],
     "data": [
         "security/ir_module_category/general_audit_ws_c3b9e71.xml",
