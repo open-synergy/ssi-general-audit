@@ -442,6 +442,55 @@ scenarios:
         values:
           balance: 0.0
 
+      - step: "Get worksheet type of the Final Materiality"
+        action: "ref"
+        xml_id: "ssi_general_audit_worksheet_final_materiality.worksheet_type_bb33b94"
+        save_as: "ws_type_final"
+
+      - step: "Create computation item of the Final Materiality"
+        action: "create"
+        model: "trial_balance_computation_item"
+        save_as: "comp_item"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Computation Item - Uncorrected AJE Analysis"
+          code: "/"
+
+      - step: "Create general audit computation with audited amount"
+        action: "create"
+        model: "general_audit.computation"
+        save_as: "computation"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          computation_item_id: "REC: comp_item.id"
+          audited_amount: 2000.0
+
+      - step: "Create the Final Materiality worksheet"
+        action: "create"
+        model: "general_audit_ws_bb33b94"
+        save_as: "final_materiality"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_final.id"
+
+      - step: "Open the Final Materiality worksheet"
+        action: "call"
+        target: "final_materiality"
+        method: "action_open"
+        as_user: "base.user_admin"
+
+      - step: "Set the Final Materiality percentages"
+        action: "write"
+        target: "final_materiality"
+        as_user: "base.user_admin"
+        values:
+          computation_item_id: "REC: comp_item.id"
+          overall_materiality_percentage: 5.0
+          performance_materiality_percentage: 50.0
+          tolerable_misstatement_percentage: 50.0
+
       - step: "Create the Uncorrected AJE Analysis worksheet"
         action: "create"
         model: "general_audit_ws_c3b9e71"
@@ -468,13 +517,23 @@ scenarios:
               - "REC: entry_u1"
               - "REC: entry_u2"
 
-      - step: "Assert Performance Materiality comes from Specific Materiality"
+      - step: "Assert the three materiality amounts come from the Final Materiality"
         action: "assert"
         target: "worksheet"
         asserts:
+          final_materiality_id:
+            type: "m2o"
+            check: "equals"
+            expected: "REC: final_materiality"
+          overall_materiality:
+            type: "value"
+            expected: 100.0
           performance_materiality:
             type: "value"
             expected: 50.0
+          clearly_trivial:
+            type: "value"
+            expected: 25.0
 
       - step: "Fetch the asset group line"
         action: "search"
@@ -495,6 +554,9 @@ scenarios:
           uncorrected_amount:
             type: "value"
             expected: 70.0
+          balance_after_misstatement:
+            type: "value"
+            expected: 1070.0
 
       - step: "Fetch the revenue group line"
         action: "search"
@@ -533,19 +595,25 @@ scenarios:
             type: "value"
             expected: 0.0
 
-      - step: "Assert the impact and the conclusion"
+      - step: "Assert the aggregate analysis"
         action: "assert"
         target: "worksheet"
         asserts:
-          pre_tax_impact:
+          aggregate_pl_misstatement:
             type: "value"
             expected: 70.0
-          post_tax_impact:
+          aggregate_pl_net_after_tax:
             type: "value"
             expected: 56.0
-          materiality_conclusion:
+          aggregate_pl_pct_of_pm:
             type: "value"
-            expected: "material"
+            expected: 1.12
+          aggregate_fp_misstatement:
+            type: "value"
+            expected: 70.0
+          aggregate_fp_pct_of_pm:
+            type: "value"
+            expected: 1.4
 
       - step: "Raise the tax rate"
         action: "write"
@@ -554,13 +622,69 @@ scenarios:
         values:
           tax_rate: 50.0
 
-      - step: "Assert the after-tax impact follows the tax rate"
+      - step: "Assert the net impact after tax follows the tax rate"
         action: "assert"
         target: "worksheet"
         asserts:
-          post_tax_impact:
+          aggregate_pl_net_after_tax:
             type: "value"
             expected: 35.0
-          materiality_conclusion:
+          aggregate_pl_pct_of_pm:
             type: "value"
-            expected: "not_material"
+            expected: 0.7
+
+      - step: "Create the individual analysis line of the asset group"
+        action: "create"
+        model: "general_audit_ws_c3b9e71.individual_line"
+        save_as: "individual_as"
+        as_user: "base.user_admin"
+        values:
+          worksheet_id: "REC: worksheet.id"
+          group_id: "REC: group_as.id"
+          preliminary_conclusion: "Not material"
+
+      - step: "Assert the individual line copies the quantitative factors"
+        action: "assert"
+        target: "individual_as"
+        asserts:
+          uncorrected_amount:
+            type: "value"
+            expected: 70.0
+          pct_of_balance:
+            type: "value"
+            expected: 0.07
+          pct_of_pm:
+            type: "value"
+            expected: 1.4
+
+      - step: "A second individual line for the same group must be rejected"
+        action: "create"
+        model: "general_audit_ws_c3b9e71.individual_line"
+        as_user: "base.user_admin"
+        values:
+          worksheet_id: "REC: worksheet.id"
+          group_id: "REC: group_as.id"
+        expect_error:
+          type: "ValidationError"
+          message_contains: "already has an individual analysis line"
+
+      - step: "Set the Final Performance Materiality percentage to zero"
+        action: "write"
+        target: "final_materiality"
+        as_user: "base.user_admin"
+        values:
+          performance_materiality_percentage: 0.0
+
+      - step: "Assert every percentage of Performance Materiality is zero"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          performance_materiality:
+            type: "value"
+            expected: 0.0
+          aggregate_pl_pct_of_pm:
+            type: "value"
+            expected: 0.0
+          aggregate_fp_pct_of_pm:
+            type: "value"
+            expected: 0.0

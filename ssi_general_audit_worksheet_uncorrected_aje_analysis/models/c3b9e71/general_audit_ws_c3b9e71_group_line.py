@@ -57,6 +57,15 @@ class GeneralAuditWsC3b9e71GroupLine(models.Model):
         help="Net amount of the uncorrected adjustment entries posted to "
         "this group, in the direction of its normal balance.",
     )
+    balance_after_misstatement = fields.Monetary(
+        string="Balance After Misstatement",
+        currency_field="currency_id",
+        compute="_compute_balance_after_misstatement",
+        store=True,
+        compute_sudo=True,
+        help="Audited balance plus the uncorrected misstatement: the "
+        "balance the group should have shown.",
+    )
     pct_of_balance = fields.Float(
         string="% of Group Balance",
         compute="_compute_pct",
@@ -73,6 +82,20 @@ class GeneralAuditWsC3b9e71GroupLine(models.Model):
         help="Uncorrected misstatement divided by Performance Materiality. "
         "Zero when Performance Materiality is zero.",
     )
+
+    @api.depends(
+        "balance",
+        "uncorrected_amount",
+    )
+    def _compute_balance_after_misstatement(self):
+        """Add the uncorrected misstatement to the audited balance.
+
+        :return: ``None``
+        """
+        for record in self:
+            record.balance_after_misstatement = (
+                record.balance + record.uncorrected_amount
+            )
 
     @api.depends(
         "balance",

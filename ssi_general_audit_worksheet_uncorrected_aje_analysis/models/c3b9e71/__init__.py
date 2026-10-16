@@ -5,4 +5,5 @@
 from . import (
     general_audit_ws_c3b9e71,
     general_audit_ws_c3b9e71_group_line,
+    general_audit_ws_c3b9e71_individual_line,
 )
