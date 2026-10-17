@@ -1032,6 +1032,7 @@ scenarios:
       - step: "Assert there is no line for account F yet"
         action: "search"
         model: "general_audit_ws_f9a2c3d.detail"
+        save_as: "lines_f_before"
         domain:
           - ["worksheet_id", "=", "REC: worksheet.id"]
           - ["audit_detail_id", "=", "REC: audit_detail_f.id"]
@@ -1048,6 +1049,7 @@ scenarios:
       - step: "Assert one line was added for account F"
         action: "search"
         model: "general_audit_ws_f9a2c3d.detail"
+        save_as: "lines_f_after"
         domain:
           - ["worksheet_id", "=", "REC: worksheet.id"]
           - ["audit_detail_id", "=", "REC: audit_detail_f.id"]
@@ -1056,6 +1058,7 @@ scenarios:
       - step: "Assert line E still exists with the same id"
         action: "search"
         model: "general_audit_ws_f9a2c3d.detail"
+        save_as: "line_e_after"
         domain:
           - ["id", "=", "REC: detail_line_e.id"]
           - ["audit_detail_id", "=", "REC: audit_detail_e.id"]
