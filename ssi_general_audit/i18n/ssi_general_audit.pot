@@ -98,6 +98,17 @@ msgid ""
 msgstr ""
 
 #. module: ssi_general_audit
+#: code:addons/ssi_general_audit/wizards/add_client_account.py:0
+#, python-format
+msgid ""
+"\n"
+"Context: Add Client Account\n"
+"Database ID: %(id)s\n"
+"Problem: %(problems)s\n"
+"Solution: Correct the lines and try again, nothing was created\n"
+msgstr ""
+
+#. module: ssi_general_audit
 #: code:addons/ssi_general_audit/models/general_audit/general_audit.py:0
 #, python-format
 msgid ""
@@ -162,6 +173,7 @@ msgid "# Adjustment Entry"
 msgstr ""
 
 #. module: ssi_general_audit
+#: model:ir.model.fields,field_description:ssi_general_audit.field_add_client_account__mapping_id
 #: model:ir.model.fields,field_description:ssi_general_audit.field_import_client_account__mapping_id
 msgid "# Client Account Mapping"
 msgstr ""
@@ -244,9 +256,20 @@ msgid "# Trial Balance"
 msgstr ""
 
 #. module: ssi_general_audit
+#: model:ir.model.fields,field_description:ssi_general_audit.field_add_client_account_line__wizard_id
+msgid "# Wizard"
+msgstr ""
+
+#. module: ssi_general_audit
 #: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit_worksheet_control__worksheet_id
 #: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit_worksheet_mixin__worksheet_id
 msgid "# Worksheet"
+msgstr ""
+
+#. module: ssi_general_audit
+#: code:addons/ssi_general_audit/wizards/add_client_account.py:0
+#, python-format
+msgid "%(accounts)s accounts and %(details)s mapping rows created."
 msgstr ""
 
 #. module: ssi_general_audit
@@ -262,6 +285,7 @@ msgid "(no client)"
 msgstr ""
 
 #. module: ssi_general_audit
+#: code:addons/ssi_general_audit/wizards/add_client_account.py:0
 #: code:addons/ssi_general_audit/wizards/import_client_account.py:0
 #, python-format
 msgid "...and %s more."
@@ -538,6 +562,11 @@ msgid "Account code %s already exists for this client"
 msgstr ""
 
 #. module: ssi_general_audit
+#: model:ir.model.fields,help:ssi_general_audit.field_add_client_account_line__code
+msgid "Account code, unique per client."
+msgstr ""
+
+#. module: ssi_general_audit
 #: model:ir.model.fields,help:ssi_general_audit.field_general_audit_group_adjustment__group_id
 msgid "Account group affected by adjustments."
 msgstr ""
@@ -555,6 +584,11 @@ msgstr ""
 #. module: ssi_general_audit
 #: model:ir.model.fields,help:ssi_general_audit.field_client_account_type__group_id
 msgid "Account group that this type belongs to."
+msgstr ""
+
+#. module: ssi_general_audit
+#: model:ir.model.fields,help:ssi_general_audit.field_add_client_account_line__name
+msgid "Account name."
 msgstr ""
 
 #. module: ssi_general_audit
@@ -802,6 +836,7 @@ msgstr ""
 
 #. module: ssi_general_audit
 #: model:ir.actions.act_window,name:ssi_general_audit.client_account_action
+#: model:ir.model.fields,field_description:ssi_general_audit.field_add_client_account__line_ids
 #: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit__account_ids
 #: model:ir.ui.menu,name:ssi_general_audit.client_account_menu
 #: model_terms:ir.ui.view,arch_db:ssi_general_audit.client_account_mapping_view_form
@@ -812,6 +847,11 @@ msgstr ""
 #: code:addons/ssi_general_audit/models/client/client_adjusting_coa.py:0
 #, python-format
 msgid "Accounts added to the audit: %s"
+msgstr ""
+
+#. module: ssi_general_audit
+#: model:ir.model.fields,help:ssi_general_audit.field_add_client_account__line_ids
+msgid "Accounts to create and map."
 msgstr ""
 
 #. module: ssi_general_audit
@@ -1044,6 +1084,29 @@ msgstr ""
 #: model:ir.model.fields,field_description:ssi_general_audit.field_team_role__activity_type_icon
 #: model:ir.model.fields,field_description:ssi_general_audit.field_trial_balance_computation_item__activity_type_icon
 msgid "Activity Type Icon"
+msgstr ""
+
+#. module: ssi_general_audit
+#: model_terms:ir.ui.view,arch_db:ssi_general_audit.add_client_account_view_form
+msgid "Add"
+msgstr ""
+
+#. module: ssi_general_audit
+#: model_terms:ir.ui.view,arch_db:ssi_general_audit.client_account_mapping_view_form
+msgid "Add Account"
+msgstr ""
+
+#. module: ssi_general_audit
+#: code:addons/ssi_general_audit/wizards/add_client_account.py:0
+#: model:ir.actions.act_window,name:ssi_general_audit.add_client_account_action
+#: model:ir.model,name:ssi_general_audit.model_add_client_account
+#, python-format
+msgid "Add Client Account"
+msgstr ""
+
+#. module: ssi_general_audit
+#: model:ir.model,name:ssi_general_audit.model_add_client_account_line
+msgid "Add Client Account Line"
 msgstr ""
 
 #. module: ssi_general_audit
@@ -1864,6 +1927,7 @@ msgid "Can Start"
 msgstr ""
 
 #. module: ssi_general_audit
+#: model_terms:ir.ui.view,arch_db:ssi_general_audit.add_client_account_view_form
 #: model_terms:ir.ui.view,arch_db:ssi_general_audit.import_adjustment_entry_detail_view_form
 #: model_terms:ir.ui.view,arch_db:ssi_general_audit.import_client_account_view_form
 #: model_terms:ir.ui.view,arch_db:ssi_general_audit.import_trial_balance_detail_view_form
@@ -1979,6 +2043,7 @@ msgid "Classification of the financial ratio for reporting."
 msgstr ""
 
 #. module: ssi_general_audit
+#: model:ir.model.fields,field_description:ssi_general_audit.field_add_client_account__partner_id
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_account__partner_id
 #: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit__partner_id
 #: model_terms:ir.ui.view,arch_db:ssi_general_audit.general_audit_view_search
@@ -2147,6 +2212,11 @@ msgid "Client company that owns the new accounts."
 msgstr ""
 
 #. module: ssi_general_audit
+#: model:ir.model.fields,help:ssi_general_audit.field_add_client_account__partner_id
+msgid "Client that owns the new accounts. Taken from the mapping."
+msgstr ""
+
+#. module: ssi_general_audit
 #: model:ir.model.fields,help:ssi_general_audit.field_client_account__partner_id
 msgid "Client that owns this account."
 msgstr ""
@@ -2167,6 +2237,7 @@ msgid "CoA and Mapping"
 msgstr ""
 
 #. module: ssi_general_audit
+#: model:ir.model.fields,field_description:ssi_general_audit.field_add_client_account_line__code
 #: model:ir.model.fields,field_description:ssi_general_audit.field_checklist_option__code
 #: model:ir.model.fields,field_description:ssi_general_audit.field_checklist_option_set__code
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_account__code
@@ -2190,6 +2261,24 @@ msgstr ""
 #: model:ir.model.fields,field_description:ssi_general_audit.field_trial_balance_computation_item__code
 #: model_terms:ir.ui.view,arch_db:ssi_general_audit.client_financial_ratio_view_form
 msgid "Code"
+msgstr ""
+
+#. module: ssi_general_audit
+#: code:addons/ssi_general_audit/wizards/add_client_account.py:0
+#, python-format
+msgid "Code %(code)s is longer than %(max)s characters"
+msgstr ""
+
+#. module: ssi_general_audit
+#: code:addons/ssi_general_audit/wizards/add_client_account.py:0
+#, python-format
+msgid "Code %s already exists for this client"
+msgstr ""
+
+#. module: ssi_general_audit
+#: code:addons/ssi_general_audit/wizards/add_client_account.py:0
+#, python-format
+msgid "Code %s is used twice in the wizard"
 msgstr ""
 
 #. module: ssi_general_audit
@@ -2495,6 +2584,8 @@ msgid "Cr."
 msgstr ""
 
 #. module: ssi_general_audit
+#: model:ir.model.fields,field_description:ssi_general_audit.field_add_client_account__create_uid
+#: model:ir.model.fields,field_description:ssi_general_audit.field_add_client_account_line__create_uid
 #: model:ir.model.fields,field_description:ssi_general_audit.field_checklist_option__create_uid
 #: model:ir.model.fields,field_description:ssi_general_audit.field_checklist_option_set__create_uid
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_account__create_uid
@@ -2541,6 +2632,8 @@ msgid "Created by"
 msgstr ""
 
 #. module: ssi_general_audit
+#: model:ir.model.fields,field_description:ssi_general_audit.field_add_client_account__create_date
+#: model:ir.model.fields,field_description:ssi_general_audit.field_add_client_account_line__create_date
 #: model:ir.model.fields,field_description:ssi_general_audit.field_checklist_option__create_date
 #: model:ir.model.fields,field_description:ssi_general_audit.field_checklist_option_set__create_date
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_account__create_date
@@ -2963,6 +3056,8 @@ msgid "Disclosures of Interest in Other Entities"
 msgstr ""
 
 #. module: ssi_general_audit
+#: model:ir.model.fields,field_description:ssi_general_audit.field_add_client_account__display_name
+#: model:ir.model.fields,field_description:ssi_general_audit.field_add_client_account_line__display_name
 #: model:ir.model.fields,field_description:ssi_general_audit.field_checklist_option__display_name
 #: model:ir.model.fields,field_description:ssi_general_audit.field_checklist_option_set__display_name
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_account__display_name
@@ -3073,6 +3168,7 @@ msgid "Duplicate code not allowed"
 msgstr ""
 
 #. module: ssi_general_audit
+#: code:addons/ssi_general_audit/wizards/add_client_account.py:0
 #: code:addons/ssi_general_audit/wizards/import_client_account.py:0
 #, python-format
 msgid "Duplicate name warning for: %s"
@@ -3148,6 +3244,12 @@ msgstr ""
 #. module: ssi_general_audit
 #: model:ir.model.fields,help:ssi_general_audit.field_general_audit_worksheet_control__user_id
 msgid "Employee responsible for preparing the worksheet."
+msgstr ""
+
+#. module: ssi_general_audit
+#: code:addons/ssi_general_audit/wizards/add_client_account.py:0
+#, python-format
+msgid "Empty code (name: %s)"
 msgstr ""
 
 #. module: ssi_general_audit
@@ -3918,6 +4020,8 @@ msgid "Human resources expense"
 msgstr ""
 
 #. module: ssi_general_audit
+#: model:ir.model.fields,field_description:ssi_general_audit.field_add_client_account__id
+#: model:ir.model.fields,field_description:ssi_general_audit.field_add_client_account_line__id
 #: model:ir.model.fields,field_description:ssi_general_audit.field_checklist_option__id
 #: model:ir.model.fields,field_description:ssi_general_audit.field_checklist_option_set__id
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_account__id
@@ -4655,6 +4759,8 @@ msgid ""
 msgstr ""
 
 #. module: ssi_general_audit
+#: model:ir.model.fields,field_description:ssi_general_audit.field_add_client_account____last_update
+#: model:ir.model.fields,field_description:ssi_general_audit.field_add_client_account_line____last_update
 #: model:ir.model.fields,field_description:ssi_general_audit.field_checklist_option____last_update
 #: model:ir.model.fields,field_description:ssi_general_audit.field_checklist_option_set____last_update
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_account____last_update
@@ -4712,6 +4818,8 @@ msgid "Last Modified on"
 msgstr ""
 
 #. module: ssi_general_audit
+#: model:ir.model.fields,field_description:ssi_general_audit.field_add_client_account__write_uid
+#: model:ir.model.fields,field_description:ssi_general_audit.field_add_client_account_line__write_uid
 #: model:ir.model.fields,field_description:ssi_general_audit.field_checklist_option__write_uid
 #: model:ir.model.fields,field_description:ssi_general_audit.field_checklist_option_set__write_uid
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_account__write_uid
@@ -4758,6 +4866,8 @@ msgid "Last Updated by"
 msgstr ""
 
 #. module: ssi_general_audit
+#: model:ir.model.fields,field_description:ssi_general_audit.field_add_client_account__write_date
+#: model:ir.model.fields,field_description:ssi_general_audit.field_add_client_account_line__write_date
 #: model:ir.model.fields,field_description:ssi_general_audit.field_checklist_option__write_date
 #: model:ir.model.fields,field_description:ssi_general_audit.field_checklist_option_set__write_date
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_account__write_date
@@ -5031,6 +5141,11 @@ msgid "Mapping lines between client accounts and standard account types."
 msgstr ""
 
 #. module: ssi_general_audit
+#: model:ir.model.fields,help:ssi_general_audit.field_add_client_account__mapping_id
+msgid "Mapping that receives the new accounts."
+msgstr ""
+
+#. module: ssi_general_audit
 #: model:ir.model.fields,help:ssi_general_audit.field_mixin_checklist_value__item_id
 msgid "Master checklist item this line refers to."
 msgstr ""
@@ -5256,6 +5371,7 @@ msgid "My Activity Deadline"
 msgstr ""
 
 #. module: ssi_general_audit
+#: model:ir.model.fields,field_description:ssi_general_audit.field_add_client_account_line__name
 #: model:ir.model.fields,field_description:ssi_general_audit.field_checklist_option__name
 #: model:ir.model.fields,field_description:ssi_general_audit.field_checklist_option_set__name
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_account__name
@@ -5532,6 +5648,12 @@ msgstr ""
 #. module: ssi_general_audit
 #: model:checklist.option,name:ssi_general_audit.checklist_option_no
 msgid "No"
+msgstr ""
+
+#. module: ssi_general_audit
+#: code:addons/ssi_general_audit/wizards/add_client_account.py:0
+#, python-format
+msgid "No account line to add"
 msgstr ""
 
 #. module: ssi_general_audit
@@ -6276,6 +6398,11 @@ msgstr ""
 #. module: ssi_general_audit
 #: model:ir.model.fields,help:ssi_general_audit.field_general_audit_relevant_regulation_item__regulation_id
 msgid "Parent regulation that contains this item."
+msgstr ""
+
+#. module: ssi_general_audit
+#: model:ir.model.fields,help:ssi_general_audit.field_add_client_account_line__wizard_id
+msgid "Parent wizard."
 msgstr ""
 
 #. module: ssi_general_audit
@@ -7231,6 +7358,11 @@ msgid "Standard account type mapped to this client account."
 msgstr ""
 
 #. module: ssi_general_audit
+#: model:ir.model.fields,help:ssi_general_audit.field_add_client_account_line__type_id
+msgid "Standard account type the new account is mapped to."
+msgstr ""
+
+#. module: ssi_general_audit
 #: model:ir.model.fields,help:ssi_general_audit.field_client_account_type_set__detail_ids
 msgid "Standard account types included in this set."
 msgstr ""
@@ -7887,6 +8019,7 @@ msgid "Ttrial Balance Start Date"
 msgstr ""
 
 #. module: ssi_general_audit
+#: model:ir.model.fields,field_description:ssi_general_audit.field_add_client_account_line__type_id
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_account__type_id
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_account_mapping_detail__type_id
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_adjusting_coa_detail__type_id
@@ -8361,6 +8494,7 @@ msgid "Zakah and Infaq/Shadaqah accounting"
 msgstr ""
 
 #. module: ssi_general_audit
+#: model_terms:ir.ui.view,arch_db:ssi_general_audit.add_client_account_view_form
 #: model_terms:ir.ui.view,arch_db:ssi_general_audit.import_client_account_view_form
 #: model_terms:ir.ui.view,arch_db:ssi_general_audit.import_trial_balance_detail_view_form
 msgid "or"
