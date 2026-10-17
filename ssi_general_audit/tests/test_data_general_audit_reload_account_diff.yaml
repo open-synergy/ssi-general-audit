@@ -1,0 +1,447 @@
+options:
+  auto_refresh: true
+
+scenarios:
+  - name: "general_audit - _reload_account synchronises by difference"
+    steps:
+      - step: "Get config parameter model"
+        action: "search"
+        model: "ir.config_parameter"
+        domain: []
+        save_as: "config_parameter"
+        limit: 1
+
+      - step: "Allow enough CPA licenses for this scenario"
+        action: "call"
+        target: "config_parameter"
+        method: "set_param"
+        args:
+          - "ssi_general_audit.max_number_of_cpa_license"
+          - "100"
+
+      - step: "Create client partner"
+        action: "create"
+        model: "res.partner"
+        save_as: "client"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Client - Reload Diff"
+          is_company: true
+
+      - step: "Create accountant partner"
+        action: "create"
+        model: "res.partner"
+        save_as: "accountant"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Accountant - Reload Diff"
+
+      - step: "Get CPA license id category"
+        action: "ref"
+        xml_id: "ssi_partner_identification_cpa_license.partner_identification_accountant_cpa_license"
+        save_as: "cpa_category"
+
+      - step: "Grant accountant a CPA license"
+        action: "create"
+        model: "res.partner.id_number"
+        save_as: "cpa_license"
+        as_user: "base.user_admin"
+        values:
+          partner_id: "REC: accountant.id"
+          category_id: "REC: cpa_category.id"
+          name: "CPA-RELOAD-0002"
+
+      - step: "Create account type set"
+        action: "create"
+        model: "client_account_type_set"
+        save_as: "account_type_set"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Account Type Set - Reload Diff"
+          code: "/"
+
+      - step: "Create financial accounting standard"
+        action: "create"
+        model: "accountant.financial_accounting_standard"
+        save_as: "standard"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Financial Accounting Standard - Reload Diff"
+          code: "/"
+
+      - step: "Create general audit"
+        action: "create"
+        model: "general_audit"
+        save_as: "audit"
+        as_user: "base.user_admin"
+        values:
+          title: "Test General Audit - Reload Diff"
+          partner_id: "REC: client.id"
+          accountant_id: "REC: accountant.id"
+          account_type_set_id: "REC: account_type_set.id"
+          financial_accounting_standard_id: "REC: standard.id"
+          date_start: 2026-01-01
+          date_end: 2026-12-31
+          need_interim: false
+          need_previous: false
+          num_of_consecutive_audit_firm: 1
+          num_of_consecutive_audit_accountant: 1
+
+      - step: "Open general audit"
+        action: "call"
+        target: "audit"
+        method: "action_open"
+        as_user: "base.user_admin"
+
+      - step: "Create client account group"
+        action: "create"
+        model: "client_account_group"
+        save_as: "group"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Group - Reload Diff"
+          code: "/"
+          sequence: 1
+          normal_balance: "dr"
+
+      - step: "Create account type A"
+        action: "create"
+        model: "client_account_type"
+        save_as: "type_a"
+        as_user: "base.user_admin"
+        values:
+          name: "Cash - Reload Diff"
+          code: "/"
+          group_id: "REC: group.id"
+          sequence: 1
+          normal_balance: "dr"
+
+      - step: "Create account type B"
+        action: "create"
+        model: "client_account_type"
+        save_as: "type_b"
+        as_user: "base.user_admin"
+        values:
+          name: "Receivable - Reload Diff"
+          code: "/"
+          group_id: "REC: group.id"
+          sequence: 2
+          normal_balance: "dr"
+
+      - step: "Create account a1 of type A"
+        action: "create"
+        model: "client_account"
+        save_as: "acc_a1"
+        as_user: "base.user_admin"
+        values:
+          name: "Account DIFFA1 - Reload Diff"
+          code: "DIFFA1"
+          partner_id: "REC: client.id"
+          type_id: "REC: type_a.id"
+
+      - step: "Create account a2 of type A"
+        action: "create"
+        model: "client_account"
+        save_as: "acc_a2"
+        as_user: "base.user_admin"
+        values:
+          name: "Account DIFFA2 - Reload Diff"
+          code: "DIFFA2"
+          partner_id: "REC: client.id"
+          type_id: "REC: type_a.id"
+
+      - step: "Create account a3 of type A"
+        action: "create"
+        model: "client_account"
+        save_as: "acc_a3"
+        as_user: "base.user_admin"
+        values:
+          name: "Account DIFFA3 - Reload Diff"
+          code: "DIFFA3"
+          partner_id: "REC: client.id"
+          type_id: "REC: type_a.id"
+
+      - step: "Create account b1 of type B"
+        action: "create"
+        model: "client_account"
+        save_as: "acc_b1"
+        as_user: "base.user_admin"
+        values:
+          name: "Account DIFFB1 - Reload Diff"
+          code: "DIFFB1"
+          partner_id: "REC: client.id"
+          type_id: "REC: type_b.id"
+
+      - step: "Create account mapping"
+        action: "create"
+        model: "client_account_mapping"
+        save_as: "mapping"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+
+      - step: "Map a1"
+        action: "create"
+        model: "client_account_mapping.detail"
+        save_as: "md_a1"
+        as_user: "base.user_admin"
+        values:
+          mapping_id: "REC: mapping.id"
+          account_id: "REC: acc_a1.id"
+          type_id: "REC: type_a.id"
+
+      - step: "Map b1"
+        action: "create"
+        model: "client_account_mapping.detail"
+        save_as: "md_b1"
+        as_user: "base.user_admin"
+        values:
+          mapping_id: "REC: mapping.id"
+          account_id: "REC: acc_b1.id"
+          type_id: "REC: type_b.id"
+
+      - step: "First reload: loads a1 and b1"
+        action: "call"
+        target: "audit"
+        method: "action_reload_account"
+        as_user: "base.user_admin"
+
+      - step: "Assert two detail lines"
+        action: "assert"
+        target: "audit"
+        asserts:
+          detail_ids:
+            type: "o2m"
+            check: "count"
+            expected_count: 2
+
+      - step: "Fetch the detail of a1"
+        action: "search"
+        model: "general_audit.detail"
+        domain:
+          [
+            ["general_audit_id", "=", "REC: audit.id"],
+            ["account_id", "=", "REC: acc_a1.id"],
+          ]
+        save_as: "det_a1"
+        limit: 1
+
+      - step: "Map a2"
+        action: "create"
+        model: "client_account_mapping.detail"
+        save_as: "md_a2"
+        as_user: "base.user_admin"
+        values:
+          mapping_id: "REC: mapping.id"
+          account_id: "REC: acc_a2.id"
+          type_id: "REC: type_a.id"
+
+      - step: "Reload after adding a2 to the mapping"
+        action: "call"
+        target: "audit"
+        method: "action_reload_account"
+        as_user: "base.user_admin"
+
+      - step: "Assert one detail line was added"
+        action: "assert"
+        target: "audit"
+        asserts:
+          detail_ids:
+            type: "o2m"
+            check: "count"
+            expected_count: 3
+
+      - step: "Assert the detail of a1 was kept, not recreated"
+        action: "assert"
+        target: "det_a1"
+        asserts:
+          account_id:
+            type: "m2o"
+            expected: "REC: acc_a1"
+
+      - step: "Reload again with nothing changed"
+        action: "call"
+        target: "audit"
+        method: "action_reload_account"
+        as_user: "base.user_admin"
+
+      - step: "Assert the second reload changed nothing"
+        action: "assert"
+        target: "audit"
+        asserts:
+          detail_ids:
+            type: "o2m"
+            check: "count"
+            expected_count: 3
+
+      - step: "Assert the detail of a1 is still the same"
+        action: "assert"
+        target: "det_a1"
+        asserts:
+          account_id:
+            type: "m2o"
+            expected: "REC: acc_a1"
+
+      - step: "Remove a2 from the mapping"
+        action: "unlink"
+        target: "md_a2"
+        as_user: "base.user_admin"
+
+      - step: "Reload after removing the unused account a2"
+        action: "call"
+        target: "audit"
+        method: "action_reload_account"
+        as_user: "base.user_admin"
+
+      - step: "Assert the detail of a2 was removed"
+        action: "assert"
+        target: "audit"
+        asserts:
+          detail_ids:
+            type: "o2m"
+            check: "count"
+            expected_count: 2
+
+      - step: "Remove b1 from the mapping"
+        action: "unlink"
+        target: "md_b1"
+        as_user: "base.user_admin"
+
+      - step: "Reload must refuse to remove the last account of type B"
+        action: "call"
+        target: "audit"
+        method: "action_reload_account"
+        as_user: "base.user_admin"
+        expect_error:
+          type: "UserError"
+          message_contains: "no account left"
+
+      - step: "Assert nothing was removed by the refused reload"
+        action: "assert"
+        target: "audit"
+        asserts:
+          detail_ids:
+            type: "o2m"
+            check: "count"
+            expected_count: 2
+
+      - step: "Map b1 again"
+        action: "create"
+        model: "client_account_mapping.detail"
+        save_as: "md_b1_again"
+        as_user: "base.user_admin"
+        values:
+          mapping_id: "REC: mapping.id"
+          account_id: "REC: acc_b1.id"
+          type_id: "REC: type_b.id"
+
+      - step: "Map a3"
+        action: "create"
+        model: "client_account_mapping.detail"
+        save_as: "md_a3"
+        as_user: "base.user_admin"
+        values:
+          mapping_id: "REC: mapping.id"
+          account_id: "REC: acc_a3.id"
+          type_id: "REC: type_a.id"
+
+      - step: "Reload after adding a3"
+        action: "call"
+        target: "audit"
+        method: "action_reload_account"
+        as_user: "base.user_admin"
+
+      - step: "Assert a3 was added"
+        action: "assert"
+        target: "audit"
+        asserts:
+          detail_ids:
+            type: "o2m"
+            check: "count"
+            expected_count: 3
+
+      - step: "Create proposed adjustment entry"
+        action: "create"
+        model: "client_adjustment_entry"
+        save_as: "entry"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          adjustment_type: "propose"
+
+      - step: "Create adjustment line on a3"
+        action: "create"
+        model: "client_adjustment_entry.detail"
+        save_as: "entry_line"
+        as_user: "base.user_admin"
+        values:
+          entry_id: "REC: entry.id"
+          account_id: "REC: acc_a3.id"
+          name: "Adjustment line on a3"
+          debit: 100.0
+          credit: 0.0
+
+      - step: "Remove a3 from the mapping"
+        action: "unlink"
+        target: "md_a3"
+        as_user: "base.user_admin"
+
+      - step: "Reload must refuse to remove an account used by an adjustment entry"
+        action: "call"
+        target: "audit"
+        method: "action_reload_account"
+        as_user: "base.user_admin"
+        expect_error:
+          type: "UserError"
+          message_contains: "is used by adjustment entry"
+
+      - step: "Assert nothing was removed by the refused reload"
+        action: "assert"
+        target: "audit"
+        asserts:
+          detail_ids:
+            type: "o2m"
+            check: "count"
+            expected_count: 3
+
+      - step: "Create a second general audit without account mapping"
+        action: "create"
+        model: "general_audit"
+        save_as: "audit_no_map"
+        as_user: "base.user_admin"
+        values:
+          title: "Test General Audit - Reload Diff No Mapping"
+          partner_id: "REC: client.id"
+          accountant_id: "REC: accountant.id"
+          account_type_set_id: "REC: account_type_set.id"
+          financial_accounting_standard_id: "REC: standard.id"
+          date_start: 2027-01-01
+          date_end: 2027-12-31
+          need_interim: false
+          need_previous: false
+          num_of_consecutive_audit_firm: 1
+          num_of_consecutive_audit_accountant: 1
+
+      - step: "Create a detail line directly on the audit without mapping"
+        action: "create"
+        model: "general_audit.detail"
+        save_as: "det_no_map"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit_no_map.id"
+          account_id: "REC: acc_a1.id"
+
+      - step: "Reload an audit without account mapping"
+        action: "call"
+        target: "audit_no_map"
+        method: "action_reload_account"
+        as_user: "base.user_admin"
+
+      - step: "Assert the detail line was not deleted"
+        action: "assert"
+        target: "audit_no_map"
+        asserts:
+          detail_ids:
+            type: "o2m"
+            check: "count"
+            expected_count: 1
