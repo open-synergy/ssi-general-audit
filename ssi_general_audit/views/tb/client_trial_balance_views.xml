@@ -14,6 +14,14 @@
     <field name="mode">primary</field>
     <field name="arch" type="xml">
         <data>
+            <xpath expr="//field[@name='name']" position="after">
+                <field name="general_audit_id" />
+                <field name="partner_id" />
+                <field name="tb_date_start" string="Date Start" />
+                <field name="tb_date_end" string="Date End" />
+                <field name="account_type_set_id" />
+                <field name="trial_balance_type" />
+            </xpath>
             <xpath expr="//field[@name='company_id']" position="after">
                 <field
                         name="operating_unit_id"
@@ -27,6 +35,38 @@
                         string="Operating Unit"
                         context="{'group_by':'operating_unit_id'}"
                         groups="operating_unit.group_multi_operating_unit"
+                    />
+            </xpath>
+            <xpath expr="//group[@name='group_by']" position="inside">
+                <filter
+                        name="grp_general_audit_id"
+                        string="General Audit"
+                        context="{'group_by':'general_audit_id'}"
+                    />
+                <filter
+                        name="grp_partner_id"
+                        string="Partner"
+                        context="{'group_by':'partner_id'}"
+                    />
+                <filter
+                        name="grp_tb_date_start"
+                        string="Date Start"
+                        context="{'group_by':'tb_date_start'}"
+                    />
+                <filter
+                        name="grp_tb_date_end"
+                        string="Date End"
+                        context="{'group_by':'tb_date_end'}"
+                    />
+                <filter
+                        name="grp_account_type_set_id"
+                        string="Account Type Set"
+                        context="{'group_by':'account_type_set_id'}"
+                    />
+                <filter
+                        name="grp_trial_balance_type"
+                        string="Trial Balance Type"
+                        context="{'group_by':'trial_balance_type'}"
                     />
             </xpath>
         </data>
