@@ -10,6 +10,7 @@ from . import test_aje_summary
 from . import test_import_adjustment_entry_detail
 from . import test_client_adjustment_entry_detail
 from . import test_import_client_account
+from . import test_add_client_account
 from . import test_adjusting_coa
 from . import test_adjusting_coa_negative
 from . import test_client_account_name_search

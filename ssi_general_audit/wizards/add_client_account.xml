@@ -1,0 +1,51 @@
+<?xml version="1.0" ?>
+<!-- Copyright 2026 PT. Open Source Integra Indonesia
+     License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl-3.0-standalone.html). -->
+<odoo>
+
+<record id="add_client_account_view_form" model="ir.ui.view">
+    <field name="name">add_client_account - form</field>
+    <field name="model">add_client_account</field>
+    <field name="arch" type="xml">
+        <form>
+            <group name="main" colspan="2" col="2">
+                <field name="mapping_id" invisible="1" />
+                <field name="partner_id" />
+            </group>
+            <field name="line_ids">
+                <tree editable="bottom">
+                    <field name="code" />
+                    <field name="name" />
+                    <field name="type_id" />
+                </tree>
+                <form>
+                    <group name="line" colspan="2" col="2">
+                        <field name="code" />
+                        <field name="name" />
+                        <field name="type_id" />
+                    </group>
+                </form>
+            </field>
+            <footer>
+                <button
+                        string="Add"
+                        name="action_add"
+                        type="object"
+                        class="btn-primary"
+                    />
+                or
+                <button string="Cancel" class="oe_link" special="cancel" />
+            </footer>
+        </form>
+    </field>
+</record>
+
+<record id="add_client_account_action" model="ir.actions.act_window">
+    <field name="name">Add Client Account</field>
+    <field name="res_model">add_client_account</field>
+    <field name="view_mode">form</field>
+    <field name="view_id" ref="add_client_account_view_form" />
+    <field name="target">new</field>
+</record>
+
+</odoo>
