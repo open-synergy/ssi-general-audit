@@ -169,7 +169,7 @@ Solution: Correct the lines and try again, nothing was created
         return self._prepare_notification(len(self.line_ids), warnings)
 
     def _prepare_notification(self, count, warnings):
-        """Build the closing ``display_notification`` action.
+        """Build the ``display_notification`` action that closes the wizard.
 
         :param count: number of accounts (and mapping rows) created
         :param warnings: list of ``(code, name)`` duplicate-name pairs
@@ -195,5 +195,7 @@ Solution: Correct the lines and try again, nothing was created
                 "title": _("Add Client Account"),
                 "message": "\n".join(lines),
                 "sticky": True,
+                # Close the dialog once the notification is shown.
+                "next": {"type": "ir.actions.act_window_close"},
             },
         }

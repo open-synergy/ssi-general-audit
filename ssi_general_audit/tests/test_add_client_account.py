@@ -140,6 +140,9 @@ class TestAddClientAccount(YamlTransactionCase):
         self.assertEqual(len(mapping.detail_ids), 2)
         self.assertEqual(mapping.detail_ids.mapped("account_id"), accounts)
         self.assertEqual(result["params"]["type"], "success")
+        self.assertEqual(
+            result["params"]["next"], {"type": "ir.actions.act_window_close"}
+        )
 
     def test_add_same_name_is_warned(self):
         """A colliding name is created and flagged in the notification.
