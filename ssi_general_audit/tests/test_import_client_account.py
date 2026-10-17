@@ -161,3 +161,134 @@ class TestImportClientAccount(YamlTransactionCase):
             "Duplicate name warning for: ACC-200/Cash",
             result["params"]["message"],
         )
+
+    def _create_two_types(self, label):
+        """Create two account types usable as CSV type codes.
+
+        Pure Python -- trigger P10 (L-09..L-11: the fixture needs a
+        group plus types whose explicit unique codes feed the CSV).
+
+        The code stays unique on purpose: the wizard looks a type up by
+        code, and the placeholder ``"/"`` is never generated on create.
+
+        :param label: short unique label used to name the records
+        :return: tuple ``(type_a, type_b)`` of ``client_account_type``
+        """
+        group = self.env["client_account_group"].create(
+            {
+                "name": "Group - %s" % label,
+                "code": "/",
+                "sequence": 1,
+                "normal_balance": "dr",
+            }
+        )
+        types = self.env["client_account_type"]
+        for suffix in ("A", "B"):
+            types |= self.env["client_account_type"].create(
+                {
+                    "name": "Type %s - %s" % (suffix, label),
+                    "code": "T%s-%s" % (suffix, label.replace(" ", "")),
+                    "group_id": group.id,
+                    "sequence": 1,
+                    "normal_balance": "dr",
+                    "python_code": "result = 0.0",
+                }
+            )
+        return types[0], types[1]
+
+    def _run_type_import(self, label, **wizard_vals):
+        """Import a CSV over an existing type-A account.
+
+        Pure Python -- trigger P10 (L-09..L-11: the wizard's ``data``
+        field needs a base64-encoded CSV fixture, unavailable in
+        ``EVAL:``).
+
+        :param label: short unique label used to name the fixtures
+        :param wizard_vals: extra values for the wizard, such as
+            ``keep_existing_type``
+        :return: tuple ``(mapping, partner, type_a, type_b)``
+        """
+        mapping, partner = self._create_mapping(label)
+        type_a, type_b = self._create_two_types(label)
+        self.env["client_account"].create(
+            {
+                "code": "ACC-EX",
+                "name": "Existing",
+                "partner_id": partner.id,
+                "type_id": type_a.id,
+            }
+        )
+        csv_content = "ACC-EX,Existing,,%s\nACC-NEW,Brand New,,%s\n" % (
+            type_b.code,
+            type_b.code,
+        )
+        vals = {
+            "mapping_id": mapping.id,
+            "has_header": False,
+            "data": base64.b64encode(csv_content.encode("utf-8")),
+        }
+        vals.update(wizard_vals)
+        wizard = self.env["import_client_account"].create(vals)
+        self.assertEqual(
+            wizard.keep_existing_type, vals.get("keep_existing_type", True)
+        )
+        wizard.button_import()
+        return mapping, partner, type_a, type_b
+
+    def _get_account(self, partner, code):
+        """Return the ``client_account`` of ``partner`` with ``code``.
+
+        Pure Python -- trigger P10 (L-09..L-11: shared lookup helper
+        for the Python-only fixtures in this class).
+
+        :param partner: client ``res.partner``
+        :param code: account code to look up
+        :return: matching ``client_account`` recordset
+        """
+        return self.env["client_account"].search(
+            [("partner_id", "=", partner.id), ("code", "=", code)]
+        )
+
+    def test_keep_existing_type_default_keeps_type(self):
+        """By default an existing account keeps its type.
+
+        Pure Python -- trigger P10 (L-09..L-11: the wizard's ``data``
+        field needs a base64-encoded CSV fixture, unavailable in
+        ``EVAL:``).
+        """
+        mapping, partner, type_a, type_b = self._run_type_import("Keep Default")
+        existing = self._get_account(partner, "ACC-EX")
+        self.assertEqual(existing.type_id, type_a)
+        self.assertEqual(self._get_account(partner, "ACC-NEW").type_id, type_b)
+        details = self.env["client_account_mapping.detail"].search(
+            [("mapping_id", "=", mapping.id), ("account_id", "=", existing.id)]
+        )
+        self.assertEqual(len(details), 1)
+
+    def test_keep_existing_type_false_overwrites_type(self):
+        """With the flag off the CSV type overwrites; no duplicate rows.
+
+        Pure Python -- trigger P10 (L-09..L-11: the wizard's ``data``
+        field needs a base64-encoded CSV fixture, unavailable in
+        ``EVAL:``).
+        """
+        mapping, partner, type_a, type_b = self._run_type_import(
+            "Keep Off", keep_existing_type=False
+        )
+        existing = self._get_account(partner, "ACC-EX")
+        self.assertEqual(existing.type_id, type_b)
+        wizard = self.env["import_client_account"].create(
+            {
+                "mapping_id": mapping.id,
+                "has_header": False,
+                "keep_existing_type": False,
+                "data": base64.b64encode(
+                    ("ACC-EX,Existing,,%s\n" % type_b.code).encode("utf-8")
+                ),
+            }
+        )
+        wizard.button_import()
+        details = self.env["client_account_mapping.detail"].search(
+            [("mapping_id", "=", mapping.id), ("account_id", "=", existing.id)]
+        )
+        self.assertEqual(len(details), 1)
