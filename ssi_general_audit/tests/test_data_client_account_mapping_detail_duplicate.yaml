@@ -157,6 +157,38 @@ scenarios:
           type: "ValidationError"
           message_contains: "already in this mapping"
 
+      - step: "Create another client partner"
+        action: "create"
+        model: "res.partner"
+        save_as: "other_client"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Other Client - Dup Account"
+          is_company: true
+
+      - step: "Create an account with the same code for the other client"
+        action: "create"
+        model: "client_account"
+        save_as: "other_account"
+        as_user: "base.user_admin"
+        values:
+          name: "Kas Test - Dup Other"
+          code: "KASDUP"
+          partner_id: "REC: other_client.id"
+          type_id: "REC: account_type.id"
+
+      - step: "An account with the same code of another client is refused"
+        action: "create"
+        model: "client_account_mapping.detail"
+        as_user: "base.user_admin"
+        values:
+          mapping_id: "REC: mapping.id"
+          account_id: "REC: other_account.id"
+          type_id: "REC: account_type.id"
+        expect_error:
+          type: "ValidationError"
+          message_contains: "already in this mapping"
+
       - step: "Assert the mapping still has exactly one line"
         action: "assert"
         target: "mapping"

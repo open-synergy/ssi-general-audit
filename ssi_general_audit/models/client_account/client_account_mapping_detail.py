@@ -65,28 +65,32 @@ class ClientAccountMappingDetail(models.Model):
 
     @api.constrains("mapping_id", "account_id")
     def _check_duplicate_account(self):
-        """Refuse a second line for the same account in one mapping.
+        """Refuse a second line with the same account code in one mapping.
 
-        Accounts of one client already have a unique code, so a repeated
-        account is a repeated code in the mapping as well.
+        Two lines count as duplicates when their accounts share a code,
+        which covers the same account added twice and an account of
+        another client that carries the same code.
 
-        :raises ValidationError: when the account is already a line of
-            the same mapping
+        :raises ValidationError: when another line of the same mapping
+            has an account with the same code
         """
         for record in self:
+            code = record.account_id.code
+            if not code:
+                continue
             criteria = [
                 ("mapping_id", "=", record.mapping_id.id),
-                ("account_id", "=", record.account_id.id),
+                ("account_id.code", "=", code),
                 ("id", "!=", record.id),
             ]
             if self.search_count(criteria) > 0:
-                error_message = _(
-                    """
-Context: Add account to client account mapping
-Database ID: %s
-Problem: Account %s is already in this mapping
-Solution: Remove the duplicate line or pick another account
-"""
-                    % (record.mapping_id.id, record.account_id.display_name)
+                error_message = """
+                Context: Add account to client account mapping
+                Database ID: %s
+                Problem: Account code %s is already in this mapping
+                Solution: Remove the duplicate line or pick another account
+                """ % (
+                    record.mapping_id.id,
+                    code,
                 )
-                raise ValidationError(error_message)
+                raise ValidationError(_(error_message))
