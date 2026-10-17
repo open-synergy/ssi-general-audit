@@ -1,7 +1,8 @@
 # Copyright 2021 PT Simetri Sinergi Indonesia
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 
-from odoo import fields, models
+from odoo import _, api, fields, models
+from odoo.exceptions import ValidationError
 
 
 class ClientAccountMappingDetail(models.Model):
@@ -61,3 +62,31 @@ class ClientAccountMappingDetail(models.Model):
         compute_sudo=True,
         help="Normal balance derived from the mapped type.",
     )
+
+    @api.constrains("mapping_id", "account_id")
+    def _check_duplicate_account(self):
+        """Refuse a second line for the same account in one mapping.
+
+        Accounts of one client already have a unique code, so a repeated
+        account is a repeated code in the mapping as well.
+
+        :raises ValidationError: when the account is already a line of
+            the same mapping
+        """
+        for record in self:
+            criteria = [
+                ("mapping_id", "=", record.mapping_id.id),
+                ("account_id", "=", record.account_id.id),
+                ("id", "!=", record.id),
+            ]
+            if self.search_count(criteria) > 0:
+                error_message = _(
+                    """
+Context: Add account to client account mapping
+Database ID: %s
+Problem: Account %s is already in this mapping
+Solution: Remove the duplicate line or pick another account
+"""
+                    % (record.mapping_id.id, record.account_id.display_name)
+                )
+                raise ValidationError(error_message)

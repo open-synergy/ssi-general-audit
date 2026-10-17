@@ -104,19 +104,14 @@
                             attrs="{'invisible':[('state','!=','open')]}"
                             style="margin-right:4px"
                         />
-                    <button
-                            name="action_open_account"
-                            type="object"
-                            string="Accounts"
-                            class="oe_highlight"
-                            icon="fa-bars"
-                            attrs="{'invisible':[('state','!=','open')]}"
-                        />
                     <field name="detail_ids">
                         <tree editable="top">
                             <field name="sequence" invisible="1" />
                             <field name="code" />
-                            <field name="account_id" />
+                            <field
+                                    name="account_id"
+                                    options="{'no_create': True, 'no_create_edit': True}"
+                                />
                             <field name="type_id" />
                             <field name="normal_balance" />
                         </tree>
