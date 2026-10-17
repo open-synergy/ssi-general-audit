@@ -948,7 +948,7 @@ scenarios:
         save_as: "details_account_a"
         expect_count: 1
 
-      - step: "Reload account a second time (unlink-then-recreate, no dup)"
+      - step: "Reload account a second time (incremental, no dup)"
         action: "call"
         target: "worksheet"
         method: "action_reload_account"
@@ -961,6 +961,284 @@ scenarios:
           - ["worksheet_id", "=", "REC: worksheet.id"]
         save_as: "details_after_second_reload"
         expect_count: 1
+
+  - name: "f9f3299 - incremental reload keeps lines and hook adds only new"
+    steps:
+      - step: "Create client account mapping for the audit"
+        action: "create"
+        model: "client_account_mapping"
+        save_as: "mapping"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+
+      - step: "Map client account A"
+        action: "create"
+        model: "client_account_mapping.detail"
+        save_as: "mapping_detail_a"
+        as_user: "base.user_admin"
+        values:
+          mapping_id: "REC: mapping.id"
+          account_id: "REC: account_a.id"
+
+      - step: "Reload general audit accounts from the mapping"
+        action: "call"
+        target: "audit"
+        method: "action_reload_account"
+        as_user: "base.user_admin"
+
+      - step: "Create worksheet f9f3299"
+        action: "create"
+        model: "general_audit_ws_f9f3299"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_f9f3299.id"
+
+      - step: "Open worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_open"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after opening worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Restrict worksheet to account type A"
+        action: "write"
+        target: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          account_type_id: "REC: account_type_a.id"
+          balance_type: "end_period"
+
+      - step: "Reload account"
+        action: "call"
+        target: "worksheet"
+        method: "action_reload_account"
+        as_user: "base.user_admin"
+
+      - step: "Find the line of account A"
+        action: "search"
+        model: "general_audit_ws_f9f3299.detail"
+        domain:
+          - ["worksheet_id", "=", "REC: worksheet.id"]
+        save_as: "line_a"
+        expect_count: 1
+
+      - step: "Fill the supporting schedule of the line"
+        action: "write"
+        target: "line_a"
+        as_user: "base.user_admin"
+        values:
+          supporting_schedule: "SS-KEEP"
+
+      - step: "Create a second client account of type A"
+        action: "create"
+        model: "client_account"
+        save_as: "account_a2"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Client Account A2 - Lead Schedule"
+          code: "ACC-A2-LEAD-SCHEDULE"
+          partner_id: "REC: client.id"
+          type_id: "REC: account_type_a.id"
+
+      - step: "Create a client account of type B"
+        action: "create"
+        model: "client_account"
+        save_as: "account_b2"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Client Account B2 - Lead Schedule"
+          code: "ACC-B2-LEAD-SCHEDULE"
+          partner_id: "REC: client.id"
+          type_id: "REC: account_type_b.id"
+
+      - step: "Add the second type A account to the audit with no cut-off"
+        action: "call"
+        target: "audit"
+        method: "_add_account"
+        as_user: "base.user_admin"
+        args:
+          - "REC: account_a2"
+        kwargs:
+          apply_cutoff: false
+
+      - step: "Add the type B account to the audit with no cut-off"
+        action: "call"
+        target: "audit"
+        method: "_add_account"
+        as_user: "base.user_admin"
+        args:
+          - "REC: account_b2"
+        kwargs:
+          apply_cutoff: false
+
+      - step: "Assert the worksheet got one new line, only for type A"
+        action: "search"
+        model: "general_audit_ws_f9f3299.detail"
+        domain:
+          - ["worksheet_id", "=", "REC: worksheet.id"]
+        save_as: "details_after_add"
+        expect_count: 2
+
+      - step: "Assert the first line keeps its id and supporting schedule"
+        action: "assert"
+        target: "line_a"
+        asserts:
+          supporting_schedule:
+            type: "value"
+            expected: "SS-KEEP"
+
+      - step: "Reload account again changes nothing"
+        action: "call"
+        target: "worksheet"
+        method: "action_reload_account"
+        as_user: "base.user_admin"
+
+      - step: "Assert still two lines after the second reload"
+        action: "search"
+        model: "general_audit_ws_f9f3299.detail"
+        domain:
+          - ["worksheet_id", "=", "REC: worksheet.id"]
+        save_as: "details_second_reload"
+        expect_count: 2
+
+  - name: "f9f3299 - account removed from mapping is blocked by a done worksheet"
+    steps:
+      - step: "Create client account mapping for the audit"
+        action: "create"
+        model: "client_account_mapping"
+        save_as: "mapping"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+
+      - step: "Map client account A"
+        action: "create"
+        model: "client_account_mapping.detail"
+        save_as: "mapping_detail_a"
+        as_user: "base.user_admin"
+        values:
+          mapping_id: "REC: mapping.id"
+          account_id: "REC: account_a.id"
+
+      - step: "Map client account B"
+        action: "create"
+        model: "client_account_mapping.detail"
+        save_as: "mapping_detail_b"
+        as_user: "base.user_admin"
+        values:
+          mapping_id: "REC: mapping.id"
+          account_id: "REC: account_b.id"
+
+      - step: "Reload general audit accounts from the mapping"
+        action: "call"
+        target: "audit"
+        method: "action_reload_account"
+        as_user: "base.user_admin"
+
+      - step: "Create worksheet f9f3299"
+        action: "create"
+        model: "general_audit_ws_f9f3299"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_f9f3299.id"
+
+      - step: "Open worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_open"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after opening worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Restrict worksheet to account type A"
+        action: "write"
+        target: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          account_type_id: "REC: account_type_a.id"
+          balance_type: "end_period"
+
+      - step: "Reload account"
+        action: "call"
+        target: "worksheet"
+        method: "action_reload_account"
+        as_user: "base.user_admin"
+
+      - step: "Fill required conclusion fields before confirm"
+        action: "write"
+        target: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          conclusion_id: "REC: conclusion_f9f3299.id"
+          conclusion: "The lead schedule per account type is adequate."
+
+      - step: "Confirm worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_confirm"
+        as_user: "base.user_admin"
+
+      - step: "Assert worksheet confirmed (refresh before approving)"
+        action: "assert"
+        target: "worksheet"
+        refresh: true
+        asserts:
+          state:
+            type: "value"
+            expected: "confirm"
+
+      - step: "Approve worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_approve_approval"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after approving worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Assert worksheet done"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          state:
+            type: "value"
+            expected: "done"
+
+      - step: "Remove account A from the mapping"
+        action: "unlink"
+        target: "mapping_detail_a"
+        as_user: "base.user_admin"
+
+      - step: "Reload must reject removing an account used by a done worksheet"
+        action: "call"
+        target: "audit"
+        method: "action_reload_account"
+        as_user: "base.user_admin"
+        expect_error:
+          type: "UserError"
+          message_contains: "Test Client Account A - Lead Schedule"
+
+      - step: "Assert the audit still has two details"
+        action: "search"
+        model: "general_audit.detail"
+        domain:
+          - ["general_audit_id", "=", "REC: audit.id"]
+        save_as: "audit_details_after_block"
+        expect_count: 2
 
   - name: "f9f3299 - Compute current_balance, adjusted_balance and diff"
     steps:
