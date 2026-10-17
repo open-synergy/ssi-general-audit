@@ -166,7 +166,10 @@ class TestImportClientAccount(YamlTransactionCase):
         """Create two account types usable as CSV type codes.
 
         Pure Python -- trigger P10 (L-09..L-11: the fixture needs a
-        group plus types whose generated codes feed the CSV).
+        group plus types whose explicit unique codes feed the CSV).
+
+        The code stays unique on purpose: the wizard looks a type up by
+        code, and the placeholder ``"/"`` is never generated on create.
 
         :param label: short unique label used to name the records
         :return: tuple ``(type_a, type_b)`` of ``client_account_type``
@@ -184,7 +187,7 @@ class TestImportClientAccount(YamlTransactionCase):
             types |= self.env["client_account_type"].create(
                 {
                     "name": "Type %s - %s" % (suffix, label),
-                    "code": "/",
+                    "code": "T%s-%s" % (suffix, label.replace(" ", "")),
                     "group_id": group.id,
                     "sequence": 1,
                     "normal_balance": "dr",
