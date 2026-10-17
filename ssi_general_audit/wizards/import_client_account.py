@@ -47,6 +47,18 @@ class ImportClientAccount(models.TransientModel):
 * Uncheck this if the uploaded file does not start with a header row,
   so every row (including the first) is validated and imported.""",
     )
+    keep_existing_type = fields.Boolean(
+        string="Keep Existing Account Type",
+        default=True,
+        help="""Keep Existing Account Type
+
+* When checked (the default), the account type of an account that
+  already exists for the client is not overwritten by the type column
+  of the uploaded file.
+* Uncheck this to overwrite the type of existing accounts with the
+  type found in the file. New accounts always get the type from the
+  file.""",
+    )
     import_summary = fields.Text(
         string="Import Preview",
         readonly=True,
@@ -189,8 +201,9 @@ computing this preview.""",
 
         Skips the row (returns ``"skipped"``) when
         ``_is_valid_account_row`` rejects it. Otherwise updates the
-        matching existing account (``"updated"``) or creates a new one
-        (``"imported"``), flagging a name collision via
+        matching existing account (``"updated"``; its type is only
+        overwritten when ``keep_existing_type`` is unset) or creates a
+        new one (``"imported"``), flagging a name collision via
         ``_check_duplicate_name`` without blocking the creation.
 
         :param row: one parsed CSV row (list of column strings)
@@ -210,7 +223,7 @@ computing this preview.""",
         accounts = Account.search(criteria)
         if len(accounts) > 0:
             account = accounts[0]
-            if type_id:
+            if type_id and not self.keep_existing_type:
                 account.write({"type_id": type_id})
             result = "updated"
         else:
