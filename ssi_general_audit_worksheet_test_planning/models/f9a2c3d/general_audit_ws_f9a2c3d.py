@@ -480,3 +480,22 @@ class GeneralAuditWSf9a2c3d(models.Model):
             lambda d: d.audit_detail_id.id not in valid_ids
         )
         stale.unlink()
+
+    def _add_accounts_to_worksheet(self, accounts):
+        """Load accounts added to the audit after it started.
+
+        Called by ``general_audit._add_account``. Delegates to
+        ``_load_detail``, which only adds the missing lines, so the
+        existing lines and their manual inputs are kept. A worksheet
+        without a Standard Account is skipped, because ``_load_detail``
+        raises ``UserError`` for it and the hook must not block the
+        addition of accounts to the other worksheets.
+
+        :param accounts: ``client_account`` recordset just added to the
+            audit
+        :return: nothing
+        """
+        self.ensure_one()
+        if not self.standard_detail_id:
+            return
+        self._load_detail()
