@@ -75,6 +75,54 @@ class ClientAccount(models.Model):
         if self.type_id:
             self.normal_balance = self.type_id.normal_balance
 
+    @api.onchange(
+        "partner_id",
+    )
+    def onchange_partner_running_audit_warning(self):
+        """Warn when a new account is created for a client with a running audit.
+
+        An account created by hand is not added to the mapping and the
+        general audit automatically, so the user is told the next steps.
+        Nothing is returned for an existing record, an empty client or a
+        client without a running (draft or open) general audit.
+
+        :return: ``warning`` dictionary, or ``None`` when nothing to warn
+        """
+        self.ensure_one()
+        if self._origin.id or not self.partner_id:
+            return None
+        audits = (
+            self.env["general_audit"]
+            .sudo()
+            .search(
+                [
+                    ("partner_id", "=", self.partner_id.id),
+                    ("state", "in", ("draft", "open")),
+                ],
+                order="id",
+            )
+        )
+        if not audits:
+            return None
+        names = ", ".join(audits[:3].mapped("name"))
+        if len(audits) > 3:
+            names = _("%(names)s and %(count)s more") % {
+                "names": names,
+                "count": len(audits) - 3,
+            }
+        message = _(
+            "This client has a running General Audit: %(names)s. An account "
+            "created here is not added to the audit automatically. Add the "
+            "account to the CoA & Mapping of the audit, then press Account "
+            "on the audit."
+        ) % {"names": names}
+        return {
+            "warning": {
+                "title": _("Running General Audit"),
+                "message": message,
+            }
+        }
+
     @api.constrains("code")
     def _check_duplicate_code(self):
         error_msg = _("Duplicate code not allowed")

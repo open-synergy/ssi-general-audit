@@ -15,4 +15,5 @@ from . import test_adjusting_coa
 from . import test_adjusting_coa_negative
 from . import test_client_account_mapping_detail_duplicate
 from . import test_client_account_name_search
+from . import test_client_account_running_audit_warning
 from . import test_ui_client_adjusting_coa
