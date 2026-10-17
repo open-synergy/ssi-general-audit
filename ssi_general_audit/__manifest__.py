@@ -70,6 +70,7 @@
         "data/master/general_audit_relevant_regulation.xml",
         "menu.xml",
         "wizards/import_client_account.xml",
+        "wizards/add_client_account.xml",
         "wizards/import_trial_balance_detail.xml",
         "views/employee/hr_employee_views.xml",
         "views/team_role/team_role_views.xml",

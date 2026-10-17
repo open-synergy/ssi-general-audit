@@ -96,18 +96,23 @@
                             style="margin-right:4px"
                         />
                     <button
-                            name="action_open_account"
-                            type="object"
-                            string="Accounts"
+                            name="%(add_client_account_action)d"
+                            type="action"
+                            string="Add Account"
                             class="oe_highlight"
-                            icon="fa-bars"
+                            icon="fa-plus"
                             attrs="{'invisible':[('state','!=','open')]}"
+                            style="margin-right:4px"
                         />
                     <field name="detail_ids">
                         <tree editable="top">
                             <field name="sequence" invisible="1" />
                             <field name="code" />
-                            <field name="account_id" />
+                            <field
+                                    name="account_id"
+                                    domain="[('partner_id', '=', parent.partner_id)]"
+                                    options="{'no_create': True, 'no_create_edit': True}"
+                                />
                             <field name="type_id" />
                             <field name="normal_balance" />
                         </tree>
