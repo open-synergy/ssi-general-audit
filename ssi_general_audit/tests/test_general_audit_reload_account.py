@@ -22,3 +22,12 @@ class TestGeneralAuditReloadAccount(YamlTransactionCase):
     def test_general_audit_reload_account(self):
         """Run the dependent-worksheet-survives-reload scenario."""
         self.run_yaml_scenario("test_data_general_audit_reload_account.yaml")
+
+    def test_general_audit_reload_account_diff(self):
+        """Run the difference-based reload scenario.
+
+        Covers added and removed accounts, kept details, idempotency,
+        the blocks for an adjustment entry and the last account of a
+        type, and an audit without account mapping.
+        """
+        self.run_yaml_scenario("test_data_general_audit_reload_account_diff.yaml")

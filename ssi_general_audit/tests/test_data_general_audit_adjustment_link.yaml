@@ -195,20 +195,20 @@ scenarios:
             type: "m2o"
             expected: "REC: audit_detail"
 
-      - step: "Second reload: deletes and recreates the audit detail"
+      - step: "Second reload: keeps the audit detail"
         action: "call"
         target: "audit"
         method: "action_reload_account"
         as_user: "base.user_admin"
 
-      - step: "Fetch the recreated audit detail"
+      - step: "Fetch the audit detail again"
         action: "search"
         model: "general_audit.detail"
         domain: [["general_audit_id", "=", "REC: audit.id"]]
         save_as: "audit_detail_2"
         limit: 1
 
-      - step: "Assert the line is linked again to the recreated detail"
+      - step: "Assert the line is still linked to the audit detail"
         action: "assert"
         target: "adjustment_line"
         asserts:

@@ -34,6 +34,11 @@ class GeneralAudit(models.Model):
     # Adjusting Journal Entry that receives accounts added later. Its
     # sequence is read when needed, so a re-ordering of worksheet types
     # moves the cut-off with it.
+    _reload_account_restrict_models = [
+        ("general_audit_ws_b26d482.detail", "detail_id"),
+        ("general_audit_ws_f9f3299.detail", "detail_id"),
+        ("general_audit_ws_f9a2c3d.detail", "audit_detail_id"),
+    ]
     _add_account_cutoff_type_xmlid = (
         "ssi_general_audit_worksheet_lead_schedule.worksheet_type_b26d482"
     )
@@ -1043,53 +1048,133 @@ class GeneralAudit(models.Model):
             )
 
     def _reload_account(self):
+        """Synchronise the audit details with the account mapping.
+
+        Computes the difference between the accounts of the mapping and
+        the accounts of ``detail_ids``. New accounts are added to the
+        audit and to every worksheet that is not ``done`` (no cut-off).
+        Accounts that left the mapping are removed, but only when no
+        other document uses them. All checks run before anything is
+        changed. Details of unchanged accounts are never touched, and a
+        second call right after the first changes nothing. Without an
+        account mapping nothing is done.
+
+        :return: True
+        :raises UserError: when a removed account is still in use
+        """
         self.ensure_one()
-
-        old_detail_ids = self.detail_ids.ids
-
-        # Hapus dulu dependent records yang FK-nya required + restrict ke
-        # general_audit.detail -- pola sama seperti _reload_standard_account()
-        # -- kalau tidak, unlink() di bawah gagal kena constraint FK begitu
-        # engagement sudah punya worksheet Lead Schedule / Test Planning.
-        for model_name, field_name in [
-            ("general_audit_ws_b26d482.detail", "detail_id"),
-            ("general_audit_ws_f9f3299.detail", "detail_id"),
-            ("general_audit_ws_f9a2c3d.detail", "audit_detail_id"),
-        ]:
-            if model_name in self.env:
-                self.env[model_name].search(
-                    [(field_name, "in", old_detail_ids)]
-                ).unlink()
-
-        self.detail_ids.unlink()
-
         if not self.account_mapping_id:
             return True
 
-        Detail = self.env["general_audit.detail"]
+        target = self.account_mapping_id.detail_ids.mapped("account_id")
+        current = self.detail_ids.mapped("account_id")
+        to_remove = current - target
+        to_add = target - current
 
-        for account in self.account_mapping_id.detail_ids:
-            Detail.create(
-                {
-                    "general_audit_id": self.id,
-                    "account_id": account.account_id.id,
-                }
+        if to_remove:
+            self._check_accounts_removable(to_remove, target)
+            self._remove_accounts(to_remove)
+        if to_add:
+            self._add_account(to_add, apply_cutoff=False)
+        return True
+
+    def _check_accounts_removable(self, accounts, remaining):
+        """Raise one error listing every account that cannot be removed.
+
+        An account is blocked when a line of an adjustment entry of this
+        audit uses it, when a worksheet that is ``done`` has a line for
+        it, or when removing it leaves a standard detail or a group
+        detail of the audit without any account.
+
+        :param accounts: ``client_account`` recordset to remove
+        :param remaining: ``client_account`` recordset the audit keeps
+        :return: True when nothing blocks the removal
+        :raises UserError: listing all blocked accounts and documents
+        """
+        self.ensure_one()
+        problems = []
+
+        entry_lines = self.env["client_adjustment_entry.detail"].search(
+            [
+                ("entry_id.general_audit_id", "=", self.id),
+                ("account_id", "in", accounts.ids),
+            ]
+        )
+        for line in entry_lines:
+            problems.append(
+                "- Account %s is used by adjustment entry %s"
+                % (line.account_id.display_name, line.entry_id.display_name)
             )
 
-        # Reload dependent worksheets supaya baris detail mereka ter-generate
-        # ulang dari general_audit.detail yang baru.
-        if "general_audit_ws_b26d482" in self.env:
-            self.env["general_audit_ws_b26d482"].search(
-                [("general_audit_id", "=", self.id)]
-            ).action_load_detail()
-        if "general_audit_ws_f9f3299" in self.env:
-            self.env["general_audit_ws_f9f3299"].search(
-                [("general_audit_id", "=", self.id)]
-            ).action_reload_account()
-        if "general_audit_ws_f9a2c3d" in self.env:
-            self.env["general_audit_ws_f9a2c3d"].search(
-                [("general_audit_id", "=", self.id)]
-            ).action_load_detail()
+        details = self.detail_ids.filtered(lambda d: d.account_id in accounts)
+        for model_name, field_name in self._reload_account_restrict_models:
+            if model_name not in self.env:
+                continue
+            lines = self.env[model_name].search(
+                [
+                    (field_name, "in", details.ids),
+                    ("worksheet_id.state", "=", "done"),
+                ]
+            )
+            for line in lines:
+                problems.append(
+                    "- Account %s is used by worksheet %s that is done"
+                    % (
+                        line[field_name].account_id.display_name,
+                        line.worksheet_id.display_name,
+                    )
+                )
+
+        remaining_types = remaining.mapped("type_id")
+        for standard in self.standard_detail_ids:
+            if standard.type_id in accounts.mapped("type_id") and (
+                standard.type_id not in remaining_types
+            ):
+                problems.append(
+                    "- Account type %s would have no account left, "
+                    "use the Standard Account button" % standard.type_id.display_name
+                )
+        remaining_groups = remaining_types.mapped("group_id")
+        for group_detail in self.group_detail_ids:
+            if group_detail.group_id in accounts.mapped("type_id.group_id") and (
+                group_detail.group_id not in remaining_groups
+            ):
+                problems.append(
+                    "- Account group %s would have no account left, "
+                    "use the Standard Account button"
+                    % group_detail.group_id.display_name
+                )
+
+        if problems:
+            error_message = _(
+                """
+Context: Reload account of general audit
+Database ID: %s
+Problem: Some accounts cannot be removed:
+%s
+Solution: Keep these accounts in the account mapping
+"""
+                % (self.id, "\n".join(problems))
+            )
+            raise UserError(error_message)
+        return True
+
+    def _remove_accounts(self, accounts):
+        """Remove the details of accounts that left the mapping.
+
+        Deletes the worksheet lines that point to those details first,
+        because their foreign keys restrict deletion, then the details.
+
+        :param accounts: ``client_account`` recordset to remove
+        :return: True
+        """
+        self.ensure_one()
+        details = self.detail_ids.filtered(lambda d: d.account_id in accounts)
+        for model_name, field_name in self._reload_account_restrict_models:
+            if model_name in self.env:
+                self.env[model_name].search([(field_name, "in", details.ids)]).unlink()
+        details.unlink()
+        return True
 
     def _get_add_account_cutoff_sequence(self):
         """Return the sequence from which worksheets receive new accounts.
@@ -1108,7 +1193,7 @@ class GeneralAudit(models.Model):
             return False
         return cutoff_type.sequence
 
-    def _add_account(self, accounts):
+    def _add_account(self, accounts, apply_cutoff=True):
         """Add client accounts to the running audit incrementally.
 
         Used by ``client_adjusting_coa`` when the document is done.
@@ -1128,7 +1213,12 @@ class GeneralAudit(models.Model):
         is new to the audit gets no risk assessment in them, and Lead
         Schedule - Account does not list the new account.
 
+        With ``apply_cutoff=False`` every worksheet of the audit that is
+        not ``done`` receives the accounts, whatever its sequence.
+
         :param accounts: ``client_account`` recordset of this client
+        :param apply_cutoff: restrict worksheets to those at or after
+            the cut-off (default, used by Adjusting CoA)
         :return: True
         :raises UserError: when an account belongs to another client
         """
@@ -1214,16 +1304,14 @@ Solution: Only add accounts of the client of the audit
         )
         lines._compute_detail_id()
 
-        # Worksheets at or after the cut-off
-        cutoff = self._get_add_account_cutoff_sequence()
-        if cutoff is False:
-            return True
-        types = self.env["general_audit_worksheet_type"].search(
-            [
-                ("sequence", ">=", cutoff),
-                ("model_name", "!=", False),
-            ]
-        )
+        # Worksheets at or after the cut-off, or all when not applied
+        domain = [("model_name", "!=", False)]
+        if apply_cutoff:
+            cutoff = self._get_add_account_cutoff_sequence()
+            if cutoff is False:
+                return True
+            domain.append(("sequence", ">=", cutoff))
+        types = self.env["general_audit_worksheet_type"].search(domain)
         for worksheet_type in types:
             if worksheet_type.model_name not in self.env:
                 continue
