@@ -1800,6 +1800,31 @@ scenarios:
         save_as: "details_after_load"
         expect_count: 0
 
+  - name: "f9f3299 - Reload account without account_type_id (no error, stays empty)"
+    steps:
+      - step: "Create worksheet f9f3299 without account_type_id"
+        action: "create"
+        model: "general_audit_ws_f9f3299"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_f9f3299.id"
+
+      - step: "Reload account (must return early without error)"
+        action: "call"
+        target: "worksheet"
+        method: "action_reload_account"
+        as_user: "base.user_admin"
+
+      - step: "Assert no detail lines were created"
+        action: "search"
+        model: "general_audit_ws_f9f3299.detail"
+        domain:
+          - ["worksheet_id", "=", "REC: worksheet.id"]
+        save_as: "details_after_reload"
+        expect_count: 0
+
   - name: "e51bb1c - Workflow draft to done"
     steps:
       - step: "Create worksheet e51bb1c"
