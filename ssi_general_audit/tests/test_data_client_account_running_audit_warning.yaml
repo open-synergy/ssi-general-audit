@@ -1,0 +1,99 @@
+options:
+  auto_refresh: true
+
+scenarios:
+  - name: "Account can be saved when the client has a running audit"
+    steps:
+      - step: "Allow enough CPA licenses"
+        action: "search"
+        model: "ir.config_parameter"
+        domain: []
+        save_as: "config_parameter"
+        limit: 1
+
+      - step: "Set CPA license limit"
+        action: "call"
+        target: "config_parameter"
+        method: "set_param"
+        args:
+          - "ssi_general_audit.max_number_of_cpa_license"
+          - "100"
+
+      - step: "Create client partner"
+        action: "create"
+        model: "res.partner"
+        save_as: "client"
+        values:
+          name: "Test Client - Warning Form"
+          is_company: true
+
+      - step: "Create accountant partner"
+        action: "create"
+        model: "res.partner"
+        save_as: "accountant"
+        values:
+          name: "Test Accountant - Warning Form"
+
+      - step: "Get CPA license category"
+        action: "ref"
+        xml_id: "ssi_partner_identification_cpa_license.partner_identification_accountant_cpa_license"
+        save_as: "cpa_category"
+
+      - step: "Grant accountant a CPA license"
+        action: "create"
+        model: "res.partner.id_number"
+        save_as: "cpa_license"
+        values:
+          partner_id: "REC: accountant.id"
+          category_id: "REC: cpa_category.id"
+          name: "CPA-WARNINGFORM"
+
+      - step: "Create account type set"
+        action: "create"
+        model: "client_account_type_set"
+        save_as: "account_type_set"
+        values:
+          name: "Type Set - Warning Form"
+          code: "/"
+
+      - step: "Create financial accounting standard"
+        action: "create"
+        model: "accountant.financial_accounting_standard"
+        save_as: "standard"
+        values:
+          name: "Standard - Warning Form"
+          code: "/"
+
+      - step: "Create general audit"
+        action: "create"
+        model: "general_audit"
+        save_as: "audit"
+        values:
+          title: "Audit - Warning Form"
+          partner_id: "REC: client.id"
+          accountant_id: "REC: accountant.id"
+          account_type_set_id: "REC: account_type_set.id"
+          financial_accounting_standard_id: "REC: standard.id"
+          date_start: "2026-01-01"
+          date_end: "2026-12-31"
+          need_interim: false
+          need_previous: false
+          num_of_consecutive_audit_firm: 1
+          num_of_consecutive_audit_accountant: 1
+
+      - step: "Fill a new account through the form after choosing the client"
+        action: "form"
+        model: "client_account"
+        save_as: "account"
+        values:
+          partner_id: "REC: client"
+          name: "Warning Form Account"
+          code: "9.9.9.92"
+
+      - step: "Assert the account is saved for the client"
+        action: "assert"
+        target: "account"
+        asserts:
+          partner_id:
+            type: "m2o"
+            expected: "REC: client"
