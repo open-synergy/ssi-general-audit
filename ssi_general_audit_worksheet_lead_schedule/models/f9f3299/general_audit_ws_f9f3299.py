@@ -24,9 +24,10 @@ class GeneralAuditWSf9f3299(models.Model):
     * **Year-on-year difference (%)** — percentage change between adjusted and
       previous balances for preliminary analytical review.
 
-    Account lines are populated via ``action_reload_account``; the method
-    removes existing lines and regenerates them from the General Audit detail
-    list filtered to ``account_type_id``.
+    Account lines are synchronised via ``action_reload_account``: lines
+    are added for General Audit details of ``account_type_id`` that have
+    none, and removed only when their account left that type. Other
+    lines, with their manual input, are never touched.
 
     Allowed account types are restricted to types registered on the parent
     General Audit standard details.
@@ -104,14 +105,45 @@ class GeneralAuditWSf9f3299(models.Model):
             record._reload_account()
 
     def _reload_account(self):
+        """Synchronise the lines with the accounts of the account type.
+
+        Compares the General Audit details whose account has type
+        ``account_type_id`` with the details already in ``detail_ids``.
+        A line is created for each detail that has none, and the lines
+        of details that left the type are removed. Other lines are never
+        touched, so a second call changes nothing. Without
+        ``account_type_id`` nothing is done.
+
+        :return: True
+        """
         self.ensure_one()
-        self.detail_ids.unlink()
-        for detail in self.general_audit_id.detail_ids.filtered(
+        if not self.account_type_id:
+            return True
+        wanted = self.general_audit_id.detail_ids.filtered(
             lambda d: d.account_id.type_id == self.account_type_id
-        ):
-            data = {
-                "worksheet_id": self.id,
-                "detail_id": detail.id,
-                "account_id": detail.account_id.id,
-            }
-            self.env["general_audit_ws_f9f3299.detail"].create(data)
+        )
+        current = self.detail_ids.mapped("detail_id")
+        obsolete = self.detail_ids.filtered(lambda l: l.detail_id not in wanted)
+        obsolete.unlink()
+        for detail in wanted - current:
+            self.env["general_audit_ws_f9f3299.detail"].create(
+                {
+                    "worksheet_id": self.id,
+                    "detail_id": detail.id,
+                    "account_id": detail.account_id.id,
+                }
+            )
+        return True
+
+    def _add_accounts_to_worksheet(self, accounts):
+        """Load newly added client accounts into this worksheet.
+
+        Delegates to ``_reload_account``, which is incremental: lines
+        that already exist are kept as they are.
+
+        :param accounts: ``client_account`` recordset just added to the
+            audit
+        :return: nothing
+        """
+        self.ensure_one()
+        self._reload_account()
