@@ -13,7 +13,57 @@
         />
     <field name="mode">primary</field>
     <field name="arch" type="xml">
-        <data />
+        <data>
+            <xpath expr="//field[@name='name']" position="after">
+                <field name="general_audit_id" />
+                <field name="partner_id" />
+                <field name="date_start" string="Date Start" />
+                <field name="date_end" string="Date End" />
+                <field name="account_type_set_id" />
+            </xpath>
+            <xpath expr="//field[@name='company_id']" position="after">
+                <field
+                        name="operating_unit_id"
+                        groups="operating_unit.group_multi_operating_unit"
+                        optional="hide"
+                    />
+            </xpath>
+            <xpath expr="//filter[@name='grp_company']" position="after">
+                <filter
+                        name="grp_ou"
+                        string="Operating Unit"
+                        context="{'group_by':'operating_unit_id'}"
+                        groups="operating_unit.group_multi_operating_unit"
+                    />
+            </xpath>
+            <xpath expr="//group[@name='group_by']" position="inside">
+                <filter
+                        name="grp_general_audit_id"
+                        string="General Audit"
+                        context="{'group_by':'general_audit_id'}"
+                    />
+                <filter
+                        name="grp_partner_id"
+                        string="Partner"
+                        context="{'group_by':'partner_id'}"
+                    />
+                <filter
+                        name="grp_date_start"
+                        string="Date Start"
+                        context="{'group_by':'date_start'}"
+                    />
+                <filter
+                        name="grp_date_end"
+                        string="Date End"
+                        context="{'group_by':'date_end'}"
+                    />
+                <filter
+                        name="grp_account_type_set_id"
+                        string="Account Type Set"
+                        context="{'group_by':'account_type_set_id'}"
+                    />
+            </xpath>
+        </data>
     </field>
 </record>
 
@@ -86,10 +136,30 @@
             </xpath>
             <xpath expr="//page[@name='note']" position="before">
                 <page name="mapping" string="Account Mappings">
+                    <div class="alert alert-info" role="alert">
+                        <p>
+                            <b>Import Accounts</b>
+                            : upload a CSV file to add many accounts at once. Column 1
+                            is the account code, column 2 the account name and column 4
+                            the standard account type code. A code that already exists
+                            for this client is reused, a new code creates a new account.
+                            Every account in the file is added to the mapping below.
+                        </p>
+                        <p>
+                            <b>Add Accounts</b>
+                            : type the code, name and type of one or a few missing
+                            accounts directly in a form. Each account is created for
+                            this client and added to the mapping below.
+                        </p>
+                        <p class="mb-0">
+                            Both buttons are only shown while the document is in
+                            <b>Open</b> status.
+                        </p>
+                    </div>
                     <button
                             name="%(import_client_account_action)d"
                             type="action"
-                            string="Accounts"
+                            string="Import Accounts"
                             class="oe_highlight"
                             icon="fa-upload"
                             attrs="{'invisible':[('state','!=','open')]}"
@@ -98,7 +168,7 @@
                     <button
                             name="%(add_client_account_action)d"
                             type="action"
-                            string="Add Account"
+                            string="Add Accounts"
                             class="oe_highlight"
                             icon="fa-plus"
                             attrs="{'invisible':[('state','!=','open')]}"
