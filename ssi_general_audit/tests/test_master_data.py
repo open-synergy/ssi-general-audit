@@ -236,3 +236,57 @@ class TestMasterData(YamlTransactionCase):
         )
         self.assertEqual(localdict["result"], 48.0)
         self.assertEqual(localdict["result"], comprehensive_profit)
+
+    def _eval_computation_item(self, name, account_group, **extra):
+        """Evaluate a computation item's ``python_code`` by name.
+
+        :param name: ``trial_balance_computation_item.name``.
+        :param account_group: mapping of group code to amount.
+        :param extra: extra localdict entries, e.g. ``T003``.
+        :return: the ``result`` computed by the item's code.
+        """
+        item = self.env["trial_balance_computation_item"].search([("name", "=", name)])
+        self.assertEqual(len(item), 1)
+        localdict = {"account_group": account_group}
+        localdict.update(extra)
+        safe_eval(item.python_code, localdict, mode="exec", nocopy=True)
+        return localdict["result"]
+
+    def test_trial_balance_computation_item_ebt_missing_groups(self):
+        """Assert EBT tolerates account groups absent from the set.
+
+        Pure Python — trigger P1 (L-01, L-03; full rationale under
+        ``test_client_financial_ratio_current_ratio_audited``). A
+        Non-profit account type set has no type in group T013 or T014,
+        so the dict built by ``_get_account_type_dict`` lacks those
+        keys; the code must treat them as 0.0 instead of raising
+        ``KeyError``.
+        Localdict var available: ``account_group``.
+        Output var read back: ``result``.
+        """
+        account_group = {"T009": 100.0, "T010": 10.0, "T011": 30.0, "T012": 20.0}
+        self.assertEqual(self._eval_computation_item("EBT", account_group), 60.0)
+        self.assertEqual(self._eval_computation_item("EBT", {}), 0.0)
+        account_group.update({"T013": 5.0, "T014": 11.0})
+        self.assertEqual(self._eval_computation_item("EBT", account_group), 55.0)
+
+    def test_trial_balance_computation_item_eat_missing_groups(self):
+        """Assert EAT tolerates account groups absent from the set.
+
+        Pure Python — trigger P1 (L-01, L-03; full rationale under
+        ``test_client_financial_ratio_current_ratio_audited``). Same
+        scenario as ``test_trial_balance_computation_item_ebt_missing_groups``;
+        ``T003`` (Total Revenue) is supplied as the previous item's
+        result, as ``client_trial_balance.computation._recompute`` does.
+        Localdict vars available: ``account_group``, ``T003``.
+        Output var read back: ``result``.
+        """
+        account_group = {"T009": 100.0, "T010": 10.0, "T011": 30.0, "T012": 20.0}
+        self.assertEqual(
+            self._eval_computation_item("EAT", account_group, T003=110.0), 60.0
+        )
+        self.assertEqual(self._eval_computation_item("EAT", {}, T003=0.0), 0.0)
+        account_group.update({"T013": 5.0, "T014": 11.0})
+        self.assertEqual(
+            self._eval_computation_item("EAT", account_group, T003=110.0), 44.0
+        )
