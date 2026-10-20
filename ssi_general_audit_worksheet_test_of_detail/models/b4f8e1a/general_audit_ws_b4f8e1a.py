@@ -43,7 +43,7 @@ class GeneralAuditWsB4f8e1a(models.Model):
     """
 
     _name = "general_audit_ws_b4f8e1a"
-    _description = "Test of Detail (b4f8e1a)"
+    _description = "Test Conclusion (b4f8e1a)"
     _inherit = [
         "general_audit_worksheet_mixin",
     ]
