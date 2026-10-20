@@ -1,12 +1,12 @@
-# Fill Data and Generate Examination Data — Test of Detail
+# Fill Data and Generate Examination Data — Test Conclusion
 
 > **Module:** `ssi_general_audit_worksheet_test_of_detail`
 >
 > **Model:** `general_audit_ws_b4f8e1a`
 >
-> **Menu:** Risk Responses > Result > Test of Detail
+> **Menu:** Risk Responses > Result > Test Conclusion
 >
-> **Actor:** user in group _Test of Detail (b4f8e1a) — User_
+> **Actor:** user in group _Test Conclusion (b4f8e1a) — User_
 
 ## Pre-Condition
 
@@ -23,11 +23,11 @@
   the selected Subledger worksheet has its **Amount Column Number** field (Raw Data tab,
   below Identifier Column Number) set to the Raw Data column representing the recorded
   transaction amount.
-- **Access:** User is in group _Test of Detail (b4f8e1a) — User_ (or higher).
+- **Access:** User is in group _Test Conclusion (b4f8e1a) — User_ (or higher).
 
 ## Flow
 
-1. Open the **Risk Responses > Result > Test of Detail** menu.
+1. Open the **Risk Responses > Result > Test Conclusion** menu.
 2. Open the worksheet to fill in.
 3. In the **Data** section, select the **Data Mode**: **General Ledger** or
    **Subledger**.

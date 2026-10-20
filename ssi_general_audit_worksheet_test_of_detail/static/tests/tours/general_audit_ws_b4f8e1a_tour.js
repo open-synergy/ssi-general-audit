@@ -17,7 +17,7 @@ odoo.define(
                 url: "/web",
             },
             [
-                // Flow 1 - Open the Risk Responses > Result > Test of Detail menu
+                // Flow 1 - Open the Risk Responses > Result > Test Conclusion menu
                 tour.stepUtils.showAppsMenuItem(),
                 {
                     content: "Open the Risk Responses app",
@@ -30,7 +30,7 @@ odoo.define(
                         '.o_menu_sections [data-menu-xmlid="ssi_general_audit.menu_rr_result"]',
                 },
                 {
-                    content: "Open the Test of Detail menu",
+                    content: "Open the Test Conclusion menu",
                     trigger:
                         ".o_menu_sections " +
                         "[data-menu-xmlid='ssi_general_audit_worksheet_test_of_detail" +
@@ -39,9 +39,9 @@ odoo.define(
                 {
                     // Gate: wait for the TARGET action, not just any list view --
                     // clicking Result lands on its first sub-menu first.
-                    content: "Test of Detail list is displayed",
+                    content: "Test Conclusion list is displayed",
                     trigger:
-                        ".o_control_panel .breadcrumb-item.active:contains(Test of Detail)",
+                        ".o_control_panel .breadcrumb-item.active:contains(Test Conclusion)",
                     extra_trigger: ".o_list_view",
                     run: function () {
                         // Assertion only; do not trigger the default click action.
