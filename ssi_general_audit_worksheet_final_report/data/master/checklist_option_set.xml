@@ -1,0 +1,14 @@
+<?xml version='1.0' encoding='utf-8' ?>
+<odoo>
+    <record
+        id="checklist_option_set_present_not_present_not_relevant"
+        model="checklist.option_set"
+    >
+        <field name="code">/</field>
+        <field name="name">3 Options (Present/Not Present/Not Relevant)</field>
+        <field
+            name="option_ids"
+            eval="[(6, 0, [ref('ssi_general_audit.checklist_option_present'), ref('ssi_general_audit.checklist_option_not_present'), ref('ssi_general_audit.checklist_option_not_relevant')])]"
+        />
+    </record>
+</odoo>
