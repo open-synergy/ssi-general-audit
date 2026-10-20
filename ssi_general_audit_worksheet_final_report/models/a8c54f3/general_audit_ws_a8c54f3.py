@@ -273,7 +273,7 @@ class GeneralAuditWSa8c54f3(models.Model):
     def _compute_link_6_ids(self):
         """Populate ``link_6_ids`` with the open/done worksheets.
 
-        Links every worksheet of type "Test Planning"
+        Links every worksheet of type "Test of Detail Planning"
         (``general_audit_ws_f9a2c3d``) that shares the same
         ``general_audit_id`` and has ``state`` in
         ``["open", "done"]``. Every match is linked: the worksheet
@@ -293,13 +293,13 @@ class GeneralAuditWSa8c54f3(models.Model):
             record.link_6_ids = result
 
     link_6_ids = fields.Many2many(
-        string="Test Planning",
+        string="Test of Detail Planning",
         comodel_name="general_audit_ws_f9a2c3d",
         compute_sudo=True,
         compute="_compute_link_6_ids",
         store=True,
         help=(
-            "Collection of all (Test Planning) worksheets linked to this "
+            "Collection of all (Test of Detail Planning) worksheets linked to this "
             "General Audit. Automatically computed and stored."
         ),
     )
@@ -351,7 +351,7 @@ class GeneralAuditWSa8c54f3(models.Model):
     def _compute_link_8_ids(self):
         """Populate ``link_8_ids`` with the open/done worksheets.
 
-        Links every worksheet of type "Test of Detail"
+        Links every worksheet of type "Test Conclusion"
         (``general_audit_ws_b4f8e1a``) that shares the same
         ``general_audit_id`` and has ``state`` in
         ``["open", "done"]``. Every match is linked: the worksheet
@@ -371,13 +371,13 @@ class GeneralAuditWSa8c54f3(models.Model):
             record.link_8_ids = result
 
     link_8_ids = fields.Many2many(
-        string="Test of Detail",
+        string="Test Conclusion",
         comodel_name="general_audit_ws_b4f8e1a",
         compute_sudo=True,
         compute="_compute_link_8_ids",
         store=True,
         help=(
-            "Collection of all (Test of Detail) worksheets linked to this "
+            "Collection of all (Test Conclusion) worksheets linked to this "
             "General Audit. Automatically computed and stored."
         ),
     )
@@ -2299,9 +2299,9 @@ class GeneralAuditWSa8c54f3(models.Model):
             "link_3_ids": _("Test of Control"),
             "link_4_ids": _("Analytical Procedures - Cycle"),
             "link_5_ids": _("Key Audit Procedures"),
-            "link_6_ids": _("Test Planning"),
+            "link_6_ids": _("Test of Detail Planning"),
             "link_7_ids": _("Sample Determination"),
-            "link_8_ids": _("Test of Detail"),
+            "link_8_ids": _("Test Conclusion"),
             "link_9_ids": _("Vouching Audit Procedure"),
             "link_10_ids": _("Physical Check"),
             "link_11_ids": _("Observation Audit Procedure"),
