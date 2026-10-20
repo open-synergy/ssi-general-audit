@@ -939,7 +939,7 @@ scenarios:
             type: "value"
             expected: 60.0
 
-      - step: "Assert audited vs planning diffs (overall and performance)"
+      - step: "Assert audited vs planning diffs"
         action: "assert"
         target: "worksheet"
         asserts:
@@ -955,30 +955,12 @@ scenarios:
           audited_planning_performance_materiality_diff_percentage:
             type: "value"
             expected: 100.0
-
-      # NOTE (production bug, not fixed here per task instructions): _compute_diff
-      # in general_audit_ws_bb33b94.py never assigns
-      # audited_planning_tolerable_misstatement_diff /
-      # audited_planning_tolerable_misstatement_diff_percentage — the "Tolerable
-      # Misstatement Diff" block only computes the audited-vs-unaudited (end
-      # period) pair, unlike the Overall/Performance blocks above it which both
-      # compute an audited-vs-unaudited AND an audited-vs-planning pair. As a
-      # result these two fields always stay at their zero default regardless of
-      # planning_tolerable_misstatement. Asserting the actual (buggy) behavior
-      # here rather than the value the symmetric formula would imply (20000.0 /
-      # 100.0).
-      - step:
-          "Assert audited vs planning tolerable misstatement diff (actual, unassigned by
-          _compute_diff)"
-        action: "assert"
-        target: "worksheet"
-        asserts:
           audited_planning_tolerable_misstatement_diff:
             type: "value"
-            expected: 0.0
+            expected: 20000.0
           audited_planning_tolerable_misstatement_diff_percentage:
             type: "value"
-            expected: 0.0
+            expected: 100.0
 
   # ------------------------------------------------------------------
   # _compute_diff - pembagi nol (guard percentage ke 0.0)
@@ -1057,6 +1039,12 @@ scenarios:
             type: "value"
             expected: 0.0
           audited_unaudited_tolerable_misstatement_diff_percentage:
+            type: "value"
+            expected: 0.0
+          audited_planning_tolerable_misstatement_diff:
+            type: "value"
+            expected: 40000.0
+          audited_planning_tolerable_misstatement_diff_percentage:
             type: "value"
             expected: 0.0
 

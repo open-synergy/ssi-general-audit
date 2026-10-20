@@ -691,6 +691,17 @@ class GeneralAuditWSbb33b94(models.Model):
             else:
                 record.audited_unaudited_tolerable_misstatement_diff_percentage = 0.0
 
+            record.audited_planning_tolerable_misstatement_diff = (
+                record.tolerable_misstatement - record.planning_tolerable_misstatement
+            )
+            if record.planning_tolerable_misstatement != 0.0:
+                record.audited_planning_tolerable_misstatement_diff_percentage = (
+                    record.audited_planning_tolerable_misstatement_diff
+                    / record.planning_tolerable_misstatement
+                ) * 100.0
+            else:
+                record.audited_planning_tolerable_misstatement_diff_percentage = 0.0
+
     @api.depends(
         "general_audit_id",
     )
