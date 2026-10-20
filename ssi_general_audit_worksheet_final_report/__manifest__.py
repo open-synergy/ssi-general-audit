@@ -41,6 +41,7 @@
         # MASTER DATA
         "data/master/general_audit_worksheet_conclusion.xml",
         "data/master/general_audit_ws_f3ed115_category.xml",
+        "data/master/checklist_option_set.xml",
         "data/master/general_audit_ws_f3ed115_item.xml",
         "data/master/general_audit_ws_a8c54f3_category.xml",
         "data/master/general_audit_ws_a8c54f3_item.xml",
