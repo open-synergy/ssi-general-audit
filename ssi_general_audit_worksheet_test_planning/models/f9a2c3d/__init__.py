@@ -4,3 +4,6 @@
 
 from . import general_audit_ws_f9a2c3d
 from . import general_audit_ws_f9a2c3d_detail
+from . import general_audit_ws_f9a2c3d_timing
+from . import general_audit_ws_f9a2c3d_extent
+from . import general_audit_ws_f9a2c3d_technique

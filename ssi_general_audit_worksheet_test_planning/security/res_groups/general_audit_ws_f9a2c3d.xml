@@ -79,4 +79,37 @@
             eval="[(4, ref('general_audit_ws_f9a2c3d_company_child_group'))]"
         />
     </record>
+    <record id="general_audit_ws_f9a2c3d_timing_group" model="res.groups">
+        <field name="name">Test of Detail Timing</field>
+        <field
+            name="category_id"
+            ref="ssi_accountant.accountant_configurator_module_category"
+        />
+        <field
+            name="users"
+            eval="[(4, ref('base.user_root')), (4, ref('base.user_admin'))]"
+        />
+    </record>
+    <record id="general_audit_ws_f9a2c3d_extent_group" model="res.groups">
+        <field name="name">Test of Detail Extent</field>
+        <field
+            name="category_id"
+            ref="ssi_accountant.accountant_configurator_module_category"
+        />
+        <field
+            name="users"
+            eval="[(4, ref('base.user_root')), (4, ref('base.user_admin'))]"
+        />
+    </record>
+    <record id="general_audit_ws_f9a2c3d_technique_group" model="res.groups">
+        <field name="name">Primary Audit Technique</field>
+        <field
+            name="category_id"
+            ref="ssi_accountant.accountant_configurator_module_category"
+        />
+        <field
+            name="users"
+            eval="[(4, ref('base.user_root')), (4, ref('base.user_admin'))]"
+        />
+    </record>
 </odoo>

@@ -6,221 +6,236 @@ from odoo import api, fields, models
 
 
 class GeneralAuditWSf9a2c3dDetail(models.Model):
-    """Test Planning Account Detail (f9a2c3d.detail).
+    """Test of Detail Planning Line (f9a2c3d.detail).
 
-    One record per individual client account within a Test Planning worksheet
-    where Test of Detail is performed at the account level
-    (``tod_level = 'account'`` on the parent worksheet).
+    One record per standard account of the General Audit. Nine columns
+    describe the planning of the Test of Detail for that account:
 
-    Each line is linked to a ``general_audit.detail`` record (an individual
-    client account within the General Audit). The auditor manually allocates
-    a Tolerable Misstatement per account and enters Key Items to compute
-    the sampling parameters.
+    1. Standard Account and Account Type
+    2. Balance, taken from the Specific Materiality worksheet (6dcda0e)
+    3. Performance Materiality
+    4. ROMM
+    5. Assertion Types
+    6. AP Result, taken from Analytical Procedures - Cycle (a3c9d2e)
+    7. Timing
+    8. Extent
+    9. Primary Audit Technique
 
-    Sampling formula (ISA 530 MUS):
-      Sampling Pool     = Account Balance - Key Items
-      Sampling Interval = Tolerable Misstatement ÷ Confidence Factor
-      Sample Count      = Sampling Pool ÷ Sampling Interval
+    Columns 1 to 6 are loaded by the **Detail** button of the worksheet
+    and are never edited by hand. Columns 7 to 9 are chosen by the
+    auditor while the worksheet is open.
     """
 
     _name = "general_audit_ws_f9a2c3d.detail"
-    _description = "Test Planning Account Detail (f9a2c3d)"
-    _order = "worksheet_id, sequence, id"
+    _description = "Test of Detail Planning Line (f9a2c3d)"
+    _order = "worksheet_id, standard_detail_id"
 
     worksheet_id = fields.Many2one(
-        comodel_name="general_audit_ws_f9a2c3d",
         string="# Worksheet",
+        comodel_name="general_audit_ws_f9a2c3d",
         required=True,
         ondelete="cascade",
-        help="Parent Test Planning worksheet.",
+        help="Test of Detail Planning worksheet that owns this line.",
     )
-    sequence = fields.Integer(
-        string="Sequence",
-        default=5,
-        help="Display order within the worksheet.",
-    )
-    currency_id = fields.Many2one(
-        comodel_name="res.currency",
-        string="Currency",
-        related="worksheet_id.currency_id",
-        store=True,
-        compute_sudo=True,
-        help="Currency inherited from the parent worksheet.",
-    )
-
-    # --- Account linkage ---
-
-    @api.depends(
-        "worksheet_id",
-        "worksheet_id.general_audit_id",
-        "worksheet_id.standard_detail_id",
-    )
-    def _compute_allowed_audit_detail_ids(self):
-        AuditDetail = self.env["general_audit.detail"]
-        for record in self:
-            record.allowed_audit_detail_ids = AuditDetail
-            ws = record.worksheet_id
-            if ws.general_audit_id and ws.standard_detail_id:
-                record.allowed_audit_detail_ids = AuditDetail.search(
-                    [
-                        ("general_audit_id", "=", ws.general_audit_id.id),
-                        ("type_id", "=", ws.standard_detail_id.type_id.id),
-                    ]
-                )
-
-    allowed_audit_detail_ids = fields.Many2many(
-        comodel_name="general_audit.detail",
-        string="Allowed Audit Details",
-        compute="_compute_allowed_audit_detail_ids",
-        store=False,
-        compute_sudo=True,
-        help="Individual account detail lines available for this account type.",
-    )
-    audit_detail_id = fields.Many2one(
-        comodel_name="general_audit.detail",
-        string="Account",
+    standard_detail_id = fields.Many2one(
+        string="Standard Account",
+        comodel_name="general_audit.standard_detail",
         required=True,
         ondelete="restrict",
-        help="Individual client account detail from the General Audit.",
+        help="Standard account of the General Audit planned by this line.",
     )
-    account_id = fields.Many2one(
-        comodel_name="client_account",
-        string="Client Account",
-        related="audit_detail_id.account_id",
+    type_id = fields.Many2one(
+        string="Account Type",
+        comodel_name="client_account_type",
+        related="standard_detail_id.type_id",
         store=True,
         compute_sudo=True,
-        help="Client account from the linked audit detail.",
+        help="Account type of the standard account.",
     )
-    audited_balance = fields.Monetary(
-        string="Account Balance (Rp)",
-        currency_field="currency_id",
-        related="audit_detail_id.audited_balance",
+    currency_id = fields.Many2one(
+        string="Currency",
+        comodel_name="res.currency",
+        related="standard_detail_id.currency_id",
         store=True,
         compute_sudo=True,
-        help="Audited balance for this individual account.",
+        help="Currency of the standard account.",
     )
 
-    # --- Sampling parameters ---
+    # --- Balance and performance materiality ---
 
-    @api.depends("tolerable_misstatement", "worksheet_id.risk_factor_adjustment")
-    def _compute_specific_materiality(self):
+    @api.depends(
+        "standard_detail_id",
+        "worksheet_id.general_audit_id",
+    )
+    def _compute_balance(self):
+        """Take the balance of the Specific Materiality mapping line.
+
+        The balance is the one the Specific Materiality worksheet
+        (6dcda0e) uses for the same standard account, so both columns
+        share one basis. It is ``0.0`` when no mapping line exists. The
+        mapping lives on another model, so the value is refreshed each
+        time the **Detail** button recreates the lines.
+
+        :return: nothing; assigns ``balance``
+        """
+        Mapping = self.env["general_audit_ws_6dcda0e_materiality_mapping"]
         for record in self:
-            record.specific_materiality = (
-                record.tolerable_misstatement
-                * record.worksheet_id.risk_factor_adjustment
-                / 100.0
-            )
+            result = 0.0
+            mapping = Mapping.search(record._get_mapping_criteria(), limit=1)
+            if mapping:
+                result = mapping.balance
+            record.balance = result
 
-    specific_materiality = fields.Monetary(
-        string="Specific Materiality (Rp)",
+    balance = fields.Monetary(
+        string="Balance",
         currency_field="currency_id",
-        compute="_compute_specific_materiality",
+        compute="_compute_balance",
         store=True,
         compute_sudo=True,
         help=(
-            "Specific Materiality = Tolerable Misstatement × Risk Factor Adjustment (%). "
-            "Inherited from the parent worksheet."
-        ),
-    )
-    direct_examination = fields.Boolean(
-        string="Direct Examination",
-        default=True,
-        help="Whether 100%% direct examination (no sampling) is applied.",
-    )
-    need_sampling = fields.Boolean(
-        string="Sampling",
-        default=False,
-        help="Whether statistical sampling is planned for this account.",
-    )
-
-    @api.onchange(
-        "audit_detail_id",
-        "direct_examination",
-        "need_sampling",
-    )
-    def _onchange_examination_sampling(self):
-        if self.direct_examination and not self.need_sampling:
-            self.key_item_amount = self.audited_balance
-        elif not self.direct_examination and self.need_sampling:
-            self.key_item_amount = 0.0
-
-    tolerable_misstatement = fields.Monetary(
-        string="Tolerable Misstatement (Rp)",
-        currency_field="currency_id",
-        help=(
-            "Tolerable Misstatement allocated to this individual account. "
-            "Manually entered by the auditor (ISA 530 MUS)."
-        ),
-    )
-    key_item_amount = fields.Monetary(
-        string="Direct Examination (Rp)",
-        currency_field="currency_id",
-        help=(
-            "Total amount of key items and directly examined items "
-            "(100%% examination). Manually entered by the auditor."
+            "Balance of the standard account, taken from the Specific "
+            "Materiality worksheet (6dcda0e). 0.0 when the account has no "
+            "line there."
         ),
     )
 
     @api.depends(
-        "audit_detail_id",
-        "audited_balance",
-        "key_item_amount",
+        "standard_detail_id",
+        "worksheet_id.general_audit_id",
     )
-    def _compute_sampling_amount(self):
-        for record in self:
-            record.sampling_amount = record.audited_balance - record.key_item_amount
+    def _compute_performance_materiality(self):
+        """Choose the materiality threshold of the standard account.
 
-    sampling_amount = fields.Monetary(
-        string="Sampling (Rp)",
+        The specific materiality of the mapping line is used when
+        ``Use Specific Materiality`` is ticked. Otherwise the ``base``
+        of the Specific Materiality worksheet (6dcda0e) of the same audit
+        is used, which follows the Materiality Type chosen there. The
+        mapping and that worksheet live on other models, so the value is
+        refreshed each time the **Detail** button recreates the lines.
+
+        :return: nothing; assigns ``performance_materiality``
+        """
+        Mapping = self.env["general_audit_ws_6dcda0e_materiality_mapping"]
+        Worksheet = self.env["general_audit_ws_6dcda0e"]
+        for record in self:
+            result = 0.0
+            mapping = Mapping.search(record._get_mapping_criteria(), limit=1)
+            if mapping and mapping.use_specific_materiality:
+                result = mapping.specific_materiality
+            else:
+                worksheet = mapping.worksheet_id or Worksheet.search(
+                    record._get_specific_materiality_criteria(), limit=1
+                )
+                result = worksheet.base
+            record.performance_materiality = result
+
+    performance_materiality = fields.Monetary(
+        string="Performance Materiality",
         currency_field="currency_id",
-        compute="_compute_sampling_amount",
+        compute="_compute_performance_materiality",
         store=True,
         compute_sudo=True,
-        readonly=False,
-        help="Sampling Pool = Account Balance - Key Items (ISA 530 MUS).",
-    )
-    confidence_factor = fields.Float(
-        string="Confidence Factor",
-        digits=(12, 2),
         help=(
-            "Confidence factor from ISA sampling table, determined by ROMM level "
-            "and availability of Substantive Analytical Procedure assurance "
-            "(ISA GUIDE VOL 2, page 231)."
+            "Specific materiality of the account when Use Specific "
+            "Materiality is ticked in the Specific Materiality worksheet "
+            "(6dcda0e). Otherwise the Balance base of that worksheet."
         ),
     )
 
-    @api.depends("tolerable_misstatement", "confidence_factor")
-    def _compute_sampling_interval(self):
-        for record in self:
-            if record.confidence_factor > 0:
-                record.sampling_interval = (
-                    record.tolerable_misstatement / record.confidence_factor
-                )
-            else:
-                record.sampling_interval = 0.0
+    def _get_mapping_criteria(self):
+        """Return the domain of the mapping line of this account.
 
-    sampling_interval = fields.Monetary(
-        string="Sampling Interval",
-        currency_field="currency_id",
-        compute="_compute_sampling_interval",
+        :return: a domain on the Specific Materiality mapping lines
+        """
+        self.ensure_one()
+        return [
+            ("standard_detail_id", "=", self.standard_detail_id.id),
+            (
+                "worksheet_id.general_audit_id",
+                "=",
+                self.worksheet_id.general_audit_id.id,
+            ),
+        ]
+
+    def _get_specific_materiality_criteria(self):
+        """Return the domain of the Specific Materiality worksheets.
+
+        :return: a domain limited to the audit of this line
+        """
+        self.ensure_one()
+        return [("general_audit_id", "=", self.worksheet_id.general_audit_id.id)]
+
+    # --- Risk information ---
+
+    romm = fields.Selection(
+        string="ROMM",
+        related="standard_detail_id.romm",
         store=True,
         compute_sudo=True,
-        help="Sampling Interval = Tolerable Misstatement ÷ Confidence Factor (ISA 530 MUS).",
+        help=(
+            "Risk of material misstatement assessed in the Account Level "
+            "ROMM worksheet (d66d87a)."
+        ),
+    )
+    pr_assersion_type_ids = fields.Many2many(
+        string="Assersion Types",
+        comodel_name="general_audit_assersion_type",
+        related="standard_detail_id.pr_assersion_type_ids",
+        compute_sudo=True,
+        help=(
+            "Assertion types of the standard account, as set in the "
+            "Account Level ROMM worksheet (d66d87a)."
+        ),
     )
 
-    @api.depends("sampling_amount", "sampling_interval")
-    def _compute_sample_count(self):
-        for record in self:
-            if record.sampling_interval > 0:
-                record.sample_count = record.sampling_amount / record.sampling_interval
-            else:
-                record.sample_count = 0.0
+    @api.depends("standard_detail_id.analytical_procedures_cycle_result")
+    def _compute_ap_result(self):
+        """Read the result of the Analytical Procedures - Cycle worksheet.
 
-    sample_count = fields.Float(
-        string="Sample Count",
-        digits=(12, 2),
-        compute="_compute_sample_count",
+        :return: nothing; assigns ``ap_result``, ``none`` when empty
+        """
+        for record in self:
+            result = "none"
+            cycle_result = record.standard_detail_id.analytical_procedures_cycle_result
+            if cycle_result:
+                result = cycle_result
+            record.ap_result = result
+
+    ap_result = fields.Selection(
+        string="AP Result",
+        selection=[
+            ("high", "High"),
+            ("moderate", "Moderate"),
+            ("none", "None"),
+        ],
+        compute="_compute_ap_result",
         store=True,
         compute_sudo=True,
-        help="Computed Sample Count = Sampling Pool ÷ Sampling Interval.",
+        help=(
+            "Result of the Analytical Procedures - Cycle worksheet "
+            "(a3c9d2e) for this account. None when it has no result."
+        ),
+    )
+
+    # --- Planning chosen by the auditor ---
+
+    timing_id = fields.Many2one(
+        string="Timing",
+        comodel_name="general_audit_ws_f9a2c3d_timing",
+        ondelete="restrict",
+        help="When the Test of Detail is performed.",
+    )
+    extent_id = fields.Many2one(
+        string="Extent",
+        comodel_name="general_audit_ws_f9a2c3d_extent",
+        ondelete="restrict",
+        help="How much of the account population is tested.",
+    )
+    technique_ids = fields.Many2many(
+        string="Primary Audit Technique",
+        comodel_name="general_audit_ws_f9a2c3d_technique",
+        relation="rel_ga_ws_f9a2c3d_detail_2_technique",
+        column1="detail_id",
+        column2="technique_id",
+        help="Audit techniques used for the test. More than one may be chosen.",
     )
