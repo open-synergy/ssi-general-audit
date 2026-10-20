@@ -49,7 +49,7 @@ class GeneralAuditWSf9a2c3d(models.Model):
     """
 
     _name = "general_audit_ws_f9a2c3d"
-    _description = "Test Planning (f9a2c3d)"
+    _description = "Test of Detail Planning (f9a2c3d)"
     _inherit = [
         "general_audit_worksheet_mixin",
     ]
