@@ -692,3 +692,79 @@ class TestWSDraftReporting(YamlTransactionCase):
         lines = worksheet.cashflow_line_ids
         self.assertTrue(lines)
         self.assertFalse(any(lines.mapped("amount")))
+
+    def _create_balance_detail(self, worksheet, type_, current, previous):
+        """Create a standard detail and its b555edd line with balances.
+
+        :param recordset worksheet: the b555edd worksheet
+        :param recordset type_: the ``client_account_type`` of the line
+        :param float current: audited balance of the current period
+        :param float previous: balance of the previous period
+        :return: the ``general_audit_ws_b555edd.detail`` record
+        :rtype: recordset
+        """
+        standard = self.env["general_audit.standard_detail"].create(
+            {"general_audit_id": worksheet.general_audit_id.id, "type_id": type_.id}
+        )
+        standard.write({"audited_balance": current, "previous_balance": previous})
+        return self.env["general_audit_ws_b555edd.detail"].create(
+            {"worksheet_id": worksheet.id, "standard_detail_id": standard.id}
+        )
+
+    def _profit_by_field(self, total_type, field, details):
+        """Fake ``_get_formula_total``: profit 100 now, 40 before.
+
+        :param str total_type: ``total_type`` asked for
+        :param str field: balance field asked for
+        :param details: ignored
+        :return: the fixed profit of the period
+        :rtype: float
+        """
+        if total_type != "profit_after_tax":
+            return 0.0
+        return 100.0 if field == "audited_balance" else 40.0
+
+    def test_retained_earnings_balance_adds_profit(self):
+        """Retained earnings line shows audit balance plus period profit.
+
+        Pure Python -- trigger P6 (L-15: no mock/patch in YAML; the
+        profit total is fixed at 100 and 40). The cash line and a
+        profit free worksheet must keep the plain audited balance.
+
+        :return: nothing; asserts the balances of both lines
+        """
+        retained_type = self.env.ref(
+            "ssi_general_audit.client_account_type_44_a5c4f192"
+        )
+        other_type = self.env["client_account_type"].search(
+            [("id", "!=", retained_type.id)], limit=1
+        )
+        worksheet = self._create_b555edd_worksheet("RetainedProfit")
+        with mock.patch.object(
+            type(worksheet),
+            "_get_formula_total",
+            side_effect=lambda t, f, d: self._profit_by_field(t, f, d),
+        ):
+            retained = self._create_balance_detail(worksheet, retained_type, 500, 300)
+            other = self._create_balance_detail(worksheet, other_type, 70, 60)
+            self.assertEqual(retained.current_balance, 600.0)
+            self.assertEqual(retained.previous_balance, 340.0)
+            self.assertEqual(other.current_balance, 70.0)
+            self.assertEqual(other.previous_balance, 60.0)
+
+    def test_retained_earnings_balance_without_profit(self):
+        """Without any profit the retained earnings line is unchanged.
+
+        Pure Python -- trigger P6 (L-15: no mock/patch in YAML). A
+        General Audit without profit and loss balances gives a zero
+        ``profit_after_tax`` total.
+
+        :return: nothing; asserts the balances equal the audit balances
+        """
+        retained_type = self.env.ref(
+            "ssi_general_audit.client_account_type_44_a5c4f192"
+        )
+        worksheet = self._create_b555edd_worksheet("RetainedNoProfit")
+        retained = self._create_balance_detail(worksheet, retained_type, 500, 300)
+        self.assertEqual(retained.current_balance, 500.0)
+        self.assertEqual(retained.previous_balance, 300.0)
