@@ -185,7 +185,7 @@
             <xpath expr="//group[@name='header_center']" position="inside">
                 <field name="title" />
             </xpath>
-            <xpath expr="//page[@name='note']" position="before">
+            <xpath expr="//page[@name='policy']" position="before">
                 <page name="other" string="Other Information">
                     <group name="other_1" colspan="4" col="2">
                         <group name="other_1_1" colspan="1" col="2">
@@ -203,6 +203,7 @@
                                     name="previous_audit"
                                     attrs="{'invisible':[('restatement_option','!=','external')],'required':[('restatement_option','=','external')]}"
                                 />
+                            <field name="audit_fee" />
                         </group>
                     </group>
                 </page>
@@ -397,6 +398,9 @@
                         <field name="aje_total_profit_loss" />
                     </group>
                 </page>
+            </xpath>
+            <xpath expr="//page[@name='policy']" position="after">
+                <xpath expr="//page[@name='note']" position="move" />
             </xpath>
         </data>
     </field>

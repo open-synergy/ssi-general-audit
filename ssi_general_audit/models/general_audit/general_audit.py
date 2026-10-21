@@ -306,6 +306,15 @@ class GeneralAudit(models.Model):
         states={"draft": [("readonly", False)]},
         help="Reference number or description of the previous audit (external).",
     )
+    audit_fee = fields.Monetary(
+        string="Audit Fee",
+        currency_field="currency_id",
+        required=False,
+        default=0.0,
+        readonly=True,
+        states={"draft": [("readonly", False)]},
+        help="Agreed audit fee, expressed in the audit currency.",
+    )
     required_worksheet_type_ids = fields.Many2many(
         string="Required Worksheet Type(s)",
         comodel_name="general_audit_worksheet_type",
