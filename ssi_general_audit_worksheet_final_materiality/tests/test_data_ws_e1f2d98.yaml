@@ -1037,6 +1037,13 @@ scenarios:
         save_as: "kept_line"
         expect_count: 1
 
+      - step: "Reset worksheet e1f2d98 to draft so it can be deleted"
+        action: "write"
+        target: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          state: "draft"
+
       - step: "Delete worksheet e1f2d98"
         action: "unlink"
         target: "worksheet"
