@@ -47,7 +47,7 @@ class WSE1F2D98VerticalHorizontalAnalysis(models.Model):
         string="Preliminary Detail Analysis",
         comodel_name="general_audit_ws_b32655a.vertical_horizontal_analysis",
         required=True,
-        ondelete="restrict",
+        ondelete="cascade",
         help=(
             "Link to the related preliminary detail analysis. Deleting the "
             "analysis will also delete this line."
