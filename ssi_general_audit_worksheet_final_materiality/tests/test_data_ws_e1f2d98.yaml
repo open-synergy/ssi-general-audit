@@ -874,3 +874,178 @@ scenarios:
           state:
             type: "value"
             expected: "draft"
+
+  # ------------------------------------------------------------------
+  # prelim_analysis_id ondelete cascade (#519)
+  # ------------------------------------------------------------------
+  - name: "e1f2d98 - deleting preliminary analysis cascades to e1f2d98 line"
+    steps:
+      - step:
+          "Create client account type (line 1) with a safe extrapolation python_code"
+        action: "create"
+        model: "client_account_type"
+        save_as: "account_type_1"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Account Type 1 - Cascade Delete"
+          code: "/"
+          group_id: "REC: account_group.id"
+          python_code: "result = 0.0"
+
+      - step:
+          "Create client account type (line 2) with a safe extrapolation python_code"
+        action: "create"
+        model: "client_account_type"
+        save_as: "account_type_2"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Account Type 2 - Cascade Delete"
+          code: "/"
+          group_id: "REC: account_group.id"
+          python_code: "result = 0.0"
+
+      - step: "Create general audit standard detail (line 1)"
+        action: "create"
+        model: "general_audit.standard_detail"
+        save_as: "standard_detail_1"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: account_type_1.id"
+
+      - step: "Create general audit standard detail (line 2)"
+        action: "create"
+        model: "general_audit.standard_detail"
+        save_as: "standard_detail_2"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: account_type_2.id"
+
+      - step: "Create preliminary b32655a worksheet"
+        action: "create"
+        model: "general_audit_ws_b32655a"
+        save_as: "ws_b32655a"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_b32655a.id"
+
+      - step: "Open preliminary b32655a worksheet"
+        action: "call"
+        target: "ws_b32655a"
+        method: "action_open"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after opening preliminary b32655a worksheet"
+        action: "call"
+        target: "ws_b32655a"
+        method: "invalidate_cache"
+
+      - step: "Create preliminary analysis line 1"
+        action: "create"
+        model: "general_audit_ws_b32655a.vertical_horizontal_analysis"
+        save_as: "prelim_line_1"
+        as_user: "base.user_admin"
+        values:
+          worksheet_id: "REC: ws_b32655a.id"
+          standard_detail_id: "REC: standard_detail_1.id"
+          industry_average: 12.5
+          vertical_need_attention: true
+          horizontal_need_attention: false
+          explanation: "Line 1 requires vertical attention"
+
+      - step: "Create preliminary analysis line 2"
+        action: "create"
+        model: "general_audit_ws_b32655a.vertical_horizontal_analysis"
+        save_as: "prelim_line_2"
+        as_user: "base.user_admin"
+        values:
+          worksheet_id: "REC: ws_b32655a.id"
+          standard_detail_id: "REC: standard_detail_2.id"
+          industry_average: 8.0
+          vertical_need_attention: false
+          horizontal_need_attention: true
+          explanation: "Line 2 requires horizontal attention"
+
+      - step: "Create worksheet e1f2d98"
+        action: "create"
+        model: "general_audit_ws_e1f2d98"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_e1f2d98.id"
+
+      - step: "Open worksheet e1f2d98"
+        action: "call"
+        target: "worksheet"
+        method: "action_open"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after opening worksheet e1f2d98"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Set ws_b32655a_id"
+        action: "write"
+        target: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          ws_b32655a_id: "REC: ws_b32655a.id"
+
+      - step: "Call action_load_analysis"
+        action: "call"
+        target: "worksheet"
+        method: "action_load_analysis"
+        as_user: "base.user_admin"
+
+      - step: "Load analysis lines"
+        action: "call"
+        target: "worksheet"
+        method: "action_load_analysis"
+        as_user: "base.user_admin"
+
+      - step: "Assert 2 analysis lines were loaded"
+        action: "search"
+        model: "general_audit_ws_e1f2d98.vertical_horizontal_analysis"
+        domain:
+          - ["worksheet_id", "=", "REC: worksheet.id"]
+        save_as: "loaded_lines"
+        expect_count: 2
+
+      - step: "Delete preliminary analysis line 2 referenced by e1f2d98 line"
+        action: "unlink"
+        target: "prelim_line_2"
+        as_user: "base.user_admin"
+
+      - step: "Assert only the line of the deleted analysis was removed"
+        action: "search"
+        model: "general_audit_ws_e1f2d98.vertical_horizontal_analysis"
+        domain:
+          - ["worksheet_id", "=", "REC: worksheet.id"]
+        save_as: "remaining_lines"
+        expect_count: 1
+
+      - step: "Assert remaining line still points to preliminary line 1"
+        action: "search"
+        model: "general_audit_ws_e1f2d98.vertical_horizontal_analysis"
+        domain:
+          - ["worksheet_id", "=", "REC: worksheet.id"]
+          - ["prelim_analysis_id", "=", "REC: prelim_line_1.id"]
+        save_as: "kept_line"
+        expect_count: 1
+
+      - step: "Delete worksheet e1f2d98"
+        action: "unlink"
+        target: "worksheet"
+        as_user: "base.user_admin"
+
+      - step: "Assert preliminary analysis line 1 is untouched"
+        action: "search"
+        model: "general_audit_ws_b32655a.vertical_horizontal_analysis"
+        domain:
+          - ["id", "=", "REC: prelim_line_1.id"]
+        save_as: "prelim_still_there"
+        expect_count: 1
