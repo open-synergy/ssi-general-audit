@@ -8,30 +8,32 @@
          DETAIL MODEL VIEWS
          ================================================================ -->
 
-    <!-- DETAIL LIST VIEW (embedded in parent) -->
+    <!-- DETAIL LIST VIEW (default list of the Details tab) -->
     <record id="general_audit_ws_f9a2c3d_detail_view_tree" model="ir.ui.view">
         <field name="name">general_audit_ws_f9a2c3d.detail tree</field>
         <field name="model">general_audit_ws_f9a2c3d.detail</field>
         <field name="arch" type="xml">
-            <tree editable="bottom">
-                <field name="sequence" widget="handle" />
+            <tree editable="bottom" create="false" delete="false">
                 <field name="currency_id" invisible="1" />
-                <field name="allowed_audit_detail_ids" invisible="1" />
+                <field name="standard_detail_id" readonly="1" />
+                <field name="type_id" readonly="1" />
+                <field name="balance" readonly="1" />
+                <field name="performance_materiality" readonly="1" />
+                <field name="romm" readonly="1" />
                 <field
-                    name="audit_detail_id"
-                    domain="[('id', 'in', allowed_audit_detail_ids)]"
+                    name="pr_assersion_type_ids"
+                    widget="many2many_tags"
+                    string="Assersion Types"
+                    readonly="1"
                 />
-                <field name="account_id" optional="hide" />
-                <field name="audited_balance" />
-                <field name="specific_materiality" optional="hide" />
-                <field name="direct_examination" />
-                <field name="need_sampling" />
-                <field name="tolerable_misstatement" />
-                <field name="key_item_amount" />
-                <field name="sampling_amount" />
-                <field name="confidence_factor" />
-                <field name="sampling_interval" optional="hide" />
-                <field name="sample_count" />
+                <field name="ap_result" readonly="1" />
+                <field name="timing_id" options="{'no_create': True}" />
+                <field name="extent_id" options="{'no_create': True}" />
+                <field
+                    name="technique_ids"
+                    widget="many2many_tags"
+                    options="{'no_create': True}"
+                />
             </tree>
         </field>
     </record>
@@ -64,18 +66,7 @@
             ref="ssi_general_audit.general_audit_worksheet_mixin_view_tree"
         />
         <field name="arch" type="xml">
-            <data>
-                <xpath expr="//field[@name='conclusion_id']" position="after">
-                    <field name="account_type_id" />
-                    <field name="materiality" />
-                    <field name="romm" />
-                    <field name="need_ap" string="AP" />
-                    <field name="need_tod" string="ToD" />
-                    <field name="timing" />
-                    <field name="tod_level" />
-                    <field name="audited_balance" />
-                </xpath>
-            </data>
+            <data />
         </field>
     </record>
 
@@ -91,156 +82,17 @@
         />
         <field name="arch" type="xml">
             <data>
-                <!-- Add test planning tab before the note page -->
                 <xpath expr="//page[1]" position="before">
-                    <page name="test_planning" string="Test Planning">
-
-                        <!-- Standard Account & Risk classification -->
-                        <group
-                            name="standard_account_info"
-                            string="Standard Account &amp; Risk Classification"
-                        >
-                            <group name="standard_account_info_left">
-                                <field
-                                    name="standard_detail_id"
-                                    domain="[('id', 'in', allowed_standard_detail_ids)]"
-                                    attrs="{'readonly': [('state', 'not in', ['open'])]}"
-                                />
-                                <field
-                                    name="allowed_standard_detail_ids"
-                                    invisible="1"
-                                />
-                                <field name="account_type_id" />
-                                <field name="materiality" />
-                                <field name="romm" />
-                                <field name="significant_account" />
-                            </group>
-                            <group
-                                name="standard_account_info_right"
-                                string="Audit Approach"
-                            >
-                                <field name="need_ap" string="AP Planned" />
-                                <field
-                                    name="ap_result"
-                                    attrs="{'readonly': [('state', 'not in', ['open'])]}"
-                                />
-                                <field name="need_tod" string="ToD Planned" />
-                                <field
-                                    name="timing"
-                                    attrs="{'readonly': [('state', 'not in', ['open'])]}"
-                                />
-                                <field
-                                    name="direct_examination"
-                                    attrs="{'readonly': [('state', 'not in', ['open'])]}"
-                                />
-                                <field
-                                    name="need_sampling"
-                                    attrs="{'readonly': [('state', 'not in', ['open'])]}"
-                                />
-                            </group>
-                        </group>
-
-                        <!-- Preliminary Materiality & ToD level -->
-                        <group
-                            name="materiality_config"
-                            string="Materiality &amp; Test of Detail Configuration"
-                        >
-                            <group
-                                name="materiality_config_left"
-                                string="Preliminary Materiality"
-                            >
-                                <field
-                                    name="preliminary_materiality_id"
-                                    domain="[('id', 'in', allowed_preliminary_materiality_ids)]"
-                                    attrs="{'readonly': [('state', 'not in', ['open'])]}"
-                                />
-                                <field name="performance_materiality" />
-                                <field name="specific_materiality" />
-                                <field
-                                    name="allowed_preliminary_materiality_ids"
-                                    invisible="1"
-                                />
-                            </group>
-                            <group
-                                name="materiality_config_right"
-                                string="Test of Detail Level"
-                            >
-                                <field
-                                    name="tod_level"
-                                    attrs="{'readonly': [('state', 'not in', ['open'])]}"
-                                />
-                                <field
-                                    name="risk_factor_adjustment"
-                                    attrs="{'readonly': [('state', 'not in', ['open'])]}"
-                                />
-                            </group>
-                        </group>
-
-                        <!-- Sampling at standard account level (tod_level = standard_account) -->
-                        <group
-                            name="sampling_standard"
-                            string="Sampling (Standard Account Level)"
-                            attrs="{'invisible': [('tod_level', '!=', 'standard_account')]}"
-                        >
-                            <group name="sampling_standard_left">
-                                <field name="audited_balance" />
-                                <field
-                                    name="key_item_amount"
-                                    attrs="{'readonly': [('state', 'not in', ['open'])]}"
-                                />
-                                <field name="sampling_amount" />
-                            </group>
-                            <group name="sampling_standard_right">
-                                <field
-                                    name="confidence_factor"
-                                    attrs="{'readonly': [('state', 'not in', ['open'])]}"
-                                />
-                                <field name="sampling_interval" />
-                                <field name="sample_count" />
-                            </group>
-                        </group>
-
-                        <!-- Account-level detail (tod_level = account) -->
-                        <div attrs="{'invisible': [('tod_level', '!=', 'account')]}">
-                            <button
-                                name="action_load_detail"
-                                type="object"
-                                string="Load / Sync Accounts"
-                                class="oe_highlight"
-                                icon="fa-refresh"
-                                attrs="{'invisible': [('state', 'not in', ['open'])]}"
-                            />
-                            <field
-                                name="detail_ids"
-                                nolabel="1"
-                                widget="one2many"
-                                mode="tree"
-                            >
-                                <tree editable="bottom">
-                                    <field name="sequence" widget="handle" />
-                                    <field name="currency_id" invisible="1" />
-                                    <field
-                                        name="allowed_audit_detail_ids"
-                                        invisible="1"
-                                    />
-                                    <field
-                                        name="audit_detail_id"
-                                        domain="[('id', 'in', allowed_audit_detail_ids)]"
-                                    />
-                                    <field name="account_id" optional="hide" />
-                                    <field name="audited_balance" />
-                                    <field name="tolerable_misstatement" />
-                                    <field name="specific_materiality" />
-                                    <field name="direct_examination" />
-                                    <field name="need_sampling" />
-                                    <field name="key_item_amount" />
-                                    <field name="sampling_amount" />
-                                    <field name="confidence_factor" />
-                                    <field name="sampling_interval" />
-                                    <field name="sample_count" />
-                                </tree>
-                            </field>
-                        </div>
+                    <page name="detail" string="Details">
+                        <button
+                            name="action_load_detail"
+                            type="object"
+                            string="Detail"
+                            class="oe_highlight"
+                            icon="fa-refresh"
+                            attrs="{'invisible': [('state', 'not in', ['open'])]}"
+                        />
+                        <field name="detail_ids" />
                     </page>
                 </xpath>
             </data>

@@ -19,24 +19,29 @@ General Audit Worksheet - Test Planning
 
 |badge1| |badge2| |badge3|
 
-Worksheet module for **Test Planning (f9a2c3d)** within General Audit.
+Worksheet module for **Test of Detail Planning (f9a2c3d)** within General Audit.
 
-Documents the auditor's planned and actual responses to assessed Risks of
-Material Misstatement (RMM) per significant account type, in accordance with
+One worksheet per General Audit, with one line per standard account. Each line
+holds the nine planning columns of the Test of Detail, in accordance with
 ISA 330 — The Auditor's Responses to Assessed Risks.
 
-- **Preliminary Materiality Link**: Tolerable Misstatement is sourced from the
-  linked Preliminary Materiality worksheet (d9d2b44).
-- **Per-Account Audit Approach**: For each significant account type, specifies
-  whether an Analytical Procedure (AP) and/or Test of Detail (ToD) is needed,
-  along with timing (Interim or Year-End).
-- **Sampling Parameters (ISA 530 MUS)**: Confidence Factor, Sampling Interval,
-  and Sample Count are computed automatically per account type based on ROMM
-  level and AP assurance availability.
-- **Load / Sync**: Standard accounts from the General Audit engagement can be
-  loaded and synchronised automatically.
+- **Detail button**: loads one line per standard account of the engagement.
+- **Balance and Performance Materiality**: taken from the Specific Materiality
+  worksheet (6dcda0e).
+- **ROMM and Assersion Types**: taken from the Account Level ROMM worksheet
+  (d66d87a).
+- **AP Result**: taken from the Analytical Procedures – Cycle worksheet
+  (a3c9d2e); None when the account has no result.
+- **Timing, Extent and Primary Audit Technique**: chosen by the auditor from
+  master data. More than one technique can be chosen.
 
-Reference standards: **ISA 300**, **ISA 315**, **ISA 330**, **ISA 530**.
+Reference standards: **ISA 300**, **ISA 330**, **ISA 530**.
+
+Work Instruction
+================
+
+* `Load Detail <docs/general_audit_ws_f9a2c3d/index.html>`_
+* `Fill In the Planning <docs/general_audit_ws_f9a2c3d/index.html>`_
 
 **Table of contents**
 
@@ -60,16 +65,13 @@ Usage
 =====
 
 1. Open **General Audit** and select the audit engagement.
-2. Go to the **Testing Plans** menu and create a new worksheet.
-3. Select the **Preliminary Materiality** worksheet to source the Tolerable
-   Misstatement value.
-4. Click **Load / Sync Standard Accounts** on the **Test Planning** tab to
-   populate detail lines from the significant account types defined in the audit.
-5. For each detail line, fill in the audit approach (AP, ToD, Timing, Direct
-   Examination) and sampling parameters (Confidence Factor).
-6. The system automatically computes **Sampling Interval** and **Sample Count**
-   based on the ISA 530 MUS formula.
-7. Fill in the **Conclusion** and **Review** on the main worksheet form,
+2. Go to **Risk Responses > Substantive Test > Test of Detail Planning** and
+   create a new worksheet.
+3. Open the worksheet and click **Detail** on the **Details** tab to load one
+   line per standard account.
+4. For each line, choose the **Timing**, **Extent** and **Primary Audit
+   Technique**.
+5. Fill in the **Conclusion** and **Review** on the main worksheet form,
    then confirm.
 
 Bug Tracker
