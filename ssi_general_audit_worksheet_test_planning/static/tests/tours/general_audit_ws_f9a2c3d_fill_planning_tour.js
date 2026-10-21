@@ -126,6 +126,11 @@ odoo.define(
                     content: "Type the second technique",
                     trigger:
                         ".o_selected_row .o_field_widget[name='technique_ids'] input",
+                    // Wait until the first tag is rendered, the input is
+                    // re-created after each choice.
+                    extra_trigger:
+                        ".o_selected_row .o_field_widget[name='technique_ids'] " +
+                        ".o_badge_text:contains(Inspection)",
                     run: "text Observation",
                 },
                 {
