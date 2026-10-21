@@ -49,7 +49,10 @@
   configuration).
 - **Statement of Financial Position** lists one row per standard account type of the
   General Audit that belongs to account groups T001-T008 (assets, liabilities and
-  equity), each with its **Current Balance** and **Previous Balance**.
+  equity), each with its **Current Balance** and **Previous Balance**. The **Retained
+  Earnings - unappropriated** row shows the audited balance plus the net profit of the
+  same period, so it agrees with the closing equity in the **Statement of Changes in
+  Equity** tab. Other rows show the audited balance only.
 - **Statement of Comprehensive Income** lists the rows of account groups T009-T015
   (revenue, expenses and other comprehensive income) in the same way.
 - **Statement of Changes in Equity** lists, per period, one row per equity component
