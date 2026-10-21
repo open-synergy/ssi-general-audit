@@ -1078,6 +1078,24 @@ class GeneralAudit(models.Model):
             self._add_account(to_add, apply_cutoff=False)
         return True
 
+    def _get_restrict_pairs(self):
+        """Return the restricting (model, field) pairs that exist.
+
+        Skips a pair whose model is not installed or whose field is
+        not defined on it (for example after a worksheet rewrite
+        dropped the field), so searching on it cannot fail.
+
+        :return: list of ``(model_name, field_name)`` tuples
+        """
+        pairs = []
+        for model_name, field_name in self._reload_account_restrict_models:
+            if model_name not in self.env:
+                continue
+            if field_name not in self.env[model_name]._fields:
+                continue
+            pairs.append((model_name, field_name))
+        return pairs
+
     def _check_accounts_removable(self, accounts, remaining):
         """Raise one error listing every account that cannot be removed.
 
@@ -1107,9 +1125,7 @@ class GeneralAudit(models.Model):
             )
 
         details = self.detail_ids.filtered(lambda d: d.account_id in accounts)
-        for model_name, field_name in self._reload_account_restrict_models:
-            if model_name not in self.env:
-                continue
+        for model_name, field_name in self._get_restrict_pairs():
             lines = self.env[model_name].search(
                 [
                     (field_name, "in", details.ids),
@@ -1170,9 +1186,8 @@ Solution: Keep these accounts in the account mapping
         """
         self.ensure_one()
         details = self.detail_ids.filtered(lambda d: d.account_id in accounts)
-        for model_name, field_name in self._reload_account_restrict_models:
-            if model_name in self.env:
-                self.env[model_name].search([(field_name, "in", details.ids)]).unlink()
+        for model_name, field_name in self._get_restrict_pairs():
+            self.env[model_name].search([(field_name, "in", details.ids)]).unlink()
         details.unlink()
         return True
 
