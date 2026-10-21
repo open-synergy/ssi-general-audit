@@ -61,7 +61,22 @@ odoo.define(
                     extra_trigger: ".o_form_view",
                 },
 
-                // Flow 3 - Click the Timing cell of the account line.
+                // Flow 3 - Click Edit. The worksheet form is read-only until
+                // then, and a click on a row of the Details list would open a
+                // read-only row dialog instead of editing the row in place.
+                {
+                    content: "Click the Edit button",
+                    trigger: ".o_form_button_edit",
+                },
+                {
+                    content: "Form is now editable",
+                    trigger: ".o_form_view.o_form_editable",
+                    run: function () {
+                        // Assertion only; do not trigger the default click action.
+                    },
+                },
+
+                // Flow 4 - Click the Timing cell of the account line.
                 // Cell 7 of the Details list: Standard Account(0), Account
                 // Type(1), Balance(2), Performance Materiality(3), ROMM(4),
                 // Assersion Types(5), AP Result(6), Timing(7), Extent(8),
@@ -85,7 +100,7 @@ odoo.define(
                         ".ui-autocomplete .ui-menu-item a:contains(Interim Testing)",
                 },
 
-                // Flow 4 - Extent.
+                // Flow 5 - Extent.
                 {
                     content: "Type the extent",
                     trigger: ".o_selected_row .o_field_widget[name='extent_id'] input",
@@ -96,7 +111,7 @@ odoo.define(
                     trigger: ".ui-autocomplete .ui-menu-item a:contains(Sampling)",
                 },
 
-                // Flow 5 - Primary Audit Technique, two values.
+                // Flow 6 - Primary Audit Technique, two values.
                 {
                     content: "Type the first technique",
                     trigger:
@@ -118,7 +133,7 @@ odoo.define(
                     trigger: ".ui-autocomplete .ui-menu-item a:contains(Observation)",
                 },
 
-                // Flow 6 - Save. The last cell is committed by selecting
+                // Flow 7 - Save. The last cell is committed by selecting
                 // another cell of the same line first (the Account Type
                 // cell, which is read-only) -- see patterns-fields.md §C
                 // "Jebakan 2".

@@ -21,11 +21,12 @@
 1. Open the **Risk Responses > Substantive Test > Test of Detail Planning** menu.
 2. Open the worksheet to plan.
 3. Open the **Details** tab (the first tab).
-4. Click the **Timing** cell of the account line and choose a timing.
-5. Click the **Extent** cell and choose an extent.
-6. Click the **Primary Audit Technique** cell and choose a technique. Choose another
+4. Click **Edit** to make the worksheet editable.
+5. Click the **Timing** cell of the account line and choose a timing.
+6. Click the **Extent** cell and choose an extent.
+7. Click the **Primary Audit Technique** cell and choose a technique. Choose another
    technique in the same cell to add a second one.
-7. Click **Save**.
+8. Click **Save**.
 
 ## Post-Condition
 
