@@ -314,7 +314,9 @@ scenarios:
   # filtered searches (worksheet_id + parent_type_id) prove each
   # behaviour regardless of what other qualifying worksheets exist
   # elsewhere in the transaction (e.g. worksheet_type_be62e79 also
-  # ships with main_worksheet=True as production seed data).
+  # ships with main_worksheet=True as production seed data). The
+  # worksheet_type_bcc0d76 seed is main too, so the bcc0d76 worksheet
+  # itself always contributes one detail line (hence the baseline 1).
   #
   # "Unlink orphan" is exercised by flipping the source type's
   # main_worksheet flag to False rather than literally deleting the
@@ -374,20 +376,22 @@ scenarios:
         target: "worksheet"
         method: "invalidate_cache"
 
-      - step: "Populate with no qualifying main worksheets yet"
+      # The BCC0D76 type itself is now a main worksheet (as in
+      # production), so the opened worksheet is its own only source.
+      - step: "Populate with only this worksheet itself as qualifying source"
         action: "call"
         target: "worksheet"
         method: "action_populate"
         as_user: "base.user_admin"
 
-      - step: "Assert detail_ids empty"
+      - step: "Assert detail_ids holds only the worksheet's own line"
         action: "assert"
         target: "worksheet"
         asserts:
           detail_ids:
             type: "o2m"
             check: "count"
-            expected_count: 0
+            expected_count: 1
 
       - step: "Create dedicated main worksheet type #1"
         action: "create"
@@ -488,7 +492,7 @@ scenarios:
         model: "general_audit_ws_bcc0d76.detail"
         domain: [["worksheet_id", "=", "REC: worksheet.id"]]
         save_as: "details_before_repeat"
-        expect_count: 2
+        expect_count: 3
 
       - step: "Populate again (idempotent, no new source worksheets)"
         action: "call"
@@ -501,7 +505,7 @@ scenarios:
         model: "general_audit_ws_bcc0d76.detail"
         domain: [["worksheet_id", "=", "REC: worksheet.id"]]
         save_as: "details_after_repeat"
-        expect_count: 2
+        expect_count: 3
 
       - step: "Create dedicated main worksheet type #3 (for unlink-orphan)"
         action: "create"
