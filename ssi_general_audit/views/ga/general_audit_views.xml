@@ -185,7 +185,7 @@
             <xpath expr="//group[@name='header_center']" position="inside">
                 <field name="title" />
             </xpath>
-            <xpath expr="//page[@name='policy']" position="before">
+            <xpath expr="//page[@name='note']" position="before">
                 <page name="other" string="Other Information">
                     <group name="other_1" colspan="4" col="2">
                         <group name="other_1_1" colspan="1" col="2">
@@ -399,7 +399,21 @@
                     </group>
                 </page>
             </xpath>
-            <xpath expr="//page[@name='policy']" position="after">
+        </data>
+    </field>
+</record>
+
+<!-- Page order: Note, then Policies, at the end of the notebook. The pages
+     of other modules are inserted before the last page, so this view runs
+     after them (priority 99) and moves Note next to Policies. -->
+<record id="general_audit_view_form_page_order" model="ir.ui.view">
+    <field name="name">general_audit - form page order</field>
+    <field name="model">general_audit</field>
+    <field name="inherit_id" ref="general_audit_view_form" />
+    <field name="priority">99</field>
+    <field name="arch" type="xml">
+        <data>
+            <xpath expr="//page[@name='policy']" position="before">
                 <xpath expr="//page[@name='note']" position="move" />
             </xpath>
         </data>
