@@ -62,8 +62,11 @@ balance). No record is changed while computing this preview.""",
         """Refresh ``import_summary`` from the uploaded file, in memory.
 
         Parses the CSV held in ``data`` without writing any record, so
-        the user can review the client name and the processed versus
-        skipped row counts before pressing Import.
+        the user can review the client name, the processed versus
+        skipped row counts, the header row status and the count of rows
+        with an unknown account code. A blank account code is listed
+        as ``(empty account code)``. A warning is appended when the
+        trial balance has no detail lines yet.
         """
         self.import_summary = False
         if not self.data:
@@ -73,20 +76,59 @@ balance). No record is changed while computing this preview.""",
         if self.has_header and rows:
             rows = rows[1:]
             header_skipped = 1
-        codes = set(self.trial_balance_id.detail_ids.mapped("account_id.code"))
-        valid = len([row for row in rows if len(row) >= 6 and row[0] in codes])
-        skipped = header_skipped + (len(rows) - valid)
+        details = self.trial_balance_id.detail_ids
+        codes = set(details.mapped("account_id.code"))
+        first_row_number = 1 + header_skipped
+        problems = []
+        valid = 0
+        for offset, row in enumerate(rows):
+            number = first_row_number + offset
+            if len(row) < 6:
+                problems.append(
+                    _("  Row %(number)s: short row (%(count)s columns, 6 needed)")
+                    % {"number": number, "count": len(row)}
+                )
+            elif row[0] not in codes:
+                code = row[0] if row[0].strip() else _("(empty account code)")
+                problems.append(
+                    _("  Row %(number)s: %(code)s") % {"number": number, "code": code}
+                )
+            else:
+                valid += 1
+        unknown = len(problems)
+        skipped = header_skipped + unknown
         partner = self.trial_balance_id.general_audit_id.partner_id
         client_name = partner.display_name if partner else _("(no client)")
-        self.import_summary = _(
+        if self.has_header:
+            header_status = _("skipped")
+        else:
+            header_status = _("not skipped")
+        summary = _(
             "Client: %(client)s\n"
             "Rows to be processed: %(valid)s\n"
-            "Rows to be skipped: %(skipped)s"
+            "Rows to be skipped: %(skipped)s\n"
+            "Header row: %(header)s\n"
+            "Unknown account code or short row: %(unknown)s"
         ) % {
             "client": client_name,
             "valid": valid,
             "skipped": skipped,
+            "header": header_status,
+            "unknown": unknown,
         }
+        max_listed = 10
+        for line in problems[:max_listed]:
+            summary += "\n" + line
+        if len(problems) > max_listed:
+            summary += "\n" + _("  ... and %(more)s more") % {
+                "more": len(problems) - max_listed
+            }
+        if not details:
+            summary += "\n" + _(
+                "This trial balance has no account lines. "
+                "Press the Account button on the Detail tab first."
+            )
+        self.import_summary = summary
 
     def _read_csv_rows(self):
         """Decode ``data`` and parse it as CSV rows.
