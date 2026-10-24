@@ -88,6 +88,8 @@ class TestGeneralAuditImportTemplateDownload(YamlTransactionCase):
     def test_seed_survives_module_update(self):
         """Assert a module update keeps the admin changes on the seed.
 
+        The seed also keeps no server action once an admin removed it.
+
         Pure Python -- trigger P10 (L-09: the fixture reloads the data
         file the way ``-u`` does, which a single YAML expression
         cannot).
@@ -100,6 +102,8 @@ class TestGeneralAuditImportTemplateDownload(YamlTransactionCase):
             "ssi_general_audit_import_template."
             "general_audit_import_template_client_account_mapping_line_1"
         )
+        self.assertTrue(seed.server_action_id)
+        seed.action_remove_server_action()
         seed.write({"name": "Renamed By Admin"})
         seed_line.write({"name": "Renamed Column"})
         seed.write({"line_ids": [(0, 0, {"name": "Admin Column"})]})
@@ -116,5 +120,6 @@ class TestGeneralAuditImportTemplateDownload(YamlTransactionCase):
         seed.invalidate_cache()
         seed_line.invalidate_cache()
         self.assertEqual(seed.name, "Renamed By Admin")
+        self.assertFalse(seed.server_action_id)
         self.assertEqual(seed_line.name, "Renamed Column")
         self.assertEqual(len(seed.line_ids), line_count)
