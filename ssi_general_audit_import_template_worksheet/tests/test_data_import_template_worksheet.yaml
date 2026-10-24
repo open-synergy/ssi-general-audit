@@ -1,0 +1,135 @@
+scenarios:
+  - name: "Seed - financial_statement_disclosure template"
+    steps:
+      - step: "Get the target model"
+        action: "ref"
+        xml_id: "ssi_general_audit_worksheet_review.model_general_audit_ws_a025441"
+        save_as: "target_model"
+
+      - step: "Get the seeded template"
+        action: "ref"
+        xml_id: "ssi_general_audit_import_template_worksheet.general_audit_import_template_financial_statement_disclosure"
+        save_as: "template"
+
+      - step: "Assert target model, header flag, and column count"
+        action: "assert"
+        target: "template"
+        asserts:
+          name:
+            type: "value"
+            expected: "Financial Statement Disclosure - Detail"
+          model_id:
+            type: "m2o"
+            expected: "REC: target_model"
+          has_header:
+            type: "value"
+            expected: true
+          delimiter:
+            type: "value"
+            expected: ","
+          line_ids:
+            type: "o2m"
+            check: "count"
+            expected_count: 4
+          server_action_id:
+            type: "value"
+            operator: "is_falsy"
+
+  - name: "Seed - population template"
+    steps:
+      - step: "Get the target model"
+        action: "ref"
+        xml_id: "ssi_general_audit_worksheet_population.model_general_audit_ws_a01723b"
+        save_as: "target_model"
+
+      - step: "Get the seeded template"
+        action: "ref"
+        xml_id: "ssi_general_audit_import_template_worksheet.general_audit_import_template_population"
+        save_as: "template"
+
+      - step: "Assert target model, header flag, and column count"
+        action: "assert"
+        target: "template"
+        asserts:
+          model_id:
+            type: "m2o"
+            expected: "REC: target_model"
+          has_header:
+            type: "value"
+            expected: true
+          delimiter:
+            type: "value"
+            expected: ","
+          line_ids:
+            type: "o2m"
+            check: "count"
+            expected_count: 4
+          server_action_id:
+            type: "value"
+            operator: "is_falsy"
+
+  - name: "Seed - subledger template"
+    steps:
+      - step: "Get the target model"
+        action: "ref"
+        xml_id: "ssi_general_audit_worksheet_client_package.model_general_audit_ws_b5e3d9f"
+        save_as: "target_model"
+
+      - step: "Get the seeded template"
+        action: "ref"
+        xml_id: "ssi_general_audit_import_template_worksheet.general_audit_import_template_subledger"
+        save_as: "template"
+
+      - step: "Assert target model, header flag, and column count"
+        action: "assert"
+        target: "template"
+        asserts:
+          model_id:
+            type: "m2o"
+            expected: "REC: target_model"
+          has_header:
+            type: "value"
+            expected: true
+          delimiter:
+            type: "value"
+            expected: ","
+          line_ids:
+            type: "o2m"
+            check: "count"
+            expected_count: 6
+          server_action_id:
+            type: "value"
+            operator: "is_falsy"
+
+  - name: "Seed - general_ledger template"
+    steps:
+      - step: "Get the target model"
+        action: "ref"
+        xml_id: "ssi_general_audit_worksheet_client_package.model_general_audit_ws_d209914"
+        save_as: "target_model"
+
+      - step: "Get the seeded template"
+        action: "ref"
+        xml_id: "ssi_general_audit_import_template_worksheet.general_audit_import_template_general_ledger"
+        save_as: "template"
+
+      - step: "Assert target model, header flag, and column count"
+        action: "assert"
+        target: "template"
+        asserts:
+          model_id:
+            type: "m2o"
+            expected: "REC: target_model"
+          has_header:
+            type: "value"
+            expected: true
+          delimiter:
+            type: "value"
+            expected: ","
+          line_ids:
+            type: "o2m"
+            check: "count"
+            expected_count: 7
+          server_action_id:
+            type: "value"
+            operator: "is_falsy"

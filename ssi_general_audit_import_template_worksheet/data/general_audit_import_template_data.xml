@@ -1,0 +1,344 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!-- Copyright 2026 OpenSynergy Indonesia
+     Copyright 2026 PT. Simetri Sinergi Indonesia
+     License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl-3.0-standalone.html). -->
+<odoo noupdate="1">
+
+    <record
+        id="general_audit_import_template_financial_statement_disclosure"
+        model="general_audit_import_template"
+    >
+        <field name="name">Financial Statement Disclosure - Detail</field>
+        <field name="code">FINANCIAL_STATEMENT_DISCLOSURE</field>
+        <field
+            name="model_id"
+            ref="ssi_general_audit_worksheet_review.model_general_audit_ws_a025441"
+        />
+        <field name="file_name">financial_statement_disclosure.csv</field>
+        <field name="delimiter">,</field>
+        <field name="has_header" eval="True" />
+    </record>
+
+    <record
+        id="general_audit_import_template_financial_statement_disclosure_line_1"
+        model="general_audit_import_template.line"
+    >
+        <field
+            name="template_id"
+            ref="general_audit_import_template_financial_statement_disclosure"
+        />
+        <field name="sequence">5</field>
+        <field name="name">Item</field>
+        <field name="example_value">PSAK 1 - Basis of preparation</field>
+        <field name="note">Disclosure item to be checked.</field>
+    </record>
+
+    <record
+        id="general_audit_import_template_financial_statement_disclosure_line_2"
+        model="general_audit_import_template.line"
+    >
+        <field
+            name="template_id"
+            ref="general_audit_import_template_financial_statement_disclosure"
+        />
+        <field name="sequence">10</field>
+        <field name="name">Standard</field>
+        <field name="example_value">PSAK 1</field>
+        <field name="note">Source accounting standard.</field>
+    </record>
+
+    <record
+        id="general_audit_import_template_financial_statement_disclosure_line_3"
+        model="general_audit_import_template.line"
+    >
+        <field
+            name="template_id"
+            ref="general_audit_import_template_financial_statement_disclosure"
+        />
+        <field name="sequence">15</field>
+        <field name="name">Note</field>
+        <field name="example_value">Note 2</field>
+        <field name="note">Note number in the financial statement.</field>
+    </record>
+
+    <record
+        id="general_audit_import_template_financial_statement_disclosure_line_4"
+        model="general_audit_import_template.line"
+    >
+        <field
+            name="template_id"
+            ref="general_audit_import_template_financial_statement_disclosure"
+        />
+        <field name="sequence">20</field>
+        <field name="name">Status</field>
+        <field name="example_value">TRUE</field>
+        <field name="note">TRUE for Yes, FALSE for No, blank for N/A.</field>
+    </record>
+
+    <record
+        id="general_audit_import_template_population"
+        model="general_audit_import_template"
+    >
+        <field name="name">Population</field>
+        <field name="code">POPULATION</field>
+        <field
+            name="model_id"
+            ref="ssi_general_audit_worksheet_population.model_general_audit_ws_a01723b"
+        />
+        <field name="file_name">population.csv</field>
+        <field name="delimiter">,</field>
+        <field name="has_header" eval="True" />
+    </record>
+
+    <record
+        id="general_audit_import_template_population_line_1"
+        model="general_audit_import_template.line"
+    >
+        <field name="template_id" ref="general_audit_import_template_population" />
+        <field name="sequence">5</field>
+        <field name="name">ID</field>
+        <field name="example_value">1</field>
+        <field
+            name="note"
+        >Illustrative column, not a mandatory format. Adjust per client.</field>
+    </record>
+
+    <record
+        id="general_audit_import_template_population_line_2"
+        model="general_audit_import_template.line"
+    >
+        <field name="template_id" ref="general_audit_import_template_population" />
+        <field name="sequence">10</field>
+        <field name="name">Date</field>
+        <field name="example_value">2026-01-31</field>
+        <field
+            name="note"
+        >Illustrative column, not a mandatory format. Adjust per client.</field>
+    </record>
+
+    <record
+        id="general_audit_import_template_population_line_3"
+        model="general_audit_import_template.line"
+    >
+        <field name="template_id" ref="general_audit_import_template_population" />
+        <field name="sequence">15</field>
+        <field name="name">Reference</field>
+        <field name="example_value">INV-001</field>
+        <field
+            name="note"
+        >Illustrative column, not a mandatory format. Adjust per client.</field>
+    </record>
+
+    <record
+        id="general_audit_import_template_population_line_4"
+        model="general_audit_import_template.line"
+    >
+        <field name="template_id" ref="general_audit_import_template_population" />
+        <field name="sequence">20</field>
+        <field name="name">Amount</field>
+        <field name="example_value">1000.50</field>
+        <field
+            name="note"
+        >Illustrative column, not a mandatory format. Adjust per client.</field>
+    </record>
+
+    <record
+        id="general_audit_import_template_subledger"
+        model="general_audit_import_template"
+    >
+        <field name="name">Subledger</field>
+        <field name="code">SUBLEDGER</field>
+        <field
+            name="model_id"
+            ref="ssi_general_audit_worksheet_client_package.model_general_audit_ws_b5e3d9f"
+        />
+        <field name="file_name">subledger.csv</field>
+        <field name="delimiter">,</field>
+        <field name="has_header" eval="True" />
+    </record>
+
+    <record
+        id="general_audit_import_template_subledger_line_1"
+        model="general_audit_import_template.line"
+    >
+        <field name="template_id" ref="general_audit_import_template_subledger" />
+        <field name="sequence">5</field>
+        <field name="name">No</field>
+        <field name="example_value">1</field>
+        <field
+            name="note"
+        >Illustrative column, not a mandatory format. Adjust per client.</field>
+    </record>
+
+    <record
+        id="general_audit_import_template_subledger_line_2"
+        model="general_audit_import_template.line"
+    >
+        <field name="template_id" ref="general_audit_import_template_subledger" />
+        <field name="sequence">10</field>
+        <field name="name">Name</field>
+        <field name="example_value">PT Example Customer</field>
+        <field
+            name="note"
+        >Illustrative column, not a mandatory format. Adjust per client.</field>
+    </record>
+
+    <record
+        id="general_audit_import_template_subledger_line_3"
+        model="general_audit_import_template.line"
+    >
+        <field name="template_id" ref="general_audit_import_template_subledger" />
+        <field name="sequence">15</field>
+        <field name="name">Reference</field>
+        <field name="example_value">INV-001</field>
+        <field
+            name="note"
+        >Illustrative column, not a mandatory format. Adjust per client.</field>
+    </record>
+
+    <record
+        id="general_audit_import_template_subledger_line_4"
+        model="general_audit_import_template.line"
+    >
+        <field name="template_id" ref="general_audit_import_template_subledger" />
+        <field name="sequence">20</field>
+        <field name="name">Date</field>
+        <field name="example_value">2026-01-31</field>
+        <field
+            name="note"
+        >Illustrative column, not a mandatory format. Adjust per client.</field>
+    </record>
+
+    <record
+        id="general_audit_import_template_subledger_line_5"
+        model="general_audit_import_template.line"
+    >
+        <field name="template_id" ref="general_audit_import_template_subledger" />
+        <field name="sequence">25</field>
+        <field name="name">Due Date</field>
+        <field name="example_value">2026-03-02</field>
+        <field
+            name="note"
+        >Illustrative column, not a mandatory format. Adjust per client.</field>
+    </record>
+
+    <record
+        id="general_audit_import_template_subledger_line_6"
+        model="general_audit_import_template.line"
+    >
+        <field name="template_id" ref="general_audit_import_template_subledger" />
+        <field name="sequence">30</field>
+        <field name="name">Amount</field>
+        <field name="example_value">1000.50</field>
+        <field
+            name="note"
+        >Illustrative column, not a mandatory format. Adjust per client.</field>
+    </record>
+
+    <record
+        id="general_audit_import_template_general_ledger"
+        model="general_audit_import_template"
+    >
+        <field name="name">General Ledger</field>
+        <field name="code">GENERAL_LEDGER</field>
+        <field
+            name="model_id"
+            ref="ssi_general_audit_worksheet_client_package.model_general_audit_ws_d209914"
+        />
+        <field name="file_name">general_ledger.csv</field>
+        <field name="delimiter">,</field>
+        <field name="has_header" eval="True" />
+    </record>
+
+    <record
+        id="general_audit_import_template_general_ledger_line_1"
+        model="general_audit_import_template.line"
+    >
+        <field name="template_id" ref="general_audit_import_template_general_ledger" />
+        <field name="sequence">5</field>
+        <field name="name">Date</field>
+        <field name="example_value">2026-01-31</field>
+        <field
+            name="note"
+        >Illustrative column, not a mandatory format. Adjust per client.</field>
+    </record>
+
+    <record
+        id="general_audit_import_template_general_ledger_line_2"
+        model="general_audit_import_template.line"
+    >
+        <field name="template_id" ref="general_audit_import_template_general_ledger" />
+        <field name="sequence">10</field>
+        <field name="name">Reference</field>
+        <field name="example_value">JV-001</field>
+        <field
+            name="note"
+        >Illustrative column, not a mandatory format. Adjust per client.</field>
+    </record>
+
+    <record
+        id="general_audit_import_template_general_ledger_line_3"
+        model="general_audit_import_template.line"
+    >
+        <field name="template_id" ref="general_audit_import_template_general_ledger" />
+        <field name="sequence">15</field>
+        <field name="name">Account Code</field>
+        <field name="example_value">1.1.1.02</field>
+        <field
+            name="note"
+        >Illustrative column, not a mandatory format. Adjust per client.</field>
+    </record>
+
+    <record
+        id="general_audit_import_template_general_ledger_line_4"
+        model="general_audit_import_template.line"
+    >
+        <field name="template_id" ref="general_audit_import_template_general_ledger" />
+        <field name="sequence">20</field>
+        <field name="name">Account Name</field>
+        <field name="example_value">Kas Besar</field>
+        <field
+            name="note"
+        >Illustrative column, not a mandatory format. Adjust per client.</field>
+    </record>
+
+    <record
+        id="general_audit_import_template_general_ledger_line_5"
+        model="general_audit_import_template.line"
+    >
+        <field name="template_id" ref="general_audit_import_template_general_ledger" />
+        <field name="sequence">25</field>
+        <field name="name">Description</field>
+        <field name="example_value">Sales journal</field>
+        <field
+            name="note"
+        >Illustrative column, not a mandatory format. Adjust per client.</field>
+    </record>
+
+    <record
+        id="general_audit_import_template_general_ledger_line_6"
+        model="general_audit_import_template.line"
+    >
+        <field name="template_id" ref="general_audit_import_template_general_ledger" />
+        <field name="sequence">30</field>
+        <field name="name">Debit</field>
+        <field name="example_value">1000.50</field>
+        <field
+            name="note"
+        >Illustrative column, not a mandatory format. Adjust per client.</field>
+    </record>
+
+    <record
+        id="general_audit_import_template_general_ledger_line_7"
+        model="general_audit_import_template.line"
+    >
+        <field name="template_id" ref="general_audit_import_template_general_ledger" />
+        <field name="sequence">35</field>
+        <field name="name">Credit</field>
+        <field name="example_value" />
+        <field
+            name="note"
+        >Illustrative column, not a mandatory format. Adjust per client.</field>
+    </record>
+
+</odoo>
