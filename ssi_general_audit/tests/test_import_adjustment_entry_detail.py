@@ -121,6 +121,7 @@ class TestImportAdjustmentEntryDetail(YamlTransactionCase):
         """
         entry, known_account = self._create_adjustment_entry()
         csv_content = (
+            "Account,AJE,Description,Debit,Credit\n"
             "%s,AJE-001,Cash adjustment,100.0,0.0\n"
             "%s,AJE-002,Reversal of cash adjustment,0.0,40.0\n"
         ) % (known_account.code, known_account.code)
@@ -152,7 +153,10 @@ class TestImportAdjustmentEntryDetail(YamlTransactionCase):
         ``EVAL:``).
         """
         entry, _known_account = self._create_adjustment_entry()
-        csv_content = "DOES-NOT-EXIST,AJE-999,Unmapped line,10.0,0.0\n"
+        csv_content = (
+            "Account,AJE,Description,Debit,Credit\n"
+            "DOES-NOT-EXIST,AJE-999,Unmapped line,10.0,0.0\n"
+        )
         wizard = self.env["import_adjustment_entry_detail"].create(
             {
                 "entry_id": entry.id,
@@ -161,4 +165,56 @@ class TestImportAdjustmentEntryDetail(YamlTransactionCase):
         )
         with self.assertRaises(UserError):
             wizard.button_import()
+        self.assertEqual(len(entry.detail_ids), 0)
+
+    def test_import_with_header_skips_first_row(self):
+        """With ``has_header`` set, the first row is not imported.
+
+        Pure Python -- trigger P10 (L-09..L-11: the wizard's ``data``
+        field needs a base64-encoded CSV fixture, unavailable in
+        ``EVAL:``). Added by open-synergy/ssi-general-audit#530.
+        """
+        entry, known_account = self._create_adjustment_entry()
+        csv_content = (
+            "Account,AJE,Description,Debit,Credit\n"
+            "%s,AJE-001,Cash adjustment,100.0,0.0\n"
+        ) % known_account.code
+        wizard = self.env["import_adjustment_entry_detail"].create(
+            {
+                "entry_id": entry.id,
+                "has_header": True,
+                "data": base64.b64encode(csv_content.encode("utf-8")),
+            }
+        )
+        wizard.button_import()
+        self.assertEqual(len(entry.detail_ids), 1)
+        self.assertEqual(entry.detail_ids[0].aje_code, "AJE-001")
+
+    def test_preview_counts_lines_and_unknown_codes(self):
+        """The preview counts lines to create and unknown account codes.
+
+        Pure Python -- trigger P10 (L-09..L-11: the wizard's ``data``
+        field needs a base64-encoded CSV fixture, unavailable in
+        ``EVAL:``). Added by open-synergy/ssi-general-audit#530.
+        """
+        entry, known_account = self._create_adjustment_entry()
+        csv_content = (
+            "Account,AJE,Description,Debit,Credit\n"
+            "%s,AJE-001,Cash adjustment,100.0,0.0\n"
+            "DOES-NOT-EXIST,AJE-002,Unmapped line,0.0,10.0\n"
+        ) % known_account.code
+        wizard = self.env["import_adjustment_entry_detail"].create(
+            {
+                "entry_id": entry.id,
+                "has_header": False,
+                "data": base64.b64encode(csv_content.encode("utf-8")),
+            }
+        )
+        wizard.onchange_import_summary()
+        self.assertIn("Lines to be created: 3", wizard.import_summary)
+        self.assertIn("Rows with unknown account code: 2", wizard.import_summary)
+        wizard.has_header = True
+        wizard.onchange_import_summary()
+        self.assertIn("Lines to be created: 2", wizard.import_summary)
+        self.assertIn("Rows with unknown account code: 1", wizard.import_summary)
         self.assertEqual(len(entry.detail_ids), 0)
