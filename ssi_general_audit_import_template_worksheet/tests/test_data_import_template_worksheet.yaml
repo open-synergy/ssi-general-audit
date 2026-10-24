@@ -33,7 +33,19 @@ scenarios:
             expected_count: 4
           server_action_id:
             type: "value"
-            operator: "is_falsy"
+            operator: "is_truthy"
+          server_action_id.binding_model_id:
+            type: "m2o"
+            expected: "REC: target_model"
+          server_action_id.model_id:
+            type: "m2o"
+            expected: "REC: target_model"
+          server_action_id.binding_type:
+            type: "value"
+            expected: "action"
+          server_action_id.state:
+            type: "value"
+            expected: "code"
 
   - name: "Seed - population template"
     steps:
@@ -66,7 +78,19 @@ scenarios:
             expected_count: 4
           server_action_id:
             type: "value"
-            operator: "is_falsy"
+            operator: "is_truthy"
+          server_action_id.binding_model_id:
+            type: "m2o"
+            expected: "REC: target_model"
+          server_action_id.model_id:
+            type: "m2o"
+            expected: "REC: target_model"
+          server_action_id.binding_type:
+            type: "value"
+            expected: "action"
+          server_action_id.state:
+            type: "value"
+            expected: "code"
 
   - name: "Seed - subledger template"
     steps:
@@ -99,7 +123,19 @@ scenarios:
             expected_count: 6
           server_action_id:
             type: "value"
-            operator: "is_falsy"
+            operator: "is_truthy"
+          server_action_id.binding_model_id:
+            type: "m2o"
+            expected: "REC: target_model"
+          server_action_id.model_id:
+            type: "m2o"
+            expected: "REC: target_model"
+          server_action_id.binding_type:
+            type: "value"
+            expected: "action"
+          server_action_id.state:
+            type: "value"
+            expected: "code"
 
   - name: "Seed - general_ledger template"
     steps:
@@ -132,4 +168,35 @@ scenarios:
             expected_count: 7
           server_action_id:
             type: "value"
-            operator: "is_falsy"
+            operator: "is_truthy"
+          server_action_id.binding_model_id:
+            type: "m2o"
+            expected: "REC: target_model"
+          server_action_id.model_id:
+            type: "m2o"
+            expected: "REC: target_model"
+          server_action_id.binding_type:
+            type: "value"
+            expected: "action"
+          server_action_id.state:
+            type: "value"
+            expected: "code"
+
+  - name: "Seed - Create on a seed with a server action is refused"
+    steps:
+      - step: "Find the seeded template"
+        action: "search"
+        model: "general_audit_import_template"
+        domain: [["code", "=", "POPULATION"]]
+        save_as: "template"
+        limit: 1
+        expect_count: 1
+
+      - step: "Create on a seed that has a server action is refused"
+        action: "call"
+        target: "template"
+        method: "action_create_server_action"
+        as_user: "base.user_admin"
+        expect_error:
+          type: "UserError"
+          message_contains: "Server action already exists"
