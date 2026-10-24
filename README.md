@@ -145,7 +145,7 @@ addon | version | maintainers | summary
 --- | --- | --- | ---
 [ssi_general_audit](ssi_general_audit/) | 14.0.4.13.1 |  | General Audit
 [ssi_general_audit_core](ssi_general_audit_core/) | 14.0.1.2.0 |  | General Audit - Core
-[ssi_general_audit_import_template](ssi_general_audit_import_template/) | 14.0.1.1.0 |  | General Audit - Import Template
+[ssi_general_audit_import_template](ssi_general_audit_import_template/) | 14.0.1.2.1 |  | General Audit - Import Template
 [ssi_general_audit_import_template_worksheet](ssi_general_audit_import_template_worksheet/) | 14.0.1.0.2 |  | General Audit - Import Template Worksheet
 [ssi_general_audit_worksheet_acceptance_continuance](ssi_general_audit_worksheet_acceptance_continuance/) | 14.0.1.7.1 |  | General Audit Worksheet - Acceptance and Continuance
 [ssi_general_audit_worksheet_analytic_cycle](ssi_general_audit_worksheet_analytic_cycle/) | 14.0.1.6.1 |  | General Audit Worksheet - Analytical Procedures – Cycle
