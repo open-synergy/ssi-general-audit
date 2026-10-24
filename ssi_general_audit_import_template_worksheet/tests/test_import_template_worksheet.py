@@ -29,7 +29,7 @@ class TestImportTemplateWorksheet(YamlTransactionCase):
     """Tests for the seeded worksheet import templates."""
 
     def test_seed_scenarios(self):
-        """Run the seed scenarios: model, column count, no server action."""
+        """Run the seed scenarios: model, column count, server action."""
         self.run_yaml_scenario("test_data_import_template_worksheet.yaml")
 
     def _get_template(self, key):
