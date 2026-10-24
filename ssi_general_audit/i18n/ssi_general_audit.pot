@@ -285,7 +285,9 @@ msgid "%(names)s and %(count)s more"
 msgstr ""
 
 #. module: ssi_general_audit
+#: code:addons/ssi_general_audit/wizards/import_adjustment_entry_detail.py:0
 #: code:addons/ssi_general_audit/wizards/import_client_account.py:0
+#: code:addons/ssi_general_audit/wizards/import_trial_balance_detail.py:0
 #, python-format
 msgid "(no client)"
 msgstr ""
@@ -1850,10 +1852,10 @@ msgstr ""
 #. module: ssi_general_audit
 #: model:ir.model.fields,help:ssi_general_audit.field_import_adjustment_entry_detail__data
 msgid ""
-"CSV file with columns (no header): account code, AJE code, description, "
-"debit, credit. This column order changed in open-synergy/ssi-general-"
-"audit#365 (AJE code was inserted before description) -- older 4-column files"
-" must be updated."
+"CSV file with a header row and columns: account code, AJE code, description,"
+" debit, credit. Uncheck 'File Has Header Row' for a file without a header. "
+"This column order changed in open-synergy/ssi-general-audit#365 (AJE code "
+"was inserted before description) -- older 4-column files must be updated."
 msgstr ""
 
 #. module: ssi_general_audit
@@ -2267,6 +2269,24 @@ msgstr ""
 #. module: ssi_general_audit
 #: model:ir.model.fields,help:ssi_general_audit.field_client_account__partner_id
 msgid "Client that owns this account."
+msgstr ""
+
+#. module: ssi_general_audit
+#: code:addons/ssi_general_audit/wizards/import_adjustment_entry_detail.py:0
+#, python-format
+msgid ""
+"Client: %(client)s\n"
+"Lines to be created: %(lines)s\n"
+"Rows with unknown account code: %(unknown)s"
+msgstr ""
+
+#. module: ssi_general_audit
+#: code:addons/ssi_general_audit/wizards/import_trial_balance_detail.py:0
+#, python-format
+msgid ""
+"Client: %(client)s\n"
+"Rows to be processed: %(valid)s\n"
+"Rows to be skipped: %(skipped)s"
 msgstr ""
 
 #. module: ssi_general_audit
@@ -3594,8 +3614,22 @@ msgid "File"
 msgstr ""
 
 #. module: ssi_general_audit
+#: model:ir.model.fields,field_description:ssi_general_audit.field_import_adjustment_entry_detail__has_header
 #: model:ir.model.fields,field_description:ssi_general_audit.field_import_client_account__has_header
+#: model:ir.model.fields,field_description:ssi_general_audit.field_import_trial_balance_detail__has_header
 msgid "File Has Header Row"
+msgstr ""
+
+#. module: ssi_general_audit
+#: model:ir.model.fields,help:ssi_general_audit.field_import_trial_balance_detail__has_header
+msgid ""
+"File Has Header Row\n"
+"\n"
+"* When checked (the default), the first row of the uploaded file is\n"
+"  always skipped without being checked, since it is assumed to be a\n"
+"  column header.\n"
+"* Uncheck this if the uploaded file does not start with a header row,\n"
+"  so every row (including the first) is processed."
 msgstr ""
 
 #. module: ssi_general_audit
@@ -3608,6 +3642,18 @@ msgid ""
 "  column header.\n"
 "* Uncheck this if the uploaded file does not start with a header row,\n"
 "  so every row (including the first) is validated and imported."
+msgstr ""
+
+#. module: ssi_general_audit
+#: model:ir.model.fields,help:ssi_general_audit.field_import_adjustment_entry_detail__has_header
+msgid ""
+"File Has Header Row\n"
+"\n"
+"* When checked (the default), the first row of the uploaded file is\n"
+"  always skipped without being checked, since it is assumed to be a\n"
+"  column header.\n"
+"* When unchecked, every row, including the first, is treated as\n"
+"  data."
 msgstr ""
 
 #. module: ssi_general_audit
@@ -4418,7 +4464,9 @@ msgid "Import Client Account"
 msgstr ""
 
 #. module: ssi_general_audit
+#: model:ir.model.fields,field_description:ssi_general_audit.field_import_adjustment_entry_detail__import_summary
 #: model:ir.model.fields,field_description:ssi_general_audit.field_import_client_account__import_summary
+#: model:ir.model.fields,field_description:ssi_general_audit.field_import_trial_balance_detail__import_summary
 msgid "Import Preview"
 msgstr ""
 
@@ -4431,6 +4479,28 @@ msgid ""
 "pressed: the client name and how many rows are valid versus will be\n"
 "skipped (empty/header/over-length code). No record is created while\n"
 "computing this preview."
+msgstr ""
+
+#. module: ssi_general_audit
+#: model:ir.model.fields,help:ssi_general_audit.field_import_adjustment_entry_detail__import_summary
+msgid ""
+"Import Preview\n"
+"\n"
+"Preview computed from the uploaded file before the Import button is\n"
+"pressed: the client name, how many lines will be created and how many\n"
+"rows carry an account code that is not found (these make the import\n"
+"fail). No record is created while computing this preview."
+msgstr ""
+
+#. module: ssi_general_audit
+#: model:ir.model.fields,help:ssi_general_audit.field_import_trial_balance_detail__import_summary
+msgid ""
+"Import Preview\n"
+"\n"
+"Preview computed from the uploaded file before the Import button is\n"
+"pressed: the client name, how many rows will be processed and how many\n"
+"will be skipped (header row, or account code not found in this trial\n"
+"balance). No record is changed while computing this preview."
 msgstr ""
 
 #. module: ssi_general_audit
