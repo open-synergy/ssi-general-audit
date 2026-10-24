@@ -157,6 +157,24 @@ msgid ""
 msgstr ""
 
 #. module: ssi_general_audit
+#: code:addons/ssi_general_audit/wizards/import_trial_balance_detail.py:0
+#, python-format
+msgid "  ... and %(more)s more"
+msgstr ""
+
+#. module: ssi_general_audit
+#: code:addons/ssi_general_audit/wizards/import_trial_balance_detail.py:0
+#, python-format
+msgid "  Row %(number)s: %(code)s"
+msgstr ""
+
+#. module: ssi_general_audit
+#: code:addons/ssi_general_audit/wizards/import_trial_balance_detail.py:0
+#, python-format
+msgid "  Row %(number)s: short row (%(count)s columns, 6 needed)"
+msgstr ""
+
+#. module: ssi_general_audit
 #: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit__account_mapping_id
 msgid "# Account Mapping"
 msgstr ""
@@ -282,6 +300,12 @@ msgstr ""
 #: code:addons/ssi_general_audit/models/client_account/client_account.py:0
 #, python-format
 msgid "%(names)s and %(count)s more"
+msgstr ""
+
+#. module: ssi_general_audit
+#: code:addons/ssi_general_audit/wizards/import_trial_balance_detail.py:0
+#, python-format
+msgid "(empty account code)"
 msgstr ""
 
 #. module: ssi_general_audit
@@ -2286,7 +2310,9 @@ msgstr ""
 msgid ""
 "Client: %(client)s\n"
 "Rows to be processed: %(valid)s\n"
-"Rows to be skipped: %(skipped)s"
+"Rows to be skipped: %(skipped)s\n"
+"Header row: %(header)s\n"
+"Unknown account code or short row: %(unknown)s"
 msgstr ""
 
 #. module: ssi_general_audit
@@ -7783,6 +7809,14 @@ msgid ""
 msgstr ""
 
 #. module: ssi_general_audit
+#: code:addons/ssi_general_audit/wizards/import_trial_balance_detail.py:0
+#, python-format
+msgid ""
+"This trial balance has no account lines. Press the Account button on the "
+"Detail tab first."
+msgstr ""
+
+#. module: ssi_general_audit
 #: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit__title
 #: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit_worksheet__title
 #: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit_worksheet_mixin__title
@@ -8660,10 +8694,22 @@ msgid "Zakah and Infaq/Shadaqah accounting"
 msgstr ""
 
 #. module: ssi_general_audit
+#: code:addons/ssi_general_audit/wizards/import_trial_balance_detail.py:0
+#, python-format
+msgid "not skipped"
+msgstr ""
+
+#. module: ssi_general_audit
 #: model_terms:ir.ui.view,arch_db:ssi_general_audit.add_client_account_view_form
 #: model_terms:ir.ui.view,arch_db:ssi_general_audit.import_client_account_view_form
 #: model_terms:ir.ui.view,arch_db:ssi_general_audit.import_trial_balance_detail_view_form
 msgid "or"
+msgstr ""
+
+#. module: ssi_general_audit
+#: code:addons/ssi_general_audit/wizards/import_trial_balance_detail.py:0
+#, python-format
+msgid "skipped"
 msgstr ""
 
 #. module: ssi_general_audit
