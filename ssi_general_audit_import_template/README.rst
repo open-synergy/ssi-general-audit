@@ -20,7 +20,13 @@ Key Features
   written, and its columns with a title and an example value.
 - A button creates or removes the server action "Download Template: <name>".
 - Three seeded templates match the existing import wizards: CoA And
-  Mapping, Balance Amount, and Adjusting Journal.
+  Mapping, Balance Amount, and Adjusting Journal. Their name, delimiter,
+  example and columns follow the module version and are restored on every
+  module update, so create a new template instead of editing a seeded one.
+  A column added to a seeded template by hand is not removed by the update.
+- Renaming a template renames its server action. A server action removed or
+  unbound by an administrator is not created again by a module update, and
+  an archived seeded template stays archived.
 
 Models
 ======

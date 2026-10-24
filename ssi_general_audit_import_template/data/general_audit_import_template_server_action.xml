@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!-- Copyright 2026 OpenSynergy Indonesia
+     Copyright 2026 PT. Simetri Sinergi Indonesia
+     License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl-3.0-standalone.html). -->
+<odoo noupdate="1">
+
+    <!-- Create the download server actions once, at installation only. The
+         file is noupdate, so Odoo runs this call in init mode only: a later
+         -u does not recreate a server action that was removed or unbound. -->
+    <function
+        model="general_audit_import_template"
+        name="action_create_server_action"
+        eval="[[
+            ref('general_audit_import_template_client_account_mapping'),
+            ref('general_audit_import_template_client_trial_balance'),
+            ref('general_audit_import_template_client_adjustment_entry'),
+        ]]"
+    />
+
+</odoo>

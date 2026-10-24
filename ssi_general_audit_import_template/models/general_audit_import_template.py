@@ -105,6 +105,24 @@ Solution: Remove the server action first
             return True
         return self.server_action_id.model_id == self.model_id
 
+    def write(self, vals):
+        """Rename the server action together with its template.
+
+        Also applies to the writes of the data loader on module update,
+        so a renamed seed template renames its server action.
+
+        :param vals: the values to write
+        :return: result of the parent ``write``
+        """
+        result = super().write(vals)
+        if "name" in vals:
+            for record in self.sudo():
+                server_action = record.server_action_id
+                name = record._get_server_action_name()
+                if server_action and server_action.name != name:
+                    server_action.write({"name": name})
+        return result
+
     def unlink(self):
         """Delete the templates together with their server actions.
 
@@ -153,6 +171,14 @@ Solution: Remove the server action first
         )
         self.write({"server_action_id": server_action.id})
 
+    def _get_server_action_name(self):
+        """Build the name of the download server action of this template.
+
+        :return: the string "Download Template: <name>"
+        """
+        self.ensure_one()
+        return _("Download Template: ") + (self.name or "")
+
     def _prepare_server_action(self):
         """Build the ``ir.actions.server`` values for this template.
 
@@ -166,7 +192,7 @@ Solution: Remove the server action first
             self.id,
         )
         return {
-            "name": _("Download Template: ") + self.name,
+            "name": self._get_server_action_name(),
             "model_id": self.model_id.id,
             "binding_model_id": self.model_id.id,
             "binding_type": "action",
