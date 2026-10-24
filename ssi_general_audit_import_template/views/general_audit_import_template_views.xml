@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!-- Copyright 2026 OpenSynergy Indonesia
+     Copyright 2026 PT. Simetri Sinergi Indonesia
+     License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl-3.0-standalone.html). -->
+<odoo>
+
+    <record id="general_audit_import_template_view_search" model="ir.ui.view">
+        <field name="name">general_audit_import_template - search</field>
+        <field name="model">general_audit_import_template</field>
+        <field
+            name="inherit_id"
+            ref="ssi_master_data_mixin.mixin_master_data_view_search"
+        />
+        <field name="mode">primary</field>
+        <field name="arch" type="xml">
+            <data>
+                <xpath expr="//field[@name='code']" position="after">
+                    <field name="model_id" />
+                </xpath>
+                <xpath expr="//group[@name='dom_active']" position="after">
+                    <group name="group_by" string="Group By">
+                        <filter
+                            name="grp_model"
+                            string="Target Model"
+                            context="{'group_by': 'model_id'}"
+                        />
+                    </group>
+                </xpath>
+            </data>
+        </field>
+    </record>
+
+    <record id="general_audit_import_template_view_tree" model="ir.ui.view">
+        <field name="name">general_audit_import_template - tree</field>
+        <field name="model">general_audit_import_template</field>
+        <field
+            name="inherit_id"
+            ref="ssi_master_data_mixin.mixin_master_data_view_tree"
+        />
+        <field name="mode">primary</field>
+        <field name="arch" type="xml">
+            <data>
+                <xpath expr="//field[@name='name']" position="after">
+                    <field name="model_id" />
+                    <field name="file_name" optional="hide" />
+                    <field name="delimiter" optional="hide" />
+                    <field name="server_action_id" optional="hide" />
+                </xpath>
+            </data>
+        </field>
+    </record>
+
+    <record id="general_audit_import_template_view_form" model="ir.ui.view">
+        <field name="name">general_audit_import_template - form</field>
+        <field name="model">general_audit_import_template</field>
+        <field
+            name="inherit_id"
+            ref="ssi_master_data_mixin.mixin_master_data_view_form"
+        />
+        <field name="mode">primary</field>
+        <field name="arch" type="xml">
+            <data>
+                <xpath expr="//header" position="inside">
+                    <button
+                        name="action_create_server_action"
+                        type="object"
+                        string="Create Server Action"
+                        class="oe_highlight"
+                        attrs="{'invisible': ['|', ('id', '=', False), ('server_action_id', '!=', False)]}"
+                    />
+                    <button
+                        name="action_remove_server_action"
+                        type="object"
+                        string="Remove Server Action"
+                        confirm="Remove the server action. Are you sure?"
+                        attrs="{'invisible': [('server_action_id', '=', False)]}"
+                    />
+                </xpath>
+                <xpath expr="//notebook/page[@name='note']" position="before">
+                    <page name="settings" string="Settings">
+                        <group name="settings_group_1" colspan="4" col="2">
+                            <field
+                                name="model_id"
+                                options="{'no_create': True, 'no_open': True}"
+                                attrs="{'readonly': [('server_action_id', '!=', False)]}"
+                            />
+                            <field name="file_name" />
+                            <field name="delimiter" />
+                            <field name="has_header" />
+                            <field name="server_action_id" />
+                        </group>
+                    </page>
+                    <page name="column" string="Columns">
+                        <field name="line_ids" nolabel="1">
+                            <tree editable="bottom">
+                                <field name="sequence" widget="handle" />
+                                <field name="name" />
+                                <field name="example_value" />
+                                <field name="note" />
+                            </tree>
+                            <form>
+                                <group name="line_group_1" colspan="4" col="2">
+                                    <field name="sequence" />
+                                    <field name="name" />
+                                    <field name="example_value" />
+                                    <field name="note" />
+                                </group>
+                            </form>
+                        </field>
+                    </page>
+                </xpath>
+            </data>
+        </field>
+    </record>
+
+    <record id="general_audit_import_template_action" model="ir.actions.act_window">
+        <field name="name">Import Templates</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">general_audit_import_template</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+    <menuitem
+        id="general_audit_import_template_menu"
+        name="Import Templates"
+        parent="ssi_general_audit.menu_general_audit_configuration"
+        action="general_audit_import_template_action"
+        sequence="300"
+        groups="general_audit_import_template_group"
+    />
+
+</odoo>

@@ -1,0 +1,259 @@
+scenarios:
+  # ------------------------------------------------------------------
+  # Create template with columns, create and remove the server action
+  # ------------------------------------------------------------------
+  - name: "Template - Create, create server action, remove it"
+    steps:
+      - step: "Get the target model"
+        action: "ref"
+        xml_id: "ssi_general_audit.model_client_business_process"
+        save_as: "target_model"
+
+      - step: "Get another model"
+        action: "ref"
+        xml_id: "ssi_general_audit.model_client_financial_ratio"
+        save_as: "other_model"
+
+      - step: "Create template with two columns"
+        action: "create"
+        model: "general_audit_import_template"
+        save_as: "template"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Import Template - Flow"
+          code: "/"
+          model_id: "REC: target_model.id"
+          line_ids:
+            - - 0
+              - 0
+              - name: "Column A"
+                example_value: "a"
+            - - 0
+              - 0
+              - name: "Column B"
+                example_value: "b"
+
+      - step: "Assert template created with defaults and two columns"
+        action: "assert"
+        target: "template"
+        asserts:
+          file_name:
+            type: "value"
+            expected: "import_template.csv"
+          delimiter:
+            type: "value"
+            expected: ","
+          has_header:
+            type: "value"
+            expected: true
+          line_ids:
+            type: "o2m"
+            check: "count"
+            expected_count: 2
+          server_action_id:
+            type: "value"
+            operator: "is_falsy"
+
+      - step: "Create the server action"
+        action: "call"
+        target: "template"
+        method: "action_create_server_action"
+        as_user: "base.user_admin"
+        asserts:
+          server_action_id:
+            type: "value"
+            operator: "is_truthy"
+          server_action_id.binding_model_id:
+            type: "m2o"
+            expected: "REC: target_model"
+          server_action_id.model_id:
+            type: "m2o"
+            expected: "REC: target_model"
+          server_action_id.binding_type:
+            type: "value"
+            expected: "action"
+          server_action_id.state:
+            type: "value"
+            expected: "code"
+
+      - step: "Create the server action twice is refused"
+        action: "call"
+        target: "template"
+        method: "action_create_server_action"
+        as_user: "base.user_admin"
+        expect_error:
+          type: "UserError"
+          message_contains: "Server action already exists"
+
+      - step: "Change the target model while the server action exists"
+        action: "write"
+        target: "template"
+        as_user: "base.user_admin"
+        values:
+          model_id: "REC: other_model.id"
+        expect_error:
+          type: "ValidationError"
+          message_contains: "Target model can not change"
+
+      - step: "Remove the server action"
+        action: "call"
+        target: "template"
+        method: "action_remove_server_action"
+        as_user: "base.user_admin"
+        asserts:
+          server_action_id:
+            type: "value"
+            operator: "is_falsy"
+
+      - step: "Change the target model once the server action is gone"
+        action: "write"
+        target: "template"
+        as_user: "base.user_admin"
+        values:
+          model_id: "REC: other_model.id"
+
+      - step: "Assert the target model changed"
+        action: "assert"
+        target: "template"
+        asserts:
+          model_id:
+            type: "m2o"
+            expected: "REC: other_model"
+
+  # ------------------------------------------------------------------
+  # Unlink the template removes its server action
+  # ------------------------------------------------------------------
+  - name: "Template - Unlink removes the server action"
+    steps:
+      - step: "Get the target model"
+        action: "ref"
+        xml_id: "ssi_general_audit.model_client_business_process"
+        save_as: "target_model"
+
+      - step: "Create template"
+        action: "create"
+        model: "general_audit_import_template"
+        save_as: "template"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Import Template - Unlink"
+          code: "/"
+          model_id: "REC: target_model.id"
+
+      - step: "Create the server action"
+        action: "call"
+        target: "template"
+        method: "action_create_server_action"
+        as_user: "base.user_admin"
+
+      - step: "Assert the server action exists"
+        action: "search"
+        model: "ir.actions.server"
+        domain: [["name", "=", "Download Template: Test Import Template - Unlink"]]
+        save_as: "found_before"
+        expect_count: 1
+
+      - step: "Unlink the template"
+        action: "unlink"
+        target: "template"
+        as_user: "base.user_admin"
+
+      - step: "Assert the server action is gone"
+        action: "search"
+        model: "ir.actions.server"
+        domain: [["name", "=", "Download Template: Test Import Template - Unlink"]]
+        save_as: "found_after"
+        expect_count: 0
+
+  # ------------------------------------------------------------------
+  # Seed templates of the three existing import wizards
+  # ------------------------------------------------------------------
+  - name: "Seed - CoA And Mapping template"
+    steps:
+      - step: "Find the seeded template"
+        action: "search"
+        model: "general_audit_import_template"
+        domain: [["code", "=", "CLIENT_ACCOUNT_MAPPING"]]
+        save_as: "template"
+        limit: 1
+        expect_count: 1
+
+      - step: "Assert the seeded template"
+        action: "assert"
+        target: "template"
+        asserts:
+          name:
+            type: "value"
+            expected: "CoA And Mapping"
+          model_id.model:
+            type: "value"
+            expected: "client_account_mapping"
+          has_header:
+            type: "value"
+            expected: true
+          delimiter:
+            type: "value"
+            expected: ","
+          line_ids:
+            type: "o2m"
+            check: "count"
+            expected_count: 5
+          server_action_id:
+            type: "value"
+            operator: "is_falsy"
+
+  - name: "Seed - Balance Amount template"
+    steps:
+      - step: "Find the seeded template"
+        action: "search"
+        model: "general_audit_import_template"
+        domain: [["code", "=", "CLIENT_TRIAL_BALANCE"]]
+        save_as: "template"
+        limit: 1
+        expect_count: 1
+
+      - step: "Assert the seeded template"
+        action: "assert"
+        target: "template"
+        asserts:
+          name:
+            type: "value"
+            expected: "Balance Amount"
+          model_id.model:
+            type: "value"
+            expected: "client_trial_balance"
+          has_header:
+            type: "value"
+            expected: true
+          line_ids:
+            type: "o2m"
+            check: "count"
+            expected_count: 6
+
+  - name: "Seed - Client Adjustment Entry template"
+    steps:
+      - step: "Find the seeded template"
+        action: "search"
+        model: "general_audit_import_template"
+        domain: [["code", "=", "CLIENT_ADJUSTMENT_ENTRY"]]
+        save_as: "template"
+        limit: 1
+        expect_count: 1
+
+      - step: "Assert the seeded template"
+        action: "assert"
+        target: "template"
+        asserts:
+          model_id.model:
+            type: "value"
+            expected: "client_adjustment_entry"
+          name:
+            type: "value"
+            expected: "Adjusting Journal"
+          has_header:
+            type: "value"
+            expected: true
+          line_ids:
+            type: "o2m"
+            check: "count"
+            expected_count: 5

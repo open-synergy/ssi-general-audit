@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!-- Copyright 2026 OpenSynergy Indonesia
+     Copyright 2026 PT. Simetri Sinergi Indonesia
+     License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl-3.0-standalone.html). -->
+<odoo>
+    <record id="general_audit_import_template_line_all_access" model="ir.model.access">
+        <field name="name">general_audit_import_template.line - all</field>
+        <field name="model_id" ref="model_general_audit_import_template_line" />
+        <field name="perm_read" eval="1" />
+        <field name="perm_write" eval="0" />
+        <field name="perm_create" eval="0" />
+        <field name="perm_unlink" eval="0" />
+    </record>
+
+    <record id="general_audit_import_template_line_user_access" model="ir.model.access">
+        <field name="name">general_audit_import_template.line - user</field>
+        <field name="model_id" ref="model_general_audit_import_template_line" />
+        <field name="group_id" ref="general_audit_import_template_group" />
+        <field name="perm_read" eval="1" />
+        <field name="perm_write" eval="1" />
+        <field name="perm_create" eval="1" />
+        <field name="perm_unlink" eval="1" />
+    </record>
+</odoo>
