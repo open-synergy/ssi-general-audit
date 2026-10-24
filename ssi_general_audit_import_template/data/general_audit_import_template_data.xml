@@ -1,0 +1,267 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!-- Copyright 2026 OpenSynergy Indonesia
+     Copyright 2026 PT. Simetri Sinergi Indonesia
+     License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl-3.0-standalone.html). -->
+<odoo noupdate="1">
+
+    <record
+        id="general_audit_import_template_client_account_mapping"
+        model="general_audit_import_template"
+    >
+        <field name="name">CoA And Mapping</field>
+        <field name="code">CLIENT_ACCOUNT_MAPPING</field>
+        <field name="model_id" ref="ssi_general_audit.model_client_account_mapping" />
+        <field name="file_name">client_account_mapping.csv</field>
+        <field name="delimiter">,</field>
+        <field name="has_header" eval="True" />
+    </record>
+
+    <record
+        id="general_audit_import_template_client_account_mapping_line_1"
+        model="general_audit_import_template.line"
+    >
+        <field
+            name="template_id"
+            ref="general_audit_import_template_client_account_mapping"
+        />
+        <field name="sequence">5</field>
+        <field name="name">Account Code</field>
+        <field name="example_value">1.1.1.02</field>
+        <field name="note">Account code of the client.</field>
+    </record>
+
+    <record
+        id="general_audit_import_template_client_account_mapping_line_2"
+        model="general_audit_import_template.line"
+    >
+        <field
+            name="template_id"
+            ref="general_audit_import_template_client_account_mapping"
+        />
+        <field name="sequence">10</field>
+        <field name="name">Account Name</field>
+        <field name="example_value">Kas Besar</field>
+        <field name="note">Account name of the client.</field>
+    </record>
+
+    <record
+        id="general_audit_import_template_client_account_mapping_line_3"
+        model="general_audit_import_template.line"
+    >
+        <field
+            name="template_id"
+            ref="general_audit_import_template_client_account_mapping"
+        />
+        <field name="sequence">15</field>
+        <field name="name">Reserved (ignored by import)</field>
+        <field name="example_value">10</field>
+        <field name="note">Reserved column, ignored by the import.</field>
+    </record>
+
+    <record
+        id="general_audit_import_template_client_account_mapping_line_4"
+        model="general_audit_import_template.line"
+    >
+        <field
+            name="template_id"
+            ref="general_audit_import_template_client_account_mapping"
+        />
+        <field name="sequence">20</field>
+        <field name="name">Account Type Code</field>
+        <field name="example_value">S111</field>
+        <field name="note">Code of the client account type.</field>
+    </record>
+
+    <record
+        id="general_audit_import_template_client_account_mapping_line_5"
+        model="general_audit_import_template.line"
+    >
+        <field
+            name="template_id"
+            ref="general_audit_import_template_client_account_mapping"
+        />
+        <field name="sequence">25</field>
+        <field name="name">Balance Side</field>
+        <field name="example_value">dr</field>
+        <field name="note">Balance side, dr or cr. Ignored by the import.</field>
+    </record>
+
+    <record
+        id="general_audit_import_template_client_trial_balance"
+        model="general_audit_import_template"
+    >
+        <field name="name">Balance Amount</field>
+        <field name="code">CLIENT_TRIAL_BALANCE</field>
+        <field name="model_id" ref="ssi_general_audit.model_client_trial_balance" />
+        <field name="file_name">client_trial_balance.csv</field>
+        <field name="delimiter">,</field>
+        <field name="has_header" eval="True" />
+    </record>
+
+    <record
+        id="general_audit_import_template_client_trial_balance_line_1"
+        model="general_audit_import_template.line"
+    >
+        <field
+            name="template_id"
+            ref="general_audit_import_template_client_trial_balance"
+        />
+        <field name="sequence">5</field>
+        <field name="name">Account Code</field>
+        <field name="example_value">1.1.1.02</field>
+        <field name="note">Account code of the client.</field>
+    </record>
+
+    <record
+        id="general_audit_import_template_client_trial_balance_line_2"
+        model="general_audit_import_template.line"
+    >
+        <field
+            name="template_id"
+            ref="general_audit_import_template_client_trial_balance"
+        />
+        <field name="sequence">10</field>
+        <field name="name">Account Name</field>
+        <field name="example_value">Kas Besar</field>
+        <field name="note">Account name of the client.</field>
+    </record>
+
+    <record
+        id="general_audit_import_template_client_trial_balance_line_3"
+        model="general_audit_import_template.line"
+    >
+        <field
+            name="template_id"
+            ref="general_audit_import_template_client_trial_balance"
+        />
+        <field name="sequence">15</field>
+        <field name="name">Opening Debit</field>
+        <field name="example_value">89623931.27</field>
+        <field name="note">Opening balance in debit.</field>
+    </record>
+
+    <record
+        id="general_audit_import_template_client_trial_balance_line_4"
+        model="general_audit_import_template.line"
+    >
+        <field
+            name="template_id"
+            ref="general_audit_import_template_client_trial_balance"
+        />
+        <field name="sequence">20</field>
+        <field name="name">Opening Credit</field>
+        <field name="example_value" />
+        <field name="note">Opening balance in credit.</field>
+    </record>
+
+    <record
+        id="general_audit_import_template_client_trial_balance_line_5"
+        model="general_audit_import_template.line"
+    >
+        <field
+            name="template_id"
+            ref="general_audit_import_template_client_trial_balance"
+        />
+        <field name="sequence">25</field>
+        <field name="name">Debit</field>
+        <field name="example_value">3670990339</field>
+        <field name="note">Debit movement of the period.</field>
+    </record>
+
+    <record
+        id="general_audit_import_template_client_trial_balance_line_6"
+        model="general_audit_import_template.line"
+    >
+        <field
+            name="template_id"
+            ref="general_audit_import_template_client_trial_balance"
+        />
+        <field name="sequence">30</field>
+        <field name="name">Credit</field>
+        <field name="example_value">3743587856</field>
+        <field name="note">Credit movement of the period.</field>
+    </record>
+
+    <record
+        id="general_audit_import_template_client_adjustment_entry"
+        model="general_audit_import_template"
+    >
+        <field name="name">Adjusting Journal</field>
+        <field name="code">CLIENT_ADJUSTMENT_ENTRY</field>
+        <field name="model_id" ref="ssi_general_audit.model_client_adjustment_entry" />
+        <field name="file_name">client_adjustment_entry.csv</field>
+        <field name="delimiter">,</field>
+        <field name="has_header" eval="True" />
+    </record>
+
+    <record
+        id="general_audit_import_template_client_adjustment_entry_line_1"
+        model="general_audit_import_template.line"
+    >
+        <field
+            name="template_id"
+            ref="general_audit_import_template_client_adjustment_entry"
+        />
+        <field name="sequence">5</field>
+        <field name="name">Account Code</field>
+        <field name="example_value">1.1.1.02</field>
+        <field name="note">Account code of the client.</field>
+    </record>
+
+    <record
+        id="general_audit_import_template_client_adjustment_entry_line_2"
+        model="general_audit_import_template.line"
+    >
+        <field
+            name="template_id"
+            ref="general_audit_import_template_client_adjustment_entry"
+        />
+        <field name="sequence">10</field>
+        <field name="name">AJE Code</field>
+        <field name="example_value">AJE-001</field>
+        <field name="note">Code of the adjustment journal entry.</field>
+    </record>
+
+    <record
+        id="general_audit_import_template_client_adjustment_entry_line_3"
+        model="general_audit_import_template.line"
+    >
+        <field
+            name="template_id"
+            ref="general_audit_import_template_client_adjustment_entry"
+        />
+        <field name="sequence">15</field>
+        <field name="name">Description</field>
+        <field name="example_value">Cash correction</field>
+        <field name="note">Description of the adjustment line.</field>
+    </record>
+
+    <record
+        id="general_audit_import_template_client_adjustment_entry_line_4"
+        model="general_audit_import_template.line"
+    >
+        <field
+            name="template_id"
+            ref="general_audit_import_template_client_adjustment_entry"
+        />
+        <field name="sequence">20</field>
+        <field name="name">Debit</field>
+        <field name="example_value">1000000</field>
+        <field name="note">Debit amount.</field>
+    </record>
+
+    <record
+        id="general_audit_import_template_client_adjustment_entry_line_5"
+        model="general_audit_import_template.line"
+    >
+        <field
+            name="template_id"
+            ref="general_audit_import_template_client_adjustment_entry"
+        />
+        <field name="sequence">25</field>
+        <field name="name">Credit</field>
+        <field name="example_value" />
+        <field name="note">Credit amount.</field>
+    </record>
+
+</odoo>
