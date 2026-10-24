@@ -270,6 +270,116 @@ scenarios:
             expected: 300.0
 
   # ------------------------------------------------------------------
+  # _compute_balance - standard_account mode (dr, cr, no type)
+  # ------------------------------------------------------------------
+  - name: "Worksheet d209914 - Compute balance in standard_account mode"
+    steps:
+      - step: "Create credit-normal client account type"
+        action: "create"
+        model: "client_account_type"
+        save_as: "account_type_cr"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Account Type CR - D209914"
+          code: "/"
+          group_id: "REC: account_group.id"
+          normal_balance: "cr"
+          python_code: "result = 0.0"
+
+      - step: "Create standard_account worksheet, debit-normal type"
+        action: "create"
+        model: "general_audit_ws_d209914"
+        save_as: "worksheet_dr"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+          account_mode: "standard_account"
+          account_type_id: "REC: account_type.id"
+          debit_col_number: 3
+          credit_col_number: 4
+          thousand_separator: ","
+          decimal_separator: "."
+          initial_balance: 5000.0
+          raw_data: |
+            Date,Description,Debit,Credit
+            2026-01-05,Sale,"1,000.50",0
+            2026-01-10,Purchase,0,"2,500.75"
+            2026-01-15,Adjustment,500.25,0
+
+      - step: "Assert dr balance is debit minus credit"
+        action: "assert"
+        target: "worksheet_dr"
+        asserts:
+          balance:
+            type: "value"
+            expected: -1000.0
+          ending_balance:
+            type: "value"
+            expected: 4000.0
+
+      - step: "Create standard_account worksheet, credit-normal type"
+        action: "create"
+        model: "general_audit_ws_d209914"
+        save_as: "worksheet_cr"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+          account_mode: "standard_account"
+          account_type_id: "REC: account_type_cr.id"
+          debit_col_number: 3
+          credit_col_number: 4
+          thousand_separator: ","
+          decimal_separator: "."
+          initial_balance: 5000.0
+          raw_data: |
+            Date,Description,Debit,Credit
+            2026-01-05,Sale,"1,000.50",0
+            2026-01-10,Purchase,0,"2,500.75"
+            2026-01-15,Adjustment,500.25,0
+
+      - step: "Assert cr balance is credit minus debit"
+        action: "assert"
+        target: "worksheet_cr"
+        asserts:
+          balance:
+            type: "value"
+            expected: 1000.0
+          ending_balance:
+            type: "value"
+            expected: 6000.0
+
+      - step: "Create standard_account worksheet without type"
+        action: "create"
+        model: "general_audit_ws_d209914"
+        save_as: "worksheet_none"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+          account_mode: "standard_account"
+          debit_col_number: 3
+          credit_col_number: 4
+          thousand_separator: ","
+          decimal_separator: "."
+          initial_balance: 300.0
+          raw_data: |
+            Date,Description,Debit,Credit
+            2026-01-05,Sale,"1,000.50",0
+
+      - step: "Assert balance 0.0 and ending equals initial"
+        action: "assert"
+        target: "worksheet_none"
+        asserts:
+          balance:
+            type: "value"
+            expected: 0.0
+          ending_balance:
+            type: "value"
+            expected: 300.0
+
+  # ------------------------------------------------------------------
   # _compute_detail_id - normal (account_id set + matching general_audit.detail)
   #                       and kosong (no account_id)
   # ------------------------------------------------------------------
