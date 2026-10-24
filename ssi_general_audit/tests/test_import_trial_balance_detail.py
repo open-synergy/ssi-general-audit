@@ -16,7 +16,9 @@ class TestImportTrialBalanceDetail(YamlTransactionCase):
     open-synergy/ssi-general-audit#530: with ``has_header`` unset every
     row updates the matching detail, with it set the first row is
     ignored, and the preview counts processed and skipped rows
-    (unknown account codes are skipped, as before).
+    (unknown account codes are skipped, as before). The preview also
+    lists problem rows by file row number (open-synergy/
+    ssi-general-audit#531).
     """
 
     def _create_trial_balance(self):
@@ -187,3 +189,119 @@ class TestImportTrialBalanceDetail(YamlTransactionCase):
         wizard.onchange_import_summary()
         self.assertIn("Rows to be processed: 2", wizard.import_summary)
         self.assertIn("Rows to be skipped: 2", wizard.import_summary)
+
+    def test_preview_header_status_and_unknown_codes(self):
+        """Preview states the header status and counts unknown codes.
+
+        Pure Python -- trigger P10 (L-09..L-11: the wizard's ``data``
+        field needs a base64-encoded CSV fixture, unavailable in
+        ``EVAL:``).
+        """
+        trial_balance, _detail_a, _detail_b = self._create_trial_balance()
+        csv_content = (
+            "Code,Name,OD,OC,D,C\n"
+            "TBIMP-A,Cash,10,0,100,0\n"
+            "UNKNOWN,Other,0,0,1,1\n"
+        )
+        wizard = self._create_wizard(trial_balance, csv_content, True)
+        wizard.onchange_import_summary()
+        self.assertIn("Header row: skipped", wizard.import_summary)
+        self.assertIn("Unknown account code or short row: 1", wizard.import_summary)
+        self.assertNotIn("no account lines", wizard.import_summary)
+        wizard.has_header = False
+        wizard.onchange_import_summary()
+        self.assertIn("Header row: not skipped", wizard.import_summary)
+        self.assertIn("Unknown account code or short row: 2", wizard.import_summary)
+
+    def test_preview_lists_problem_rows(self):
+        """Preview lists problem rows by file row number, up to ten.
+
+        Pure Python -- trigger P10 (L-09..L-11: the wizard's ``data``
+        field needs a base64-encoded CSV fixture, unavailable in
+        ``EVAL:``).
+        """
+        trial_balance, _detail_a, _detail_b = self._create_trial_balance()
+        csv_content = (
+            "Code,Name,OD,OC,D,C\n"
+            "TBIMP-A,Cash,10,0,100,0\n"
+            "UNKNOWN,Other,0,0,1,1\n"
+            "TBIMP-B,Bank\n"
+        )
+        wizard = self._create_wizard(trial_balance, csv_content, True)
+        wizard.onchange_import_summary()
+        self.assertIn("\n  Row 3: UNKNOWN", wizard.import_summary)
+        self.assertIn(
+            "\n  Row 4: short row (2 columns, 6 needed)", wizard.import_summary
+        )
+        self.assertNotIn("Row 1:", wizard.import_summary)
+        self.assertNotIn("Row 2:", wizard.import_summary)
+        self.assertNotIn("more", wizard.import_summary)
+        wizard.has_header = False
+        wizard.onchange_import_summary()
+        self.assertIn("\n  Row 1: Code", wizard.import_summary)
+        self.assertIn("\n  Row 3: UNKNOWN", wizard.import_summary)
+        self.assertIn(
+            "\n  Row 4: short row (2 columns, 6 needed)", wizard.import_summary
+        )
+        self.assertNotIn("Row 2:", wizard.import_summary)
+        many = "Code,Name,OD,OC,D,C\n" + "".join(
+            "BAD%s,X,0,0,0,0\n" % i for i in range(12)
+        )
+        wizard = self._create_wizard(trial_balance, many, True)
+        wizard.onchange_import_summary()
+        self.assertIn("\n  Row 2: BAD0", wizard.import_summary)
+        self.assertIn("\n  Row 11: BAD9", wizard.import_summary)
+        self.assertNotIn("Row 12:", wizard.import_summary)
+        self.assertIn("\n  ... and 2 more", wizard.import_summary)
+
+    def test_preview_lists_empty_account_code(self):
+        """Preview names a blank account code as an empty account code.
+
+        Pure Python -- trigger P10 (L-09..L-11: the wizard's ``data``
+        field needs a base64-encoded CSV fixture, unavailable in
+        ``EVAL:``).
+        """
+        trial_balance, _detail_a, _detail_b = self._create_trial_balance()
+        csv_content = (
+            "Code,Name,OD,OC,D,C\n"
+            "TBIMP-A,Cash,10,0,100,0\n"
+            ",Blank,0,0,1,1\n"
+            "   ,Spaces,0,0,1,1\n"
+            "UNKNOWN,Other,0,0,1,1\n"
+        )
+        wizard = self._create_wizard(trial_balance, csv_content, True)
+        wizard.onchange_import_summary()
+        self.assertIn("\n  Row 3: (empty account code)", wizard.import_summary)
+        self.assertIn("\n  Row 4: (empty account code)", wizard.import_summary)
+        self.assertIn("\n  Row 5: UNKNOWN", wizard.import_summary)
+        self.assertNotIn("Row 3: \n", wizard.import_summary)
+        self.assertIn("Unknown account code or short row: 3", wizard.import_summary)
+
+    def test_preview_warns_when_no_detail_lines(self):
+        """Preview warns to press Account when the trial balance is empty.
+
+        Pure Python -- trigger P10 (L-09..L-11: the wizard's ``data``
+        field needs a base64-encoded CSV fixture, unavailable in
+        ``EVAL:``).
+        """
+        trial_balance, detail_a, detail_b = self._create_trial_balance()
+        (detail_a | detail_b).unlink()
+        csv_content = "Code,Name,OD,OC,D,C\nTBIMP-A,Cash,10,0,100,0\n"
+        wizard = self._create_wizard(trial_balance, csv_content, True)
+        wizard.onchange_import_summary()
+        self.assertIn("no account lines", wizard.import_summary)
+        self.assertIn("Press the Account button", wizard.import_summary)
+
+    def test_preview_empty_without_data(self):
+        """Preview stays empty, with no warning, when no file is set.
+
+        Pure Python -- trigger P10 (L-09..L-11: asserts the wizard
+        state with an empty ``data`` field, which ``EVAL:`` cannot
+        build).
+        """
+        trial_balance, _detail_a, _detail_b = self._create_trial_balance()
+        wizard = self.env["import_trial_balance_detail"].new(
+            {"trial_balance_id": trial_balance.id, "has_header": True}
+        )
+        wizard.onchange_import_summary()
+        self.assertFalse(wizard.import_summary)
