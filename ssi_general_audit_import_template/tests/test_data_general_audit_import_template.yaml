@@ -200,7 +200,19 @@ scenarios:
             expected_count: 5
           server_action_id:
             type: "value"
-            operator: "is_falsy"
+            operator: "is_truthy"
+          server_action_id.binding_model_id.model:
+            type: "value"
+            expected: "client_account_mapping"
+          server_action_id.model_id.model:
+            type: "value"
+            expected: "client_account_mapping"
+          server_action_id.binding_type:
+            type: "value"
+            expected: "action"
+          server_action_id.state:
+            type: "value"
+            expected: "code"
 
   - name: "Seed - Balance Amount template"
     steps:
@@ -229,6 +241,21 @@ scenarios:
             type: "o2m"
             check: "count"
             expected_count: 6
+          server_action_id:
+            type: "value"
+            operator: "is_truthy"
+          server_action_id.binding_model_id.model:
+            type: "value"
+            expected: "client_trial_balance"
+          server_action_id.model_id.model:
+            type: "value"
+            expected: "client_trial_balance"
+          server_action_id.binding_type:
+            type: "value"
+            expected: "action"
+          server_action_id.state:
+            type: "value"
+            expected: "code"
 
   - name: "Seed - Client Adjustment Entry template"
     steps:
@@ -257,3 +284,47 @@ scenarios:
             type: "o2m"
             check: "count"
             expected_count: 5
+          server_action_id:
+            type: "value"
+            operator: "is_truthy"
+          server_action_id.binding_model_id.model:
+            type: "value"
+            expected: "client_adjustment_entry"
+          server_action_id.model_id.model:
+            type: "value"
+            expected: "client_adjustment_entry"
+          server_action_id.binding_type:
+            type: "value"
+            expected: "action"
+          server_action_id.state:
+            type: "value"
+            expected: "code"
+
+  - name: "Seed - Remove and recreate the server action"
+    steps:
+      - step: "Find the seeded template"
+        action: "search"
+        model: "general_audit_import_template"
+        domain: [["code", "=", "CLIENT_ADJUSTMENT_ENTRY"]]
+        save_as: "template"
+        limit: 1
+        expect_count: 1
+
+      - step: "Create on a seed that has a server action is refused"
+        action: "call"
+        target: "template"
+        method: "action_create_server_action"
+        as_user: "base.user_admin"
+        expect_error:
+          type: "UserError"
+          message_contains: "Server action already exists"
+
+      - step: "Remove the server action of the seed"
+        action: "call"
+        target: "template"
+        method: "action_remove_server_action"
+        as_user: "base.user_admin"
+        asserts:
+          server_action_id:
+            type: "value"
+            operator: "is_falsy"
