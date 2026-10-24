@@ -262,14 +262,32 @@ class GeneralAuditWSd209914(models.Model):
                     credit_total = 0.0
             record.credit = credit_total
 
-    @api.depends("debit", "credit", "account_id")
+    @api.depends(
+        "debit",
+        "credit",
+        "account_id",
+        "account_mode",
+        "account_type_id",
+    )
     def _compute_balance(self):
+        """Compute balance from the normal balance side.
+
+        The side comes from the account in account mode, or from the
+        standard account type in standard account mode. Without that
+        source the balance is 0.0.
+        """
         for record in self:
-            if record.account_id:
-                if record.account_id.normal_balance == "dr":
-                    record.balance = record.debit - record.credit
-                else:
-                    record.balance = record.credit - record.debit
+            normal_balance = False
+            if record.account_mode == "standard_account":
+                normal_balance = record.account_type_id.normal_balance
+            elif record.account_id:
+                normal_balance = record.account_id.normal_balance
+            if normal_balance == "dr":
+                record.balance = record.debit - record.credit
+            elif normal_balance:
+                record.balance = record.credit - record.debit
+            else:
+                record.balance = 0.0
 
     @api.depends("initial_balance", "balance")
     def _compute_ending_balance(self):
