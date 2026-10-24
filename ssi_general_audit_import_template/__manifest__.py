@@ -4,7 +4,7 @@
 # pylint: disable=locally-disabled, manifest-required-author
 {
     "name": "General Audit - Import Template",
-    "version": "14.0.1.1.0",
+    "version": "14.0.1.2.0",
     "category": "Administration",
     "website": "https://simetri-sinergi.id",
     "author": "OpenSynergy Indonesia, PT. Simetri Sinergi Indonesia",
@@ -21,6 +21,7 @@
         "views/general_audit_import_template_views.xml",
         "views/assets.xml",
         "data/general_audit_import_template_data.xml",
+        "data/general_audit_import_template_server_action.xml",
     ],
     "demo": [],
 }

@@ -166,6 +166,51 @@ scenarios:
         expect_count: 0
 
   # ------------------------------------------------------------------
+  # Renaming the template renames its server action
+  # ------------------------------------------------------------------
+  - name: "Template - Rename reaches the server action"
+    steps:
+      - step: "Get the target model"
+        action: "ref"
+        xml_id: "ssi_general_audit.model_client_business_process"
+        save_as: "target_model"
+
+      - step: "Create template"
+        action: "create"
+        model: "general_audit_import_template"
+        save_as: "template"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Import Template - Rename"
+          code: "/"
+          model_id: "REC: target_model.id"
+
+      - step: "Create the server action"
+        action: "call"
+        target: "template"
+        method: "action_create_server_action"
+        as_user: "base.user_admin"
+        asserts:
+          server_action_id.name:
+            type: "value"
+            expected: "Download Template: Test Import Template - Rename"
+
+      - step: "Rename the template"
+        action: "write"
+        target: "template"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Import Template - Renamed"
+
+      - step: "Assert the server action name follows the template"
+        action: "assert"
+        target: "template"
+        asserts:
+          server_action_id.name:
+            type: "value"
+            expected: "Download Template: Test Import Template - Renamed"
+
+  # ------------------------------------------------------------------
   # Seed templates of the three existing import wizards
   # ------------------------------------------------------------------
   - name: "Seed - CoA And Mapping template"
