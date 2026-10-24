@@ -14,7 +14,12 @@ does not force the worksheet modules to be installed.
 Key Features
 ============
 
-- Four seeded templates, editable by the administrator (``noupdate``).
+- Four seeded templates. Their name, delimiter, example and columns follow
+  the module version and are restored on every module update, so create a new
+  template instead of editing a seeded one. A column added to a seeded
+  template by hand is not removed by the update. A server action removed or
+  unbound by an administrator is not created again by a module update, and an
+  archived seeded template stays archived.
 - Financial Statement Disclosure - Detail: columns Item, Standard, Note, and Status.
 - Population: illustrative columns only (ID, Date, Reference, Amount).
 - Subledger: per-item balance list with columns No, Name, Reference, Date,
