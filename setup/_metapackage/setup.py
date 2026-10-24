@@ -10,6 +10,7 @@ setuptools.setup(
     install_requires=[
         'odoo14-addon-ssi_general_audit',
         'odoo14-addon-ssi_general_audit_core',
+        'odoo14-addon-ssi_general_audit_import_template',
         'odoo14-addon-ssi_general_audit_worksheet_acceptance_continuance',
         'odoo14-addon-ssi_general_audit_worksheet_analytic_cycle',
         'odoo14-addon-ssi_general_audit_worksheet_assignment_letter',
