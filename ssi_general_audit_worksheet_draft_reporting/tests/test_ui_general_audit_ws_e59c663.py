@@ -99,19 +99,14 @@ class TestUiGeneralAuditWsE59c663(HttpSavepointCase):
             )
         )
         cls.audit.with_user(cls.admin).action_open()
+        # The Create tour picks the General Audit by this fixed number,
+        # because the generated one changes on every run.
+        cls.audit.sudo().write({"name": "TOUR-E59C663-GA"})
 
         # Two more separate General Audits -- see the class docstring for
         # why ``worksheet_draft``/``worksheet_open`` cannot share an audit
         # with each other or with ``cls.audit`` (reserved for the Create
-        # tour, and left without a pre-existing worksheet). Their titles
-        # deliberately do NOT contain "Test General Audit - E59C663 Tour"
-        # as a substring: the Create tour's autocomplete step matches
-        # ``:contains(Test General Audit - E59C663 Tour)``, and with 3
-        # overlapping titles Odoo's dropdown picked a "Create and Edit"
-        # quick-create entry instead of the intended existing record
-        # (confirmed from the CI failure screenshot -- a blank "Create:
-        # General Audit" dialog popped up instead of the field being
-        # filled from an existing one).
+        # tour, and left without a pre-existing worksheet).
         audit_for_draft = (
             cls.env["general_audit"]
             .with_user(cls.admin)
