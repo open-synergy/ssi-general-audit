@@ -42,6 +42,9 @@
         "ssi_general_audit_worksheet_draft_reporting",
         "ssi_general_audit_worksheet_review",
         "ssi_general_audit_worksheet_final_report",
+        # Import Template
+        "ssi_general_audit_import_template",
+        "ssi_general_audit_import_template_worksheet",
         # From odoo_module.xlsx
         "web_advanced_search",
         "web_copy_confirm",
