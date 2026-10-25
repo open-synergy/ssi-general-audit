@@ -70,24 +70,12 @@ odoo.define(
                 {
                     content: "Select the General Audit",
                     trigger: ".o_field_many2one[name='general_audit_id'] input",
-                    run: "text Test General Audit - E59C663 Tour",
+                    run: "text TOUR-E59C663-GA",
                 },
                 {
-                    // The "Create" quick-create option is rendered as
-                    // Create "<strong>Test General Audit - E59C663
-                    // Tour</strong>" -- its text also contains the typed
-                    // string, so :contains() alone matches it too (CI
-                    // screenshot confirmed the tour landed on a blank
-                    // "Create: General Audit" dialog instead of picking
-                    // the fixture). Both "Create" and "Create and Edit..."
-                    // options carry the o_m2o_dropdown_option class
-                    // (odoo/addons/web/static/src/js/fields/
-                    // relational_fields.js), which real record matches do
-                    // not -- exclude it.
                     content: "Pick the General Audit from the dropdown",
                     trigger:
-                        ".ui-autocomplete .ui-menu-item " +
-                        "a:contains(Test General Audit - E59C663 Tour):not(.o_m2o_dropdown_option)",
+                        ".ui-autocomplete .ui-menu-item a:contains(TOUR-E59C663-GA)",
                     in_modal: false,
                 },
 
