@@ -4,6 +4,7 @@
 # pylint: disable=W8106
 from odoo import _, api, fields, models
 from odoo.exceptions import UserError, ValidationError
+from odoo.osv import expression
 
 from odoo.addons.ssi_decorator import ssi_decorator
 
@@ -730,6 +731,42 @@ class GeneralAudit(models.Model):
             )
             for record_id, name in result
         ]
+
+    @api.model
+    def _name_search(
+        self, name, args=None, operator="ilike", limit=100, name_get_uid=None
+    ):
+        """Also search by client name when asked.
+
+        Only applies when the context key ``display_partner_name`` is set, so
+        typing part of the client name finds the document. A negative operator
+        or an empty text keeps the default search.
+
+        :param name: text typed by the user
+        :param args: extra domain restricting the result
+        :param operator: comparison operator applied to number and client
+        :param limit: maximum number of records
+        :param name_get_uid: user used to read the display names
+        :return: list of ids of the matching documents
+        """
+        if (
+            not self.env.context.get("display_partner_name")
+            or not name
+            or operator in expression.NEGATIVE_TERM_OPERATORS
+        ):
+            return super()._name_search(
+                name,
+                args=args,
+                operator=operator,
+                limit=limit,
+                name_get_uid=name_get_uid,
+            )
+        domain = ["|", ("name", operator, name), ("partner_id", operator, name)]
+        return self._search(
+            expression.AND([domain, args or []]),
+            limit=limit,
+            access_rights_uid=name_get_uid,
+        )
 
     @api.constrains("date_start", "date_end")
     def _check_date_start_end(self):
