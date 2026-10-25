@@ -131,7 +131,11 @@
                     <attribute name="invisible">1</attribute>
                 </xpath>
                 <xpath expr="//field[@name='company_id']" position="after">
-                    <field name="general_audit_id" domain="[('state','=','open')]" />
+                    <field
+                        name="general_audit_id"
+                        domain="[('state','=','open')]"
+                        options="{'no_create': True, 'no_create_edit': True}"
+                    />
                     <field
                         name="account_type_ids"
                         widget="many2many_tags"
@@ -159,7 +163,11 @@
                     <field name="previous_date_end" invisible="1" />
                     <label for="user_id" string="Responsible" />
                     <div class="o_three_in_one_format">
-                        <field name="user_id" placeholder="Team Member" />
+                        <field
+                            name="user_id"
+                            placeholder="Team Member"
+                            options="{'no_create': True, 'no_create_edit': True}"
+                        />
                         <field name="preparation_date" placeholder="Date" />
                         <field
                             name="preparation_time"
@@ -168,7 +176,11 @@
                     </div>
                     <label for="reviewer_id" string="Reviewer" />
                     <div class="o_three_in_one_format">
-                        <field name="reviewer_id" placeholder="Team Member" />
+                        <field
+                            name="reviewer_id"
+                            placeholder="Team Member"
+                            options="{'no_create': True, 'no_create_edit': True}"
+                        />
                         <field name="review_date" placeholder="Date" />
                         <field name="review_time" placeholder="Total (in minutes)" />
                     </div>
