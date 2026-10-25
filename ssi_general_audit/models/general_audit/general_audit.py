@@ -709,27 +709,38 @@ class GeneralAudit(models.Model):
             document.interim_trial_balance_id = interim
             document.previous_trial_balance_id = previous
 
-    def name_get(self):
-        """Append the client name to the document number when asked.
+    @api.model
+    def name_search(self, name="", args=None, operator="ilike", limit=100):
+        """Append the client name to the dropdown suggestions when asked.
 
         Only applies when the context key ``display_partner_name`` is set,
-        e.g. by the General Audit field on the worksheet form, so other
-        Many2one and breadcrumbs keep showing the document number only.
+        e.g. by the General Audit field on the worksheet form. Only the
+        suggestions change: ``name_get`` is untouched, so a saved field,
+        other Many2one and breadcrumbs keep showing the document number only.
 
+        :param name: text typed by the user
+        :param args: extra domain restricting the result
+        :param operator: comparison operator applied to number and client
+        :param limit: maximum number of records
         :return: list of ``(id, "<number>(<client name>)")``
         """
-        result = super().name_get()
+        result = super().name_search(
+            name=name, args=args, operator=operator, limit=limit
+        )
         if not self.env.context.get("display_partner_name"):
             return result
-        partner_names = {rec.id: rec.partner_id.display_name for rec in self}
+        partner_names = {
+            rec.id: rec.partner_id.display_name
+            for rec in self.browse([record_id for record_id, _name in result])
+        }
         return [
             (
                 record_id,
-                "%s(%s)" % (name, partner_names[record_id])
+                "%s(%s)" % (record_name, partner_names[record_id])
                 if partner_names.get(record_id)
-                else name,
+                else record_name,
             )
-            for record_id, name in result
+            for record_id, record_name in result
         ]
 
     @api.model
