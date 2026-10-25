@@ -708,6 +708,29 @@ class GeneralAudit(models.Model):
             document.interim_trial_balance_id = interim
             document.previous_trial_balance_id = previous
 
+    def name_get(self):
+        """Append the client name to the document number when asked.
+
+        Only applies when the context key ``display_partner_name`` is set,
+        e.g. by the General Audit field on the worksheet form, so other
+        Many2one and breadcrumbs keep showing the document number only.
+
+        :return: list of ``(id, "<number>(<client name>)")``
+        """
+        result = super().name_get()
+        if not self.env.context.get("display_partner_name"):
+            return result
+        partner_names = {rec.id: rec.partner_id.display_name for rec in self}
+        return [
+            (
+                record_id,
+                "%s(%s)" % (name, partner_names[record_id])
+                if partner_names.get(record_id)
+                else name,
+            )
+            for record_id, name in result
+        ]
+
     @api.constrains("date_start", "date_end")
     def _check_date_start_end(self):
         for record in self:
