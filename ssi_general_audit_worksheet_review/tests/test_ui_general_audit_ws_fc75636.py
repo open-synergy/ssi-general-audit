@@ -173,7 +173,7 @@ class TestUiGeneralAuditWsFc75636(HttpSavepointCase):
     def test_reload_links(self):
         """Run the Reload Links tour.
 
-        IK: docs/general_audit_ws_fc75636/01-reload_links.md
+        IK: docs/general_audit_ws_fc75636/01-reload-links.md
         """
         self.start_tour(
             "/web",

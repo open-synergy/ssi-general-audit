@@ -144,7 +144,7 @@ class TestUiGeneralAuditWsDe69c2f(HttpSavepointCase):
     def test_reload_links(self):
         """Run the Reload Links tour.
 
-        IK: docs/general_audit_ws_de69c2f/02-reload_links.md
+        IK: docs/general_audit_ws_de69c2f/02-reload-links.md
         """
         self.start_tour(
             "/web",

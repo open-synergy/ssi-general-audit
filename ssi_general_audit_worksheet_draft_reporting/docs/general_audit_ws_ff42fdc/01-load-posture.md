@@ -1,6 +1,6 @@
 # Reload Posture — Audit Result (ff42fdc)
 
-> **Module:** ssi_general_audit_worksheet_draft_reporting
+> **Module:** `ssi_general_audit_worksheet_draft_reporting`
 >
 > **Model:** `general_audit_ws_ff42fdc`
 >

@@ -84,6 +84,8 @@ Work Instruction
 * `Create Draft Financial Statements <docs/general_audit_ws_e59c663/index.html>`_
 * `Open Draft Financial Statements <docs/general_audit_ws_e59c663/index.html>`_
 * `Confirm Draft Financial Statements <docs/general_audit_ws_e59c663/index.html>`_
+* `Reload Links - Final Discussion <docs/general_audit_ws_de69c2f/index.html>`_
+* `Reload Posture - Audit Result <docs/general_audit_ws_ff42fdc/index.html>`_
 
 Installation
 ============
