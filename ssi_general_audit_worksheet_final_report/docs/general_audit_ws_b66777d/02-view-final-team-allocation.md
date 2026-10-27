@@ -68,3 +68,9 @@
   click, one row per contributing Team Member.
 - The **Final Audit Opinion** and **Details** tabs are unaffected.
 - Clicking Populate again replaces the whole table with a fresh snapshot.
+
+## Related Views
+
+- `action_view_source_worksheets` (magnifier icon at the end of each Final Team
+  Allocations row): opens the worksheets of the same engagement whose time is counted
+  into that row. It only navigates and changes no data.

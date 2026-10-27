@@ -59,3 +59,9 @@
   Amount Comparison, Diff, and Result (`True` when Diff is zero, `False` otherwise).
 - On the worksheet header, the **Check Data** page shows the population/sample subset
   used as the reference side of the comparison.
+
+## Related Views
+
+- `action_open_check_lines` (**Open Check Lines** button, **Check** tab of the worksheet
+  form): opens the list of Check Lines of this worksheet. It only navigates and changes
+  no data.
