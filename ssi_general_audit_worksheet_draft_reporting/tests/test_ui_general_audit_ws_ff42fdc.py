@@ -173,7 +173,7 @@ class TestUiGeneralAuditWsFf42fdc(HttpSavepointCase):
         Covers the Posture Report table (Account Group and fixed Total
         rows, Previous column) and the three Audit Opinion sections.
 
-        IK: docs/general_audit_ws_ff42fdc/01-load_posture.md
+        IK: docs/general_audit_ws_ff42fdc/01-load-posture.md
         """
         self.start_tour(
             "/web",
