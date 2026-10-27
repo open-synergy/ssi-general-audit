@@ -32,6 +32,13 @@ class GeneralAuditWSb555edd(models.Model):
     _SFP_GROUP_CODES = [f"T{number:03d}" for number in range(1, 9)]
     _SOCI_GROUP_CODES = [f"T{number:03d}" for number in range(9, 16)]
 
+    closing_line_ids = fields.One2many(
+        string="Closing Line(s)",
+        comodel_name="general_audit.closing_line",
+        related="general_audit_id.closing_line_ids",
+        readonly=True,
+        help="Closing journal lines of the General Audit.",
+    )
     detail_ids = fields.One2many(
         comodel_name="general_audit_ws_b555edd.detail",
         inverse_name="worksheet_id",
