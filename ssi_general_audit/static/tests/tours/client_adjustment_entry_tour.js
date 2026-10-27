@@ -77,7 +77,7 @@ odoo.define("ssi_general_audit.client_adjustment_entry_tour", function (require)
             {
                 content: "Click the Import button",
                 trigger:
-                    ".o_form_view .tab-pane.active button.oe_highlight:contains(Import)",
+                    ".o_form_view .tab-pane.active > button.btn-primary:contains(Import)",
                 extra_trigger: ".o_form_view",
             },
 
