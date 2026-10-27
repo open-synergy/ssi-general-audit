@@ -86,6 +86,9 @@ Work Instruction
 ================
 
 * `Edit Financial Statement Disclosure - Detail <docs/general_audit_ws_a025441/index.html>`_
+* `Populate Checklist - Financial Statement Disclosure Review <docs/general_audit_ws_be62e79/index.html>`_
+* `Populate Details - Audit Quality <docs/general_audit_ws_bcc0d76/index.html>`_
+* `Populate Details - Audit Evidence Evaluation Detail <docs/general_audit_ws_cae598e/index.html>`_
 * `Reload Links - Proposed Audit Opinion <docs/general_audit_ws_fc75636/index.html>`_
 * `Fill Draft Audit Opinion - Proposed Audit Opinion <docs/general_audit_ws_fc75636/index.html>`_
 * `Fill Final Audit Opinion - Proposed Audit Opinion <docs/general_audit_ws_fc75636/index.html>`_
