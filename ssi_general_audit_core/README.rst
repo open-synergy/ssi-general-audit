@@ -7,6 +7,12 @@ General Audit - Core
 ====================
 
 
+Work Instruction
+================
+
+* `Create General Audit <docs/general_audit/index.html>`_
+* `Edit General Audit <docs/general_audit/index.html>`_
+
 Installation
 ============
 
