@@ -143,7 +143,7 @@ Available addons
 ----------------
 addon | version | maintainers | summary
 --- | --- | --- | ---
-[ssi_general_audit](ssi_general_audit/) | 14.0.4.13.2 |  | General Audit
+[ssi_general_audit](ssi_general_audit/) | 14.0.4.14.0 |  | General Audit
 [ssi_general_audit_core](ssi_general_audit_core/) | 14.0.1.2.1 |  | General Audit - Core
 [ssi_general_audit_import_template](ssi_general_audit_import_template/) | 14.0.1.2.1 |  | General Audit - Import Template
 [ssi_general_audit_import_template_worksheet](ssi_general_audit_import_template_worksheet/) | 14.0.1.1.1 |  | General Audit - Import Template Worksheet
