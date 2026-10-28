@@ -2757,3 +2757,83 @@ scenarios:
           - ["worksheet_id", "=", "REC: worksheet.id"]
         save_as: "details_twice"
         expect_count: 2
+
+  # ==================================================================
+  # b26d482 - Closing lines
+  # ==================================================================
+  - name: "b26d482 - action_generate_closing fills the closing lines of the audit"
+    steps:
+      - step: "Create closing type with one mapping"
+        action: "create"
+        model: "general_audit_closing_type"
+        save_as: "closing_type"
+        values:
+          name: "Test Closing Type - Lead Schedule"
+          code: "/"
+          mapping_ids:
+            - - 0
+              - 0
+              - name: "Close profit and loss"
+                sequence: 10
+                source_type_ids:
+                  - - 6
+                    - 0
+                    - - "REC: account_type_b.id"
+                account_type_id: "REC: account_type_a.id"
+
+      - step: "Select the closing type on the audit"
+        action: "write"
+        target: "audit"
+        values:
+          closing_type_id: "REC: closing_type.id"
+
+      - step: "Create worksheet b26d482"
+        action: "create"
+        model: "general_audit_ws_b26d482"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_b26d482.id"
+
+      - step: "Generate closing lines"
+        action: "call"
+        target: "worksheet"
+        method: "action_generate_closing"
+        as_user: "base.user_admin"
+        asserts:
+          closing_line_ids:
+            type: "o2m"
+            check: "count"
+            expected_count: 1
+
+      - step: "Generate closing lines again keeps a single line"
+        action: "call"
+        target: "worksheet"
+        method: "action_generate_closing"
+        as_user: "base.user_admin"
+        asserts:
+          closing_line_ids:
+            type: "o2m"
+            check: "count"
+            expected_count: 1
+
+  - name: "b26d482 - action_generate_closing requires a closing type"
+    steps:
+      - step: "Create worksheet b26d482"
+        action: "create"
+        model: "general_audit_ws_b26d482"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_b26d482.id"
+
+      - step: "Generate without closing type must be rejected"
+        action: "call"
+        target: "worksheet"
+        method: "action_generate_closing"
+        as_user: "base.user_admin"
+        expect_error:
+          type: "UserError"
+          message_contains: "Closing type is empty"

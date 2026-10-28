@@ -104,6 +104,14 @@ class GeneralAuditWSb26d482(models.Model):
         help="Sum of the previous balance of all detail lines.",
     )
 
+    closing_line_ids = fields.One2many(
+        string="Closing Line(s)",
+        comodel_name="general_audit.closing_line",
+        related="general_audit_id.closing_line_ids",
+        readonly=True,
+        help="Closing journal lines of the General Audit.",
+    )
+
     @api.depends(
         "detail_ids",
         "detail_ids.current_balance",
@@ -132,6 +140,17 @@ class GeneralAuditWSb26d482(models.Model):
             record.total_credit_adjustments = credit_adjustments
             record.total_adjusted_balance = adjusted_balance
             record.total_previous_balance = previous_balance
+
+    def action_generate_closing(self):
+        """Generate the closing lines of the parent General Audit.
+
+        Runs with ``sudo()`` like ``action_load_detail`` and delegates
+        to ``general_audit._generate_closing_lines``.
+
+        :return: nothing; the closing lines of the audit are replaced
+        """
+        for record in self.sudo():
+            record.general_audit_id._generate_closing_lines()
 
     def action_load_detail(self):
         for record in self.sudo():
