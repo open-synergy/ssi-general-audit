@@ -3677,3 +3677,124 @@ scenarios:
             type: "o2m"
             check: "count"
             expected_count: 0
+
+  # ------------------------------------------------------------------
+  # ff42fdc and b555edd - Closing lines of the General Audit
+  # ------------------------------------------------------------------
+  - name: "ff42fdc and b555edd - closing lines follow the General Audit"
+    steps:
+      - step: "Create first closing line on the audit"
+        action: "create"
+        model: "general_audit.closing_line"
+        save_as: "closing_line_1"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          sequence: 10
+          name: "Close profit and loss"
+          credit: 100.0
+
+      - step: "Create second closing line on the audit"
+        action: "create"
+        model: "general_audit.closing_line"
+        save_as: "closing_line_2"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          sequence: 20
+          name: "Close other comprehensive income"
+          debit: 30.0
+
+      - step: "Create worksheet ff42fdc"
+        action: "create"
+        model: "general_audit_ws_ff42fdc"
+        save_as: "worksheet_ff42fdc"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_ff42fdc.id"
+
+      - step: "Create worksheet b555edd"
+        action: "create"
+        model: "general_audit_ws_b555edd"
+        save_as: "worksheet_b555edd"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_b555edd.id"
+
+      - step: "Assert ff42fdc shows both closing lines"
+        action: "assert"
+        target: "worksheet_ff42fdc"
+        asserts:
+          closing_line_ids:
+            type: "o2m"
+            check: "count"
+            expected_count: 2
+
+      - step: "Assert b555edd shows both closing lines"
+        action: "assert"
+        target: "worksheet_b555edd"
+        asserts:
+          closing_line_ids:
+            type: "o2m"
+            check: "count"
+            expected_count: 2
+
+      - step: "Create third closing line on the audit"
+        action: "create"
+        model: "general_audit.closing_line"
+        save_as: "closing_line_3"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          sequence: 30
+          name: "Third closing line"
+          credit: 5.0
+
+      - step: "Assert both worksheets pick up the new line"
+        action: "assert"
+        target: "worksheet_ff42fdc"
+        asserts:
+          closing_line_ids:
+            type: "o2m"
+            check: "count"
+            expected_count: 3
+
+  - name: "ff42fdc and b555edd - audit without closing lines shows an empty list"
+    steps:
+      - step: "Create worksheet ff42fdc"
+        action: "create"
+        model: "general_audit_ws_ff42fdc"
+        save_as: "worksheet_ff42fdc"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_ff42fdc.id"
+
+      - step: "Create worksheet b555edd"
+        action: "create"
+        model: "general_audit_ws_b555edd"
+        save_as: "worksheet_b555edd"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_b555edd.id"
+
+      - step: "Assert ff42fdc has no closing lines"
+        action: "assert"
+        target: "worksheet_ff42fdc"
+        asserts:
+          closing_line_ids:
+            type: "o2m"
+            check: "count"
+            expected_count: 0
+
+      - step: "Assert b555edd has no closing lines"
+        action: "assert"
+        target: "worksheet_b555edd"
+        asserts:
+          closing_line_ids:
+            type: "o2m"
+            check: "count"
+            expected_count: 0

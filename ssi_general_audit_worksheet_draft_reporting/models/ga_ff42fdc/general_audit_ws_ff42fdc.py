@@ -110,6 +110,13 @@ class GeneralAuditWSff42fdc(models.Model):
         help="Date of the opinion on compliance with internal "
         "control. Local to this worksheet.",
     )
+    closing_line_ids = fields.One2many(
+        string="Closing Line(s)",
+        comodel_name="general_audit.closing_line",
+        related="general_audit_id.closing_line_ids",
+        readonly=True,
+        help="Closing journal lines of the General Audit.",
+    )
     posture_ids = fields.One2many(
         comodel_name="general_audit_ws_ff42fdc.posture",
         inverse_name="worksheet_id",
