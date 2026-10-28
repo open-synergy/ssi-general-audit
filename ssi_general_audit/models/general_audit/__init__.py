@@ -17,4 +17,7 @@ from . import (
     general_audit_standard_audit,
     general_audit_evidence,
     general_audit_worksheet_summary,
+    general_audit_closing_type,
+    general_audit_closing_type_mapping,
+    general_audit_closing_line,
 )

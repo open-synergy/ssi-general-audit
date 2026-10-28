@@ -1,0 +1,194 @@
+options:
+  auto_refresh: true
+setup:
+  steps:
+    - action: search
+      domain: []
+      limit: 1
+      model: ir.config_parameter
+      save_as: config_parameter
+      step: Get config parameter model
+    - action: call
+      args:
+        - ssi_general_audit.max_number_of_cpa_license
+        - "100"
+      method: set_param
+      step: Allow enough CPA licenses for this scenario
+      target: config_parameter
+    - action: create
+      as_user: base.user_admin
+      model: res.partner
+      save_as: client
+      step: Create client partner
+      values:
+        is_company: true
+        name: Test Client - Closing
+    - action: create
+      as_user: base.user_admin
+      model: res.partner
+      save_as: accountant
+      step: Create accountant partner
+      values:
+        name: Test Accountant - Closing
+    - action: ref
+      save_as: cpa_category
+      step: Get CPA license id category
+      xml_id: ssi_partner_identification_cpa_license.partner_identification_accountant_cpa_license
+    - action: create
+      as_user: base.user_admin
+      model: res.partner.id_number
+      save_as: cpa_license
+      step: Grant accountant a CPA license
+      values:
+        category_id: "REC: cpa_category.id"
+        name: CPA-CLOSING-0001
+        partner_id: "REC: accountant.id"
+    - action: create
+      as_user: base.user_admin
+      model: client_account_type_set
+      save_as: account_type_set
+      step: Create account type set
+      values:
+        code: /
+        name: Test Account Type Set - Closing
+    - action: create
+      as_user: base.user_admin
+      model: accountant.financial_accounting_standard
+      save_as: standard
+      step: Create financial accounting standard
+      values:
+        code: /
+        name: Test Financial Accounting Standard - Closing
+    - action: create
+      as_user: base.user_admin
+      model: general_audit
+      save_as: audit
+      step: Create general audit
+      values:
+        account_type_set_id: "REC: account_type_set.id"
+        accountant_id: "REC: accountant.id"
+        date_end: 2026-12-31
+        date_start: 2026-01-01
+        financial_accounting_standard_id: "REC: standard.id"
+        need_interim: false
+        need_previous: false
+        num_of_consecutive_audit_accountant: 1
+        num_of_consecutive_audit_firm: 1
+        partner_id: "REC: client.id"
+        title: Test General Audit - Closing
+    - step: Create account group for the closing source
+      action: create
+      model: client_account_group
+      save_as: group_pl
+      values:
+        name: Test Closing Group P&L
+        code: /
+        normal_balance: cr
+    - step: Create destination account type
+      action: create
+      model: client_account_type
+      save_as: type_re
+      values:
+        name: Test Closing Retained Earnings
+        code: /
+        group_id: "REC: group_pl.id"
+    - step: Create source account type
+      action: create
+      model: client_account_type
+      save_as: type_pl
+      values:
+        name: Test Closing Source Type
+        code: /
+        group_id: "REC: group_pl.id"
+scenarios:
+  - name: general_audit_closing_type - mapping is created under the type
+    steps:
+      - &id001
+        step: Create closing type
+        action: create
+        model: general_audit_closing_type
+        save_as: closing_type
+        values:
+          name: Test Closing Type
+          code: /
+          mapping_ids:
+            - - 0
+              - 0
+              - name: Close profit and loss
+                sequence: 10
+                source_type_ids:
+                  - - 6
+                    - 0
+                    - - "REC: type_pl.id"
+                account_type_id: "REC: type_re.id"
+      - step: Assert the mapping exists
+        action: assert
+        target: closing_type
+        asserts:
+          mapping_ids:
+            type: o2m
+            check: count
+            expected_count: 1
+  - name: general_audit - generate closing lines creates one line per mapping
+    steps:
+      - *id001
+      - step: Select the closing type on the audit
+        action: write
+        target: audit
+        values:
+          closing_type_id: "REC: closing_type.id"
+      - step: Generate closing lines
+        action: call
+        target: audit
+        method: _generate_closing_lines
+        as_user: base.user_admin
+        asserts:
+          closing_line_ids:
+            type: o2m
+            check: count
+            expected_count: 1
+      - step: Generate closing lines again
+        action: call
+        target: audit
+        method: _generate_closing_lines
+        as_user: base.user_admin
+        asserts:
+          closing_line_ids:
+            type: o2m
+            check: count
+            expected_count: 1
+      - step: Find the generated line
+        action: search
+        model: general_audit.closing_line
+        domain:
+          - - general_audit_id
+            - "="
+            - "EVAL: registry['audit'].id"
+        save_as: line
+        expect_count: 1
+      - step: Assert label partner and account type come from mapping and audit
+        action: assert
+        target: line
+        asserts:
+          name:
+            type: value
+            expected: Close profit and loss
+          partner_id:
+            type: m2o
+            expected: "REC: client"
+          account_type_id:
+            type: m2o
+            expected: "REC: type_re"
+          account_group_id:
+            type: m2o
+            expected: "REC: group_pl"
+  - name: general_audit - generate closing lines requires a closing type
+    steps:
+      - step: Generate without closing type must be rejected
+        action: call
+        target: audit
+        method: _generate_closing_lines
+        as_user: base.user_admin
+        expect_error:
+          type: UserError
+          message_contains: Closing type is empty

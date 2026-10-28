@@ -90,6 +90,7 @@
         "views/worksheet/general_audit_worksheet_type_category_views.xml",
         "views/worksheet/general_audit_worksheet_type_views.xml",
         "views/worksheet/general_audit_worksheet_conclusion_views.xml",
+        "views/general_audit_closing_type_views.xml",
         "views/ga/general_audit_views.xml",
         "views/ga/general_audit_worksheet_summary_views.xml",
         "views/ga/general_audit_computation_views.xml",

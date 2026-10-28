@@ -21,3 +21,5 @@ from . import test_ui_client_adjusting_coa
 from . import test_ui_client_adjustment_entry
 from . import test_ui_import_client_account
 from . import test_general_audit_audit_fee
+from . import test_general_audit_closing
+from . import test_general_audit_closing_amount

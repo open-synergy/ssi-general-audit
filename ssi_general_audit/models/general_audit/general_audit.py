@@ -202,6 +202,24 @@ class GeneralAudit(models.Model):
         ondelete="restrict",
         help="Configured set of account types used in this audit.",
     )
+    closing_type_id = fields.Many2one(
+        string="Closing Type",
+        comodel_name="general_audit_closing_type",
+        readonly=True,
+        states={
+            "draft": [("readonly", False)],
+            "open": [("readonly", False)],
+        },
+        ondelete="restrict",
+        help="Closing type whose mappings generate the closing lines.",
+    )
+    closing_line_ids = fields.One2many(
+        string="Closing Line(s)",
+        comodel_name="general_audit.closing_line",
+        inverse_name="general_audit_id",
+        readonly=True,
+        help="Closing journal lines generated from the closing type.",
+    )
     financial_accounting_standard_id = fields.Many2one(
         string="Financial Accounting Standard",
         comodel_name="accountant.financial_accounting_standard",
@@ -1571,6 +1589,63 @@ Solution: Only add accounts of the client of the audit
         self.ensure_one()
         for computation in self.computation_ids:
             computation._compute_computation()
+
+    def _generate_closing_lines(self):
+        """Regenerate the closing lines from the closing type.
+
+        Removes the existing closing lines, then builds a closing
+        journal per mapping of ``closing_type_id`` in sequence order.
+        Each source account with a balance is closed on the opposite
+        side, and one line on the destination account type receives
+        the net amount, so the journal is balanced.
+
+        :raises UserError: if the audit has no closing type
+        :return: nothing; ``closing_line_ids`` is replaced
+        """
+        self.ensure_one()
+        if not self.closing_type_id:
+            error_message = _(
+                """
+Context: Generate closing lines
+Database ID: %s
+Problem: Closing type is empty
+Solution: Select the closing type on the General Audit
+"""
+                % self.id
+            )
+            raise UserError(error_message)
+        self.closing_line_ids.unlink()
+        ClosingLine = self.env["general_audit.closing_line"]
+        for mapping in self.closing_type_id.mapping_ids:
+            net = 0.0
+            for detail in mapping._get_closing_details(self):
+                balance = mapping._get_closing_balance(detail)
+                if not balance:
+                    continue
+                net += balance
+                ClosingLine.create(
+                    {
+                        "general_audit_id": self.id,
+                        "sequence": mapping.sequence,
+                        "mapping_id": mapping.id,
+                        "account_id": detail.account_id.id,
+                        "account_type_id": detail.type_id.id,
+                        "name": mapping.name,
+                        "debit": balance if balance > 0 else 0.0,
+                        "credit": abs(balance) if balance < 0 else 0.0,
+                    }
+                )
+            ClosingLine.create(
+                {
+                    "general_audit_id": self.id,
+                    "sequence": mapping.sequence,
+                    "mapping_id": mapping.id,
+                    "account_type_id": mapping.account_type_id.id,
+                    "name": mapping.name,
+                    "debit": abs(net) if net < 0 else 0.0,
+                    "credit": net if net > 0 else 0.0,
+                }
+            )
 
     @ssi_decorator.insert_on_form_view()
     def _insert_form_element(self, view_arch):
