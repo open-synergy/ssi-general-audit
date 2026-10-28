@@ -132,6 +132,17 @@ msgid ""
 msgstr ""
 
 #. module: ssi_general_audit
+#: code:addons/ssi_general_audit/models/general_audit/general_audit.py:0
+#, python-format
+msgid ""
+"\n"
+"Context: Generate closing lines\n"
+"Database ID: %s\n"
+"Problem: Closing type is empty\n"
+"Solution: Select the closing type on the General Audit\n"
+msgstr ""
+
+#. module: ssi_general_audit
 #: code:addons/ssi_general_audit/wizards/import_adjustment_entry_detail.py:0
 #, python-format
 msgid ""
@@ -224,6 +235,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_trial_balance__general_audit_id
 #: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit_account_adjustment__general_audit_id
 #: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit_adjustment__general_audit_id
+#: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit_closing_line__general_audit_id
 #: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit_computation__general_audit_id
 #: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit_detail__general_audit_id
 #: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit_group_adjustment__general_audit_id
@@ -513,6 +525,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_adjustment_entry_detail__account_id
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_trial_balance_detail__account_id
 #: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit_account_adjustment__account_id
+#: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit_closing_line__account_id
 #: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit_detail__account_id
 #: model_terms:ir.ui.view,arch_db:ssi_general_audit.client_trial_balance_view_form
 #: model_terms:ir.ui.view,arch_db:ssi_general_audit.general_audit_view_form
@@ -533,6 +546,7 @@ msgstr ""
 #. module: ssi_general_audit
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_account__group_id
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_trial_balance_group_detail__group_id
+#: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit_closing_line__account_group_id
 #: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit_group_adjustment__group_id
 #: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit_group_detail__group_id
 #: model_terms:ir.ui.view,arch_db:ssi_general_audit.client_account_type_view_search
@@ -577,6 +591,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_trial_balance_detail__type_id
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_trial_balance_standard_detail__type_id
 #: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit_adjustment__type_id
+#: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit_closing_line__account_type_id
 #: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit_detail__type_id
 #: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit_standard_detail__type_id
 #: model_terms:ir.ui.view,arch_db:ssi_general_audit.client_account_view_search
@@ -636,6 +651,11 @@ msgid "Account group lines aggregated for analysis."
 msgstr ""
 
 #. module: ssi_general_audit
+#: model:ir.model.fields,help:ssi_general_audit.field_general_audit_closing_line__account_group_id
+msgid "Account group of the account type of this line."
+msgstr ""
+
+#. module: ssi_general_audit
 #: model:ir.model.fields,help:ssi_general_audit.field_client_account_type__group_id
 msgid "Account group that this type belongs to."
 msgstr ""
@@ -678,6 +698,13 @@ msgid "Account type of code %s is not in the account type set"
 msgstr ""
 
 #. module: ssi_general_audit
+#: model:ir.model.fields,help:ssi_general_audit.field_general_audit_closing_line__account_type_id
+msgid ""
+"Account type of the closed account, or the destination account type on the "
+"line that receives the net amount."
+msgstr ""
+
+#. module: ssi_general_audit
 #: model:ir.model.fields,help:ssi_general_audit.field_client_adjusting_coa_detail__type_id
 msgid ""
 "Account type of the new account. Must belong to the account type set of the "
@@ -711,6 +738,11 @@ msgid "Account type set used to classify client accounts."
 msgstr ""
 
 #. module: ssi_general_audit
+#: model:ir.model.fields,help:ssi_general_audit.field_general_audit_closing_type_mapping__account_type_id
+msgid "Account type that receives the closing amount."
+msgstr ""
+
+#. module: ssi_general_audit
 #: model:ir.model.fields,help:ssi_general_audit.field_client_trial_balance__allowed_type_ids
 msgid "Account types allowed based on the selected account type set."
 msgstr ""
@@ -728,6 +760,11 @@ msgstr ""
 #. module: ssi_general_audit
 #: model:ir.model.fields,help:ssi_general_audit.field_client_adjusting_coa__allowed_type_ids
 msgid "Account types that can be used on the lines of this document."
+msgstr ""
+
+#. module: ssi_general_audit
+#: model:ir.model.fields,help:ssi_general_audit.field_general_audit_closing_type_mapping__source_type_ids
+msgid "Account types whose audited balances are closed."
 msgstr ""
 
 #. module: ssi_general_audit
@@ -943,6 +980,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_trial_balance__message_needaction
 #: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit__message_needaction
 #: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit_business_environment__message_needaction
+#: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit_closing_type__message_needaction
 #: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit_evidence__message_needaction
 #: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit_relevant_regulation__message_needaction
 #: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit_standard_audit__message_needaction
@@ -968,6 +1006,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_financial_ratio__active
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_relevant_account_type__active
 #: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit_business_environment__active
+#: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit_closing_type__active
 #: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit_evidence__active
 #: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit_relevant_regulation__active
 #: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit_standard_audit__active
@@ -1029,6 +1068,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_trial_balance__activity_ids
 #: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit__activity_ids
 #: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit_business_environment__activity_ids
+#: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit_closing_type__activity_ids
 #: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit_evidence__activity_ids
 #: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit_relevant_regulation__activity_ids
 #: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit_standard_audit__activity_ids
@@ -1059,6 +1099,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_trial_balance__activity_exception_decoration
 #: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit__activity_exception_decoration
 #: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit_business_environment__activity_exception_decoration
+#: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit_closing_type__activity_exception_decoration
 #: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit_evidence__activity_exception_decoration
 #: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit_relevant_regulation__activity_exception_decoration
 #: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit_standard_audit__activity_exception_decoration
@@ -1095,6 +1136,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_trial_balance__activity_state
 #: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit__activity_state
 #: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit_business_environment__activity_state
+#: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit_closing_type__activity_state
 #: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit_evidence__activity_state
 #: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit_relevant_regulation__activity_state
 #: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit_standard_audit__activity_state
@@ -1125,6 +1167,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_trial_balance__activity_type_icon
 #: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit__activity_type_icon
 #: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit_business_environment__activity_type_icon
+#: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit_closing_type__activity_type_icon
 #: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit_evidence__activity_type_icon
 #: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit_relevant_regulation__activity_type_icon
 #: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit_standard_audit__activity_type_icon
@@ -1540,6 +1583,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_trial_balance__message_attachment_count
 #: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit__message_attachment_count
 #: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit_business_environment__message_attachment_count
+#: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit_closing_type__message_attachment_count
 #: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit_evidence__message_attachment_count
 #: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit_relevant_regulation__message_attachment_count
 #: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit_standard_audit__message_attachment_count
@@ -2219,6 +2263,13 @@ msgid "Client account being tracked in the audit."
 msgstr ""
 
 #. module: ssi_general_audit
+#: model:ir.model.fields,help:ssi_general_audit.field_general_audit_closing_line__account_id
+msgid ""
+"Client account closed by this line. Empty on the line that receives the net "
+"closing amount."
+msgstr ""
+
+#. module: ssi_general_audit
 #: model:ir.model.fields,help:ssi_general_audit.field_client_account_mapping_detail__code
 msgid "Client account code."
 msgstr ""
@@ -2286,6 +2337,11 @@ msgid "Client company that owns the new accounts."
 msgstr ""
 
 #. module: ssi_general_audit
+#: model:ir.model.fields,help:ssi_general_audit.field_general_audit_closing_line__partner_id
+msgid "Client of the General Audit."
+msgstr ""
+
+#. module: ssi_general_audit
 #: model:ir.model.fields,help:ssi_general_audit.field_add_client_account__partner_id
 msgid "Client that owns the new accounts. Taken from the mapping."
 msgstr ""
@@ -2325,6 +2381,43 @@ msgid ""
 msgstr ""
 
 #. module: ssi_general_audit
+#: model_terms:ir.ui.view,arch_db:ssi_general_audit.general_audit_view_form
+msgid "Closing"
+msgstr ""
+
+#. module: ssi_general_audit
+#: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit__closing_line_ids
+msgid "Closing Line(s)"
+msgstr ""
+
+#. module: ssi_general_audit
+#: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit__closing_type_id
+#: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit_closing_type_mapping__closing_type_id
+msgid "Closing Type"
+msgstr ""
+
+#. module: ssi_general_audit
+#: model:ir.actions.act_window,name:ssi_general_audit.general_audit_closing_type_action
+#: model:ir.ui.menu,name:ssi_general_audit.general_audit_closing_type_menu
+msgid "Closing Types"
+msgstr ""
+
+#. module: ssi_general_audit
+#: model:ir.model.fields,help:ssi_general_audit.field_general_audit__closing_line_ids
+msgid "Closing journal lines generated from the closing type."
+msgstr ""
+
+#. module: ssi_general_audit
+#: model:ir.model.fields,help:ssi_general_audit.field_general_audit_closing_type_mapping__closing_type_id
+msgid "Closing type that owns this mapping."
+msgstr ""
+
+#. module: ssi_general_audit
+#: model:ir.model.fields,help:ssi_general_audit.field_general_audit__closing_type_id
+msgid "Closing type whose mappings generate the closing lines."
+msgstr ""
+
+#. module: ssi_general_audit
 #: model:ir.actions.act_window,name:ssi_general_audit.client_account_mapping_action
 #: model:ir.ui.menu,name:ssi_general_audit.client_account_mapping_menu
 msgid "CoA and Mapping"
@@ -2344,6 +2437,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_financial_ratio__code
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_relevant_account_type__code
 #: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit_business_environment__code
+#: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit_closing_type__code
 #: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit_evidence__code
 #: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit_relevant_regulation__code
 #: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit_standard_audit__code
@@ -2703,6 +2797,9 @@ msgstr ""
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_trial_balance_standard_detail__create_uid
 #: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit__create_uid
 #: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit_business_environment__create_uid
+#: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit_closing_line__create_uid
+#: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit_closing_type__create_uid
+#: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit_closing_type_mapping__create_uid
 #: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit_computation__create_uid
 #: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit_detail__create_uid
 #: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit_evidence__create_uid
@@ -2751,6 +2848,9 @@ msgstr ""
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_trial_balance_standard_detail__create_date
 #: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit__create_date
 #: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit_business_environment__create_date
+#: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit_closing_line__create_date
+#: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit_closing_type__create_date
+#: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit_closing_type_mapping__create_date
 #: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit_computation__create_date
 #: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit_detail__create_date
 #: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit_evidence__create_date
@@ -2786,6 +2886,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_trial_balance_standard_detail__credit
 #: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit_account_adjustment__credit
 #: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit_adjustment__credit
+#: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit_closing_line__credit
 #: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit_group_adjustment__credit
 #: model:ir.model.fields.selection,name:ssi_general_audit.selection__client_account_group__normal_balance__cr
 #: model:ir.model.fields.selection,name:ssi_general_audit.selection__client_account_type__normal_balance__cr
@@ -2803,6 +2904,11 @@ msgstr ""
 #. module: ssi_general_audit
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_trial_balance_detail__opening_balance_credit
 msgid "Credit Opening Balance"
+msgstr ""
+
+#. module: ssi_general_audit
+#: model:ir.model.fields,help:ssi_general_audit.field_general_audit_closing_line__credit
+msgid "Credit amount of the closing line."
 msgstr ""
 
 #. module: ssi_general_audit
@@ -2828,6 +2934,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit__currency_id
 #: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit_account_adjustment__currency_id
 #: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit_adjustment__currency_id
+#: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit_closing_line__currency_id
 #: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit_detail__currency_id
 #: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit_group_adjustment__currency_id
 #: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit_group_detail__currency_id
@@ -2851,6 +2958,11 @@ msgstr ""
 #: model:ir.model.fields,help:ssi_general_audit.field_client_trial_balance_detail__currency_id
 #: model:ir.model.fields,help:ssi_general_audit.field_client_trial_balance_group_detail__currency_id
 msgid "Currency of amounts; inherited from the trial balance."
+msgstr ""
+
+#. module: ssi_general_audit
+#: model:ir.model.fields,help:ssi_general_audit.field_general_audit_closing_line__currency_id
+msgid "Currency of the General Audit."
 msgstr ""
 
 #. module: ssi_general_audit
@@ -3000,6 +3112,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_trial_balance_standard_detail__debit
 #: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit_account_adjustment__debit
 #: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit_adjustment__debit
+#: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit_closing_line__debit
 #: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit_group_adjustment__debit
 #: model:ir.model.fields.selection,name:ssi_general_audit.selection__client_account_group__normal_balance__dr
 #: model:ir.model.fields.selection,name:ssi_general_audit.selection__client_account_type__normal_balance__dr
@@ -3017,6 +3130,11 @@ msgstr ""
 #. module: ssi_general_audit
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_trial_balance_detail__opening_balance_debit
 msgid "Debit Opening Balance"
+msgstr ""
+
+#. module: ssi_general_audit
+#: model:ir.model.fields,help:ssi_general_audit.field_general_audit_closing_line__debit
+msgid "Debit amount of the closing line."
 msgstr ""
 
 #. module: ssi_general_audit
@@ -3103,8 +3221,19 @@ msgstr ""
 
 #. module: ssi_general_audit
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_adjustment_entry_detail__name
+#: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit_closing_type_mapping__name
 #: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit_relevant_regulation_item__description
 msgid "Description"
+msgstr ""
+
+#. module: ssi_general_audit
+#: model:ir.model.fields,help:ssi_general_audit.field_general_audit_closing_type_mapping__name
+msgid "Description of the mapping. Used as the closing line label."
+msgstr ""
+
+#. module: ssi_general_audit
+#: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit_closing_type_mapping__account_type_id
+msgid "Destination Account Type"
 msgstr ""
 
 #. module: ssi_general_audit
@@ -3181,6 +3310,9 @@ msgstr ""
 #: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit_account_adjustment__display_name
 #: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit_adjustment__display_name
 #: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit_business_environment__display_name
+#: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit_closing_line__display_name
+#: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit_closing_type__display_name
+#: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit_closing_type_mapping__display_name
 #: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit_computation__display_name
 #: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit_detail__display_name
 #: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit_evidence__display_name
@@ -3818,6 +3950,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_trial_balance__message_follower_ids
 #: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit__message_follower_ids
 #: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit_business_environment__message_follower_ids
+#: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit_closing_type__message_follower_ids
 #: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit_evidence__message_follower_ids
 #: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit_relevant_regulation__message_follower_ids
 #: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit_standard_audit__message_follower_ids
@@ -3848,6 +3981,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_trial_balance__message_channel_ids
 #: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit__message_channel_ids
 #: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit_business_environment__message_channel_ids
+#: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit_closing_type__message_channel_ids
 #: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit_evidence__message_channel_ids
 #: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit_relevant_regulation__message_channel_ids
 #: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit_standard_audit__message_channel_ids
@@ -3878,6 +4012,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_trial_balance__message_partner_ids
 #: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit__message_partner_ids
 #: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit_business_environment__message_partner_ids
+#: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit_closing_type__message_partner_ids
 #: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit_evidence__message_partner_ids
 #: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit_relevant_regulation__message_partner_ids
 #: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit_standard_audit__message_partner_ids
@@ -3908,6 +4043,7 @@ msgstr ""
 #: model:ir.model.fields,help:ssi_general_audit.field_client_trial_balance__activity_type_icon
 #: model:ir.model.fields,help:ssi_general_audit.field_general_audit__activity_type_icon
 #: model:ir.model.fields,help:ssi_general_audit.field_general_audit_business_environment__activity_type_icon
+#: model:ir.model.fields,help:ssi_general_audit.field_general_audit_closing_type__activity_type_icon
 #: model:ir.model.fields,help:ssi_general_audit.field_general_audit_evidence__activity_type_icon
 #: model:ir.model.fields,help:ssi_general_audit.field_general_audit_relevant_regulation__activity_type_icon
 #: model:ir.model.fields,help:ssi_general_audit.field_general_audit_standard_audit__activity_type_icon
@@ -3964,6 +4100,22 @@ msgstr ""
 #: model:ir.model,name:ssi_general_audit.model_general_audit_business_environment
 #: model:res.groups,name:ssi_general_audit.general_audit_business_environment_group
 msgid "General Audit Business Environment"
+msgstr ""
+
+#. module: ssi_general_audit
+#: model:ir.model,name:ssi_general_audit.model_general_audit_closing_line
+msgid "General Audit Closing Line"
+msgstr ""
+
+#. module: ssi_general_audit
+#: model:ir.model,name:ssi_general_audit.model_general_audit_closing_type
+#: model:res.groups,name:ssi_general_audit.general_audit_closing_type_group
+msgid "General Audit Closing Type"
+msgstr ""
+
+#. module: ssi_general_audit
+#: model:ir.model,name:ssi_general_audit.model_general_audit_closing_type_mapping
+msgid "General Audit Closing Type Mapping"
 msgstr ""
 
 #. module: ssi_general_audit
@@ -4028,6 +4180,11 @@ msgstr ""
 #. module: ssi_general_audit
 #: model:ir.model.fields,help:ssi_general_audit.field_general_audit_adjustment__general_audit_id
 msgid "General Audit document related to the standard adjustment summary."
+msgstr ""
+
+#. module: ssi_general_audit
+#: model:ir.model.fields,help:ssi_general_audit.field_general_audit_closing_line__general_audit_id
+msgid "General Audit document that owns this closing line."
 msgstr ""
 
 #. module: ssi_general_audit
@@ -4173,6 +4330,9 @@ msgstr ""
 #: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit_account_adjustment__id
 #: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit_adjustment__id
 #: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit_business_environment__id
+#: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit_closing_line__id
+#: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit_closing_type__id
+#: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit_closing_type_mapping__id
 #: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit_computation__id
 #: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit_detail__id
 #: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit_evidence__id
@@ -4225,6 +4385,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_trial_balance__activity_exception_icon
 #: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit__activity_exception_icon
 #: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit_business_environment__activity_exception_icon
+#: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit_closing_type__activity_exception_icon
 #: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit_evidence__activity_exception_icon
 #: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit_relevant_regulation__activity_exception_icon
 #: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit_standard_audit__activity_exception_icon
@@ -4255,6 +4416,7 @@ msgstr ""
 #: model:ir.model.fields,help:ssi_general_audit.field_client_trial_balance__activity_exception_icon
 #: model:ir.model.fields,help:ssi_general_audit.field_general_audit__activity_exception_icon
 #: model:ir.model.fields,help:ssi_general_audit.field_general_audit_business_environment__activity_exception_icon
+#: model:ir.model.fields,help:ssi_general_audit.field_general_audit_closing_type__activity_exception_icon
 #: model:ir.model.fields,help:ssi_general_audit.field_general_audit_evidence__activity_exception_icon
 #: model:ir.model.fields,help:ssi_general_audit.field_general_audit_relevant_regulation__activity_exception_icon
 #: model:ir.model.fields,help:ssi_general_audit.field_general_audit_standard_audit__activity_exception_icon
@@ -4312,6 +4474,8 @@ msgstr ""
 #: model:ir.model.fields,help:ssi_general_audit.field_general_audit__message_unread
 #: model:ir.model.fields,help:ssi_general_audit.field_general_audit_business_environment__message_needaction
 #: model:ir.model.fields,help:ssi_general_audit.field_general_audit_business_environment__message_unread
+#: model:ir.model.fields,help:ssi_general_audit.field_general_audit_closing_type__message_needaction
+#: model:ir.model.fields,help:ssi_general_audit.field_general_audit_closing_type__message_unread
 #: model:ir.model.fields,help:ssi_general_audit.field_general_audit_evidence__message_needaction
 #: model:ir.model.fields,help:ssi_general_audit.field_general_audit_evidence__message_unread
 #: model:ir.model.fields,help:ssi_general_audit.field_general_audit_relevant_regulation__message_needaction
@@ -4353,6 +4517,7 @@ msgstr ""
 #: model:ir.model.fields,help:ssi_general_audit.field_client_trial_balance__message_has_error
 #: model:ir.model.fields,help:ssi_general_audit.field_general_audit__message_has_error
 #: model:ir.model.fields,help:ssi_general_audit.field_general_audit_business_environment__message_has_error
+#: model:ir.model.fields,help:ssi_general_audit.field_general_audit_closing_type__message_has_error
 #: model:ir.model.fields,help:ssi_general_audit.field_general_audit_evidence__message_has_error
 #: model:ir.model.fields,help:ssi_general_audit.field_general_audit_relevant_regulation__message_has_error
 #: model:ir.model.fields,help:ssi_general_audit.field_general_audit_standard_audit__message_has_error
@@ -4859,6 +5024,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_trial_balance__message_is_follower
 #: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit__message_is_follower
 #: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit_business_environment__message_is_follower
+#: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit_closing_type__message_is_follower
 #: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit_evidence__message_is_follower
 #: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit_relevant_regulation__message_is_follower
 #: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit_standard_audit__message_is_follower
@@ -4932,6 +5098,16 @@ msgid ""
 msgstr ""
 
 #. module: ssi_general_audit
+#: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit_closing_line__name
+msgid "Label"
+msgstr ""
+
+#. module: ssi_general_audit
+#: model:ir.model.fields,help:ssi_general_audit.field_general_audit_closing_line__name
+msgid "Label of the closing line, taken from the mapping description."
+msgstr ""
+
+#. module: ssi_general_audit
 #: model:ir.model.fields,field_description:ssi_general_audit.field_add_client_account____last_update
 #: model:ir.model.fields,field_description:ssi_general_audit.field_add_client_account_line____last_update
 #: model:ir.model.fields,field_description:ssi_general_audit.field_checklist_option____last_update
@@ -4959,6 +5135,9 @@ msgstr ""
 #: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit_account_adjustment____last_update
 #: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit_adjustment____last_update
 #: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit_business_environment____last_update
+#: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit_closing_line____last_update
+#: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit_closing_type____last_update
+#: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit_closing_type_mapping____last_update
 #: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit_computation____last_update
 #: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit_detail____last_update
 #: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit_evidence____last_update
@@ -5016,6 +5195,9 @@ msgstr ""
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_trial_balance_standard_detail__write_uid
 #: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit__write_uid
 #: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit_business_environment__write_uid
+#: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit_closing_line__write_uid
+#: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit_closing_type__write_uid
+#: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit_closing_type_mapping__write_uid
 #: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit_computation__write_uid
 #: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit_detail__write_uid
 #: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit_evidence__write_uid
@@ -5064,6 +5246,9 @@ msgstr ""
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_trial_balance_standard_detail__write_date
 #: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit__write_date
 #: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit_business_environment__write_date
+#: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit_closing_line__write_date
+#: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit_closing_type__write_date
+#: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit_closing_type_mapping__write_date
 #: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit_computation__write_date
 #: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit_detail__write_date
 #: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit_evidence__write_date
@@ -5250,6 +5435,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_trial_balance__message_main_attachment_id
 #: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit__message_main_attachment_id
 #: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit_business_environment__message_main_attachment_id
+#: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit_closing_type__message_main_attachment_id
 #: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit_evidence__message_main_attachment_id
 #: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit_relevant_regulation__message_main_attachment_id
 #: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit_standard_audit__message_main_attachment_id
@@ -5309,13 +5495,34 @@ msgid "Manual or calculated adjustment applied to the extrapolation."
 msgstr ""
 
 #. module: ssi_general_audit
+#: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit_closing_line__mapping_id
+#: model_terms:ir.ui.view,arch_db:ssi_general_audit.general_audit_closing_type_view_form
+msgid "Mapping"
+msgstr ""
+
+#. module: ssi_general_audit
 #: model:ir.model.fields,help:ssi_general_audit.field_client_account_mapping__detail_ids
 msgid "Mapping lines between client accounts and standard account types."
 msgstr ""
 
 #. module: ssi_general_audit
+#: model:ir.model.fields,help:ssi_general_audit.field_general_audit_closing_line__mapping_id
+msgid "Mapping that produced this closing line."
+msgstr ""
+
+#. module: ssi_general_audit
 #: model:ir.model.fields,help:ssi_general_audit.field_add_client_account__mapping_id
 msgid "Mapping that receives the new accounts."
+msgstr ""
+
+#. module: ssi_general_audit
+#: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit_closing_type__mapping_ids
+msgid "Mapping(s)"
+msgstr ""
+
+#. module: ssi_general_audit
+#: model:ir.model.fields,help:ssi_general_audit.field_general_audit_closing_type__mapping_ids
+msgid "Mappings evaluated in sequence order to build closing lines."
 msgstr ""
 
 #. module: ssi_general_audit
@@ -5334,6 +5541,7 @@ msgstr ""
 #: model:ir.model.fields,help:ssi_general_audit.field_client_financial_ratio__active
 #: model:ir.model.fields,help:ssi_general_audit.field_client_relevant_account_type__active
 #: model:ir.model.fields,help:ssi_general_audit.field_general_audit_business_environment__active
+#: model:ir.model.fields,help:ssi_general_audit.field_general_audit_closing_type__active
 #: model:ir.model.fields,help:ssi_general_audit.field_general_audit_evidence__active
 #: model:ir.model.fields,help:ssi_general_audit.field_general_audit_relevant_regulation__active
 #: model:ir.model.fields,help:ssi_general_audit.field_general_audit_standard_audit__active
@@ -5360,6 +5568,7 @@ msgstr ""
 #: model:ir.model.fields,help:ssi_general_audit.field_client_business_process__code
 #: model:ir.model.fields,help:ssi_general_audit.field_client_financial_ratio__code
 #: model:ir.model.fields,help:ssi_general_audit.field_general_audit_business_environment__code
+#: model:ir.model.fields,help:ssi_general_audit.field_general_audit_closing_type__code
 #: model:ir.model.fields,help:ssi_general_audit.field_general_audit_relevant_regulation__code
 #: model:ir.model.fields,help:ssi_general_audit.field_general_audit_standard_audit__code
 #: model:ir.model.fields,help:ssi_general_audit.field_general_audit_worksheet_conclusion__code
@@ -5434,6 +5643,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_trial_balance__message_has_error
 #: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit__message_has_error
 #: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit_business_environment__message_has_error
+#: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit_closing_type__message_has_error
 #: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit_evidence__message_has_error
 #: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit_relevant_regulation__message_has_error
 #: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit_standard_audit__message_has_error
@@ -5464,6 +5674,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_trial_balance__message_ids
 #: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit__message_ids
 #: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit_business_environment__message_ids
+#: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit_closing_type__message_ids
 #: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit_evidence__message_ids
 #: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit_relevant_regulation__message_ids
 #: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit_standard_audit__message_ids
@@ -5529,6 +5740,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_trial_balance__my_activity_date_deadline
 #: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit__my_activity_date_deadline
 #: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit_business_environment__my_activity_date_deadline
+#: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit_closing_type__my_activity_date_deadline
 #: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit_evidence__my_activity_date_deadline
 #: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit_relevant_regulation__my_activity_date_deadline
 #: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit_standard_audit__my_activity_date_deadline
@@ -5555,6 +5767,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_financial_ratio__name
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_relevant_account_type__name
 #: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit_business_environment__name
+#: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit_closing_type__name
 #: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit_evidence__name
 #: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit_relevant_regulation__name
 #: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit_standard_audit__name
@@ -5733,6 +5946,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_trial_balance__activity_date_deadline
 #: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit__activity_date_deadline
 #: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit_business_environment__activity_date_deadline
+#: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit_closing_type__activity_date_deadline
 #: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit_evidence__activity_date_deadline
 #: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit_relevant_regulation__activity_date_deadline
 #: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit_standard_audit__activity_date_deadline
@@ -5763,6 +5977,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_trial_balance__activity_summary
 #: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit__activity_summary
 #: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit_business_environment__activity_summary
+#: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit_closing_type__activity_summary
 #: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit_evidence__activity_summary
 #: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit_relevant_regulation__activity_summary
 #: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit_standard_audit__activity_summary
@@ -5793,6 +6008,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_trial_balance__activity_type_id
 #: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit__activity_type_id
 #: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit_business_environment__activity_type_id
+#: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit_closing_type__activity_type_id
 #: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit_evidence__activity_type_id
 #: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit_relevant_regulation__activity_type_id
 #: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit_standard_audit__activity_type_id
@@ -5941,6 +6157,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_trial_balance__note
 #: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit__note
 #: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit_business_environment__note
+#: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit_closing_type__note
 #: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit_evidence__note
 #: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit_relevant_regulation__note
 #: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit_standard_audit__note
@@ -5987,6 +6204,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_trial_balance__message_needaction_counter
 #: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit__message_needaction_counter
 #: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit_business_environment__message_needaction_counter
+#: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit_closing_type__message_needaction_counter
 #: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit_evidence__message_needaction_counter
 #: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit_relevant_regulation__message_needaction_counter
 #: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit_standard_audit__message_needaction_counter
@@ -6037,6 +6255,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_trial_balance__message_has_error_counter
 #: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit__message_has_error_counter
 #: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit_business_environment__message_has_error_counter
+#: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit_closing_type__message_has_error_counter
 #: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit_evidence__message_has_error_counter
 #: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit_relevant_regulation__message_has_error_counter
 #: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit_standard_audit__message_has_error_counter
@@ -6072,6 +6291,7 @@ msgstr ""
 #: model:ir.model.fields,help:ssi_general_audit.field_client_trial_balance__message_needaction_counter
 #: model:ir.model.fields,help:ssi_general_audit.field_general_audit__message_needaction_counter
 #: model:ir.model.fields,help:ssi_general_audit.field_general_audit_business_environment__message_needaction_counter
+#: model:ir.model.fields,help:ssi_general_audit.field_general_audit_closing_type__message_needaction_counter
 #: model:ir.model.fields,help:ssi_general_audit.field_general_audit_evidence__message_needaction_counter
 #: model:ir.model.fields,help:ssi_general_audit.field_general_audit_relevant_regulation__message_needaction_counter
 #: model:ir.model.fields,help:ssi_general_audit.field_general_audit_standard_audit__message_needaction_counter
@@ -6102,6 +6322,7 @@ msgstr ""
 #: model:ir.model.fields,help:ssi_general_audit.field_client_trial_balance__message_has_error_counter
 #: model:ir.model.fields,help:ssi_general_audit.field_general_audit__message_has_error_counter
 #: model:ir.model.fields,help:ssi_general_audit.field_general_audit_business_environment__message_has_error_counter
+#: model:ir.model.fields,help:ssi_general_audit.field_general_audit_closing_type__message_has_error_counter
 #: model:ir.model.fields,help:ssi_general_audit.field_general_audit_evidence__message_has_error_counter
 #: model:ir.model.fields,help:ssi_general_audit.field_general_audit_relevant_regulation__message_has_error_counter
 #: model:ir.model.fields,help:ssi_general_audit.field_general_audit_standard_audit__message_has_error_counter
@@ -6132,6 +6353,7 @@ msgstr ""
 #: model:ir.model.fields,help:ssi_general_audit.field_client_trial_balance__message_unread_counter
 #: model:ir.model.fields,help:ssi_general_audit.field_general_audit__message_unread_counter
 #: model:ir.model.fields,help:ssi_general_audit.field_general_audit_business_environment__message_unread_counter
+#: model:ir.model.fields,help:ssi_general_audit.field_general_audit_closing_type__message_unread_counter
 #: model:ir.model.fields,help:ssi_general_audit.field_general_audit_evidence__message_unread_counter
 #: model:ir.model.fields,help:ssi_general_audit.field_general_audit_relevant_regulation__message_unread_counter
 #: model:ir.model.fields,help:ssi_general_audit.field_general_audit_standard_audit__message_unread_counter
@@ -6383,6 +6605,11 @@ msgid "Ordering number inherited from the client account."
 msgstr ""
 
 #. module: ssi_general_audit
+#: model:ir.model.fields,help:ssi_general_audit.field_general_audit_closing_line__sequence
+msgid "Ordering number of the closing line."
+msgstr ""
+
+#. module: ssi_general_audit
 #: model:ir.model.fields,help:ssi_general_audit.field_client_account_group__sequence
 msgid "Ordering of the account group in lists and reports."
 msgstr ""
@@ -6401,6 +6628,11 @@ msgstr ""
 #. module: ssi_general_audit
 #: model:ir.model.fields,help:ssi_general_audit.field_general_audit_relevant_regulation_item__sequence
 msgid "Ordering of the item within the regulation."
+msgstr ""
+
+#. module: ssi_general_audit
+#: model:ir.model.fields,help:ssi_general_audit.field_general_audit_closing_type_mapping__sequence
+msgid "Ordering of the mapping and of the closing line it creates."
 msgstr ""
 
 #. module: ssi_general_audit
@@ -6589,6 +6821,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_adjusting_coa__partner_id
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_adjustment_entry__partner_id
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_trial_balance__partner_id
+#: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit_closing_line__partner_id
 #: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit_worksheet__partner_id
 #: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit_worksheet_mixin__partner_id
 #: model_terms:ir.ui.view,arch_db:ssi_general_audit.client_account_mapping_view_search
@@ -7127,6 +7360,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_trial_balance__activity_user_id
 #: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit__activity_user_id
 #: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit_business_environment__activity_user_id
+#: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit_closing_type__activity_user_id
 #: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit_evidence__activity_user_id
 #: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit_relevant_regulation__activity_user_id
 #: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit_standard_audit__activity_user_id
@@ -7377,6 +7611,8 @@ msgstr ""
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_trial_balance_detail__sequence
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_trial_balance_group_detail__sequence
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_trial_balance_standard_detail__sequence
+#: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit_closing_line__sequence
+#: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit_closing_type_mapping__sequence
 #: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit_computation__sequence
 #: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit_detail__sequence
 #: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit_group_detail__sequence
@@ -7445,6 +7681,11 @@ msgstr ""
 #: model:ir.model.fields.selection,name:ssi_general_audit.selection__client_financial_ratio__category__solvency
 #: model:ir.model.fields.selection,name:ssi_general_audit.selection__trial_balance_computation_item__category__solvency
 msgid "Solvency Ratio"
+msgstr ""
+
+#. module: ssi_general_audit
+#: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit_closing_type_mapping__source_type_ids
+msgid "Source Account Type(s)"
 msgstr ""
 
 #. module: ssi_general_audit
@@ -7628,6 +7869,7 @@ msgstr ""
 #: model:ir.model.fields,help:ssi_general_audit.field_client_trial_balance__activity_state
 #: model:ir.model.fields,help:ssi_general_audit.field_general_audit__activity_state
 #: model:ir.model.fields,help:ssi_general_audit.field_general_audit_business_environment__activity_state
+#: model:ir.model.fields,help:ssi_general_audit.field_general_audit_closing_type__activity_state
 #: model:ir.model.fields,help:ssi_general_audit.field_general_audit_evidence__activity_state
 #: model:ir.model.fields,help:ssi_general_audit.field_general_audit_relevant_regulation__activity_state
 #: model:ir.model.fields,help:ssi_general_audit.field_general_audit_standard_audit__activity_state
@@ -8269,6 +8511,7 @@ msgstr ""
 #: model:ir.model.fields,help:ssi_general_audit.field_client_trial_balance__activity_exception_decoration
 #: model:ir.model.fields,help:ssi_general_audit.field_general_audit__activity_exception_decoration
 #: model:ir.model.fields,help:ssi_general_audit.field_general_audit_business_environment__activity_exception_decoration
+#: model:ir.model.fields,help:ssi_general_audit.field_general_audit_closing_type__activity_exception_decoration
 #: model:ir.model.fields,help:ssi_general_audit.field_general_audit_evidence__activity_exception_decoration
 #: model:ir.model.fields,help:ssi_general_audit.field_general_audit_relevant_regulation__activity_exception_decoration
 #: model:ir.model.fields,help:ssi_general_audit.field_general_audit_standard_audit__activity_exception_decoration
@@ -8358,6 +8601,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_trial_balance__message_unread
 #: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit__message_unread
 #: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit_business_environment__message_unread
+#: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit_closing_type__message_unread
 #: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit_evidence__message_unread
 #: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit_relevant_regulation__message_unread
 #: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit_standard_audit__message_unread
@@ -8388,6 +8632,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_trial_balance__message_unread_counter
 #: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit__message_unread_counter
 #: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit_business_environment__message_unread_counter
+#: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit_closing_type__message_unread_counter
 #: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit_evidence__message_unread_counter
 #: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit_relevant_regulation__message_unread_counter
 #: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit_standard_audit__message_unread_counter
@@ -8518,6 +8763,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:ssi_general_audit.field_client_trial_balance__website_message_ids
 #: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit__website_message_ids
 #: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit_business_environment__website_message_ids
+#: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit_closing_type__website_message_ids
 #: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit_evidence__website_message_ids
 #: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit_relevant_regulation__website_message_ids
 #: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit_standard_audit__website_message_ids
@@ -8548,6 +8794,7 @@ msgstr ""
 #: model:ir.model.fields,help:ssi_general_audit.field_client_trial_balance__website_message_ids
 #: model:ir.model.fields,help:ssi_general_audit.field_general_audit__website_message_ids
 #: model:ir.model.fields,help:ssi_general_audit.field_general_audit_business_environment__website_message_ids
+#: model:ir.model.fields,help:ssi_general_audit.field_general_audit_closing_type__website_message_ids
 #: model:ir.model.fields,help:ssi_general_audit.field_general_audit_evidence__website_message_ids
 #: model:ir.model.fields,help:ssi_general_audit.field_general_audit_relevant_regulation__website_message_ids
 #: model:ir.model.fields,help:ssi_general_audit.field_general_audit_standard_audit__website_message_ids
