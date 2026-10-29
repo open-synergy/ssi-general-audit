@@ -38,6 +38,11 @@ The worksheet in this module covers:
 Engagements
 
 
+Work Instruction
+================
+
+* `Create - Engagement Letter Checklist <docs/general_audit_ws_d8aaebc/index.html>`_
+
 Installation
 ============
 
