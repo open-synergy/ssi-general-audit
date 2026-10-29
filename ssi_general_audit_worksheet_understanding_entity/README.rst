@@ -179,6 +179,22 @@ Models
 | ``ownership_location``                   | Master: Ownership Location                     |
 +------------------------------------------+------------------------------------------------+
 
+Work Instruction
+================
+
+* `Create - Fraud Factor Analysis <docs/general_audit_ws_c0e0eec/index.html>`_
+* `Populate Procedures - Fraud Factor Analysis <docs/general_audit_ws_c0e0eec/index.html>`_
+* `Create - Main Business Activity Processes <docs/general_audit_ws_ae11f7e/index.html>`_
+* `Create - Business Cycle Summaries <docs/general_audit_ws_a604795/index.html>`_
+* `Create - Understanding of The Entity and it's Environment <docs/general_audit_ws_f87b2e1/index.html>`_
+* `Reload Links - Understanding of The Entity and it's Environment <docs/general_audit_ws_f87b2e1/index.html>`_
+* `Create - Understanding of preparation of Financial Statements <docs/general_audit_ws_f6a227/index.html>`_
+* `Create - General Information and Legal Aspect <docs/general_audit_ws_ddf034c/index.html>`_
+* `Create - Going Concern Analysis <docs/general_audit_ws_c0d0898/index.html>`_
+* `Create - Understanding of Relevant Regulations <docs/general_audit_ws_a13a30e/index.html>`_
+* `Create - Understanding of The Business Environments <docs/general_audit_ws_bdcdfc5/index.html>`_
+* `Create - Structure Organization and Responsibilities <docs/general_audit_ws_e78a3c6/index.html>`_
+
 Installation
 ============
 
