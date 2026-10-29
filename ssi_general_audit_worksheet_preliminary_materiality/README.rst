@@ -59,6 +59,16 @@ The worksheets in this module cover:
 Performing an Audit
 
 
+Work Instruction
+================
+
+* `Create - Materiality Computation <docs/general_audit_ws_d9d2b44/index.html>`_
+* `Reload Specific Materiality Link - Materiality Computation <docs/general_audit_ws_d9d2b44/index.html>`_
+* `Create - Specific Materiality <docs/general_audit_ws_6dcda0e/index.html>`_
+* `Reload Materiality Mapping - Specific Materiality <docs/general_audit_ws_6dcda0e/index.html>`_
+* `Create - Preliminary Materiality <docs/general_audit_ws_1d9338d/index.html>`_
+* `Populate Checklist - Preliminary Materiality <docs/general_audit_ws_1d9338d/index.html>`_
+
 Installation
 ============
 
