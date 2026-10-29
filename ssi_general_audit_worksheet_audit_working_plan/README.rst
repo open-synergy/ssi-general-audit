@@ -54,6 +54,13 @@ ISA 300 / SA 300 — Planning an Audit of Financial Statements;
 ISQM 1 — Quality Management for Firms that Perform Audits or Reviews
 
 
+Work Instruction
+================
+
+* `Create - Audit Working Plan <docs/general_audit_ws_cbbbaf4/index.html>`_
+* `Refresh Team Allocation - Audit Working Plan <docs/general_audit_ws_cbbbaf4/index.html>`_
+* `Refresh Team Competency - Audit Working Plan <docs/general_audit_ws_cbbbaf4/index.html>`_
+
 Installation
 ============
 
