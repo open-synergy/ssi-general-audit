@@ -52,6 +52,11 @@ Models
 | ``general_audit_ws_a033cc6.item``     | Trial Balance — master checklist item definition   |
 +---------------------------------------+----------------------------------------------------+
 
+Work Instruction
+================
+
+* `Create - Trial Balance <docs/general_audit_ws_a033cc6/index.html>`_
+
 Installation
 ============
 
