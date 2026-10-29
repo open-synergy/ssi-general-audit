@@ -59,6 +59,17 @@ requirement.  The worksheets in this module cover:
 Charged with Governance; ISA 265 / SA 265 — Communicating Deficiencies
 in Internal Control; ISA 610 / SA 610 — Using the Work of Internal Auditors
 
+Work Instruction
+================
+
+* `Create - External Communication <docs/general_audit_ws_ae48e68/index.html>`_
+* `Populate Checklist - External Communication <docs/general_audit_ws_ae48e68/index.html>`_
+* `Create - Communication With Management <docs/general_audit_ws_b3ff42f/index.html>`_
+* `Populate Checklist - Communication With Management <docs/general_audit_ws_b3ff42f/index.html>`_
+* `Create - Communication With TCWG <docs/general_audit_ws_c94e287/index.html>`_
+* `Populate Checklist - Communication With TCWG <docs/general_audit_ws_c94e287/index.html>`_
+* `Create - Use of Internal Auditor's Work Results <docs/general_audit_ws_d133f46/index.html>`_
+* `Populate Checklist - Use of Internal Auditor's Work Results <docs/general_audit_ws_d133f46/index.html>`_
 
 Installation
 ============
