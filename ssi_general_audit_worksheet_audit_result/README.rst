@@ -57,6 +57,16 @@ ISA 700 / SA 700 — Forming an Opinion and Reporting on Financial Statements;
 ISA 705 / SA 705 — Modifications to the Opinion in the Independent Auditor's Report
 
 
+Work Instruction
+================
+
+* `Create - Audit Result Formulation <docs/general_audit_ws_ab19fd4/index.html>`_
+* `Reload Details - Audit Result Formulation <docs/general_audit_ws_ab19fd4/index.html>`_
+* `Create - Findings That Influence Opinion <docs/general_audit_ws_a0319a2/index.html>`_
+* `Create - Control Deficiencies <docs/general_audit_ws_d33420f/index.html>`_
+* `Create - Audit Result Discussion <docs/general_audit_ws_bc3e272/index.html>`_
+* `Populate Details - Audit Result Discussion <docs/general_audit_ws_bc3e272/index.html>`_
+
 Installation
 ============
 
