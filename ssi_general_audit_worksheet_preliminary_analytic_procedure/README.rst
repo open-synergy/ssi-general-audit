@@ -60,6 +60,16 @@ The worksheets in this module cover:
 - ISA 520 / SA 520 — Analytical Procedures
 
 
+Work Instruction
+================
+
+* `Create - Preliminary Analytic Procedure <docs/general_audit_ws_c8740d4/index.html>`_
+* `Create - Vertical and Horizontal Analysis <docs/general_audit_ws_b32655a/index.html>`_
+* `Reload Analysis - Vertical and Horizontal Analysis <docs/general_audit_ws_b32655a/index.html>`_
+* `Create - Ratio Analysis <docs/general_audit_ws_d4289e4/index.html>`_
+* `Reload Ratio - Ratio Analysis <docs/general_audit_ws_d4289e4/index.html>`_
+* `Compute Ratio - Ratio Analysis <docs/general_audit_ws_d4289e4/index.html>`_
+
 Installation
 ============
 

@@ -6,3 +6,7 @@ from . import test_analytic_procedure_conclusion_category
 from . import test_general_audit_ws_b32655a
 from . import test_general_audit_ws_d4289e4
 from . import test_general_audit_ws_c8740d4
+from . import ui_fixture
+from . import test_ui_general_audit_ws_c8740d4
+from . import test_ui_general_audit_ws_b32655a
+from . import test_ui_general_audit_ws_d4289e4

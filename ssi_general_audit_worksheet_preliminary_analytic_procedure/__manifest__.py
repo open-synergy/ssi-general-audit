@@ -11,6 +11,7 @@
     "installable": True,
     "depends": [
         "ssi_general_audit",
+        "web_tour",
     ],
     "data": [
         "security/ir_module_category_data.xml",
@@ -46,6 +47,7 @@
         "views/ga_c8740d4/general_audit_ws_c8740d4_views.xml",
         "views/ga_c8740d4/general_audit_ws_c8740d4_item_views.xml",
         "views/general_audit_ws_d4289e4_views.xml",
+        "views/assets.xml",
     ],
     "demo": [],
 }
