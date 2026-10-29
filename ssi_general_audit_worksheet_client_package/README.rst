@@ -60,6 +60,16 @@ testing); ISA 500 / SA 500 — Audit Evidence; ISA 315 / SA 315 — Identifying
 and Assessing the Risks of Material Misstatement
 
 
+Work Instruction
+================
+
+* `Create - Client Assistance Package <docs/general_audit_ws_abd82ed/index.html>`_
+* `Create - Journal Entry Testing <docs/general_audit_ws_e301171/index.html>`_
+* `Create - Data Collection <docs/general_audit_ws_f5a3cee/index.html>`_
+* `Populate Details - Data Collection <docs/general_audit_ws_f5a3cee/index.html>`_
+* `Create - Subledger <docs/general_audit_ws_b5e3d9f/index.html>`_
+* `Create - General Ledger <docs/general_audit_ws_d209914/index.html>`_
+
 Installation
 ============
 
