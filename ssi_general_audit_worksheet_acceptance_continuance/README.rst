@@ -109,6 +109,26 @@ Catatan Implementasi
 - Worksheet 842f0d6 → 805d4d5 → 806c4e1 membentuk rantai referensi risiko PMPJ.
 - Worksheet f5e7049 juga mereferensikan 842f0d6 untuk penilaian integritas manajemen.
 
+Work Instruction
+================
+
+* `Create - Acceptance and Continuance of Client Relationships Analysis <docs/general_audit_ws_806c4e1/index.html>`_
+* `Reload Links - Acceptance and Continuance of Client Relationships Analysis <docs/general_audit_ws_806c4e1/index.html>`_
+* `Create - Previous Financial Reporting Issues <docs/general_audit_ws_369c5a5/index.html>`_
+* `Create - Management Integrity <docs/general_audit_ws_f5e7049/index.html>`_
+* `Reload Links - Management Integrity <docs/general_audit_ws_f5e7049/index.html>`_
+* `Create - Money Laundring Issues <docs/general_audit_ws_842f0d6/index.html>`_
+* `Populate Checklist - Money Laundring Issues <docs/general_audit_ws_842f0d6/index.html>`_
+* `Reload Links - Money Laundring Issues <docs/general_audit_ws_842f0d6/index.html>`_
+* `Create - Know Your Customer Principles <docs/general_audit_ws_805d4d5/index.html>`_
+* `Reload Entity Data - Know Your Customer Principles <docs/general_audit_ws_805d4d5/index.html>`_
+* `Reload Links - Know Your Customer Principles <docs/general_audit_ws_805d4d5/index.html>`_
+* `Create - Competency, Availability and Independency Of Assignment Team <docs/general_audit_ws_b9d8a5c/index.html>`_
+* `Populate Personnel - Competency, Availability and Independency Of Assignment Team <docs/general_audit_ws_b9d8a5c/index.html>`_
+* `Create Analysis Summary - Competency, Availability and Independency Of Assignment Team <docs/general_audit_ws_b9d8a5c/index.html>`_
+* `Create - Communication With Previous Auditor <docs/general_audit_ws_0427d28/index.html>`_
+* `Populate Checklist - Communication With Previous Auditor <docs/general_audit_ws_0427d28/index.html>`_
+
 Installation
 ============
 
