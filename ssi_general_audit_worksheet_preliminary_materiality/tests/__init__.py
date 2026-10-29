@@ -6,3 +6,7 @@ from . import test_general_audit_ws_d9d2b44
 from . import test_general_audit_ws_6dcda0e
 from . import test_general_audit_ws_1d9338d
 from . import test_worksheet_type_standard_item
+from . import ui_fixture
+from . import test_ui_general_audit_ws_d9d2b44
+from . import test_ui_general_audit_ws_6dcda0e
+from . import test_ui_general_audit_ws_1d9338d
