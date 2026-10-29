@@ -48,6 +48,11 @@ Independent Auditor and the Conduct of an Audit in Accordance with
 International Standards on Auditing; IESBA Code of Ethics
 
 
+Work Instruction
+================
+
+* `Create - Independence Statement <docs/general_audit_ws_09253fe/index.html>`_
+
 Installation
 ============
 
