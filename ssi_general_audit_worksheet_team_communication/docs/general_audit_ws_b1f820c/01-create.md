@@ -16,7 +16,10 @@
 
 ## Flow
 
-1. Open the **Risk Assessment > Team Communication > Team Communication** menu.
+1. Open the **Risk Assessment > Team Communication > Team Communication** menu. If
+   **Team Communication** is not visible in the top menu bar, click the **+** button at
+   its right end first. The menu list that opens shows **Team Communication** with its
+   entry below it.
 2. Click the **Create** button. _(16.0 and later: "New")_
 3. Fill in the required field:
    - **General Audit**: select the open `general_audit` engagement this worksheet

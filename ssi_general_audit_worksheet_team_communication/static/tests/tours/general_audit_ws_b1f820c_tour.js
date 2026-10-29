@@ -28,10 +28,38 @@ odoo.define(
                         '.o_app[data-menu-xmlid="ssi_general_audit.menu_risk_assesment_root"]',
                 },
                 {
-                    content: "Open the Team Communication menu",
+                    // The Risk Assessment app has more level-1 sections than
+                    // fit the navbar, so Team Communication is folded into the
+                    // "+" overflow dropdown. Open it only when the section is
+                    // not directly visible; otherwise the section itself
+                    // matches first and nothing is clicked here.
+                    content: "Open the overflow menu if Team Communication is folded",
                     trigger:
-                        ".o_menu_sections " +
-                        '[data-menu-xmlid="ssi_general_audit.menu_general_audit_ra_team_communication"]',
+                        ".o_menu_sections > li > " +
+                        '[data-menu-xmlid="ssi_general_audit.menu_general_audit_ra_team_communication"], ' +
+                        ".o_menu_sections li.o_extra_menu_items > a",
+                    run: function () {
+                        if (this.$anchor.closest("li").hasClass("o_extra_menu_items")) {
+                            this.$anchor[0].click();
+                        }
+                    },
+                },
+                {
+                    // Directly visible: click the section to open its
+                    // dropdown. Folded: the opened "+" dropdown already lists
+                    // every section expanded and its section headers ignore
+                    // clicks (navbar.scss), so only wait for it.
+                    content: "Open the Team Communication section if it is not folded",
+                    trigger:
+                        ".o_menu_sections > li > " +
+                        '[data-menu-xmlid="ssi_general_audit.menu_general_audit_ra_team_communication"]' +
+                        ":not(.dropdown-item), " +
+                        ".o_menu_sections li.o_extra_menu_items.show > ul",
+                    run: function () {
+                        if (this.$anchor.is("[data-menu-xmlid]")) {
+                            this.$anchor[0].click();
+                        }
+                    },
                 },
                 {
                     content: "Open the Team Communication menu",
