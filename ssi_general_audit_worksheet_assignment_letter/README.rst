@@ -91,6 +91,11 @@ Catatan Implementasi
   ``conclusion_id``, ``preparation_date``, dll.) tersedia melalui delegasi ke
   ``general_audit_worksheet`` — tidak perlu didefinisikan ulang di model ini.
 
+Work Instruction
+================
+
+* `Create - Assignment Letter <docs/general_audit_ws_c435bcd/index.html>`_
+
 Installation
 ============
 
