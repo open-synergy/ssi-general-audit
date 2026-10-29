@@ -58,6 +58,14 @@ Models
 | ``general_audit_ws_b1f820c.item``     | Risk Assessment Communication — master checklist item |
 +---------------------------------------+-------------------------------------------------------+
 
+Work Instruction
+================
+
+* `Create - Team Communication Pre-Engagement <docs/general_audit_ws_437fc8f/index.html>`_
+* `Populate Checklist - Team Communication Pre-Engagement <docs/general_audit_ws_437fc8f/index.html>`_
+* `Create - Team Communication Risk Assessment <docs/general_audit_ws_b1f820c/index.html>`_
+* `Populate Checklist - Team Communication Risk Assessment <docs/general_audit_ws_b1f820c/index.html>`_
+
 Installation
 ============
 
