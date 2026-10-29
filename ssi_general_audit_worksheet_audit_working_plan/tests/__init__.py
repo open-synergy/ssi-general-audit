@@ -5,3 +5,5 @@
 from . import test_general_audit_worksheet_type_data
 from . import test_master_data
 from . import test_ws_cbbbaf4
+from . import ui_fixture
+from . import test_ui_general_audit_ws_cbbbaf4
