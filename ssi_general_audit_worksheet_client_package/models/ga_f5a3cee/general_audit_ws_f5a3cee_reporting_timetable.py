@@ -15,6 +15,7 @@ class GeneralAuditWsF5a3ceeReportingTimetable(models.Model):
     """
 
     _name = "general_audit_ws_f5a3cee.reporting_timetable"
+    _inherit = ["general_audit_ws_f5a3cee.attachment_mixin"]
     _description = "Data Collection (f5a3cee) - Reporting Timetable"
 
     worksheet_id = fields.Many2one(
