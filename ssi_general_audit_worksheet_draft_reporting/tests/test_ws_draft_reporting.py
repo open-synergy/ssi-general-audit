@@ -768,3 +768,116 @@ class TestWSDraftReporting(YamlTransactionCase):
         retained = self._create_balance_detail(worksheet, retained_type, 500, 300)
         self.assertEqual(retained.current_balance, 500.0)
         self.assertEqual(retained.previous_balance, 300.0)
+
+    def _create_closing_line(self, worksheet, type_, **amounts):
+        """Create a destination closing line on the audit of a worksheet.
+
+        :param worksheet: the ``general_audit_ws_b555edd`` record
+        :param recordset type_: destination ``client_account_type``
+        :param amounts: ``debit`` and ``credit`` of the line
+        :return: the ``general_audit.closing_line`` record
+        :rtype: recordset
+        """
+        return self.env["general_audit.closing_line"].create(
+            dict(
+                general_audit_id=worksheet.general_audit_id.id,
+                name="Test closing line",
+                account_type_id=type_.id,
+                **amounts,
+            )
+        )
+
+    def test_closing_is_single_source_for_destination_type(self):
+        """Generated closing replaces the profit added to retained earnings.
+
+        Pure Python -- trigger P6 (L-15: no mock/patch in YAML; the
+        profit total is fixed at 100 and 40). The destination lines
+        give 80 - 30 = 50 on the credit-normal retained earnings type:
+        the current balance is the audit balance plus 50 and no profit,
+        while the previous period still adds its profit.
+
+        :return: nothing; asserts the current and previous balances
+        """
+        retained_type = self.env.ref(
+            "ssi_general_audit.client_account_type_44_a5c4f192"
+        )
+        worksheet = self._create_b555edd_worksheet("ClosingSingleSource")
+        self._create_closing_line(worksheet, retained_type, credit=80.0)
+        self._create_closing_line(worksheet, retained_type, debit=30.0)
+        with mock.patch.object(
+            type(worksheet),
+            "_get_formula_total",
+            side_effect=lambda t, f, d: self._profit_by_field(t, f, d),
+        ):
+            retained = self._create_balance_detail(worksheet, retained_type, 500, 300)
+            self.assertEqual(retained.current_balance, 550.0)
+            self.assertEqual(retained.previous_balance, 340.0)
+
+    def test_closing_to_other_type_skips_profit_on_retained_earnings(self):
+        """Closing to another type leaves retained earnings without profit.
+
+        Pure Python -- trigger P6 (L-15: no mock/patch in YAML). The
+        closing lines target a debit-normal type, so that line adds
+        ``debit - credit`` and the retained earnings line keeps only
+        its audit balance.
+
+        :return: nothing; asserts the balances of both lines
+        """
+        retained_type = self.env.ref(
+            "ssi_general_audit.client_account_type_44_a5c4f192"
+        )
+        other_type = self.env["client_account_type"].search(
+            [("id", "!=", retained_type.id), ("normal_balance", "=", "dr")],
+            limit=1,
+        )
+        worksheet = self._create_b555edd_worksheet("ClosingOtherType")
+        self._create_closing_line(worksheet, other_type, debit=40.0)
+        self._create_closing_line(worksheet, other_type, credit=10.0)
+        with mock.patch.object(
+            type(worksheet),
+            "_get_formula_total",
+            side_effect=lambda t, f, d: self._profit_by_field(t, f, d),
+        ):
+            retained = self._create_balance_detail(worksheet, retained_type, 500, 300)
+            other = self._create_balance_detail(worksheet, other_type, 70, 60)
+            self.assertEqual(retained.current_balance, 500.0)
+            self.assertEqual(other.current_balance, 100.0)
+            self.assertEqual(other.previous_balance, 60.0)
+
+    def test_closing_source_lines_do_not_count(self):
+        """Closing lines of closed source accounts change no balance.
+
+        Pure Python -- trigger P6 (L-15: no mock/patch in YAML). A
+        closing line with an account is a source line, so the
+        retained earnings line keeps the profit it had before.
+
+        :return: nothing; asserts the current balance still adds profit
+        """
+        retained_type = self.env.ref(
+            "ssi_general_audit.client_account_type_44_a5c4f192"
+        )
+        worksheet = self._create_b555edd_worksheet("ClosingSourceOnly")
+        account = self.env["client_account"].create(
+            {
+                "name": "Test closed source account",
+                "code": "ACC-CLOSING-SOURCE",
+                "partner_id": worksheet.general_audit_id.partner_id.id,
+                "type_id": retained_type.id,
+            }
+        )
+        self.env["general_audit.closing_line"].create(
+            {
+                "general_audit_id": worksheet.general_audit_id.id,
+                "name": "Test source line",
+                "account_id": account.id,
+                "account_type_id": retained_type.id,
+                "debit": 90.0,
+            }
+        )
+        with mock.patch.object(
+            type(worksheet),
+            "_get_formula_total",
+            side_effect=lambda t, f, d: self._profit_by_field(t, f, d),
+        ):
+            retained = self._create_balance_detail(worksheet, retained_type, 500, 300)
+            self.assertEqual(retained.current_balance, 600.0)

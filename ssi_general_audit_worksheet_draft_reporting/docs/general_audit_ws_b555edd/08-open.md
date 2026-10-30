@@ -52,7 +52,11 @@
   equity), each with its **Current Balance** and **Previous Balance**. The **Retained
   Earnings - unappropriated** row shows the audited balance plus the net profit of the
   same period, so it agrees with the closing equity in the **Statement of Changes in
-  Equity** tab. Other rows show the audited balance only.
+  Equity** tab. Other rows show the audited balance only. Once the closing lines of the
+  General Audit are generated, the closing is the only source for the **Current
+  Balance**: each destination account type adds its closing amount and the net profit is
+  no longer added to the Retained Earnings row, so it is not counted twice. The
+  **Previous Balance** is not affected.
 - **Statement of Comprehensive Income** lists the rows of account groups T009-T015
   (revenue, expenses and other comprehensive income) in the same way.
 - **Statement of Changes in Equity** lists, per period, one row per equity component
