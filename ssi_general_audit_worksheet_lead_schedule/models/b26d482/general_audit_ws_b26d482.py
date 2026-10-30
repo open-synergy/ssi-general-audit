@@ -19,14 +19,19 @@ class GeneralAuditWSb26d482(models.Model):
       sourced from the audit detail record.
     * **Adjusted balance** — current balance ± adjustments, respecting the
       account's normal balance side.
-    * **Previous balance** — prior-year comparative.
+    * **Current profit / OCI / Balance sheet** — the adjusted balance
+      placed in the column of the account group's report category.
     * Cross-reference to the per-account-type lead schedule
       (``general_audit_ws_f9f3299``).
 
     ``total_current_balance``, ``total_debit_adjustments``,
-    ``total_credit_adjustments``, ``total_adjusted_balance`` and
-    ``total_previous_balance`` mirror each Monetary column of
-    ``detail_ids`` as a grand total, shown next to the detail tree.
+    ``total_credit_adjustments`` and ``total_adjusted_balance`` mirror
+    each Monetary column of ``detail_ids`` as a grand total, shown next
+    to the detail tree. ``total_current_profit``, ``total_oci`` and
+    ``total_balance_sheet`` weigh each line by the normal balance of its
+    account, like the aggregate of the uncorrected AJE analysis: credit
+    accounts add and debit accounts subtract for profit and OCI, the
+    other way round for the balance sheet.
 
     Use ``action_load_detail`` to synchronise the detail lines with the
     accounts registered on the parent General Audit.
@@ -95,13 +100,33 @@ class GeneralAuditWSb26d482(models.Model):
         store=True,
         help="Sum of the adjusted balance of all detail lines.",
     )
-    total_previous_balance = fields.Monetary(
-        string="Total Previous Balance",
+    total_current_profit = fields.Monetary(
+        string="Total Current Profit",
         currency_field="currency_id",
         compute="_compute_total_detail",
         compute_sudo=True,
         store=True,
-        help="Sum of the previous balance of all detail lines.",
+        help="Revenue minus expense: credit accounts add and debit "
+        "accounts subtract their current profit column.",
+    )
+    total_oci = fields.Monetary(
+        string="Total OCI",
+        currency_field="currency_id",
+        compute="_compute_total_detail",
+        compute_sudo=True,
+        store=True,
+        help="Credit accounts add and debit accounts subtract their OCI " "column.",
+    )
+    total_balance_sheet = fields.Monetary(
+        string="Total Balance Sheet",
+        currency_field="currency_id",
+        compute="_compute_total_detail",
+        compute_sudo=True,
+        store=True,
+        help="Assets minus liabilities and equity: debit accounts add and "
+        "credit accounts subtract their balance sheet column. On a "
+        "balanced trial balance with every group categorised it equals "
+        "Total Current Profit plus Total OCI.",
     )
 
     closing_line_ids = fields.One2many(
@@ -118,28 +143,45 @@ class GeneralAuditWSb26d482(models.Model):
         "detail_ids.adjustment_dr",
         "detail_ids.adjustment_cr",
         "detail_ids.adjusted_balance",
-        "detail_ids.previous_balance",
+        "detail_ids.current_profit",
+        "detail_ids.oci",
+        "detail_ids.balance_sheet",
+        "detail_ids.account_id.normal_balance",
     )
     def _compute_total_detail(self):
         """Sum every Monetary column of ``detail_ids`` onto the parent.
+
+        The first four totals are plain sums. The current profit and OCI
+        totals add credit-normal lines and subtract debit-normal lines;
+        the balance sheet total does the opposite.
 
         :return: None, fields are assigned in-place per record.
         """
         for record in self:
             current_balance = (
                 debit_adjustments
-            ) = credit_adjustments = adjusted_balance = previous_balance = 0.0
+            ) = credit_adjustments = adjusted_balance = 0.0
+            current_profit = oci = balance_sheet = 0.0
             for detail in record.detail_ids:
                 current_balance += detail.current_balance
                 debit_adjustments += detail.adjustment_dr
                 credit_adjustments += detail.adjustment_cr
                 adjusted_balance += detail.adjusted_balance
-                previous_balance += detail.previous_balance
+                if detail.account_id.normal_balance == "cr":
+                    current_profit += detail.current_profit
+                    oci += detail.oci
+                    balance_sheet -= detail.balance_sheet
+                else:
+                    current_profit -= detail.current_profit
+                    oci -= detail.oci
+                    balance_sheet += detail.balance_sheet
             record.total_current_balance = current_balance
             record.total_debit_adjustments = debit_adjustments
             record.total_credit_adjustments = credit_adjustments
             record.total_adjusted_balance = adjusted_balance
-            record.total_previous_balance = previous_balance
+            record.total_current_profit = current_profit
+            record.total_oci = oci
+            record.total_balance_sheet = balance_sheet
 
     def action_generate_closing(self):
         """Generate the closing lines of the parent General Audit.

@@ -18,7 +18,10 @@ class GeneralAuditWSb26d482Detail(models.Model):
       from the audit detail.
     * ``adjusted_balance`` — net balance after applying adjustments, honouring
       the account's normal balance convention.
-    * ``previous_balance`` — prior-year comparative carried from the detail.
+    * ``current_profit`` / ``oci`` / ``balance_sheet`` — the adjusted
+      balance placed in the column of the account group's report category
+      (Profit & Loss, Other Comprehensive Income, or asset, liability and
+      equity), left at zero in the other columns.
     * ``ws_f9f3299_id`` — optional cross-reference to the per-account-type
       lead schedule (``general_audit_ws_f9f3299``).
     """
@@ -81,11 +84,29 @@ class GeneralAuditWSb26d482Detail(models.Model):
         compute_sudo=True,
         store=True,
     )
-    previous_balance = fields.Monetary(
-        string="Previous Balance",
-        related="detail_id.previous_balance",
+    current_profit = fields.Monetary(
+        string="Current Profit",
+        compute="_compute_statement_columns",
+        compute_sudo=True,
         store=True,
-        help="Previous period balance for this account.",
+        help="Adjusted balance of an account whose group has the "
+        "Profit & Loss report category.",
+    )
+    oci = fields.Monetary(
+        string="OCI",
+        compute="_compute_statement_columns",
+        compute_sudo=True,
+        store=True,
+        help="Adjusted balance of an account whose group has the "
+        "Other Comprehensive Income report category.",
+    )
+    balance_sheet = fields.Monetary(
+        string="Balance Sheet",
+        compute="_compute_statement_columns",
+        compute_sudo=True,
+        store=True,
+        help="Adjusted balance of an account whose group has the Asset, "
+        "Liability or Equity report category.",
     )
 
     @api.depends(
@@ -124,3 +145,31 @@ class GeneralAuditWSb26d482Detail(models.Model):
                         - record.adjustment_dr
                         + record.adjustment_cr
                     )
+
+    @api.depends(
+        "adjusted_balance",
+        "account_id.type_id.group_id.report_category",
+    )
+    def _compute_statement_columns(self):
+        """Place the adjusted balance in its financial statement column.
+
+        The category comes from the report category of the account
+        group. Profit & Loss feeds ``current_profit``, Other
+        Comprehensive Income feeds ``oci`` and asset, liability and
+        equity feed ``balance_sheet``. The adjusted balance is copied as
+        is, on the normal balance side of the account; a group without a
+        report category leaves all three columns at zero.
+
+        :return: ``None``, the columns are assigned in-place per record
+        """
+        for record in self:
+            record.current_profit = 0.0
+            record.oci = 0.0
+            record.balance_sheet = 0.0
+            category = record.account_id.type_id.group_id.report_category
+            if category == "profit_loss":
+                record.current_profit = record.adjusted_balance
+            elif category == "oci":
+                record.oci = record.adjusted_balance
+            elif category in ("asset", "liability", "equity"):
+                record.balance_sheet = record.adjusted_balance
