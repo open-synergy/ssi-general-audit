@@ -15,6 +15,7 @@ class GeneralAuditWSf5a3ceeDetail(models.Model):
     """
 
     _name = "general_audit_ws_f5a3cee.detail"
+    _inherit = ["general_audit_ws_f5a3cee.attachment_mixin"]
     _description = "Data Collection (f5a3cee) - Details"
 
     worksheet_id = fields.Many2one(

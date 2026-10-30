@@ -806,3 +806,250 @@ scenarios:
         expect_error:
           type: "AssertionError"
           message_contains: "is a required field"
+
+  # ------------------------------------------------------------------
+  # Attachment link (detail, write)
+  # ------------------------------------------------------------------
+  - name: "Worksheet f5a3cee - Attachment link (detail, write)"
+    steps:
+      - step: "Create worksheet"
+        action: "create"
+        model: "general_audit_ws_f5a3cee"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+
+      - step: "Create orphan attachment att_a"
+        action: "create"
+        model: "ir.attachment"
+        save_as: "att_a"
+        as_user: "base.user_admin"
+        values:
+          name: "Evidence att_a"
+          type: "url"
+          url: "https://example.com/att_a"
+      - step: "Create detail_line"
+        action: "create"
+        model: "general_audit_ws_f5a3cee.detail"
+        save_as: "detail_line"
+        as_user: "base.user_admin"
+        values:
+          worksheet_id: "REC: worksheet.id"
+          account_client_type_id: "REC: account_type_a.id"
+      - step: "Add the orphan attachment to the detail line"
+        action: "write"
+        target: "detail_line"
+        as_user: "base.user_admin"
+        values:
+          attachment_ids: [[6, 0, ["REC: att_a.id"]]]
+
+      - step: "Assert att_a is bound to the worksheet"
+        action: "assert"
+        target: "att_a"
+        asserts:
+          res_model:
+            type: "value"
+            expected: "general_audit_ws_f5a3cee"
+          res_id:
+            type: "value"
+            expected: "EVAL: registry['worksheet'].id"
+
+  # ------------------------------------------------------------------
+  # Attachment link (detail, create)
+  # ------------------------------------------------------------------
+  - name: "Worksheet f5a3cee - Attachment link (detail, create)"
+    steps:
+      - step: "Create worksheet"
+        action: "create"
+        model: "general_audit_ws_f5a3cee"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+
+      - step: "Create orphan attachment att_b"
+        action: "create"
+        model: "ir.attachment"
+        save_as: "att_b"
+        as_user: "base.user_admin"
+        values:
+          name: "Evidence att_b"
+          type: "url"
+          url: "https://example.com/att_b"
+      - step: "Create detail_line"
+        action: "create"
+        model: "general_audit_ws_f5a3cee.detail"
+        save_as: "detail_line"
+        as_user: "base.user_admin"
+        values:
+          worksheet_id: "REC: worksheet.id"
+          account_client_type_id: "REC: account_type_a.id"
+          attachment_ids: [[6, 0, ["REC: att_b.id"]]]
+      - step: "Assert att_b is bound to the worksheet"
+        action: "assert"
+        target: "att_b"
+        asserts:
+          res_model:
+            type: "value"
+            expected: "general_audit_ws_f5a3cee"
+          res_id:
+            type: "value"
+            expected: "EVAL: registry['worksheet'].id"
+
+  # ------------------------------------------------------------------
+  # Attachment link (reporting timetable, write)
+  # ------------------------------------------------------------------
+  - name: "Worksheet f5a3cee - Attachment link (reporting timetable, write)"
+    steps:
+      - step: "Create worksheet"
+        action: "create"
+        model: "general_audit_ws_f5a3cee"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+
+      - step: "Create orphan attachment att_c"
+        action: "create"
+        model: "ir.attachment"
+        save_as: "att_c"
+        as_user: "base.user_admin"
+        values:
+          name: "Evidence att_c"
+          type: "url"
+          url: "https://example.com/att_c"
+      - step: "Create timetable_line"
+        action: "create"
+        model: "general_audit_ws_f5a3cee.reporting_timetable"
+        save_as: "timetable_line"
+        as_user: "base.user_admin"
+        values:
+          worksheet_id: "REC: worksheet.id"
+          description: "Draft report"
+      - step: "Add the orphan attachment to the timetable row"
+        action: "write"
+        target: "timetable_line"
+        as_user: "base.user_admin"
+        values:
+          attachment_ids: [[6, 0, ["REC: att_c.id"]]]
+
+      - step: "Assert att_c is bound to the worksheet"
+        action: "assert"
+        target: "att_c"
+        asserts:
+          res_model:
+            type: "value"
+            expected: "general_audit_ws_f5a3cee"
+          res_id:
+            type: "value"
+            expected: "EVAL: registry['worksheet'].id"
+
+  # ------------------------------------------------------------------
+  # Attachment link (reporting timetable, create)
+  # ------------------------------------------------------------------
+  - name: "Worksheet f5a3cee - Attachment link (reporting timetable, create)"
+    steps:
+      - step: "Create worksheet"
+        action: "create"
+        model: "general_audit_ws_f5a3cee"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+
+      - step: "Create orphan attachment att_d"
+        action: "create"
+        model: "ir.attachment"
+        save_as: "att_d"
+        as_user: "base.user_admin"
+        values:
+          name: "Evidence att_d"
+          type: "url"
+          url: "https://example.com/att_d"
+      - step: "Create timetable_line"
+        action: "create"
+        model: "general_audit_ws_f5a3cee.reporting_timetable"
+        save_as: "timetable_line"
+        as_user: "base.user_admin"
+        values:
+          worksheet_id: "REC: worksheet.id"
+          description: "Draft report"
+          attachment_ids: [[6, 0, ["REC: att_d.id"]]]
+      - step: "Assert att_d is bound to the worksheet"
+        action: "assert"
+        target: "att_d"
+        asserts:
+          res_model:
+            type: "value"
+            expected: "general_audit_ws_f5a3cee"
+          res_id:
+            type: "value"
+            expected: "EVAL: registry['worksheet'].id"
+
+  # ------------------------------------------------------------------
+  # Attachment link (already linked record untouched)
+  # ------------------------------------------------------------------
+  - name: "Worksheet f5a3cee - Attachment link (already linked record untouched)"
+    steps:
+      - step: "Create worksheet"
+        action: "create"
+        model: "general_audit_ws_f5a3cee"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+
+      - step: "Create partner owning an attachment"
+        action: "create"
+        model: "res.partner"
+        save_as: "other_partner"
+        as_user: "base.user_admin"
+        values:
+          name: "Attachment Owner - F5A3CEE"
+
+      - step: "Create attachment already linked to the partner"
+        action: "create"
+        model: "ir.attachment"
+        save_as: "att_owned"
+        as_user: "base.user_admin"
+        values:
+          name: "Evidence owned"
+          type: "url"
+          url: "https://example.com/owned"
+          res_model: "res.partner"
+          res_id: "EVAL: registry['other_partner'].id"
+
+      - step: "Create detail_line"
+        action: "create"
+        model: "general_audit_ws_f5a3cee.detail"
+        save_as: "detail_line"
+        as_user: "base.user_admin"
+        values:
+          worksheet_id: "REC: worksheet.id"
+          account_client_type_id: "REC: account_type_a.id"
+          attachment_ids: [[6, 0, ["REC: att_owned.id"]]]
+      - step: "Create timetable_line"
+        action: "create"
+        model: "general_audit_ws_f5a3cee.reporting_timetable"
+        save_as: "timetable_line"
+        as_user: "base.user_admin"
+        values:
+          worksheet_id: "REC: worksheet.id"
+          description: "Draft report"
+          attachment_ids: [[6, 0, ["REC: att_owned.id"]]]
+      - step: "Assert the attachment kept its original model"
+        action: "assert"
+        target: "att_owned"
+        asserts:
+          res_model:
+            type: "value"
+            expected: "res.partner"
+          res_id:
+            type: "value"
+            expected: "EVAL: registry['other_partner'].id"
