@@ -148,6 +148,10 @@ class GeneralAuditWsFf42fdcPosture(models.Model):
         "worksheet_id.general_audit_id.detail_ids.adjustment_credit",
         "worksheet_id.general_audit_id.detail_ids.audited_balance",
         "worksheet_id.general_audit_id.detail_ids.previous_balance",
+        "worksheet_id.general_audit_id.closing_line_ids.account_id",
+        "worksheet_id.general_audit_id.closing_line_ids.account_group_id",
+        "worksheet_id.general_audit_id.closing_line_ids.debit",
+        "worksheet_id.general_audit_id.closing_line_ids.credit",
     )
     def _compute_amounts(self):
         """Aggregate audit detail amounts for this posture line.
@@ -170,6 +174,12 @@ class GeneralAuditWsFf42fdcPosture(models.Model):
         expense group is still a debit to equity. A Total line whose
         layout line has ``show_adjustment`` unticked keeps both columns
         at zero and gets ``adjustment_visible`` False.
+
+        The Audited column also carries the closing amount that the
+        closing lines of the General Audit move into the group (see
+        ``_get_closing_amount``). A Total line adds it per formula
+        group with the formula sign. Without closing lines the amount
+        is zero.
 
         Reading the formula table is not itself a reactive dependency
         of this compute: editing
@@ -200,6 +210,9 @@ class GeneralAuditWsFf42fdcPosture(models.Model):
                 result_adjustment_debit = sum(details.mapped("adjustment_debit"))
                 result_adjustment_credit = sum(details.mapped("adjustment_credit"))
                 result_audited = sum(details.mapped("audited_balance"))
+                result_audited += record._get_closing_amount(
+                    record.worksheet_id.general_audit_id, record.group_id
+                )
                 result_previous = sum(details.mapped("previous_balance"))
             elif record.line_type == "total" and record.total_type:
                 formula_lines = formula_model.search(
@@ -238,6 +251,9 @@ class GeneralAuditWsFf42fdcPosture(models.Model):
                     result_audited += sign * sum(
                         group_details.mapped("audited_balance")
                     )
+                    result_audited += sign * record._get_closing_amount(
+                        record.worksheet_id.general_audit_id, group
+                    )
                     result_previous += sign * sum(
                         group_details.mapped("previous_balance")
                     )
@@ -247,6 +263,33 @@ class GeneralAuditWsFf42fdcPosture(models.Model):
             record.audited = result_audited
             record.previous = result_previous
             record.adjustment_visible = result_adjustment_visible
+
+    @api.model
+    def _get_closing_amount(self, general_audit, group):
+        """Get the closing amount that lands in an account group.
+
+        Only the destination lines of the closing journal count, that
+        is the lines without an account. The lines of the closed source
+        accounts are left out, so the source groups keep their audited
+        balance. Each line is signed on the normal balance side of its
+        account type, like ``audited_balance``.
+
+        :param general_audit: ``general_audit`` record being reported
+        :param group: ``client_account_group`` record of the line
+        :return: closing amount of the group, zero when the closing
+            lines were not generated
+        :rtype: float
+        """
+        result = 0.0
+        lines = general_audit.closing_line_ids.filtered(
+            lambda line: not line.account_id and line.account_group_id == group
+        )
+        for line in lines:
+            if line.account_type_id.normal_balance == "cr":
+                result += line.credit - line.debit
+            else:
+                result += line.debit - line.credit
+        return result
 
     def _posture_line_order_key(self):
         """Return the key this line is looked up by in the layout table.
