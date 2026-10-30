@@ -65,6 +65,18 @@ Performing an Audit; ISA 450 / SA 450 — Evaluation of Misstatements;
 ISA 520 / SA 520 — Analytical Procedures
 
 
+Work Instruction
+================
+
+* `Create - Final Materiality <docs/general_audit_ws_bb33b94/index.html>`_
+* `Create - Final Analytical Procedures <docs/general_audit_ws_c2375d8/index.html>`_
+* `Populate Checklist - Final Analytical Procedures <docs/general_audit_ws_c2375d8/index.html>`_
+* `Create - Vertical and Horisontal Analysis <docs/general_audit_ws_e1f2d98/index.html>`_
+* `Load Analysis - Vertical and Horisontal Analysis <docs/general_audit_ws_e1f2d98/index.html>`_
+* `Create - Ratio Analysis <docs/general_audit_ws_f3a78de/index.html>`_
+* `Reload Ratio - Ratio Analysis <docs/general_audit_ws_f3a78de/index.html>`_
+* `Compute Ratio - Ratio Analysis <docs/general_audit_ws_f3a78de/index.html>`_
+
 Installation
 ============
 

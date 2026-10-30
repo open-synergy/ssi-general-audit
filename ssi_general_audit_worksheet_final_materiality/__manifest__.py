@@ -12,6 +12,7 @@
     "depends": [
         "ssi_general_audit_worksheet_preliminary_materiality",
         "ssi_general_audit_worksheet_preliminary_analytic_procedure",
+        "web_tour",
     ],
     "data": [
         "security/ir_module_category_data.xml",
@@ -54,6 +55,7 @@
         "data/approval_template/general_audit_ws_f3a78de.xml",
         "views/ga_f3a78de/general_audit_ws_f3a78de_views.xml",
         "security/ir.model.access.csv",
+        "views/assets.xml",
     ],
     "demo": [],
 }
