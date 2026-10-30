@@ -33,8 +33,10 @@
     to that group. **Previous** sums the previous-period balance of the same accounts.
     When the closing lines of the General Audit have been generated, **Audited** also
     includes the closing amount that lands in the group (the destination lines of the
-    closing type, not the closed source accounts); the Total rows add it too. Without
-    closing lines nothing is added.
+    closing type, not the closed source accounts). A group that only receives a closing
+    amount, such as other comprehensive income, gets its own row. The Total rows are not
+    changed: their formulas already include the profit and loss groups. Without closing
+    lines nothing is added. Press **Reload** after generating the closing lines.
   - Nine fixed **Total** rows (Total Asset, Total Liability, Total Equity, Total
     Liability and Equity, Gross Profit, Operating Profit, Profit Before Tax, Profit
     After Tax, Comprehensive Income), interleaved right after their component Account

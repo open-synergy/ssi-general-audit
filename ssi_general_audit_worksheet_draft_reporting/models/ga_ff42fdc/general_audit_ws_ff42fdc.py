@@ -156,13 +156,15 @@ class GeneralAuditWSff42fdc(models.Model):
         each, the first time this worksheet loads posture -- they
         always exist afterwards, regardless of whether their component
         groups have any data. Every line's ``sequence`` is (re)assigned
-        via ``_resequence_posture_lines``. Finally, every existing
-        Total line's amounts are force-recomputed: they are not
+        via ``_resequence_posture_lines``. Finally, the amounts of
+        every existing line are force-recomputed: Total lines are not
         reactively linked to
         ``general_audit_ws_ff42fdc.total_formula`` (an
         ``@api.depends`` cannot express "any formula row for my
-        total_type"), so this Reload is what applies an edited
-        formula to a worksheet that already has its Total lines.
+        total_type"), and group lines keep their stored amounts after
+        the closing lines are generated, so this Reload is what
+        applies both. A group that only receives a closing amount, such
+        as other comprehensive income, also gets a line.
 
         ORM cache note (two distinct bugs, both fixed here):
 
@@ -212,6 +214,11 @@ class GeneralAuditWSff42fdc(models.Model):
 
         group_lines = self.posture_ids.filtered(lambda p: p.line_type == "group")
         all_groups = self.general_audit_id.mapped("detail_ids.account_id.group_id")
+        # A group that only receives a closing amount, such as other
+        # comprehensive income, still gets its own line.
+        all_groups |= self.general_audit_id.closing_line_ids.filtered(
+            lambda line: not line.account_id
+        ).mapped("account_group_id")
         existing_groups = group_lines.mapped("group_id")
 
         groups_to_add = all_groups - existing_groups
@@ -255,11 +262,11 @@ class GeneralAuditWSff42fdc(models.Model):
 
         self._resequence_posture_lines()
 
-        # Force-recompute Total lines so an edited
-        # general_audit_ws_ff42fdc.total_formula takes effect now,
-        # instead of waiting for an unrelated detail_ids change.
-        total_lines = self.posture_ids.filtered(lambda p: p.line_type == "total")
-        total_lines._compute_amounts()
+        # Force-recompute every line so an edited
+        # general_audit_ws_ff42fdc.total_formula or newly generated
+        # closing lines take effect now, instead of waiting for an
+        # unrelated detail_ids change.
+        self.posture_ids._compute_amounts()
 
         # Drop the cached posture_ids tuple so the next read -- even
         # within this same transaction -- re-queries the comodel and

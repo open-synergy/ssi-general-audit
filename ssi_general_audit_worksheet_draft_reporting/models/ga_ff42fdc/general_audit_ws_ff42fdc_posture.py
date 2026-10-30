@@ -175,11 +175,12 @@ class GeneralAuditWsFf42fdcPosture(models.Model):
         layout line has ``show_adjustment`` unticked keeps both columns
         at zero and gets ``adjustment_visible`` False.
 
-        The Audited column also carries the closing amount that the
-        closing lines of the General Audit move into the group (see
-        ``_get_closing_amount``). A Total line adds it per formula
-        group with the formula sign. Without closing lines the amount
-        is zero.
+        The Audited column of an Account Group line also carries the
+        closing amount that the closing lines of the General Audit
+        move into the group (see ``_get_closing_amount``). Total lines
+        do not add it: their formulas already include the profit and
+        loss groups that the closing empties, so adding it would count
+        the profit twice. Without closing lines the amount is zero.
 
         Reading the formula table is not itself a reactive dependency
         of this compute: editing
@@ -250,9 +251,6 @@ class GeneralAuditWsFf42fdcPosture(models.Model):
                         )
                     result_audited += sign * sum(
                         group_details.mapped("audited_balance")
-                    )
-                    result_audited += sign * record._get_closing_amount(
-                        record.worksheet_id.general_audit_id, group
                     )
                     result_previous += sign * sum(
                         group_details.mapped("previous_balance")
