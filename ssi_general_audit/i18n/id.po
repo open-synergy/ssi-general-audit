@@ -5292,13 +5292,29 @@ msgid ""
 "\n"
 "Context: Tick Receive Closing on a client account\n"
 "Database ID: %(id)s\n"
-"Problem: Account %(other)s of the same client and type already receives closing\n"
+"Problem: The type of this account is not the destination of any closing mapping\n"
+"Solution: Tick Receive Closing only on an account whose type receives a closing\n"
+msgstr ""
+"\n"
+"Context: Mencentang Receive Closing pada akun klien\n"
+"Database ID: %(id)s\n"
+"Problem: Tipe akun ini bukan tujuan dari pemetaan closing mana pun\n"
+"Solution: Centang Receive Closing hanya pada akun yang tipenya menerima closing\n"
+
+#. module: ssi_general_audit
+#: code:addons/ssi_general_audit/models/client_account/client_account.py:0
+#, python-format
+msgid ""
+"\n"
+"Context: Tick Receive Closing on a client account\n"
+"Database ID: %(id)s\n"
+"Problem: Account %(other)s of the same client and group already receives closing\n"
 "Solution: Untick Receive Closing on account %(other)s first\n"
 msgstr ""
 "\n"
 "Context: Mencentang Receive Closing pada akun klien\n"
 "Database ID: %(id)s\n"
-"Problem: Akun %(other)s milik klien dan tipe yang sama sudah menerima closing\n"
+"Problem: Akun %(other)s milik klien dan grup yang sama sudah menerima closing\n"
 "Solution: Hapus centang Receive Closing pada akun %(other)s terlebih dahulu\n"
 
 #. module: ssi_general_audit
@@ -5311,11 +5327,11 @@ msgstr "Terima Closing"
 msgid ""
 "Tick to make this account the one that receives the closing amount of its "
 "type in the lead schedule worksheet. Only one account of a client can be "
-"ticked for each type."
+"ticked for each account group, and only on a type that receives a closing."
 msgstr ""
 "Centang agar akun ini menerima nilai closing untuk tipenya pada worksheet "
 "lead schedule. Hanya satu akun per klien yang dapat dicentang untuk setiap "
-"tipe."
+"grup akun, dan hanya pada tipe yang menerima closing."
 
 #. module: ssi_general_audit
 #: model:checklist.option,name:ssi_general_audit.checklist_option_not_applicable

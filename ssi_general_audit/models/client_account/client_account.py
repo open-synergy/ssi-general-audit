@@ -72,7 +72,8 @@ class ClientAccount(models.Model):
         default=False,
         help="Tick to make this account the one that receives the closing "
         "amount of its type in the lead schedule worksheet. Only one account "
-        "of a client can be ticked for each type.",
+        "of a client can be ticked for each account group, and only on a type "
+        "that receives a closing.",
     )
 
     @api.onchange(
@@ -132,19 +133,39 @@ class ClientAccount(models.Model):
         }
 
     @api.constrains("receive_closing", "partner_id", "type_id")
-    def _check_receive_closing_unique(self):
-        """Allow only one closing receiver per client and type.
+    def _check_receive_closing(self):
+        """Validate the closing receiver flag of an account.
 
-        :raises UserError: when another account of the same client and
-            type is already ticked as the closing receiver
+        An account can be ticked only when its type is the destination
+        type of a closing mapping, and only one account per client and
+        account group can be ticked.
+
+        :raises UserError: when the type is not a closing destination or
+            another account of the same client and group is already ticked
         """
-        for record in self.filtered(lambda r: r.receive_closing and r.type_id):
+        mapping_model = self.env["general_audit_closing_type.mapping"].sudo()
+        for record in self.filtered("receive_closing"):
+            if not mapping_model.search_count(
+                [("account_type_id", "=", record.type_id.id)]
+            ):
+                error_message = (
+                    _(
+                        """
+Context: Tick Receive Closing on a client account
+Database ID: %(id)s
+Problem: The type of this account is not the destination of any closing mapping
+Solution: Tick Receive Closing only on an account whose type receives a closing
+"""
+                    )
+                    % {"id": record.id}
+                )
+                raise UserError(error_message)
             other = self.search(
                 [
                     ("id", "!=", record.id),
                     ("receive_closing", "=", True),
                     ("partner_id", "=", record.partner_id.id),
-                    ("type_id", "=", record.type_id.id),
+                    ("group_id", "=", record.group_id.id),
                 ],
                 limit=1,
             )
@@ -154,7 +175,7 @@ class ClientAccount(models.Model):
                         """
 Context: Tick Receive Closing on a client account
 Database ID: %(id)s
-Problem: Account %(other)s of the same client and type already receives closing
+Problem: Account %(other)s of the same client and group already receives closing
 Solution: Untick Receive Closing on account %(other)s first
 """
                     )

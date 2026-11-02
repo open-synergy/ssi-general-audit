@@ -31,7 +31,7 @@ scenarios:
           sequence: 1
           normal_balance: "cr"
 
-      - step: "Create account type"
+      - step: "Create destination type one"
         action: "create"
         model: "client_account_type"
         save_as: "account_type"
@@ -42,6 +42,70 @@ scenarios:
           group_id: "REC: group.id"
           sequence: 1
           normal_balance: "cr"
+
+      - step: "Create destination type two, same group"
+        action: "create"
+        model: "client_account_type"
+        save_as: "account_type_two"
+        as_user: "base.user_admin"
+        values:
+          name: "Retained Two - Receive Closing"
+          code: "/"
+          group_id: "REC: group.id"
+          sequence: 2
+          normal_balance: "cr"
+
+      - step: "Create source type"
+        action: "create"
+        model: "client_account_type"
+        save_as: "source_type"
+        as_user: "base.user_admin"
+        values:
+          name: "Source - Receive Closing"
+          code: "/"
+          group_id: "REC: group.id"
+          sequence: 3
+          normal_balance: "cr"
+
+      - step: "Create type that is not a closing destination"
+        action: "create"
+        model: "client_account_type"
+        save_as: "plain_type"
+        as_user: "base.user_admin"
+        values:
+          name: "Plain - Receive Closing"
+          code: "/"
+          group_id: "REC: group.id"
+          sequence: 4
+          normal_balance: "cr"
+
+      - step: "Create closing type with two destinations"
+        action: "create"
+        model: "general_audit_closing_type"
+        save_as: "closing_type"
+        as_user: "base.user_admin"
+        values:
+          name: "Closing Type - Receive Closing"
+          code: "/"
+          mapping_ids:
+            - - 0
+              - 0
+              - name: "Close to one"
+                sequence: 10
+                source_type_ids:
+                  - - 6
+                    - 0
+                    - - "REC: source_type.id"
+                account_type_id: "REC: account_type.id"
+            - - 0
+              - 0
+              - name: "Close to two"
+                sequence: 20
+                source_type_ids:
+                  - - 6
+                    - 0
+                    - - "REC: source_type.id"
+                account_type_id: "REC: account_type_two.id"
 
       - step: "Create first account, ticked"
         action: "create"
@@ -64,9 +128,9 @@ scenarios:
           name: "Account B"
           code: "RC.B"
           partner_id: "REC: client.id"
-          type_id: "REC: account_type.id"
+          type_id: "REC: account_type_two.id"
 
-      - step: "Same type of another client may be ticked"
+      - step: "Same group of another client may be ticked"
         action: "create"
         model: "client_account"
         save_as: "account_c"
@@ -78,7 +142,7 @@ scenarios:
           type_id: "REC: account_type.id"
           receive_closing: true
 
-      - step: "Ticking a second account of the same client and type is refused"
+      - step: "Ticking a second account of the same client and group is refused"
         action: "write"
         target: "account_b"
         as_user: "base.user_admin"
@@ -86,7 +150,7 @@ scenarios:
           receive_closing: true
         expect_error:
           type: "UserError"
-          message_contains: "already receives closing"
+          message_contains: "same client and group"
 
       - step: "Untick the first account"
         action: "write"
@@ -101,6 +165,27 @@ scenarios:
         as_user: "base.user_admin"
         values:
           receive_closing: true
+
+      - step: "Create account of a type that is not a closing destination"
+        action: "create"
+        model: "client_account"
+        save_as: "account_plain"
+        as_user: "base.user_admin"
+        values:
+          name: "Account Plain"
+          code: "RC.P"
+          partner_id: "REC: client.id"
+          type_id: "REC: plain_type.id"
+
+      - step: "Ticking an account whose type receives no closing is refused"
+        action: "write"
+        target: "account_plain"
+        as_user: "base.user_admin"
+        values:
+          receive_closing: true
+        expect_error:
+          type: "UserError"
+          message_contains: "not the destination"
 
       - step: "Second account is ticked"
         action: "assert"

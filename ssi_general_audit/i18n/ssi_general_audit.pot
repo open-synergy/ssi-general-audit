@@ -6114,7 +6114,18 @@ msgid ""
 "\n"
 "Context: Tick Receive Closing on a client account\n"
 "Database ID: %(id)s\n"
-"Problem: Account %(other)s of the same client and type already receives closing\n"
+"Problem: The type of this account is not the destination of any closing mapping\n"
+"Solution: Tick Receive Closing only on an account whose type receives a closing\n"
+msgstr ""
+
+#. module: ssi_general_audit
+#: code:addons/ssi_general_audit/models/client_account/client_account.py:0
+#, python-format
+msgid ""
+"\n"
+"Context: Tick Receive Closing on a client account\n"
+"Database ID: %(id)s\n"
+"Problem: Account %(other)s of the same client and group already receives closing\n"
 "Solution: Untick Receive Closing on account %(other)s first\n"
 msgstr ""
 
@@ -6128,7 +6139,7 @@ msgstr ""
 msgid ""
 "Tick to make this account the one that receives the closing amount of its "
 "type in the lead schedule worksheet. Only one account of a client can be "
-"ticked for each type."
+"ticked for each account group, and only on a type that receives a closing."
 msgstr ""
 
 #. module: ssi_general_audit
