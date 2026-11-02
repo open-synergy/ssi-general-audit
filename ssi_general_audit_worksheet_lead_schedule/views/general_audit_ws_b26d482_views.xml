@@ -58,7 +58,12 @@
                             attrs="{'invisible': [('state', 'not in', ['open'])]}"
                         />
                         <field name="detail_ids">
-                            <tree editable="bottom" create="true" delete="true">
+                            <tree
+                                editable="bottom"
+                                create="false"
+                                delete="true"
+                                js_class="drag_scroll_list"
+                            >
                                 <field name="detail_id" invisible="1" />
                                 <field name="account_id" />
                                 <field name="currency_id" invisible="1" />

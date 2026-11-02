@@ -12,6 +12,7 @@
     "depends": [
         "ssi_general_audit",
         "ssi_general_audit_worksheet_control_risk",
+        "ssi_web_list_drag_scroll",
     ],
     "data": [
         "security/ir_module_category_data.xml",
