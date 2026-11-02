@@ -3607,6 +3607,34 @@ scenarios:
             type: "value"
             expected: 90000.0
 
+      - step: "Create a closing type whose destinations are types B and C"
+        action: "create"
+        model: "general_audit_closing_type"
+        save_as: "closing_type_dest"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Closing Type Destinations - Lead Schedule"
+          code: "/"
+          mapping_ids:
+            - - 0
+              - 0
+              - name: "Close to type B"
+                sequence: 10
+                source_type_ids:
+                  - - 6
+                    - 0
+                    - - "REC: account_type_rev.id"
+                account_type_id: "REC: account_type_b.id"
+            - - 0
+              - 0
+              - name: "Close to type C"
+                sequence: 20
+                source_type_ids:
+                  - - 6
+                    - 0
+                    - - "REC: account_type_rev.id"
+                account_type_id: "REC: account_type_c.id"
+
       - step: "Tick equity B as the closing receiver"
         action: "write"
         target: "account_b"
