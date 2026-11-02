@@ -4,6 +4,8 @@
 
 from odoo import api, fields, models
 
+BALANCE_SHEET_CATEGORIES = ("asset", "liability", "equity")
+
 
 class GeneralAuditWSb26d482Detail(models.Model):
     """
@@ -21,7 +23,9 @@ class GeneralAuditWSb26d482Detail(models.Model):
     * ``current_profit`` / ``oci`` / ``balance_sheet`` — the adjusted
       balance placed in the column of the account group's report category
       (Profit & Loss, Other Comprehensive Income, or asset, liability and
-      equity), left at zero in the other columns.
+      equity), left at zero in the other columns. The account that
+      receives the closing of its type adds the closing amount to
+      ``balance_sheet``.
     * ``ws_f9f3299_id`` — optional cross-reference to the per-account-type
       lead schedule (``general_audit_ws_f9f3299``).
     """
@@ -106,7 +110,8 @@ class GeneralAuditWSb26d482Detail(models.Model):
         compute_sudo=True,
         store=True,
         help="Adjusted balance of an account whose group has the Asset, "
-        "Liability or Equity report category.",
+        "Liability or Equity report category, plus the closing amount "
+        "when the account receives the closing of its type.",
     )
 
     @api.depends(
@@ -149,6 +154,15 @@ class GeneralAuditWSb26d482Detail(models.Model):
     @api.depends(
         "adjusted_balance",
         "account_id.type_id.group_id.report_category",
+        "account_id.type_id.normal_balance",
+        "account_id.receive_closing",
+        "account_id.code",
+        "worksheet_id.detail_ids.account_id",
+        "worksheet_id.detail_ids.account_id.receive_closing",
+        "worksheet_id.general_audit_id.closing_line_ids.account_id",
+        "worksheet_id.general_audit_id.closing_line_ids.account_type_id",
+        "worksheet_id.general_audit_id.closing_line_ids.debit",
+        "worksheet_id.general_audit_id.closing_line_ids.credit",
     )
     def _compute_statement_columns(self):
         """Place the adjusted balance in its financial statement column.
@@ -160,8 +174,13 @@ class GeneralAuditWSb26d482Detail(models.Model):
         is, on the normal balance side of the account; a group without a
         report category leaves all three columns at zero.
 
+        The account that receives the closing of its type also adds the
+        closing amount to ``balance_sheet`` (see
+        ``general_audit_ws_b26d482._get_closing_allocation``).
+
         :return: ``None``, the columns are assigned in-place per record
         """
+        allocations = {}
         for record in self:
             record.current_profit = 0.0
             record.oci = 0.0
@@ -171,5 +190,13 @@ class GeneralAuditWSb26d482Detail(models.Model):
                 record.current_profit = record.adjusted_balance
             elif category == "oci":
                 record.oci = record.adjusted_balance
-            elif category in ("asset", "liability", "equity"):
-                record.balance_sheet = record.adjusted_balance
+            elif category in BALANCE_SHEET_CATEGORIES:
+                worksheet = record.worksheet_id
+                if worksheet.id not in allocations:
+                    allocations[worksheet.id] = worksheet._get_closing_allocation()
+                receivers, amounts = allocations[worksheet.id]
+                type_id = record.account_id.type_id.id
+                closing = 0.0
+                if receivers.get(type_id) == record.account_id:
+                    closing = amounts.get(type_id, 0.0)
+                record.balance_sheet = record.adjusted_balance + closing

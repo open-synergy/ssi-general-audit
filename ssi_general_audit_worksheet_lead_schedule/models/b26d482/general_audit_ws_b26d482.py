@@ -4,6 +4,8 @@
 
 from odoo import api, fields, models
 
+from .general_audit_ws_b26d482_detail import BALANCE_SHEET_CATEGORIES
+
 
 class GeneralAuditWSb26d482(models.Model):
     """
@@ -31,7 +33,11 @@ class GeneralAuditWSb26d482(models.Model):
     ``total_balance_sheet`` weigh each line by the normal balance of its
     account, like the aggregate of the uncorrected AJE analysis: credit
     accounts add and debit accounts subtract for profit and OCI, the
-    other way round for the balance sheet.
+    other way round for the balance sheet. The ``total_<column>_debit``
+    and ``total_<column>_credit`` fields split the five statement columns
+    by the normal balance of the account, like the control rows of the
+    manual lead schedule. ``total_closing_unallocated`` shows the closing
+    that has no account to receive it.
 
     Use ``action_load_detail`` to synchronise the detail lines with the
     accounts registered on the parent General Audit.
@@ -128,6 +134,97 @@ class GeneralAuditWSb26d482(models.Model):
         "balanced trial balance with every group categorised it equals "
         "Total Current Profit plus Total OCI.",
     )
+    total_current_balance_debit = fields.Monetary(
+        string="Total Current Balance Debit",
+        currency_field="currency_id",
+        compute="_compute_total_detail",
+        compute_sudo=True,
+        store=True,
+        help="Sum of the current balance column of the debit-normal accounts.",
+    )
+    total_current_balance_credit = fields.Monetary(
+        string="Total Current Balance Credit",
+        currency_field="currency_id",
+        compute="_compute_total_detail",
+        compute_sudo=True,
+        store=True,
+        help="Sum of the current balance column of the credit-normal accounts.",
+    )
+    total_adjusted_balance_debit = fields.Monetary(
+        string="Total Adjusted Balance Debit",
+        currency_field="currency_id",
+        compute="_compute_total_detail",
+        compute_sudo=True,
+        store=True,
+        help="Sum of the adjusted balance column of the debit-normal accounts.",
+    )
+    total_adjusted_balance_credit = fields.Monetary(
+        string="Total Adjusted Balance Credit",
+        currency_field="currency_id",
+        compute="_compute_total_detail",
+        compute_sudo=True,
+        store=True,
+        help="Sum of the adjusted balance column of the credit-normal accounts.",
+    )
+    total_current_profit_debit = fields.Monetary(
+        string="Total Current Profit Debit",
+        currency_field="currency_id",
+        compute="_compute_total_detail",
+        compute_sudo=True,
+        store=True,
+        help="Sum of the current profit column of the debit-normal accounts.",
+    )
+    total_current_profit_credit = fields.Monetary(
+        string="Total Current Profit Credit",
+        currency_field="currency_id",
+        compute="_compute_total_detail",
+        compute_sudo=True,
+        store=True,
+        help="Sum of the current profit column of the credit-normal accounts.",
+    )
+    total_oci_debit = fields.Monetary(
+        string="Total OCI Debit",
+        currency_field="currency_id",
+        compute="_compute_total_detail",
+        compute_sudo=True,
+        store=True,
+        help="Sum of the OCI column of the debit-normal accounts.",
+    )
+    total_oci_credit = fields.Monetary(
+        string="Total OCI Credit",
+        currency_field="currency_id",
+        compute="_compute_total_detail",
+        compute_sudo=True,
+        store=True,
+        help="Sum of the OCI column of the credit-normal accounts.",
+    )
+    total_balance_sheet_debit = fields.Monetary(
+        string="Total Balance Sheet Debit",
+        currency_field="currency_id",
+        compute="_compute_total_detail",
+        compute_sudo=True,
+        store=True,
+        help="Sum of the balance sheet column of the debit-normal accounts.",
+    )
+    total_balance_sheet_credit = fields.Monetary(
+        string="Total Balance Sheet Credit",
+        currency_field="currency_id",
+        compute="_compute_total_detail",
+        compute_sudo=True,
+        store=True,
+        help="Sum of the balance sheet column of the credit-normal accounts.",
+    )
+    total_closing_unallocated = fields.Monetary(
+        string="Closing Not Allocated",
+        currency_field="currency_id",
+        compute="_compute_total_closing_unallocated",
+        compute_sudo=True,
+        store=True,
+        help="Debit minus credit of the closing lines whose destination "
+        "type has no account in this worksheet to receive it. It is not "
+        "part of Total Balance Sheet; on a balanced trial balance Total "
+        "Balance Sheet plus this amount equals zero.",
+    )
 
     closing_line_ids = fields.One2many(
         string="Closing Line(s)",
@@ -153,21 +250,34 @@ class GeneralAuditWSb26d482(models.Model):
 
         The first four totals are plain sums. The current profit and OCI
         totals add credit-normal lines and subtract debit-normal lines;
-        the balance sheet total does the opposite.
+        the balance sheet total does the opposite. The ``_debit`` and
+        ``_credit`` totals of the five statement columns sum the lines
+        of the debit-normal and credit-normal accounts separately.
 
         :return: None, fields are assigned in-place per record.
         """
+        columns = (
+            "current_balance",
+            "adjusted_balance",
+            "current_profit",
+            "oci",
+            "balance_sheet",
+        )
         for record in self:
             current_balance = (
                 debit_adjustments
             ) = credit_adjustments = adjusted_balance = 0.0
             current_profit = oci = balance_sheet = 0.0
+            sides = {(column, side): 0.0 for column in columns for side in ("dr", "cr")}
             for detail in record.detail_ids:
                 current_balance += detail.current_balance
                 debit_adjustments += detail.adjustment_dr
                 credit_adjustments += detail.adjustment_cr
                 adjusted_balance += detail.adjusted_balance
-                if detail.account_id.normal_balance == "cr":
+                side = "cr" if detail.account_id.normal_balance == "cr" else "dr"
+                for column in columns:
+                    sides[(column, side)] += detail[column]
+                if side == "cr":
                     current_profit += detail.current_profit
                     oci += detail.oci
                     balance_sheet -= detail.balance_sheet
@@ -182,6 +292,83 @@ class GeneralAuditWSb26d482(models.Model):
             record.total_current_profit = current_profit
             record.total_oci = oci
             record.total_balance_sheet = balance_sheet
+            record.total_current_balance_debit = sides[("current_balance", "dr")]
+            record.total_current_balance_credit = sides[("current_balance", "cr")]
+            record.total_adjusted_balance_debit = sides[("adjusted_balance", "dr")]
+            record.total_adjusted_balance_credit = sides[("adjusted_balance", "cr")]
+            record.total_current_profit_debit = sides[("current_profit", "dr")]
+            record.total_current_profit_credit = sides[("current_profit", "cr")]
+            record.total_oci_debit = sides[("oci", "dr")]
+            record.total_oci_credit = sides[("oci", "cr")]
+            record.total_balance_sheet_debit = sides[("balance_sheet", "dr")]
+            record.total_balance_sheet_credit = sides[("balance_sheet", "cr")]
+
+    def _get_closing_allocation(self):
+        """Find who receives the closing of each destination type.
+
+        The destination lines of the closing are the lines without an
+        account. For a destination type the receiver is the account of
+        this worksheet with that type, in a balance sheet group, that is
+        ticked ``receive_closing``; without a ticked account, the first
+        one by code. A type without such an account has no receiver.
+
+        The amount of a type is positive on its normal balance side:
+        credit minus debit for a credit-normal type, debit minus credit
+        for a debit-normal type.
+
+        :return: tuple ``(receivers, amounts)``, two dictionaries keyed
+            by the id of the destination type: the receiving
+            ``client_account`` record and the closing amount
+        """
+        self.ensure_one()
+        receivers = {}
+        amounts = {}
+        lines = self.general_audit_id.closing_line_ids.filtered(
+            lambda line: not line.account_id and line.account_type_id
+        )
+        accounts = self.detail_ids.mapped("account_id")
+        for account_type in lines.mapped("account_type_id"):
+            candidates = accounts.filtered(
+                lambda account: account.type_id == account_type
+                and account.group_id.report_category in BALANCE_SHEET_CATEGORIES
+            )
+            if candidates:
+                ticked = candidates.filtered("receive_closing")
+                receivers[account_type.id] = (ticked or candidates.sorted("code"))[:1]
+            type_lines = lines.filtered(
+                lambda line: line.account_type_id == account_type
+            )
+            debit = sum(type_lines.mapped("debit"))
+            credit = sum(type_lines.mapped("credit"))
+            if account_type.normal_balance == "cr":
+                amounts[account_type.id] = credit - debit
+            else:
+                amounts[account_type.id] = debit - credit
+        return receivers, amounts
+
+    @api.depends(
+        "detail_ids.account_id",
+        "detail_ids.account_id.receive_closing",
+        "general_audit_id.closing_line_ids.account_id",
+        "general_audit_id.closing_line_ids.account_type_id",
+        "general_audit_id.closing_line_ids.debit",
+        "general_audit_id.closing_line_ids.credit",
+    )
+    def _compute_total_closing_unallocated(self):
+        """Add up the closing lines whose type has no receiving account.
+
+        :return: None, the field is assigned in-place per record.
+        """
+        for record in self:
+            receivers = record._get_closing_allocation()[0]
+            lines = record.general_audit_id.closing_line_ids.filtered(
+                lambda line: not line.account_id
+                and line.account_type_id
+                and line.account_type_id.id not in receivers
+            )
+            record.total_closing_unallocated = sum(lines.mapped("debit")) - sum(
+                lines.mapped("credit")
+            )
 
     def action_generate_closing(self):
         """Generate the closing lines of the parent General Audit.

@@ -16445,8 +16445,8 @@ msgstr "Saldo setelah penyesuaian dari akun yang grupnya berkategori laporan Pen
 
 #. module: ssi_general_audit_worksheet_lead_schedule
 #: model:ir.model.fields,help:ssi_general_audit_worksheet_lead_schedule.field_general_audit_ws_b26d482_detail__balance_sheet
-msgid "Adjusted balance of an account whose group has the Asset, Liability or Equity report category."
-msgstr "Saldo setelah penyesuaian dari akun yang grupnya berkategori laporan Aset, Liabilitas, atau Ekuitas."
+msgid "Adjusted balance of an account whose group has the Asset, Liability or Equity report category, plus the closing amount when the account receives the closing of its type."
+msgstr "Saldo setelah penyesuaian dari akun yang grupnya berkategori laporan Aset, Liabilitas, atau Ekuitas, ditambah nilai closing bila akun menerima closing tipenya."
 
 #. module: ssi_general_audit_worksheet_lead_schedule
 #: model:ir.model.fields,help:ssi_general_audit_worksheet_lead_schedule.field_general_audit_ws_b26d482__total_current_profit
@@ -16462,6 +16462,116 @@ msgstr "Akun kredit menambah dan akun debit mengurangi kolom OCI."
 #: model:ir.model.fields,help:ssi_general_audit_worksheet_lead_schedule.field_general_audit_ws_b26d482__total_balance_sheet
 msgid "Assets minus liabilities and equity: debit accounts add and credit accounts subtract their balance sheet column. On a balanced trial balance with every group categorised it equals Total Current Profit plus Total OCI."
 msgstr "Aset dikurangi liabilitas dan ekuitas: akun debit menambah dan akun kredit mengurangi kolom neraca. Pada neraca saldo seimbang dengan semua grup berkategori, nilainya sama dengan Total Laba Rugi ditambah Total OCI."
+
+#. module: ssi_general_audit_worksheet_lead_schedule
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_lead_schedule.field_general_audit_ws_b26d482__total_current_balance_debit
+msgid "Total Current Balance Debit"
+msgstr "Total Saldo Berjalan Debit"
+
+#. module: ssi_general_audit_worksheet_lead_schedule
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_lead_schedule.field_general_audit_ws_b26d482__total_current_balance_debit
+msgid "Sum of the current balance column of the debit-normal accounts."
+msgstr "Jumlah kolom saldo berjalan dari akun bersaldo normal debit."
+
+#. module: ssi_general_audit_worksheet_lead_schedule
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_lead_schedule.field_general_audit_ws_b26d482__total_current_balance_credit
+msgid "Total Current Balance Credit"
+msgstr "Total Saldo Berjalan Kredit"
+
+#. module: ssi_general_audit_worksheet_lead_schedule
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_lead_schedule.field_general_audit_ws_b26d482__total_current_balance_credit
+msgid "Sum of the current balance column of the credit-normal accounts."
+msgstr "Jumlah kolom saldo berjalan dari akun bersaldo normal kredit."
+
+#. module: ssi_general_audit_worksheet_lead_schedule
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_lead_schedule.field_general_audit_ws_b26d482__total_adjusted_balance_debit
+msgid "Total Adjusted Balance Debit"
+msgstr "Total Saldo Setelah Penyesuaian Debit"
+
+#. module: ssi_general_audit_worksheet_lead_schedule
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_lead_schedule.field_general_audit_ws_b26d482__total_adjusted_balance_debit
+msgid "Sum of the adjusted balance column of the debit-normal accounts."
+msgstr "Jumlah kolom saldo setelah penyesuaian dari akun bersaldo normal debit."
+
+#. module: ssi_general_audit_worksheet_lead_schedule
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_lead_schedule.field_general_audit_ws_b26d482__total_adjusted_balance_credit
+msgid "Total Adjusted Balance Credit"
+msgstr "Total Saldo Setelah Penyesuaian Kredit"
+
+#. module: ssi_general_audit_worksheet_lead_schedule
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_lead_schedule.field_general_audit_ws_b26d482__total_adjusted_balance_credit
+msgid "Sum of the adjusted balance column of the credit-normal accounts."
+msgstr "Jumlah kolom saldo setelah penyesuaian dari akun bersaldo normal kredit."
+
+#. module: ssi_general_audit_worksheet_lead_schedule
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_lead_schedule.field_general_audit_ws_b26d482__total_current_profit_debit
+msgid "Total Current Profit Debit"
+msgstr "Total Laba Rugi Berjalan Debit"
+
+#. module: ssi_general_audit_worksheet_lead_schedule
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_lead_schedule.field_general_audit_ws_b26d482__total_current_profit_debit
+msgid "Sum of the current profit column of the debit-normal accounts."
+msgstr "Jumlah kolom laba rugi berjalan dari akun bersaldo normal debit."
+
+#. module: ssi_general_audit_worksheet_lead_schedule
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_lead_schedule.field_general_audit_ws_b26d482__total_current_profit_credit
+msgid "Total Current Profit Credit"
+msgstr "Total Laba Rugi Berjalan Kredit"
+
+#. module: ssi_general_audit_worksheet_lead_schedule
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_lead_schedule.field_general_audit_ws_b26d482__total_current_profit_credit
+msgid "Sum of the current profit column of the credit-normal accounts."
+msgstr "Jumlah kolom laba rugi berjalan dari akun bersaldo normal kredit."
+
+#. module: ssi_general_audit_worksheet_lead_schedule
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_lead_schedule.field_general_audit_ws_b26d482__total_oci_debit
+msgid "Total OCI Debit"
+msgstr "Total OCI Debit"
+
+#. module: ssi_general_audit_worksheet_lead_schedule
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_lead_schedule.field_general_audit_ws_b26d482__total_oci_debit
+msgid "Sum of the OCI column of the debit-normal accounts."
+msgstr "Jumlah kolom oci dari akun bersaldo normal debit."
+
+#. module: ssi_general_audit_worksheet_lead_schedule
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_lead_schedule.field_general_audit_ws_b26d482__total_oci_credit
+msgid "Total OCI Credit"
+msgstr "Total OCI Kredit"
+
+#. module: ssi_general_audit_worksheet_lead_schedule
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_lead_schedule.field_general_audit_ws_b26d482__total_oci_credit
+msgid "Sum of the OCI column of the credit-normal accounts."
+msgstr "Jumlah kolom oci dari akun bersaldo normal kredit."
+
+#. module: ssi_general_audit_worksheet_lead_schedule
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_lead_schedule.field_general_audit_ws_b26d482__total_balance_sheet_debit
+msgid "Total Balance Sheet Debit"
+msgstr "Total Neraca Debit"
+
+#. module: ssi_general_audit_worksheet_lead_schedule
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_lead_schedule.field_general_audit_ws_b26d482__total_balance_sheet_debit
+msgid "Sum of the balance sheet column of the debit-normal accounts."
+msgstr "Jumlah kolom neraca dari akun bersaldo normal debit."
+
+#. module: ssi_general_audit_worksheet_lead_schedule
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_lead_schedule.field_general_audit_ws_b26d482__total_balance_sheet_credit
+msgid "Total Balance Sheet Credit"
+msgstr "Total Neraca Kredit"
+
+#. module: ssi_general_audit_worksheet_lead_schedule
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_lead_schedule.field_general_audit_ws_b26d482__total_balance_sheet_credit
+msgid "Sum of the balance sheet column of the credit-normal accounts."
+msgstr "Jumlah kolom neraca dari akun bersaldo normal kredit."
+
+#. module: ssi_general_audit_worksheet_lead_schedule
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_lead_schedule.field_general_audit_ws_b26d482__total_closing_unallocated
+msgid "Closing Not Allocated"
+msgstr "Closing Belum Teralokasi"
+
+#. module: ssi_general_audit_worksheet_lead_schedule
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_lead_schedule.field_general_audit_ws_b26d482__total_closing_unallocated
+msgid "Debit minus credit of the closing lines whose destination type has no account in this worksheet to receive it. It is not part of Total Balance Sheet; on a balanced trial balance Total Balance Sheet plus this amount equals zero."
+msgstr "Debit dikurangi kredit dari baris closing yang tipe tujuannya tidak memiliki akun di worksheet ini untuk menerimanya. Tidak termasuk Total Neraca; pada neraca saldo seimbang, Total Neraca ditambah nilai ini sama dengan nol."
 
 #~ msgid "Audit Procedure"
 #~ msgstr "Prosedur Audit"

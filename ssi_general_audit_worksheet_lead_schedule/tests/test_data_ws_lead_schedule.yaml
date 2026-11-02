@@ -3244,3 +3244,444 @@ scenarios:
         expect_error:
           type: "UserError"
           message_contains: "Closing type is empty"
+
+  # ==================================================================
+  # b26d482 - Closing amount on the receiving account
+  # ==================================================================
+  - name: "b26d482 - Closing goes to the receiving account of its type"
+    steps:
+      - step: "Create asset group"
+        action: "create"
+        model: "client_account_group"
+        save_as: "group_asset"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Group Asset - Closing"
+          code: "/"
+          report_category: "asset"
+
+      - step: "Create equity group"
+        action: "create"
+        model: "client_account_group"
+        save_as: "group_equity"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Group Equity - Closing"
+          code: "/"
+          report_category: "equity"
+
+      - step: "Create profit and loss group"
+        action: "create"
+        model: "client_account_group"
+        save_as: "group_pl"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Group Profit Loss - Closing"
+          code: "/"
+          report_category: "profit_loss"
+
+      - step: "Move debit-normal type A to the asset group"
+        action: "write"
+        target: "account_type_a"
+        as_user: "base.user_admin"
+        values:
+          group_id: "REC: group_asset.id"
+
+      - step: "Move credit-normal type B to the equity group"
+        action: "write"
+        target: "account_type_b"
+        as_user: "base.user_admin"
+        values:
+          group_id: "REC: group_equity.id"
+
+      - step: "Create type Equity C - Closing"
+        action: "create"
+        model: "client_account_type"
+        save_as: "account_type_c"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Type Equity C - Closing"
+          code: "/"
+          group_id: "REC: group_equity.id"
+          normal_balance: "cr"
+          python_code: "result = 0.0"
+
+      - step: "Create type Revenue - Closing"
+        action: "create"
+        model: "client_account_type"
+        save_as: "account_type_rev"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Type Revenue - Closing"
+          code: "/"
+          group_id: "REC: group_pl.id"
+          normal_balance: "cr"
+          python_code: "result = 0.0"
+
+      - step: "Create type Expense - Closing"
+        action: "create"
+        model: "client_account_type"
+        save_as: "account_type_exp"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Type Expense - Closing"
+          code: "/"
+          group_id: "REC: group_pl.id"
+          normal_balance: "dr"
+          python_code: "result = 0.0"
+
+      - step: "Create account Equity B2 (code sorts first)"
+        action: "create"
+        model: "client_account"
+        save_as: "account_b2"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Client Account Equity B2 (code sorts first)"
+          code: "ACC-A0-CLOSING"
+          partner_id: "REC: client.id"
+          type_id: "REC: account_type_b.id"
+
+      - step: "Create account Revenue"
+        action: "create"
+        model: "client_account"
+        save_as: "account_rev"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Client Account Revenue"
+          code: "ACC-REV-CLOSING"
+          partner_id: "REC: client.id"
+          type_id: "REC: account_type_rev.id"
+
+      - step: "Create account Expense"
+        action: "create"
+        model: "client_account"
+        save_as: "account_exp"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Client Account Expense"
+          code: "ACC-EXP-CLOSING"
+          partner_id: "REC: client.id"
+          type_id: "REC: account_type_exp.id"
+
+      - step: "Create client account mapping for the audit"
+        action: "create"
+        model: "client_account_mapping"
+        save_as: "mapping"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+
+      - step: "Map account_a"
+        action: "create"
+        model: "client_account_mapping.detail"
+        save_as: "md_account_a"
+        as_user: "base.user_admin"
+        values:
+          mapping_id: "REC: mapping.id"
+          account_id: "REC: account_a.id"
+
+      - step: "Map account_b"
+        action: "create"
+        model: "client_account_mapping.detail"
+        save_as: "md_account_b"
+        as_user: "base.user_admin"
+        values:
+          mapping_id: "REC: mapping.id"
+          account_id: "REC: account_b.id"
+
+      - step: "Map account_b2"
+        action: "create"
+        model: "client_account_mapping.detail"
+        save_as: "md_account_b2"
+        as_user: "base.user_admin"
+        values:
+          mapping_id: "REC: mapping.id"
+          account_id: "REC: account_b2.id"
+
+      - step: "Map account_rev"
+        action: "create"
+        model: "client_account_mapping.detail"
+        save_as: "md_account_rev"
+        as_user: "base.user_admin"
+        values:
+          mapping_id: "REC: mapping.id"
+          account_id: "REC: account_rev.id"
+
+      - step: "Map account_exp"
+        action: "create"
+        model: "client_account_mapping.detail"
+        save_as: "md_account_exp"
+        as_user: "base.user_admin"
+        values:
+          mapping_id: "REC: mapping.id"
+          account_id: "REC: account_exp.id"
+
+      - step: "Reload general audit accounts from the mapping"
+        action: "call"
+        target: "audit"
+        method: "action_reload_account"
+        as_user: "base.user_admin"
+
+      - step: "Create home trial balance"
+        action: "create"
+        model: "client_trial_balance"
+        save_as: "tb_home"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          trial_balance_type: "home"
+
+      - step: "Asset A debit 100,000"
+        action: "create"
+        model: "client_trial_balance.detail"
+        save_as: "tbd_account_a"
+        as_user: "base.user_admin"
+        values:
+          trial_balance_id: "REC: tb_home.id"
+          account_id: "REC: account_a.id"
+          debit: 100000.0
+
+      - step: "Equity B credit 90,000"
+        action: "create"
+        model: "client_trial_balance.detail"
+        save_as: "tbd_account_b"
+        as_user: "base.user_admin"
+        values:
+          trial_balance_id: "REC: tb_home.id"
+          account_id: "REC: account_b.id"
+          credit: 90000.0
+
+      - step: "Revenue credit 30,000"
+        action: "create"
+        model: "client_trial_balance.detail"
+        save_as: "tbd_account_rev"
+        as_user: "base.user_admin"
+        values:
+          trial_balance_id: "REC: tb_home.id"
+          account_id: "REC: account_rev.id"
+          credit: 30000.0
+
+      - step: "Expense debit 20,000"
+        action: "create"
+        model: "client_trial_balance.detail"
+        save_as: "tbd_account_exp"
+        as_user: "base.user_admin"
+        values:
+          trial_balance_id: "REC: tb_home.id"
+          account_id: "REC: account_exp.id"
+          debit: 20000.0
+
+      - step: "Create worksheet b26d482"
+        action: "create"
+        model: "general_audit_ws_b26d482"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_b26d482.id"
+
+      - step: "Open worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_open"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after opening worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Set balance_type to end_period"
+        action: "write"
+        target: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          balance_type: "end_period"
+
+      - step: "Load detail"
+        action: "call"
+        target: "worksheet"
+        method: "action_load_detail"
+        as_user: "base.user_admin"
+
+      - step: "Find detail of equity B"
+        action: "search"
+        model: "general_audit_ws_b26d482.detail"
+        domain:
+          - ["worksheet_id", "=", "REC: worksheet.id"]
+          - ["account_id", "=", "REC: account_b.id"]
+        save_as: "ws_detail_b"
+        limit: 1
+
+      - step: "Find detail of equity B2"
+        action: "search"
+        model: "general_audit_ws_b26d482.detail"
+        domain:
+          - ["worksheet_id", "=", "REC: worksheet.id"]
+          - ["account_id", "=", "REC: account_b2.id"]
+        save_as: "ws_detail_b2"
+        limit: 1
+
+      - step: "Invalidate cache on worksheet (before closing)"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Invalidate cache on ws_detail_b (before closing)"
+        action: "call"
+        target: "ws_detail_b"
+        method: "invalidate_cache"
+
+      - step: "Invalidate cache on ws_detail_b2 (before closing)"
+        action: "call"
+        target: "ws_detail_b2"
+        method: "invalidate_cache"
+
+      - step: "Without closing lines nothing changes (negative)"
+        action: "assert"
+        target: "ws_detail_b"
+        asserts:
+          balance_sheet:
+            type: "value"
+            expected: 90000.0
+
+      - step: "Without closing lines the unallocated amount is zero (negative)"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          total_closing_unallocated:
+            type: "value"
+            expected: 0.0
+          total_balance_sheet:
+            type: "value"
+            expected: 10000.0
+
+      - step: "Closing line to type B, credit 6,000"
+        action: "create"
+        model: "general_audit.closing_line"
+        save_as: "cl_b"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          account_type_id: "REC: account_type_b.id"
+          credit: 6000.0
+
+      - step: "Closing line to type C (no account), credit 4,000"
+        action: "create"
+        model: "general_audit.closing_line"
+        save_as: "cl_c"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          account_type_id: "REC: account_type_c.id"
+          credit: 4000.0
+
+      - step: "Invalidate cache on worksheet (closing, first by code)"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Invalidate cache on ws_detail_b (closing, first by code)"
+        action: "call"
+        target: "ws_detail_b"
+        method: "invalidate_cache"
+
+      - step: "Invalidate cache on ws_detail_b2 (closing, first by code)"
+        action: "call"
+        target: "ws_detail_b2"
+        method: "invalidate_cache"
+
+      - step: "Without a ticked account the first account by code receives the closing"
+        action: "assert"
+        target: "ws_detail_b2"
+        asserts:
+          balance_sheet:
+            type: "value"
+            expected: 6000.0
+
+      - step: "The other account of the type is unchanged"
+        action: "assert"
+        target: "ws_detail_b"
+        asserts:
+          balance_sheet:
+            type: "value"
+            expected: 90000.0
+
+      - step: "Tick equity B as the closing receiver"
+        action: "write"
+        target: "account_b"
+        as_user: "base.user_admin"
+        values:
+          receive_closing: true
+
+      - step: "Invalidate cache on worksheet (ticked)"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Invalidate cache on ws_detail_b (ticked)"
+        action: "call"
+        target: "ws_detail_b"
+        method: "invalidate_cache"
+
+      - step: "Invalidate cache on ws_detail_b2 (ticked)"
+        action: "call"
+        target: "ws_detail_b2"
+        method: "invalidate_cache"
+
+      - step: "The ticked account receives the closing"
+        action: "assert"
+        target: "ws_detail_b"
+        asserts:
+          balance_sheet:
+            type: "value"
+            expected: 96000.0
+
+      - step: "The first account by code no longer receives it"
+        action: "assert"
+        target: "ws_detail_b2"
+        asserts:
+          balance_sheet:
+            type: "value"
+            expected: 0.0
+
+      - step: "Closing of a type without account is shown as not allocated"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          total_closing_unallocated:
+            type: "value"
+            expected: -4000.0
+          total_balance_sheet:
+            type: "value"
+            expected: 4000.0
+          total_balance_sheet_debit:
+            type: "value"
+            expected: 100000.0
+          total_balance_sheet_credit:
+            type: "value"
+            expected: 96000.0
+          total_current_profit_debit:
+            type: "value"
+            expected: 20000.0
+          total_current_profit_credit:
+            type: "value"
+            expected: 30000.0
+          total_current_balance_debit:
+            type: "value"
+            expected: 120000.0
+          total_current_balance_credit:
+            type: "value"
+            expected: 120000.0
+          total_adjusted_balance_debit:
+            type: "value"
+            expected: 120000.0
+          total_adjusted_balance_credit:
+            type: "value"
+            expected: 120000.0
+          total_oci_debit:
+            type: "value"
+            expected: 0.0
+          total_oci_credit:
+            type: "value"
+            expected: 0.0
