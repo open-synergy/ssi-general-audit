@@ -3683,33 +3683,16 @@ scenarios:
           total_balance_sheet:
             type: "value"
             expected: 4000.0
-          total_balance_sheet_debit:
-            type: "value"
-            expected: 100000.0
-          total_balance_sheet_credit:
-            type: "value"
-            expected: 96000.0
-          total_current_profit_debit:
-            type: "value"
-            expected: 20000.0
-          total_current_profit_credit:
-            type: "value"
-            expected: 30000.0
-          total_current_balance_debit:
-            type: "value"
-            expected: 120000.0
-          total_current_balance_credit:
-            type: "value"
-            expected: 120000.0
-          total_adjusted_balance_debit:
-            type: "value"
-            expected: 120000.0
-          total_adjusted_balance_credit:
-            type: "value"
-            expected: 120000.0
-          total_oci_debit:
+          # debit minus credit of each column
+          net_current_balance:
             type: "value"
             expected: 0.0
-          total_oci_credit:
+          net_adjusted_balance:
+            type: "value"
+            expected: 0.0
+          net_current_profit:
+            type: "value"
+            expected: -10000.0
+          net_oci:
             type: "value"
             expected: 0.0

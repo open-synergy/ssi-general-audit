@@ -33,11 +33,11 @@ class GeneralAuditWSb26d482(models.Model):
     ``total_balance_sheet`` weigh each line by the normal balance of its
     account, like the aggregate of the uncorrected AJE analysis: credit
     accounts add and debit accounts subtract for profit and OCI, the
-    other way round for the balance sheet. The ``total_<column>_debit``
-    and ``total_<column>_credit`` fields split the five statement columns
-    by the normal balance of the account, like the control rows of the
-    manual lead schedule. ``total_closing_unallocated`` shows the closing
-    that has no account to receive it.
+    other way round for the balance sheet. The ``net_<column>`` fields show
+    each column as debit minus credit, like the control rows of the
+    manual lead schedule (``total_balance_sheet`` is already one).
+    ``total_closing_unallocated`` shows the closing that has no account
+    to receive it.
 
     Use ``action_load_detail`` to synchronise the detail lines with the
     accounts registered on the parent General Audit.
@@ -134,85 +134,43 @@ class GeneralAuditWSb26d482(models.Model):
         "balanced trial balance with every group categorised it equals "
         "Total Current Profit plus Total OCI.",
     )
-    total_current_balance_debit = fields.Monetary(
-        string="Current Balance Debit",
+    net_current_balance = fields.Monetary(
+        string="Current Balance",
         currency_field="currency_id",
         compute="_compute_total_detail",
         compute_sudo=True,
         store=True,
-        help="Sum of the current balance column of the debit-normal accounts.",
+        help="Debit minus credit: the current balance of debit-normal "
+        "accounts minus that of credit-normal accounts. Zero on a "
+        "balanced trial balance.",
     )
-    total_current_balance_credit = fields.Monetary(
-        string="Current Balance Credit",
+    net_adjusted_balance = fields.Monetary(
+        string="Adjusted Balance",
         currency_field="currency_id",
         compute="_compute_total_detail",
         compute_sudo=True,
         store=True,
-        help="Sum of the current balance column of the credit-normal accounts.",
+        help="Debit minus credit: the adjusted balance of debit-normal "
+        "accounts minus that of credit-normal accounts. Zero when the "
+        "adjustments keep the trial balance balanced.",
     )
-    total_adjusted_balance_debit = fields.Monetary(
-        string="Adjusted Balance Debit",
+    net_current_profit = fields.Monetary(
+        string="Current Profit",
         currency_field="currency_id",
         compute="_compute_total_detail",
         compute_sudo=True,
         store=True,
-        help="Sum of the adjusted balance column of the debit-normal accounts.",
+        help="Debit minus credit of the current profit column: expense "
+        "minus revenue, so a profit is negative.",
     )
-    total_adjusted_balance_credit = fields.Monetary(
-        string="Adjusted Balance Credit",
+    net_oci = fields.Monetary(
+        string="OCI",
         currency_field="currency_id",
         compute="_compute_total_detail",
         compute_sudo=True,
         store=True,
-        help="Sum of the adjusted balance column of the credit-normal accounts.",
-    )
-    total_current_profit_debit = fields.Monetary(
-        string="Current Profit Debit",
-        currency_field="currency_id",
-        compute="_compute_total_detail",
-        compute_sudo=True,
-        store=True,
-        help="Sum of the current profit column of the debit-normal accounts.",
-    )
-    total_current_profit_credit = fields.Monetary(
-        string="Current Profit Credit",
-        currency_field="currency_id",
-        compute="_compute_total_detail",
-        compute_sudo=True,
-        store=True,
-        help="Sum of the current profit column of the credit-normal accounts.",
-    )
-    total_oci_debit = fields.Monetary(
-        string="OCI Debit",
-        currency_field="currency_id",
-        compute="_compute_total_detail",
-        compute_sudo=True,
-        store=True,
-        help="Sum of the OCI column of the debit-normal accounts.",
-    )
-    total_oci_credit = fields.Monetary(
-        string="OCI Credit",
-        currency_field="currency_id",
-        compute="_compute_total_detail",
-        compute_sudo=True,
-        store=True,
-        help="Sum of the OCI column of the credit-normal accounts.",
-    )
-    total_balance_sheet_debit = fields.Monetary(
-        string="Balance Sheet Debit",
-        currency_field="currency_id",
-        compute="_compute_total_detail",
-        compute_sudo=True,
-        store=True,
-        help="Sum of the balance sheet column of the debit-normal accounts.",
-    )
-    total_balance_sheet_credit = fields.Monetary(
-        string="Balance Sheet Credit",
-        currency_field="currency_id",
-        compute="_compute_total_detail",
-        compute_sudo=True,
-        store=True,
-        help="Sum of the balance sheet column of the credit-normal accounts.",
+        help="Debit minus credit of the OCI column, so an other "
+        "comprehensive income gain is negative.",
     )
     total_closing_unallocated = fields.Monetary(
         string="Closing Not Allocated",
@@ -250,41 +208,40 @@ class GeneralAuditWSb26d482(models.Model):
 
         The first four totals are plain sums. The current profit and OCI
         totals add credit-normal lines and subtract debit-normal lines;
-        the balance sheet total does the opposite. The ``_debit`` and
-        ``_credit`` totals of the five statement columns sum the lines
-        of the debit-normal and credit-normal accounts separately.
+        the balance sheet total does the opposite. The ``net_`` fields are
+        debit minus credit of each column: debit-normal lines add and
+        credit-normal lines subtract.
 
         :return: None, fields are assigned in-place per record.
         """
-        columns = (
-            "current_balance",
-            "adjusted_balance",
-            "current_profit",
-            "oci",
-            "balance_sheet",
-        )
         for record in self:
             current_balance = (
                 debit_adjustments
             ) = credit_adjustments = adjusted_balance = 0.0
             current_profit = oci = balance_sheet = 0.0
-            sides = {(column, side): 0.0 for column in columns for side in ("dr", "cr")}
+            net_current_balance = net_adjusted_balance = 0.0
+            net_current_profit = net_oci = 0.0
             for detail in record.detail_ids:
                 current_balance += detail.current_balance
                 debit_adjustments += detail.adjustment_dr
                 credit_adjustments += detail.adjustment_cr
                 adjusted_balance += detail.adjusted_balance
-                side = "cr" if detail.account_id.normal_balance == "cr" else "dr"
-                for column in columns:
-                    sides[(column, side)] += detail[column]
-                if side == "cr":
+                if detail.account_id.normal_balance == "cr":
                     current_profit += detail.current_profit
                     oci += detail.oci
                     balance_sheet -= detail.balance_sheet
+                    net_current_balance -= detail.current_balance
+                    net_adjusted_balance -= detail.adjusted_balance
+                    net_current_profit -= detail.current_profit
+                    net_oci -= detail.oci
                 else:
                     current_profit -= detail.current_profit
                     oci -= detail.oci
                     balance_sheet += detail.balance_sheet
+                    net_current_balance += detail.current_balance
+                    net_adjusted_balance += detail.adjusted_balance
+                    net_current_profit += detail.current_profit
+                    net_oci += detail.oci
             record.total_current_balance = current_balance
             record.total_debit_adjustments = debit_adjustments
             record.total_credit_adjustments = credit_adjustments
@@ -292,16 +249,10 @@ class GeneralAuditWSb26d482(models.Model):
             record.total_current_profit = current_profit
             record.total_oci = oci
             record.total_balance_sheet = balance_sheet
-            record.total_current_balance_debit = sides[("current_balance", "dr")]
-            record.total_current_balance_credit = sides[("current_balance", "cr")]
-            record.total_adjusted_balance_debit = sides[("adjusted_balance", "dr")]
-            record.total_adjusted_balance_credit = sides[("adjusted_balance", "cr")]
-            record.total_current_profit_debit = sides[("current_profit", "dr")]
-            record.total_current_profit_credit = sides[("current_profit", "cr")]
-            record.total_oci_debit = sides[("oci", "dr")]
-            record.total_oci_credit = sides[("oci", "cr")]
-            record.total_balance_sheet_debit = sides[("balance_sheet", "dr")]
-            record.total_balance_sheet_credit = sides[("balance_sheet", "cr")]
+            record.net_current_balance = net_current_balance
+            record.net_adjusted_balance = net_adjusted_balance
+            record.net_current_profit = net_current_profit
+            record.net_oci = net_oci
 
     def _get_closing_allocation(self):
         """Find who receives the closing of each destination type.
