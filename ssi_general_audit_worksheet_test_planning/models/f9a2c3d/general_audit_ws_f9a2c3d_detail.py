@@ -9,9 +9,11 @@ class GeneralAuditWSf9a2c3dDetail(models.Model):
     """Test of Detail Planning Line (f9a2c3d.detail).
 
     One record per standard account of the General Audit. Nine columns
-    describe the planning of the Test of Detail for that account:
+    describe the planning of the Test of Detail for that account; the
+    standard account itself is not shown, because it is the same as the
+    Account Type:
 
-    1. Standard Account and Account Type
+    1. Account Type
     2. Balance, taken from the Specific Materiality worksheet (6dcda0e)
     3. Performance Materiality
     4. ROMM
