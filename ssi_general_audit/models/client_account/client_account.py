@@ -67,6 +67,14 @@ class ClientAccount(models.Model):
         help="Normal balance derived from the selected type.",
     )
 
+    receive_closing = fields.Boolean(
+        string="Receive Closing",
+        default=False,
+        help="Tick to make this account the one that receives the closing "
+        "amount of its type in the lead schedule worksheet. Only one account "
+        "of a client can be ticked for each type.",
+    )
+
     @api.onchange(
         "type_id",
     )
@@ -122,6 +130,37 @@ class ClientAccount(models.Model):
                 "message": message,
             }
         }
+
+    @api.constrains("receive_closing", "partner_id", "type_id")
+    def _check_receive_closing_unique(self):
+        """Allow only one closing receiver per client and type.
+
+        :raises UserError: when another account of the same client and
+            type is already ticked as the closing receiver
+        """
+        for record in self.filtered(lambda r: r.receive_closing and r.type_id):
+            other = self.search(
+                [
+                    ("id", "!=", record.id),
+                    ("receive_closing", "=", True),
+                    ("partner_id", "=", record.partner_id.id),
+                    ("type_id", "=", record.type_id.id),
+                ],
+                limit=1,
+            )
+            if other:
+                error_message = (
+                    _(
+                        """
+Context: Tick Receive Closing on a client account
+Database ID: %(id)s
+Problem: Account %(other)s of the same client and type already receives closing
+Solution: Untick Receive Closing on account %(other)s first
+"""
+                    )
+                    % {"id": record.id, "other": other.display_name}
+                )
+                raise UserError(error_message)
 
     @api.constrains("code")
     def _check_duplicate_code(self):

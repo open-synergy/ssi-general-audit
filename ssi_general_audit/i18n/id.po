@@ -5286,6 +5286,38 @@ msgid "Normal balance derived from the selected type."
 msgstr "Saldo normal yang diturunkan dari jenis yang dipilih."
 
 #. module: ssi_general_audit
+#: code:addons/ssi_general_audit/models/client_account/client_account.py:0
+#, python-format
+msgid ""
+"\n"
+"Context: Tick Receive Closing on a client account\n"
+"Database ID: %(id)s\n"
+"Problem: Account %(other)s of the same client and type already receives closing\n"
+"Solution: Untick Receive Closing on account %(other)s first\n"
+msgstr ""
+"\n"
+"Context: Mencentang Receive Closing pada akun klien\n"
+"Database ID: %(id)s\n"
+"Problem: Akun %(other)s milik klien dan tipe yang sama sudah menerima closing\n"
+"Solution: Hapus centang Receive Closing pada akun %(other)s terlebih dahulu\n"
+
+#. module: ssi_general_audit
+#: model:ir.model.fields,field_description:ssi_general_audit.field_client_account__receive_closing
+msgid "Receive Closing"
+msgstr "Terima Closing"
+
+#. module: ssi_general_audit
+#: model:ir.model.fields,help:ssi_general_audit.field_client_account__receive_closing
+msgid ""
+"Tick to make this account the one that receives the closing amount of its "
+"type in the lead schedule worksheet. Only one account of a client can be "
+"ticked for each type."
+msgstr ""
+"Centang agar akun ini menerima nilai closing untuk tipenya pada worksheet "
+"lead schedule. Hanya satu akun per klien yang dapat dicentang untuk setiap "
+"tipe."
+
+#. module: ssi_general_audit
 #: model:checklist.option,name:ssi_general_audit.checklist_option_not_applicable
 msgid "Not Applicable"
 msgstr ""

@@ -1,0 +1,111 @@
+options:
+  auto_refresh: true
+
+scenarios:
+  - name: "Only one account per client and type can receive closing"
+    steps:
+      - step: "Create client one"
+        action: "create"
+        model: "res.partner"
+        save_as: "client"
+        values:
+          name: "Test Client - Receive Closing"
+          is_company: true
+
+      - step: "Create client two"
+        action: "create"
+        model: "res.partner"
+        save_as: "other_client"
+        values:
+          name: "Test Client - Receive Closing Other"
+          is_company: true
+
+      - step: "Create account group"
+        action: "create"
+        model: "client_account_group"
+        save_as: "group"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Group - Receive Closing"
+          code: "/"
+          sequence: 1
+          normal_balance: "cr"
+
+      - step: "Create account type"
+        action: "create"
+        model: "client_account_type"
+        save_as: "account_type"
+        as_user: "base.user_admin"
+        values:
+          name: "Retained - Receive Closing"
+          code: "/"
+          group_id: "REC: group.id"
+          sequence: 1
+          normal_balance: "cr"
+
+      - step: "Create first account, ticked"
+        action: "create"
+        model: "client_account"
+        save_as: "account_a"
+        as_user: "base.user_admin"
+        values:
+          name: "Account A"
+          code: "RC.A"
+          partner_id: "REC: client.id"
+          type_id: "REC: account_type.id"
+          receive_closing: true
+
+      - step: "Create second account, not ticked"
+        action: "create"
+        model: "client_account"
+        save_as: "account_b"
+        as_user: "base.user_admin"
+        values:
+          name: "Account B"
+          code: "RC.B"
+          partner_id: "REC: client.id"
+          type_id: "REC: account_type.id"
+
+      - step: "Same type of another client may be ticked"
+        action: "create"
+        model: "client_account"
+        save_as: "account_c"
+        as_user: "base.user_admin"
+        values:
+          name: "Account C"
+          code: "RC.C"
+          partner_id: "REC: other_client.id"
+          type_id: "REC: account_type.id"
+          receive_closing: true
+
+      - step: "Ticking a second account of the same client and type is refused"
+        action: "write"
+        target: "account_b"
+        as_user: "base.user_admin"
+        values:
+          receive_closing: true
+        expect_error:
+          type: "UserError"
+          message_contains: "already receives closing"
+
+      - step: "Untick the first account"
+        action: "write"
+        target: "account_a"
+        as_user: "base.user_admin"
+        values:
+          receive_closing: false
+
+      - step: "Now the second account can be ticked"
+        action: "write"
+        target: "account_b"
+        as_user: "base.user_admin"
+        values:
+          receive_closing: true
+
+      - step: "Second account is ticked"
+        action: "assert"
+        target: "account_b"
+        asserts:
+          receive_closing:
+            type: "value"
+            expected: true
