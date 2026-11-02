@@ -24,6 +24,7 @@
         "ssi_decorator",
         "ssi_partner_identification_cpa_license",
         "web_tour",
+        "ssi_web_list_drag_scroll",
     ],
     "data": [
         "views/assets.xml",
