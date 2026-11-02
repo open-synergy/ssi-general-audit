@@ -135,7 +135,7 @@ class GeneralAuditWSb26d482(models.Model):
         "Total Current Profit plus Total OCI.",
     )
     total_current_balance_debit = fields.Monetary(
-        string="Total Current Balance Debit",
+        string="Current Balance Debit",
         currency_field="currency_id",
         compute="_compute_total_detail",
         compute_sudo=True,
@@ -143,7 +143,7 @@ class GeneralAuditWSb26d482(models.Model):
         help="Sum of the current balance column of the debit-normal accounts.",
     )
     total_current_balance_credit = fields.Monetary(
-        string="Total Current Balance Credit",
+        string="Current Balance Credit",
         currency_field="currency_id",
         compute="_compute_total_detail",
         compute_sudo=True,
@@ -151,7 +151,7 @@ class GeneralAuditWSb26d482(models.Model):
         help="Sum of the current balance column of the credit-normal accounts.",
     )
     total_adjusted_balance_debit = fields.Monetary(
-        string="Total Adjusted Balance Debit",
+        string="Adjusted Balance Debit",
         currency_field="currency_id",
         compute="_compute_total_detail",
         compute_sudo=True,
@@ -159,7 +159,7 @@ class GeneralAuditWSb26d482(models.Model):
         help="Sum of the adjusted balance column of the debit-normal accounts.",
     )
     total_adjusted_balance_credit = fields.Monetary(
-        string="Total Adjusted Balance Credit",
+        string="Adjusted Balance Credit",
         currency_field="currency_id",
         compute="_compute_total_detail",
         compute_sudo=True,
@@ -167,7 +167,7 @@ class GeneralAuditWSb26d482(models.Model):
         help="Sum of the adjusted balance column of the credit-normal accounts.",
     )
     total_current_profit_debit = fields.Monetary(
-        string="Total Current Profit Debit",
+        string="Current Profit Debit",
         currency_field="currency_id",
         compute="_compute_total_detail",
         compute_sudo=True,
@@ -175,7 +175,7 @@ class GeneralAuditWSb26d482(models.Model):
         help="Sum of the current profit column of the debit-normal accounts.",
     )
     total_current_profit_credit = fields.Monetary(
-        string="Total Current Profit Credit",
+        string="Current Profit Credit",
         currency_field="currency_id",
         compute="_compute_total_detail",
         compute_sudo=True,
@@ -183,7 +183,7 @@ class GeneralAuditWSb26d482(models.Model):
         help="Sum of the current profit column of the credit-normal accounts.",
     )
     total_oci_debit = fields.Monetary(
-        string="Total OCI Debit",
+        string="OCI Debit",
         currency_field="currency_id",
         compute="_compute_total_detail",
         compute_sudo=True,
@@ -191,7 +191,7 @@ class GeneralAuditWSb26d482(models.Model):
         help="Sum of the OCI column of the debit-normal accounts.",
     )
     total_oci_credit = fields.Monetary(
-        string="Total OCI Credit",
+        string="OCI Credit",
         currency_field="currency_id",
         compute="_compute_total_detail",
         compute_sudo=True,
@@ -199,7 +199,7 @@ class GeneralAuditWSb26d482(models.Model):
         help="Sum of the OCI column of the credit-normal accounts.",
     )
     total_balance_sheet_debit = fields.Monetary(
-        string="Total Balance Sheet Debit",
+        string="Balance Sheet Debit",
         currency_field="currency_id",
         compute="_compute_total_detail",
         compute_sudo=True,
@@ -207,7 +207,7 @@ class GeneralAuditWSb26d482(models.Model):
         help="Sum of the balance sheet column of the debit-normal accounts.",
     )
     total_balance_sheet_credit = fields.Monetary(
-        string="Total Balance Sheet Credit",
+        string="Balance Sheet Credit",
         currency_field="currency_id",
         compute="_compute_total_detail",
         compute_sudo=True,
