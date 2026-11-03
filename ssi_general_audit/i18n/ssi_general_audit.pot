@@ -168,6 +168,28 @@ msgid ""
 msgstr ""
 
 #. module: ssi_general_audit
+#: code:addons/ssi_general_audit/models/client_account/client_account.py:0
+#, python-format
+msgid ""
+"\n"
+"Context: Tick Receive Closing on a client account\n"
+"Database ID: %(id)s\n"
+"Problem: Account %(other)s of the same client and group already receives closing\n"
+"Solution: Untick Receive Closing on account %(other)s first\n"
+msgstr ""
+
+#. module: ssi_general_audit
+#: code:addons/ssi_general_audit/models/client_account/client_account.py:0
+#, python-format
+msgid ""
+"\n"
+"Context: Tick Receive Closing on a client account\n"
+"Database ID: %(id)s\n"
+"Problem: The type of this account is not the destination of any closing mapping\n"
+"Solution: Tick Receive Closing only on an account whose type receives a closing\n"
+msgstr ""
+
+#. module: ssi_general_audit
 #: code:addons/ssi_general_audit/wizards/import_trial_balance_detail.py:0
 #, python-format
 msgid "  ... and %(more)s more"
@@ -6108,41 +6130,6 @@ msgid "Normal balance derived from the selected type."
 msgstr ""
 
 #. module: ssi_general_audit
-#: code:addons/ssi_general_audit/models/client_account/client_account.py:0
-#, python-format
-msgid ""
-"\n"
-"Context: Tick Receive Closing on a client account\n"
-"Database ID: %(id)s\n"
-"Problem: The type of this account is not the destination of any closing mapping\n"
-"Solution: Tick Receive Closing only on an account whose type receives a closing\n"
-msgstr ""
-
-#. module: ssi_general_audit
-#: code:addons/ssi_general_audit/models/client_account/client_account.py:0
-#, python-format
-msgid ""
-"\n"
-"Context: Tick Receive Closing on a client account\n"
-"Database ID: %(id)s\n"
-"Problem: Account %(other)s of the same client and group already receives closing\n"
-"Solution: Untick Receive Closing on account %(other)s first\n"
-msgstr ""
-
-#. module: ssi_general_audit
-#: model:ir.model.fields,field_description:ssi_general_audit.field_client_account__receive_closing
-msgid "Receive Closing"
-msgstr ""
-
-#. module: ssi_general_audit
-#: model:ir.model.fields,help:ssi_general_audit.field_client_account__receive_closing
-msgid ""
-"Tick to make this account the one that receives the closing amount of its "
-"type in the lead schedule worksheet. Only one account of a client can be "
-"ticked for each account group, and only on a type that receives a closing."
-msgstr ""
-
-#. module: ssi_general_audit
 #: model:checklist.option,name:ssi_general_audit.checklist_option_not_applicable
 msgid "Not Applicable"
 msgstr ""
@@ -7226,6 +7213,11 @@ msgid "Re-Compute"
 msgstr ""
 
 #. module: ssi_general_audit
+#: model:ir.model.fields,field_description:ssi_general_audit.field_client_account__receive_closing
+msgid "Receive Closing"
+msgstr ""
+
+#. module: ssi_general_audit
 #: model_terms:ir.ui.view,arch_db:ssi_general_audit.client_trial_balance_view_form
 msgid "Recompute"
 msgstr ""
@@ -8093,6 +8085,14 @@ msgstr ""
 msgid ""
 "This trial balance has no account lines. Press the Account button on the "
 "Detail tab first."
+msgstr ""
+
+#. module: ssi_general_audit
+#: model:ir.model.fields,help:ssi_general_audit.field_client_account__receive_closing
+msgid ""
+"Tick to make this account the one that receives the closing amount of its "
+"type in the lead schedule worksheet. Only one account of a client can be "
+"ticked for each account group, and only on a type that receives a closing."
 msgstr ""
 
 #. module: ssi_general_audit
