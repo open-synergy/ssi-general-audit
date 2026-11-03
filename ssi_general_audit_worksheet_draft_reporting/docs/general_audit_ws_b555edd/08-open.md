@@ -67,9 +67,13 @@
   Comprehensive Income. **Other Movement** is the part of the movement that profit, OCI
   and the typed-in owner transactions do not explain; it becomes 0 once the owner
   transactions are filled in. The previous period section has rows only when the General
-  Audit keeps a previous period. The figures assume a trial balance before closing
-  entries; when profit is already inside the Retained Earnings balance, that row shows
-  the profit as **Other Movement**.
+  Audit keeps a previous period. For the current period, **Closing Balance** is read
+  from the **Worksheet** of the General Audit (its **Balance Sheet** column, including
+  the closing that no account receives), so both statements agree; the newest Worksheet
+  that is not cancelled or rejected and has lines is used. Without such a Worksheet, or
+  for the previous period, it is the audited balance plus profit and OCI. Because the
+  Worksheet already holds the profit, the profit also shows as **Other Movement** on the
+  Retained Earnings row when it is not explained by the owner transactions.
 - **Statement of Cash Flows** lists the operating (profit before tax, non-cash
   adjustments, working capital changes, interest and tax paid), investing and financing
   rows, then the total of each section, the net change in cash, the opening cash, the

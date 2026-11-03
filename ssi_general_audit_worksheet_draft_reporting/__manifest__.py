@@ -11,6 +11,7 @@
     "installable": True,
     "depends": [
         "ssi_general_audit_worksheet_audit_result",
+        "ssi_general_audit_worksheet_lead_schedule",
         "web_tour",
     ],
     "data": [
