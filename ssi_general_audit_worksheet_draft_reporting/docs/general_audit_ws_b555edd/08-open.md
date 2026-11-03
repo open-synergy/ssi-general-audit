@@ -26,10 +26,11 @@
 2. Open the record to start.
 3. Click the **Start** button.
 4. Click **OK** on the confirmation dialog.
-5. Open the **Statement of Financial Position** tab.
-6. Click the **Reload** button to fill both statement tabs from the General Audit's
+5. Open the **Statement of Comprehensive Income** tab, the first tab on the form. It
+   stays empty until **Reload** is clicked.
+6. Open the **Statement of Financial Position** tab, the second tab.
+7. Click the **Reload** button to fill both statement tabs from the General Audit's
    standard account type lines.
-7. Open the **Statement of Comprehensive Income** tab to review its lines.
 8. Open the **Statement of Changes in Equity** tab. **Reload** also fills this tab, one
    row per equity component, first for the current period and then for the previous
    period.
@@ -47,6 +48,9 @@
 - Status changes to **On Progress** (`open`).
 - A document number is assigned to the worksheet (per the `sequence.template`
   configuration).
+- **Statement of Comprehensive Income** lists the rows of account groups T009-T015
+  (revenue, expenses and other comprehensive income), each with its **Current Balance**
+  and **Previous Balance**.
 - **Statement of Financial Position** lists one row per standard account type of the
   General Audit that belongs to account groups T001-T008 (assets, liabilities and
   equity), each with its **Current Balance** and **Previous Balance**. The **Retained
@@ -57,8 +61,6 @@
   Balance**: each destination account type adds its closing amount and the net profit is
   no longer added to the Retained Earnings row, so it is not counted twice. The
   **Previous Balance** is not affected.
-- **Statement of Comprehensive Income** lists the rows of account groups T009-T015
-  (revenue, expenses and other comprehensive income) in the same way.
 - **Statement of Changes in Equity** lists, per period, one row per equity component
   with **Opening Balance**, **Profit**, **OCI**, the four owner transactions, **Other
   Movement** and **Closing Balance**. Profit goes to Retained Earnings and OCI to Other
