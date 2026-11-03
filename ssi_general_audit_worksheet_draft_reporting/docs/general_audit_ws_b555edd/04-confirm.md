@@ -32,5 +32,5 @@
 
 - Status changes to **Waiting for Approval** (`confirm`).
 - Approval records are created for each approver defined by the approval template.
-- The **Statement of Financial Position** and **Statement of Comprehensive Income** tabs
+- The **Statement of Comprehensive Income** and **Statement of Financial Position** tabs
   keep the rows loaded by **Reload**.

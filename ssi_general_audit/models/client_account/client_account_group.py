@@ -46,10 +46,12 @@ class ClientAccountGroup(models.Model):
             ("liability", "Liability"),
             ("equity", "Equity"),
             ("profit_loss", "Profit & Loss"),
+            ("oci", "Other Comprehensive Income"),
         ],
         required=False,
         help="Financial statement category of the accounts under this "
         "group. Used to summarise the impact of adjustment entries "
-        "(AJE Summaries). Leave empty to exclude the group from the "
-        "impact columns.",
+        "(AJE Summaries). Other Comprehensive Income is summarised "
+        "like Profit & Loss. Leave empty to exclude the group from "
+        "the impact columns.",
     )

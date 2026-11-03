@@ -232,6 +232,41 @@ scenarios:
           partner_id: "REC: client.id"
           type_id: "REC: type_pl.id"
 
+      - step: "Create other comprehensive income account group"
+        action: "create"
+        model: "client_account_group"
+        save_as: "group_oci"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Group OCI - AJE Summary"
+          code: "/"
+          sequence: 5
+          normal_balance: "cr"
+          report_category: "oci"
+
+      - step: "Create other comprehensive income account type"
+        action: "create"
+        model: "client_account_type"
+        save_as: "type_oci"
+        as_user: "base.user_admin"
+        values:
+          name: "OCI - AJE Summary"
+          code: "/"
+          group_id: "REC: group_oci.id"
+          sequence: 5
+          normal_balance: "cr"
+
+      - step: "Create other comprehensive income account"
+        action: "create"
+        model: "client_account"
+        save_as: "account_oci"
+        as_user: "base.user_admin"
+        values:
+          name: "OCI Test - AJE Summary"
+          code: "OCISUM"
+          partner_id: "REC: client.id"
+          type_id: "REC: type_oci.id"
+
       - step: "Create corrected entry"
         action: "create"
         model: "client_adjustment_entry"
@@ -322,6 +357,30 @@ scenarios:
           account_id: "REC: account_pl.id"
           name: "Profit and loss debit"
           debit: 40.0
+          credit: 0.0
+
+      - step: "Create other comprehensive income credit line of the uncorrected entry"
+        action: "create"
+        model: "client_adjustment_entry.detail"
+        save_as: "line_oci_cr"
+        as_user: "base.user_admin"
+        values:
+          entry_id: "REC: entry_2.id"
+          account_id: "REC: account_oci.id"
+          name: "OCI credit"
+          debit: 0.0
+          credit: 20.0
+
+      - step: "Create other comprehensive income debit line of the uncorrected entry"
+        action: "create"
+        model: "client_adjustment_entry.detail"
+        save_as: "line_oci_dr"
+        as_user: "base.user_admin"
+        values:
+          entry_id: "REC: entry_2.id"
+          account_id: "REC: account_oci.id"
+          name: "OCI debit"
+          debit: 20.0
           credit: 0.0
 
       - step: "Create second corrected entry with a profit and loss line"
@@ -456,6 +515,33 @@ scenarios:
           impact_equity:
             type: "value"
             expected: -40.0
+
+      - step:
+          "Assert other comprehensive income credit line is summarised like profit and
+          loss"
+        action: "assert"
+        target: "line_oci_cr"
+        asserts:
+          impact_profit_loss:
+            type: "value"
+            expected: 20.0
+          impact_equity:
+            type: "value"
+            expected: 20.0
+          impact_asset:
+            type: "value"
+            expected: 0.0
+
+      - step: "Assert other comprehensive income debit line is negative on both columns"
+        action: "assert"
+        target: "line_oci_dr"
+        asserts:
+          impact_profit_loss:
+            type: "value"
+            expected: -20.0
+          impact_equity:
+            type: "value"
+            expected: -20.0
 
       - step: "Assert unclassified line has no impact"
         action: "assert"

@@ -49,6 +49,18 @@ msgid "Accoount Type Set"
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_lead_schedule
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_lead_schedule.field_general_audit_ws_b26d482_detail__account_code
+msgid "Account Code"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_lead_schedule
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_lead_schedule.field_general_audit_ws_b26d482_detail__account_code
+msgid ""
+"Code of the account. The lines of the worksheet are listed in the order of "
+"this code."
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_lead_schedule
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_lead_schedule.field_general_audit_ws_b26d482_detail__account_id
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_lead_schedule.field_general_audit_ws_f9f3299_detail__account_id
 msgid "Account"
@@ -182,6 +194,7 @@ msgstr ""
 #. module: ssi_general_audit_worksheet_lead_schedule
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_lead_schedule.field_general_audit_ws_b26d482_detail__adjusted_balance
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_lead_schedule.field_general_audit_ws_f9f3299_detail__adjusted_balance
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_lead_schedule.field_general_audit_ws_b26d482__net_adjusted_balance
 msgid "Adjusted Balance"
 msgstr ""
 
@@ -2601,6 +2614,7 @@ msgstr ""
 #. module: ssi_general_audit_worksheet_lead_schedule
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_lead_schedule.field_general_audit_ws_b26d482_detail__current_balance
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_lead_schedule.field_general_audit_ws_f9f3299_detail__current_balance
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_lead_schedule.field_general_audit_ws_b26d482__net_current_balance
 msgid "Current Balance"
 msgstr ""
 
@@ -7993,7 +8007,6 @@ msgid "Presentation and Disclosure Testing"
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_lead_schedule
-#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_lead_schedule.field_general_audit_ws_b26d482_detail__previous_balance
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_lead_schedule.field_general_audit_ws_f9f3299_detail__previous_balance
 msgid "Previous Balance"
 msgstr ""
@@ -8013,7 +8026,6 @@ msgid "Previous Start Date"
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_lead_schedule
-#: model:ir.model.fields,help:ssi_general_audit_worksheet_lead_schedule.field_general_audit_ws_b26d482_detail__previous_balance
 #: model:ir.model.fields,help:ssi_general_audit_worksheet_lead_schedule.field_general_audit_ws_f9f3299_detail__previous_balance
 msgid "Previous period balance for this account."
 msgstr ""
@@ -11275,11 +11287,6 @@ msgid "Sum of the debit adjustments of all detail lines."
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_lead_schedule
-#: model:ir.model.fields,help:ssi_general_audit_worksheet_lead_schedule.field_general_audit_ws_b26d482__total_previous_balance
-msgid "Sum of the previous balance of all detail lines."
-msgstr ""
-
-#. module: ssi_general_audit_worksheet_lead_schedule
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_lead_schedule.field_general_audit_ws_f9f3299_detail__supporting_schedule
 msgid "Supporting Schedule"
 msgstr ""
@@ -12009,8 +12016,6 @@ msgid "Total Debit Adjustments"
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_lead_schedule
-#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_lead_schedule.field_general_audit_ws_b26d482__total_previous_balance
-#: model_terms:ir.ui.view,arch_db:ssi_general_audit_worksheet_lead_schedule.general_audit_ws_b26d482_view_form
 #: model_terms:ir.ui.view,arch_db:ssi_general_audit_worksheet_lead_schedule.general_audit_ws_f9f3299_view_form
 msgid "Total Previous Balance"
 msgstr ""
@@ -13706,4 +13711,96 @@ msgstr ""
 #: model:ir.model.fields,help:ssi_general_audit_worksheet_lead_schedule.field_general_audit_ws_e51bb1c__type_id
 #: model:ir.model.fields,help:ssi_general_audit_worksheet_lead_schedule.field_general_audit_ws_f9f3299__type_id
 msgid "Worksheet type that determines behavior, items, and conclusions."
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_lead_schedule
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_lead_schedule.field_general_audit_ws_b26d482_detail__current_profit
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_lead_schedule.field_general_audit_ws_b26d482__net_current_profit
+msgid "Current Profit"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_lead_schedule
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_lead_schedule.field_general_audit_ws_b26d482_detail__oci
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_lead_schedule.field_general_audit_ws_b26d482__net_oci
+msgid "OCI"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_lead_schedule
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_lead_schedule.field_general_audit_ws_b26d482_detail__balance_sheet
+msgid "Balance Sheet"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_lead_schedule
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_lead_schedule.field_general_audit_ws_b26d482__total_current_profit
+msgid "Total Current Profit"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_lead_schedule
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_lead_schedule.field_general_audit_ws_b26d482__total_oci
+msgid "Total OCI"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_lead_schedule
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_lead_schedule.field_general_audit_ws_b26d482__total_balance_sheet
+msgid "Total Balance Sheet"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_lead_schedule
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_lead_schedule.field_general_audit_ws_b26d482_detail__current_profit
+msgid "Adjusted balance of an account whose group has the Profit & Loss report category."
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_lead_schedule
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_lead_schedule.field_general_audit_ws_b26d482_detail__oci
+msgid "Adjusted balance of an account whose group has the Other Comprehensive Income report category."
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_lead_schedule
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_lead_schedule.field_general_audit_ws_b26d482_detail__balance_sheet
+msgid "Adjusted balance of an account whose group has the Asset, Liability or Equity report category, plus the closing amount when the account receives the closing of its type."
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_lead_schedule
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_lead_schedule.field_general_audit_ws_b26d482__total_current_profit
+msgid "Revenue minus expense: credit accounts add and debit accounts subtract their current profit column."
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_lead_schedule
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_lead_schedule.field_general_audit_ws_b26d482__total_oci
+msgid "Credit accounts add and debit accounts subtract their OCI column."
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_lead_schedule
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_lead_schedule.field_general_audit_ws_b26d482__total_balance_sheet
+msgid "Assets minus liabilities and equity: debit accounts add and credit accounts subtract their balance sheet column. On a balanced trial balance with every group categorised it equals Total Current Profit plus Total OCI."
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_lead_schedule
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_lead_schedule.field_general_audit_ws_b26d482__total_closing_unallocated
+msgid "Closing Not Allocated"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_lead_schedule
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_lead_schedule.field_general_audit_ws_b26d482__total_closing_unallocated
+msgid "Debit minus credit of the closing lines whose destination type has no account in this worksheet to receive it. It is not part of Total Balance Sheet; on a balanced trial balance Total Balance Sheet plus this amount equals zero."
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_lead_schedule
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_lead_schedule.field_general_audit_ws_b26d482__net_current_balance
+msgid "Debit minus credit: the current balance of debit-normal accounts minus that of credit-normal accounts. Zero on a balanced trial balance."
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_lead_schedule
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_lead_schedule.field_general_audit_ws_b26d482__net_adjusted_balance
+msgid "Debit minus credit: the adjusted balance of debit-normal accounts minus that of credit-normal accounts. Zero when the adjustments keep the trial balance balanced."
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_lead_schedule
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_lead_schedule.field_general_audit_ws_b26d482__net_current_profit
+msgid "Credit minus debit of the current profit column: revenue minus expense, so a profit is positive."
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_lead_schedule
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_lead_schedule.field_general_audit_ws_b26d482__net_oci
+msgid "Credit minus debit of the OCI column, so an other comprehensive income gain is positive."
 msgstr ""

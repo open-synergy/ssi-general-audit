@@ -26,6 +26,28 @@ class _FakeDetail(SimpleNamespace):
         return getattr(self, key)
 
 
+class _FakeRows(list):
+    """List of stand-in rows that also answers ``mapped`` and ``filtered``."""
+
+    def mapped(self, name):
+        """Return the attribute ``name`` of every row.
+
+        :param str name: attribute to read
+        :return: one value per row
+        :rtype: list
+        """
+        return [getattr(row, name) for row in self]
+
+    def filtered(self, func):
+        """Keep the rows for which ``func`` is true.
+
+        :param func: predicate applied to each row
+        :return: the matching rows
+        :rtype: _FakeRows
+        """
+        return _FakeRows(row for row in self if func(row))
+
+
 @tagged("post_install", "-at_install")
 class TestWSDraftReporting(YamlTransactionCase):
     """Scenario tests for the ``ssi_general_audit_worksheet_draft_reporting``
@@ -497,6 +519,169 @@ class TestWSDraftReporting(YamlTransactionCase):
         self.assertFalse(any(lines.mapped("closing_balance")))
         self.assertFalse(any(lines.mapped("other_movement")))
 
+    def _fake_lead_schedule(self, details, receivers=None, amounts=None):
+        """Build a stand-in for a ``general_audit_ws_b26d482`` record.
+
+        :param list details: ``(account type, normal balance, balance
+            sheet amount)`` tuples, one per Worksheet line
+        :param dict receivers: receiving accounts by destination type id
+        :param dict amounts: closing amounts by destination type id
+        :return: object giving ``detail_ids`` and
+            ``_get_closing_allocation()``
+        :rtype: SimpleNamespace
+        """
+        lines = [
+            SimpleNamespace(
+                account_id=SimpleNamespace(type_id=type_, normal_balance=normal),
+                balance_sheet=amount,
+            )
+            for type_, normal, amount in details
+        ]
+        return SimpleNamespace(
+            detail_ids=lines,
+            _get_closing_allocation=lambda: (receivers or {}, amounts or {}),
+        )
+
+    def _reload_with_lead_schedule(self, worksheet, fake):
+        """Reload ``worksheet`` while the Worksheet source is ``fake``.
+
+        :param recordset worksheet: the ``general_audit_ws_b555edd``
+        :param fake: result of ``_fake_lead_schedule``
+        :return: the current period equity lines by component
+        :rtype: dict
+        """
+        with mock.patch.object(
+            type(worksheet), "_get_lead_schedule_worksheet", return_value=fake
+        ):
+            worksheet.action_reload_account()
+        lines = worksheet.equity_line_ids.filtered(lambda r: r.period == "current")
+        return {line.component_id: line for line in lines}
+
+    def test_equity_closing_comes_from_lead_schedule_worksheet(self):
+        """The closing balance is the Balance Sheet of the Worksheet lines.
+
+        Pure Python -- trigger P6 (L-15: no mock/patch in YAML; the
+        Worksheet is replaced by a fixed stand-in). The retained
+        earnings line reads 580 from the Worksheet, not the standard
+        detail balance plus profit and OCI.
+
+        :return: nothing; asserts the retained earnings closing balance
+        """
+        retained = self.env["general_audit_ws_b555edd.equity_component"].search(
+            [("receive_profit", "=", True)], limit=1
+        )
+        fake = self._fake_lead_schedule([(retained.type_ids[:1], "cr", 580.0)])
+        worksheet = self._create_b555edd_worksheet("EquityFromWorksheet")
+
+        lines = self._reload_with_lead_schedule(worksheet, fake)
+
+        self.assertEqual(lines[retained].closing_balance, 580.0)
+        self.assertEqual(lines[retained].other_movement, 580.0)
+
+    def test_equity_closing_counts_debit_normal_type_negative(self):
+        """A debit-normal account reduces the equity of its component.
+
+        Pure Python -- trigger P6 (L-15: no mock/patch in YAML). The
+        Worksheet shows 30 on the debit side, which is -30 of equity.
+
+        :return: nothing; asserts the sign of the closing balance
+        """
+        component = self.env["general_audit_ws_b555edd.equity_component"].search(
+            [("receive_profit", "=", True)], limit=1
+        )
+        fake = self._fake_lead_schedule([(component.type_ids[:1], "dr", 30.0)])
+        worksheet = self._create_b555edd_worksheet("EquityDebitNormal")
+
+        lines = self._reload_with_lead_schedule(worksheet, fake)
+
+        self.assertEqual(lines[component].closing_balance, -30.0)
+
+    def test_equity_closing_includes_type_without_receiving_account(self):
+        """Closing to a type that no account receives still reaches equity.
+
+        Pure Python -- trigger P6 (L-15: no mock/patch in YAML). The
+        OCI type has a closing amount of 10 and no receiving account,
+        so the OCI component carries it, positive on a credit-normal
+        type.
+
+        :return: nothing; asserts the OCI closing balance
+        """
+        component = self.env["general_audit_ws_b555edd.equity_component"].search(
+            [("receive_oci", "=", True)], limit=1
+        )
+        type_ = component.type_ids[:1]
+        fake = self._fake_lead_schedule([], amounts={type_.id: 10.0})
+        worksheet = self._create_b555edd_worksheet("EquityNoReceiver")
+
+        lines = self._reload_with_lead_schedule(worksheet, fake)
+
+        sign = 1 if type_.normal_balance == "cr" else -1
+        self.assertEqual(lines[component].closing_balance, sign * 10.0)
+
+    def test_equity_closing_skips_type_with_receiving_account(self):
+        """A closing that an account receives is not counted twice.
+
+        Pure Python -- trigger P6 (L-15: no mock/patch in YAML). The
+        receiving account already holds the closing in its Balance
+        Sheet column, so the type amount adds nothing on top.
+
+        :return: nothing; asserts the OCI closing balance stays zero
+        """
+        component = self.env["general_audit_ws_b555edd.equity_component"].search(
+            [("receive_oci", "=", True)], limit=1
+        )
+        type_ = component.type_ids[:1]
+        fake = self._fake_lead_schedule(
+            [], receivers={type_.id: object()}, amounts={type_.id: 10.0}
+        )
+        worksheet = self._create_b555edd_worksheet("EquityWithReceiver")
+
+        lines = self._reload_with_lead_schedule(worksheet, fake)
+
+        self.assertEqual(lines[component].closing_balance, 0.0)
+
+    def test_equity_previous_period_ignores_lead_schedule_worksheet(self):
+        """Only the current period reads the Worksheet.
+
+        Pure Python -- trigger P6 (L-15: no mock/patch in YAML). The
+        Worksheet has no previous period, so the previous lines keep
+        the standard detail balance, zero on this empty audit.
+
+        :return: nothing; asserts the previous closing balances are zero
+        """
+        retained = self.env["general_audit_ws_b555edd.equity_component"].search(
+            [("receive_profit", "=", True)], limit=1
+        )
+        fake = self._fake_lead_schedule([(retained.type_ids[:1], "cr", 580.0)])
+        worksheet = self._create_b555edd_worksheet("EquityPrevious", True)
+
+        self._reload_with_lead_schedule(worksheet, fake)
+
+        previous = worksheet.equity_line_ids.filtered(lambda r: r.period == "previous")
+        self.assertTrue(previous)
+        self.assertFalse(any(previous.mapped("closing_balance")))
+
+    def test_lead_schedule_worksheet_without_detail_is_ignored(self):
+        """A Worksheet without lines is not used as the source.
+
+        Pure Python -- trigger P1 (L-01: the return value of the
+        method is what is asserted). The audit has a Worksheet with no
+        detail lines, so there is nothing to read from.
+
+        :return: nothing; asserts no Worksheet is found
+        """
+        worksheet = self._create_b555edd_worksheet("EquityEmptyWorksheet")
+        self.env["general_audit_ws_b26d482"].create(
+            {
+                "general_audit_id": worksheet.general_audit_id.id,
+                "type_id": self.env.ref(
+                    "ssi_general_audit_worksheet_lead_schedule.worksheet_type_b26d482"
+                ).id,
+            }
+        )
+
+        self.assertFalse(worksheet._get_lead_schedule_worksheet())
+
     _CF_PREFIX = (
         "ssi_general_audit_worksheet_draft_reporting."
         "general_audit_ws_b555edd_cashflow_item_"
@@ -768,3 +953,231 @@ class TestWSDraftReporting(YamlTransactionCase):
         retained = self._create_balance_detail(worksheet, retained_type, 500, 300)
         self.assertEqual(retained.current_balance, 500.0)
         self.assertEqual(retained.previous_balance, 300.0)
+
+    def _create_closing_line(self, worksheet, type_, **amounts):
+        """Create a destination closing line on the audit of a worksheet.
+
+        :param worksheet: the ``general_audit_ws_b555edd`` record
+        :param recordset type_: destination ``client_account_type``
+        :param amounts: ``debit`` and ``credit`` of the line
+        :return: the ``general_audit.closing_line`` record
+        :rtype: recordset
+        """
+        return self.env["general_audit.closing_line"].create(
+            dict(
+                general_audit_id=worksheet.general_audit_id.id,
+                name="Test closing line",
+                account_type_id=type_.id,
+                **amounts,
+            )
+        )
+
+    def test_closing_is_single_source_for_destination_type(self):
+        """Generated closing replaces the profit added to retained earnings.
+
+        Pure Python -- trigger P6 (L-15: no mock/patch in YAML; the
+        profit total is fixed at 100 and 40). The destination lines
+        give 80 - 30 = 50 on the credit-normal retained earnings type:
+        the current balance is the audit balance plus 50 and no profit,
+        while the previous period still adds its profit.
+
+        :return: nothing; asserts the current and previous balances
+        """
+        retained_type = self.env.ref(
+            "ssi_general_audit.client_account_type_44_a5c4f192"
+        )
+        worksheet = self._create_b555edd_worksheet("ClosingSingleSource")
+        self._create_closing_line(worksheet, retained_type, credit=80.0)
+        self._create_closing_line(worksheet, retained_type, debit=30.0)
+        with mock.patch.object(
+            type(worksheet),
+            "_get_formula_total",
+            side_effect=lambda t, f, d: self._profit_by_field(t, f, d),
+        ):
+            retained = self._create_balance_detail(worksheet, retained_type, 500, 300)
+            self.assertEqual(retained.current_balance, 550.0)
+            self.assertEqual(retained.previous_balance, 340.0)
+
+    def test_closing_to_other_type_skips_profit_on_retained_earnings(self):
+        """Closing to another type leaves retained earnings without profit.
+
+        Pure Python -- trigger P6 (L-15: no mock/patch in YAML). The
+        closing lines target a debit-normal type, so that line adds
+        ``debit - credit`` and the retained earnings line keeps only
+        its audit balance.
+
+        :return: nothing; asserts the balances of both lines
+        """
+        retained_type = self.env.ref(
+            "ssi_general_audit.client_account_type_44_a5c4f192"
+        )
+        other_type = self.env["client_account_type"].search(
+            [("id", "!=", retained_type.id), ("normal_balance", "=", "dr")],
+            limit=1,
+        )
+        worksheet = self._create_b555edd_worksheet("ClosingOtherType")
+        self._create_closing_line(worksheet, other_type, debit=40.0)
+        self._create_closing_line(worksheet, other_type, credit=10.0)
+        with mock.patch.object(
+            type(worksheet),
+            "_get_formula_total",
+            side_effect=lambda t, f, d: self._profit_by_field(t, f, d),
+        ):
+            retained = self._create_balance_detail(worksheet, retained_type, 500, 300)
+            other = self._create_balance_detail(worksheet, other_type, 70, 60)
+            self.assertEqual(retained.current_balance, 500.0)
+            self.assertEqual(other.current_balance, 100.0)
+            self.assertEqual(other.previous_balance, 60.0)
+
+    def test_closing_source_lines_do_not_count(self):
+        """Closing lines of closed source accounts change no balance.
+
+        Pure Python -- trigger P6 (L-15: no mock/patch in YAML). A
+        closing line with an account is a source line, so the
+        retained earnings line keeps the profit it had before.
+
+        :return: nothing; asserts the current balance still adds profit
+        """
+        retained_type = self.env.ref(
+            "ssi_general_audit.client_account_type_44_a5c4f192"
+        )
+        worksheet = self._create_b555edd_worksheet("ClosingSourceOnly")
+        account = self.env["client_account"].create(
+            {
+                "name": "Test closed source account",
+                "code": "ACC-CLOSING-SOURCE",
+                "partner_id": worksheet.general_audit_id.partner_id.id,
+                "type_id": retained_type.id,
+            }
+        )
+        self.env["general_audit.closing_line"].create(
+            {
+                "general_audit_id": worksheet.general_audit_id.id,
+                "name": "Test source line",
+                "account_id": account.id,
+                "account_type_id": retained_type.id,
+                "debit": 90.0,
+            }
+        )
+        with mock.patch.object(
+            type(worksheet),
+            "_get_formula_total",
+            side_effect=lambda t, f, d: self._profit_by_field(t, f, d),
+        ):
+            retained = self._create_balance_detail(worksheet, retained_type, 500, 300)
+            self.assertEqual(retained.current_balance, 600.0)
+
+    def _fake_posture_worksheet(self, details, closing_lines=None, receivers=None):
+        """Build a stand-in Worksheet for the posture Audited column.
+
+        :param list details: ``(group, balance sheet, current profit, oci)``
+            tuples, one per Worksheet line
+        :param list closing_lines: ``(group, type, debit, credit)`` tuples
+            of closing lines without an account
+        :param dict receivers: receiving accounts by destination type id
+        :return: object giving ``detail_ids``, ``general_audit_id``,
+            ``_get_closing_allocation()``, ``net_current_profit`` and
+            ``net_oci``
+        :rtype: SimpleNamespace
+        """
+        lines = [
+            SimpleNamespace(
+                account_id=SimpleNamespace(group_id=group),
+                balance_sheet=balance,
+                current_profit=profit,
+                oci=oci,
+            )
+            for group, balance, profit, oci in details
+        ]
+        closing = [
+            SimpleNamespace(
+                account_id=False,
+                account_group_id=group,
+                account_type_id=type_,
+                debit=debit,
+                credit=credit,
+            )
+            for group, type_, debit, credit in (closing_lines or [])
+        ]
+        return SimpleNamespace(
+            detail_ids=_FakeRows(lines),
+            general_audit_id=SimpleNamespace(closing_line_ids=_FakeRows(closing)),
+            _get_closing_allocation=lambda: (receivers or {}, {}),
+            net_current_profit=1000.0,
+            net_oci=-200.0,
+        )
+
+    def test_posture_group_audited_comes_from_lead_schedule_worksheet(self):
+        """Asset, profit and OCI groups read their own Worksheet column.
+
+        Pure Python -- trigger P1 (L-01: return value of a method) with a
+        stand-in Worksheet. Each category reads Balance Sheet, Current
+        Profit or OCI respectively.
+
+        :return: nothing; asserts the three amounts
+        """
+        posture = self.env["general_audit_ws_ff42fdc.posture"]
+        groups = self.env["client_account_group"].search([])
+        asset = groups.filtered(lambda g: g.report_category == "asset")[:1]
+        profit = groups.filtered(lambda g: g.report_category == "profit_loss")[:1]
+        oci = groups.filtered(lambda g: g.report_category == "oci")[:1]
+        fake = self._fake_posture_worksheet(
+            [
+                (asset, 700.0, 1.0, 2.0),
+                (profit, 3.0, 400.0, 5.0),
+                (oci, 6.0, 7.0, -50.0),
+            ]
+        )
+        self.assertEqual(posture._get_lead_schedule_group_amount(fake, asset), 700.0)
+        self.assertEqual(posture._get_lead_schedule_group_amount(fake, profit), 400.0)
+        self.assertEqual(posture._get_lead_schedule_group_amount(fake, oci), -50.0)
+
+    def test_posture_group_audited_adds_closing_without_receiver(self):
+        """Closing of a type without receiving account lands in its group.
+
+        Pure Python -- trigger P1 (L-01). A credit-normal type adds
+        credit minus debit; a type with a receiver is skipped, because its
+        Balance Sheet already holds it.
+
+        :return: nothing; asserts the group amount
+        """
+        posture = self.env["general_audit_ws_ff42fdc.posture"]
+        group = self.env["client_account_group"].search(
+            [("report_category", "=", "equity")], limit=1
+        )
+        cr_type = SimpleNamespace(id=1, normal_balance="cr")
+        received = SimpleNamespace(id=2, normal_balance="cr")
+        fake = self._fake_posture_worksheet(
+            [(group, 100.0, 0.0, 0.0)],
+            closing_lines=[
+                (group, cr_type, 10.0, 60.0),
+                (group, received, 0.0, 999.0),
+            ],
+            receivers={2: object()},
+        )
+        self.assertEqual(posture._get_lead_schedule_group_amount(fake, group), 150.0)
+
+    def test_posture_totals_come_from_lead_schedule_worksheet(self):
+        """Profit After Tax and Comprehensive Profit read the net columns.
+
+        Pure Python -- trigger P6 (L-15: mock of the Worksheet search).
+        The audited column is the Worksheet net profit, and net profit
+        plus net OCI for the comprehensive total.
+
+        :return: nothing; asserts the two totals
+        """
+        worksheet = self._create_ff42fdc_worksheet_with_all_groups()
+        fake = self._fake_posture_worksheet([])
+        with mock.patch.object(
+            type(worksheet.posture_ids),
+            "_get_lead_schedule_worksheet",
+            return_value=fake,
+        ):
+            worksheet.action_load_posture()
+            totals = {
+                line.total_type: line.audited
+                for line in worksheet.posture_ids
+                if line.line_type == "total"
+            }
+        self.assertEqual(totals["profit_after_tax"], 1000.0)
+        self.assertEqual(totals["comprehensive_profit"], 800.0)

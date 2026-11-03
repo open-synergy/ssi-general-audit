@@ -58,31 +58,27 @@
                             attrs="{'invisible': [('state', 'not in', ['open'])]}"
                         />
                         <field name="detail_ids">
-                            <tree editable="bottom" create="true" delete="true">
+                            <tree
+                                editable="bottom"
+                                create="false"
+                                delete="true"
+                                js_class="drag_scroll_list"
+                            >
                                 <field name="detail_id" invisible="1" />
                                 <field name="account_id" />
                                 <field name="currency_id" invisible="1" />
+                                <field name="current_balance" optional="show" />
                                 <field
-                                    name="current_balance"
-                                    sum="Total Current Balance"
+                                    name="ws_f9f3299_id"
+                                    string="Lead Schedule"
+                                    optional="hide"
                                 />
-                                <field name="ws_f9f3299_id" string="Lead Schedule" />
-                                <field
-                                    name="adjustment_dr"
-                                    sum="Total Debit Adjustments"
-                                />
-                                <field
-                                    name="adjustment_cr"
-                                    sum="Total Credit Adjustments"
-                                />
-                                <field
-                                    name="adjusted_balance"
-                                    sum="Total Adjusted Balance"
-                                />
-                                <field
-                                    name="previous_balance"
-                                    sum="Total Previous Balance"
-                                />
+                                <field name="adjustment_dr" optional="show" />
+                                <field name="adjustment_cr" optional="show" />
+                                <field name="adjusted_balance" optional="show" />
+                                <field name="current_profit" optional="show" />
+                                <field name="oci" optional="show" />
+                                <field name="balance_sheet" optional="show" />
                             </tree>
                             <form>
                                 <sheet>
@@ -95,17 +91,20 @@
                                         <field name="adjustment_dr" />
                                         <field name="adjustment_cr" />
                                         <field name="adjusted_balance" />
-                                        <field name="previous_balance" />
+                                        <field name="current_profit" />
+                                        <field name="oci" />
+                                        <field name="balance_sheet" />
                                     </group>
                                 </sheet>
                             </form>
                         </field>
-                        <group name="detail_totals" colspan="4" col="2">
-                            <field name="total_current_balance" />
-                            <field name="total_debit_adjustments" />
-                            <field name="total_credit_adjustments" />
-                            <field name="total_adjusted_balance" />
-                            <field name="total_previous_balance" />
+                        <group name="detail_totals" string="Total" colspan="4" col="2">
+                            <field name="net_current_balance" />
+                            <field name="net_adjusted_balance" />
+                            <field name="net_current_profit" />
+                            <field name="net_oci" />
+                            <field name="total_balance_sheet" string="Balance Sheet" />
+                            <field name="total_closing_unallocated" invisible="1" />
                         </group>
                     </page>
                     <page string="Closing">

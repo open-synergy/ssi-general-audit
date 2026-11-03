@@ -54,6 +54,9 @@
         <field name="mode">primary</field>
         <field name="arch" type="xml">
             <data>
+            <xpath expr="//tree" position="attributes">
+                <attribute name="js_class">drag_scroll_list</attribute>
+            </xpath>
                 <xpath expr="//field[@name='code']" position="before">
                     <field name="sequence" widget="handle" />
                 </xpath>

@@ -32,7 +32,7 @@
   creates them again, so the **Timing**, **Extent** and **Primary Audit Technique**
   chosen before are cleared.
 - Each line shows these columns, none of them editable by hand:
-  - **Standard Account** and **Account Type**.
+  - **Account Type**.
   - **Balance**: the balance of the account in the Specific Materiality worksheet
     (6dcda0e).
   - **Performance Materiality**: the specific materiality of the account when **Use

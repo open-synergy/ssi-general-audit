@@ -88,6 +88,10 @@ class GeneralAuditWsB555eddDetail(models.Model):
         "worksheet_id.general_audit_id.standard_detail_ids.audited_balance",
         "worksheet_id.general_audit_id.standard_detail_ids.previous_balance",
         "worksheet_id.general_audit_id.standard_detail_ids.type_id",
+        "worksheet_id.general_audit_id.closing_line_ids.account_id",
+        "worksheet_id.general_audit_id.closing_line_ids.account_type_id",
+        "worksheet_id.general_audit_id.closing_line_ids.debit",
+        "worksheet_id.general_audit_id.closing_line_ids.credit",
     )
     def _compute_balance(self):
         """Fill the balances of both periods from the standard detail.
@@ -97,6 +101,12 @@ class GeneralAuditWsB555eddDetail(models.Model):
         ``profit_after_tax`` total of the same period, because the profit
         is not closed into equity in the trial balance.
 
+        Once the closing lines of the General Audit are generated, the
+        closing is the only source: the current balance of each
+        destination account type adds its closing amount and the profit
+        is no longer added, so it is not counted twice. The previous
+        period is not affected by the closing.
+
         :return: None
         """
         receiver = self._get_profit_receiver_type()
@@ -104,17 +114,49 @@ class GeneralAuditWsB555eddDetail(models.Model):
             detail = record.standard_detail_id
             current = detail.audited_balance
             previous = detail.previous_balance
+            closing_lines = (
+                record.worksheet_id.general_audit_id.closing_line_ids.filtered(
+                    lambda line: not line.account_id
+                )
+            )
+            if closing_lines:
+                current += record._get_closing_amount(closing_lines, detail.type_id)
             if receiver and detail.type_id == receiver:
                 worksheet = record.worksheet_id
                 details = worksheet.general_audit_id.standard_detail_ids
-                current += worksheet._get_formula_total(
-                    "profit_after_tax", "audited_balance", details
-                )
+                if not closing_lines:
+                    current += worksheet._get_formula_total(
+                        "profit_after_tax", "audited_balance", details
+                    )
                 previous += worksheet._get_formula_total(
                     "profit_after_tax", "previous_balance", details
                 )
             record.current_balance = current
             record.previous_balance = previous
+
+    @api.model
+    def _get_closing_amount(self, closing_lines, account_type):
+        """Get the closing amount that lands in an account type.
+
+        Each destination line of the type is signed on the normal
+        balance side of the type, like ``audited_balance``.
+
+        :param closing_lines: destination ``general_audit.closing_line``
+            records of the General Audit (lines without an account)
+        :param account_type: ``client_account_type`` record of the line
+        :return: closing amount of the type, zero when no closing line
+            targets it
+        :rtype: float
+        """
+        result = 0.0
+        for line in closing_lines.filtered(
+            lambda line: line.account_type_id == account_type
+        ):
+            if account_type.normal_balance == "cr":
+                result += line.credit - line.debit
+            else:
+                result += line.debit - line.credit
+        return result
 
     @api.model
     def _get_profit_receiver_type(self):

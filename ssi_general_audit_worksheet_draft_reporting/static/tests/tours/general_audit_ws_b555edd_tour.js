@@ -109,17 +109,17 @@ odoo.define(
                 // Post-Condition - both statement tabs are visible on the
                 // form, even though both are still empty at this point.
                 {
-                    content: "The Statement of Financial Position tab is visible",
+                    content: "The Statement of Comprehensive Income tab is visible",
                     trigger:
-                        ".o_notebook .nav-link:contains(Statement of Financial Position)",
+                        ".o_notebook .nav-link:contains(Statement of Comprehensive Income)",
                     run: function () {
                         // Assertion only; do not trigger the default click action.
                     },
                 },
                 {
-                    content: "The Statement of Comprehensive Income tab is visible",
+                    content: "The Statement of Financial Position tab is visible",
                     trigger:
-                        ".o_notebook .nav-link:contains(Statement of Comprehensive Income)",
+                        ".o_notebook .nav-link:contains(Statement of Financial Position)",
                     run: function () {
                         // Assertion only; do not trigger the default click action.
                     },
@@ -202,10 +202,26 @@ odoo.define(
                     },
                 },
 
-                // Flow 5 - The Statement of Financial Position tab is the
-                // first tab on the form; click its Reload button. The
-                // button is only visible while the worksheet is Draft or
-                // On Progress, so it also proves the status change above.
+                // Flow 5 - The Statement of Comprehensive Income tab is the
+                // first tab on the form; open it.
+                {
+                    content: "Open the Statement of Comprehensive Income tab",
+                    trigger:
+                        ".o_notebook .nav-link:contains(Statement of Comprehensive Income)",
+                    extra_trigger: ".o_form_view",
+                },
+                {
+                    content: "The comprehensive income lines table is displayed",
+                    trigger: ".tab-pane.active .o_field_widget[name='soci_detail_ids']",
+                    run: function () {
+                        // Assertion only; do not trigger the default click action.
+                    },
+                },
+
+                // Flow 6 - Open the Statement of Financial Position tab, the
+                // second tab, and click its Reload button. The button is only
+                // visible while the worksheet is Draft or On Progress, so it
+                // also proves the status change above.
                 {
                     content: "Open the Statement of Financial Position tab",
                     trigger:
@@ -220,21 +236,6 @@ odoo.define(
                 {
                     content: "The statement lines table is displayed",
                     trigger: ".tab-pane.active .o_field_widget[name='sfp_detail_ids']",
-                    run: function () {
-                        // Assertion only; do not trigger the default click action.
-                    },
-                },
-
-                // Flow 6 - Open the Statement of Comprehensive Income tab.
-                {
-                    content: "Open the Statement of Comprehensive Income tab",
-                    trigger:
-                        ".o_notebook .nav-link:contains(Statement of Comprehensive Income)",
-                    extra_trigger: ".o_form_view",
-                },
-                {
-                    content: "The comprehensive income lines table is displayed",
-                    trigger: ".tab-pane.active .o_field_widget[name='soci_detail_ids']",
                     run: function () {
                         // Assertion only; do not trigger the default click action.
                     },
@@ -349,18 +350,18 @@ odoo.define(
                 // Post-Condition - both statement tabs remain visible
                 // after confirming.
                 {
-                    content: "The Statement of Financial Position tab is still visible",
+                    content:
+                        "The Statement of Comprehensive Income tab is still visible",
                     trigger:
-                        ".o_notebook .nav-link:contains(Statement of Financial Position)",
+                        ".o_notebook .nav-link:contains(Statement of Comprehensive Income)",
                     run: function () {
                         // Assertion only; do not trigger the default click action.
                     },
                 },
                 {
-                    content:
-                        "The Statement of Comprehensive Income tab is still visible",
+                    content: "The Statement of Financial Position tab is still visible",
                     trigger:
-                        ".o_notebook .nav-link:contains(Statement of Comprehensive Income)",
+                        ".o_notebook .nav-link:contains(Statement of Financial Position)",
                     run: function () {
                         // Assertion only; do not trigger the default click action.
                     },

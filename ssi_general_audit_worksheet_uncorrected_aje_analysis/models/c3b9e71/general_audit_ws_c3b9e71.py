@@ -319,7 +319,8 @@ class GeneralAuditWsC3b9e71(models.Model):
         """Derive the aggregate quantitative figures of the analysis.
 
         The profit and loss figure nets the profit and loss account
-        groups: credit-normal groups add their uncorrected amount and
+        groups, including those of the other comprehensive income
+        category: credit-normal groups add their uncorrected amount and
         debit-normal groups subtract it. The financial position figure is
         the total of one side of the uncorrected adjustment entries: debit
         plus credit of every line, divided by two. Percentages are zero
@@ -330,7 +331,7 @@ class GeneralAuditWsC3b9e71(models.Model):
         for record in self:
             pl_amount = 0.0
             for line in record.group_line_ids:
-                if line.group_id.report_category != "profit_loss":
+                if line.group_id.report_category not in ("profit_loss", "oci"):
                     continue
                 if line.group_id.normal_balance == "cr":
                     pl_amount += line.uncorrected_amount

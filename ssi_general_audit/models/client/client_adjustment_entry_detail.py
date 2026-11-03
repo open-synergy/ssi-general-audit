@@ -142,13 +142,17 @@ class ClientAdjustmentEntryDetail(models.Model):
         Assets take debit minus credit; liabilities, equity and profit
         and loss take credit minus debit. A profit and loss line also
         counts as an equity impact of the same amount, since profit and
-        loss flows into equity. A line whose account group has no report
-        category contributes zero to every impact column.
+        loss flows into equity. The other comprehensive income category
+        is summarised exactly like profit and loss. A line whose account
+        group has no report category contributes zero to every impact
+        column.
 
         :return: ``None``
         """
         for record in self:
             category = record.account_id.type_id.group_id.report_category
+            if category == "oci":
+                category = "profit_loss"
             result = {
                 "asset": 0.0,
                 "liability": 0.0,

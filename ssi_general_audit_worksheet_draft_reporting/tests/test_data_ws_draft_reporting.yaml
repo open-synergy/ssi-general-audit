@@ -3761,6 +3761,495 @@ scenarios:
             check: "count"
             expected_count: 3
 
+  - name: "Posture ff42fdc - closing destination lines add to Audited (positive)"
+    steps:
+      - step: "Get client account group T007 (Retained Earnings)"
+        action: "ref"
+        xml_id: "ssi_general_audit.client_account_group_7_fd2a0509"
+        save_as: "group_t007"
+
+      - step: "Create equity type (credit-normal, group T007)"
+        action: "create"
+        model: "client_account_type"
+        save_as: "account_type_t007"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Account Type T007 - Posture Closing"
+          code: "/"
+          group_id: "REC: group_t007.id"
+          normal_balance: "cr"
+          python_code: "result = 0.0"
+
+      - step: "Create revenue type (credit-normal, group T009)"
+        action: "create"
+        model: "client_account_type"
+        save_as: "account_type_t009"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Account Type T009 - Posture Closing"
+          code: "/"
+          group_id: "REC: group_t009.id"
+          normal_balance: "cr"
+          python_code: "result = 0.0"
+
+      - step: "Create equity account"
+        action: "create"
+        model: "client_account"
+        save_as: "account_t007"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Client Account T007 - Posture Closing"
+          code: "ACC-T007-POSTURE-CLOSING"
+          partner_id: "REC: client.id"
+          type_id: "REC: account_type_t007.id"
+
+      - step: "Create revenue account"
+        action: "create"
+        model: "client_account"
+        save_as: "account_t009"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Client Account T009 - Posture Closing"
+          code: "ACC-T009-POSTURE-CLOSING"
+          partner_id: "REC: client.id"
+          type_id: "REC: account_type_t009.id"
+
+      - step: "Create client account mapping for the audit"
+        action: "create"
+        model: "client_account_mapping"
+        save_as: "mapping"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+
+      - step: "Map equity account"
+        action: "create"
+        model: "client_account_mapping.detail"
+        save_as: "mapping_detail_t007"
+        as_user: "base.user_admin"
+        values:
+          mapping_id: "REC: mapping.id"
+          account_id: "REC: account_t007.id"
+
+      - step: "Map revenue account"
+        action: "create"
+        model: "client_account_mapping.detail"
+        save_as: "mapping_detail_t009"
+        as_user: "base.user_admin"
+        values:
+          mapping_id: "REC: mapping.id"
+          account_id: "REC: account_t009.id"
+
+      - step: "Reload general audit accounts from the mapping"
+        action: "call"
+        target: "audit"
+        method: "action_reload_account"
+        as_user: "base.user_admin"
+
+      - step: "Create home trial balance"
+        action: "create"
+        model: "client_trial_balance"
+        save_as: "tb_home"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          trial_balance_type: "home"
+
+      - step: "Home trial balance line for equity account (credit 500)"
+        action: "create"
+        model: "client_trial_balance.detail"
+        save_as: "tb_home_detail_t007"
+        as_user: "base.user_admin"
+        values:
+          trial_balance_id: "REC: tb_home.id"
+          account_id: "REC: account_t007.id"
+          credit: 500.0
+
+      - step: "Home trial balance line for revenue account (credit 200)"
+        action: "create"
+        model: "client_trial_balance.detail"
+        save_as: "tb_home_detail_t009"
+        as_user: "base.user_admin"
+        values:
+          trial_balance_id: "REC: tb_home.id"
+          account_id: "REC: account_t009.id"
+          credit: 200.0
+
+      - step: "Closing destination line: credit 80 on the equity type"
+        action: "create"
+        model: "general_audit.closing_line"
+        save_as: "closing_dest_cr"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          sequence: 10
+          name: "Close profit and loss"
+          account_type_id: "REC: account_type_t007.id"
+          credit: 80.0
+
+      - step: "Closing destination line: debit 30 on the equity type"
+        action: "create"
+        model: "general_audit.closing_line"
+        save_as: "closing_dest_dr"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          sequence: 20
+          name: "Close other comprehensive income"
+          account_type_id: "REC: account_type_t007.id"
+          debit: 30.0
+
+      - step: "Get client account group T006 (OCI) that has no account"
+        action: "ref"
+        xml_id: "ssi_general_audit.client_account_group_6_76ade538"
+        save_as: "group_t006"
+
+      - step: "Create OCI type (credit-normal, group T006)"
+        action: "create"
+        model: "client_account_type"
+        save_as: "account_type_t006"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Account Type T006 - Posture Closing"
+          code: "/"
+          group_id: "REC: group_t006.id"
+          normal_balance: "cr"
+          python_code: "result = 0.0"
+
+      - step: "Closing destination line: debit 10 on the OCI type"
+        action: "create"
+        model: "general_audit.closing_line"
+        save_as: "closing_dest_oci"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          sequence: 30
+          name: "Close other comprehensive income"
+          account_type_id: "REC: account_type_t006.id"
+          debit: 10.0
+
+      - step: "Closing source line on the revenue account (must not count)"
+        action: "create"
+        model: "general_audit.closing_line"
+        save_as: "closing_source"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          sequence: 10
+          name: "Close profit and loss"
+          account_id: "REC: account_t009.id"
+          account_type_id: "REC: account_type_t009.id"
+          debit: 200.0
+
+      - step: "Create worksheet ff42fdc for posture"
+        action: "create"
+        model: "general_audit_ws_ff42fdc"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_ff42fdc.id"
+
+      - step: "Open worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_open"
+        as_user: "base.user_admin"
+
+      - step: "Load posture"
+        action: "call"
+        target: "worksheet"
+        method: "action_load_posture"
+        as_user: "base.user_admin"
+
+      - step: "Find posture line for the equity group"
+        action: "search"
+        model: "general_audit_ws_ff42fdc.posture"
+        domain:
+          - ["worksheet_id", "=", "REC: worksheet.id"]
+          - ["line_type", "=", "group"]
+          - ["group_id", "=", "REC: group_t007.id"]
+        save_as: "posture_t007"
+        limit: 1
+
+      - step: "Find posture line for the revenue group"
+        action: "search"
+        model: "general_audit_ws_ff42fdc.posture"
+        domain:
+          - ["worksheet_id", "=", "REC: worksheet.id"]
+          - ["line_type", "=", "group"]
+          - ["group_id", "=", "REC: group_t009.id"]
+        save_as: "posture_t009"
+        limit: 1
+
+      - step: "Find posture line for total_equity"
+        action: "search"
+        model: "general_audit_ws_ff42fdc.posture"
+        domain:
+          - ["worksheet_id", "=", "REC: worksheet.id"]
+          - ["line_type", "=", "total"]
+          - ["total_type", "=", "total_equity"]
+        save_as: "posture_total_equity"
+        limit: 1
+
+      - step: "Invalidate cache on the posture lines"
+        action: "call"
+        target: "posture_t007"
+        method: "invalidate_cache"
+
+      # Destination lines: credit 80 and debit 30 on a credit-normal type
+      # give 80 - 30 = 50. The source line on the revenue account is
+      # ignored, so the revenue group stays at 200.
+      - step: "With closing: equity group Audited"
+        action: "assert"
+        target: "posture_t007"
+        asserts:
+          audited:
+            type: "value"
+            expected: 550.0
+          unaudited:
+            type: "value"
+            expected: 500.0
+
+      - step: "With closing: revenue group keeps its Audited balance"
+        action: "assert"
+        target: "posture_t009"
+        asserts:
+          audited:
+            type: "value"
+            expected: 200.0
+
+      # The total formula already holds the profit and loss groups,
+      # so closing must not change it: 500 + 200 in both cases.
+      - step: "With closing: Total Equity is not changed by closing"
+        action: "assert"
+        target: "posture_total_equity"
+        asserts:
+          audited:
+            type: "value"
+            expected: 700.0
+
+      - step: "OCI group has a line only because of the closing"
+        action: "search"
+        model: "general_audit_ws_ff42fdc.posture"
+        domain:
+          - ["worksheet_id", "=", "REC: worksheet.id"]
+          - ["line_type", "=", "group"]
+          - ["group_id", "=", "REC: group_t006.id"]
+        save_as: "posture_t006"
+        limit: 1
+        expect_count: 1
+
+      - step: "OCI group Audited follows the closing"
+        action: "assert"
+        target: "posture_t006"
+        asserts:
+          audited:
+            type: "value"
+            expected: -10.0
+          unaudited:
+            type: "value"
+            expected: 0.0
+
+  - name: "Posture ff42fdc - audit without closing lines adds nothing (negative)"
+    steps:
+      - step: "Get client account group T007 (Retained Earnings)"
+        action: "ref"
+        xml_id: "ssi_general_audit.client_account_group_7_fd2a0509"
+        save_as: "group_t007"
+
+      - step: "Create equity type (credit-normal, group T007)"
+        action: "create"
+        model: "client_account_type"
+        save_as: "account_type_t007"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Account Type T007 - Posture Closing"
+          code: "/"
+          group_id: "REC: group_t007.id"
+          normal_balance: "cr"
+          python_code: "result = 0.0"
+
+      - step: "Create revenue type (credit-normal, group T009)"
+        action: "create"
+        model: "client_account_type"
+        save_as: "account_type_t009"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Account Type T009 - Posture Closing"
+          code: "/"
+          group_id: "REC: group_t009.id"
+          normal_balance: "cr"
+          python_code: "result = 0.0"
+
+      - step: "Create equity account"
+        action: "create"
+        model: "client_account"
+        save_as: "account_t007"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Client Account T007 - Posture Closing"
+          code: "ACC-T007-POSTURE-CLOSING"
+          partner_id: "REC: client.id"
+          type_id: "REC: account_type_t007.id"
+
+      - step: "Create revenue account"
+        action: "create"
+        model: "client_account"
+        save_as: "account_t009"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Client Account T009 - Posture Closing"
+          code: "ACC-T009-POSTURE-CLOSING"
+          partner_id: "REC: client.id"
+          type_id: "REC: account_type_t009.id"
+
+      - step: "Create client account mapping for the audit"
+        action: "create"
+        model: "client_account_mapping"
+        save_as: "mapping"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+
+      - step: "Map equity account"
+        action: "create"
+        model: "client_account_mapping.detail"
+        save_as: "mapping_detail_t007"
+        as_user: "base.user_admin"
+        values:
+          mapping_id: "REC: mapping.id"
+          account_id: "REC: account_t007.id"
+
+      - step: "Map revenue account"
+        action: "create"
+        model: "client_account_mapping.detail"
+        save_as: "mapping_detail_t009"
+        as_user: "base.user_admin"
+        values:
+          mapping_id: "REC: mapping.id"
+          account_id: "REC: account_t009.id"
+
+      - step: "Reload general audit accounts from the mapping"
+        action: "call"
+        target: "audit"
+        method: "action_reload_account"
+        as_user: "base.user_admin"
+
+      - step: "Create home trial balance"
+        action: "create"
+        model: "client_trial_balance"
+        save_as: "tb_home"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          trial_balance_type: "home"
+
+      - step: "Home trial balance line for equity account (credit 500)"
+        action: "create"
+        model: "client_trial_balance.detail"
+        save_as: "tb_home_detail_t007"
+        as_user: "base.user_admin"
+        values:
+          trial_balance_id: "REC: tb_home.id"
+          account_id: "REC: account_t007.id"
+          credit: 500.0
+
+      - step: "Home trial balance line for revenue account (credit 200)"
+        action: "create"
+        model: "client_trial_balance.detail"
+        save_as: "tb_home_detail_t009"
+        as_user: "base.user_admin"
+        values:
+          trial_balance_id: "REC: tb_home.id"
+          account_id: "REC: account_t009.id"
+          credit: 200.0
+
+      - step: "Create worksheet ff42fdc for posture"
+        action: "create"
+        model: "general_audit_ws_ff42fdc"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_ff42fdc.id"
+
+      - step: "Open worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_open"
+        as_user: "base.user_admin"
+
+      - step: "Load posture"
+        action: "call"
+        target: "worksheet"
+        method: "action_load_posture"
+        as_user: "base.user_admin"
+
+      - step: "Find posture line for the equity group"
+        action: "search"
+        model: "general_audit_ws_ff42fdc.posture"
+        domain:
+          - ["worksheet_id", "=", "REC: worksheet.id"]
+          - ["line_type", "=", "group"]
+          - ["group_id", "=", "REC: group_t007.id"]
+        save_as: "posture_t007"
+        limit: 1
+
+      - step: "Find posture line for the revenue group"
+        action: "search"
+        model: "general_audit_ws_ff42fdc.posture"
+        domain:
+          - ["worksheet_id", "=", "REC: worksheet.id"]
+          - ["line_type", "=", "group"]
+          - ["group_id", "=", "REC: group_t009.id"]
+        save_as: "posture_t009"
+        limit: 1
+
+      - step: "Find posture line for total_equity"
+        action: "search"
+        model: "general_audit_ws_ff42fdc.posture"
+        domain:
+          - ["worksheet_id", "=", "REC: worksheet.id"]
+          - ["line_type", "=", "total"]
+          - ["total_type", "=", "total_equity"]
+        save_as: "posture_total_equity"
+        limit: 1
+
+      - step: "Invalidate cache on the posture lines"
+        action: "call"
+        target: "posture_t007"
+        method: "invalidate_cache"
+
+      - step: "Without closing: equity group Audited"
+        action: "assert"
+        target: "posture_t007"
+        asserts:
+          audited:
+            type: "value"
+            expected: 500.0
+          unaudited:
+            type: "value"
+            expected: 500.0
+
+      - step: "Without closing: revenue group keeps its Audited balance"
+        action: "assert"
+        target: "posture_t009"
+        asserts:
+          audited:
+            type: "value"
+            expected: 200.0
+
+      # The total formula already holds the profit and loss groups,
+      # so closing must not change it: 500 + 200 in both cases.
+      - step: "Without closing: Total Equity is not changed by closing"
+        action: "assert"
+        target: "posture_total_equity"
+        asserts:
+          audited:
+            type: "value"
+            expected: 700.0
+
   - name: "ff42fdc and b555edd - audit without closing lines shows an empty list"
     steps:
       - step: "Create worksheet ff42fdc"

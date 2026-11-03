@@ -26,10 +26,11 @@
 2. Open the record to start.
 3. Click the **Start** button.
 4. Click **OK** on the confirmation dialog.
-5. Open the **Statement of Financial Position** tab.
-6. Click the **Reload** button to fill both statement tabs from the General Audit's
+5. Open the **Statement of Comprehensive Income** tab, the first tab on the form. It
+   stays empty until **Reload** is clicked.
+6. Open the **Statement of Financial Position** tab, the second tab.
+7. Click the **Reload** button to fill both statement tabs from the General Audit's
    standard account type lines.
-7. Open the **Statement of Comprehensive Income** tab to review its lines.
 8. Open the **Statement of Changes in Equity** tab. **Reload** also fills this tab, one
    row per equity component, first for the current period and then for the previous
    period.
@@ -47,23 +48,32 @@
 - Status changes to **On Progress** (`open`).
 - A document number is assigned to the worksheet (per the `sequence.template`
   configuration).
+- **Statement of Comprehensive Income** lists the rows of account groups T009-T015
+  (revenue, expenses and other comprehensive income), each with its **Current Balance**
+  and **Previous Balance**.
 - **Statement of Financial Position** lists one row per standard account type of the
   General Audit that belongs to account groups T001-T008 (assets, liabilities and
   equity), each with its **Current Balance** and **Previous Balance**. The **Retained
   Earnings - unappropriated** row shows the audited balance plus the net profit of the
   same period, so it agrees with the closing equity in the **Statement of Changes in
-  Equity** tab. Other rows show the audited balance only.
-- **Statement of Comprehensive Income** lists the rows of account groups T009-T015
-  (revenue, expenses and other comprehensive income) in the same way.
+  Equity** tab. Other rows show the audited balance only. Once the closing lines of the
+  General Audit are generated, the closing is the only source for the **Current
+  Balance**: each destination account type adds its closing amount and the net profit is
+  no longer added to the Retained Earnings row, so it is not counted twice. The
+  **Previous Balance** is not affected.
 - **Statement of Changes in Equity** lists, per period, one row per equity component
   with **Opening Balance**, **Profit**, **OCI**, the four owner transactions, **Other
   Movement** and **Closing Balance**. Profit goes to Retained Earnings and OCI to Other
   Comprehensive Income. **Other Movement** is the part of the movement that profit, OCI
   and the typed-in owner transactions do not explain; it becomes 0 once the owner
   transactions are filled in. The previous period section has rows only when the General
-  Audit keeps a previous period. The figures assume a trial balance before closing
-  entries; when profit is already inside the Retained Earnings balance, that row shows
-  the profit as **Other Movement**.
+  Audit keeps a previous period. For the current period, **Closing Balance** is read
+  from the **Worksheet** of the General Audit (its **Balance Sheet** column, including
+  the closing that no account receives), so both statements agree; the newest Worksheet
+  that is not cancelled or rejected and has lines is used. Without such a Worksheet, or
+  for the previous period, it is the audited balance plus profit and OCI. Because the
+  Worksheet already holds the profit, the profit also shows as **Other Movement** on the
+  Retained Earnings row when it is not explained by the owner transactions.
 - **Statement of Cash Flows** lists the operating (profit before tax, non-cash
   adjustments, working capital changes, interest and tax paid), investing and financing
   rows, then the total of each section, the net change in cash, the opening cash, the

@@ -240,6 +240,55 @@ class GeneralAuditWSb555edd(models.Model):
             )
         return amount
 
+    def _get_lead_schedule_worksheet(self):
+        """Find the Worksheet (b26d482) the equity closing is read from.
+
+        It is the newest Worksheet of the same General Audit that is
+        neither cancelled nor rejected and has detail lines.
+
+        :return: ``general_audit_ws_b26d482`` record, empty when the
+            audit has no usable Worksheet
+        :rtype: recordset
+        """
+        self.ensure_one()
+        return self.env[
+            "general_audit_ws_ff42fdc.posture"
+        ]._get_lead_schedule_worksheet(self.general_audit_id)
+
+    def _get_worksheet_equity_closing(self, worksheet):
+        """Read the closing balance of every equity component.
+
+        The balance of a component is the Balance Sheet column of the
+        Worksheet lines whose account has one of the component's types,
+        plus the closing of those types that no account receives. The
+        Worksheet shows an amount positive on the normal balance side of
+        its account, so a debit-normal type (for example treasury
+        shares) counts negative, like the other equity figures.
+
+        :param worksheet: ``general_audit_ws_b26d482`` record
+        :return: ``{component id: closing balance}``
+        :rtype: dict
+        """
+        receivers, amounts = worksheet._get_closing_allocation()
+        type_model = self.env["client_account_type"]
+        result = {}
+        for component in self.env["general_audit_ws_b555edd.equity_component"].search(
+            []
+        ):
+            total = 0.0
+            for detail in worksheet.detail_ids:
+                account = detail.account_id
+                if account.type_id in component.type_ids:
+                    sign = 1 if account.normal_balance == "cr" else -1
+                    total += sign * detail.balance_sheet
+            for type_id, amount in amounts.items():
+                account_type = type_model.browse(type_id)
+                if type_id not in receivers and account_type in component.type_ids:
+                    sign = 1 if account_type.normal_balance == "cr" else -1
+                    total += sign * amount
+            result[component.id] = total
+        return result
+
     def _get_equity_source(self, period):
         """Read the equity figures of one period from the standard details.
 
@@ -249,10 +298,17 @@ class GeneralAuditWSb555edd(models.Model):
         profit`` total minus it, both from the signed groups of
         ``general_audit_ws_ff42fdc.total_formula``.
 
+        For the current period, the closing balance of every component
+        is read from the Worksheet (b26d482) when the audit has one, see
+        ``_get_worksheet_equity_closing()``; the Worksheet already holds
+        the profit and OCI closing. The previous period has no Worksheet.
+
         :param period: ``current`` or ``previous``
         :type period: str
         :return: ``{"profit": float, "oci": float, "components":
-            {component id: (opening, closing before profit and OCI)}}``
+            {component id: (opening, closing before profit and OCI)},
+            "closing_total": {component id: closing balance}}``; the
+            last one is empty without a Worksheet
         :rtype: dict
         """
         self.ensure_one()
@@ -279,7 +335,17 @@ class GeneralAuditWSb555edd(models.Model):
                 sum(signed(d, opening_field) for d in matched),
                 sum(signed(d, closing_field) for d in matched),
             )
-        return {"profit": profit, "oci": oci, "components": components}
+        closing_total = {}
+        if period == "current":
+            worksheet = self._get_lead_schedule_worksheet()
+            if worksheet:
+                closing_total = self._get_worksheet_equity_closing(worksheet)
+        return {
+            "profit": profit,
+            "oci": oci,
+            "components": components,
+            "closing_total": closing_total,
+        }
 
     def _reload_equity(self):
         """Replace the equity lines with a fresh snapshot.
@@ -287,7 +353,9 @@ class GeneralAuditWSb555edd(models.Model):
         One line per equity component for the current period, plus one
         per component for the previous period when the General Audit
         keeps a previous period. Owner transactions typed in before are
-        lost, as the lines are created again.
+        lost, as the lines are created again. The current closing balance
+        comes from the Worksheet when there is one, otherwise it is the
+        standard detail balance plus profit and OCI.
 
         :return: None
         """
@@ -304,6 +372,11 @@ class GeneralAuditWSb555edd(models.Model):
                 opening, closing = source["components"].get(component.id, (0.0, 0.0))
                 profit = source["profit"] if component.receive_profit else 0.0
                 oci = source["oci"] if component.receive_oci else 0.0
+                closing_total = source.get("closing_total", {})
+                if component.id in closing_total:
+                    closing_balance = closing_total[component.id]
+                else:
+                    closing_balance = closing + profit + oci
                 Line.create(
                     {
                         "worksheet_id": self.id,
@@ -313,7 +386,7 @@ class GeneralAuditWSb555edd(models.Model):
                         "opening_balance": opening,
                         "profit": profit,
                         "oci": oci,
-                        "closing_balance": closing + profit + oci,
+                        "closing_balance": closing_balance,
                     }
                 )
 

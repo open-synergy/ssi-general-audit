@@ -43,8 +43,8 @@
             <data>
                 <xpath expr="//page[1]" position="before">
                     <page
-                        name="statement_of_financial_position"
-                        string="Statement of Financial Position"
+                        name="statement_of_comprehensive_income"
+                        string="Statement of Comprehensive Income"
                     >
                         <field name="reload_needs_confirm" invisible="1" />
                         <button
@@ -64,7 +64,7 @@
                             confirm="Reload clears the figures you typed in on the equity and cash flow tabs. Are you sure?"
                             attrs="{'invisible': ['|', ('state', 'not in', ['draft', 'open']), ('reload_needs_confirm', '=', False)]}"
                         />
-                        <field name="sfp_detail_ids" nolabel="1">
+                        <field name="soci_detail_ids" nolabel="1">
                             <tree create="false" delete="false" edit="false">
                                 <field name="type_id" />
                                 <field name="currency_id" invisible="1" />
@@ -82,8 +82,8 @@
                         </field>
                     </page>
                     <page
-                        name="statement_of_comprehensive_income"
-                        string="Statement of Comprehensive Income"
+                        name="statement_of_financial_position"
+                        string="Statement of Financial Position"
                     >
                         <button
                             name="action_reload_account"
@@ -102,7 +102,7 @@
                             confirm="Reload clears the figures you typed in on the equity and cash flow tabs. Are you sure?"
                             attrs="{'invisible': ['|', ('state', 'not in', ['draft', 'open']), ('reload_needs_confirm', '=', False)]}"
                         />
-                        <field name="soci_detail_ids" nolabel="1">
+                        <field name="sfp_detail_ids" nolabel="1">
                             <tree create="false" delete="false" edit="false">
                                 <field name="type_id" />
                                 <field name="currency_id" invisible="1" />
@@ -368,7 +368,7 @@
                         </field>
                     </page>
                 </xpath>
-                <xpath expr="//notebook" position="inside">
+                <xpath expr="//page[@name='statement_of_cash_flows']" position="after">
                     <page name="closing" string="Closing">
                         <field name="closing_line_ids">
                             <tree>

@@ -3904,7 +3904,8 @@ msgstr ""
 #: model:ir.model.fields,help:ssi_general_audit.field_client_account_group__report_category
 msgid ""
 "Financial statement category of the accounts under this group. Used to "
-"summarise the impact of adjustment entries (AJE Summaries). Leave empty to "
+"summarise the impact of adjustment entries (AJE Summaries). Other "
+"Comprehensive Income is summarised like Profit & Loss. Leave empty to "
 "exclude the group from the impact columns."
 msgstr ""
 
@@ -6107,6 +6108,41 @@ msgid "Normal balance derived from the selected type."
 msgstr ""
 
 #. module: ssi_general_audit
+#: code:addons/ssi_general_audit/models/client_account/client_account.py:0
+#, python-format
+msgid ""
+"\n"
+"Context: Tick Receive Closing on a client account\n"
+"Database ID: %(id)s\n"
+"Problem: The type of this account is not the destination of any closing mapping\n"
+"Solution: Tick Receive Closing only on an account whose type receives a closing\n"
+msgstr ""
+
+#. module: ssi_general_audit
+#: code:addons/ssi_general_audit/models/client_account/client_account.py:0
+#, python-format
+msgid ""
+"\n"
+"Context: Tick Receive Closing on a client account\n"
+"Database ID: %(id)s\n"
+"Problem: Account %(other)s of the same client and group already receives closing\n"
+"Solution: Untick Receive Closing on account %(other)s first\n"
+msgstr ""
+
+#. module: ssi_general_audit
+#: model:ir.model.fields,field_description:ssi_general_audit.field_client_account__receive_closing
+msgid "Receive Closing"
+msgstr ""
+
+#. module: ssi_general_audit
+#: model:ir.model.fields,help:ssi_general_audit.field_client_account__receive_closing
+msgid ""
+"Tick to make this account the one that receives the closing amount of its "
+"type in the lead schedule worksheet. Only one account of a client can be "
+"ticked for each account group, and only on a type that receives a closing."
+msgstr ""
+
+#. module: ssi_general_audit
 #: model:checklist.option,name:ssi_general_audit.checklist_option_not_applicable
 msgid "Not Applicable"
 msgstr ""
@@ -6659,6 +6695,7 @@ msgstr ""
 
 #. module: ssi_general_audit
 #: model:client_account_group,name:ssi_general_audit.client_account_group_15_315c4d27
+#: model:ir.model.fields.selection,name:ssi_general_audit.selection__client_account_group__report_category__oci
 msgid "Other Comprehensive Income"
 msgstr ""
 

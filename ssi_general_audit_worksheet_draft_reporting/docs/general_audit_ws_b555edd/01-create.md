@@ -25,6 +25,6 @@
 ## Post-Condition
 
 - A new record is created in **Draft** status.
-- The **Statement of Financial Position** and **Statement of Comprehensive Income** tabs
+- The **Statement of Comprehensive Income** and **Statement of Financial Position** tabs
   are visible on the form, but both are still empty until **Reload** is clicked (see
   `08-open`).

@@ -77,16 +77,16 @@ odoo.define(
                 },
 
                 // Flow 4 - Click the Timing cell of the account line.
-                // Cell 7 of the Details list: Standard Account(0), Account
-                // Type(1), Balance(2), Performance Materiality(3), ROMM(4),
-                // Assersion Types(5), AP Result(6), Timing(7), Extent(8),
-                // Primary Audit Technique(9). The currency column is
-                // invisible and renders no cell.
+                // Cell 6 of the Details list: Account Type(0), Balance(1),
+                // Performance Materiality(2), ROMM(3), Assersion Types(4),
+                // AP Result(5), Timing(6), Extent(7), Primary Audit
+                // Technique(8). The currency column is invisible and
+                // renders no cell.
                 {
                     content: "Click the Timing cell of the account line",
                     trigger:
                         ".tab-pane.active .o_field_widget[name='detail_ids'] " +
-                        ".o_data_row:contains(TOUR-F9A2C3D-TYPE) .o_data_cell:eq(7)",
+                        ".o_data_row:contains(TOUR-F9A2C3D-TYPE) .o_data_cell:eq(6)",
                     extra_trigger: ".o_form_view",
                 },
                 {
@@ -140,11 +140,12 @@ odoo.define(
 
                 // Flow 7 - Save. The last cell is committed by selecting
                 // another cell of the same line first (the Account Type
-                // cell, which is read-only) -- see patterns-fields.md §C
+                // cell, the first one, which is read-only) -- see
+                // patterns-fields.md §C
                 // "Jebakan 2".
                 {
                     content: "Commit the technique by selecting another cell",
-                    trigger: ".o_selected_row .o_data_cell:eq(1)",
+                    trigger: ".o_selected_row .o_data_cell:eq(0)",
                     run: "click",
                 },
                 {

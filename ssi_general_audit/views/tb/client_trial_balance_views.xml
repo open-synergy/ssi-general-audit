@@ -80,6 +80,9 @@
     <field name="inherit_id" ref="ssi_transaction_mixin.mixin_transaction_view_tree" />
     <field name="arch" type="xml">
         <data>
+            <xpath expr="//tree" position="attributes">
+                <attribute name="js_class">drag_scroll_list</attribute>
+            </xpath>
             <xpath expr="//field[@name='company_id']" position="after">
                 <field
                         name="operating_unit_id"
