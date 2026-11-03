@@ -26,6 +26,28 @@ class _FakeDetail(SimpleNamespace):
         return getattr(self, key)
 
 
+class _FakeRows(list):
+    """List of stand-in rows that also answers ``mapped`` and ``filtered``."""
+
+    def mapped(self, name):
+        """Return the attribute ``name`` of every row.
+
+        :param str name: attribute to read
+        :return: one value per row
+        :rtype: list
+        """
+        return [getattr(row, name) for row in self]
+
+    def filtered(self, func):
+        """Keep the rows for which ``func`` is true.
+
+        :param func: predicate applied to each row
+        :return: the matching rows
+        :rtype: _FakeRows
+        """
+        return _FakeRows(row for row in self if func(row))
+
+
 @tagged("post_install", "-at_install")
 class TestWSDraftReporting(YamlTransactionCase):
     """Scenario tests for the ``ssi_general_audit_worksheet_draft_reporting``
@@ -1044,3 +1066,118 @@ class TestWSDraftReporting(YamlTransactionCase):
         ):
             retained = self._create_balance_detail(worksheet, retained_type, 500, 300)
             self.assertEqual(retained.current_balance, 600.0)
+
+    def _fake_posture_worksheet(self, details, closing_lines=None, receivers=None):
+        """Build a stand-in Worksheet for the posture Audited column.
+
+        :param list details: ``(group, balance sheet, current profit, oci)``
+            tuples, one per Worksheet line
+        :param list closing_lines: ``(group, type, debit, credit)`` tuples
+            of closing lines without an account
+        :param dict receivers: receiving accounts by destination type id
+        :return: object giving ``detail_ids``, ``general_audit_id``,
+            ``_get_closing_allocation()``, ``net_current_profit`` and
+            ``net_oci``
+        :rtype: SimpleNamespace
+        """
+        lines = [
+            SimpleNamespace(
+                account_id=SimpleNamespace(group_id=group),
+                balance_sheet=balance,
+                current_profit=profit,
+                oci=oci,
+            )
+            for group, balance, profit, oci in details
+        ]
+        closing = [
+            SimpleNamespace(
+                account_id=False,
+                account_group_id=group,
+                account_type_id=type_,
+                debit=debit,
+                credit=credit,
+            )
+            for group, type_, debit, credit in (closing_lines or [])
+        ]
+        return SimpleNamespace(
+            detail_ids=_FakeRows(lines),
+            general_audit_id=SimpleNamespace(closing_line_ids=_FakeRows(closing)),
+            _get_closing_allocation=lambda: (receivers or {}, {}),
+            net_current_profit=1000.0,
+            net_oci=-200.0,
+        )
+
+    def test_posture_group_audited_comes_from_lead_schedule_worksheet(self):
+        """Asset, profit and OCI groups read their own Worksheet column.
+
+        Pure Python -- trigger P1 (L-01: return value of a method) with a
+        stand-in Worksheet. Each category reads Balance Sheet, Current
+        Profit or OCI respectively.
+
+        :return: nothing; asserts the three amounts
+        """
+        posture = self.env["general_audit_ws_ff42fdc.posture"]
+        groups = self.env["client_account_group"].search([])
+        asset = groups.filtered(lambda g: g.report_category == "asset")[:1]
+        profit = groups.filtered(lambda g: g.report_category == "profit_loss")[:1]
+        oci = groups.filtered(lambda g: g.report_category == "oci")[:1]
+        fake = self._fake_posture_worksheet(
+            [
+                (asset, 700.0, 1.0, 2.0),
+                (profit, 3.0, 400.0, 5.0),
+                (oci, 6.0, 7.0, -50.0),
+            ]
+        )
+        self.assertEqual(posture._get_lead_schedule_group_amount(fake, asset), 700.0)
+        self.assertEqual(posture._get_lead_schedule_group_amount(fake, profit), 400.0)
+        self.assertEqual(posture._get_lead_schedule_group_amount(fake, oci), -50.0)
+
+    def test_posture_group_audited_adds_closing_without_receiver(self):
+        """Closing of a type without receiving account lands in its group.
+
+        Pure Python -- trigger P1 (L-01). A credit-normal type adds
+        credit minus debit; a type with a receiver is skipped, because its
+        Balance Sheet already holds it.
+
+        :return: nothing; asserts the group amount
+        """
+        posture = self.env["general_audit_ws_ff42fdc.posture"]
+        group = self.env["client_account_group"].search(
+            [("report_category", "=", "equity")], limit=1
+        )
+        cr_type = SimpleNamespace(id=1, normal_balance="cr")
+        received = SimpleNamespace(id=2, normal_balance="cr")
+        fake = self._fake_posture_worksheet(
+            [(group, 100.0, 0.0, 0.0)],
+            closing_lines=[
+                (group, cr_type, 10.0, 60.0),
+                (group, received, 0.0, 999.0),
+            ],
+            receivers={2: object()},
+        )
+        self.assertEqual(posture._get_lead_schedule_group_amount(fake, group), 150.0)
+
+    def test_posture_totals_come_from_lead_schedule_worksheet(self):
+        """Profit After Tax and Comprehensive Profit read the net columns.
+
+        Pure Python -- trigger P6 (L-15: mock of the Worksheet search).
+        The audited column is the Worksheet net profit, and net profit
+        plus net OCI for the comprehensive total.
+
+        :return: nothing; asserts the two totals
+        """
+        worksheet = self._create_ff42fdc_worksheet_with_all_groups()
+        fake = self._fake_posture_worksheet([])
+        with mock.patch.object(
+            type(worksheet.posture_ids),
+            "_get_lead_schedule_worksheet",
+            return_value=fake,
+        ):
+            worksheet.action_load_posture()
+            totals = {
+                line.total_type: line.audited
+                for line in worksheet.posture_ids
+                if line.line_type == "total"
+            }
+        self.assertEqual(totals["profit_after_tax"], 1000.0)
+        self.assertEqual(totals["comprehensive_profit"], 800.0)

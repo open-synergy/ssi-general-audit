@@ -182,6 +182,13 @@ class GeneralAuditWsFf42fdcPosture(models.Model):
         loss groups that the closing empties, so adding it would count
         the profit twice. Without closing lines the amount is zero.
 
+        When the General Audit has a usable KKA Worksheet (b26d482), the
+        Audited column of the Account Group lines and of the Profit After
+        Tax and Comprehensive Profit totals comes from it, see
+        ``_get_lead_schedule_group_amount``; the other columns and totals
+        stay on the General Audit details. Without a Worksheet the
+        computation above applies unchanged.
+
         Reading the formula table is not itself a reactive dependency
         of this compute: editing
         ``general_audit_ws_ff42fdc.total_formula`` does not
@@ -202,7 +209,9 @@ class GeneralAuditWsFf42fdcPosture(models.Model):
             result_audited = 0.0
             result_previous = 0.0
             result_adjustment_visible = True
-            all_details = record.worksheet_id.general_audit_id.detail_ids
+            general_audit = record.worksheet_id.general_audit_id
+            all_details = general_audit.detail_ids
+            lead_schedule = record._get_lead_schedule_worksheet(general_audit)
             if record.line_type == "group" and record.group_id:
                 details = all_details.filtered(
                     lambda d: d.account_id.group_id == record.group_id
@@ -210,10 +219,15 @@ class GeneralAuditWsFf42fdcPosture(models.Model):
                 result_unaudited = sum(details.mapped("home_statement_balance"))
                 result_adjustment_debit = sum(details.mapped("adjustment_debit"))
                 result_adjustment_credit = sum(details.mapped("adjustment_credit"))
-                result_audited = sum(details.mapped("audited_balance"))
-                result_audited += record._get_closing_amount(
-                    record.worksheet_id.general_audit_id, record.group_id
-                )
+                if lead_schedule:
+                    result_audited = record._get_lead_schedule_group_amount(
+                        lead_schedule, record.group_id
+                    )
+                else:
+                    result_audited = sum(details.mapped("audited_balance"))
+                    result_audited += record._get_closing_amount(
+                        general_audit, record.group_id
+                    )
                 result_previous = sum(details.mapped("previous_balance"))
             elif record.line_type == "total" and record.total_type:
                 formula_lines = formula_model.search(
@@ -255,12 +269,82 @@ class GeneralAuditWsFf42fdcPosture(models.Model):
                     result_previous += sign * sum(
                         group_details.mapped("previous_balance")
                     )
+                if lead_schedule and record.total_type == "profit_after_tax":
+                    result_audited = lead_schedule.net_current_profit
+                elif lead_schedule and record.total_type == "comprehensive_profit":
+                    result_audited = (
+                        lead_schedule.net_current_profit + lead_schedule.net_oci
+                    )
             record.unaudited = result_unaudited
             record.adjustment_debit = result_adjustment_debit
             record.adjustment_credit = result_adjustment_credit
             record.audited = result_audited
             record.previous = result_previous
             record.adjustment_visible = result_adjustment_visible
+
+    @api.model
+    def _get_lead_schedule_worksheet(self, general_audit):
+        """Find the KKA Worksheet (b26d482) the Audited column reads from.
+
+        It is the newest Worksheet of the General Audit that is neither
+        cancelled nor rejected and has detail lines.
+
+        :param general_audit: ``general_audit`` record being reported
+        :return: ``general_audit_ws_b26d482`` record, empty when the
+            audit has no usable Worksheet
+        :rtype: recordset
+        """
+        return (
+            self.env["general_audit_ws_b26d482"]
+            .sudo()
+            .search(
+                [
+                    ("general_audit_id", "=", general_audit.id),
+                    ("state", "not in", ("cancel", "reject")),
+                    ("detail_ids", "!=", False),
+                ],
+                order="id desc",
+                limit=1,
+            )
+        )
+
+    @api.model
+    def _get_lead_schedule_group_amount(self, worksheet, group):
+        """Get the Audited amount of an account group from the Worksheet.
+
+        An Asset, Liability or Equity group sums the Balance Sheet column
+        of its Worksheet lines, plus the closing of the types that no
+        account receives and that land in the group. A Profit and Loss
+        group sums the Current Profit column and an Other Comprehensive
+        Income group the OCI column. The Worksheet shows each line
+        positive on the normal balance side of its account.
+
+        :param worksheet: ``general_audit_ws_b26d482`` record
+        :param group: ``client_account_group`` record of the line
+        :return: Audited amount of the group
+        :rtype: float
+        """
+        details = worksheet.detail_ids.filtered(
+            lambda d: d.account_id.group_id == group
+        )
+        category = group.report_category
+        if category == "profit_loss":
+            return sum(details.mapped("current_profit"))
+        if category == "oci":
+            return sum(details.mapped("oci"))
+        result = sum(details.mapped("balance_sheet"))
+        receivers = worksheet._get_closing_allocation()[0]
+        lines = worksheet.general_audit_id.closing_line_ids.filtered(
+            lambda line: not line.account_id
+            and line.account_group_id == group
+            and line.account_type_id.id not in receivers
+        )
+        for line in lines:
+            if line.account_type_id.normal_balance == "cr":
+                result += line.credit - line.debit
+            else:
+                result += line.debit - line.credit
+        return result
 
     @api.model
     def _get_closing_amount(self, general_audit, group):

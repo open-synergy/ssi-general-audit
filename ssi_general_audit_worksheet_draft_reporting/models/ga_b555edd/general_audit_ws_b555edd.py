@@ -251,19 +251,9 @@ class GeneralAuditWSb555edd(models.Model):
         :rtype: recordset
         """
         self.ensure_one()
-        return (
-            self.env["general_audit_ws_b26d482"]
-            .sudo()
-            .search(
-                [
-                    ("general_audit_id", "=", self.general_audit_id.id),
-                    ("state", "not in", ("cancel", "reject")),
-                    ("detail_ids", "!=", False),
-                ],
-                order="id desc",
-                limit=1,
-            )
-        )
+        return self.env[
+            "general_audit_ws_ff42fdc.posture"
+        ]._get_lead_schedule_worksheet(self.general_audit_id)
 
     def _get_worksheet_equity_closing(self, worksheet):
         """Read the closing balance of every equity component.

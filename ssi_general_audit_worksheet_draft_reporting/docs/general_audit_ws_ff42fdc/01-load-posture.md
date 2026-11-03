@@ -31,17 +31,21 @@
     the General Audit, each showing Unaudited, Adjustment (Debit), Adjustment (Credit),
     Audited, and **Previous** amounts aggregated from the account detail lines belonging
     to that group. **Previous** sums the previous-period balance of the same accounts.
-    When the closing lines of the General Audit have been generated, **Audited** also
-    includes the closing amount that lands in the group (the destination lines of the
-    closing type, not the closed source accounts). A group that only receives a closing
-    amount, such as other comprehensive income, gets its own row. The Total rows are not
-    changed: their formulas already include the profit and loss groups. Without closing
-    lines nothing is added. Press **Reload** after generating the closing lines.
+    When the General Audit has a KKA Worksheet (the newest one that is not cancelled or
+    rejected), **Audited** is read from it: the Balance Sheet column for asset,
+    liability and equity groups (plus the closing of a type that no account receives),
+    the Current Profit column for profit and loss groups and the OCI column for other
+    comprehensive income groups. Without a KKA Worksheet, **Audited** sums the audited
+    balance of the account detail lines and adds the closing amount that lands in the
+    group. Press **Reload** after the KKA Worksheet or the closing lines change.
   - Nine fixed **Total** rows (Total Asset, Total Liability, Total Equity, Total
     Liability and Equity, Gross Profit, Operating Profit, Profit Before Tax, Profit
     After Tax, Comprehensive Income), interleaved right after their component Account
     Group rows and shown in **bold**. Total rows always appear, even when their
     component account groups have no data.
+  - With a KKA Worksheet, the **Audited** column of Profit After Tax is its Total
+    Current Profit and that of Comprehensive Income is Total Current Profit plus Total
+    OCI.
   - A Total row shows the plain sums of the debit and credit adjustments of its
     component account groups. The Adjustment (Debit) and Adjustment (Credit) columns are
     blank on the profit and loss subtotals (Gross Profit, Operating Profit, Profit
