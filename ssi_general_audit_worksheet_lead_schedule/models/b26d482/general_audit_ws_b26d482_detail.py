@@ -32,6 +32,10 @@ class GeneralAuditWSb26d482Detail(models.Model):
 
     _name = "general_audit_ws_b26d482.detail"
     _description = "Worksheet (b26d482) - Detail"
+    # Lines always read in account code order, whatever order the accounts
+    # were loaded or added in. ``client_account`` is not ordered by code
+    # alone, so ``account_id`` cannot be the sort key.
+    _order = "account_code, id"
 
     worksheet_id = fields.Many2one(
         comodel_name="general_audit_ws_b26d482",
@@ -50,6 +54,13 @@ class GeneralAuditWSb26d482Detail(models.Model):
         string="Account",
         related="detail_id.account_id",
         store=True,
+    )
+    account_code = fields.Char(
+        string="Account Code",
+        related="account_id.code",
+        store=True,
+        help="Code of the account. The lines of the worksheet are listed "
+        "in the order of this code.",
     )
     currency_id = fields.Many2one(
         comodel_name="res.currency",
