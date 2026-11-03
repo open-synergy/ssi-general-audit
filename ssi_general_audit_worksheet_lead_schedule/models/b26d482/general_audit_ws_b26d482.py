@@ -35,7 +35,9 @@ class GeneralAuditWSb26d482(models.Model):
     accounts add and debit accounts subtract for profit and OCI, the
     other way round for the balance sheet. The ``net_<column>`` fields show
     each column as debit minus credit, like the control rows of the
-    manual lead schedule (``total_balance_sheet`` is already one).
+    manual lead schedule (``total_balance_sheet`` is already one). The
+    exceptions are the current profit and OCI, credit minus debit so that
+    a profit is positive.
     ``total_closing_unallocated`` shows the closing that has no account
     to receive it.
 
@@ -160,8 +162,8 @@ class GeneralAuditWSb26d482(models.Model):
         compute="_compute_total_detail",
         compute_sudo=True,
         store=True,
-        help="Debit minus credit of the current profit column: expense "
-        "minus revenue, so a profit is negative.",
+        help="Credit minus debit of the current profit column: revenue "
+        "minus expense, so a profit is positive.",
     )
     net_oci = fields.Monetary(
         string="OCI",
@@ -169,8 +171,8 @@ class GeneralAuditWSb26d482(models.Model):
         compute="_compute_total_detail",
         compute_sudo=True,
         store=True,
-        help="Debit minus credit of the OCI column, so an other "
-        "comprehensive income gain is negative.",
+        help="Credit minus debit of the OCI column, so an other "
+        "comprehensive income gain is positive.",
     )
     total_closing_unallocated = fields.Monetary(
         string="Closing Not Allocated",
@@ -208,9 +210,11 @@ class GeneralAuditWSb26d482(models.Model):
 
         The first four totals are plain sums. The current profit and OCI
         totals add credit-normal lines and subtract debit-normal lines;
-        the balance sheet total does the opposite. The ``net_`` fields are
-        debit minus credit of each column: debit-normal lines add and
-        credit-normal lines subtract.
+        the balance sheet total does the opposite. ``net_current_profit`` and
+        ``net_oci`` are credit minus debit, so a positive amount is a
+        profit: credit-normal lines add and debit-normal lines subtract.
+        The other ``net_`` fields are debit minus credit of each column:
+        debit-normal lines add and credit-normal lines subtract.
 
         :return: None, fields are assigned in-place per record.
         """
@@ -232,16 +236,16 @@ class GeneralAuditWSb26d482(models.Model):
                     balance_sheet -= detail.balance_sheet
                     net_current_balance -= detail.current_balance
                     net_adjusted_balance -= detail.adjusted_balance
-                    net_current_profit -= detail.current_profit
-                    net_oci -= detail.oci
+                    net_current_profit += detail.current_profit
+                    net_oci += detail.oci
                 else:
                     current_profit -= detail.current_profit
                     oci -= detail.oci
                     balance_sheet += detail.balance_sheet
                     net_current_balance += detail.current_balance
                     net_adjusted_balance += detail.adjusted_balance
-                    net_current_profit += detail.current_profit
-                    net_oci += detail.oci
+                    net_current_profit -= detail.current_profit
+                    net_oci -= detail.oci
             record.total_current_balance = current_balance
             record.total_debit_adjustments = debit_adjustments
             record.total_credit_adjustments = credit_adjustments

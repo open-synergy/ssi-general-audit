@@ -3683,7 +3683,8 @@ scenarios:
           total_balance_sheet:
             type: "value"
             expected: 4000.0
-          # debit minus credit of each column
+          # debit minus credit of each column, except the current profit
+          # and OCI which are credit minus debit (a profit is positive)
           net_current_balance:
             type: "value"
             expected: 0.0
@@ -3692,7 +3693,7 @@ scenarios:
             expected: 0.0
           net_current_profit:
             type: "value"
-            expected: -10000.0
+            expected: 10000.0
           net_oci:
             type: "value"
             expected: 0.0
