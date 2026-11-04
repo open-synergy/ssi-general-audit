@@ -193,6 +193,20 @@ class GeneralAuditWSb26d482(models.Model):
         readonly=True,
         help="Closing journal lines of the General Audit.",
     )
+    previous_closing_line_ids = fields.One2many(
+        string="Previous Closing Line(s)",
+        comodel_name="general_audit.closing_line",
+        related="general_audit_id.previous_closing_line_ids",
+        readonly=True,
+        help="Closing journal lines of the previous period of the " "General Audit.",
+    )
+    previous_trial_balance_id = fields.Many2one(
+        string="# Previous Trial Balance",
+        comodel_name="client_trial_balance",
+        related="general_audit_id.previous_trial_balance_id",
+        readonly=True,
+        help="Previous period trial balance of the General Audit.",
+    )
 
     @api.depends(
         "detail_ids",
