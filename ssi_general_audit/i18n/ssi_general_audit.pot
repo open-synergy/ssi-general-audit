@@ -2426,7 +2426,16 @@ msgstr ""
 
 #. module: ssi_general_audit
 #: model:ir.model.fields,help:ssi_general_audit.field_general_audit__closing_line_ids
-msgid "Closing journal lines generated from the closing type."
+msgid ""
+"Closing journal lines of the current period, generated from the closing "
+"type."
+msgstr ""
+
+#. module: ssi_general_audit
+#: model:ir.model.fields,help:ssi_general_audit.field_general_audit__previous_closing_line_ids
+msgid ""
+"Closing journal lines of the previous period. Filled only when the audit has"
+" a previous trial balance."
 msgstr ""
 
 #. module: ssi_general_audit
@@ -3025,8 +3034,18 @@ msgid "Currency used for this trial balance."
 msgstr ""
 
 #. module: ssi_general_audit
+#: model:ir.model.fields.selection,name:ssi_general_audit.selection__general_audit_closing_line__period__current
+msgid "Current"
+msgstr ""
+
+#. module: ssi_general_audit
 #: model:client_account_group,name:ssi_general_audit.client_account_group_1_885ef902
 msgid "Current Asset"
+msgstr ""
+
+#. module: ssi_general_audit
+#: model_terms:ir.ui.view,arch_db:ssi_general_audit.general_audit_view_form
+msgid "Current Period"
 msgstr ""
 
 #. module: ssi_general_audit
@@ -6876,6 +6895,18 @@ msgid "Penentuan Imbalan Jasa Audit Laporan-Keuangan"
 msgstr ""
 
 #. module: ssi_general_audit
+#: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit_closing_line__period
+msgid "Period"
+msgstr ""
+
+#. module: ssi_general_audit
+#: model:ir.model.fields,help:ssi_general_audit.field_general_audit_closing_line__period
+msgid ""
+"Period of the balances closed by this line. Previous lines exist only when "
+"the General Audit has a previous trial balance."
+msgstr ""
+
+#. module: ssi_general_audit
 #: model:general_audit_standard_audit,name:ssi_general_audit.general_audit_standard_audit_41_2e630763
 msgid ""
 "Perubahan atas PMK mengenai Prinsip Mengenal Pengguna Jasa bagi Akuntan dan "
@@ -6974,6 +7005,7 @@ msgstr ""
 
 #. module: ssi_general_audit
 #: model:ir.model.fields.selection,name:ssi_general_audit.selection__client_trial_balance__trial_balance_type__previous
+#: model:ir.model.fields.selection,name:ssi_general_audit.selection__general_audit_closing_line__period__previous
 #: model_terms:ir.ui.view,arch_db:ssi_general_audit.general_audit_computation_view_form
 #: model_terms:ir.ui.view,arch_db:ssi_general_audit.general_audit_computation_view_tree
 #: model_terms:ir.ui.view,arch_db:ssi_general_audit.general_audit_detail_view_form
@@ -7020,6 +7052,11 @@ msgid "Previous Balance"
 msgstr ""
 
 #. module: ssi_general_audit
+#: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit__previous_closing_line_ids
+msgid "Previous Closing Line(s)"
+msgstr ""
+
+#. module: ssi_general_audit
 #: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit_computation__previous_computation_id
 msgid "Previous Computation"
 msgstr ""
@@ -7046,6 +7083,11 @@ msgstr ""
 #: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit_detail__previous_opening_balance
 #: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit_standard_detail__previous_opening_balance
 msgid "Previous Opening Balance"
+msgstr ""
+
+#. module: ssi_general_audit
+#: model_terms:ir.ui.view,arch_db:ssi_general_audit.general_audit_view_form
+msgid "Previous Period"
 msgstr ""
 
 #. module: ssi_general_audit
