@@ -217,8 +217,21 @@ class GeneralAudit(models.Model):
         string="Closing Line(s)",
         comodel_name="general_audit.closing_line",
         inverse_name="general_audit_id",
+        domain=[("period", "=", "current")],
+        context={"default_period": "current"},
         readonly=True,
-        help="Closing journal lines generated from the closing type.",
+        help="Closing journal lines of the current period, generated from "
+        "the closing type.",
+    )
+    previous_closing_line_ids = fields.One2many(
+        string="Previous Closing Line(s)",
+        comodel_name="general_audit.closing_line",
+        inverse_name="general_audit_id",
+        domain=[("period", "=", "previous")],
+        context={"default_period": "previous"},
+        readonly=True,
+        help="Closing journal lines of the previous period. Filled "
+        "only when the audit has a previous trial balance.",
     )
     financial_accounting_standard_id = fields.Many2one(
         string="Financial Accounting Standard",
@@ -1590,14 +1603,28 @@ Solution: Only add accounts of the client of the audit
         for computation in self.computation_ids:
             computation._compute_computation()
 
+    def _get_closing_periods(self):
+        """Get the periods that receive a closing journal.
+
+        The current period always does. The previous period does only
+        when the audit has a previous trial balance.
+
+        :return: ``["current"]`` or ``["current", "previous"]``
+        :rtype: list
+        """
+        periods = ["current"]
+        if self.previous_trial_balance_id:
+            periods.append("previous")
+        return periods
+
     def _generate_closing_lines(self):
         """Regenerate the closing lines from the closing type.
 
-        Removes the existing closing lines, then builds a closing
-        journal per mapping of ``closing_type_id`` in sequence order.
-        Each source account with a balance is closed on the opposite
-        side, and one line on the destination account type receives
-        the net amount, so the journal is balanced.
+        Removes the existing closing lines of both periods, then builds
+        a closing journal per period and per mapping of ``closing_type_id`` in
+        sequence order. Each source account with a balance is closed
+        on the opposite side, and one line on the destination account
+        type receives the net amount, so every journal is balanced.
 
         :raises UserError: if the audit has no closing type
         :return: nothing; ``closing_line_ids`` is replaced
@@ -1614,38 +1641,41 @@ Solution: Select the closing type on the General Audit
                 % self.id
             )
             raise UserError(error_message)
-        self.closing_line_ids.unlink()
+        (self.closing_line_ids | self.previous_closing_line_ids).unlink()
         ClosingLine = self.env["general_audit.closing_line"]
-        for mapping in self.closing_type_id.mapping_ids:
-            net = 0.0
-            for detail in mapping._get_closing_details(self):
-                balance = mapping._get_closing_balance(detail)
-                if not balance:
-                    continue
-                net += balance
+        for period in self._get_closing_periods():
+            for mapping in self.closing_type_id.mapping_ids:
+                net = 0.0
+                for detail in mapping._get_closing_details(self):
+                    balance = mapping._get_closing_balance(detail, period)
+                    if not balance:
+                        continue
+                    net += balance
+                    ClosingLine.create(
+                        {
+                            "general_audit_id": self.id,
+                            "period": period,
+                            "sequence": mapping.sequence,
+                            "mapping_id": mapping.id,
+                            "account_id": detail.account_id.id,
+                            "account_type_id": detail.type_id.id,
+                            "name": mapping.name,
+                            "debit": balance if balance > 0 else 0.0,
+                            "credit": abs(balance) if balance < 0 else 0.0,
+                        }
+                    )
                 ClosingLine.create(
                     {
                         "general_audit_id": self.id,
+                        "period": period,
                         "sequence": mapping.sequence,
                         "mapping_id": mapping.id,
-                        "account_id": detail.account_id.id,
-                        "account_type_id": detail.type_id.id,
+                        "account_type_id": mapping.account_type_id.id,
                         "name": mapping.name,
-                        "debit": balance if balance > 0 else 0.0,
-                        "credit": abs(balance) if balance < 0 else 0.0,
+                        "debit": abs(net) if net < 0 else 0.0,
+                        "credit": net if net > 0 else 0.0,
                     }
                 )
-            ClosingLine.create(
-                {
-                    "general_audit_id": self.id,
-                    "sequence": mapping.sequence,
-                    "mapping_id": mapping.id,
-                    "account_type_id": mapping.account_type_id.id,
-                    "name": mapping.name,
-                    "debit": abs(net) if net < 0 else 0.0,
-                    "credit": net if net > 0 else 0.0,
-                }
-            )
 
     @ssi_decorator.insert_on_form_view()
     def _insert_form_element(self, view_arch):

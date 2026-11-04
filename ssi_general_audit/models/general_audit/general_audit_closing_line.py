@@ -31,6 +31,17 @@ class GeneralAuditClosingLine(models.Model):
         required=True,
         help="Ordering number of the closing line.",
     )
+    period = fields.Selection(
+        string="Period",
+        selection=[
+            ("current", "Current"),
+            ("previous", "Previous"),
+        ],
+        default="current",
+        required=True,
+        help="Period of the balances closed by this line. Previous lines "
+        "exist only when the General Audit has a previous trial balance.",
+    )
     mapping_id = fields.Many2one(
         string="Mapping",
         comodel_name="general_audit_closing_type.mapping",
