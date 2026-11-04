@@ -65,17 +65,25 @@ class GeneralAuditClosingTypeMapping(models.Model):
             lambda d: d.type_id in self.source_type_ids
         )
 
-    def _get_closing_balance(self, detail):
-        """Get the audited balance of an account in credit-positive sign.
+    def _get_closing_balance(self, detail, period="current"):
+        """Get the balance of an account in credit-positive sign.
+
+        The current period uses the audited balance, the previous
+        period uses the balance of the previous trial balance.
 
         :param detail: ``general_audit.detail`` record of the account
-        :return: audited balance, positive for credit and negative for
-            debit
+        :param period: ``current`` or ``previous``
+        :return: balance of the period, positive for credit and
+            negative for debit
         :rtype: float
         """
+        if period == "previous":
+            balance = detail.previous_balance
+        else:
+            balance = detail.audited_balance
         if detail.account_id.normal_balance == "cr":
-            return detail.audited_balance
-        return -detail.audited_balance
+            return balance
+        return -balance
 
     def _compute_closing_amount(self, general_audit):
         """Compute the closing amount of this mapping for an audit.

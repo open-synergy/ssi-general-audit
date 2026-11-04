@@ -99,3 +99,47 @@ class TestGeneralAuditClosingAmount(YamlTransactionCase):
         details = [(revenue, "cr", 10.0), (expense, "dr", 40.0)]
         self.assertEqual(self._compute(mapping, details), -30.0)
         self.assertEqual(self._compute(mapping, []), 0.0)
+
+    def test_closing_balance_period(self):
+        """Pick the balance of the period with the sign of the account.
+
+        Pure Python test: the balances of an account line are stored
+        related fields of the trial balances, so a fake detail is used.
+        Trigger P6, limitation L-15 (no mock or stub in the YAML DSL).
+
+        :return: ``None``
+        """
+        mapping = self.env["general_audit_closing_type.mapping"]
+        for normal_balance, sign in (("cr", 1), ("dr", -1)):
+            detail = SimpleNamespace(
+                account_id=SimpleNamespace(normal_balance=normal_balance),
+                audited_balance=70.0,
+                previous_balance=20.0,
+            )
+            self.assertEqual(mapping._get_closing_balance(detail), sign * 70.0)
+            self.assertEqual(
+                mapping._get_closing_balance(detail, "current"), sign * 70.0
+            )
+            self.assertEqual(
+                mapping._get_closing_balance(detail, "previous"), sign * 20.0
+            )
+
+    def test_closing_periods(self):
+        """Add the previous period only when a previous trial balance exists.
+
+        Pure Python test: building a previous trial balance with account
+        lines is out of proportion for a two-branch rule, so a fake audit
+        is used. Trigger P6, limitation L-15.
+
+        :return: ``None``
+        """
+        audit_model = self.env["general_audit"]
+        without = SimpleNamespace(previous_trial_balance_id=False)
+        with_previous = SimpleNamespace(previous_trial_balance_id=True)
+        self.assertEqual(
+            audit_model._get_closing_periods.__func__(without), ["current"]
+        )
+        self.assertEqual(
+            audit_model._get_closing_periods.__func__(with_previous),
+            ["current", "previous"],
+        )

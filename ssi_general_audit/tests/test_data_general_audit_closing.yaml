@@ -147,6 +147,10 @@ scenarios:
             type: o2m
             check: count
             expected_count: 1
+          previous_closing_line_ids:
+            type: o2m
+            check: count
+            expected_count: 0
       - step: Generate closing lines again
         action: call
         target: audit
@@ -173,6 +177,9 @@ scenarios:
           name:
             type: value
             expected: Close profit and loss
+          period:
+            type: value
+            expected: current
           partner_id:
             type: m2o
             expected: "REC: client"
