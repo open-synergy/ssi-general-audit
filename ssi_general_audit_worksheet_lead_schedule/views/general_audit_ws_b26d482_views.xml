@@ -116,8 +116,9 @@
                             icon="fa-refresh"
                             attrs="{'invisible': [('state', 'not in', ['open'])]}"
                         />
+                        <separator string="Current Period" />
                         <field name="closing_line_ids">
-                            <tree>
+                            <tree js_class="drag_scroll_list">
                                 <field name="account_id" width="240px" />
                                 <field name="account_type_id" width="200px" />
                                 <field
@@ -132,6 +133,47 @@
                             </tree>
                             <form>
                                 <group name="closing_line_form" colspan="4" col="2">
+                                    <field name="sequence" />
+                                    <field name="account_type_id" />
+                                    <field name="account_id" />
+                                    <field name="account_group_id" />
+                                    <field name="partner_id" />
+                                    <field name="name" />
+                                    <field name="currency_id" invisible="1" />
+                                    <field name="debit" />
+                                    <field name="credit" />
+                                </group>
+                            </form>
+                        </field>
+                        <field name="previous_trial_balance_id" invisible="1" />
+                        <separator
+                            string="Previous Period"
+                            attrs="{'invisible': [('previous_trial_balance_id', '=', False)]}"
+                        />
+                        <field
+                            name="previous_closing_line_ids"
+                            nolabel="1"
+                            attrs="{'invisible': [('previous_trial_balance_id', '=', False)]}"
+                        >
+                            <tree js_class="drag_scroll_list">
+                                <field name="account_id" width="240px" />
+                                <field name="account_type_id" width="200px" />
+                                <field
+                                    name="partner_id"
+                                    width="200px"
+                                    optional="hide"
+                                />
+                                <field name="name" />
+                                <field name="currency_id" invisible="1" />
+                                <field name="debit" sum="Total Debit" width="170px" />
+                                <field name="credit" sum="Total Credit" width="170px" />
+                            </tree>
+                            <form>
+                                <group
+                                    name="previous_closing_line_form"
+                                    colspan="4"
+                                    col="2"
+                                >
                                     <field name="sequence" />
                                     <field name="account_type_id" />
                                     <field name="account_id" />
