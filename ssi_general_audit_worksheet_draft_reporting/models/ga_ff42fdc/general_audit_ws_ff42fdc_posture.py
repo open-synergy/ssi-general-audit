@@ -152,6 +152,10 @@ class GeneralAuditWsFf42fdcPosture(models.Model):
         "worksheet_id.general_audit_id.closing_line_ids.account_group_id",
         "worksheet_id.general_audit_id.closing_line_ids.debit",
         "worksheet_id.general_audit_id.closing_line_ids.credit",
+        "worksheet_id.general_audit_id.previous_closing_line_ids.account_id",
+        "worksheet_id.general_audit_id.previous_closing_line_ids.account_group_id",
+        "worksheet_id.general_audit_id.previous_closing_line_ids.debit",
+        "worksheet_id.general_audit_id.previous_closing_line_ids.credit",
     )
     def _compute_amounts(self):
         """Aggregate audit detail amounts for this posture line.
@@ -229,6 +233,9 @@ class GeneralAuditWsFf42fdcPosture(models.Model):
                         general_audit, record.group_id
                     )
                 result_previous = sum(details.mapped("previous_balance"))
+                result_previous += record._get_closing_amount(
+                    general_audit, record.group_id, previous=True
+                )
             elif record.line_type == "total" and record.total_type:
                 formula_lines = formula_model.search(
                     [("total_type", "=", record.total_type)]
@@ -347,7 +354,7 @@ class GeneralAuditWsFf42fdcPosture(models.Model):
         return result
 
     @api.model
-    def _get_closing_amount(self, general_audit, group):
+    def _get_closing_amount(self, general_audit, group, previous=False):
         """Get the closing amount that lands in an account group.
 
         Only the destination lines of the closing journal count, that
@@ -358,12 +365,19 @@ class GeneralAuditWsFf42fdcPosture(models.Model):
 
         :param general_audit: ``general_audit`` record being reported
         :param group: ``client_account_group`` record of the line
+        :param previous: read the closing lines of the previous period
+            instead of the current period
         :return: closing amount of the group, zero when the closing
             lines were not generated
         :rtype: float
         """
         result = 0.0
-        lines = general_audit.closing_line_ids.filtered(
+        closing_lines = (
+            general_audit.previous_closing_line_ids
+            if previous
+            else general_audit.closing_line_ids
+        )
+        lines = closing_lines.filtered(
             lambda line: not line.account_id and line.account_group_id == group
         )
         for line in lines:

@@ -4011,6 +4011,38 @@ scenarios:
             type: "value"
             expected: 500.0
 
+      # A destination line of the previous period lands in the Previous
+      # column only. No previous trial balance exists, so the previous
+      # balance of the group is 0 and Previous equals the closing: 40.
+      - step: "Previous closing destination line: credit 40 on the equity type"
+        action: "create"
+        model: "general_audit.closing_line"
+        save_as: "closing_previous_dest"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          period: "previous"
+          sequence: 10
+          name: "Close profit and loss"
+          account_type_id: "REC: account_type_t007.id"
+          credit: 40.0
+
+      - step: "Invalidate cache on the equity posture line after previous closing"
+        action: "call"
+        target: "posture_t007"
+        method: "invalidate_cache"
+
+      - step: "With previous closing: Previous follows it, Audited is unchanged"
+        action: "assert"
+        target: "posture_t007"
+        asserts:
+          previous:
+            type: "value"
+            expected: 40.0
+          audited:
+            type: "value"
+            expected: 550.0
+
       - step: "With closing: revenue group keeps its Audited balance"
         action: "assert"
         target: "posture_t009"

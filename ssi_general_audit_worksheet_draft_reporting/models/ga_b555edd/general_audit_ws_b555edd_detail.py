@@ -92,6 +92,10 @@ class GeneralAuditWsB555eddDetail(models.Model):
         "worksheet_id.general_audit_id.closing_line_ids.account_type_id",
         "worksheet_id.general_audit_id.closing_line_ids.debit",
         "worksheet_id.general_audit_id.closing_line_ids.credit",
+        "worksheet_id.general_audit_id.previous_closing_line_ids.account_id",
+        "worksheet_id.general_audit_id.previous_closing_line_ids.account_type_id",
+        "worksheet_id.general_audit_id.previous_closing_line_ids.debit",
+        "worksheet_id.general_audit_id.previous_closing_line_ids.credit",
     )
     def _compute_balance(self):
         """Fill the balances of both periods from the standard detail.
@@ -105,7 +109,8 @@ class GeneralAuditWsB555eddDetail(models.Model):
         closing is the only source: the current balance of each
         destination account type adds its closing amount and the profit
         is no longer added, so it is not counted twice. The previous
-        period is not affected by the closing.
+        period follows the same rule with the previous closing lines
+        of the General Audit.
 
         :return: None
         """
@@ -119,8 +124,17 @@ class GeneralAuditWsB555eddDetail(models.Model):
                     lambda line: not line.account_id
                 )
             )
+            previous_closing_lines = (
+                record.worksheet_id.general_audit_id.previous_closing_line_ids.filtered(
+                    lambda line: not line.account_id
+                )
+            )
             if closing_lines:
                 current += record._get_closing_amount(closing_lines, detail.type_id)
+            if previous_closing_lines:
+                previous += record._get_closing_amount(
+                    previous_closing_lines, detail.type_id
+                )
             if receiver and detail.type_id == receiver:
                 worksheet = record.worksheet_id
                 details = worksheet.general_audit_id.standard_detail_ids
@@ -128,9 +142,10 @@ class GeneralAuditWsB555eddDetail(models.Model):
                     current += worksheet._get_formula_total(
                         "profit_after_tax", "audited_balance", details
                     )
-                previous += worksheet._get_formula_total(
-                    "profit_after_tax", "previous_balance", details
-                )
+                if not previous_closing_lines:
+                    previous += worksheet._get_formula_total(
+                        "profit_after_tax", "previous_balance", details
+                    )
             record.current_balance = current
             record.previous_balance = previous
 
