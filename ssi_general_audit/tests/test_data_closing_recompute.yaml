@@ -295,6 +295,7 @@ scenarios:
           - ["model", "=", "general_audit"]
           - ["res_id", "=", "REC: audit.id"]
           - ["body", "ilike", "Closing lines regenerated"]
+        save_as: "regeneration_log"
         expect_count: 1
 
       - step: "Create second entry"
