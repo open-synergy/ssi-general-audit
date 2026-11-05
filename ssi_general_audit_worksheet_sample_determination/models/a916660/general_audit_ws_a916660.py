@@ -10,7 +10,7 @@ import re
 import sqlite3
 
 from odoo import _, api, fields, models
-from odoo.exceptions import UserError
+from odoo.exceptions import UserError, ValidationError
 
 # Forbidden SQL keywords for `filter_where_clause` (mutating/DDL statements);
 # only a read-only WHERE clause against the in-memory candidate table is
@@ -249,10 +249,14 @@ class GeneralAuditWsA916660(models.Model):
     )
     sampling_process_filter = fields.Text(
         string="Filter (WHERE clause)",
+        tracking=True,
         help="Optional SQL WHERE clause to narrow down the candidates shown "
         "in 'Sampling Process' -- useful when the population is large. "
         "Use column names from the table header; spaces and special "
-        "characters are replaced by underscores.\n"
+        "characters are replaced by underscores. Numeric columns are "
+        "compared by value, using the thousand and decimal separators "
+        "of the selected data source. Every change is logged in the "
+        "chatter.\n"
         "Example: Additional_Info LIKE '%%FRONT WALL%%'",
     )
     sampling_process_data = fields.Text(
@@ -1396,31 +1400,96 @@ class GeneralAuditWsA916660(models.Model):
                 continue
             candidate_csv = record.nss_candidate_pool
             if record.sampling_process_filter:
+                thousand_sep, decimal_sep = record._get_separators()
                 candidate_csv = self._apply_where_clause(
-                    candidate_csv, record.sampling_process_filter
+                    candidate_csv,
+                    record.sampling_process_filter,
+                    thousand_sep,
+                    decimal_sep,
                 )
             record.sampling_process_data = candidate_csv
 
-    @api.model
-    def _apply_where_clause(self, raw_csv, where_clause):
-        """Filter CSV data using a read-only SQL WHERE clause via SQLite.
+    @staticmethod
+    def _parse_number_or_none(cell_value, thousand_sep=",", decimal_sep="."):
+        """Parse a CSV cell into a float, or ``None`` when not numeric.
 
-        Columns whose values are entirely numeric (or blank) get NUMERIC
-        affinity so comparisons like ``Amount > 10000000`` are evaluated
-        by value, not lexicographically as strings.
+        Uses the same separator and parenthesised-negative rules as
+        ``_parse_monetary_value``, but reports a non-numeric cell as
+        ``None`` instead of ``0.0`` so the caller can tell them apart.
+
+        :param cell_value: raw cell text from the CSV.
+        :param thousand_sep: thousand separator used in ``cell_value``.
+        :param decimal_sep: decimal separator used in ``cell_value``.
+        :return: the parsed float, or ``None`` for a non-numeric cell.
+        """
+        raw_val = (cell_value or "").strip()
+        if raw_val.startswith("(") and raw_val.endswith(")"):
+            raw_val = "-" + raw_val[1:-1]
+        if thousand_sep:
+            raw_val = raw_val.replace(thousand_sep, "")
+        if decimal_sep and decimal_sep != ".":
+            raw_val = raw_val.replace(decimal_sep, ".")
+        try:
+            number = float(raw_val)
+        except ValueError:
+            return None
+        return number if math.isfinite(number) else None
+
+    @staticmethod
+    def _sanitize_where_columns(headers):
+        """Turn CSV header labels into usable SQLite column names.
+
+        Characters outside ``\\w`` become ``_``, a leading digit gets a
+        ``c_`` prefix, and names that collide (case-insensitively, or
+        with a SQLite row-id alias) get a numeric suffix.
+
+        :param headers: the CSV header labels.
+        :return: a list of unique column names, one per header.
+        """
+        reserved = {"rowid", "oid", "_rowid_"}
+        used = set()
+        result = []
+        for label in headers:
+            col = re.sub(r"[^\w]", "_", label.strip())
+            if not col or col[0].isdigit():
+                col = "c_" + col
+            candidate = col
+            counter = 2
+            while candidate.lower() in used or candidate.lower() in reserved:
+                candidate = "{}_{}".format(col, counter)
+                counter += 1
+            used.add(candidate.lower())
+            result.append(candidate)
+        return result
+
+    @api.model
+    def _filter_csv_by_where_clause(
+        self, raw_csv, where_clause, thousand_sep=",", decimal_sep="."
+    ):
+        """Filter CSV data with a read-only SQL WHERE clause via SQLite.
+
+        A column whose non-blank cells all parse as numbers (using the
+        given separators) gets NUMERIC affinity and holds the parsed
+        values, so ``Amount_Debet > 1000`` compares by value even when
+        the cells read ``1,500.00`` or ``(2,000.00)``. Other columns stay
+        TEXT. The returned rows keep the original cell text.
 
         :param raw_csv: CSV text with a header row.
         :param where_clause: a SQL WHERE clause (without the ``WHERE``
-            keyword) referencing the header's sanitised column names.
-        :return: the filtered CSV text, or the original ``raw_csv``
-            unchanged when it is empty, ``where_clause`` is blank/contains
-            a forbidden keyword, or filtering fails for any reason.
+            keyword) referencing the sanitised column names.
+        :param thousand_sep: thousand separator used in the data.
+        :param decimal_sep: decimal separator used in the data.
+        :return: the filtered CSV text, or ``raw_csv`` unchanged when it
+            or ``where_clause`` is empty.
+        :raises ValueError: when ``where_clause`` contains a forbidden
+            keyword.
+        :raises sqlite3.Error: when SQLite cannot run the clause.
         """
         where_clause = (where_clause or "").strip()
         if not where_clause or not raw_csv:
             return raw_csv
         if _FORBIDDEN_SQL.search(where_clause):
-            return raw_csv
+            raise ValueError("Forbidden SQL keyword in the filter.")
 
         reader = csv.reader(io.StringIO(raw_csv))
         headers = next(reader, None)
@@ -1428,63 +1497,117 @@ class GeneralAuditWsA916660(models.Model):
         if not headers or not rows:
             return raw_csv
 
-        safe_cols = []
-        for h in headers:
-            col = re.sub(r"[^\w]", "_", h.strip())
-            if not col or col[0].isdigit():
-                col = "c_" + col
-            safe_cols.append(col)
+        safe_cols = self._sanitize_where_columns(headers)
+        width = len(safe_cols)
+        padded_rows = [(list(row) + [""] * width)[:width] for row in rows]
 
-        # A column declared TEXT gets TEXT affinity, so SQLite compares it
-        # lexicographically even against a bare numeric literal in the
-        # WHERE clause -- "4440000" > "10000000" is TRUE as strings (the
-        # leading "4" beats "1"), even though 4,440,000 < 10,000,000.
-        # Give a column that looks entirely numeric NUMERIC affinity
-        # instead, so ``Amount > 10000000``-style filters compare by
-        # value, not by leading digit.
-        def _looks_numeric(value):
-            """Whether ``value`` parses as a float, treating blank as yes."""
-            value = (value or "").strip()
-            if not value:
-                return True
-            try:
-                float(value)
-                return True
-            except ValueError:
-                return False
-
+        parsed_rows = []
         col_types = []
-        for i in range(len(safe_cols)):
-            values = [row[i] for row in rows if len(row) > i]
-            numeric_col = bool(values) and all(_looks_numeric(v) for v in values)
+        for i in range(width):
+            values = [
+                self._parse_number_or_none(row[i], thousand_sep, decimal_sep)
+                for row in padded_rows
+            ]
+            numeric_col = all(
+                value is not None or not row[i].strip()
+                for value, row in zip(values, padded_rows)
+            ) and any(value is not None for value in values)
             col_types.append("NUMERIC" if numeric_col else "TEXT")
+            parsed_rows.append(values)
 
         col_defs = ", ".join(
             '"{}" {}'.format(c, t) for c, t in zip(safe_cols, col_types)
         )
-        placeholders = ", ".join(["?"] * len(safe_cols))
+        placeholders = ", ".join(["?"] * width)
 
+        conn = sqlite3.connect(":memory:")
         try:
-            conn = sqlite3.connect(":memory:")
             cur = conn.cursor()
             cur.execute("CREATE TABLE data ({})".format(col_defs))
-            for row in rows:
-                padded = list(row) + [""] * (len(safe_cols) - len(row))
-                cur.execute(
-                    "INSERT INTO data VALUES ({})".format(placeholders),
-                    padded[: len(safe_cols)],
-                )
-            cur.execute("SELECT * FROM data WHERE {}".format(where_clause))
-            filtered = cur.fetchall()
+            for idx, row in enumerate(padded_rows):
+                cells = [
+                    parsed_rows[i][idx] if col_types[i] == "NUMERIC" else row[i]
+                    for i in range(width)
+                ]
+                cur.execute("INSERT INTO data VALUES ({})".format(placeholders), cells)
+            cur.execute(
+                "SELECT rowid FROM data WHERE {} ORDER BY rowid".format(where_clause)
+            )
+            kept = [rowid - 1 for (rowid,) in cur.fetchall()]
+        finally:
             conn.close()
-        except Exception:
-            return raw_csv
 
         out = io.StringIO()
         writer = csv.writer(out)
         writer.writerow(headers)
-        writer.writerows(filtered)
+        writer.writerows(padded_rows[idx] for idx in kept)
         return out.getvalue()
+
+    @api.model
+    def _apply_where_clause(
+        self, raw_csv, where_clause, thousand_sep=",", decimal_sep="."
+    ):
+        """Filter CSV data using a read-only SQL WHERE clause.
+
+        Failure-tolerant wrapper around ``_filter_csv_by_where_clause``
+        for the computed "Sampling Process" table: an unusable clause
+        never breaks the form. ``_check_sampling_process_filter`` is what
+        tells the user a clause is invalid, when it is saved.
+
+        :param raw_csv: CSV text with a header row.
+        :param where_clause: a SQL WHERE clause (without the ``WHERE``
+            keyword) referencing the header's sanitised column names.
+        :param thousand_sep: thousand separator used in the data.
+        :param decimal_sep: decimal separator used in the data.
+        :return: the filtered CSV text, or the original ``raw_csv``
+            unchanged when it is empty, ``where_clause`` is blank or
+            contains a forbidden keyword, or filtering fails.
+        """
+        try:
+            return self._filter_csv_by_where_clause(
+                raw_csv, where_clause, thousand_sep, decimal_sep
+            )
+        except Exception:
+            return raw_csv
+
+    @api.constrains("sampling_process_filter")
+    def _check_sampling_process_filter(self):
+        """Reject a filter that cannot run against the candidate pool.
+
+        The filter is tried on ``nss_candidate_pool``; a filter saved
+        before any pool exists cannot be checked and is accepted.
+
+        :return: ``None``.
+        :raises ValidationError: when the filter holds a forbidden
+            keyword or SQLite cannot run it, naming the usable columns.
+        """
+        for record in self:
+            where_clause = (record.sampling_process_filter or "").strip()
+            if not where_clause or not record.nss_candidate_pool:
+                continue
+            thousand_sep, decimal_sep = record._get_separators()
+            try:
+                record._filter_csv_by_where_clause(
+                    record.nss_candidate_pool,
+                    where_clause,
+                    thousand_sep,
+                    decimal_sep,
+                )
+            except Exception as exc:
+                headers = next(csv.reader(io.StringIO(record.nss_candidate_pool)))
+                columns = ", ".join(self._sanitize_where_columns(headers))
+                error_message = (
+                    _(
+                        """
+Context: Validate Sampling Process filter
+Database ID: %s
+Problem: The filter cannot be applied (%s)
+Solution: Fix the WHERE clause. Usable columns: %s
+"""
+                    )
+                    % (record.id, exc, columns)
+                )
+                raise ValidationError(error_message) from exc
 
     def _inverse_sampling_process_data(self):
         """Write edited "Chose?"/Type values back into ``nss_candidate_pool``

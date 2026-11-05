@@ -485,6 +485,54 @@ class TestGeneralAuditWSa916660(YamlTransactionCase):
 
         self.assertEqual(rows, ["Index,Amount,Type", "1,10027246,Candidate"])
 
+    def test_apply_where_clause_parses_separator_formatted_amounts(self):
+        """HT/26/000846: cells such as ``1,500.00`` or ``(2,000.00)`` are
+        not plain floats, so the column used to fall back to TEXT and
+        ``Amount_Debet > 1000`` compared strings. With the data's own
+        separators the column is numeric, the filter compares by value,
+        and the surviving rows keep their original text.
+
+        Covered in Python rather than YAML: P1 (the method's return
+        value is what is asserted), limits L-01 and L-02.
+        """
+        _admin, worksheet, _gl, _subledger = self._create_worksheet_fixture()
+
+        raw_csv = (
+            "Index,Amount Debet,Type\n"
+            '1,"1,500.00",Candidate\n'
+            '2,"500.00",Candidate\n'
+            '3,"(2,000.00)",Candidate\n'
+        )
+
+        filtered = worksheet._apply_where_clause(
+            raw_csv, "Amount_Debet > 1000", ",", "."
+        )
+        rows = [line for line in filtered.splitlines() if line]
+
+        self.assertEqual(rows, ["Index,Amount Debet,Type", '1,"1,500.00",Candidate'])
+
+    def test_apply_where_clause_parses_swapped_separators(self):
+        """HT/26/000846: with ``.`` as thousand and ``,`` as decimal
+        separator, ``1.500,00`` is 1500 and ``500,00`` is 500.
+
+        Covered in Python rather than YAML: P1 (the method's return
+        value is what is asserted), limits L-01 and L-02.
+        """
+        _admin, worksheet, _gl, _subledger = self._create_worksheet_fixture()
+
+        raw_csv = (
+            "Index,Amount Debet,Type\n"
+            '1,"1.500,00",Candidate\n'
+            '2,"500,00",Candidate\n'
+        )
+
+        filtered = worksheet._apply_where_clause(
+            raw_csv, "Amount_Debet > 1000", ".", ","
+        )
+        rows = [line for line in filtered.splitlines() if line]
+
+        self.assertEqual(rows, ["Index,Amount Debet,Type", '1,"1.500,00",Candidate'])
+
     def test_sampling_data_never_lists_nss_candidates(self):
         """HT/26/000687 (6th revision): ``sampling_data`` must only ever
         hold "Key Item" and chosen "Sample" rows -- unchosen "Candidate"
