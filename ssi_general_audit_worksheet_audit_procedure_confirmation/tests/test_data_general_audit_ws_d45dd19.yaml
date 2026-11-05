@@ -818,11 +818,10 @@ scenarios:
             expected: 300.0
 
   # ------------------------------------------------------------------
-  # 11. _apply_where_clause rejects dangerous SQL and applies safe filters
+  # 11. invalid filters are rejected on save; safe filters are applied
   # ------------------------------------------------------------------
   - name:
-      "Confirmation d45dd19 - _apply_where_clause rejects dangerous SQL, applies safe
-      filter"
+      "Confirmation d45dd19 - invalid filters are rejected on save, applies safe filter"
     steps:
       - step: "Create GL worksheet with raw CSV data"
         action: "create"
@@ -858,12 +857,32 @@ scenarios:
           data_mode: "gl"
           general_ledger_id: "REC: ws_gl.id"
 
-      - step: "Set a dangerous filter_where_clause"
+      - step: "Set a dangerous filter_where_clause -> ValidationError"
         action: "write"
         target: "confirmation"
         as_user: "base.user_admin"
         values:
           filter_where_clause: "DROP TABLE data"
+        expect_error:
+          type: "ValidationError"
+
+      - step: "A clause with broken syntax -> ValidationError"
+        action: "write"
+        target: "confirmation"
+        as_user: "base.user_admin"
+        values:
+          filter_where_clause: "Debit >"
+        expect_error:
+          type: "ValidationError"
+
+      - step: "A clause on a missing column -> ValidationError"
+        action: "write"
+        target: "confirmation"
+        as_user: "base.user_admin"
+        values:
+          filter_where_clause: "Missing_Column = 1"
+        expect_error:
+          type: "ValidationError"
 
       - step: "Assert raw_data is left unfiltered (identical to source)"
         action: "assert"
