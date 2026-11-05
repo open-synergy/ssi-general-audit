@@ -14,6 +14,17 @@ msgstr ""
 "Plural-Forms: \n"
 
 #. module: ssi_general_audit_worksheet_sample_determination
+#: code:addons/ssi_general_audit_worksheet_sample_determination/models/a916660/general_audit_ws_a916660.py:0
+#, python-format
+msgid ""
+"\n"
+"Context: Validate Sampling Process filter\n"
+"Database ID: %s\n"
+"Problem: The filter cannot be applied (%s)\n"
+"Solution: Fix the WHERE clause. Usable columns: %s\n"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_sample_determination
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_sample_determination.field_general_audit_ws_a916660__name
 msgid "# Document"
 msgstr ""
@@ -741,6 +752,11 @@ msgstr ""
 
 #. module: ssi_general_audit_worksheet_sample_determination
 #: model_terms:ir.ui.view,arch_db:ssi_general_audit_worksheet_sample_determination.general_audit_ws_a916660_view_form
+msgid "Every change to the filter is logged in the chatter"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_sample_determination
+#: model_terms:ir.ui.view,arch_db:ssi_general_audit_worksheet_sample_determination.general_audit_ws_a916660_view_form
 msgid "Exact match: <code>Type = 'Candidate'</code>"
 msgstr ""
 
@@ -1085,7 +1101,7 @@ msgstr ""
 #. module: ssi_general_audit_worksheet_sample_determination
 #: model:ir.model.fields,help:ssi_general_audit_worksheet_sample_determination.field_general_audit_ws_a916660__sampling_process_filter
 msgid ""
-"Optional SQL WHERE clause to narrow down the candidates shown in 'Sampling Process' -- useful when the population is large. Use column names from the table header; spaces and special characters are replaced by underscores.\n"
+"Optional SQL WHERE clause to narrow down the candidates shown in 'Sampling Process' -- useful when the population is large. Use column names from the table header; spaces and special characters are replaced by underscores. Numeric columns are compared by value, using the thousand and decimal separators of the selected data source. Every change is logged in the chatter.\n"
 "Example: Additional_Info LIKE '%%FRONT WALL%%'"
 msgstr ""
 
