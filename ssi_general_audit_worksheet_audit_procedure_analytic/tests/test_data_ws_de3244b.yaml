@@ -2029,7 +2029,7 @@ scenarios:
             type: "value"
             expected: 300.0
 
-  - name: "Variable de3244b - Unsafe or invalid where clause keeps all rows"
+  - name: "Variable de3244b - Unsafe or invalid where clause is rejected on save"
     steps:
       - step: "Create GL worksheet ws_gl_1"
         action: "create"
@@ -2053,10 +2053,9 @@ scenarios:
           general_audit_id: "REC: audit.id"
           type_id: "REC: ws_type.id"
 
-      - step: "Create variable Unsafe Filter"
+      - step: "Create variable Unsafe Filter -> ValidationError"
         action: "create"
         model: "general_audit_ws_de3244b.variable"
-        save_as: "variable_unsafe"
         as_user: "base.user_admin"
         values:
           worksheet_id: "REC: worksheet.id"
@@ -2065,11 +2064,12 @@ scenarios:
           general_ledger_id: "REC: ws_gl_1.id"
           filter_where_clause: "Account = '1000'; DROP TABLE data"
           value_col_number: 3
+        expect_error:
+          type: "ValidationError"
 
-      - step: "Create variable Invalid Filter"
+      - step: "Create variable Invalid Filter (missing column) -> ValidationError"
         action: "create"
         model: "general_audit_ws_de3244b.variable"
-        save_as: "variable_invalid"
         as_user: "base.user_admin"
         values:
           worksheet_id: "REC: worksheet.id"
@@ -2078,25 +2078,22 @@ scenarios:
           general_ledger_id: "REC: ws_gl_1.id"
           filter_where_clause: "Missing_Column = 1"
           value_col_number: 3
+        expect_error:
+          type: "ValidationError"
 
-      - step: "Assert variable_unsafe"
-        action: "assert"
-        target: "variable_unsafe"
-        asserts:
-          value:
-            type: "value"
-            expected: 450.0
-
-      - step: "Assert variable_invalid"
-        action: "assert"
-        target: "variable_invalid"
-        asserts:
-          raw_data:
-            type: "value"
-            operator: "is_truthy"
-          value:
-            type: "value"
-            expected: 450.0
+      - step: "Create variable Broken Syntax Filter -> ValidationError"
+        action: "create"
+        model: "general_audit_ws_de3244b.variable"
+        as_user: "base.user_admin"
+        values:
+          worksheet_id: "REC: worksheet.id"
+          name: "Broken Syntax Filter"
+          data_mode: "gl"
+          general_ledger_id: "REC: ws_gl_1.id"
+          filter_where_clause: "Account ="
+          value_col_number: 3
+        expect_error:
+          type: "ValidationError"
 
   - name: "Variable de3244b - Empty or non-numeric cells count as zero"
     steps:

@@ -4,10 +4,12 @@
 
 import csv
 import io
-import re
-import sqlite3
 
-from odoo import api, fields, models
+from odoo import _, api, fields, models
+from odoo.exceptions import ValidationError
+from odoo.tools import html_escape
+
+from ..where_clause import describe_columns, filter_csv
 
 
 class GeneralAuditWSaa899bafVariable(models.Model):
@@ -110,7 +112,9 @@ class GeneralAuditWSaa899bafVariable(models.Model):
         help="Optional SQL WHERE clause to filter the raw data.\n"
         "Use column names from the CSV header row.\n"
         "Spaces and special characters in column names are replaced "
-        "by underscores.\n"
+        "by underscores. Numeric columns are compared by value, using "
+        "the thousand and decimal separators set on this variable. Every "
+        "change is logged in the worksheet chatter.\n"
         "Example: Entry_Label = 'posted' AND Debit > 1000",
     )
     raw_data = fields.Text(
@@ -249,6 +253,8 @@ class GeneralAuditWSaa899bafVariable(models.Model):
         "data_source",
         "sample_determination_id",
         "filter_where_clause",
+        "thousand_separator",
+        "decimal_separator",
     )
     def _compute_raw_data(self):
         """Resolve the raw CSV data for the currently selected source.
@@ -259,26 +265,14 @@ class GeneralAuditWSaa899bafVariable(models.Model):
             optionally filtered by ``filter_where_clause``.
         """
         for record in self:
-            if (
-                record.data_mode == "gl"
-                and record.data_source == "population"
-                and record.general_ledger_id
-            ):
-                source_data = record.general_ledger_id.raw_data
-            elif (
-                record.data_mode == "subledger"
-                and record.data_source == "population"
-                and record.subledger_id
-            ):
-                source_data = record.subledger_id.raw_data
-            elif record.data_source == "sample" and record.sample_determination_id:
-                source_data = record.sample_determination_id.raw_data
-            else:
-                source_data = False
+            source_data = record._get_source_data()
 
             if source_data and record.filter_where_clause:
                 source_data = record._apply_where_clause(
-                    source_data, record.filter_where_clause
+                    source_data,
+                    record.filter_where_clause,
+                    record.thousand_separator or ",",
+                    record.decimal_separator or ".",
                 )
             record.raw_data = source_data
 
@@ -304,26 +298,14 @@ class GeneralAuditWSaa899bafVariable(models.Model):
         """
         for record in self:
             # Recompute raw data inline to avoid dependency on non-stored field
-            if (
-                record.data_mode == "gl"
-                and record.data_source == "population"
-                and record.general_ledger_id
-            ):
-                source_data = record.general_ledger_id.raw_data
-            elif (
-                record.data_mode == "subledger"
-                and record.data_source == "population"
-                and record.subledger_id
-            ):
-                source_data = record.subledger_id.raw_data
-            elif record.data_source == "sample" and record.sample_determination_id:
-                source_data = record.sample_determination_id.raw_data
-            else:
-                source_data = False
+            source_data = record._get_source_data()
 
             if source_data and record.filter_where_clause:
                 source_data = record._apply_where_clause(
-                    source_data, record.filter_where_clause
+                    source_data,
+                    record.filter_where_clause,
+                    record.thousand_separator or ",",
+                    record.decimal_separator or ".",
                 )
 
             total = 0.0
@@ -350,66 +332,141 @@ class GeneralAuditWSaa899bafVariable(models.Model):
         except ValueError:
             return 0.0
 
+    def _get_source_data(self):
+        """Return the unfiltered CSV of the selected data source.
+
+        Pulls ``raw_data`` from the General Ledger or Subledger worksheet
+        selected via ``data_mode`` when ``data_source`` is ``population``,
+        or from the Sample Determination worksheet selected via
+        ``sample_determination_id`` when ``data_source`` is ``sample``.
+
+        :return: the CSV text, or ``False`` when no source is selected.
+        """
+        self.ensure_one()
+        if (
+            self.data_mode == "gl"
+            and self.data_source == "population"
+            and self.general_ledger_id
+        ):
+            return self.general_ledger_id.raw_data
+        if (
+            self.data_mode == "subledger"
+            and self.data_source == "population"
+            and self.subledger_id
+        ):
+            return self.subledger_id.raw_data
+        if self.data_source == "sample" and self.sample_determination_id:
+            return self.sample_determination_id.raw_data
+        return False
+
     @api.model
-    def _apply_where_clause(self, raw_csv, where_clause):
-        """Filter CSV data using a SQL WHERE clause via in-memory SQLite."""
-        where_clause = (where_clause or "").strip()
-        if not where_clause:
-            return raw_csv
+    def _apply_where_clause(
+        self, raw_csv, where_clause, thousand_sep=",", decimal_sep="."
+    ):
+        """Filter CSV data using a read-only SQL WHERE clause.
 
-        # Reject dangerous SQL keywords
-        _FORBIDDEN = re.compile(
-            r"\b(INSERT|UPDATE|DELETE|DROP|ALTER|CREATE|ATTACH|DETACH"
-            r"|REPLACE|PRAGMA|REINDEX|VACUUM|SAVEPOINT|RELEASE"
-            r"|BEGIN|COMMIT|ROLLBACK)\b",
-            re.IGNORECASE,
-        )
-        if _FORBIDDEN.search(where_clause):
-            return raw_csv
+        Failure-tolerant wrapper around ``filter_csv``: an unusable
+        clause never breaks the form. ``_check_filter_where_clause``
+        tells the user a clause is invalid, when it is saved.
 
-        reader = csv.reader(io.StringIO(raw_csv))
-        headers = next(reader, None)
-        if not headers:
-            return raw_csv
-
-        rows = list(reader)
-        if not rows:
-            return raw_csv
-
-        # Sanitise header names: replace non-alphanumeric chars with _
-        safe_cols = []
-        for h in headers:
-            col = re.sub(r"[^\w]", "_", h.strip())
-            if not col or col[0].isdigit():
-                col = "c_" + col
-            safe_cols.append(col)
-
-        col_defs = ", ".join('"{}" TEXT'.format(c) for c in safe_cols)
-        placeholders = ", ".join(["?"] * len(safe_cols))
-
+        :param raw_csv: CSV text with a header row.
+        :param where_clause: a SQL WHERE clause (without the ``WHERE``
+            keyword) referencing the header's sanitised column names.
+        :param thousand_sep: thousand separator used in the data.
+        :param decimal_sep: decimal separator used in the data.
+        :return: the filtered CSV text, or the original ``raw_csv``
+            unchanged when it is empty, ``where_clause`` is blank or
+            contains a forbidden keyword, or filtering fails.
+        """
         try:
-            conn = sqlite3.connect(":memory:")
-            cur = conn.cursor()
-            cur.execute("CREATE TABLE data ({})".format(col_defs))
-            for row in rows:
-                # Pad or trim row to match header count
-                padded = list(row) + [""] * (len(safe_cols) - len(row))
-                cur.execute(
-                    "INSERT INTO data VALUES ({})".format(placeholders),
-                    padded[: len(safe_cols)],
-                )
-            cur.execute("SELECT * FROM data WHERE {}".format(where_clause))
-            filtered = cur.fetchall()
-            conn.close()
+            return filter_csv(raw_csv, where_clause, thousand_sep, decimal_sep)
         except Exception:
             return raw_csv
 
-        # Rebuild CSV output
-        out = io.StringIO()
-        writer = csv.writer(out)
-        writer.writerow(headers)
-        writer.writerows(filtered)
-        return out.getvalue()
+    @api.constrains("filter_where_clause")
+    def _check_filter_where_clause(self):
+        """Reject a filter that cannot run against the data source.
+
+        The filter is tried on the unfiltered source data with the
+        variable's own separators; without source data it cannot be
+        checked and is accepted.
+
+        :return: ``None``.
+        :raises ValidationError: when the filter holds a forbidden
+            keyword or SQLite cannot run it, naming the usable columns.
+        """
+        for record in self:
+            where_clause = (record.filter_where_clause or "").strip()
+            source_data = record._get_source_data()
+            if not where_clause or not source_data:
+                continue
+            try:
+                filter_csv(
+                    source_data,
+                    where_clause,
+                    record.thousand_separator or ",",
+                    record.decimal_separator or ".",
+                )
+            except Exception as exc:
+                error_message = (
+                    _(
+                        """
+Context: Validate variable filter
+Database ID: %s
+Problem: The filter cannot be applied (%s)
+Solution: Fix the WHERE clause. Usable columns: %s
+"""
+                    )
+                    % (record.id, exc, describe_columns(source_data))
+                )
+                raise ValidationError(error_message) from exc
+
+    def _post_filter_change_note(self, old_value):
+        """Log a filter change as an internal note on the worksheet.
+
+        :param old_value: the previous ``filter_where_clause`` text.
+        :return: ``None``.
+        """
+        self.ensure_one()
+        body = _(
+            "<p>Filter (WHERE clause) of variable <b>%(name)s</b> "
+            "changed.</p><ul><li>Old: <code>%(old)s</code></li>"
+            "<li>New: <code>%(new)s</code></li></ul>"
+        ) % {
+            "name": html_escape(self.name or ""),
+            "old": html_escape(old_value or ""),
+            "new": html_escape(self.filter_where_clause or ""),
+        }
+        self.worksheet_id.message_post(body=body, subtype_xmlid="mail.mt_note")
+
+    @api.model_create_multi
+    def create(self, vals_list):
+        """Create variables and log any initial filter.
+
+        :param vals_list: the values of the records to create.
+        :return: the created records.
+        """
+        records = super().create(vals_list)
+        for record in records:
+            if record.filter_where_clause:
+                record._post_filter_change_note(False)
+        return records
+
+    def write(self, vals):
+        """Write values and log a change of ``filter_where_clause``.
+
+        :param vals: the values to write.
+        :return: the result of the parent ``write``.
+        """
+        if "filter_where_clause" not in vals:
+            return super().write(vals)
+        old_values = {record.id: record.filter_where_clause for record in self}
+        result = super().write(vals)
+        for record in self:
+            old_value = old_values[record.id]
+            if (old_value or "") != (record.filter_where_clause or ""):
+                record._post_filter_change_note(old_value)
+        return result
 
     @api.onchange("data_mode")
     def onchange_general_ledger_id(self):
