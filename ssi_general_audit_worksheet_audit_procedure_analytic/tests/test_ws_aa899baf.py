@@ -102,3 +102,36 @@ class TestGeneralAuditWsAa899baf(YamlTransactionCase):
         self.assertEqual(
             relations_action["context"]["default_worksheet_id"], worksheet.id
         )
+
+    def test_apply_where_clause_parses_separator_formatted_amounts(self):
+        """HT/26/000846: cells such as ``1,500.00`` or ``(2,000.00)`` are
+        not plain floats, so every column used to be compared as TEXT and
+        ``Debit > 1000`` compared strings. With the data's own separators
+        the column is numeric, the filter compares by value, and the
+        surviving rows keep their original text.
+
+        Covered in Python rather than YAML: P1 (the method's return
+        value is what is asserted), limits L-01 and L-02.
+        """
+        variable = self.env["general_audit_ws_aa899baf.variable"]
+        raw_csv = "Ref,Debit\n" 'R1,"1,500.00"\n' 'R2,"500.00"\n' 'R3,"(2,000.00)"\n'
+
+        filtered = variable._apply_where_clause(raw_csv, "Debit > 1000", ",", ".")
+        rows = [line for line in filtered.splitlines() if line]
+
+        self.assertEqual(rows, ["Ref,Debit", 'R1,"1,500.00"'])
+
+    def test_apply_where_clause_parses_swapped_separators(self):
+        """HT/26/000846: with ``.`` as thousand and ``,`` as decimal
+        separator, ``1.500,00`` is 1500 and ``500,00`` is 500.
+
+        Covered in Python rather than YAML: P1 (the method's return
+        value is what is asserted), limits L-01 and L-02.
+        """
+        variable = self.env["general_audit_ws_aa899baf.variable"]
+        raw_csv = 'Ref,Debit\nR1,"1.500,00"\nR2,"500,00"\n'
+
+        filtered = variable._apply_where_clause(raw_csv, "Debit > 1000", ".", ",")
+        rows = [line for line in filtered.splitlines() if line]
+
+        self.assertEqual(rows, ["Ref,Debit", 'R1,"1.500,00"'])
