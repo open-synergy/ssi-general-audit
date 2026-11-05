@@ -15,6 +15,12 @@
         <field name="arch" type="xml">
         <data>
             <xpath expr="//field[@name='company_id']" position="after">
+                <field name="general_audit_id" />
+                <field name="partner_id" />
+                <field name="account_type_set_id" />
+                <field name="currency_id" />
+                <field name="date_start" />
+                <field name="date_end" />
                 <field
                         name="operating_unit_id"
                         groups="operating_unit.group_multi_operating_unit"
@@ -35,6 +41,41 @@
                 <separator />
             </xpath>
             <xpath expr="//filter[@name='grp_company']" position="after">
+                <filter
+                        name="grp_general_audit"
+                        string="General Audit"
+                        context="{'group_by':'general_audit_id'}"
+                    />
+                <filter
+                        name="grp_partner"
+                        string="Partner"
+                        context="{'group_by':'partner_id'}"
+                    />
+                <filter
+                        name="grp_account_type_set"
+                        string="Account Type Set"
+                        context="{'group_by':'account_type_set_id'}"
+                    />
+                <filter
+                        name="grp_currency"
+                        string="Currency"
+                        context="{'group_by':'currency_id'}"
+                    />
+                <filter
+                        name="grp_adjustment_type"
+                        string="Adjustment Type"
+                        context="{'group_by':'adjustment_type'}"
+                    />
+                <filter
+                        name="grp_date_start"
+                        string="Start Date"
+                        context="{'group_by':'date_start'}"
+                    />
+                <filter
+                        name="grp_date_end"
+                        string="End Date"
+                        context="{'group_by':'date_end'}"
+                    />
                 <filter
                         name="grp_corrected"
                         string="Corrected"
