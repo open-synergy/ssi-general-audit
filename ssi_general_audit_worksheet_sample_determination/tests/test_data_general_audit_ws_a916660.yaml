@@ -1465,6 +1465,67 @@ scenarios:
   # ------------------------------------------------------------------
   # 15. Workflow worksheet - draft -> open -> confirm -> approve -> done
   # ------------------------------------------------------------------
+
+  # HT/26/000846: a filter SQLite cannot run, or one holding a forbidden
+  # keyword, is rejected on save instead of being silently ignored; a
+  # valid filter is stored (and logged by tracking).
+  - name: "Sampling Process - an invalid filter is rejected on save"
+    steps:
+      - step: "Create NSS worksheet"
+        action: "create"
+        model: "general_audit_ws_a916660"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+          data_mode: "gl"
+          general_ledger_id: "REC: gl.id"
+          identifier_col_number: 1
+          monetary_col_number: 2
+          additional_info_col_number: 3
+          key_item_count: 1
+          method_type: "nss"
+          nss_final_sample_size: 2
+
+      - step: "Generate sampling"
+        action: "call"
+        target: "worksheet"
+        method: "action_generate_sampling"
+        as_user: "base.user_admin"
+
+      - step: "A clause with broken syntax -> ValidationError"
+        action: "write"
+        target: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          sampling_process_filter: "amount >"
+        expect_error:
+          type: "ValidationError"
+
+      - step: "A clause holding a forbidden keyword -> ValidationError"
+        action: "write"
+        target: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          sampling_process_filter: "1=1; DROP TABLE data"
+        expect_error:
+          type: "ValidationError"
+
+      - step: "A valid clause is stored"
+        action: "write"
+        target: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          sampling_process_filter: "amount >= 1000"
+
+      - step: "Assert the valid clause was kept"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          sampling_process_filter:
+            type: "value"
+            expected: "amount >= 1000"
   - name: "Workflow worksheet - draft to done"
     steps:
       - step: "Create worksheet a916660"
