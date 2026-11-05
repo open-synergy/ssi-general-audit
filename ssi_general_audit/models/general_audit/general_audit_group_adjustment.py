@@ -72,6 +72,7 @@ class GeneralAuditGroupAdjustment(models.Model):
     def _where(self):
         where_str = """
         WHERE b.corrected = true
+        AND b.state = 'done'
         """
         return where_str
 
