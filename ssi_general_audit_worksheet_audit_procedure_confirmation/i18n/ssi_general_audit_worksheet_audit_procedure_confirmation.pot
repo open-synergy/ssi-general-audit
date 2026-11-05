@@ -14,6 +14,28 @@ msgstr ""
 "Plural-Forms: \n"
 
 #. module: ssi_general_audit_worksheet_audit_procedure_confirmation
+#: code:addons/ssi_general_audit_worksheet_audit_procedure_confirmation/models/d45dd19/general_audit_ws_d45dd19_confirmation_detail.py:0
+#, python-format
+msgid ""
+"\n"
+"Context: Validate confirmation detail filter\n"
+"Database ID: %s\n"
+"Problem: The filter cannot be applied (%s)\n"
+"Solution: Fix the WHERE clause. Usable columns: %s\n"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_audit_procedure_confirmation
+#: code:addons/ssi_general_audit_worksheet_audit_procedure_confirmation/models/d45dd19/general_audit_ws_d45dd19_confirmation.py:0
+#, python-format
+msgid ""
+"\n"
+"Context: Validate confirmation filter\n"
+"Database ID: %s\n"
+"Problem: The filter cannot be applied (%s)\n"
+"Solution: Fix the WHERE clause. Usable columns: %s\n"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_audit_procedure_confirmation
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_audit_procedure_confirmation.field_general_audit_ws_d45dd19__name
 msgid "# Document"
 msgstr ""
@@ -31,6 +53,24 @@ msgstr ""
 #. module: ssi_general_audit_worksheet_audit_procedure_confirmation
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_audit_procedure_confirmation.field_general_audit_ws_d45dd19__worksheet_id
 msgid "# Worksheet"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_audit_procedure_confirmation
+#: code:addons/ssi_general_audit_worksheet_audit_procedure_confirmation/models/d45dd19/general_audit_ws_d45dd19_confirmation.py:0
+#, python-format
+msgid ""
+"<p>Filter (WHERE clause) of confirmation <b>%(name)s</b> "
+"changed.</p><ul><li>Old: <code>%(old)s</code></li><li>New: "
+"<code>%(new)s</code></li></ul>"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_audit_procedure_confirmation
+#: code:addons/ssi_general_audit_worksheet_audit_procedure_confirmation/models/d45dd19/general_audit_ws_d45dd19_confirmation_detail.py:0
+#, python-format
+msgid ""
+"<p>Filter (WHERE clause) of confirmation detail <b>%(name)s</b> "
+"changed.</p><ul><li>Old: <code>%(old)s</code></li><li>New: "
+"<code>%(new)s</code></li></ul>"
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_audit_procedure_confirmation
@@ -1061,7 +1101,7 @@ msgstr ""
 msgid ""
 "Optional SQL WHERE clause to filter the raw data.\n"
 "Use column names from the CSV header row.\n"
-"Spaces and special characters in column names are replaced by underscores.\n"
+"Spaces and special characters in column names are replaced by underscores. Numeric columns are compared by value, using the thousand and decimal separators of the data source. Every change is logged in the worksheet chatter.\n"
 "Example: Entry_Label = 'posted' AND Debit > 1000"
 msgstr ""
 
