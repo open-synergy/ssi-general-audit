@@ -240,7 +240,7 @@ class GeneralAuditDetail(models.Model):
         store=True,
         currency_field="currency_id",
         help="Total debit adjustments for this account, from corrected "
-        "adjustment entries only.",
+        "adjustment entries in done state only.",
     )
     adjustment_credit = fields.Monetary(
         string="Adjustment Credit",
@@ -249,7 +249,7 @@ class GeneralAuditDetail(models.Model):
         store=True,
         currency_field="currency_id",
         help="Total credit adjustments for this account, from corrected "
-        "adjustment entries only.",
+        "adjustment entries in done state only.",
     )
 
     @api.depends(
@@ -257,18 +257,19 @@ class GeneralAuditDetail(models.Model):
         "adjustment_line_ids.debit",
         "adjustment_line_ids.credit",
         "adjustment_line_ids.entry_id.corrected",
+        "adjustment_line_ids.entry_id.state",
     )
     def _compute_adjustment_amount(self):
-        """Sum the debit and credit of the corrected adjustment lines.
+        """Sum the debit and credit of the done, corrected adjustment lines.
 
-        Every entry state counts, as in the adjustment summary views; only
-        entries that the client did not correct are left out.
+        Only entries in done state that the client corrected count, as in
+        the adjustment summary views; other entries are left out.
 
         :return: ``None``
         """
         for record in self:
             lines = record.adjustment_line_ids.filtered(
-                lambda line: line.entry_id.corrected
+                lambda line: line.entry_id.corrected and line.entry_id.state == "done"
             )
             record.adjustment_debit = sum(lines.mapped("debit"))
             record.adjustment_credit = sum(lines.mapped("credit"))

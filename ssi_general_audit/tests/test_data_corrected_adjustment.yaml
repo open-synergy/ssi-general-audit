@@ -256,6 +256,17 @@ scenarios:
           debit: 0.0
           credit: 40.0
 
+      - step: "Assert a draft corrected entry does not count in the account"
+        action: "assert"
+        target: "audit_detail_1"
+        asserts:
+          adjustment_debit:
+            type: "value"
+            expected: 0.0
+          adjustment_credit:
+            type: "value"
+            expected: 0.0
+
       - step: "Mark the corrected entry as done"
         action: "write"
         target: "entry_corrected"
