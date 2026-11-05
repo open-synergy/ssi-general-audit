@@ -244,3 +244,83 @@ class ClientAdjustmentEntry(models.Model):
                 if total_debit != total_credit:
                     msg = _("Total Credit and Total Debit must balance")
                     raise UserError(msg)
+
+    def write(self, vals):
+        """Regenerate the closing lines when the counted entries change.
+
+        An entry counts in the audited balance only when it is done and
+        corrected, so a change of ``state`` or ``corrected`` on an entry
+        that is or was done makes the closing lines stale.
+
+        :param vals: the values to write
+        :return: the result of the standard write
+        :rtype: bool
+        """
+        trigger = "state" in vals or "corrected" in vals
+        was_done = self.browse()
+        if trigger:
+            was_done = self.filtered(lambda r: r.state == "done")
+        result = super().write(vals)
+        if trigger:
+            affected = was_done | self.filtered(lambda r: r.state == "done")
+            self._regenerate_closing(affected._get_closing_targets())
+        return result
+
+    def unlink(self):
+        """Regenerate the closing lines after done entries are deleted.
+
+        :return: the result of the standard unlink
+        :rtype: bool
+        """
+        targets = self.filtered(lambda r: r.state == "done")._get_closing_targets()
+        result = super().unlink()
+        self._regenerate_closing(targets)
+        return result
+
+    def _get_closing_targets(self):
+        """Group the entry numbers by the audit that they belong to.
+
+        :return: ``{general_audit record: [entry names]}``
+        :rtype: dict
+        """
+        targets = {}
+        for record in self:
+            audit = record.general_audit_id.sudo()
+            targets.setdefault(audit, []).append(record.name or str(record.id))
+        return targets
+
+    @api.model
+    def _regenerate_closing(self, targets):
+        """Regenerate the closing lines of the audits that need it.
+
+        Only an open audit that already has a closing type and closing
+        lines is regenerated. Any other audit is left alone: it is either
+        not closed yet or no longer editable. Each audit is regenerated
+        once and the change is logged on its chatter.
+
+        :param targets: ``{general_audit record: [entry names]}`` from
+            ``_get_closing_targets``
+        :return: nothing; the closing lines of the audits are replaced
+        """
+        audits = [
+            audit
+            for audit in targets
+            if audit.exists()
+            and audit.state == "open"
+            and audit.closing_type_id
+            and (audit.closing_line_ids | audit.previous_closing_line_ids)
+        ]
+        if not audits:
+            return
+        self.env["client_adjustment_entry"].flush()
+        self.env["client_adjustment_entry.detail"].flush()
+        for audit in audits:
+            audit._generate_closing_lines()
+            audit.message_post(
+                body=_(
+                    "Closing lines regenerated after a change of adjustment "
+                    "entry %s."
+                )
+                % ", ".join(targets[audit]),
+                subtype_xmlid="mail.mt_note",
+            )

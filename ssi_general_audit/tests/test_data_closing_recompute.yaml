@@ -1,0 +1,346 @@
+options:
+  auto_refresh: true
+
+scenarios:
+  - name: "client_adjustment_entry - closing lines follow the done entries"
+    steps:
+      - step: "Get config parameter model"
+        action: "search"
+        model: "ir.config_parameter"
+        domain: []
+        save_as: "config_parameter"
+        limit: 1
+
+      - step: "Allow enough CPA licenses for this scenario"
+        action: "call"
+        target: "config_parameter"
+        method: "set_param"
+        args:
+          - "ssi_general_audit.max_number_of_cpa_license"
+          - "100"
+
+      - step: "Create client partner"
+        action: "create"
+        model: "res.partner"
+        save_as: "client"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Client - Closing Recompute"
+          is_company: true
+
+      - step: "Create accountant partner"
+        action: "create"
+        model: "res.partner"
+        save_as: "accountant"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Accountant - Closing Recompute"
+
+      - step: "Get CPA license id category"
+        action: "ref"
+        xml_id: "ssi_partner_identification_cpa_license.partner_identification_accountant_cpa_license"
+        save_as: "cpa_category"
+
+      - step: "Grant accountant a CPA license"
+        action: "create"
+        model: "res.partner.id_number"
+        save_as: "cpa_license"
+        as_user: "base.user_admin"
+        values:
+          partner_id: "REC: accountant.id"
+          category_id: "REC: cpa_category.id"
+          name: "CPA-CLOSEREC-0001"
+
+      - step: "Create account type set"
+        action: "create"
+        model: "client_account_type_set"
+        save_as: "account_type_set"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Account Type Set - Closing Recompute"
+          code: "/"
+
+      - step: "Create financial accounting standard"
+        action: "create"
+        model: "accountant.financial_accounting_standard"
+        save_as: "standard"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Financial Accounting Standard - Closing Recompute"
+          code: "/"
+
+      - step: "Create general audit"
+        action: "create"
+        model: "general_audit"
+        save_as: "audit"
+        as_user: "base.user_admin"
+        values:
+          title: "Test General Audit - Closing Recompute"
+          partner_id: "REC: client.id"
+          accountant_id: "REC: accountant.id"
+          account_type_set_id: "REC: account_type_set.id"
+          financial_accounting_standard_id: "REC: standard.id"
+          date_start: 2026-01-01
+          date_end: 2026-12-31
+          need_interim: false
+          need_previous: false
+          num_of_consecutive_audit_firm: 1
+          num_of_consecutive_audit_accountant: 1
+
+      - step: "Open general audit"
+        action: "call"
+        target: "audit"
+        method: "action_open"
+        as_user: "base.user_admin"
+
+      - step: "Create client account group"
+        action: "create"
+        model: "client_account_group"
+        save_as: "group"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Group - Closing Recompute"
+          code: "/"
+          sequence: 1
+          normal_balance: "dr"
+
+      - step: "Create client account type"
+        action: "create"
+        model: "client_account_type"
+        save_as: "account_type"
+        as_user: "base.user_admin"
+        values:
+          name: "Cash - Closing Recompute"
+          code: "/"
+          group_id: "REC: group.id"
+          sequence: 1
+          normal_balance: "dr"
+
+      - step: "Create first client account"
+        action: "create"
+        model: "client_account"
+        save_as: "account_1"
+        as_user: "base.user_admin"
+        values:
+          name: "Kas Test 1 - Closing Recompute"
+          code: "KASREC1"
+          partner_id: "REC: client.id"
+          type_id: "REC: account_type.id"
+
+      - step: "Create second client account"
+        action: "create"
+        model: "client_account"
+        save_as: "account_2"
+        as_user: "base.user_admin"
+        values:
+          name: "Kas Test 2 - Closing Recompute"
+          code: "KASREC2"
+          partner_id: "REC: client.id"
+          type_id: "REC: account_type.id"
+
+      - step: "Create client account mapping"
+        action: "create"
+        model: "client_account_mapping"
+        save_as: "mapping"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+
+      - step: "Create mapping detail line for the first account"
+        action: "create"
+        model: "client_account_mapping.detail"
+        save_as: "mapping_detail_1"
+        as_user: "base.user_admin"
+        values:
+          mapping_id: "REC: mapping.id"
+          account_id: "REC: account_1.id"
+          type_id: "REC: account_type.id"
+
+      - step: "Create mapping detail line for the second account"
+        action: "create"
+        model: "client_account_mapping.detail"
+        save_as: "mapping_detail_2"
+        as_user: "base.user_admin"
+        values:
+          mapping_id: "REC: mapping.id"
+          account_id: "REC: account_2.id"
+          type_id: "REC: account_type.id"
+
+      - step: "Reload accounts to create the audit details"
+        action: "call"
+        target: "audit"
+        method: "action_reload_account"
+        as_user: "base.user_admin"
+
+      - step: "Create first entry"
+        action: "create"
+        model: "client_adjustment_entry"
+        save_as: "entry_1"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          adjustment_type: "propose"
+
+      - step: "Create debit line of the first entry"
+        action: "create"
+        model: "client_adjustment_entry.detail"
+        as_user: "base.user_admin"
+        values:
+          entry_id: "REC: entry_1.id"
+          account_id: "REC: account_1.id"
+          name: "First debit"
+          debit: 100.0
+          credit: 0.0
+
+      - step: "Create credit line of the first entry"
+        action: "create"
+        model: "client_adjustment_entry.detail"
+        as_user: "base.user_admin"
+        values:
+          entry_id: "REC: entry_1.id"
+          account_id: "REC: account_2.id"
+          name: "First credit"
+          debit: 0.0
+          credit: 100.0
+
+      - step: "Mark the first entry as done without a closing type"
+        action: "write"
+        target: "entry_1"
+        as_user: "base.user_admin"
+        values:
+          state: "done"
+
+      - step: "Assert an audit without closing lines gets none"
+        action: "assert"
+        target: "audit"
+        asserts:
+          closing_line_ids:
+            type: "o2m"
+            check: "count"
+            expected_count: 0
+
+      - step: "Create the destination account type"
+        action: "create"
+        model: "client_account_type"
+        save_as: "type_destination"
+        as_user: "base.user_admin"
+        values:
+          name: "Retained - Closing Recompute"
+          code: "/"
+          group_id: "REC: group.id"
+          sequence: 2
+          normal_balance: "dr"
+
+      - step: "Create closing type"
+        action: "create"
+        model: "general_audit_closing_type"
+        save_as: "closing_type"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Closing Type - Closing Recompute"
+          code: "/"
+          mapping_ids:
+            - - 0
+              - 0
+              - name: "Close cash"
+                sequence: 10
+                source_type_ids:
+                  - - 6
+                    - 0
+                    - - "REC: account_type.id"
+                account_type_id: "REC: type_destination.id"
+
+      - step: "Select the closing type on the audit"
+        action: "write"
+        target: "audit"
+        as_user: "base.user_admin"
+        values:
+          closing_type_id: "REC: closing_type.id"
+
+      - step: "Generate closing lines"
+        action: "call"
+        target: "audit"
+        method: "_generate_closing_lines"
+        as_user: "base.user_admin"
+
+      - step: "Assert closing lines hold two accounts and the destination"
+        action: "assert"
+        target: "audit"
+        asserts:
+          closing_line_ids:
+            type: "o2m"
+            check: "count"
+            expected_count: 3
+
+      - step: "Cancel the first entry"
+        action: "write"
+        target: "entry_1"
+        as_user: "base.user_admin"
+        values:
+          state: "cancel"
+
+      - step: "Assert closing lines were regenerated without the entry"
+        action: "assert"
+        target: "audit"
+        asserts:
+          closing_line_ids:
+            type: "o2m"
+            check: "count"
+            expected_count: 1
+
+      - step: "Find the log of the regeneration"
+        action: "search"
+        model: "mail.message"
+        domain:
+          - ["model", "=", "general_audit"]
+          - ["res_id", "=", "REC: audit.id"]
+          - ["body", "ilike", "Closing lines regenerated"]
+        save_as: "regeneration_log"
+        expect_count: 1
+
+      - step: "Create second entry"
+        action: "create"
+        model: "client_adjustment_entry"
+        save_as: "entry_2"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          adjustment_type: "propose"
+
+      - step: "Create debit line of the second entry"
+        action: "create"
+        model: "client_adjustment_entry.detail"
+        as_user: "base.user_admin"
+        values:
+          entry_id: "REC: entry_2.id"
+          account_id: "REC: account_1.id"
+          name: "Second debit"
+          debit: 40.0
+          credit: 0.0
+
+      - step: "Create credit line of the second entry"
+        action: "create"
+        model: "client_adjustment_entry.detail"
+        as_user: "base.user_admin"
+        values:
+          entry_id: "REC: entry_2.id"
+          account_id: "REC: account_2.id"
+          name: "Second credit"
+          debit: 0.0
+          credit: 40.0
+
+      - step: "Mark the second entry as done"
+        action: "write"
+        target: "entry_2"
+        as_user: "base.user_admin"
+        values:
+          state: "done"
+
+      - step: "Assert closing lines were regenerated with the entry"
+        action: "assert"
+        target: "audit"
+        asserts:
+          closing_line_ids:
+            type: "o2m"
+            check: "count"
+            expected_count: 3
