@@ -4,3 +4,7 @@
 
 from . import test_ws_bab9d32
 from . import test_ws_cda3a68
+
+from . import ui_fixture
+from . import test_ui_general_audit_ws_bab9d32
+from . import test_ui_general_audit_ws_cda3a68
