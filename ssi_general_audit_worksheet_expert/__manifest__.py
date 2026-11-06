@@ -12,6 +12,7 @@
     "depends": [
         "ssi_general_audit",
         "ssi_general_audit_worksheet_understanding_entity",
+        "web_tour",
     ],
     "data": [
         "security/ir_module_category_data.xml",
@@ -43,6 +44,7 @@
         "views/ga_cda3a68/general_audit_ws_cda3a68_category_views.xml",
         "views/ga_cda3a68/general_audit_ws_cda3a68_factor_views.xml",
         "security/ir.model.access.csv",
+        "views/assets.xml",
     ],
     "demo": [],
 }

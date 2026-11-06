@@ -50,6 +50,14 @@ in this module cover:
 ISA 620 / SA 620 — Using the Work of an Auditor's Expert
 
 
+Work Instruction
+================
+
+* `Create - Auditor Expert <docs/general_audit_ws_bab9d32/index.html>`_
+* `Populate Details - Auditor Expert <docs/general_audit_ws_bab9d32/index.html>`_
+* `Create - Management Expert <docs/general_audit_ws_cda3a68/index.html>`_
+* `Populate Details - Management Expert <docs/general_audit_ws_cda3a68/index.html>`_
+
 Installation
 ============
 
