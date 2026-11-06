@@ -329,7 +329,7 @@
                                 <field name="state" invisible="1" />
                                 <field
                                     name="amount"
-                                    attrs="{'readonly': ['|', ('calc_type', '!=', 'manual'), ('state', 'not in', ['draft', 'open'])]}"
+                                    attrs="{'readonly': ['|', ('calc_type', 'not in', ['manual', 'fx_effect']), ('state', 'not in', ['draft', 'open'])]}"
                                 />
                             </tree>
                             <form>
@@ -355,7 +355,7 @@
                                 <field name="state" invisible="1" />
                                 <field
                                     name="amount"
-                                    attrs="{'readonly': ['|', ('calc_type', '!=', 'manual'), ('state', 'not in', ['draft', 'open'])]}"
+                                    attrs="{'readonly': ['|', ('calc_type', 'not in', ['manual', 'fx_effect']), ('state', 'not in', ['draft', 'open'])]}"
                                 />
                             </tree>
                             <form>

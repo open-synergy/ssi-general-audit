@@ -820,6 +820,70 @@ class TestWSDraftReporting(YamlTransactionCase):
         self.assertTrue(worksheet.cashflow_has_manual)
         self.assertTrue(worksheet.reload_needs_confirm)
 
+    def test_cashflow_new_manual_rows_feed_totals(self):
+        """Typed-in auditor rows move the totals and the closing cash.
+
+        Pure Python -- trigger P6 (L-15: no mock/patch in YAML; the
+        calculated amounts are fixed). Operating -60, investing -80 and
+        financing +20 give a net change of -120 and, with opening cash
+        300, a computed closing cash of 180. A non-cash adjustment of
+        25 lifts operating to -35, other investing of -15 lowers
+        investing to -95, and the exchange rate effect of 7 is added to
+        the closing cash without entering the net change. The three
+        seeded items carry the agreed section, calculation and order.
+
+        :return: nothing; asserts the seed and the summary lines
+        """
+        noncash = self._cf_item("noncash_adjustment")
+        other_investing = self._cf_item("other_investing")
+        fx_item = self._cf_item("fx_effect")
+        self.assertEqual(
+            (noncash.section, noncash.calc_type, noncash.sequence),
+            ("operating_adjustment", "manual", 55),
+        )
+        self.assertEqual(
+            (other_investing.section, other_investing.calc_type),
+            ("investing", "manual"),
+        )
+        self.assertEqual(other_investing.sequence, 275)
+        self.assertEqual(
+            (fx_item.section, fx_item.calc_type, fx_item.sequence),
+            ("summary", "fx_effect", 385),
+        )
+
+        worksheet = self._create_b555edd_worksheet("CashflowNewRows")
+        lines = self._cf_reload(
+            worksheet,
+            {
+                "ar": -100.0,
+                "ap": 40.0,
+                "capex": -80.0,
+                "share_capital": 20.0,
+                "cash_opening": 300.0,
+                "cash_closing_tb": 280.0,
+            },
+        )
+        self.assertEqual(lines["fx_effect"].amount, 0.0)
+        self.assertEqual(lines["cash_closing_computed"].amount, 180.0)
+
+        lines["noncash_adjustment"].amount = 25.0
+        lines["other_investing"].amount = -15.0
+        lines["fx_effect"].amount = 7.0
+
+        lines = self._cf_lines(worksheet)
+        self.assertEqual(lines["operating_total"].amount, -35.0)
+        self.assertEqual(lines["investing_total"].amount, -95.0)
+        self.assertEqual(lines["net_change"].amount, -110.0)
+        self.assertEqual(lines["cash_closing_computed"].amount, 197.0)
+        self.assertEqual(lines["cash_difference"].amount, -83.0)
+        self.assertTrue(worksheet.cashflow_has_manual)
+
+        lines = self._cf_reload(worksheet, {"ar": -100.0})
+        self.assertEqual(lines["noncash_adjustment"].amount, 0.0)
+        self.assertEqual(lines["other_investing"].amount, 0.0)
+        self.assertEqual(lines["fx_effect"].amount, 0.0)
+        self.assertFalse(worksheet.cashflow_has_manual)
+
     def test_cashflow_reload_discards_manual_amounts(self):
         """Reload again throws away the typed-in amounts.
 

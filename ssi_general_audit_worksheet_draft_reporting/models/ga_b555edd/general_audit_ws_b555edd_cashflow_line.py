@@ -87,7 +87,7 @@ class GeneralAuditWsB555eddCashflowLine(models.Model):
         """
         result = super().write(vals)
         if "amount" in vals:
-            manual = self.filtered(lambda r: r.calc_type == "manual")
+            manual = self.filtered(lambda r: r.calc_type in ("manual", "fx_effect"))
             for worksheet in manual.mapped("worksheet_id"):
                 worksheet._refresh_cashflow_totals()
         return result
