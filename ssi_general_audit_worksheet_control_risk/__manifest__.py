@@ -12,6 +12,7 @@
     "depends": [
         "ssi_general_audit_worksheet_understanding_entity",
         "ssi_general_audit_worksheet_inherent_risk",
+        "web_tour",
     ],
     "data": [
         "security/res_group_data.xml",
@@ -98,6 +99,7 @@
         "data/approval_template/general_audit_ws_ba9b2f0.xml",
         "views/ga_ba9b2f0/general_audit_ws_ba9b2f0_views.xml",
         "security/ir.model.access.csv",
+        "views/assets.xml",
     ],
     "demo": [],
 }
