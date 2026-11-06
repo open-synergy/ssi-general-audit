@@ -54,6 +54,7 @@ class GeneralAuditWsB555eddCashflowItem(models.Model):
             ("financing_total", "Total Financing Cash Flow"),
             ("net_change", "Net Change in Cash"),
             ("cash_opening", "Opening Cash"),
+            ("fx_effect", "Exchange Rate Effect"),
             ("cash_closing_computed", "Closing Cash (Computed)"),
             ("cash_closing_tb", "Closing Cash (Trial Balance)"),
             ("cash_difference", "Cash Difference"),

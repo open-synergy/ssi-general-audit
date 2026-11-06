@@ -156,7 +156,7 @@ class GeneralAuditWSb555edd(models.Model):
         """
         for record in self:
             record.cashflow_has_manual = any(
-                line.calc_type == "manual" and line.amount
+                line.calc_type in ("manual", "fx_effect") and line.amount
                 for line in record.cashflow_line_ids
             )
 
@@ -504,7 +504,9 @@ class GeneralAuditWSb555edd(models.Model):
 
         Totals of the operating, investing and financing sections, the
         net change, the computed closing cash and the difference with
-        the closing cash of the trial balance.
+        the closing cash of the trial balance. The typed-in exchange
+        rate effect is added to the computed closing cash but is not
+        part of the net change.
 
         :return: None
         """
@@ -535,7 +537,8 @@ class GeneralAuditWSb555edd(models.Model):
                 if "cash_closing_tb" in by_type
                 else 0.0
             )
-            computed = opening + net
+            fx_effect = by_type["fx_effect"].amount if "fx_effect" in by_type else 0.0
+            computed = opening + net + fx_effect
             values = {
                 "operating_total": operating,
                 "investing_total": investing,

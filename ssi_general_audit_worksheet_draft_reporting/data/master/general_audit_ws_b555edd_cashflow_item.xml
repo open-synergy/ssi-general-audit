@@ -74,6 +74,17 @@
     </record>
 
     <record
+        id="general_audit_ws_b555edd_cashflow_item_noncash_adjustment"
+        model="general_audit_ws_b555edd.cashflow_item"
+    >
+        <field name="name">Non-cash transaction</field>
+        <field name="sequence" eval="55" />
+        <field name="section">operating_adjustment</field>
+        <field name="calc_type">manual</field>
+        <field name="sign">add</field>
+    </record>
+
+    <record
         id="general_audit_ws_b555edd_cashflow_item_ar"
         model="general_audit_ws_b555edd.cashflow_item"
     >
@@ -412,6 +423,17 @@
     </record>
 
     <record
+        id="general_audit_ws_b555edd_cashflow_item_other_investing"
+        model="general_audit_ws_b555edd.cashflow_item"
+    >
+        <field name="name">Other investing activities</field>
+        <field name="sequence" eval="275" />
+        <field name="section">investing</field>
+        <field name="calc_type">manual</field>
+        <field name="sign">add</field>
+    </record>
+
+    <record
         id="general_audit_ws_b555edd_cashflow_item_borrowing"
         model="general_audit_ws_b555edd.cashflow_item"
     >
@@ -556,6 +578,17 @@
             name="type_ids"
             eval="[(6, 0, [ref('ssi_general_audit.client_account_type_1_e046f813')])]"
         />
+    </record>
+
+    <record
+        id="general_audit_ws_b555edd_cashflow_item_fx_effect"
+        model="general_audit_ws_b555edd.cashflow_item"
+    >
+        <field name="name">The impact of foreign exchange rate changes</field>
+        <field name="sequence" eval="385" />
+        <field name="section">summary</field>
+        <field name="calc_type">fx_effect</field>
+        <field name="sign">add</field>
     </record>
 
     <record
