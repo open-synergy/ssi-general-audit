@@ -63,6 +63,14 @@ of Material Misstatement through Understanding the Entity and Its Environment;
 ISA 570 / SA 570 — Going Concern
 
 
+Work Instruction
+================
+
+* `Create - Inherent Risk Checklist <docs/general_audit_ws_bfb6dae/index.html>`_
+* `Create - Financial Statement Level Inherent Risk <docs/general_audit_ws_c16abd7/index.html>`_
+* `Create - Account Level Inherent Risk <docs/general_audit_ws_a418d89/index.html>`_
+* `Load Details - Account Level Inherent Risk <docs/general_audit_ws_a418d89/index.html>`_
+
 Installation
 ============
 
