@@ -11,6 +11,7 @@
     "installable": True,
     "depends": [
         "ssi_general_audit_worksheet_understanding_entity",
+        "web_tour",
     ],
     "data": [
         "security/ir_module_category_data.xml",
@@ -49,6 +50,7 @@
         "views/ga_bfb6dae/general_audit_ws_bfb6dae_views.xml",
         "views/ga_bfb6dae/general_audit_ws_bfb6dae_item_views.xml",
         "security/ir.model.access.csv",
+        "views/assets.xml",
     ],
     "demo": [],
 }
