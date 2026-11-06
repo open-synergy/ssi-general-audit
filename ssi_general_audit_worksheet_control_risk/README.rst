@@ -88,6 +88,20 @@ of Material Misstatement; ISA 330 / SA 330 — The Auditor's Responses to
 Assessed Risks; ISA 265 / SA 265 — Communicating Deficiencies in Internal Control
 
 
+Work Instruction
+================
+
+* `Create - Control Risk - Entity Level <docs/general_audit_ws_b59b886/index.html>`_
+* `Populate Details - Control Risk - Entity Level <docs/general_audit_ws_b59b886/index.html>`_
+* `Create - General Control Evaluation <docs/general_audit_ws_d3d2719/index.html>`_
+* `Load Details - General Control Evaluation <docs/general_audit_ws_d3d2719/index.html>`_
+* `Create - IT Control Evaluation <docs/general_audit_ws_f63f569/index.html>`_
+* `Load Details - IT Control Evaluation <docs/general_audit_ws_f63f569/index.html>`_
+* `Create - Business Cycle Internal Control <docs/general_audit_ws_eabdaad/index.html>`_
+* `Create - Significant Account Internal Control <docs/general_audit_ws_ba9b2f0/index.html>`_
+* `Create - Control Risk <docs/general_audit_ws_a58e29c/index.html>`_
+* `Reload Links - Control Risk <docs/general_audit_ws_a58e29c/index.html>`_
+
 Installation
 ============
 
