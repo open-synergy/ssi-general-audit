@@ -15,6 +15,7 @@
         "ssi_general_audit_worksheet_control_risk",
         "ssi_general_audit_worksheet_lead_schedule",
         "ssi_general_audit_worksheet_understanding_entity",
+        "web_tour",
     ],
     "data": [
         "security/ir_module_category/general_audit_ws_a916660.xml",
@@ -28,6 +29,7 @@
         "data/approval_template/general_audit_ws_a916660.xml",
         "data/general_audit_worksheet_type/general_audit_ws_a916660.xml",
         "views/general_audit_ws_a916660.xml",
+        "views/assets.xml",
     ],
     "demo": [],
 }
