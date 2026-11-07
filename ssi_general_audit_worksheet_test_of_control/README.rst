@@ -48,6 +48,13 @@ Reference standards: **ISA 330 / SA 330** (Responses to Assessed Risks),
 .. contents::
    :local:
 
+Work Instruction
+================
+
+* `Create - Test of Control <docs/general_audit_ws_e3f4a5b/index.html>`_
+* `Generate Sample - Test of Control <docs/general_audit_ws_e3f4a5b/index.html>`_
+* `Compute Deviation - Test of Control <docs/general_audit_ws_e3f4a5b/index.html>`_
+
 Installation
 ============
 

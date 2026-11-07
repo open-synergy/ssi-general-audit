@@ -15,6 +15,7 @@
         "ssi_general_audit_worksheet_client_package",
         "ssi_general_audit_worksheet_lead_schedule",
         "ssi_web_widget_csv_table",
+        "web_tour",
     ],
     "data": [
         "security/ir_module_category/general_audit_ws_e3f4a5b.xml",
@@ -29,6 +30,7 @@
         "views/general_audit_ws_e3f4a5b.xml",
         "views/general_audit_ws_eabdaad_views.xml",
         "views/general_audit_ws_ba9b2f0_views.xml",
+        "views/assets.xml",
     ],
     "demo": [],
 }
