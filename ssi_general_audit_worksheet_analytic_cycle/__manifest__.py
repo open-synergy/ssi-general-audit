@@ -12,6 +12,7 @@
     "depends": [
         "ssi_general_audit",
         "ssi_general_audit_worksheet_lead_schedule",
+        "web_tour",
     ],
     "data": [
         "security/ir_module_category/general_audit_ws_a3c9d2e.xml",
@@ -29,6 +30,7 @@
         "views/master/general_audit_ws_a3c9d2e_item_views.xml",
         "views/master/general_audit_ws_a3c9d2e_procedure_item_views.xml",
         "views/general_audit_ws_a3c9d2e_views.xml",
+        "views/assets.xml",
     ],
     "demo": [],
 }
