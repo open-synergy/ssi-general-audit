@@ -13,6 +13,7 @@
         "ssi_general_audit",
         "ssi_general_audit_worksheet_understanding_entity",
         "ssi_general_audit_worksheet_control_risk",
+        "web_tour",
     ],
     "data": [
         "security/ir_module_category_data.xml",
@@ -75,6 +76,7 @@
         "views/general_audit_going_concern_confirmation_procedure_views.xml",
         "views/trial_balance_computation_item_views.xml",
         "views/general_audit_going_concern_z_score_coeficient_set_views.xml",
+        "views/assets.xml",
     ],
     "demo": [],
 }
