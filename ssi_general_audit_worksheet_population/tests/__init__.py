@@ -4,3 +4,7 @@
 
 from . import test_general_audit_population_type
 from . import test_general_audit_ws_a01723b
+
+from . import ui_fixture
+from . import test_ui_general_audit_population_type
+from . import test_ui_general_audit_ws_a01723b
