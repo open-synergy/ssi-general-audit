@@ -13,6 +13,7 @@
         "ssi_general_audit",
         "ssi_general_audit_worksheet_control_risk",
         "ssi_web_list_drag_scroll",
+        "web_tour",
     ],
     "data": [
         "security/ir_module_category_data.xml",
@@ -49,6 +50,7 @@
         "security/ir.model.access.csv",
         "views/general_audit_audit_procedure_category_views.xml",
         "views/general_audit_audit_procedure_views.xml",
+        "views/assets.xml",
     ],
     "demo": [],
 }

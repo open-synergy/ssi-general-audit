@@ -54,6 +54,17 @@ the key-procedure worksheet is populated.
 - ISA 300 / SA 300 — Planning an Audit of Financial Statements
 
 
+Work Instruction
+================
+
+* `Create - Worksheet <docs/general_audit_ws_b26d482/index.html>`_
+* `Load Accounts - Worksheet <docs/general_audit_ws_b26d482/index.html>`_
+* `Generate Closing - Worksheet <docs/general_audit_ws_b26d482/index.html>`_
+* `Create - Key Audit Procedures <docs/general_audit_ws_e51bb1c/index.html>`_
+* `Load Procedures - Key Audit Procedures <docs/general_audit_ws_e51bb1c/index.html>`_
+* `Create - Lead Schedule - Account <docs/general_audit_ws_f9f3299/index.html>`_
+* `Reload Accounts - Lead Schedule - Account <docs/general_audit_ws_f9f3299/index.html>`_
+
 Installation
 ============
 

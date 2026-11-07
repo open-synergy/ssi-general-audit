@@ -4,3 +4,8 @@
 
 from . import test_master_audit_procedure
 from . import test_ws_lead_schedule
+
+from . import ui_fixture
+from . import test_ui_general_audit_ws_b26d482
+from . import test_ui_general_audit_ws_e51bb1c
+from . import test_ui_general_audit_ws_f9f3299
