@@ -23,7 +23,10 @@ class GeneralAuditWSa01723b(models.Model):
         string="Population Type",
         required=True,
         readonly=True,
-        states={"open": [("readonly", False)]},
+        states={
+            "draft": [("readonly", False)],
+            "open": [("readonly", False)],
+        },
     )
     raw_data = fields.Text(
         string="Raw Data",
