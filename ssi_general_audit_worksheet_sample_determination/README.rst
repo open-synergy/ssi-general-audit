@@ -7,6 +7,12 @@ General Audit Worksheet - Sample Determination
 =======================================================
 
 
+Work Instruction
+================
+
+* `Create - Sample Determination <docs/general_audit_ws_a916660/index.html>`_
+* `Generate Sampling - Sample Determination <docs/general_audit_ws_a916660/index.html>`_
+
 Installation
 ============
 
