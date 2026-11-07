@@ -6,6 +6,11 @@
 General Audit Worksheet - Population
 ====================================
 
+Work Instruction
+================
+
+* `Create - Population <docs/general_audit_ws_a01723b/index.html>`_
+* `Create - Population Type <docs/general_audit_population_type/index.html>`_
 
 Installation
 ============

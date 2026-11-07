@@ -14,6 +14,7 @@
         "ssi_general_audit_worksheet_control_risk",
         "ssi_general_audit_worksheet_lead_schedule",
         "ssi_general_audit_worksheet_understanding_entity",
+        "web_tour",
     ],
     "external_dependencies": {
         "python": [
@@ -34,6 +35,7 @@
         "data/general_audit_worksheet_type/general_audit_ws_a01723b.xml",
         "views/general_audit_population_type.xml",
         "views/general_audit_ws_a01723b.xml",
+        "views/assets.xml",
     ],
     "demo": [],
 }
