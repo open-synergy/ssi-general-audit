@@ -5,3 +5,10 @@
 from . import test_master_data
 from . import test_general_audit_ws_specific_procedure
 from . import test_worksheet_type_standard_item
+
+from . import ui_fixture
+from . import test_ui_general_audit_ws_a8f4d88
+from . import test_ui_general_audit_ws_c40cfd9
+from . import test_ui_general_audit_ws_cb82c5f
+from . import test_ui_general_audit_ws_ee819ae
+from . import test_ui_general_audit_ws_fbf57ee
