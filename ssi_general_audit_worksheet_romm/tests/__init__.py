@@ -7,3 +7,8 @@ from . import test_general_audit_ws_control_risk
 from . import test_general_audit_ws_d66d87a_control_risk
 from . import test_general_audit_ws_d66d87a_romm_compute
 from . import test_general_audit_ws_romm
+
+from . import ui_fixture
+from . import test_ui_general_audit_ws_c165170
+from . import test_ui_general_audit_ws_d66d87a
+from . import test_ui_general_audit_ws_de417a6

@@ -13,6 +13,7 @@
         "ssi_general_audit_worksheet_control_risk",
         "ssi_general_audit_worksheet_understanding_entity",
         "ssi_general_audit_worksheet_inherent_risk",
+        "web_tour",
     ],
     "data": [
         "security/ir_module_category_data.xml",
@@ -49,6 +50,7 @@
         "views/general_audit_standard_detail_views.xml",
         "views/ga_de417a6/general_audit_ws_de417a6_views.xml",
         "views/ga_de417a6/general_audit_ws_de417a6_item_views.xml",
+        "views/assets.xml",
     ],
     "demo": [],
 }
