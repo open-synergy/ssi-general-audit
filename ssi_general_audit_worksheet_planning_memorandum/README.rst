@@ -54,6 +54,14 @@ The worksheets in this module cover:
 Statements
 
 
+Work Instruction
+================
+
+* `Create - Audit Planning Memorandum <docs/general_audit_ws_a753ab9/index.html>`_
+* `Populate Checklist - Audit Planning Memorandum <docs/general_audit_ws_a753ab9/index.html>`_
+* `Create - Audit Planning Memorandum - Details <docs/general_audit_ws_fbbe0f8/index.html>`_
+* `Reload Links - Audit Planning Memorandum - Details <docs/general_audit_ws_fbbe0f8/index.html>`_
+
 Installation
 ============
 

@@ -25,6 +25,7 @@
         "ssi_general_audit_worksheet_trial_balance",
         "ssi_general_audit_worksheet_preliminary_analytic_procedure",
         "ssi_general_audit_worksheet_romm",
+        "web_tour",
     ],
     "data": [
         "views/assets.xml",
