@@ -122,6 +122,12 @@ Catatan Implementasi
   ``performed`` dari WS-E51BB1C, mencegah auditor mereferensikan prosedur
   yang belum direncanakan.
 
+Work Instruction
+================
+
+* `Create - Plausible Relationship Audit Procedure <docs/general_audit_ws_aa899baf/index.html>`_
+* `Create - Comparative Audit Procedure <docs/general_audit_ws_de3244b/index.html>`_
+
 Installation
 ============
 
