@@ -17,6 +17,7 @@
         "ssi_general_audit_worksheet_sample_determination",
         "ssi_general_audit_worksheet_understanding_entity",
         "ssi_web_widget_csv_table",
+        "web_tour",
     ],
     "data": [
         "security/ir_module_category/general_audit_ws_c6c86fd.xml",
@@ -29,6 +30,7 @@
         "data/approval_template/general_audit_ws_c6c86fd.xml",
         "data/general_audit_worksheet_type/general_audit_ws_c6c86fd.xml",
         "views/general_audit_ws_c6c86fd.xml",
+        "views/assets.xml",
     ],
     "demo": [],
 }
