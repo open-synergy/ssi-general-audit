@@ -42,6 +42,11 @@ Typical use cases include:
 **ISA / SA references:** ISA 500, SA 500 — Audit Evidence
 
 
+Work Instruction
+================
+
+* `Create - Vouching Audit Procedure <docs/general_audit_ws_b4f7d9c/index.html>`_
+
 Installation
 ============
 
