@@ -44,6 +44,11 @@ ISA 315, SA 315 — Identifying and Assessing the Risks of Material
 Misstatement; ISA 330, SA 330 — The Auditor's Responses to Assessed Risks
 
 
+Work Instruction
+================
+
+* `Create - Observation Audit Procedure <docs/general_audit_ws_d4d1ac0/index.html>`_
+
 Installation
 ============
 
