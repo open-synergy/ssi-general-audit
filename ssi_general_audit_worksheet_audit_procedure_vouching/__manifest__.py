@@ -14,6 +14,7 @@
         "ssi_general_audit_worksheet_control_risk",
         "ssi_general_audit_worksheet_lead_schedule",
         "ssi_general_audit_worksheet_sample_determination",
+        "web_tour",
     ],
     "external_dependencies": {
         "python": ["openupgradelib"],
@@ -29,6 +30,7 @@
         "data/approval_template/general_audit_ws_b4f7d9c.xml",
         "data/general_audit_worksheet_type/general_audit_ws_b4f7d9c.xml",
         "views/general_audit_ws_b4f7d9c_views.xml",
+        "views/assets.xml",
     ],
     "demo": [],
 }
