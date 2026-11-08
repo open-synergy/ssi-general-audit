@@ -48,6 +48,12 @@ ISA 330, SA 330 — The Auditor's Responses to Assessed Risks;
 ISA 520, SA 520 — Analytical Procedures
 
 
+Work Instruction
+================
+
+* `Create - Recompute Audit Procedure <docs/general_audit_ws_c6c86fd/index.html>`_
+* `Recompute - Recompute Audit Procedure <docs/general_audit_ws_c6c86fd/index.html>`_
+
 Installation
 ============
 
