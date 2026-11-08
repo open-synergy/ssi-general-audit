@@ -43,6 +43,11 @@ ISA 240, SA 240 — The Auditor's Responsibilities Relating to Fraud in an
 Audit of Financial Statements
 
 
+Work Instruction
+================
+
+* `Create - Inquiry Audit Procedure <docs/general_audit_ws_a145276/index.html>`_
+
 Installation
 ============
 
