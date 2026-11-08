@@ -10,7 +10,7 @@ from .ui_fixture import create_open_general_audit
 
 
 @tagged("post_install", "-at_install")
-class TestUiGeneralAuditWsD1ECFB7(HttpSavepointCase):
+class TestUiGeneralAuditWsD1ecfb7(HttpSavepointCase):
     """Tour tests for the ``general_audit_ws_d1ecfb7`` work instructions."""
 
     @classmethod
