@@ -3,3 +3,7 @@
 
 from . import test_ws_de3244b
 from . import test_ws_aa899baf
+
+from . import ui_fixture
+from . import test_ui_general_audit_ws_aa899baf
+from . import test_ui_general_audit_ws_de3244b
