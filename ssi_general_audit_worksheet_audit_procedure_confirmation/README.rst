@@ -28,6 +28,11 @@ and contractual terms with counterparties.
 **ISA / SA references:** ISA 505, SA 505 — External Confirmations
 
 
+Work Instruction
+================
+
+* `Create - Confirmation Audit Procedure <docs/general_audit_ws_d45dd19/index.html>`_
+
 Installation
 ============
 

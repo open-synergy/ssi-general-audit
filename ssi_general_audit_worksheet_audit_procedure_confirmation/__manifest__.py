@@ -15,6 +15,7 @@
         "ssi_general_audit_worksheet_lead_schedule",
         "ssi_general_audit_worksheet_sample_determination",
         "ssi_general_audit_worksheet_understanding_entity",
+        "web_tour",
     ],
     "data": [
         "security/ir_module_category/general_audit_ws_d45dd19.xml",
@@ -27,6 +28,7 @@
         "data/approval_template/general_audit_ws_d45dd19.xml",
         "data/general_audit_worksheet_type/general_audit_ws_d45dd19.xml",
         "views/general_audit_ws_d45dd19.xml",
+        "views/assets.xml",
     ],
     "demo": [],
 }
