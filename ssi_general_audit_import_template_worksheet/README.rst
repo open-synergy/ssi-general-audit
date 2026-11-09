@@ -7,21 +7,20 @@ General Audit - Import Template Worksheet
 =========================================
 
 This module seeds import templates for the worksheets whose raw data is pasted
-by the user as CSV: Subledger, General Ledger, Population, and Financial
-Statement Disclosure. It is separate from the core template module so the core
+by the user as CSV: Subledger, General Ledger, and Financial Statement
+Disclosure. It is separate from the core template module so the core
 does not force the worksheet modules to be installed.
 
 Key Features
 ============
 
-- Four seeded templates. Their name, delimiter, example and columns follow
+- Three seeded templates. Their name, delimiter, example and columns follow
   the module version and are restored on every module update, so create a new
   template instead of editing a seeded one. A column added to a seeded
   template by hand is not removed by the update. A server action removed or
   unbound by an administrator is not created again by a module update, and an
   archived seeded template stays archived.
 - Financial Statement Disclosure - Detail: columns Item, Standard, Note, and Status.
-- Population: illustrative columns only (ID, Date, Reference, Amount).
 - Subledger: per-item balance list with columns No, Name, Reference, Date,
   Due Date, and Amount.
 - General Ledger: columns Date, Reference, Account Code, Account Name,

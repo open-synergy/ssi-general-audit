@@ -16,7 +16,6 @@ MODULE = "ssi_general_audit_import_template_worksheet"
 
 COLUMNS = {
     "financial_statement_disclosure": ["Item", "Standard", "Note", "Status"],
-    "population": ["ID", "Date", "Reference", "Amount"],
     "subledger": ["No", "Name", "Reference", "Date", "Due Date", "Amount"],
     "general_ledger": [
         "Date",
@@ -144,7 +143,7 @@ class TestImportTemplateWorksheet(YamlTransactionCase):
         files the way ``-u`` does, which a single YAML expression
         cannot).
         """
-        seed = self._get_template("population")
+        seed = self._get_template("general_ledger")
         self.assertTrue(seed.server_action_id)
         seed.action_remove_server_action()
         self.assertFalse(seed.server_action_id)
@@ -191,3 +190,48 @@ class TestImportTemplateWorksheet(YamlTransactionCase):
             (MODULE, models),
         )
         self.assertEqual(self.env.cr.fetchone()[0], 0)
+
+    def test_pre_migrate_removes_population_seed(self):
+        """Assert the 14.0.1.2.0 script removes the Population seed.
+
+        Pure Python -- trigger P10 (L-09: the migration function is
+        called directly on a seed rebuilt with a server action).
+        """
+        path = os.path.join(
+            get_module_path(MODULE),
+            "migrations",
+            "14.0.1.2.0",
+            "pre-migrate.py",
+        )
+        spec = importlib.util.spec_from_file_location("pre_migrate_pop", path)
+        script = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(script)
+        model = self.env.ref(
+            "ssi_general_audit_worksheet_review.model_general_audit_ws_a025441"
+        )
+        template = self.env["general_audit_import_template"].create(
+            {
+                "name": "Legacy Population",
+                "code": "POPULATION",
+                "model_id": model.id,
+                "file_name": "population.csv",
+                "delimiter": ",",
+                "line_ids": [(0, 0, {"sequence": 5, "name": "ID"})],
+            }
+        )
+        template.action_create_server_action()
+        action = template.server_action_id
+        self.assertTrue(action)
+        self.env["ir.model.data"].create(
+            {
+                "module": MODULE,
+                "name": script.TEMPLATE,
+                "model": template._name,
+                "res_id": template.id,
+            }
+        )
+        script.migrate(self.env.cr, "14.0.1.1.1")
+        self.assertFalse(template.exists())
+        self.assertFalse(action.exists())
+        # Running again on a database without the seed does nothing.
+        script.migrate(self.env.cr, "14.0.1.1.1")

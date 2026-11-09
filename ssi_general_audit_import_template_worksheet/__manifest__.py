@@ -13,7 +13,6 @@
     "depends": [
         "ssi_general_audit_import_template",
         "ssi_general_audit_worksheet_client_package",
-        "ssi_general_audit_worksheet_population",
         "ssi_general_audit_worksheet_review",
     ],
     "data": [
