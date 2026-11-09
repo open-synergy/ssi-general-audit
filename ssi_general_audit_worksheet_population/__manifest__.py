@@ -38,4 +38,5 @@
         "views/assets.xml",
     ],
     "demo": [],
+    "uninstall_hook": "uninstall_hook",
 }
