@@ -30,7 +30,6 @@
         "ssi_general_audit_worksheet_audit_procedure_inquiry",
         "ssi_general_audit_worksheet_specific_procedure",
         "ssi_general_audit_worksheet_expert",
-        "ssi_general_audit_worksheet_population",
         "ssi_general_audit_worksheet_audit_result",
         "ssi_general_audit_worksheet_final_materiality",
         "ssi_general_audit_worksheet_draft_reporting",

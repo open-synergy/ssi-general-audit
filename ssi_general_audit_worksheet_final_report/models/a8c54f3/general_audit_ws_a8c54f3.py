@@ -1234,45 +1234,6 @@ class GeneralAuditWSa8c54f3(models.Model):
         ),
     )
 
-    # Population
-    # LINK - 27 a01723b
-    @api.depends(
-        "general_audit_id",
-    )
-    def _compute_link_27_ids(self):
-        """Populate ``link_27_ids`` with the open/done worksheets.
-
-        Links every worksheet of type "Population"
-        (``general_audit_ws_a01723b``) that shares the same
-        ``general_audit_id`` and has ``state`` in
-        ``["open", "done"]``. Every match is linked: the worksheet
-        type allows more than one per audit
-        (``allowed_audit=True``).
-        """
-        for record in self:
-            result = False
-            obj = self.env["general_audit_ws_a01723b"]
-            criteria = [
-                ("general_audit_id", "=", record.general_audit_id.id),
-                ("state", "in", ["open", "done"]),
-            ]
-            link_27_ids = obj.search(criteria)
-            if link_27_ids:
-                result = link_27_ids.ids
-            record.link_27_ids = result
-
-    link_27_ids = fields.Many2many(
-        string="Population",
-        comodel_name="general_audit_ws_a01723b",
-        compute_sudo=True,
-        compute="_compute_link_27_ids",
-        store=True,
-        help=(
-            "Collection of all (Population) worksheets linked to this "
-            "General  Audit. Automatically computed and stored."
-        ),
-    )
-
     # Audit Result Formulation
     # LINK - 28 ab19fd4
     @api.depends(
@@ -2265,7 +2226,6 @@ class GeneralAuditWSa8c54f3(models.Model):
         self._compute_link_24_id()
         self._compute_link_25_ids()
         self._compute_link_26_id()
-        self._compute_link_27_ids()
         self._compute_link_28_id()
         self._compute_link_29_id()
         self._compute_link_30_id()
@@ -2320,7 +2280,6 @@ class GeneralAuditWSa8c54f3(models.Model):
             "link_24_id": _("Commitment and Contingent"),
             "link_25_ids": _("Lead Schedule - Account"),
             "link_26_id": _("Worksheet"),
-            "link_27_ids": _("Population"),
             "link_28_id": _("Audit Result Formulation"),
             "link_29_id": _("Findings That Influence Opinion"),
             "link_30_id": _("Control Deficiencies"),
