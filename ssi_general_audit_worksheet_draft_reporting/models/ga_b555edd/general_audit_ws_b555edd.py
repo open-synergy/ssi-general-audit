@@ -2,7 +2,7 @@
 # Copyright 2025 PT. Simetri Sinergi Indonesia
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl-3.0-standalone.html).
 
-from odoo import api, fields, models
+from odoo import fields, models
 
 
 class GeneralAuditWSb555edd(models.Model):
@@ -115,61 +115,6 @@ class GeneralAuditWSb555edd(models.Model):
         domain=[("period", "=", "previous")],
         help="Cash flow lines of the previous period.",
     )
-    cashflow_has_manual = fields.Boolean(
-        string="Has Manual Cash Flow Input",
-        compute="_compute_cashflow_has_manual",
-        help="True when a manual cash flow amount has been typed in.",
-    )
-    reload_needs_confirm = fields.Boolean(
-        string="Reload Needs Confirmation",
-        compute="_compute_reload_needs_confirm",
-        help="True when Reload would discard figures typed in by the user.",
-    )
-    equity_has_manual = fields.Boolean(
-        string="Has Manual Equity Input",
-        compute="_compute_equity_has_manual",
-        help="True when an owner transaction has been typed in.",
-    )
-
-    @api.depends(
-        "equity_line_ids.issuance",
-        "equity_line_ids.treasury",
-        "equity_line_ids.reserve",
-        "equity_line_ids.dividend",
-    )
-    def _compute_equity_has_manual(self):
-        """Flag worksheets whose owner transactions are filled in.
-
-        :return: None
-        """
-        for record in self:
-            record.equity_has_manual = any(
-                line.issuance or line.treasury or line.reserve or line.dividend
-                for line in record.equity_line_ids
-            )
-
-    @api.depends("cashflow_line_ids.amount", "cashflow_line_ids.calc_type")
-    def _compute_cashflow_has_manual(self):
-        """Flag worksheets with a manual cash flow amount typed in.
-
-        :return: None
-        """
-        for record in self:
-            record.cashflow_has_manual = any(
-                line.calc_type in ("manual", "fx_effect") and line.amount
-                for line in record.cashflow_line_ids
-            )
-
-    @api.depends("equity_has_manual", "cashflow_has_manual")
-    def _compute_reload_needs_confirm(self):
-        """Flag worksheets whose typed-in figures Reload would discard.
-
-        :return: None
-        """
-        for record in self:
-            record.reload_needs_confirm = (
-                record.equity_has_manual or record.cashflow_has_manual
-            )
 
     def action_reload_account(self):
         """Refill the detail lines from the General Audit standard details.
@@ -180,31 +125,66 @@ class GeneralAuditWSb555edd(models.Model):
             record._reload_account()
 
     def _reload_account(self):
-        """Replace the detail, equity and cash flow lines with fresh ones.
+        """Synchronise the detail, equity and cash flow lines.
 
         Every standard account type of the General Audit gets a line,
         whether it belongs to the financial position or to the
-        comprehensive income statement. Existing lines are removed
-        first, so clicking Reload again never duplicates lines. The
-        equity and cash flow lines are rebuilt as well, see
-        ``_reload_equity()`` and ``_reload_cashflow()``.
+        comprehensive income statement. Lines are matched on
+        ``standard_detail_id``: missing ones are created, ones whose
+        standard detail is gone are removed and the others only get
+        their ``sequence`` refreshed, so clicking Reload again never
+        duplicates lines. The equity and cash flow lines are
+        synchronised as well, see ``_reload_equity()`` and
+        ``_reload_cashflow()``.
 
         :return: None
         """
         self.ensure_one()
-        self.detail_ids.unlink()
+        standard_details = self.general_audit_id.standard_detail_ids
+        existing = self._index_lines(
+            self.detail_ids, lambda line: line.standard_detail_id.id
+        )
+        self.detail_ids.filtered(
+            lambda line: line.standard_detail_id not in standard_details
+        ).unlink()
         Detail = self.env["general_audit_ws_b555edd.detail"]
-        for standard_detail in self.general_audit_id.standard_detail_ids:
+        for standard_detail in standard_details:
             type_ = standard_detail.type_id
-            Detail.create(
-                {
-                    "worksheet_id": self.id,
-                    "standard_detail_id": standard_detail.id,
-                    "sequence": type_.group_id.sequence * 1000 + type_.sequence,
-                }
-            )
+            sequence = type_.group_id.sequence * 1000 + type_.sequence
+            line = existing.get(standard_detail.id)
+            if line:
+                line.sequence = sequence
+            else:
+                Detail.create(
+                    {
+                        "worksheet_id": self.id,
+                        "standard_detail_id": standard_detail.id,
+                        "sequence": sequence,
+                    }
+                )
         self._reload_equity()
         self._reload_cashflow()
+
+    def _index_lines(self, lines, key):
+        """Index lines by a key, removing the duplicates of a key.
+
+        Only the first line of each key is kept, so a worksheet that
+        somehow holds two lines for the same key is repaired by Reload.
+
+        :param lines: lines of this worksheet
+        :param key: function returning the matching key of a line
+        :return: ``{key: first line with that key}``
+        :rtype: dict
+        """
+        indexed = {}
+        duplicates = lines.browse()
+        for line in lines:
+            if key(line) in indexed:
+                duplicates |= line
+            else:
+                indexed[key(line)] = line
+        duplicates.unlink()
+        return indexed
 
     def _get_period_fields(self, period):
         """Return the standard detail fields holding a period's balances.
@@ -348,27 +328,38 @@ class GeneralAuditWSb555edd(models.Model):
         }
 
     def _reload_equity(self):
-        """Replace the equity lines with a fresh snapshot.
+        """Synchronise the equity lines with the General Audit.
 
         One line per equity component for the current period, plus one
         per component for the previous period when the General Audit
-        keeps a previous period. Owner transactions typed in before are
-        lost, as the lines are created again. The current closing balance
-        comes from the Worksheet when there is one, otherwise it is the
-        standard detail balance plus profit and OCI.
+        keeps a previous period. Lines are matched on the component and
+        period: missing ones are created and the ones no longer needed
+        (for example ``previous`` after ``need_previous`` is switched
+        off) are removed. On a kept line only the source columns are
+        refreshed; ``issuance``, ``treasury``, ``reserve`` and
+        ``dividend`` typed in by the auditor are never written. The
+        current closing balance comes from the Worksheet when there is
+        one, otherwise it is the standard detail balance plus profit
+        and OCI.
 
         :return: None
         """
         self.ensure_one()
-        self.equity_line_ids.unlink()
         periods = ["current"]
         if self.general_audit_id.need_previous:
             periods.append("previous")
         Line = self.env["general_audit_ws_b555edd.equity_line"]
-        Component = self.env["general_audit_ws_b555edd.equity_component"]
+        components = self.env["general_audit_ws_b555edd.equity_component"].search([])
+        existing = self._index_lines(
+            self.equity_line_ids, lambda line: (line.component_id.id, line.period)
+        )
+        self.equity_line_ids.filtered(
+            lambda line: line.period not in periods
+            or line.component_id not in components
+        ).unlink()
         for period in periods:
             source = self._get_equity_source(period)
-            for component in Component.search([]):
+            for component in components:
                 opening, closing = source["components"].get(component.id, (0.0, 0.0))
                 profit = source["profit"] if component.receive_profit else 0.0
                 oci = source["oci"] if component.receive_oci else 0.0
@@ -377,18 +368,25 @@ class GeneralAuditWSb555edd(models.Model):
                     closing_balance = closing_total[component.id]
                 else:
                     closing_balance = closing + profit + oci
-                Line.create(
-                    {
-                        "worksheet_id": self.id,
-                        "component_id": component.id,
-                        "period": period,
-                        "sequence": component.sequence,
-                        "opening_balance": opening,
-                        "profit": profit,
-                        "oci": oci,
-                        "closing_balance": closing_balance,
-                    }
-                )
+                values = {
+                    "sequence": component.sequence,
+                    "opening_balance": opening,
+                    "profit": profit,
+                    "oci": oci,
+                    "closing_balance": closing_balance,
+                }
+                line = existing.get((component.id, period))
+                if line:
+                    line.write(values)
+                else:
+                    values.update(
+                        {
+                            "worksheet_id": self.id,
+                            "component_id": component.id,
+                            "period": period,
+                        }
+                    )
+                    Line.create(values)
 
     _CASHFLOW_OPERATING_SECTIONS = (
         "operating_adjustment",
@@ -469,34 +467,50 @@ class GeneralAuditWSb555edd(models.Model):
         )
 
     def _reload_cashflow(self):
-        """Replace the cash flow lines with a fresh snapshot.
+        """Synchronise the cash flow lines with the General Audit.
 
         One line per cash flow item for the current period, plus one per
         item for the previous period when the General Audit keeps a
-        previous period. Manual amounts typed in before are lost, as the
-        lines are created again.
+        previous period. Lines are matched on the item and period:
+        missing ones are created and the ones no longer needed are
+        removed. On a kept line the ``amount`` is refreshed from the
+        source, except for ``manual`` and ``fx_effect`` items, whose
+        typed-in amount is never written. The summary lines are
+        recomputed at the end.
 
         :return: None
         """
         self.ensure_one()
-        self.cashflow_line_ids.unlink()
         periods = ["current"]
         if self.general_audit_id.need_previous:
             periods.append("previous")
         Line = self.env["general_audit_ws_b555edd.cashflow_line"]
         items = self.env["general_audit_ws_b555edd.cashflow_item"].search([])
+        existing = self._index_lines(
+            self.cashflow_line_ids, lambda line: (line.item_id.id, line.period)
+        )
+        self.cashflow_line_ids.filtered(
+            lambda line: line.period not in periods or line.item_id not in items
+        ).unlink()
         for period in periods:
             amounts = self._get_cashflow_source(period)
             for item in items:
-                Line.create(
-                    {
-                        "worksheet_id": self.id,
-                        "item_id": item.id,
-                        "period": period,
-                        "sequence": item.sequence,
-                        "amount": amounts.get(item.id, 0.0),
-                    }
-                )
+                values = {"sequence": item.sequence}
+                line = existing.get((item.id, period))
+                if line:
+                    if item.calc_type not in ("manual", "fx_effect"):
+                        values["amount"] = amounts.get(item.id, 0.0)
+                    line.write(values)
+                else:
+                    values.update(
+                        {
+                            "worksheet_id": self.id,
+                            "item_id": item.id,
+                            "period": period,
+                            "amount": amounts.get(item.id, 0.0),
+                        }
+                    )
+                    Line.create(values)
         self._refresh_cashflow_totals()
 
     def _refresh_cashflow_totals(self):

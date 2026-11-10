@@ -46,23 +46,13 @@
                         name="statement_of_comprehensive_income"
                         string="Statement of Comprehensive Income"
                     >
-                        <field name="reload_needs_confirm" invisible="1" />
                         <button
                             name="action_reload_account"
                             type="object"
                             string="Reload"
                             class="oe_highlight"
                             icon="fa-refresh"
-                            attrs="{'invisible': ['|', ('state', 'not in', ['draft', 'open']), ('reload_needs_confirm', '=', True)]}"
-                        />
-                        <button
-                            name="action_reload_account"
-                            type="object"
-                            string="Reload"
-                            class="oe_highlight"
-                            icon="fa-refresh"
-                            confirm="Reload clears the figures you typed in on the equity and cash flow tabs. Are you sure?"
-                            attrs="{'invisible': ['|', ('state', 'not in', ['draft', 'open']), ('reload_needs_confirm', '=', False)]}"
+                            attrs="{'invisible': [('state', 'not in', ['draft', 'open'])]}"
                         />
                         <field name="soci_detail_ids" nolabel="1">
                             <tree create="false" delete="false" edit="false">
@@ -91,16 +81,7 @@
                             string="Reload"
                             class="oe_highlight"
                             icon="fa-refresh"
-                            attrs="{'invisible': ['|', ('state', 'not in', ['draft', 'open']), ('reload_needs_confirm', '=', True)]}"
-                        />
-                        <button
-                            name="action_reload_account"
-                            type="object"
-                            string="Reload"
-                            class="oe_highlight"
-                            icon="fa-refresh"
-                            confirm="Reload clears the figures you typed in on the equity and cash flow tabs. Are you sure?"
-                            attrs="{'invisible': ['|', ('state', 'not in', ['draft', 'open']), ('reload_needs_confirm', '=', False)]}"
+                            attrs="{'invisible': [('state', 'not in', ['draft', 'open'])]}"
                         />
                         <field name="sfp_detail_ids" nolabel="1">
                             <tree create="false" delete="false" edit="false">
@@ -129,16 +110,7 @@
                             string="Reload"
                             class="oe_highlight"
                             icon="fa-refresh"
-                            attrs="{'invisible': ['|', ('state', 'not in', ['draft', 'open']), ('reload_needs_confirm', '=', True)]}"
-                        />
-                        <button
-                            name="action_reload_account"
-                            type="object"
-                            string="Reload"
-                            class="oe_highlight"
-                            icon="fa-refresh"
-                            confirm="Reload clears the figures you typed in on the equity and cash flow tabs. Are you sure?"
-                            attrs="{'invisible': ['|', ('state', 'not in', ['draft', 'open']), ('reload_needs_confirm', '=', False)]}"
+                            attrs="{'invisible': [('state', 'not in', ['draft', 'open'])]}"
                         />
                         <div class="alert alert-info" role="alert">
                             <p>
@@ -177,8 +149,9 @@
                             <p>
                                 Other Movement = Closing Balance - (Opening Balance
                                 + Profit + OCI + owner transactions). It is 0 when
-                                the whole movement is explained. Reload replaces
-                                every figure, including the ones you typed in.
+                                the whole movement is explained. Reload refreshes
+                                the figures from the trial balance and keeps the
+                                ones you typed in.
                             </p>
                         </div>
                         <separator string="Current Period" />
@@ -290,16 +263,7 @@
                             string="Reload"
                             class="oe_highlight"
                             icon="fa-refresh"
-                            attrs="{'invisible': ['|', ('state', 'not in', ['draft', 'open']), ('reload_needs_confirm', '=', True)]}"
-                        />
-                        <button
-                            name="action_reload_account"
-                            type="object"
-                            string="Reload"
-                            class="oe_highlight"
-                            icon="fa-refresh"
-                            confirm="Reload clears the figures you typed in on the equity and cash flow tabs. Are you sure?"
-                            attrs="{'invisible': ['|', ('state', 'not in', ['draft', 'open']), ('reload_needs_confirm', '=', False)]}"
+                            attrs="{'invisible': [('state', 'not in', ['draft', 'open'])]}"
                         />
                         <div class="alert alert-info" role="alert">
                             <p>
@@ -320,8 +284,8 @@
                                 Difference = computed closing cash - closing cash
                                 of the trial balance. It is 0 when every cash
                                 movement is mapped; otherwise something is still
-                                missing. Reload replaces every figure, including the
-                                ones you typed in.
+                                missing. Reload refreshes the figures from the trial
+                                balance and keeps the ones you typed in.
                             </p>
                         </div>
                         <separator string="Current Period" />
