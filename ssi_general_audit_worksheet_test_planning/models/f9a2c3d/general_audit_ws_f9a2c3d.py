@@ -47,38 +47,47 @@ class GeneralAuditWSf9a2c3d(models.Model):
     )
 
     def action_load_detail(self):
-        """Populate ``detail_ids`` from the standard accounts of the audit.
+        """Synchronise ``detail_ids`` with the standard accounts.
 
         Triggers :meth:`_load_detail` (wrapped in ``sudo()``) for every
         record in the current recordset.
 
-        :return: nothing; rebuilds the detail lines
+        :return: nothing; adds, removes and refreshes detail lines
         """
         for record in self.sudo():
             record._load_detail()
 
     def _load_detail(self):
-        """Rebuild ``detail_ids`` from ``general_audit.standard_detail``.
+        """Synchronise ``detail_ids`` with ``general_audit.standard_detail``.
 
-        Existing lines are removed, then one line is created for each
-        standard detail that belongs to ``general_audit_id``, so pressing
-        the button again never duplicates a line.
+        A line is created for each standard detail that belongs to
+        ``general_audit_id`` and has none, and the lines of standard
+        details that no longer match the criteria are removed. Other
+        lines are kept as they are, so the Timing, Extent and Primary
+        Audit Technique chosen by the auditor are never lost. The stored
+        computed columns of the kept lines are refreshed, and pressing
+        the button again without changes alters nothing.
 
-        :return: nothing; rebuilds the detail lines
+        :return: nothing; adds, removes and refreshes detail lines
         """
         self.ensure_one()
-        self.detail_ids.unlink()
         Detail = self.env["general_audit_ws_f9a2c3d.detail"]
-        criteria = self._get_standard_detail_criteria()
-        for standard_detail in self.env["general_audit.standard_detail"].search(
-            criteria
-        ):
+        wanted = self.env["general_audit.standard_detail"].search(
+            self._get_standard_detail_criteria()
+        )
+        obsolete = self.detail_ids.filtered(
+            lambda line: line.standard_detail_id not in wanted
+        )
+        obsolete.unlink()
+        kept = self.detail_ids - obsolete
+        for standard_detail in wanted - kept.mapped("standard_detail_id"):
             Detail.create(
                 {
                     "worksheet_id": self.id,
                     "standard_detail_id": standard_detail.id,
                 }
             )
+        kept._refresh_computed_columns()
 
     def _get_standard_detail_criteria(self):
         """Return the domain of the standard accounts to load.

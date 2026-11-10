@@ -76,7 +76,7 @@ class GeneralAuditWSf9a2c3dDetail(models.Model):
         (6dcda0e) uses for the same standard account, so both columns
         share one basis. It is ``0.0`` when no mapping line exists. The
         mapping lives on another model, so the value is refreshed each
-        time the **Detail** button recreates the lines.
+        time the **Detail** button is pressed.
 
         :return: nothing; assigns ``balance``
         """
@@ -113,7 +113,7 @@ class GeneralAuditWSf9a2c3dDetail(models.Model):
         of the Specific Materiality worksheet (6dcda0e) of the same audit
         is used, which follows the Materiality Type chosen there. The
         mapping and that worksheet live on other models, so the value is
-        refreshed each time the **Detail** button recreates the lines.
+        refreshed each time the **Detail** button is pressed.
 
         :return: nothing; assigns ``performance_materiality``
         """
@@ -143,6 +143,20 @@ class GeneralAuditWSf9a2c3dDetail(models.Model):
             "(6dcda0e). Otherwise the Balance base of that worksheet."
         ),
     )
+
+    def _refresh_computed_columns(self):
+        """Recompute the columns that read other worksheets.
+
+        The balance, the performance materiality and the AP result
+        depend on records of other models, so they are not refreshed by
+        the ORM when those records change. The **Detail** button calls
+        this method on the lines it keeps.
+
+        :return: nothing; reassigns the three stored columns
+        """
+        self._compute_balance()
+        self._compute_performance_materiality()
+        self._compute_ap_result()
 
     def _get_mapping_criteria(self):
         """Return the domain of the mapping line of this account.
