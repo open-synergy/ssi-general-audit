@@ -648,6 +648,223 @@ scenarios:
         expect_count: 0
 
   # ------------------------------------------------------------------
+  # d3d2719 - action_load_detail (jawaban auditor dipertahankan)
+  # ------------------------------------------------------------------
+  - name: "Worksheet d3d2719 - Action load detail (keeps auditor answers)"
+    steps:
+      - step: "Create control category"
+        action: "create"
+        model: "general_audit_general_control_category"
+        save_as: "category"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Category - d3d2719 Load Detail Keep"
+          code: "/"
+
+      - step: "Create option set"
+        action: "create"
+        model: "checklist.option_set"
+        save_as: "option_set"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Option Set - d3d2719 Load Detail Keep"
+          code: "/"
+
+      - step: "Create answer option"
+        action: "create"
+        model: "checklist.option"
+        save_as: "option"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Option - d3d2719 Load Detail Keep"
+          code: "/"
+
+      - step: "Create control A"
+        action: "create"
+        model: "general_audit_general_control"
+        save_as: "control_a"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Control A - d3d2719 Load Detail Keep"
+          code: "/"
+          category_id: "REC: category.id"
+          option_set_id: "REC: option_set.id"
+
+      - step: "Create control B"
+        action: "create"
+        model: "general_audit_general_control"
+        save_as: "control_b"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Control B - d3d2719 Load Detail Keep"
+          code: "/"
+          category_id: "REC: category.id"
+          option_set_id: "REC: option_set.id"
+
+      - step: "Create indicator 1 for control A"
+        action: "create"
+        model: "general_audit_general_control_indicator"
+        save_as: "indicator_1"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Indicator 1 - d3d2719 Load Detail Keep"
+          code: "/"
+          control_id: "REC: control_a.id"
+          option_set_id: "REC: option_set.id"
+
+      - step: "Create indicator 2 for control B"
+        action: "create"
+        model: "general_audit_general_control_indicator"
+        save_as: "indicator_2"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Indicator 2 - d3d2719 Load Detail Keep"
+          code: "/"
+          control_id: "REC: control_b.id"
+          option_set_id: "REC: option_set.id"
+
+      - step: "Create indicator 3 for control A, not in the set yet"
+        action: "create"
+        model: "general_audit_general_control_indicator"
+        save_as: "indicator_3"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Indicator 3 - d3d2719 Load Detail Keep"
+          code: "/"
+          control_id: "REC: control_a.id"
+          option_set_id: "REC: option_set.id"
+
+      - step: "Create general control set with indicators 1 and 2"
+        action: "create"
+        model: "general_audit_general_control_set"
+        save_as: "set"
+        as_user: "base.user_admin"
+        values:
+          name: "Test General Control Set - d3d2719 Load Detail Keep"
+          code: "/"
+          general_control_indicator_ids:
+            [[6, 0, ["REC: indicator_1.id", "REC: indicator_2.id"]]]
+
+      - step: "Create worksheet d3d2719 with the control set"
+        action: "create"
+        model: "general_audit_ws_d3d2719"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_d3d2719.id"
+          set_id: "REC: set.id"
+
+      - step: "Call action_load_detail the first time"
+        action: "call"
+        target: "worksheet"
+        method: "action_load_detail"
+        as_user: "base.user_admin"
+
+      - step: "Find the control line of control A"
+        action: "search"
+        model: "general_audit_ws_d3d2719.detail"
+        domain:
+          - ["worksheet_id", "=", "REC: worksheet.id"]
+          - ["control_id", "=", "REC: control_a.id"]
+        save_as: "detail_a"
+        expect_count: 1
+
+      - step: "Find the indicator line of indicator 1"
+        action: "search"
+        model: "general_audit_ws_d3d2719.indicator"
+        domain:
+          - ["worksheet_id", "=", "REC: worksheet.id"]
+          - ["indicator_id", "=", "REC: indicator_1.id"]
+        save_as: "line_1"
+        expect_count: 1
+
+      - step: "Auditor answers the control line of control A"
+        action: "write"
+        target: "detail_a"
+        as_user: "base.user_admin"
+        values:
+          result: "REC: option.id"
+          explanation: "Answer on control A"
+
+      - step: "Auditor answers the indicator line of indicator 1"
+        action: "write"
+        target: "line_1"
+        as_user: "base.user_admin"
+        values:
+          result: "REC: option.id"
+          explanation: "Answer on indicator 1"
+
+      - step: "Add indicator 3 to the set and drop indicator 2 (control B)"
+        action: "write"
+        target: "set"
+        as_user: "base.user_admin"
+        values:
+          general_control_indicator_ids:
+            [[6, 0, ["REC: indicator_1.id", "REC: indicator_3.id"]]]
+
+      - step: "Call action_load_detail again"
+        action: "call"
+        target: "worksheet"
+        method: "action_load_detail"
+        as_user: "base.user_admin"
+
+      - step: "Verify only the control line of control A remains"
+        action: "search"
+        model: "general_audit_ws_d3d2719.detail"
+        domain:
+          - ["worksheet_id", "=", "REC: worksheet.id"]
+        save_as: "details"
+        expect_count: 1
+
+      - step: "Verify the kept control line is the same record, answer intact"
+        action: "assert"
+        target: "detail_a"
+        asserts:
+          explanation:
+            type: "value"
+            expected: "Answer on control A"
+          result:
+            type: "m2o"
+            expected: "REC: option"
+
+      - step: "Verify indicator lines are indicator 1 and indicator 3"
+        action: "search"
+        model: "general_audit_ws_d3d2719.indicator"
+        domain:
+          - ["worksheet_id", "=", "REC: worksheet.id"]
+        save_as: "indicators"
+        expect_count: 2
+
+      - step: "Verify the kept indicator line is the same record, answer intact"
+        action: "assert"
+        target: "line_1"
+        asserts:
+          explanation:
+            type: "value"
+            expected: "Answer on indicator 1"
+          result:
+            type: "m2o"
+            expected: "REC: option"
+
+      - step: "Find the new indicator line of indicator 3"
+        action: "search"
+        model: "general_audit_ws_d3d2719.indicator"
+        domain:
+          - ["worksheet_id", "=", "REC: worksheet.id"]
+          - ["indicator_id", "=", "REC: indicator_3.id"]
+        save_as: "line_3"
+        expect_count: 1
+
+      - step: "Verify the new indicator line has no answer"
+        action: "assert"
+        target: "line_3"
+        asserts:
+          explanation:
+            type: "value"
+            expected: false
+
+  # ------------------------------------------------------------------
   # d3d2719 - Workflow confirm to done
   # ------------------------------------------------------------------
   - name: "Worksheet d3d2719 - Workflow confirm to done"
@@ -806,6 +1023,223 @@ scenarios:
           state:
             type: "value"
             expected: "draft"
+
+  # ------------------------------------------------------------------
+  # f63f569 - action_load_detail (jawaban auditor dipertahankan)
+  # ------------------------------------------------------------------
+  - name: "Worksheet f63f569 - Action load detail (keeps auditor answers)"
+    steps:
+      - step: "Create control category"
+        action: "create"
+        model: "general_audit_it_control_category"
+        save_as: "category"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Category - f63f569 Load Detail Keep"
+          code: "/"
+
+      - step: "Create option set"
+        action: "create"
+        model: "checklist.option_set"
+        save_as: "option_set"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Option Set - f63f569 Load Detail Keep"
+          code: "/"
+
+      - step: "Create answer option"
+        action: "create"
+        model: "checklist.option"
+        save_as: "option"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Option - f63f569 Load Detail Keep"
+          code: "/"
+
+      - step: "Create control A"
+        action: "create"
+        model: "general_audit_it_control"
+        save_as: "control_a"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Control A - f63f569 Load Detail Keep"
+          code: "/"
+          category_id: "REC: category.id"
+          option_set_id: "REC: option_set.id"
+
+      - step: "Create control B"
+        action: "create"
+        model: "general_audit_it_control"
+        save_as: "control_b"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Control B - f63f569 Load Detail Keep"
+          code: "/"
+          category_id: "REC: category.id"
+          option_set_id: "REC: option_set.id"
+
+      - step: "Create indicator 1 for control A"
+        action: "create"
+        model: "general_audit_it_control_indicator"
+        save_as: "indicator_1"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Indicator 1 - f63f569 Load Detail Keep"
+          code: "/"
+          control_id: "REC: control_a.id"
+          option_set_id: "REC: option_set.id"
+
+      - step: "Create indicator 2 for control B"
+        action: "create"
+        model: "general_audit_it_control_indicator"
+        save_as: "indicator_2"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Indicator 2 - f63f569 Load Detail Keep"
+          code: "/"
+          control_id: "REC: control_b.id"
+          option_set_id: "REC: option_set.id"
+
+      - step: "Create indicator 3 for control A, not in the set yet"
+        action: "create"
+        model: "general_audit_it_control_indicator"
+        save_as: "indicator_3"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Indicator 3 - f63f569 Load Detail Keep"
+          code: "/"
+          control_id: "REC: control_a.id"
+          option_set_id: "REC: option_set.id"
+
+      - step: "Create IT control set with indicators 1 and 2"
+        action: "create"
+        model: "general_audit_it_control_set"
+        save_as: "set"
+        as_user: "base.user_admin"
+        values:
+          name: "Test IT Control Set - f63f569 Load Detail Keep"
+          code: "/"
+          it_control_indicator_ids:
+            [[6, 0, ["REC: indicator_1.id", "REC: indicator_2.id"]]]
+
+      - step: "Create worksheet f63f569 with the control set"
+        action: "create"
+        model: "general_audit_ws_f63f569"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_f63f569.id"
+          set_id: "REC: set.id"
+
+      - step: "Call action_load_detail the first time"
+        action: "call"
+        target: "worksheet"
+        method: "action_load_detail"
+        as_user: "base.user_admin"
+
+      - step: "Find the control line of control A"
+        action: "search"
+        model: "general_audit_ws_f63f569.detail"
+        domain:
+          - ["worksheet_id", "=", "REC: worksheet.id"]
+          - ["control_id", "=", "REC: control_a.id"]
+        save_as: "detail_a"
+        expect_count: 1
+
+      - step: "Find the indicator line of indicator 1"
+        action: "search"
+        model: "general_audit_ws_f63f569.indicator"
+        domain:
+          - ["worksheet_id", "=", "REC: worksheet.id"]
+          - ["indicator_id", "=", "REC: indicator_1.id"]
+        save_as: "line_1"
+        expect_count: 1
+
+      - step: "Auditor answers the control line of control A"
+        action: "write"
+        target: "detail_a"
+        as_user: "base.user_admin"
+        values:
+          result: "REC: option.id"
+          explanation: "Answer on control A"
+
+      - step: "Auditor answers the indicator line of indicator 1"
+        action: "write"
+        target: "line_1"
+        as_user: "base.user_admin"
+        values:
+          result: "REC: option.id"
+          explanation: "Answer on indicator 1"
+
+      - step: "Add indicator 3 to the set and drop indicator 2 (control B)"
+        action: "write"
+        target: "set"
+        as_user: "base.user_admin"
+        values:
+          it_control_indicator_ids:
+            [[6, 0, ["REC: indicator_1.id", "REC: indicator_3.id"]]]
+
+      - step: "Call action_load_detail again"
+        action: "call"
+        target: "worksheet"
+        method: "action_load_detail"
+        as_user: "base.user_admin"
+
+      - step: "Verify only the control line of control A remains"
+        action: "search"
+        model: "general_audit_ws_f63f569.detail"
+        domain:
+          - ["worksheet_id", "=", "REC: worksheet.id"]
+        save_as: "details"
+        expect_count: 1
+
+      - step: "Verify the kept control line is the same record, answer intact"
+        action: "assert"
+        target: "detail_a"
+        asserts:
+          explanation:
+            type: "value"
+            expected: "Answer on control A"
+          result:
+            type: "m2o"
+            expected: "REC: option"
+
+      - step: "Verify indicator lines are indicator 1 and indicator 3"
+        action: "search"
+        model: "general_audit_ws_f63f569.indicator"
+        domain:
+          - ["worksheet_id", "=", "REC: worksheet.id"]
+        save_as: "indicators"
+        expect_count: 2
+
+      - step: "Verify the kept indicator line is the same record, answer intact"
+        action: "assert"
+        target: "line_1"
+        asserts:
+          explanation:
+            type: "value"
+            expected: "Answer on indicator 1"
+          result:
+            type: "m2o"
+            expected: "REC: option"
+
+      - step: "Find the new indicator line of indicator 3"
+        action: "search"
+        model: "general_audit_ws_f63f569.indicator"
+        domain:
+          - ["worksheet_id", "=", "REC: worksheet.id"]
+          - ["indicator_id", "=", "REC: indicator_3.id"]
+        save_as: "line_3"
+        expect_count: 1
+
+      - step: "Verify the new indicator line has no answer"
+        action: "assert"
+        target: "line_3"
+        asserts:
+          explanation:
+            type: "value"
+            expected: false
 
   # ------------------------------------------------------------------
   # f63f569 - Workflow confirm to done
