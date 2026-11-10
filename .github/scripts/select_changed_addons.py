@@ -136,11 +136,49 @@ def summary(text):
             handle.write(text + "\n")
 
 
+def git_out(args):
+    """Jalankan git dan kembalikan keluarannya (string), atau "" bila gagal."""
+    try:
+        return subprocess.check_output(
+            ["git"] + args, stderr=subprocess.STDOUT, universal_newlines=True
+        ).strip()
+    except (subprocess.CalledProcessError, OSError):
+        return ""
+
+
+def resolve_base(mode):
+    """Tentukan basis pembanding menurut `mode`; "" berarti tes penuh.
+
+    * `pr`: HEAD adalah merge commit PR dari GitHub (HEAD^1 = ujung branch
+      dasar, HEAD^2 = ujung PR).
+    * `ocabot`: HEAD adalah ujung branch persiapan OCA bot; merge commit
+      "Merge PR" terakhir di jalur first-parent punya parent pertama =
+      ujung 14.0 saat branch disiapkan.
+
+    Checkout sengaja dangkal (fetch-depth 50) karena langkah ".pot" bawaan
+    OCA menjalankan `git fetch --unshallow`, yang gagal di repo lengkap.
+    """
+    if mode == "pr":
+        if git_out(["rev-parse", "--verify", "-q", "HEAD^2"]):
+            return "HEAD^1"
+        return ""
+    if mode == "ocabot":
+        merge = git_out(
+            ["log", "--first-parent", "--merges", "-1", "--format=%H"]
+        )
+        if merge:
+            return merge + "^1"
+        return ""
+    return ""
+
+
 def main(argv):
-    """Titik masuk: `select_changed_addons.py [--base REF]`."""
+    """Titik masuk: `select_changed_addons.py [--base REF | --mode pr|ocabot]`."""
     base = ""
     if len(argv) >= 3 and argv[1] == "--base":
         base = argv[2]
+    elif len(argv) >= 3 and argv[1] == "--mode":
+        base = resolve_base(argv[2])
     addons = list_addons()
     if not base:
         summary("Select addons: tes penuh ({} addon), tanpa basis "
