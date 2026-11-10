@@ -135,34 +135,51 @@ class GeneralAuditWSfbf57ee(models.Model):
             record._load_computation_lines()
 
     def _load_computation_lines(self):
+        """Synchronise ``computation_line_ids`` with the audit.
+
+        Lines are matched by ``general_audit_computation_id`` against the
+        computations of ``general_audit_id`` whose item is flagged for
+        going concern. A computation without a line gets one, with the
+        coefficient of the selected Z-Score coefficient set. The lines
+        of computations that no longer qualify are removed. Other lines
+        are not rewritten, so a coefficient changed by the auditor is
+        kept, and their stored amount and result are refreshed.
+
+        :return: nothing; adds, removes and refreshes computation lines
+        """
         self.ensure_one()
-        self.computation_line_ids.unlink()
+        Computation = self.env["general_audit_ws_fbf57ee.computation"]
 
         criteria = [
             ("general_audit_id", "=", self.general_audit_id.id),
             ("computation_item_id.going_concern_ok", "=", True),
         ]
-        general_audit_computations = self.env["general_audit.computation"].search(
-            criteria
-        )
+        wanted = self.env["general_audit.computation"].search(criteria)
 
-        for computation in general_audit_computations:
+        obsolete = self.computation_line_ids.filtered(
+            lambda line: line.general_audit_computation_id not in wanted
+        )
+        obsolete.unlink()
+        kept = self.computation_line_ids - obsolete
+
+        for computation in wanted - kept.mapped("general_audit_computation_id"):
             coefficient = 0.0
             z_score_set = self.z_score_coefficient_set_id
             if z_score_set:
                 item = z_score_set.item_ids.filtered(
-                    lambda l: l.computation_item_id.id
-                    == computation.computation_item_id.id
+                    lambda l, c=computation: l.computation_item_id.id
+                    == c.computation_item_id.id
                 )
                 if item:
                     coefficient = item[0].coefficient
-            self.env["general_audit_ws_fbf57ee.computation"].create(
+            Computation.create(
                 {
                     "worksheet_id": self.id,
                     "general_audit_computation_id": computation.id,
                     "coefficient": coefficient,
                 }
             )
+        kept._refresh_computed_columns()
 
     def _load_analysis(self):
         self.ensure_one()

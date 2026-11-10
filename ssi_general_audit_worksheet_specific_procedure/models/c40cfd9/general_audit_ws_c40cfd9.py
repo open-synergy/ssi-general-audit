@@ -68,11 +68,27 @@ class GeneralAuditWSc40cfd9(models.Model):
             record._load_confirmation_procedure()
 
     def _load_related_party(self):
+        """Add the related parties that have no line yet.
+
+        Lines are matched by ``name`` against the related parties of
+        ``ws_ae11f7e_id``. A party without a line gets one, with its
+        relation and account types copied into the initial and final
+        columns. Existing lines are never rewritten or removed, so the
+        reference, final relation, final account types and conclusion
+        entered by the auditor, and the lines the auditor added by hand,
+        are kept. Pressing the button again without changes alters
+        nothing.
+
+        :return: nothing; creates the missing related party lines
+        """
         self.ensure_one()
 
-        self.related_party_line_ids.unlink()
+        existing_names = set(self.related_party_line_ids.mapped("name"))
 
         for related_party in self.ws_ae11f7e_id.related_party_ids:
+            if related_party.name in existing_names:
+                continue
+            existing_names.add(related_party.name)
             self.env["general_audit_ws_c40cfd9.related_party"].create(
                 {
                     "worksheet_id": self.id,

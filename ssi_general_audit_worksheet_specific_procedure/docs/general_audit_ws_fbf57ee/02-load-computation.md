@@ -26,9 +26,11 @@
 
 ## Post-Condition
 
-- The **Computation** list has one line for every going-concern computation line of the
-  General Audit.
-- The coefficient of each line comes from the selected **Z-Score Coefficient Set**.
-- Existing lines are removed first and rebuilt, so any input already entered on them is
-  lost.
+- The **Computation** list is synchronised with the going-concern computation lines of
+  the General Audit. A line is added for each computation that has none, and the line of
+  a computation that no longer qualifies is removed.
+- The coefficient of a new line comes from the selected **Z-Score Coefficient Set**.
+  Kept lines are not rewritten, so a coefficient changed before is not lost.
+- The **Current Amount** and **Result** of the kept lines are refreshed from the current
+  trial balance.
 - Clicking the button again does not duplicate lines.
