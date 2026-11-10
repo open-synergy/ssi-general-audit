@@ -456,6 +456,681 @@ scenarios:
             expected: "moderate"
 
   # ------------------------------------------------------------------
+  # general_audit_ws_a3c9d2e - stale cycle result is cleared (#695).
+  # Each scenario builds its own fixture (REC aliases do not survive
+  # across scenarios).
+  # ------------------------------------------------------------------
+  - name: "Worksheet a3c9d2e - removing an account clears its result"
+    steps:
+      - step: "Create client account group"
+        action: "create"
+        model: "client_account_group"
+        save_as: "cr_group"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Group - a3c9d2e clearing 1"
+          code: "/"
+          sequence: 1
+          normal_balance: "dr"
+
+      - step: "Create account type A"
+        action: "create"
+        model: "client_account_type"
+        save_as: "cr_type_a"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Type A - a3c9d2e clearing 1"
+          code: "/"
+          group_id: "REC: cr_group.id"
+          sequence: 1
+          normal_balance: "dr"
+
+      - step: "Create account type B"
+        action: "create"
+        model: "client_account_type"
+        save_as: "cr_type_b"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Type B - a3c9d2e clearing 1"
+          code: "/"
+          group_id: "REC: cr_group.id"
+          sequence: 2
+          normal_balance: "dr"
+
+      - step: "Add standard detail for account type A"
+        action: "create"
+        model: "general_audit.standard_detail"
+        save_as: "cr_detail_a"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: cr_type_a.id"
+
+      - step: "Add standard detail for account type B"
+        action: "create"
+        model: "general_audit.standard_detail"
+        save_as: "cr_detail_b"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: cr_type_b.id"
+
+      - step: "Create worksheet 1"
+        action: "create"
+        model: "general_audit_ws_a3c9d2e"
+        save_as: "cr_ws1"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+
+      - step: "Tag accounts A and B with result high"
+        action: "write"
+        target: "cr_ws1"
+        as_user: "base.user_admin"
+        values:
+          related_account_type_ids:
+            - - 6
+              - 0
+              - - "REC: cr_type_a.id"
+                - "REC: cr_type_b.id"
+          result: "high"
+
+      - step: "Invalidate cache before: Detail A is high"
+        action: "call"
+        target: "cr_detail_a"
+        method: "invalidate_cache"
+
+      - step: "Detail A is high"
+        action: "assert"
+        target: "cr_detail_a"
+        asserts:
+          analytical_procedures_cycle_result:
+            type: "value"
+            expected: "high"
+
+      - step: "Invalidate cache before: Detail B is high"
+        action: "call"
+        target: "cr_detail_b"
+        method: "invalidate_cache"
+
+      - step: "Detail B is high"
+        action: "assert"
+        target: "cr_detail_b"
+        asserts:
+          analytical_procedures_cycle_result:
+            type: "value"
+            expected: "high"
+
+      - step: "Remove account B from the worksheet"
+        action: "write"
+        target: "cr_ws1"
+        as_user: "base.user_admin"
+        values:
+          related_account_type_ids:
+            - - 6
+              - 0
+              - - "REC: cr_type_a.id"
+
+      - step: "Invalidate cache before: Detail B cleared after removal"
+        action: "call"
+        target: "cr_detail_b"
+        method: "invalidate_cache"
+
+      - step: "Detail B cleared after removal"
+        action: "assert"
+        target: "cr_detail_b"
+        asserts:
+          analytical_procedures_cycle_result:
+            type: "value"
+            expected: false
+
+      - step: "Invalidate cache before: Detail A untouched by removal of B"
+        action: "call"
+        target: "cr_detail_a"
+        method: "invalidate_cache"
+
+      - step: "Detail A untouched by removal of B"
+        action: "assert"
+        target: "cr_detail_a"
+        asserts:
+          analytical_procedures_cycle_result:
+            type: "value"
+            expected: "high"
+
+  - name: "Worksheet a3c9d2e - two worksheets on one account, high outranks"
+    steps:
+      - step: "Create client account group"
+        action: "create"
+        model: "client_account_group"
+        save_as: "cr_group"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Group - a3c9d2e clearing 2"
+          code: "/"
+          sequence: 1
+          normal_balance: "dr"
+
+      - step: "Create account type A"
+        action: "create"
+        model: "client_account_type"
+        save_as: "cr_type_a"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Type A - a3c9d2e clearing 2"
+          code: "/"
+          group_id: "REC: cr_group.id"
+          sequence: 1
+          normal_balance: "dr"
+
+      - step: "Create account type B"
+        action: "create"
+        model: "client_account_type"
+        save_as: "cr_type_b"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Type B - a3c9d2e clearing 2"
+          code: "/"
+          group_id: "REC: cr_group.id"
+          sequence: 2
+          normal_balance: "dr"
+
+      - step: "Add standard detail for account type A"
+        action: "create"
+        model: "general_audit.standard_detail"
+        save_as: "cr_detail_a"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: cr_type_a.id"
+
+      - step: "Add standard detail for account type B"
+        action: "create"
+        model: "general_audit.standard_detail"
+        save_as: "cr_detail_b"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: cr_type_b.id"
+
+      - step: "Create worksheet 1"
+        action: "create"
+        model: "general_audit_ws_a3c9d2e"
+        save_as: "cr_ws1"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+
+      - step: "Tag accounts A and B with result high"
+        action: "write"
+        target: "cr_ws1"
+        as_user: "base.user_admin"
+        values:
+          related_account_type_ids:
+            - - 6
+              - 0
+              - - "REC: cr_type_a.id"
+                - "REC: cr_type_b.id"
+          result: "high"
+
+      - step: "Create worksheet 2"
+        action: "create"
+        model: "general_audit_ws_a3c9d2e"
+        save_as: "cr_ws2"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+
+      - step: "Worksheet 2 covers A with result moderate"
+        action: "write"
+        target: "cr_ws2"
+        as_user: "base.user_admin"
+        values:
+          related_account_type_ids:
+            - - 6
+              - 0
+              - - "REC: cr_type_a.id"
+          result: "moderate"
+
+      - step: "Invalidate cache before: Detail A is high (high outranks moderate)"
+        action: "call"
+        target: "cr_detail_a"
+        method: "invalidate_cache"
+
+      - step: "Detail A is high (high outranks moderate)"
+        action: "assert"
+        target: "cr_detail_a"
+        asserts:
+          analytical_procedures_cycle_result:
+            type: "value"
+            expected: "high"
+
+      - step: "Lower worksheet 1 to moderate"
+        action: "write"
+        target: "cr_ws1"
+        as_user: "base.user_admin"
+        values:
+          result: "moderate"
+
+      - step: "Invalidate cache before: Detail A is moderate"
+        action: "call"
+        target: "cr_detail_a"
+        method: "invalidate_cache"
+
+      - step: "Detail A is moderate"
+        action: "assert"
+        target: "cr_detail_a"
+        asserts:
+          analytical_procedures_cycle_result:
+            type: "value"
+            expected: "moderate"
+
+      - step: "Raise worksheet 1 to high again"
+        action: "write"
+        target: "cr_ws1"
+        as_user: "base.user_admin"
+        values:
+          result: "high"
+
+      - step: "Remove A from worksheet 1"
+        action: "write"
+        target: "cr_ws1"
+        as_user: "base.user_admin"
+        values:
+          related_account_type_ids:
+            - - 6
+              - 0
+              - - "REC: cr_type_b.id"
+
+      - step: "Invalidate cache before: Detail A falls back to worksheet 2 (moderate)"
+        action: "call"
+        target: "cr_detail_a"
+        method: "invalidate_cache"
+
+      - step: "Detail A falls back to worksheet 2 (moderate)"
+        action: "assert"
+        target: "cr_detail_a"
+        asserts:
+          analytical_procedures_cycle_result:
+            type: "value"
+            expected: "moderate"
+
+      - step: "Invalidate cache before: Detail B stays high"
+        action: "call"
+        target: "cr_detail_b"
+        method: "invalidate_cache"
+
+      - step: "Detail B stays high"
+        action: "assert"
+        target: "cr_detail_b"
+        asserts:
+          analytical_procedures_cycle_result:
+            type: "value"
+            expected: "high"
+
+  - name: "Worksheet a3c9d2e - clearing result clears the accounts"
+    steps:
+      - step: "Create client account group"
+        action: "create"
+        model: "client_account_group"
+        save_as: "cr_group"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Group - a3c9d2e clearing 3"
+          code: "/"
+          sequence: 1
+          normal_balance: "dr"
+
+      - step: "Create account type A"
+        action: "create"
+        model: "client_account_type"
+        save_as: "cr_type_a"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Type A - a3c9d2e clearing 3"
+          code: "/"
+          group_id: "REC: cr_group.id"
+          sequence: 1
+          normal_balance: "dr"
+
+      - step: "Create account type B"
+        action: "create"
+        model: "client_account_type"
+        save_as: "cr_type_b"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Type B - a3c9d2e clearing 3"
+          code: "/"
+          group_id: "REC: cr_group.id"
+          sequence: 2
+          normal_balance: "dr"
+
+      - step: "Add standard detail for account type A"
+        action: "create"
+        model: "general_audit.standard_detail"
+        save_as: "cr_detail_a"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: cr_type_a.id"
+
+      - step: "Add standard detail for account type B"
+        action: "create"
+        model: "general_audit.standard_detail"
+        save_as: "cr_detail_b"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: cr_type_b.id"
+
+      - step: "Create worksheet 1"
+        action: "create"
+        model: "general_audit_ws_a3c9d2e"
+        save_as: "cr_ws1"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+
+      - step: "Tag account A with result high"
+        action: "write"
+        target: "cr_ws1"
+        as_user: "base.user_admin"
+        values:
+          related_account_type_ids:
+            - - 6
+              - 0
+              - - "REC: cr_type_a.id"
+                - "REC: cr_type_b.id"
+          result: "high"
+
+      - step: "Invalidate cache before: Detail A is high"
+        action: "call"
+        target: "cr_detail_a"
+        method: "invalidate_cache"
+
+      - step: "Detail A is high"
+        action: "assert"
+        target: "cr_detail_a"
+        asserts:
+          analytical_procedures_cycle_result:
+            type: "value"
+            expected: "high"
+
+      - step: "Clear the result of worksheet 1"
+        action: "write"
+        target: "cr_ws1"
+        as_user: "base.user_admin"
+        values:
+          result: false
+
+      - step: "Invalidate cache before: Detail A cleared after result cleared"
+        action: "call"
+        target: "cr_detail_a"
+        method: "invalidate_cache"
+
+      - step: "Detail A cleared after result cleared"
+        action: "assert"
+        target: "cr_detail_a"
+        asserts:
+          analytical_procedures_cycle_result:
+            type: "value"
+            expected: false
+
+      - step: "Invalidate cache before: Detail B cleared after result cleared"
+        action: "call"
+        target: "cr_detail_b"
+        method: "invalidate_cache"
+
+      - step: "Detail B cleared after result cleared"
+        action: "assert"
+        target: "cr_detail_b"
+        asserts:
+          analytical_procedures_cycle_result:
+            type: "value"
+            expected: false
+
+  - name: "Worksheet a3c9d2e - cancelling the worksheet clears the accounts"
+    steps:
+      - step: "Create client account group"
+        action: "create"
+        model: "client_account_group"
+        save_as: "cr_group"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Group - a3c9d2e clearing 4"
+          code: "/"
+          sequence: 1
+          normal_balance: "dr"
+
+      - step: "Create account type A"
+        action: "create"
+        model: "client_account_type"
+        save_as: "cr_type_a"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Type A - a3c9d2e clearing 4"
+          code: "/"
+          group_id: "REC: cr_group.id"
+          sequence: 1
+          normal_balance: "dr"
+
+      - step: "Create account type B"
+        action: "create"
+        model: "client_account_type"
+        save_as: "cr_type_b"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Type B - a3c9d2e clearing 4"
+          code: "/"
+          group_id: "REC: cr_group.id"
+          sequence: 2
+          normal_balance: "dr"
+
+      - step: "Add standard detail for account type A"
+        action: "create"
+        model: "general_audit.standard_detail"
+        save_as: "cr_detail_a"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: cr_type_a.id"
+
+      - step: "Add standard detail for account type B"
+        action: "create"
+        model: "general_audit.standard_detail"
+        save_as: "cr_detail_b"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: cr_type_b.id"
+
+      - step: "Create worksheet 1"
+        action: "create"
+        model: "general_audit_ws_a3c9d2e"
+        save_as: "cr_ws1"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+
+      - step: "Tag accounts A and B with result high"
+        action: "write"
+        target: "cr_ws1"
+        as_user: "base.user_admin"
+        values:
+          related_account_type_ids:
+            - - 6
+              - 0
+              - - "REC: cr_type_a.id"
+                - "REC: cr_type_b.id"
+          result: "high"
+
+      - step: "Open worksheet 1"
+        action: "call"
+        target: "cr_ws1"
+        method: "action_open"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after opening worksheet 1"
+        action: "call"
+        target: "cr_ws1"
+        method: "invalidate_cache"
+
+      - step: "Cancel worksheet 1"
+        action: "call"
+        target: "cr_ws1"
+        method: "action_cancel"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache before: Detail A cleared after cancel"
+        action: "call"
+        target: "cr_detail_a"
+        method: "invalidate_cache"
+
+      - step: "Detail A cleared after cancel"
+        action: "assert"
+        target: "cr_detail_a"
+        asserts:
+          analytical_procedures_cycle_result:
+            type: "value"
+            expected: false
+
+      - step: "Invalidate cache before: Detail B cleared after cancel"
+        action: "call"
+        target: "cr_detail_b"
+        method: "invalidate_cache"
+
+      - step: "Detail B cleared after cancel"
+        action: "assert"
+        target: "cr_detail_b"
+        asserts:
+          analytical_procedures_cycle_result:
+            type: "value"
+            expected: false
+
+  - name: "Worksheet a3c9d2e - deleting the worksheet clears the accounts"
+    steps:
+      - step: "Create client account group"
+        action: "create"
+        model: "client_account_group"
+        save_as: "cr_group"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Group - a3c9d2e clearing 5"
+          code: "/"
+          sequence: 1
+          normal_balance: "dr"
+
+      - step: "Create account type A"
+        action: "create"
+        model: "client_account_type"
+        save_as: "cr_type_a"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Type A - a3c9d2e clearing 5"
+          code: "/"
+          group_id: "REC: cr_group.id"
+          sequence: 1
+          normal_balance: "dr"
+
+      - step: "Create account type B"
+        action: "create"
+        model: "client_account_type"
+        save_as: "cr_type_b"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Type B - a3c9d2e clearing 5"
+          code: "/"
+          group_id: "REC: cr_group.id"
+          sequence: 2
+          normal_balance: "dr"
+
+      - step: "Add standard detail for account type A"
+        action: "create"
+        model: "general_audit.standard_detail"
+        save_as: "cr_detail_a"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: cr_type_a.id"
+
+      - step: "Add standard detail for account type B"
+        action: "create"
+        model: "general_audit.standard_detail"
+        save_as: "cr_detail_b"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: cr_type_b.id"
+
+      - step: "Create worksheet 1"
+        action: "create"
+        model: "general_audit_ws_a3c9d2e"
+        save_as: "cr_ws1"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+
+      - step: "Tag accounts A and B with result high"
+        action: "write"
+        target: "cr_ws1"
+        as_user: "base.user_admin"
+        values:
+          related_account_type_ids:
+            - - 6
+              - 0
+              - - "REC: cr_type_a.id"
+                - "REC: cr_type_b.id"
+          result: "high"
+
+      - step: "Invalidate cache before: Detail A is high"
+        action: "call"
+        target: "cr_detail_a"
+        method: "invalidate_cache"
+
+      - step: "Detail A is high"
+        action: "assert"
+        target: "cr_detail_a"
+        asserts:
+          analytical_procedures_cycle_result:
+            type: "value"
+            expected: "high"
+
+      - step: "Delete worksheet 1"
+        action: "unlink"
+        target: "cr_ws1"
+
+      - step: "Invalidate cache before: Detail A cleared after delete"
+        action: "call"
+        target: "cr_detail_a"
+        method: "invalidate_cache"
+
+      - step: "Detail A cleared after delete"
+        action: "assert"
+        target: "cr_detail_a"
+        asserts:
+          analytical_procedures_cycle_result:
+            type: "value"
+            expected: false
+
+      - step: "Invalidate cache before: Detail B cleared after delete"
+        action: "call"
+        target: "cr_detail_b"
+        method: "invalidate_cache"
+
+      - step: "Detail B cleared after delete"
+        action: "assert"
+        target: "cr_detail_b"
+        asserts:
+          analytical_procedures_cycle_result:
+            type: "value"
+            expected: false
+
+  # ------------------------------------------------------------------
   # general_audit_ws_a3c9d2e - Confirm without conclusion fields is rejected
   # ------------------------------------------------------------------
   - name: "Worksheet a3c9d2e - Confirm without conclusion fields is rejected"
