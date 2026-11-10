@@ -2,6 +2,8 @@
 # Copyright 2026 PT. Simetri Sinergi Indonesia
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl-3.0-standalone.html).
 
+from unittest import mock
+
 from odoo_yaml_test import YamlTransactionCase
 
 from odoo.tests import tagged
@@ -149,3 +151,54 @@ class TestGeneralAuditWSf9a2c3d(YamlTransactionCase):
             with Form(worksheet.with_user(admin)) as form:
                 with form.detail_ids.edit(0) as line:
                     line.timing_id = timing
+
+    def test_detail_removes_only_obsolete_lines(self):
+        """Pressing Detail removes only the line of a dropped account.
+
+        The criteria of the loader are patched to leave one standard
+        account out, which cannot be done from YAML (``P6``, ``L-15``).
+        The line of the account that stays keeps its id and its Timing.
+        """
+        admin = self.env.ref("base.user_admin")
+        worksheet = self._create_worksheet_fixture()
+        audit = worksheet.general_audit_id
+        first = audit.standard_detail_ids[:1]
+        account_type = (
+            self.env["client_account_type"]
+            .with_user(admin)
+            .create(
+                {
+                    "name": "Test Account Type 2 - F9A2C3D Python",
+                    "code": "/",
+                    "group_id": first.type_id.group_id.id,
+                    "normal_balance": "dr",
+                    "python_code": "result = 0.0",
+                }
+            )
+        )
+        second = (
+            self.env["general_audit.standard_detail"]
+            .with_user(admin)
+            .create({"general_audit_id": audit.id, "type_id": account_type.id})
+        )
+        worksheet.with_user(admin).action_open()
+        worksheet.with_user(admin).action_load_detail()
+        self.assertEqual(len(worksheet.detail_ids), 2)
+        kept_line = worksheet.detail_ids.filtered(
+            lambda line: line.standard_detail_id == first
+        )
+        timing = self.env["general_audit_ws_f9a2c3d_timing"].search([], limit=1)
+        kept_line.timing_id = timing
+
+        criteria = [
+            ("general_audit_id", "=", audit.id),
+            ("id", "!=", second.id),
+        ]
+        with mock.patch.object(
+            type(worksheet),
+            "_get_standard_detail_criteria",
+            return_value=criteria,
+        ):
+            worksheet.with_user(admin).action_load_detail()
+        self.assertEqual(worksheet.detail_ids, kept_line)
+        self.assertEqual(kept_line.timing_id, timing)

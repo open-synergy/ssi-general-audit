@@ -27,10 +27,11 @@
 
 ## Post-Condition
 
-- The **Details** table is rebuilt with one line per standard account of the General
-  Audit. Pressing **Detail** again does not duplicate the lines: it removes them and
-  creates them again, so the **Timing**, **Extent** and **Primary Audit Technique**
-  chosen before are cleared.
+- The **Details** table is synchronised with the standard accounts of the General Audit.
+  A line is added for each account that has none, and the line of an account that is no
+  longer in the General Audit is removed. All other lines are kept, so the **Timing**,
+  **Extent** and **Primary Audit Technique** chosen before are not lost. Pressing
+  **Detail** again without changes alters nothing.
 - Each line shows these columns, none of them editable by hand:
   - **Account Type**.
   - **Balance**: the balance of the account in the Specific Materiality worksheet
@@ -42,5 +43,5 @@
     worksheet.
   - **AP Result**: High or Moderate from the Analytical Procedures – Cycle worksheet, or
     **None** when the account has no result.
-- **Timing**, **Extent** and **Primary Audit Technique** are empty (see
-  `02-isi-perencanaan`).
+- **Timing**, **Extent** and **Primary Audit Technique** are empty on new lines and
+  unchanged on kept lines (see `02-isi-perencanaan`).

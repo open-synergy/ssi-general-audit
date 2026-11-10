@@ -688,6 +688,289 @@ scenarios:
         expect_count: 7
 
   # ------------------------------------------------------------------
+  # 08 - Detail keeps what the auditor filled in
+  # ------------------------------------------------------------------
+  - name: "08 - Pressing Detail again keeps the planning of the auditor"
+    steps:
+      - step: "Create worksheet f9a2c3d"
+        action: "create"
+        model: "general_audit_ws_f9a2c3d"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_f9a2c3d.id"
+
+      - step: "Open worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_open"
+        as_user: "base.user_admin"
+
+      - step: "Press the Detail button"
+        action: "call"
+        target: "worksheet"
+        method: "action_load_detail"
+        as_user: "base.user_admin"
+
+      - step: "Find the line of standard_detail"
+        action: "search"
+        model: "general_audit_ws_f9a2c3d.detail"
+        domain:
+          - ["worksheet_id", "=", "REC: worksheet.id"]
+          - ["standard_detail_id", "=", "REC: standard_detail.id"]
+        save_as: "line_1"
+        limit: 1
+
+      - step: "Get the Interim Testing timing"
+        action: "ref"
+        xml_id: "ssi_general_audit_worksheet_test_planning.general_audit_ws_f9a2c3d_timing_1"
+        save_as: "timing"
+
+      - step: "Get the Sampling extent"
+        action: "ref"
+        xml_id: "ssi_general_audit_worksheet_test_planning.general_audit_ws_f9a2c3d_extent_2"
+        save_as: "extent"
+
+      - step: "Get the Inspection technique"
+        action: "ref"
+        xml_id: "ssi_general_audit_worksheet_test_planning.general_audit_ws_f9a2c3d_technique_1"
+        save_as: "technique_1"
+
+      - step: "Get the Observation technique"
+        action: "ref"
+        xml_id: "ssi_general_audit_worksheet_test_planning.general_audit_ws_f9a2c3d_technique_2"
+        save_as: "technique_2"
+
+      - step: "Fill timing, extent and two techniques"
+        action: "write"
+        target: "line_1"
+        as_user: "base.user_admin"
+        values:
+          timing_id: "REC: timing.id"
+          extent_id: "REC: extent.id"
+          technique_ids:
+            - [6, 0, ["REC: technique_1.id", "REC: technique_2.id"]]
+
+      - step: "Press the Detail button again"
+        action: "call"
+        target: "worksheet"
+        method: "action_load_detail"
+        as_user: "base.user_admin"
+
+      - step: "Find the line of standard_detail again"
+        action: "search"
+        model: "general_audit_ws_f9a2c3d.detail"
+        domain:
+          - ["worksheet_id", "=", "REC: worksheet.id"]
+          - ["standard_detail_id", "=", "REC: standard_detail.id"]
+        save_as: "line_again"
+        limit: 1
+
+      - step: "Assert the line is the same record with the planning intact"
+        action: "assert"
+        target: "line_again"
+        asserts:
+          id:
+            type: "value"
+            expected: "EVAL: registry['line_1'].id"
+          timing_id:
+            type: "m2o"
+            expected: "REC: timing"
+          extent_id:
+            type: "m2o"
+            expected: "REC: extent"
+          technique_ids:
+            type: "m2m"
+            check: "count"
+            expected_count: 2
+
+      - step: "Assert the number of lines did not change"
+        action: "search"
+        model: "general_audit_ws_f9a2c3d.detail"
+        domain:
+          - ["worksheet_id", "=", "REC: worksheet.id"]
+        save_as: "lines_after"
+        expect_count: 3
+
+  # ------------------------------------------------------------------
+  # 09 - Computed columns of kept lines follow the source
+  # ------------------------------------------------------------------
+  - name: "09 - Pressing Detail refreshes the computed columns of kept lines"
+    steps:
+      - step: "Create worksheet f9a2c3d"
+        action: "create"
+        model: "general_audit_ws_f9a2c3d"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_f9a2c3d.id"
+
+      - step: "Open worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_open"
+        as_user: "base.user_admin"
+
+      - step: "Press the Detail button"
+        action: "call"
+        target: "worksheet"
+        method: "action_load_detail"
+        as_user: "base.user_admin"
+
+      - step: "Find the line of standard_detail"
+        action: "search"
+        model: "general_audit_ws_f9a2c3d.detail"
+        domain:
+          - ["worksheet_id", "=", "REC: worksheet.id"]
+          - ["standard_detail_id", "=", "REC: standard_detail.id"]
+        save_as: "line_1"
+        limit: 1
+
+      - step: "Change the specific materiality of the mapping line"
+        action: "write"
+        target: "mapping_1"
+        as_user: "base.user_admin"
+        values:
+          specific_materiality: 55555.0
+
+      - step: "Press the Detail button again"
+        action: "call"
+        target: "worksheet"
+        method: "action_load_detail"
+        as_user: "base.user_admin"
+
+      - step: "Find the line of standard_detail again"
+        action: "search"
+        model: "general_audit_ws_f9a2c3d.detail"
+        domain:
+          - ["worksheet_id", "=", "REC: worksheet.id"]
+          - ["standard_detail_id", "=", "REC: standard_detail.id"]
+        save_as: "line_again"
+        limit: 1
+
+      - step: "Assert the performance materiality follows the new value"
+        action: "assert"
+        target: "line_again"
+        asserts:
+          id:
+            type: "value"
+            expected: "EVAL: registry['line_1'].id"
+          performance_materiality:
+            type: "value"
+            expected: 55555.0
+
+      - step: "Restore the specific materiality of the mapping line"
+        action: "write"
+        target: "mapping_1"
+        as_user: "base.user_admin"
+        values:
+          specific_materiality: 99999.0
+
+  # ------------------------------------------------------------------
+  # 10 - A new standard account adds one line only
+  # ------------------------------------------------------------------
+  - name: "10 - A new standard account adds one line and keeps the others"
+    steps:
+      - step: "Create worksheet f9a2c3d"
+        action: "create"
+        model: "general_audit_ws_f9a2c3d"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_f9a2c3d.id"
+
+      - step: "Open worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_open"
+        as_user: "base.user_admin"
+
+      - step: "Press the Detail button"
+        action: "call"
+        target: "worksheet"
+        method: "action_load_detail"
+        as_user: "base.user_admin"
+
+      - step: "Find the line of standard_detail"
+        action: "search"
+        model: "general_audit_ws_f9a2c3d.detail"
+        domain:
+          - ["worksheet_id", "=", "REC: worksheet.id"]
+          - ["standard_detail_id", "=", "REC: standard_detail.id"]
+        save_as: "line_1"
+        limit: 1
+
+      - step: "Get the Interim Testing timing"
+        action: "ref"
+        xml_id: "ssi_general_audit_worksheet_test_planning.general_audit_ws_f9a2c3d_timing_1"
+        save_as: "timing"
+
+      - step: "Fill timing on the existing line"
+        action: "write"
+        target: "line_1"
+        as_user: "base.user_admin"
+        values:
+          timing_id: "REC: timing.id"
+
+      - step: "Create account type 4"
+        action: "create"
+        model: "client_account_type"
+        save_as: "account_type_4"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Account Type 4 - F9A2C3D"
+          code: "/"
+          group_id: "REC: account_group.id"
+          normal_balance: "dr"
+          python_code: "result = 0.0"
+
+      - step: "Add a fourth standard detail to the audit"
+        action: "create"
+        model: "general_audit.standard_detail"
+        save_as: "standard_detail_4"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: account_type_4.id"
+
+      - step: "Press the Detail button again"
+        action: "call"
+        target: "worksheet"
+        method: "action_load_detail"
+        as_user: "base.user_admin"
+
+      - step: "Assert one more line"
+        action: "search"
+        model: "general_audit_ws_f9a2c3d.detail"
+        domain:
+          - ["worksheet_id", "=", "REC: worksheet.id"]
+        save_as: "lines_after"
+        expect_count: 4
+
+      - step: "Find the line of standard_detail again"
+        action: "search"
+        model: "general_audit_ws_f9a2c3d.detail"
+        domain:
+          - ["worksheet_id", "=", "REC: worksheet.id"]
+          - ["standard_detail_id", "=", "REC: standard_detail.id"]
+        save_as: "line_again"
+        limit: 1
+
+      - step: "Assert the old line kept its id and timing"
+        action: "assert"
+        target: "line_again"
+        asserts:
+          id:
+            type: "value"
+            expected: "EVAL: registry['line_1'].id"
+          timing_id:
+            type: "m2o"
+            expected: "REC: timing"
+
+  # ------------------------------------------------------------------
   # 17 - Workflow draft to done
   # ------------------------------------------------------------------
   - name: "17 - Workflow draft to done"
