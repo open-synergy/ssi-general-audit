@@ -74,25 +74,59 @@ class GeneralAuditWSF63F569(models.Model):
     )
 
     def action_load_detail(self):
+        """Synchronise the control lines with the selected control set.
+
+        Triggers :meth:`_load_detail` (wrapped in ``sudo()``) for every
+        record in the current recordset.
+
+        :return: nothing; adds and removes control and indicator lines
+        """
         for record in self.sudo():
             record._load_detail()
 
     def _load_detail(self):
-        self.detail_ids.unlink()
+        """Synchronise ``detail_ids`` with the selected control set.
+
+        Control lines are matched on ``control_id`` and indicator lines
+        on ``indicator_id``. Missing lines are created, lines no longer
+        in the set are removed and all others are left untouched, so the
+        result and explanation entered by the auditor are never lost.
+        An empty set removes every line.
+
+        :return: nothing; adds and removes control and indicator lines
+        """
+        self.ensure_one()
         Detail = self.env["general_audit_ws_f63f569.detail"]
         Indicator = self.env["general_audit_ws_f63f569.indicator"]
         control_set = self.set_id
-        for control in control_set.it_control_ids:
-            data = {
-                "worksheet_id": self.id,
-                "control_id": control.id,
-            }
-            detail = Detail.create(data)
-            for indicator in control_set.it_control_indicator_ids.filtered(
-                lambda r: r.control_id.id == control.id
-            ):
-                data = {
-                    "detail_id": detail.id,
-                    "indicator_id": indicator.id,
-                }
-                Indicator.create(data)
+        wanted_controls = control_set.it_control_ids
+        obsolete = self.detail_ids.filtered(
+            lambda line: line.control_id not in wanted_controls
+        )
+        obsolete.unlink()
+        kept = self.detail_ids - obsolete
+        details = {line.control_id: line for line in kept}
+        for control in wanted_controls:
+            detail = details.get(control)
+            if not detail:
+                detail = Detail.create(
+                    {
+                        "worksheet_id": self.id,
+                        "control_id": control.id,
+                    }
+                )
+            wanted_indicators = control_set.it_control_indicator_ids.filtered(
+                lambda r, control=control: r.control_id.id == control.id
+            )
+            stale = detail.indicator_ids.filtered(
+                lambda line: line.indicator_id not in wanted_indicators
+            )
+            stale.unlink()
+            present = (detail.indicator_ids - stale).mapped("indicator_id")
+            for indicator in wanted_indicators - present:
+                Indicator.create(
+                    {
+                        "detail_id": detail.id,
+                        "indicator_id": indicator.id,
+                    }
+                )

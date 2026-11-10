@@ -27,6 +27,8 @@
 
 - The tab has one line for every IT control in the selected set, each with a line for
   every indicator of that control.
-- Lines that already exist are replaced, so any response already entered on them is
-  lost.
-- Clicking **Detail** again does not duplicate lines.
+- The tab is synchronised with the selected set. A line is added for every IT control or
+  indicator that has none, and the line of an IT control or indicator that is no longer
+  in the set is removed. All other lines are kept, so the **Result** and **Explanation**
+  already entered on them are not lost.
+- Clicking **Detail** again without changes alters nothing and does not duplicate lines.
