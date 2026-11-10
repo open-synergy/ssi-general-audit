@@ -24,6 +24,9 @@
 ## Post-Condition
 
 - The tab has one line for every standard detail of the General Audit.
-- Existing lines are removed first and rebuilt, so any input already entered on them is
-  lost.
+- Existing lines are removed first and rebuilt, but the auditor's input is kept: the
+  Planned Response flags and Assersion Types are stored on the account's standard
+  detail, not on the line, so the rebuilt line shows them again.
+- Inherent Risk and Fraud Impacted are re-synchronized from their source worksheets
+  before the lines are rebuilt.
 - Clicking **Detail** again does not duplicate lines.
