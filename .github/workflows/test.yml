@@ -53,6 +53,10 @@ jobs:
       - uses: actions/checkout@v4
         with:
           persist-credentials: false
+          # Dangkal tapi cukup untuk langkah "Select addons to test". JANGAN 0:
+          # langkah ".pot" bawaan OCA menjalankan `git fetch --unshallow`,
+          # yang gagal (exit 128) pada repo yang sudah lengkap.
+          fetch-depth: 50
       - name: Install odoo-yaml-test from git
         run: pip install git+https://github.com/andhit-r/odoo-yaml-test.git@v0.5.0#egg=odoo-yaml-test
       - name: Install addons and dependencies
@@ -77,9 +81,26 @@ jobs:
       - name: Check development status
         run: manifestoo -d . check-dev-status --default-dev-status=Beta
         continue-on-error: true
+      - name: Select addons to test
+        # PR dan branch ocabot: hanya addon yang berubah + yang bergantung
+        # padanya (INCLUDE bawaan image OCA CI). Push ke 14.0: tes penuh.
+        # Berkas di luar addon, atau gagal membaca diff: tes penuh.
+        run: |
+          git config --global --add safe.directory "$GITHUB_WORKSPACE"
+          MODE=""
+          if [ "$GITHUB_EVENT_NAME" = "pull_request" ]; then
+            MODE="pr"
+          elif [ "$GITHUB_EVENT_NAME" = "push" ]; then
+            case "$GITHUB_REF_NAME" in
+              14.0-ocabot-*) MODE="ocabot" ;;
+            esac
+          fi
+          python3 .github/scripts/select_changed_addons.py --mode "$MODE"
       - name: Initialize test db
+        if: ${{ env.TEST_SKIP != 'true' }}
         run: oca_init_test_database
       - name: Run tests
+        if: ${{ env.TEST_SKIP != 'true' }}
         run: oca_run_tests
       - name: Upload screenshots from JS tests
         uses: actions/upload-artifact@v4
@@ -89,6 +110,7 @@ jobs:
           path: /tmp/odoo_tests/${{ env.PGDATABASE }}
           if-no-files-found: ignore
       - uses: codecov/codecov-action@v4
+        if: ${{ env.TEST_SKIP != 'true' }}
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
       - name: Update .pot files
