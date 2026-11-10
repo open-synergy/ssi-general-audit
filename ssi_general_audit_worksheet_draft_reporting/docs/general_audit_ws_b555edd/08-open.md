@@ -82,8 +82,13 @@
   increase of a liability or equity account is a cash inflow. A **Difference** other
   than 0 means some cash movement is not mapped to a row yet; the mapping is kept in
   **Configuration > Account & Computation > Cash Flow Item**.
-- Clicking **Reload** when owner transactions or cash flow amounts are typed in asks for
-  confirmation first, because Reload clears them.
-- Clicking **Reload** again does not duplicate rows; it removes the previous rows and
-  creates them again from the General Audit. **Reload** is visible only while the
-  worksheet is **Draft** or **On Progress**.
+- Clicking **Reload** never asks for confirmation and never clears figures you typed in.
+  It refreshes only the figures that come from the General Audit: the account balances,
+  the opening balance, profit, OCI and closing balance of the equity rows, and the
+  calculated cash flow rows. The owner transactions on the equity rows and the amounts
+  of the cash flow rows without a calculation (for example **Dividends paid**) keep the
+  values you typed in.
+- Clicking **Reload** again does not duplicate rows; it adds the rows that are missing,
+  removes the rows that no longer belong (for example the previous period rows after the
+  General Audit stops keeping a previous period) and keeps the others. **Reload** is
+  visible only while the worksheet is **Draft** or **On Progress**.

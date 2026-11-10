@@ -447,9 +447,9 @@ class TestWSDraftReporting(YamlTransactionCase):
         Pure Python -- trigger P6 (L-15: no mock/patch in YAML; the
         source figures are fixed). Retained earnings leaves 20 of
         movement unexplained; a dividend of -20 explains it, and Reload
-        again throws the typed-in value away.
+        again keeps both the typed-in value and the line itself.
 
-        :return: nothing; asserts other movement and the manual flag
+        :return: nothing; asserts other movement and the line identity
         """
         worksheet = self._create_b555edd_worksheet("EquityDividend")
         with mock.patch.object(
@@ -462,16 +462,56 @@ class TestWSDraftReporting(YamlTransactionCase):
             retained.dividend = -20.0
 
             self.assertEqual(retained.other_movement, 0.0)
-            self.assertTrue(worksheet.equity_has_manual)
 
             worksheet.action_reload_account()
 
+        kept = worksheet.equity_line_ids.filtered(
+            lambda r: r.component_id.receive_profit
+        )
+        self.assertEqual(kept, retained)
+        self.assertEqual(kept.dividend, -20.0)
+        self.assertEqual(kept.other_movement, 0.0)
+
+    def test_equity_reload_keeps_owner_transactions_and_follows_source(self):
+        """Reload refreshes the source columns and spares the typed ones.
+
+        Pure Python -- trigger P6 (L-15: no mock/patch in YAML; the
+        source figures are fixed and then changed). All four owner
+        transactions are typed in, the source profit moves from 100 to
+        150, and Reload must follow the source without touching the
+        typed-in values or the id of the line.
+
+        :return: nothing; asserts source and typed-in columns
+        """
+        worksheet = self._create_b555edd_worksheet("EquityKeep")
+        with mock.patch.object(
+            type(worksheet), "_get_equity_source", return_value=self._equity_source()
+        ):
+            worksheet.action_reload_account()
         retained = worksheet.equity_line_ids.filtered(
             lambda r: r.component_id.receive_profit
         )
-        self.assertEqual(retained.dividend, 0.0)
-        self.assertEqual(retained.other_movement, -20.0)
-        self.assertFalse(worksheet.equity_has_manual)
+        retained.write(
+            {"issuance": 1.0, "treasury": -2.0, "reserve": 3.0, "dividend": -4.0}
+        )
+        source = self._equity_source()
+        source["profit"] = 150.0
+        with mock.patch.object(
+            type(worksheet), "_get_equity_source", return_value=source
+        ):
+            worksheet.action_reload_account()
+
+        kept = worksheet.equity_line_ids.filtered(
+            lambda r: r.component_id.receive_profit
+        )
+        self.assertEqual(kept, retained)
+        self.assertEqual(kept.profit, 150.0)
+        self.assertEqual(kept.closing_balance, 630.0)
+        self.assertEqual(
+            (kept.issuance, kept.treasury, kept.reserve, kept.dividend),
+            (1.0, -2.0, 3.0, -4.0),
+        )
+        self.assertEqual(kept.other_movement, -18.0)
 
     def test_equity_previous_period_lines_follow_need_previous(self):
         """Previous period lines exist only when the audit keeps one.
@@ -499,6 +539,34 @@ class TestWSDraftReporting(YamlTransactionCase):
         self.assertEqual(len(without.equity_previous_ids), 0)
         self.assertEqual(len(with_previous.equity_current_ids), components)
         self.assertEqual(len(with_previous.equity_previous_ids), components)
+
+    def test_equity_previous_lines_follow_need_previous_toggle(self):
+        """Switching ``need_previous`` adds or drops only the previous lines.
+
+        Pure Python -- trigger P6 (L-15: no mock/patch in YAML; the
+        source figures are fixed). Turning the flag on creates the
+        previous period lines and leaves the current ones alone; turning
+        it off removes only the previous ones.
+
+        :return: nothing; asserts the lines and their ids per period
+        """
+        worksheet = self._create_b555edd_worksheet("EquityToggle")
+        with mock.patch.object(
+            type(worksheet), "_get_equity_source", return_value=self._equity_source()
+        ):
+            worksheet.action_reload_account()
+            current = worksheet.equity_current_ids
+            self.assertFalse(worksheet.equity_previous_ids)
+
+            worksheet.general_audit_id.need_previous = True
+            worksheet.action_reload_account()
+            self.assertEqual(worksheet.equity_current_ids, current)
+            self.assertEqual(len(worksheet.equity_previous_ids), len(current))
+
+            worksheet.general_audit_id.need_previous = False
+            worksheet.action_reload_account()
+            self.assertEqual(worksheet.equity_current_ids, current)
+            self.assertFalse(worksheet.equity_previous_ids)
 
     def test_equity_reload_without_standard_details(self):
         """Reload on an audit without standard details gives empty lines.
@@ -817,8 +885,6 @@ class TestWSDraftReporting(YamlTransactionCase):
         lines = self._cf_lines(worksheet)
         self.assertEqual(lines["financing_total"].amount, 10.0)
         self.assertEqual(lines["cash_difference"].amount, -110.0)
-        self.assertTrue(worksheet.cashflow_has_manual)
-        self.assertTrue(worksheet.reload_needs_confirm)
 
     def test_cashflow_new_manual_rows_feed_totals(self):
         """Typed-in auditor rows move the totals and the closing cash.
@@ -831,6 +897,7 @@ class TestWSDraftReporting(YamlTransactionCase):
         investing to -95, and the exchange rate effect of 7 is added to
         the closing cash without entering the net change. The three
         seeded items carry the agreed section, calculation and order.
+        Reload again keeps the three typed-in amounts and the line ids.
 
         :return: nothing; asserts the seed and the summary lines
         """
@@ -852,17 +919,15 @@ class TestWSDraftReporting(YamlTransactionCase):
         )
 
         worksheet = self._create_b555edd_worksheet("CashflowNewRows")
-        lines = self._cf_reload(
-            worksheet,
-            {
-                "ar": -100.0,
-                "ap": 40.0,
-                "capex": -80.0,
-                "share_capital": 20.0,
-                "cash_opening": 300.0,
-                "cash_closing_tb": 280.0,
-            },
-        )
+        source = {
+            "ar": -100.0,
+            "ap": 40.0,
+            "capex": -80.0,
+            "share_capital": 20.0,
+            "cash_opening": 300.0,
+            "cash_closing_tb": 280.0,
+        }
+        lines = self._cf_reload(worksheet, source)
         self.assertEqual(lines["fx_effect"].amount, 0.0)
         self.assertEqual(lines["cash_closing_computed"].amount, 180.0)
 
@@ -876,32 +941,109 @@ class TestWSDraftReporting(YamlTransactionCase):
         self.assertEqual(lines["net_change"].amount, -110.0)
         self.assertEqual(lines["cash_closing_computed"].amount, 197.0)
         self.assertEqual(lines["cash_difference"].amount, -83.0)
-        self.assertTrue(worksheet.cashflow_has_manual)
 
-        lines = self._cf_reload(worksheet, {"ar": -100.0})
-        self.assertEqual(lines["noncash_adjustment"].amount, 0.0)
-        self.assertEqual(lines["other_investing"].amount, 0.0)
-        self.assertEqual(lines["fx_effect"].amount, 0.0)
-        self.assertFalse(worksheet.cashflow_has_manual)
+        kept_ids = {key: line.id for key, line in lines.items()}
+        lines = self._cf_reload(worksheet, source)
+        self.assertEqual({key: line.id for key, line in lines.items()}, kept_ids)
+        self.assertEqual(lines["noncash_adjustment"].amount, 25.0)
+        self.assertEqual(lines["other_investing"].amount, -15.0)
+        self.assertEqual(lines["fx_effect"].amount, 7.0)
+        self.assertEqual(lines["operating_total"].amount, -35.0)
+        self.assertEqual(lines["cash_closing_computed"].amount, 197.0)
+        self.assertEqual(lines["cash_difference"].amount, -83.0)
 
-    def test_cashflow_reload_discards_manual_amounts(self):
-        """Reload again throws away the typed-in amounts.
+    def test_cashflow_reload_keeps_manual_amounts(self):
+        """Reload keeps the typed-in amounts and follows the source.
 
         Pure Python -- trigger P6 (L-15: no mock/patch in YAML; the
-        calculated amounts are fixed). A dividend paid typed in is gone
-        after the next Reload, and the confirmation flag goes off.
+        calculated amounts are fixed and then changed). A dividend paid
+        typed in survives the next Reload with the same line id, while
+        the calculated receivables line follows the new source.
 
-        :return: nothing; asserts the manual line and the flags
+        :return: nothing; asserts the manual and the calculated line
         """
         worksheet = self._create_b555edd_worksheet("CashflowReload")
         lines = self._cf_reload(worksheet, {"ar": -100.0})
         lines["dividend_paid"].amount = -10.0
+        manual_id = lines["dividend_paid"].id
 
+        lines = self._cf_reload(worksheet, {"ar": -150.0})
+
+        self.assertEqual(lines["dividend_paid"].id, manual_id)
+        self.assertEqual(lines["dividend_paid"].amount, -10.0)
+        self.assertEqual(lines["ar"].amount, -150.0)
+
+    def test_cashflow_previous_lines_follow_need_previous_toggle(self):
+        """Switching ``need_previous`` adds or drops only the previous lines.
+
+        Pure Python -- trigger P6 (L-15: no mock/patch in YAML; the
+        calculated amounts are fixed). A manual amount typed on the
+        current period survives both switches.
+
+        :return: nothing; asserts the lines per period
+        """
+        worksheet = self._create_b555edd_worksheet("CashflowToggle")
         lines = self._cf_reload(worksheet, {"ar": -100.0})
+        lines["dividend_paid"].amount = -10.0
+        current = worksheet.cashflow_current_ids
+        self.assertFalse(worksheet.cashflow_previous_ids)
 
-        self.assertEqual(lines["dividend_paid"].amount, 0.0)
-        self.assertFalse(worksheet.cashflow_has_manual)
-        self.assertFalse(worksheet.reload_needs_confirm)
+        worksheet.general_audit_id.need_previous = True
+        lines = self._cf_reload(worksheet, {"ar": -100.0})
+        self.assertEqual(worksheet.cashflow_current_ids, current)
+        self.assertEqual(len(worksheet.cashflow_previous_ids), len(current))
+        self.assertEqual(lines["dividend_paid"].amount, -10.0)
+
+        worksheet.general_audit_id.need_previous = False
+        lines = self._cf_reload(worksheet, {"ar": -100.0})
+        self.assertEqual(worksheet.cashflow_current_ids, current)
+        self.assertFalse(worksheet.cashflow_previous_ids)
+        self.assertEqual(lines["dividend_paid"].amount, -10.0)
+
+    def test_detail_reload_follows_standard_details(self):
+        """Reload adds new standard details and drops the vanished ones.
+
+        Pure Python -- trigger P6 (L-15: no mock/patch in YAML; the
+        standard details the audit exposes are replaced by a fixed set,
+        because ``standard_detail_id`` is ``ondelete="restrict"`` and a
+        real standard detail cannot be deleted while a line uses it). A
+        new standard detail adds one line and leaves the others
+        untouched; a standard detail that vanishes removes only its own
+        line.
+
+        :return: nothing; asserts the detail lines and their ids
+        """
+        worksheet = self._create_b555edd_worksheet("DetailSync")
+        audit = worksheet.general_audit_id
+        types = self.env["client_account_type"].search([], limit=3)
+        standard_model = self.env["general_audit.standard_detail"]
+        first = standard_model.create(
+            {"general_audit_id": audit.id, "type_id": types[0].id}
+        )
+        standard_model.create({"general_audit_id": audit.id, "type_id": types[1].id})
+        worksheet.action_reload_account()
+        old_lines = worksheet.detail_ids
+        self.assertEqual(len(old_lines), 2)
+
+        third = standard_model.create(
+            {"general_audit_id": audit.id, "type_id": types[2].id}
+        )
+        worksheet.action_reload_account()
+        self.assertEqual(len(worksheet.detail_ids), 3)
+        self.assertEqual(worksheet.detail_ids & old_lines, old_lines)
+
+        first_line = old_lines.filtered(lambda r: r.standard_detail_id == first)
+        with mock.patch.object(
+            type(audit),
+            "standard_detail_ids",
+            new_callable=mock.PropertyMock,
+            return_value=first | third,
+        ):
+            worksheet.action_reload_account()
+        self.assertEqual(
+            worksheet.detail_ids.mapped("standard_detail_id"), first | third
+        )
+        self.assertEqual(worksheet.detail_ids & old_lines, first_line)
 
     def test_cashflow_previous_period_lines_follow_need_previous(self):
         """Previous period cash flow lines exist only when kept.
