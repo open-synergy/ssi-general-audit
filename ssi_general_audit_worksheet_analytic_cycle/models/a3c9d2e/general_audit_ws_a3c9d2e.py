@@ -20,7 +20,9 @@ class GeneralAuditWSA3C9D2E(models.Model):
     shown on the KKA template, next to "Siklus"). The worksheet's own
     ``result`` (High/Moderate) is propagated to every matched
     ``general_audit.standard_detail`` (see
-    :meth:`_inverse_to_standard_detail`). ``conclusion_id``/
+    :meth:`_inverse_to_standard_detail`), which recomputes each account
+    from all non-cancelled worksheets covering it (``high`` outranks
+    ``moderate``) and clears it when none remains. ``conclusion_id``/
     ``conclusion`` remain the mixin's generic
     required-before-confirm fields and are not used for this
     propagation. Per-procedure results
@@ -152,18 +154,103 @@ class GeneralAuditWSA3C9D2E(models.Model):
             return "moderate"
         return False
 
-    def _inverse_to_standard_detail(self):
-        """Propagate the worksheet's cycle result to the matched standard details."""
-        for record in self:
-            result = record._get_analytical_procedures_cycle_result()
-            if result and record.standard_detail_ids:
-                record.standard_detail_ids.write(
-                    {"analytical_procedures_cycle_result": result}
+    def _get_live_standard_details(self):
+        """Return the standard details currently covered by these sheets.
+
+        Derived from a direct search on ``related_account_type_ids`` and
+        ``general_audit_id`` rather than from the stored
+        ``standard_detail_ids`` cache, which may lag behind a write.
+
+        :return: ``general_audit.standard_detail`` recordset (sudo)
+        """
+        StandardDetail = self.env["general_audit.standard_detail"].sudo()
+        result = StandardDetail
+        for record in self.sudo():
+            if record.general_audit_id and record.related_account_type_ids:
+                result |= StandardDetail.search(
+                    [
+                        ("general_audit_id", "=", record.general_audit_id.id),
+                        ("type_id", "in", record.related_account_type_ids.ids),
+                    ]
                 )
+        return result
+
+    def _inverse_to_standard_detail(self, standard_details=None):
+        """Recompute the cycle result of every affected standard detail.
+
+        For each standard detail (those covered by these worksheets plus
+        ``standard_details``, typically the ones covered before a change)
+        the value is re-derived from a live search of every non-cancelled
+        worksheet of the same General Audit that tags its account and
+        has a ``result``. ``high`` outranks ``moderate``; when no such
+        worksheet remains the value is cleared (``False``).
+
+        :param standard_details: extra ``general_audit.standard_detail``
+            records to recompute, e.g. accounts that were just removed
+            from ``related_account_type_ids``
+        :return: nothing; writes ``analytical_procedures_cycle_result``
+        """
+        Worksheet = self.env["general_audit_ws_a3c9d2e"].sudo()
+        details = self._get_live_standard_details()
+        if standard_details:
+            details |= standard_details.sudo()
+        for detail in details.exists():
+            worksheets = Worksheet.search(
+                [
+                    ("general_audit_id", "=", detail.general_audit_id.id),
+                    ("related_account_type_ids", "in", detail.type_id.ids),
+                    ("state", "!=", "cancel"),
+                    ("result", "!=", False),
+                ]
+            )
+            results = [w._get_analytical_procedures_cycle_result() for w in worksheets]
+            if "high" in results:
+                value = "high"
+            elif "moderate" in results:
+                value = "moderate"
+            else:
+                value = False
+            if detail.analytical_procedures_cycle_result != value:
+                detail.write({"analytical_procedures_cycle_result": value})
+
+    @api.model_create_multi
+    def create(self, vals_list):
+        """Propagate the result of new worksheets carrying result/accounts.
+
+        :param vals_list: list of values dicts for the new worksheets
+        :return: the created worksheets
+        """
+        records = super().create(vals_list)
+        if any({"result", "related_account_type_ids"} & set(v) for v in vals_list):
+            records._inverse_to_standard_detail()
+        return records
 
     def write(self, vals):
-        """Re-propagate the result whenever it or the account tags change."""
+        """Re-propagate the result when it, the accounts or the state change.
+
+        The standard details covered *before* the write are recomputed
+        too, so an account removed from the worksheet (or whose worksheet
+        was cancelled or emptied) loses a stale value.
+
+        :param vals: values being written
+        :return: result of the parent ``write``
+        """
+        triggers = {"result", "related_account_type_ids", "state", "general_audit_id"}
+        propagate = bool(triggers & set(vals.keys()))
+        before = self._get_live_standard_details() if propagate else None
         res = super().write(vals)
-        if {"result", "related_account_type_ids"} & set(vals.keys()):
-            self._inverse_to_standard_detail()
+        if propagate:
+            self._inverse_to_standard_detail(standard_details=before)
+        return res
+
+    def unlink(self):
+        """Clear the cycle result of accounts only covered by these sheets.
+
+        :return: result of the parent ``unlink``
+        """
+        before = self._get_live_standard_details()
+        res = super().unlink()
+        self.env["general_audit_ws_a3c9d2e"]._inverse_to_standard_detail(
+            standard_details=before
+        )
         return res
