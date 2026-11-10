@@ -84,3 +84,16 @@ class GeneralAuditWSfbf57eeComputation(models.Model):
     def _compute_result(self):
         for record in self:
             record.result = record.current_amount * record.coefficient
+
+    def _refresh_computed_columns(self):
+        """Recompute the stored amount and result of the lines.
+
+        The amount is read from the General Audit computation, a record
+        of another model, so the ORM does not refresh it when the trial
+        balance changes. The **Computation** button calls this method on
+        the lines it keeps.
+
+        :return: nothing; reassigns ``current_amount`` and ``result``
+        """
+        self._compute_current_amount()
+        self._compute_result()

@@ -26,9 +26,10 @@
 ## Post-Condition
 
 - The **Related Parties** list has one line for every related party of the selected
-  Understanding of the Entity worksheet.
-- The relation and related account types of each party are copied into both the initial
+  Understanding of the Entity worksheet. A line is added only for a party that has none.
+- The relation and related account types of a new line are copied into both the initial
   and the final columns.
-- Existing lines are removed first and rebuilt, so any input already entered on them is
-  lost.
-- Clicking the button again does not duplicate lines.
+- Existing lines are kept as they are, so the **Ref.**, final relation, final related
+  account types and **Conclusion** already entered are not lost. Lines added by hand,
+  and lines of parties no longer in the source worksheet, are not removed.
+- Clicking the button again does not duplicate lines and alters nothing without changes.

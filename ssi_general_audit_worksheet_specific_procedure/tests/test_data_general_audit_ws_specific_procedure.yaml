@@ -451,6 +451,225 @@ scenarios:
             expected: 160000.0
 
   # ------------------------------------------------------------------
+  # fbf57ee - action_load_computation keeps the auditor input (#693)
+  # ------------------------------------------------------------------
+  - name: "WS fbf57ee - action_load_computation keeps coefficient and refreshes amounts"
+    steps:
+      - step: "Create computation item 1 flagged for going concern"
+        action: "create"
+        model: "trial_balance_computation_item"
+        save_as: "gc_item_1"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Computation Item 1 - fbf57ee Keep"
+          code: "/"
+          going_concern_ok: true
+
+      - step: "Create computation item 2 flagged for going concern"
+        action: "create"
+        model: "trial_balance_computation_item"
+        save_as: "gc_item_2"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Computation Item 2 - fbf57ee Keep"
+          code: "/"
+          going_concern_ok: true
+
+      - step: "Create home trial balance for the audit"
+        action: "create"
+        model: "client_trial_balance"
+        save_as: "tb_home"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          trial_balance_type: "home"
+
+      - step: "Create home trial balance computation line for item 1"
+        action: "create"
+        model: "client_trial_balance.computation"
+        save_as: "tb_computation_1"
+        as_user: "base.user_admin"
+        values:
+          trial_balance_id: "REC: tb_home.id"
+          computation_item_id: "REC: gc_item_1.id"
+          amount: 100000.0
+
+      - step: "Create general_audit.computation row for item 1"
+        action: "create"
+        model: "general_audit.computation"
+        save_as: "audit_computation_1"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          computation_item_id: "REC: gc_item_1.id"
+
+      - step: "Create z-score coefficient set with coefficients for both items"
+        action: "create"
+        model: "general_audit_going_concern_z_score_coeficient_set"
+        save_as: "coefficient_set"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Z-Score Coefficient Set - fbf57ee Keep"
+          code: "/"
+          item_ids:
+            - - 0
+              - 0
+              - computation_item_id: "REC: gc_item_1.id"
+                coefficient: 2.0
+            - - 0
+              - 0
+              - computation_item_id: "REC: gc_item_2.id"
+                coefficient: 3.0
+
+      - step: "Create worksheet fbf57ee (balance_type = end_period)"
+        action: "create"
+        model: "general_audit_ws_fbf57ee"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_fbf57ee.id"
+          balance_type: "end_period"
+          z_score_coefficient_set_id: "REC: coefficient_set.id"
+
+      - step: "Call action_load_computation the first time"
+        action: "call"
+        target: "worksheet"
+        method: "action_load_computation"
+        as_user: "base.user_admin"
+
+      - step: "Find the line of computation 1"
+        action: "search"
+        model: "general_audit_ws_fbf57ee.computation"
+        domain:
+          - ["worksheet_id", "=", "REC: worksheet.id"]
+          - ["general_audit_computation_id", "=", "REC: audit_computation_1.id"]
+        save_as: "line_1"
+        expect_count: 1
+
+      - step: "Auditor changes the coefficient of line 1"
+        action: "write"
+        target: "line_1"
+        as_user: "base.user_admin"
+        values:
+          coefficient: 5.0
+
+      - step: "The trial balance amount of item 1 changes"
+        action: "write"
+        target: "tb_computation_1"
+        as_user: "base.user_admin"
+        values:
+          amount: 150000.0
+
+      - step: "Item 2 gets a trial balance amount and a computation row"
+        action: "create"
+        model: "client_trial_balance.computation"
+        save_as: "tb_computation_2"
+        as_user: "base.user_admin"
+        values:
+          trial_balance_id: "REC: tb_home.id"
+          computation_item_id: "REC: gc_item_2.id"
+          amount: 10000.0
+
+      - step: "Create general_audit.computation row for item 2"
+        action: "create"
+        model: "general_audit.computation"
+        save_as: "audit_computation_2"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          computation_item_id: "REC: gc_item_2.id"
+
+      - step: "Call action_load_computation again"
+        action: "call"
+        target: "worksheet"
+        method: "action_load_computation"
+        as_user: "base.user_admin"
+
+      - step: "Two lines exist: the kept one and the new one"
+        action: "search"
+        model: "general_audit_ws_fbf57ee.computation"
+        domain:
+          - ["worksheet_id", "=", "REC: worksheet.id"]
+        save_as: "all_lines"
+        expect_count: 2
+
+      - step: "Line 1 keeps its id"
+        action: "search"
+        model: "general_audit_ws_fbf57ee.computation"
+        domain:
+          - ["id", "=", "REC: line_1.id"]
+        save_as: "line_1_after"
+        expect_count: 1
+
+      - step: "Line 1 keeps the coefficient and has fresh amount and result"
+        action: "assert"
+        target: "line_1_after"
+        asserts:
+          coefficient:
+            type: "value"
+            expected: 5.0
+          current_amount:
+            type: "value"
+            expected: 150000.0
+          result:
+            type: "value"
+            expected: 750000.0
+
+      - step: "Find the new line of computation 2"
+        action: "search"
+        model: "general_audit_ws_fbf57ee.computation"
+        domain:
+          - ["worksheet_id", "=", "REC: worksheet.id"]
+          - ["general_audit_computation_id", "=", "REC: audit_computation_2.id"]
+        save_as: "line_2"
+        expect_count: 1
+
+      - step: "The new line takes its coefficient from the set"
+        action: "assert"
+        target: "line_2"
+        asserts:
+          coefficient:
+            type: "value"
+            expected: 3.0
+          current_amount:
+            type: "value"
+            expected: 10000.0
+          result:
+            type: "value"
+            expected: 30000.0
+
+      - step: "Item 2 is no longer flagged for going concern"
+        action: "write"
+        target: "gc_item_2"
+        as_user: "base.user_admin"
+        values:
+          going_concern_ok: false
+
+      - step: "Call action_load_computation a third time"
+        action: "call"
+        target: "worksheet"
+        method: "action_load_computation"
+        as_user: "base.user_admin"
+
+      - step: "Only the line of computation 1 remains"
+        action: "search"
+        model: "general_audit_ws_fbf57ee.computation"
+        domain:
+          - ["worksheet_id", "=", "REC: worksheet.id"]
+        save_as: "lines_final"
+        expect_count: 1
+
+      - step: "The remaining line is line 1 with its coefficient intact"
+        action: "search"
+        model: "general_audit_ws_fbf57ee.computation"
+        domain:
+          - ["id", "=", "REC: line_1.id"]
+          - ["coefficient", "=", 5.0]
+        save_as: "line_1_final"
+        expect_count: 1
+
+  # ------------------------------------------------------------------
   # fbf57ee - z_score with no computation lines (only Z-Score case
   # reachable without hitting the action_load_computation bug above)
   # ------------------------------------------------------------------
@@ -1330,6 +1549,190 @@ scenarios:
           - ["name", "=", "Test Related Party 2"]
           - ["final_relation", "=", "Shareholder"]
         save_as: "copied_line_2"
+        expect_count: 1
+
+  # ------------------------------------------------------------------
+  # c40cfd9 - action_load_related_party keeps the auditor input (#693)
+  # ------------------------------------------------------------------
+  - name: "WS c40cfd9 - action_load_related_party keeps auditor input"
+    steps:
+      - step: "Create account group prerequisite"
+        action: "create"
+        model: "client_account_group"
+        save_as: "account_group"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Account Group - c40cfd9 Keep Input"
+          code: "/"
+
+      - step: "Create account type prerequisite"
+        action: "create"
+        model: "client_account_type"
+        save_as: "account_type"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Account Type - c40cfd9 Keep Input"
+          code: "/"
+          group_id: "REC: account_group.id"
+          python_code: "result = 0.0"
+
+      - step: "Create source worksheet ae11f7e"
+        action: "create"
+        model: "general_audit_ws_ae11f7e"
+        save_as: "ws_ae11f7e"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_ae11f7e.id"
+
+      - step: "Add related party 1 on source worksheet"
+        action: "create"
+        model: "general_audit_ws_ae11f7e.related_party"
+        save_as: "source_related_party_1"
+        as_user: "base.user_admin"
+        values:
+          worksheet_id: "REC: ws_ae11f7e.id"
+          name: "Test Keep Party 1"
+          relation: "Subsidiary"
+          related_account_type_ids: [[6, 0, ["REC: account_type.id"]]]
+
+      - step: "Add related party 2 on source worksheet"
+        action: "create"
+        model: "general_audit_ws_ae11f7e.related_party"
+        save_as: "source_related_party_2"
+        as_user: "base.user_admin"
+        values:
+          worksheet_id: "REC: ws_ae11f7e.id"
+          name: "Test Keep Party 2"
+          relation: "Shareholder"
+          related_account_type_ids: [[6, 0, ["REC: account_type.id"]]]
+
+      - step: "Create worksheet c40cfd9 linked to ae11f7e"
+        action: "create"
+        model: "general_audit_ws_c40cfd9"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_c40cfd9.id"
+          ws_ae11f7e_id: "REC: ws_ae11f7e.id"
+
+      - step: "Call action_load_related_party the first time"
+        action: "call"
+        target: "worksheet"
+        method: "action_load_related_party"
+        as_user: "base.user_admin"
+
+      - step: "Find the line of related party 1"
+        action: "search"
+        model: "general_audit_ws_c40cfd9.related_party"
+        domain:
+          - ["worksheet_id", "=", "REC: worksheet.id"]
+          - ["name", "=", "Test Keep Party 1"]
+        save_as: "line_1"
+        expect_count: 1
+
+      - step: "Auditor fills reference, final relation and conclusion on line 1"
+        action: "write"
+        target: "line_1"
+        as_user: "base.user_admin"
+        values:
+          reference: "REF-KEEP-1"
+          final_relation: "Associate"
+          conclusion: "Auditor conclusion on party 1."
+
+      - step: "Auditor adds a manual related party line"
+        action: "create"
+        model: "general_audit_ws_c40cfd9.related_party"
+        save_as: "manual_line"
+        as_user: "base.user_admin"
+        values:
+          worksheet_id: "REC: worksheet.id"
+          name: "Test Manual Party"
+          final_relation: "Director"
+          final_related_account_type_ids: [[6, 0, ["REC: account_type.id"]]]
+
+      - step: "Related party 3 appears on the source worksheet"
+        action: "create"
+        model: "general_audit_ws_ae11f7e.related_party"
+        save_as: "source_related_party_3"
+        as_user: "base.user_admin"
+        values:
+          worksheet_id: "REC: ws_ae11f7e.id"
+          name: "Test Keep Party 3"
+          relation: "Joint Venture"
+          related_account_type_ids: [[6, 0, ["REC: account_type.id"]]]
+
+      - step: "Related party 2 is removed from the source worksheet"
+        action: "unlink"
+        target: "source_related_party_2"
+
+      - step: "Call action_load_related_party again"
+        action: "call"
+        target: "worksheet"
+        method: "action_load_related_party"
+        as_user: "base.user_admin"
+
+      - step: "Four lines remain: 2 loaded, 1 manual, 1 new"
+        action: "search"
+        model: "general_audit_ws_c40cfd9.related_party"
+        domain:
+          - ["worksheet_id", "=", "REC: worksheet.id"]
+        save_as: "all_lines"
+        expect_count: 4
+
+      - step: "Line 1 keeps its id and the auditor input"
+        action: "search"
+        model: "general_audit_ws_c40cfd9.related_party"
+        domain:
+          - ["id", "=", "REC: line_1.id"]
+        save_as: "line_1_after"
+        expect_count: 1
+
+      - step: "Assert line 1 values are intact"
+        action: "assert"
+        target: "line_1_after"
+        asserts:
+          reference:
+            type: "value"
+            expected: "REF-KEEP-1"
+          final_relation:
+            type: "value"
+            expected: "Associate"
+          conclusion:
+            type: "value"
+            expected: "Auditor conclusion on party 1."
+          initial_relation:
+            type: "value"
+            expected: "Subsidiary"
+
+      - step: "The manual line is still there"
+        action: "search"
+        model: "general_audit_ws_c40cfd9.related_party"
+        domain:
+          - ["id", "=", "REC: manual_line.id"]
+          - ["name", "=", "Test Manual Party"]
+        save_as: "manual_line_after"
+        expect_count: 1
+
+      - step: "The line of the party dropped from the source is not removed"
+        action: "search"
+        model: "general_audit_ws_c40cfd9.related_party"
+        domain:
+          - ["worksheet_id", "=", "REC: worksheet.id"]
+          - ["name", "=", "Test Keep Party 2"]
+        save_as: "line_2_after"
+        expect_count: 1
+
+      - step: "The new party became a new line copied from the source"
+        action: "search"
+        model: "general_audit_ws_c40cfd9.related_party"
+        domain:
+          - ["worksheet_id", "=", "REC: worksheet.id"]
+          - ["name", "=", "Test Keep Party 3"]
+          - ["initial_relation", "=", "Joint Venture"]
+          - ["final_relation", "=", "Joint Venture"]
+        save_as: "line_3_after"
         expect_count: 1
 
   # ------------------------------------------------------------------
