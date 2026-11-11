@@ -107,6 +107,20 @@ class GeneralAuditWSa8c54f3(models.Model):
             "General Audit. Automatically computed and stored."
         ),
     )
+    link_1_conclusion = fields.Text(
+        string="Conclusion",
+        readonly=True,
+        states={
+            "open": [
+                ("readonly", False),
+            ],
+        },
+        help=(
+            "Free-text conclusion summarising all worksheets in the "
+            "link_1_ids group. Entered manually; it is not changed "
+            "when the links are reloaded."
+        ),
+    )
 
     # Subledger
     # LINK - 2 b5e3d9f
@@ -146,6 +160,20 @@ class GeneralAuditWSa8c54f3(models.Model):
             "General  Audit. Automatically computed and stored."
         ),
     )
+    link_2_conclusion = fields.Text(
+        string="Conclusion",
+        readonly=True,
+        states={
+            "open": [
+                ("readonly", False),
+            ],
+        },
+        help=(
+            "Free-text conclusion summarising all worksheets in the "
+            "link_2_ids group. Entered manually; it is not changed "
+            "when the links are reloaded."
+        ),
+    )
 
     # Test of Control
     # LINK - 3 e3f4a5b
@@ -183,6 +211,20 @@ class GeneralAuditWSa8c54f3(models.Model):
         help=(
             "Collection of all (Test of Control) worksheets linked to "
             "this  General Audit. Automatically computed and stored."
+        ),
+    )
+    link_3_conclusion = fields.Text(
+        string="Conclusion",
+        readonly=True,
+        states={
+            "open": [
+                ("readonly", False),
+            ],
+        },
+        help=(
+            "Free-text conclusion summarising all worksheets in the "
+            "link_3_ids group. Entered manually; it is not changed "
+            "when the links are reloaded."
         ),
     )
 
@@ -225,6 +267,20 @@ class GeneralAuditWSa8c54f3(models.Model):
             "stored."
         ),
     )
+    link_4_conclusion = fields.Text(
+        string="Conclusion",
+        readonly=True,
+        states={
+            "open": [
+                ("readonly", False),
+            ],
+        },
+        help=(
+            "Free-text conclusion summarising all worksheets in the "
+            "link_4_ids group. Entered manually; it is not changed "
+            "when the links are reloaded."
+        ),
+    )
 
     # Key Audit Procedures
     # LINK - 5 e51bb1c
@@ -262,6 +318,20 @@ class GeneralAuditWSa8c54f3(models.Model):
         help=(
             "Collection of all (Key Audit Procedures) worksheets linked "
             "to this  General Audit. Automatically computed and stored."
+        ),
+    )
+    link_5_conclusion = fields.Text(
+        string="Conclusion",
+        readonly=True,
+        states={
+            "open": [
+                ("readonly", False),
+            ],
+        },
+        help=(
+            "Free-text conclusion summarising all worksheets in the "
+            "link_5_ids group. Entered manually; it is not changed "
+            "when the links are reloaded."
         ),
     )
 
@@ -303,6 +373,20 @@ class GeneralAuditWSa8c54f3(models.Model):
             "General Audit. Automatically computed and stored."
         ),
     )
+    link_6_conclusion = fields.Text(
+        string="Conclusion",
+        readonly=True,
+        states={
+            "open": [
+                ("readonly", False),
+            ],
+        },
+        help=(
+            "Free-text conclusion summarising all worksheets in the "
+            "link_6_ids group. Entered manually; it is not changed "
+            "when the links are reloaded."
+        ),
+    )
 
     # Sample Determination
     # LINK - 7 a916660
@@ -342,6 +426,20 @@ class GeneralAuditWSa8c54f3(models.Model):
             "to this  General Audit. Automatically computed and stored."
         ),
     )
+    link_7_conclusion = fields.Text(
+        string="Conclusion",
+        readonly=True,
+        states={
+            "open": [
+                ("readonly", False),
+            ],
+        },
+        help=(
+            "Free-text conclusion summarising all worksheets in the "
+            "link_7_ids group. Entered manually; it is not changed "
+            "when the links are reloaded."
+        ),
+    )
 
     # Test of Detail
     # LINK - 8 b4f8e1a
@@ -379,6 +477,20 @@ class GeneralAuditWSa8c54f3(models.Model):
         help=(
             "Collection of all (Test Conclusion) worksheets linked to this "
             "General Audit. Automatically computed and stored."
+        ),
+    )
+    link_8_conclusion = fields.Text(
+        string="Conclusion",
+        readonly=True,
+        states={
+            "open": [
+                ("readonly", False),
+            ],
+        },
+        help=(
+            "Free-text conclusion summarising all worksheets in the "
+            "link_8_ids group. Entered manually; it is not changed "
+            "when the links are reloaded."
         ),
     )
 
@@ -421,6 +533,20 @@ class GeneralAuditWSa8c54f3(models.Model):
             "stored."
         ),
     )
+    link_9_conclusion = fields.Text(
+        string="Conclusion",
+        readonly=True,
+        states={
+            "open": [
+                ("readonly", False),
+            ],
+        },
+        help=(
+            "Free-text conclusion summarising all worksheets in the "
+            "link_9_ids group. Entered manually; it is not changed "
+            "when the links are reloaded."
+        ),
+    )
 
     # Physical Check
     # LINK - 10 c7d5f2b
@@ -458,6 +584,20 @@ class GeneralAuditWSa8c54f3(models.Model):
         help=(
             "Collection of all (Physical Check) worksheets linked to this "
             "General Audit. Automatically computed and stored."
+        ),
+    )
+    link_10_conclusion = fields.Text(
+        string="Conclusion",
+        readonly=True,
+        states={
+            "open": [
+                ("readonly", False),
+            ],
+        },
+        help=(
+            "Free-text conclusion summarising all worksheets in the "
+            "link_10_ids group. Entered manually; it is not changed "
+            "when the links are reloaded."
         ),
     )
 
@@ -500,6 +640,20 @@ class GeneralAuditWSa8c54f3(models.Model):
             "stored."
         ),
     )
+    link_11_conclusion = fields.Text(
+        string="Conclusion",
+        readonly=True,
+        states={
+            "open": [
+                ("readonly", False),
+            ],
+        },
+        help=(
+            "Free-text conclusion summarising all worksheets in the "
+            "link_11_ids group. Entered manually; it is not changed "
+            "when the links are reloaded."
+        ),
+    )
 
     # Confirmation Audit Procedure
     # LINK - 12 d45dd19
@@ -538,6 +692,20 @@ class GeneralAuditWSa8c54f3(models.Model):
             "Collection of all (Confirmation Audit Procedure) worksheets "
             "linked  to this General Audit. Automatically computed and "
             "stored."
+        ),
+    )
+    link_12_conclusion = fields.Text(
+        string="Conclusion",
+        readonly=True,
+        states={
+            "open": [
+                ("readonly", False),
+            ],
+        },
+        help=(
+            "Free-text conclusion summarising all worksheets in the "
+            "link_12_ids group. Entered manually; it is not changed "
+            "when the links are reloaded."
         ),
     )
 
@@ -580,6 +748,20 @@ class GeneralAuditWSa8c54f3(models.Model):
             "stored."
         ),
     )
+    link_13_conclusion = fields.Text(
+        string="Conclusion",
+        readonly=True,
+        states={
+            "open": [
+                ("readonly", False),
+            ],
+        },
+        help=(
+            "Free-text conclusion summarising all worksheets in the "
+            "link_13_ids group. Entered manually; it is not changed "
+            "when the links are reloaded."
+        ),
+    )
 
     # Reperformance Audit Procedure
     # LINK - 14 d1ecfb7
@@ -618,6 +800,20 @@ class GeneralAuditWSa8c54f3(models.Model):
             "Collection of all (Reperformance Audit Procedure) worksheets "
             "linked to this General Audit. Automatically computed and "
             "stored."
+        ),
+    )
+    link_14_conclusion = fields.Text(
+        string="Conclusion",
+        readonly=True,
+        states={
+            "open": [
+                ("readonly", False),
+            ],
+        },
+        help=(
+            "Free-text conclusion summarising all worksheets in the "
+            "link_14_ids group. Entered manually; it is not changed "
+            "when the links are reloaded."
         ),
     )
 
@@ -660,6 +856,20 @@ class GeneralAuditWSa8c54f3(models.Model):
             "computed  and stored."
         ),
     )
+    link_15_conclusion = fields.Text(
+        string="Conclusion",
+        readonly=True,
+        states={
+            "open": [
+                ("readonly", False),
+            ],
+        },
+        help=(
+            "Free-text conclusion summarising all worksheets in the "
+            "link_15_ids group. Entered manually; it is not changed "
+            "when the links are reloaded."
+        ),
+    )
 
     # Comparative Audit Procedure
     # LINK - 16 de3244b
@@ -700,6 +910,20 @@ class GeneralAuditWSa8c54f3(models.Model):
             "stored."
         ),
     )
+    link_16_conclusion = fields.Text(
+        string="Conclusion",
+        readonly=True,
+        states={
+            "open": [
+                ("readonly", False),
+            ],
+        },
+        help=(
+            "Free-text conclusion summarising all worksheets in the "
+            "link_16_ids group. Entered manually; it is not changed "
+            "when the links are reloaded."
+        ),
+    )
 
     # Inquiry Audit Procedures
     # LINK - 17 a145276
@@ -738,6 +962,20 @@ class GeneralAuditWSa8c54f3(models.Model):
             "Collection of all (Inquiry Audit Procedures) worksheets "
             "linked to  this General Audit. Automatically computed and "
             "stored."
+        ),
+    )
+    link_17_conclusion = fields.Text(
+        string="Conclusion",
+        readonly=True,
+        states={
+            "open": [
+                ("readonly", False),
+            ],
+        },
+        help=(
+            "Free-text conclusion summarising all worksheets in the "
+            "link_17_ids group. Entered manually; it is not changed "
+            "when the links are reloaded."
         ),
     )
 
@@ -1029,6 +1267,20 @@ class GeneralAuditWSa8c54f3(models.Model):
             "General Audit. Automatically computed and stored."
         ),
     )
+    link_22_conclusion = fields.Text(
+        string="Conclusion",
+        readonly=True,
+        states={
+            "open": [
+                ("readonly", False),
+            ],
+        },
+        help=(
+            "Free-text conclusion summarising all worksheets in the "
+            "link_22_ids group. Entered manually; it is not changed "
+            "when the links are reloaded."
+        ),
+    )
 
     # Management Expert
     # LINK - 23 cda3a68
@@ -1066,6 +1318,20 @@ class GeneralAuditWSa8c54f3(models.Model):
         help=(
             "Collection of all (Management Expert) worksheets linked to "
             "this  General Audit. Automatically computed and stored."
+        ),
+    )
+    link_23_conclusion = fields.Text(
+        string="Conclusion",
+        readonly=True,
+        states={
+            "open": [
+                ("readonly", False),
+            ],
+        },
+        help=(
+            "Free-text conclusion summarising all worksheets in the "
+            "link_23_ids group. Entered manually; it is not changed "
+            "when the links are reloaded."
         ),
     )
 
@@ -1169,6 +1435,20 @@ class GeneralAuditWSa8c54f3(models.Model):
             "Collection of all (Lead Schedule - Account) worksheets "
             "linked to  this General Audit. Automatically computed and "
             "stored."
+        ),
+    )
+    link_25_conclusion = fields.Text(
+        string="Conclusion",
+        readonly=True,
+        states={
+            "open": [
+                ("readonly", False),
+            ],
+        },
+        help=(
+            "Free-text conclusion summarising all worksheets in the "
+            "link_25_ids group. Entered manually; it is not changed "
+            "when the links are reloaded."
         ),
     )
 
