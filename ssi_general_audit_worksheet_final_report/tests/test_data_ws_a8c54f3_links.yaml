@@ -303,3 +303,31 @@ scenarios:
           link_48_id:
             type: "value"
             operator: "is_falsy"
+
+  # Positive: the manual link_1_conclusion is free text, not computed,
+  # so action_reload_links must leave it untouched.
+  - name: "link_1_conclusion survives action_reload_links"
+    steps:
+      - step: "Create worksheet a8c54f3 with a manual link_1 conclusion"
+        action: "create"
+        model: "general_audit_ws_a8c54f3"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_a8c54f3.id"
+          link_1_conclusion: "Manual conclusion for the general ledger group."
+
+      - step: "Call action_reload_links on a8c54f3"
+        action: "call"
+        target: "worksheet"
+        method: "action_reload_links"
+        as_user: "base.user_admin"
+
+      - step: "Assert link_1_conclusion keeps the manual text"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          link_1_conclusion:
+            type: "value"
+            expected: "Manual conclusion for the general ledger group."
