@@ -2745,6 +2745,476 @@ class GeneralAuditWSfbbe0f8(models.Model):
         ),
     )
 
+    # Free-text conclusions for the Many2many links. A Many2many link
+    # holds many worksheets, so no single source conclusion exists; the
+    # user summarises the whole group here. Never touched by reload.
+    link_1_conclusion = fields.Text(
+        string="Conclusion",
+        readonly=True,
+        states={
+            "open": [
+                ("readonly", False),
+            ],
+        },
+        help=(
+            "Free-text conclusion summarising all worksheets in the "
+            "link_1_ids group. Entered manually; it is not changed "
+            "when the links are reloaded."
+        ),
+    )
+    link_2_conclusion = fields.Text(
+        string="Conclusion",
+        readonly=True,
+        states={
+            "open": [
+                ("readonly", False),
+            ],
+        },
+        help=(
+            "Free-text conclusion summarising all worksheets in the "
+            "link_2_ids group. Entered manually; it is not changed "
+            "when the links are reloaded."
+        ),
+    )
+    link_3_conclusion = fields.Text(
+        string="Conclusion",
+        readonly=True,
+        states={
+            "open": [
+                ("readonly", False),
+            ],
+        },
+        help=(
+            "Free-text conclusion summarising all worksheets in the "
+            "link_3_ids group. Entered manually; it is not changed "
+            "when the links are reloaded."
+        ),
+    )
+    link_4_conclusion = fields.Text(
+        string="Conclusion",
+        readonly=True,
+        states={
+            "open": [
+                ("readonly", False),
+            ],
+        },
+        help=(
+            "Free-text conclusion summarising all worksheets in the "
+            "link_4_ids group. Entered manually; it is not changed "
+            "when the links are reloaded."
+        ),
+    )
+    link_9_conclusion = fields.Text(
+        string="Conclusion",
+        readonly=True,
+        states={
+            "open": [
+                ("readonly", False),
+            ],
+        },
+        help=(
+            "Free-text conclusion summarising all worksheets in the "
+            "link_9_ids group. Entered manually; it is not changed "
+            "when the links are reloaded."
+        ),
+    )
+    link_11_conclusion = fields.Text(
+        string="Conclusion",
+        readonly=True,
+        states={
+            "open": [
+                ("readonly", False),
+            ],
+        },
+        help=(
+            "Free-text conclusion summarising all worksheets in the "
+            "link_11_ids group. Entered manually; it is not changed "
+            "when the links are reloaded."
+        ),
+    )
+    link_12_conclusion = fields.Text(
+        string="Conclusion",
+        readonly=True,
+        states={
+            "open": [
+                ("readonly", False),
+            ],
+        },
+        help=(
+            "Free-text conclusion summarising all worksheets in the "
+            "link_12_ids group. Entered manually; it is not changed "
+            "when the links are reloaded."
+        ),
+    )
+    link_14_conclusion = fields.Text(
+        string="Conclusion",
+        readonly=True,
+        states={
+            "open": [
+                ("readonly", False),
+            ],
+        },
+        help=(
+            "Free-text conclusion summarising all worksheets in the "
+            "link_14_ids group. Entered manually; it is not changed "
+            "when the links are reloaded."
+        ),
+    )
+    link_15_conclusion = fields.Text(
+        string="Conclusion",
+        readonly=True,
+        states={
+            "open": [
+                ("readonly", False),
+            ],
+        },
+        help=(
+            "Free-text conclusion summarising all worksheets in the "
+            "link_15_ids group. Entered manually; it is not changed "
+            "when the links are reloaded."
+        ),
+    )
+    link_16_conclusion = fields.Text(
+        string="Conclusion",
+        readonly=True,
+        states={
+            "open": [
+                ("readonly", False),
+            ],
+        },
+        help=(
+            "Free-text conclusion summarising all worksheets in the "
+            "link_16_ids group. Entered manually; it is not changed "
+            "when the links are reloaded."
+        ),
+    )
+    link_17_conclusion = fields.Text(
+        string="Conclusion",
+        readonly=True,
+        states={
+            "open": [
+                ("readonly", False),
+            ],
+        },
+        help=(
+            "Free-text conclusion summarising all worksheets in the "
+            "link_17_ids group. Entered manually; it is not changed "
+            "when the links are reloaded."
+        ),
+    )
+    link_18_conclusion = fields.Text(
+        string="Conclusion",
+        readonly=True,
+        states={
+            "open": [
+                ("readonly", False),
+            ],
+        },
+        help=(
+            "Free-text conclusion summarising all worksheets in the "
+            "link_18_ids group. Entered manually; it is not changed "
+            "when the links are reloaded."
+        ),
+    )
+    link_23_conclusion = fields.Text(
+        string="Conclusion",
+        readonly=True,
+        states={
+            "open": [
+                ("readonly", False),
+            ],
+        },
+        help=(
+            "Free-text conclusion summarising all worksheets in the "
+            "link_23_ids group. Entered manually; it is not changed "
+            "when the links are reloaded."
+        ),
+    )
+    link_25_conclusion = fields.Text(
+        string="Conclusion",
+        readonly=True,
+        states={
+            "open": [
+                ("readonly", False),
+            ],
+        },
+        help=(
+            "Free-text conclusion summarising all worksheets in the "
+            "link_25_ids group. Entered manually; it is not changed "
+            "when the links are reloaded."
+        ),
+    )
+    link_26_conclusion = fields.Text(
+        string="Conclusion",
+        readonly=True,
+        states={
+            "open": [
+                ("readonly", False),
+            ],
+        },
+        help=(
+            "Free-text conclusion summarising all worksheets in the "
+            "link_26_ids group. Entered manually; it is not changed "
+            "when the links are reloaded."
+        ),
+    )
+
+    # Preliminary Materiality
+    # LINK - 41 1d9338d
+    @api.depends(
+        "general_audit_id",
+    )
+    def _compute_link_41_id(self):
+        """Populate ``link_41_id`` from Preliminary Materiality worksheets.
+
+        Considers only open/done worksheets.
+
+        Searches ``general_audit_ws_1d9338d`` records sharing the same
+        ``general_audit_id`` with ``state`` in ``["open", "done"]``, plus
+        ``limit=1``: the first match by default order is used instead of
+        raising on multiple results (same pattern as
+        ``_compute_link_13_id``).
+        """
+        for record in self:
+            result = False
+            obj = self.env["general_audit_ws_1d9338d"]
+            criteria = [
+                ("general_audit_id", "=", record.general_audit_id.id),
+                ("state", "in", ["open", "done"]),
+            ]
+            link_41_id = obj.search(criteria, limit=1)
+            if link_41_id:
+                result = link_41_id.id
+            record.link_41_id = result
+
+    link_41_id = fields.Many2one(
+        string="Preliminary Materiality",
+        comodel_name="general_audit_ws_1d9338d",
+        compute_sudo=True,
+        compute="_compute_link_41_id",
+        store=True,
+        help=(
+            "Link to worksheet (Preliminary Materiality) for this General Audit. "
+            "Automatically computed and stored."
+        ),
+    )
+    link_41_state = fields.Selection(
+        string="State",
+        related="link_41_id.state",
+        help=(
+            "Workflow state of the linked Preliminary Materiality worksheet. "
+            "Read-only and follows the linked record."
+        ),
+    )
+    link_41_conclusion_id = fields.Many2one(
+        string="Conclusion ID",
+        related="link_41_id.conclusion_id",
+        help=(
+            "Conclusion from the Preliminary Materiality worksheet. "
+            "Read-only, mirrors the linked record."
+        ),
+    )
+    link_41_conclusion = fields.Text(
+        string="Conclusion",
+        related="link_41_id.conclusion",
+        help=(
+            "Conclusion on the Preliminary Materiality worksheet. "
+            "Read-only, mirrors the linked record."
+        ),
+    )
+
+    # Understanding of The Entity
+    # LINK - 42 f87b2e1
+    @api.depends(
+        "general_audit_id",
+    )
+    def _compute_link_42_id(self):
+        """Populate ``link_42_id`` from Understanding of The Entity worksheets.
+
+        Considers only open/done worksheets.
+
+        Searches ``general_audit_ws_f87b2e1`` records sharing the same
+        ``general_audit_id`` with ``state`` in ``["open", "done"]``, plus
+        ``limit=1``: the first match by default order is used instead of
+        raising on multiple results (same pattern as
+        ``_compute_link_13_id``).
+        """
+        for record in self:
+            result = False
+            obj = self.env["general_audit_ws_f87b2e1"]
+            criteria = [
+                ("general_audit_id", "=", record.general_audit_id.id),
+                ("state", "in", ["open", "done"]),
+            ]
+            link_42_id = obj.search(criteria, limit=1)
+            if link_42_id:
+                result = link_42_id.id
+            record.link_42_id = result
+
+    link_42_id = fields.Many2one(
+        string="Understanding of The Entity",
+        comodel_name="general_audit_ws_f87b2e1",
+        compute_sudo=True,
+        compute="_compute_link_42_id",
+        store=True,
+        help=(
+            "Link to worksheet (Understanding of The Entity) for this General Audit. "
+            "Automatically computed and stored."
+        ),
+    )
+    link_42_state = fields.Selection(
+        string="State",
+        related="link_42_id.state",
+        help=(
+            "Workflow state of the linked Understanding of The Entity worksheet. "
+            "Read-only and follows the linked record."
+        ),
+    )
+    link_42_conclusion_id = fields.Many2one(
+        string="Conclusion ID",
+        related="link_42_id.conclusion_id",
+        help=(
+            "Conclusion from the Understanding of The Entity worksheet. "
+            "Read-only, mirrors the linked record."
+        ),
+    )
+    link_42_conclusion = fields.Text(
+        string="Conclusion",
+        related="link_42_id.conclusion",
+        help=(
+            "Conclusion on the Understanding of The Entity worksheet. "
+            "Read-only, mirrors the linked record."
+        ),
+    )
+
+    # Inherent Risk
+    # LINK - 43 bfb6dae
+    @api.depends(
+        "general_audit_id",
+    )
+    def _compute_link_43_id(self):
+        """Populate ``link_43_id`` from Inherent Risk worksheets.
+
+        Considers only open/done worksheets.
+
+        Searches ``general_audit_ws_bfb6dae`` records sharing the same
+        ``general_audit_id`` with ``state`` in ``["open", "done"]``, plus
+        ``limit=1``: the first match by default order is used instead of
+        raising on multiple results (same pattern as
+        ``_compute_link_13_id``).
+        """
+        for record in self:
+            result = False
+            obj = self.env["general_audit_ws_bfb6dae"]
+            criteria = [
+                ("general_audit_id", "=", record.general_audit_id.id),
+                ("state", "in", ["open", "done"]),
+            ]
+            link_43_id = obj.search(criteria, limit=1)
+            if link_43_id:
+                result = link_43_id.id
+            record.link_43_id = result
+
+    link_43_id = fields.Many2one(
+        string="Inherent Risk",
+        comodel_name="general_audit_ws_bfb6dae",
+        compute_sudo=True,
+        compute="_compute_link_43_id",
+        store=True,
+        help=(
+            "Link to worksheet (Inherent Risk) for this General Audit. "
+            "Automatically computed and stored."
+        ),
+    )
+    link_43_state = fields.Selection(
+        string="State",
+        related="link_43_id.state",
+        help=(
+            "Workflow state of the linked Inherent Risk worksheet. "
+            "Read-only and follows the linked record."
+        ),
+    )
+    link_43_conclusion_id = fields.Many2one(
+        string="Conclusion ID",
+        related="link_43_id.conclusion_id",
+        help=(
+            "Conclusion from the Inherent Risk worksheet. "
+            "Read-only, mirrors the linked record."
+        ),
+    )
+    link_43_conclusion = fields.Text(
+        string="Conclusion",
+        related="link_43_id.conclusion",
+        help=(
+            "Conclusion on the Inherent Risk worksheet. "
+            "Read-only, mirrors the linked record."
+        ),
+    )
+
+    # Control Risk
+    # LINK - 44 a58e29c
+    @api.depends(
+        "general_audit_id",
+    )
+    def _compute_link_44_id(self):
+        """Populate ``link_44_id`` from Control Risk worksheets.
+
+        Considers only open/done worksheets.
+
+        Searches ``general_audit_ws_a58e29c`` records sharing the same
+        ``general_audit_id`` with ``state`` in ``["open", "done"]``, plus
+        ``limit=1``: the first match by default order is used instead of
+        raising on multiple results (same pattern as
+        ``_compute_link_13_id``).
+        """
+        for record in self:
+            result = False
+            obj = self.env["general_audit_ws_a58e29c"]
+            criteria = [
+                ("general_audit_id", "=", record.general_audit_id.id),
+                ("state", "in", ["open", "done"]),
+            ]
+            link_44_id = obj.search(criteria, limit=1)
+            if link_44_id:
+                result = link_44_id.id
+            record.link_44_id = result
+
+    link_44_id = fields.Many2one(
+        string="Control Risk",
+        comodel_name="general_audit_ws_a58e29c",
+        compute_sudo=True,
+        compute="_compute_link_44_id",
+        store=True,
+        help=(
+            "Link to worksheet (Control Risk) for this General Audit. "
+            "Automatically computed and stored."
+        ),
+    )
+    link_44_state = fields.Selection(
+        string="State",
+        related="link_44_id.state",
+        help=(
+            "Workflow state of the linked Control Risk worksheet. "
+            "Read-only and follows the linked record."
+        ),
+    )
+    link_44_conclusion_id = fields.Many2one(
+        string="Conclusion ID",
+        related="link_44_id.conclusion_id",
+        help=(
+            "Conclusion from the Control Risk worksheet. "
+            "Read-only, mirrors the linked record."
+        ),
+    )
+    link_44_conclusion = fields.Text(
+        string="Conclusion",
+        related="link_44_id.conclusion",
+        help=(
+            "Conclusion on the Control Risk worksheet. "
+            "Read-only, mirrors the linked record."
+        ),
+    )
+
     def action_reload_links(self):
         for record in self.sudo():
             record._reload_links()
@@ -2791,6 +3261,10 @@ class GeneralAuditWSfbbe0f8(models.Model):
         self._compute_link_38_id()
         self._compute_link_39_id()
         self._compute_link_40_id()
+        self._compute_link_41_id()
+        self._compute_link_42_id()
+        self._compute_link_43_id()
+        self._compute_link_44_id()
 
     def _get_fields_required_before_confirm(self):
         _super = super(GeneralAuditWSfbbe0f8, self)
@@ -2860,6 +3334,10 @@ class GeneralAuditWSfbbe0f8(models.Model):
             "link_38_id": _("Communication with Management"),
             "link_39_id": _("Communication with TCWG"),
             "link_40_id": _("Use of Internal Auditor's Work Result"),
+            "link_41_id": _("Preliminary Materiality"),
+            "link_42_id": _("Understanding of The Entity"),
+            "link_43_id": _("Inherent Risk"),
+            "link_44_id": _("Control Risk"),
         }
 
     @api.model

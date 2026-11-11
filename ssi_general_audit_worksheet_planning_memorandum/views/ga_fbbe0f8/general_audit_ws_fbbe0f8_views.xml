@@ -755,233 +755,14 @@
                     </page>
                 </xpath>
                 <xpath expr="//page[@name='note']" position="before">
-                    <page name="links" string="Links">
-                        <group
-                            name="link_1"
-                            string="Understanding of The Business Environment"
-                        >
-                            <field
-                                name="link_1_ids"
-                                widget="many2many_tree"
-                                nolabel="1"
-                            >
-                                <tree>
-                                    <field name="name" />
-                                    <field name="business_environment_id" />
-                                    <field name="state" />
-                                    <field
-                                        name="conclusion"
-                                        string="Conclusion"
-                                        style="white-space: normal; word-wrap: break-word; max-width: 320px;"
-                                    />
-                                </tree>
-                            </field>
-                        </group>
-                        <group name="link_2" string="Business Cycle Summaries">
-                            <field
-                                name="link_2_ids"
-                                widget="many2many_tree"
-                                nolabel="1"
-                            >
-                                <tree>
-                                    <field name="name" />
-                                    <field name="business_process_id" />
-                                    <field name="state" />
-                                    <field
-                                        name="conclusion"
-                                        string="Conclusion"
-                                        style="white-space: normal; word-wrap: break-word; max-width: 320px;"
-                                    />
-                                </tree>
-                            </field>
-                        </group>
-                        <group name="activity_3" string="Materiality Computation">
-                            <field
-                                name="link_3_ids"
-                                widget="many2many_tree"
-                                nolabel="1"
-                            >
-                                <tree>
-                                    <field name="name" />
-                                    <field name="base_amount_source" />
-                                    <field name="state" />
-                                    <field
-                                        name="conclusion"
-                                        string="Conclusion"
-                                        style="white-space: normal; word-wrap: break-word; max-width: 320px;"
-                                    />
-                                </tree>
-                            </field>
-                        </group>
-                        <group name="activity_4" string="Specific Materiality">
-                            <field
-                                name="link_4_ids"
-                                widget="many2many_tree"
-                                nolabel="1"
-                            >
-                                <tree>
-                                    <field name="name" />
-                                    <field name="base_amount_source" />
-                                    <field name="state" />
-                                    <field
-                                        name="conclusion"
-                                        string="Conclusion"
-                                        style="white-space: normal; word-wrap: break-word; max-width: 320px;"
-                                    />
-                                </tree>
-                            </field>
-                        </group>
-                        <group
-                            name="activity_5"
-                            string="Inherent Risk - Financial Statement Level"
-                        >
-                            <label for="link_5_id" string="# Worksheet" />
-                            <div class="o_row">
-                                <field
-                                    name="link_5_id"
-                                    class="oe_inline"
-                                    force_save="1"
-                                />
-                                <label
-                                    for="link_5_state"
-                                    string="State"
-                                    style="font-weight: bold;"
-                                />
-                                <field name="link_5_state" class="oe_inline" />
-                            </div>
-                            <field name="link_5_conclusion" string="Conclusion" />
-                        </group>
-                        <group
-                            name="activity_6"
-                            string="Team Communication Pre-Engagement"
-                        >
-                            <label for="link_6_id" string="# Worksheet" />
-                            <div class="o_row">
-                                <field
-                                    name="link_6_id"
-                                    class="oe_inline"
-                                    force_save="1"
-                                />
-                                <label
-                                    for="link_6_state"
-                                    string="State"
-                                    style="font-weight: bold;"
-                                />
-                                <field name="link_6_state" class="oe_inline" />
-                            </div>
-                            <field name="link_6_conclusion" string="Conclusion" />
-                        </group>
-                        <group
-                            name="activity_7"
-                            string="Main Business Activity Process"
-                        >
-                            <label for="link_7_id" string="# Worksheet" />
-                            <div class="o_row">
-                                <field
-                                    name="link_7_id"
-                                    class="oe_inline"
-                                    force_save="1"
-                                />
-                                <label
-                                    for="link_7_state"
-                                    string="State"
-                                    style="font-weight: bold;"
-                                />
-                                <field name="link_7_state" class="oe_inline" />
-                            </div>
-                            <field name="link_7_conclusion" string="Conclusion" />
-                        </group>
-                        <group name="activity_8" string="Control Risk - Entity Level">
-                            <label for="link_8_id" string="# Worksheet" />
-                            <div class="o_row">
-                                <field
-                                    name="link_8_id"
-                                    class="oe_inline"
-                                    force_save="1"
-                                />
-                                <label
-                                    for="link_8_state"
-                                    string="State"
-                                    style="font-weight: bold;"
-                                />
-                                <field name="link_8_state" class="oe_inline" />
-                            </div>
-                            <field name="link_8_conclusion" string="Conclusion" />
-                        </group>
-                        <group
-                            name="activity_9"
-                            string="Competency, Availability, and Independency of Assignment Team"
-                        >
-                            <field
-                                name="link_9_ids"
-                                widget="many2many_tree"
-                                nolabel="1"
-                            >
-                                <tree>
-                                    <field name="name" />
-                                    <field name="state" />
-                                    <field
-                                        name="conclusion"
-                                        string="Conclusion"
-                                        style="white-space: normal; word-wrap: break-word; max-width: 320px;"
-                                    />
-                                </tree>
-                            </field>
-                        </group>
-                        <group name="activity_10" string="External Communication">
-                            <label for="link_10_id" string="# Worksheet" />
-                            <div class="o_row">
-                                <field
-                                    name="link_10_id"
-                                    class="oe_inline"
-                                    force_save="1"
-                                />
-                                <label
-                                    for="link_10_state"
-                                    string="State"
-                                    style="font-weight: bold;"
-                                />
-                                <field name="link_10_state" class="oe_inline" />
-                            </div>
-                            <field name="link_10_conclusion" string="Conclusion" />
-                        </group>
-                        <group name="link_11" string="Control Risk - Cycle Level">
-                            <field
-                                name="link_11_ids"
-                                widget="many2many_tree"
-                                nolabel="1"
-                            >
-                                <tree>
-                                    <field name="name" />
-                                    <field name="business_cycle_id" />
-                                    <field name="risk" />
-                                    <field name="state" />
-                                    <field
-                                        name="conclusion"
-                                        string="Conclusion"
-                                        style="white-space: normal; word-wrap: break-word; max-width: 320px;"
-                                    />
-                                </tree>
-                            </field>
-                        </group>
-                        <group name="link_14" string="Data Collection">
-                            <field
-                                name="link_14_ids"
-                                widget="many2many_tree"
-                                nolabel="1"
-                            >
-                                <tree>
-                                    <field name="name" />
-                                    <field name="state" />
-                                </tree>
-                            </field>
-                        </group>
+                    <page name="links" string="Conclusions">
                         <group
                             name="activity_15"
                             string="Acceptance and Continuance of Client Relationships Analysis"
                         >
                             <field
                                 name="link_15_ids"
+                                colspan="2"
                                 widget="many2many_tree"
                                 nolabel="1"
                             >
@@ -995,6 +776,13 @@
                                     />
                                 </tree>
                             </field>
+                            <label
+                                for="link_15_conclusion"
+                                string="Conclusion"
+                                colspan="2"
+                                style="font-weight: bold;"
+                            />
+                            <field name="link_15_conclusion" nolabel="1" colspan="2" />
                         </group>
                         <group
                             name="activity_16"
@@ -1002,6 +790,7 @@
                         >
                             <field
                                 name="link_16_ids"
+                                colspan="2"
                                 widget="many2many_tree"
                                 nolabel="1"
                             >
@@ -1015,10 +804,18 @@
                                     />
                                 </tree>
                             </field>
+                            <label
+                                for="link_16_conclusion"
+                                string="Conclusion"
+                                colspan="2"
+                                style="font-weight: bold;"
+                            />
+                            <field name="link_16_conclusion" nolabel="1" colspan="2" />
                         </group>
                         <group name="activity_17" string="Management Integrity">
                             <field
                                 name="link_17_ids"
+                                colspan="2"
                                 widget="many2many_tree"
                                 nolabel="1"
                             >
@@ -1032,6 +829,41 @@
                                     />
                                 </tree>
                             </field>
+                            <label
+                                for="link_17_conclusion"
+                                string="Conclusion"
+                                colspan="2"
+                                style="font-weight: bold;"
+                            />
+                            <field name="link_17_conclusion" nolabel="1" colspan="2" />
+                        </group>
+                        <group
+                            name="activity_9"
+                            string="Competency, Availability, and Independency of Assignment Team"
+                        >
+                            <field
+                                name="link_9_ids"
+                                colspan="2"
+                                widget="many2many_tree"
+                                nolabel="1"
+                            >
+                                <tree>
+                                    <field name="name" />
+                                    <field name="state" />
+                                    <field
+                                        name="conclusion"
+                                        string="Conclusion"
+                                        style="white-space: normal; word-wrap: break-word; max-width: 320px;"
+                                    />
+                                </tree>
+                            </field>
+                            <label
+                                for="link_9_conclusion"
+                                string="Conclusion"
+                                colspan="2"
+                                style="font-weight: bold;"
+                            />
+                            <field name="link_9_conclusion" nolabel="1" colspan="2" />
                         </group>
                         <group
                             name="activity_18"
@@ -1039,6 +871,7 @@
                         >
                             <field
                                 name="link_18_ids"
+                                colspan="2"
                                 widget="many2many_tree"
                                 nolabel="1"
                             >
@@ -1052,6 +885,30 @@
                                     />
                                 </tree>
                             </field>
+                            <label
+                                for="link_18_conclusion"
+                                string="Conclusion"
+                                colspan="2"
+                                style="font-weight: bold;"
+                            />
+                            <field name="link_18_conclusion" nolabel="1" colspan="2" />
+                        </group>
+                        <group name="activity_13" string="Audit Working Plan">
+                            <label for="link_13_id" string="# Worksheet" />
+                            <div class="o_row">
+                                <field
+                                    name="link_13_id"
+                                    class="oe_inline"
+                                    force_save="1"
+                                />
+                                <label
+                                    for="link_13_state"
+                                    string="State"
+                                    style="font-weight: bold;"
+                                />
+                                <field name="link_13_state" class="oe_inline" />
+                            </div>
+                            <field name="link_13_conclusion" string="Conclusion" />
                         </group>
                         <group name="activity_19" string="Engagement Letter">
                             <label for="link_19_id" string="# Worksheet" />
@@ -1104,6 +961,26 @@
                             </div>
                             <field name="link_21_conclusion" string="Conclusion" />
                         </group>
+                        <group
+                            name="activity_6"
+                            string="Team Communication Pre-Engagement"
+                        >
+                            <label for="link_6_id" string="# Worksheet" />
+                            <div class="o_row">
+                                <field
+                                    name="link_6_id"
+                                    class="oe_inline"
+                                    force_save="1"
+                                />
+                                <label
+                                    for="link_6_state"
+                                    string="State"
+                                    style="font-weight: bold;"
+                                />
+                                <field name="link_6_state" class="oe_inline" />
+                            </div>
+                            <field name="link_6_conclusion" string="Conclusion" />
+                        </group>
                         <group name="activity_22" string="Client Assistance Package">
                             <label for="link_22_id" string="# Worksheet" />
                             <div class="o_row">
@@ -1121,9 +998,30 @@
                             </div>
                             <field name="link_22_conclusion" string="Conclusion" />
                         </group>
+                        <group name="link_14" string="Data Collection">
+                            <field
+                                name="link_14_ids"
+                                colspan="2"
+                                widget="many2many_tree"
+                                nolabel="1"
+                            >
+                                <tree>
+                                    <field name="name" />
+                                    <field name="state" />
+                                </tree>
+                            </field>
+                            <label
+                                for="link_14_conclusion"
+                                string="Conclusion"
+                                colspan="2"
+                                style="font-weight: bold;"
+                            />
+                            <field name="link_14_conclusion" nolabel="1" colspan="2" />
+                        </group>
                         <group name="activity_23" string="Trial Balance">
                             <field
                                 name="link_23_ids"
+                                colspan="2"
                                 widget="many2many_tree"
                                 nolabel="1"
                             >
@@ -1137,6 +1035,82 @@
                                     />
                                 </tree>
                             </field>
+                            <label
+                                for="link_23_conclusion"
+                                string="Conclusion"
+                                colspan="2"
+                                style="font-weight: bold;"
+                            />
+                            <field name="link_23_conclusion" nolabel="1" colspan="2" />
+                        </group>
+                        <group name="activity_41" string="Preliminary Materiality">
+                            <label for="link_41_id" string="# Worksheet" />
+                            <div class="o_row">
+                                <field
+                                    name="link_41_id"
+                                    class="oe_inline"
+                                    force_save="1"
+                                />
+                                <label
+                                    for="link_41_state"
+                                    string="State"
+                                    style="font-weight: bold;"
+                                />
+                                <field name="link_41_state" class="oe_inline" />
+                            </div>
+                            <field name="link_41_conclusion" string="Conclusion" />
+                        </group>
+                        <group name="activity_3" string="Materiality Computation">
+                            <field
+                                name="link_3_ids"
+                                colspan="2"
+                                widget="many2many_tree"
+                                nolabel="1"
+                            >
+                                <tree>
+                                    <field name="name" />
+                                    <field name="base_amount_source" />
+                                    <field name="state" />
+                                    <field
+                                        name="conclusion"
+                                        string="Conclusion"
+                                        style="white-space: normal; word-wrap: break-word; max-width: 320px;"
+                                    />
+                                </tree>
+                            </field>
+                            <label
+                                for="link_3_conclusion"
+                                string="Conclusion"
+                                colspan="2"
+                                style="font-weight: bold;"
+                            />
+                            <field name="link_3_conclusion" nolabel="1" colspan="2" />
+                        </group>
+                        <group name="activity_4" string="Specific Materiality">
+                            <field
+                                name="link_4_ids"
+                                colspan="2"
+                                widget="many2many_tree"
+                                nolabel="1"
+                            >
+                                <tree>
+                                    <field name="name" />
+                                    <field name="base_amount_source" />
+                                    <field name="state" />
+                                    <field
+                                        name="conclusion"
+                                        string="Conclusion"
+                                        style="white-space: normal; word-wrap: break-word; max-width: 320px;"
+                                    />
+                                </tree>
+                            </field>
+                            <label
+                                for="link_4_conclusion"
+                                string="Conclusion"
+                                colspan="2"
+                                style="font-weight: bold;"
+                            />
+                            <field name="link_4_conclusion" nolabel="1" colspan="2" />
                         </group>
                         <group
                             name="activity_24"
@@ -1164,6 +1138,7 @@
                         >
                             <field
                                 name="link_25_ids"
+                                colspan="2"
                                 widget="many2many_tree"
                                 nolabel="1"
                             >
@@ -1177,6 +1152,13 @@
                                     />
                                 </tree>
                             </field>
+                            <label
+                                for="link_25_conclusion"
+                                string="Conclusion"
+                                colspan="2"
+                                style="font-weight: bold;"
+                            />
+                            <field name="link_25_conclusion" nolabel="1" colspan="2" />
                         </group>
                         <group
                             name="activity_26"
@@ -1184,6 +1166,7 @@
                         >
                             <field
                                 name="link_26_ids"
+                                colspan="2"
                                 widget="many2many_tree"
                                 nolabel="1"
                             >
@@ -1197,6 +1180,33 @@
                                     />
                                 </tree>
                             </field>
+                            <label
+                                for="link_26_conclusion"
+                                string="Conclusion"
+                                colspan="2"
+                                style="font-weight: bold;"
+                            />
+                            <field name="link_26_conclusion" nolabel="1" colspan="2" />
+                        </group>
+                        <group
+                            name="activity_42"
+                            string="Understanding of The Entity and it's Environment"
+                        >
+                            <label for="link_42_id" string="# Worksheet" />
+                            <div class="o_row">
+                                <field
+                                    name="link_42_id"
+                                    class="oe_inline"
+                                    force_save="1"
+                                />
+                                <label
+                                    for="link_42_state"
+                                    string="State"
+                                    style="font-weight: bold;"
+                                />
+                                <field name="link_42_state" class="oe_inline" />
+                            </div>
+                            <field name="link_42_conclusion" string="Conclusion" />
                         </group>
                         <group
                             name="activity_27"
@@ -1239,6 +1249,52 @@
                             <field name="link_28_conclusion" string="Conclusion" />
                         </group>
                         <group
+                            name="activity_7"
+                            string="Main Business Activity Process"
+                        >
+                            <label for="link_7_id" string="# Worksheet" />
+                            <div class="o_row">
+                                <field
+                                    name="link_7_id"
+                                    class="oe_inline"
+                                    force_save="1"
+                                />
+                                <label
+                                    for="link_7_state"
+                                    string="State"
+                                    style="font-weight: bold;"
+                                />
+                                <field name="link_7_state" class="oe_inline" />
+                            </div>
+                            <field name="link_7_conclusion" string="Conclusion" />
+                        </group>
+                        <group name="link_2" string="Business Cycle Summaries">
+                            <field
+                                name="link_2_ids"
+                                colspan="2"
+                                widget="many2many_tree"
+                                nolabel="1"
+                            >
+                                <tree>
+                                    <field name="name" />
+                                    <field name="business_process_id" />
+                                    <field name="state" />
+                                    <field
+                                        name="conclusion"
+                                        string="Conclusion"
+                                        style="white-space: normal; word-wrap: break-word; max-width: 320px;"
+                                    />
+                                </tree>
+                            </field>
+                            <label
+                                for="link_2_conclusion"
+                                string="Conclusion"
+                                colspan="2"
+                                style="font-weight: bold;"
+                            />
+                            <field name="link_2_conclusion" nolabel="1" colspan="2" />
+                        </group>
+                        <group
                             name="activity_29"
                             string="Understanding of Relevant Regulation"
                         >
@@ -1257,6 +1313,35 @@
                                 <field name="link_29_state" class="oe_inline" />
                             </div>
                             <field name="link_29_conclusion" string="Conclusion" />
+                        </group>
+                        <group
+                            name="link_1"
+                            string="Understanding of The Business Environment"
+                        >
+                            <field
+                                name="link_1_ids"
+                                colspan="2"
+                                widget="many2many_tree"
+                                nolabel="1"
+                            >
+                                <tree>
+                                    <field name="name" />
+                                    <field name="business_environment_id" />
+                                    <field name="state" />
+                                    <field
+                                        name="conclusion"
+                                        string="Conclusion"
+                                        style="white-space: normal; word-wrap: break-word; max-width: 320px;"
+                                    />
+                                </tree>
+                            </field>
+                            <label
+                                for="link_1_conclusion"
+                                string="Conclusion"
+                                colspan="2"
+                                style="font-weight: bold;"
+                            />
+                            <field name="link_1_conclusion" nolabel="1" colspan="2" />
                         </group>
                         <group name="activity_30" string="Going Concern Analysis">
                             <label for="link_30_id" string="# Worksheet" />
@@ -1312,6 +1397,43 @@
                             </div>
                             <field name="link_32_conclusion" string="Conclusion" />
                         </group>
+                        <group name="activity_43" string="Inherent Risk">
+                            <label for="link_43_id" string="# Worksheet" />
+                            <div class="o_row">
+                                <field
+                                    name="link_43_id"
+                                    class="oe_inline"
+                                    force_save="1"
+                                />
+                                <label
+                                    for="link_43_state"
+                                    string="State"
+                                    style="font-weight: bold;"
+                                />
+                                <field name="link_43_state" class="oe_inline" />
+                            </div>
+                            <field name="link_43_conclusion" string="Conclusion" />
+                        </group>
+                        <group
+                            name="activity_5"
+                            string="Inherent Risk - Financial Statement Level"
+                        >
+                            <label for="link_5_id" string="# Worksheet" />
+                            <div class="o_row">
+                                <field
+                                    name="link_5_id"
+                                    class="oe_inline"
+                                    force_save="1"
+                                />
+                                <label
+                                    for="link_5_state"
+                                    string="State"
+                                    style="font-weight: bold;"
+                                />
+                                <field name="link_5_state" class="oe_inline" />
+                            </div>
+                            <field name="link_5_conclusion" string="Conclusion" />
+                        </group>
                         <group
                             name="activity_33"
                             string="Inherent Risk - Account Level"
@@ -1331,6 +1453,95 @@
                                 <field name="link_33_state" class="oe_inline" />
                             </div>
                             <field name="link_33_conclusion" string="Conclusion" />
+                        </group>
+                        <group name="activity_44" string="Control Risk">
+                            <label for="link_44_id" string="# Worksheet" />
+                            <div class="o_row">
+                                <field
+                                    name="link_44_id"
+                                    class="oe_inline"
+                                    force_save="1"
+                                />
+                                <label
+                                    for="link_44_state"
+                                    string="State"
+                                    style="font-weight: bold;"
+                                />
+                                <field name="link_44_state" class="oe_inline" />
+                            </div>
+                            <field name="link_44_conclusion" string="Conclusion" />
+                        </group>
+                        <group name="activity_8" string="Control Risk - Entity Level">
+                            <label for="link_8_id" string="# Worksheet" />
+                            <div class="o_row">
+                                <field
+                                    name="link_8_id"
+                                    class="oe_inline"
+                                    force_save="1"
+                                />
+                                <label
+                                    for="link_8_state"
+                                    string="State"
+                                    style="font-weight: bold;"
+                                />
+                                <field name="link_8_state" class="oe_inline" />
+                            </div>
+                            <field name="link_8_conclusion" string="Conclusion" />
+                        </group>
+                        <group name="link_11" string="Control Risk - Cycle Level">
+                            <field
+                                name="link_11_ids"
+                                colspan="2"
+                                widget="many2many_tree"
+                                nolabel="1"
+                            >
+                                <tree>
+                                    <field name="name" />
+                                    <field name="business_cycle_id" />
+                                    <field name="risk" />
+                                    <field name="state" />
+                                    <field
+                                        name="conclusion"
+                                        string="Conclusion"
+                                        style="white-space: normal; word-wrap: break-word; max-width: 320px;"
+                                    />
+                                </tree>
+                            </field>
+                            <label
+                                for="link_11_conclusion"
+                                string="Conclusion"
+                                colspan="2"
+                                style="font-weight: bold;"
+                            />
+                            <field name="link_11_conclusion" nolabel="1" colspan="2" />
+                        </group>
+                        <group
+                            name="link_12"
+                            string="Significant Account Internal Control"
+                        >
+                            <field
+                                name="link_12_ids"
+                                colspan="2"
+                                widget="many2many_tree"
+                                nolabel="1"
+                            >
+                                <tree>
+                                    <field name="name" />
+                                    <field name="state" />
+                                    <field
+                                        name="conclusion"
+                                        string="Conclusion"
+                                        style="white-space: normal; word-wrap: break-word; max-width: 320px;"
+                                    />
+                                </tree>
+                            </field>
+                            <label
+                                for="link_12_conclusion"
+                                string="Conclusion"
+                                colspan="2"
+                                style="font-weight: bold;"
+                            />
+                            <field name="link_12_conclusion" nolabel="1" colspan="2" />
                         </group>
                         <group name="activity_34" string="ROMM">
                             <label for="link_34_id" string="# Worksheet" />
@@ -1405,6 +1616,23 @@
                                 <field name="link_37_state" class="oe_inline" />
                             </div>
                             <field name="link_37_conclusion" string="Conclusion" />
+                        </group>
+                        <group name="activity_10" string="External Communication">
+                            <label for="link_10_id" string="# Worksheet" />
+                            <div class="o_row">
+                                <field
+                                    name="link_10_id"
+                                    class="oe_inline"
+                                    force_save="1"
+                                />
+                                <label
+                                    for="link_10_state"
+                                    string="State"
+                                    style="font-weight: bold;"
+                                />
+                                <field name="link_10_state" class="oe_inline" />
+                            </div>
+                            <field name="link_10_conclusion" string="Conclusion" />
                         </group>
                         <group
                             name="activity_38"
