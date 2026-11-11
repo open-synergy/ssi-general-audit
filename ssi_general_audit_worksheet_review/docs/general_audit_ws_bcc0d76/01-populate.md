@@ -29,5 +29,7 @@
 - The **Details** tab holds one row per main worksheet type of the same General Audit.
   When a type has several worksheets, only one of them is listed.
 - Existing rows are kept. **Populate** does not create duplicates.
-- Rows whose source worksheet no longer qualifies are removed, except rows already used
-  by an Audit Evidence Evaluation worksheet. Those stay untouched.
+- Rows whose source worksheet no longer qualifies are removed without any warning. This
+  includes rows already used by an Audit Evidence Evaluation worksheet; the matching
+  evaluation rows are removed with them.
+- Rows in the **Details** tab cannot be added or deleted by hand.

@@ -63,10 +63,10 @@ class GeneralAuditWSbcc0d76(models.Model):
         ``main_worksheet`` flag is set and that belongs to this record's
         ``general_audit_id``, skipping types that already have a detail
         line. Detail lines whose source worksheet no longer qualifies are
-        removed, **except** those already referenced by a
-        ``general_audit_ws_cae598e.detail`` (``detail_id``), which are left
-        untouched to avoid a ``ForeignKeyViolation`` on the
-        ``ondelete="restrict"`` relation.
+        removed, including those already referenced by a
+        ``general_audit_ws_cae598e.detail`` (``detail_id``,
+        ``ondelete="restrict"``): the referencing evaluation lines are
+        deleted first so no ``ForeignKeyViolation`` is raised.
         """
         self.ensure_one()
         Detail = self.env["general_audit_ws_bcc0d76.detail"]
@@ -103,17 +103,15 @@ class GeneralAuditWSbcc0d76(models.Model):
                     }
                 )
 
-        # --- Hapus detail yang tidak ada lagi di worksheet, kecuali yang
-        # --- sudah dievaluasi di Audit Evidence Evaluation (cae598e) ---
+        # --- Hapus detail yang tidak ada lagi di worksheet. Baris
+        # --- general_audit_ws_cae598e.detail yang merujuknya (detail_id,
+        # --- ondelete="restrict") dihapus lebih dulu.
         worksheet_ids = {w.id for w in unique_worksheets}
-        evaluated_detail_ids = set(
-            self.env["general_audit_ws_cae598e.detail"]
-            .search([("detail_id", "in", self.detail_ids.ids)])
-            .detail_id.ids
+        obsolete = self.detail_ids.filtered(
+            lambda chk: chk.general_worksheet_id.id not in worksheet_ids
         )
-        for chk in self.detail_ids:
-            if (
-                chk.general_worksheet_id.id not in worksheet_ids
-                and chk.id not in evaluated_detail_ids
-            ):
-                chk.unlink()
+        if obsolete:
+            self.env["general_audit_ws_cae598e.detail"].search(
+                [("detail_id", "in", obsolete.ids)]
+            ).unlink()
+            obsolete.unlink()
