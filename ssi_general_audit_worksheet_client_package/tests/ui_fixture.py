@@ -72,3 +72,31 @@ def create_open_general_audit(env, number):
     audit.with_user(admin).action_open()
     audit.sudo().write({"name": number})
     return audit
+
+
+def create_data_collection_refs(env, name):
+    """Create a Client Account Type and a Data Collection Category.
+
+    The Data Collection tour picks both through the UI by name.
+
+    :param env: environment used to create the fixture records.
+    :param str name: suffix that makes the record names unique.
+    :return: tuple of the new ``client_account_type`` and
+        ``general_audit_data_collection_category`` records.
+    """
+    group = env["client_account_group"].create(
+        {"name": "Test Account Group - %s" % name, "code": "/"}
+    )
+    account_type = env["client_account_type"].create(
+        {
+            "name": "Test Account Type - %s" % name,
+            "code": "/",
+            "group_id": group.id,
+            "normal_balance": "dr",
+            "python_code": "result = 0.0",
+        }
+    )
+    category = env["general_audit_data_collection_category"].create(
+        {"name": "Test Category - %s" % name, "code": "/"}
+    )
+    return account_type, category
