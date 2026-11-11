@@ -179,6 +179,26 @@ setup:
       xml_id: "ssi_general_audit_worksheet_client_package.worksheet_type_f5a3cee"
       save_as: "ws_type_f5a3cee"
 
+    - step: "Get worksheet type 1d9338d"
+      action: "ref"
+      xml_id: "ssi_general_audit_worksheet_preliminary_materiality.worksheet_type_1d9338d"
+      save_as: "ws_type_1d9338d"
+
+    - step: "Get worksheet type f87b2e1"
+      action: "ref"
+      xml_id: "ssi_general_audit_worksheet_understanding_entity.worksheet_type_f87b2e1"
+      save_as: "ws_type_f87b2e1"
+
+    - step: "Get worksheet type bfb6dae"
+      action: "ref"
+      xml_id: "ssi_general_audit_worksheet_inherent_risk.worksheet_type_bfb6dae"
+      save_as: "ws_type_bfb6dae"
+
+    - step: "Get worksheet type a58e29c"
+      action: "ref"
+      xml_id: "ssi_general_audit_worksheet_control_risk.worksheet_type_a58e29c"
+      save_as: "ws_type_a58e29c"
+
     - step: "Get business environment - Industry Trends"
       action: "ref"
       xml_id: "ssi_general_audit.general_audit_business_environment_1_297034dd"
@@ -1281,6 +1301,128 @@ scenarios:
             check: "exact"
             expected_records:
               - "REC: ws_bdcdfc5"
+
+  # ------------------------------------------------------------------
+  # Free-text conclusions of the Many2many links are stored values:
+  # action_reload_links must never overwrite them. The four main-KKA
+  # links (link_41..link_44) stay empty until their worksheet is
+  # open/done, then follow it after action_reload_links.
+  # ------------------------------------------------------------------
+  - name:
+      "link_1_conclusion survives reload and link_41..link_44 follow their worksheets"
+    steps:
+      - step: "Create worksheet fbbe0f8 with a manual link_1 conclusion"
+        action: "create"
+        model: "general_audit_ws_fbbe0f8"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_fbbe0f8.id"
+          link_1_conclusion: "Manual conclusion for the business environment group."
+
+      - step: "Assert link_41..link_44 are empty before their worksheets exist"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          link_41_id:
+            type: "value"
+            operator: "is_falsy"
+          link_42_id:
+            type: "value"
+            operator: "is_falsy"
+          link_43_id:
+            type: "value"
+            operator: "is_falsy"
+          link_44_id:
+            type: "value"
+            operator: "is_falsy"
+
+      - step: "Create worksheet 1d9338d for the same audit"
+        action: "create"
+        model: "general_audit_ws_1d9338d"
+        save_as: "ws_1d9338d"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_1d9338d.id"
+
+      - step: "Open worksheet 1d9338d"
+        action: "call"
+        target: "ws_1d9338d"
+        method: "action_open"
+        as_user: "base.user_admin"
+
+      - step: "Create worksheet f87b2e1 for the same audit"
+        action: "create"
+        model: "general_audit_ws_f87b2e1"
+        save_as: "ws_f87b2e1"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_f87b2e1.id"
+
+      - step: "Open worksheet f87b2e1"
+        action: "call"
+        target: "ws_f87b2e1"
+        method: "action_open"
+        as_user: "base.user_admin"
+
+      - step: "Create worksheet bfb6dae for the same audit"
+        action: "create"
+        model: "general_audit_ws_bfb6dae"
+        save_as: "ws_bfb6dae"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_bfb6dae.id"
+
+      - step: "Open worksheet bfb6dae"
+        action: "call"
+        target: "ws_bfb6dae"
+        method: "action_open"
+        as_user: "base.user_admin"
+
+      - step: "Create worksheet a58e29c for the same audit"
+        action: "create"
+        model: "general_audit_ws_a58e29c"
+        save_as: "ws_a58e29c"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_a58e29c.id"
+
+      - step: "Open worksheet a58e29c"
+        action: "call"
+        target: "ws_a58e29c"
+        method: "action_open"
+        as_user: "base.user_admin"
+
+      - step: "Call action_reload_links on fbbe0f8"
+        action: "call"
+        target: "worksheet"
+        method: "action_reload_links"
+        as_user: "base.user_admin"
+
+      - step: "Assert the manual conclusion is kept and link_41..link_44 are linked"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          link_1_conclusion:
+            type: "value"
+            expected: "Manual conclusion for the business environment group."
+          link_41_id:
+            type: "m2o"
+            expected: "REC: ws_1d9338d"
+          link_42_id:
+            type: "m2o"
+            expected: "REC: ws_f87b2e1"
+          link_43_id:
+            type: "m2o"
+            expected: "REC: ws_bfb6dae"
+          link_44_id:
+            type: "m2o"
+            expected: "REC: ws_a58e29c"
 
   # ------------------------------------------------------------------
   # link_15 (Acceptance and Continuance of Client Relationships

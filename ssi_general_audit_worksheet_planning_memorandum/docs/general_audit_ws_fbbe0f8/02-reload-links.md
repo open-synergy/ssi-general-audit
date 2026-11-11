@@ -22,11 +22,13 @@
 2. Open the worksheet to work on.
 3. Click the **Reload** button above the tabs. The button is only visible while the
    status is **On Progress**.
-4. Open the **Links** tab to see the result.
+4. Open the **Conclusions** tab to see the result.
 
 ## Post-Condition
 
-- The **Links** tab shows the worksheets of the same General Audit that this memorandum
-  summarises (for example business environment, preliminary materiality and
+- The **Conclusions** tab shows the worksheets of the same General Audit that this
+  memorandum summarises (for example business environment, preliminary materiality and
   understanding of the entity).
+- Groups that list several worksheets have a **Conclusion** field below them. It is
+  typed by hand and is not changed by **Reload**.
 - All other tabs are unaffected.
