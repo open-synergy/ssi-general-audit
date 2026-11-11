@@ -728,14 +728,23 @@ scenarios:
         target: "worksheet"
         method: "invalidate_cache"
 
-      - step: "Create a detail line, not completed"
+      - step: "Create a detail"
         action: "create"
         model: "general_audit_ws_f5a3cee.detail"
-        save_as: "detail_line"
+        save_as: "detail"
         as_user: "base.user_admin"
         values:
           worksheet_id: "REC: worksheet.id"
           account_client_type_id: "REC: account_type_a.id"
+
+      - step: "Create a data line, not completed"
+        action: "create"
+        model: "general_audit_ws_f5a3cee.detail_line"
+        save_as: "detail_line"
+        as_user: "base.user_admin"
+        values:
+          detail_id: "REC: detail.id"
+          name: "Manual data"
           complete_ok: false
 
       - step: "Create a reporting timetable row, not completed"
@@ -808,9 +817,9 @@ scenarios:
           message_contains: "is a required field"
 
   # ------------------------------------------------------------------
-  # Attachment link (detail, write)
+  # Attachment link (detail line, write)
   # ------------------------------------------------------------------
-  - name: "Worksheet f5a3cee - Attachment link (detail, write)"
+  - name: "Worksheet f5a3cee - Attachment link (detail line, write)"
     steps:
       - step: "Create worksheet"
         action: "create"
@@ -830,14 +839,22 @@ scenarios:
           name: "Evidence att_a"
           type: "url"
           url: "https://example.com/att_a"
-      - step: "Create detail_line"
+      - step: "Create detail"
         action: "create"
         model: "general_audit_ws_f5a3cee.detail"
-        save_as: "detail_line"
+        save_as: "detail"
         as_user: "base.user_admin"
         values:
           worksheet_id: "REC: worksheet.id"
           account_client_type_id: "REC: account_type_a.id"
+      - step: "Create detail_line"
+        action: "create"
+        model: "general_audit_ws_f5a3cee.detail_line"
+        save_as: "detail_line"
+        as_user: "base.user_admin"
+        values:
+          detail_id: "REC: detail.id"
+          name: "Manual data"
       - step: "Add the orphan attachment to the detail line"
         action: "write"
         target: "detail_line"
@@ -857,9 +874,9 @@ scenarios:
             expected: "EVAL: registry['worksheet'].id"
 
   # ------------------------------------------------------------------
-  # Attachment link (detail, create)
+  # Attachment link (detail line, create)
   # ------------------------------------------------------------------
-  - name: "Worksheet f5a3cee - Attachment link (detail, create)"
+  - name: "Worksheet f5a3cee - Attachment link (detail line, create)"
     steps:
       - step: "Create worksheet"
         action: "create"
@@ -879,14 +896,22 @@ scenarios:
           name: "Evidence att_b"
           type: "url"
           url: "https://example.com/att_b"
-      - step: "Create detail_line"
+      - step: "Create detail"
         action: "create"
         model: "general_audit_ws_f5a3cee.detail"
-        save_as: "detail_line"
+        save_as: "detail"
         as_user: "base.user_admin"
         values:
           worksheet_id: "REC: worksheet.id"
           account_client_type_id: "REC: account_type_a.id"
+      - step: "Create detail_line"
+        action: "create"
+        model: "general_audit_ws_f5a3cee.detail_line"
+        save_as: "detail_line"
+        as_user: "base.user_admin"
+        values:
+          detail_id: "REC: detail.id"
+          name: "Manual data"
           attachment_ids: [[6, 0, ["REC: att_b.id"]]]
       - step: "Assert att_b is bound to the worksheet"
         action: "assert"
@@ -1025,14 +1050,22 @@ scenarios:
           res_model: "res.partner"
           res_id: "EVAL: registry['other_partner'].id"
 
-      - step: "Create detail_line"
+      - step: "Create detail"
         action: "create"
         model: "general_audit_ws_f5a3cee.detail"
-        save_as: "detail_line"
+        save_as: "detail"
         as_user: "base.user_admin"
         values:
           worksheet_id: "REC: worksheet.id"
           account_client_type_id: "REC: account_type_a.id"
+      - step: "Create detail_line"
+        action: "create"
+        model: "general_audit_ws_f5a3cee.detail_line"
+        save_as: "detail_line"
+        as_user: "base.user_admin"
+        values:
+          detail_id: "REC: detail.id"
+          name: "Manual data"
           attachment_ids: [[6, 0, ["REC: att_owned.id"]]]
       - step: "Create timetable_line"
         action: "create"
@@ -1053,3 +1086,481 @@ scenarios:
           res_id:
             type: "value"
             expected: "EVAL: registry['other_partner'].id"
+
+  # ------------------------------------------------------------------
+  # action_populate_details - data lines and other lines from the master
+  # ------------------------------------------------------------------
+  - name: "Worksheet f5a3cee - Populate data lines from master"
+    steps:
+      - step: "Create client account mapping"
+        action: "create"
+        model: "client_account_mapping"
+        save_as: "mapping"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+
+      - step: "Map client account A (type A only)"
+        action: "create"
+        model: "client_account_mapping.detail"
+        save_as: "mapping_detail_a"
+        as_user: "base.user_admin"
+        values:
+          mapping_id: "REC: mapping.id"
+          account_id: "REC: account_a.id"
+
+      - step: "Get a seeded category"
+        action: "ref"
+        xml_id: "ssi_general_audit_worksheet_client_package.general_audit_data_collection_category_1_6c1e4a0b"
+        save_as: "category"
+
+      - step: "Create master for type A (mapped)"
+        action: "create"
+        model: "general_audit_data_collection"
+        save_as: "master_a"
+        as_user: "base.user_admin"
+        values:
+          name: "Master for type A"
+          code: "/"
+          type: "account_type"
+          account_type_id: "REC: account_type_a.id"
+          category_id: "REC: category.id"
+
+      - step: "Create master for type B (not mapped)"
+        action: "create"
+        model: "general_audit_data_collection"
+        save_as: "master_b"
+        as_user: "base.user_admin"
+        values:
+          name: "Master for type B"
+          code: "/"
+          type: "account_type"
+          account_type_id: "REC: account_type_b.id"
+          category_id: "REC: category.id"
+
+      - step: "Create master of type Others"
+        action: "create"
+        model: "general_audit_data_collection"
+        save_as: "master_o"
+        as_user: "base.user_admin"
+        values:
+          name: "Master Others"
+          code: "/"
+          type: "others"
+          category_id: "REC: category.id"
+
+      - step: "Create worksheet"
+        action: "create"
+        model: "general_audit_ws_f5a3cee"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+
+      - step: "Populate"
+        action: "call"
+        target: "worksheet"
+        method: "action_populate_details"
+        as_user: "base.user_admin"
+
+      - step: "Assert one detail, for the mapped type only"
+        action: "search"
+        model: "general_audit_ws_f5a3cee.detail"
+        domain:
+          - ["worksheet_id", "=", "REC: worksheet.id"]
+        save_as: "detail"
+        expect_count: 1
+
+      - step: "Assert one data line, from the mapped type's master"
+        action: "search"
+        model: "general_audit_ws_f5a3cee.detail_line"
+        domain:
+          - ["detail_id", "=", "REC: detail.id"]
+          - ["data_collection_id", "=", "REC: master_a.id"]
+        save_as: "line_a"
+        expect_count: 1
+
+      - step: "Assert no data line from the unmapped type's master"
+        action: "search"
+        model: "general_audit_ws_f5a3cee.detail_line"
+        domain:
+          - ["detail_id", "=", "REC: detail.id"]
+          - ["data_collection_id", "=", "REC: master_b.id"]
+        save_as: "found_1"
+        expect_count: 0
+
+      - step: "Assert one timetable line, from the Others master"
+        action: "search"
+        model: "general_audit_ws_f5a3cee.reporting_timetable"
+        domain:
+          - ["worksheet_id", "=", "REC: worksheet.id"]
+          - ["data_collection_id", "=", "REC: master_o.id"]
+        save_as: "other_o"
+        expect_count: 1
+
+      - step: "Fill the date on the populated data line"
+        action: "write"
+        target: "line_a"
+        as_user: "base.user_admin"
+        values:
+          date: "2026-03-31"
+          complete_ok: true
+
+      - step: "Populate a second time"
+        action: "call"
+        target: "worksheet"
+        method: "action_populate_details"
+        as_user: "base.user_admin"
+
+      - step: "Assert no duplicated data line"
+        action: "search"
+        model: "general_audit_ws_f5a3cee.detail_line"
+        domain:
+          - ["detail_id", "=", "REC: detail.id"]
+        save_as: "found_2"
+        expect_count: 1
+
+      - step: "Assert no duplicated timetable line"
+        action: "search"
+        model: "general_audit_ws_f5a3cee.reporting_timetable"
+        domain:
+          - ["worksheet_id", "=", "REC: worksheet.id"]
+        save_as: "found_3"
+        expect_count: 1
+
+      - step: "Assert the filled data line kept its date and completion"
+        action: "assert"
+        target: "line_a"
+        asserts:
+          name:
+            type: "value"
+            expected: "Master for type A"
+          complete_ok:
+            type: "value"
+            expected: true
+
+      - step: "Clear the category of the populated timetable line"
+        action: "write"
+        target: "other_o"
+        as_user: "base.user_admin"
+        values:
+          category_id: false
+
+      - step: "Populate to refill the empty category"
+        action: "call"
+        target: "worksheet"
+        method: "action_populate_details"
+        as_user: "base.user_admin"
+
+      - step: "Assert the category was refilled from the master"
+        action: "assert"
+        target: "other_o"
+        asserts:
+          category_id:
+            type: "m2o"
+            expected: "REC: category"
+
+      - step: "Add a data line without master"
+        action: "create"
+        model: "general_audit_ws_f5a3cee.detail_line"
+        as_user: "base.user_admin"
+        values:
+          detail_id: "REC: detail.id"
+          name: "Manual data"
+
+      - step: "Deactivate master A"
+        action: "write"
+        target: "master_a"
+        as_user: "base.user_admin"
+        values:
+          active: false
+
+      - step: "Populate after deactivating master A"
+        action: "call"
+        target: "worksheet"
+        method: "action_populate_details"
+        as_user: "base.user_admin"
+
+      - step: "Assert only the line without master survived"
+        action: "search"
+        model: "general_audit_ws_f5a3cee.detail_line"
+        domain:
+          - ["detail_id", "=", "REC: detail.id"]
+        save_as: "found_4"
+        expect_count: 1
+
+      - step: "Assert the surviving line has no master"
+        action: "search"
+        model: "general_audit_ws_f5a3cee.detail_line"
+        domain:
+          - ["detail_id", "=", "REC: detail.id"]
+          - ["data_collection_id", "=", false]
+        save_as: "found_5"
+        expect_count: 1
+
+      - step: "Assert the timetable line is untouched"
+        action: "search"
+        model: "general_audit_ws_f5a3cee.reporting_timetable"
+        domain:
+          - ["worksheet_id", "=", "REC: worksheet.id"]
+        save_as: "found_6"
+        expect_count: 1
+
+  # ------------------------------------------------------------------
+  # detail.complete_ok - computed from the data lines
+  # ------------------------------------------------------------------
+  - name: "Worksheet f5a3cee - Detail completed follows its data lines"
+    steps:
+      - step: "Create worksheet"
+        action: "create"
+        model: "general_audit_ws_f5a3cee"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+
+      - step: "Create a detail"
+        action: "create"
+        model: "general_audit_ws_f5a3cee.detail"
+        save_as: "detail"
+        as_user: "base.user_admin"
+        values:
+          worksheet_id: "REC: worksheet.id"
+          account_client_type_id: "REC: account_type_a.id"
+
+      - step: "Assert a detail without lines is not completed"
+        action: "assert"
+        target: "detail"
+        asserts:
+          complete_ok:
+            type: "value"
+            expected: false
+
+      - step: "Create a completed data line"
+        action: "create"
+        model: "general_audit_ws_f5a3cee.detail_line"
+        save_as: "line_1"
+        as_user: "base.user_admin"
+        values:
+          detail_id: "REC: detail.id"
+          name: "Data one"
+          complete_ok: true
+
+      - step: "Create a data line, not completed"
+        action: "create"
+        model: "general_audit_ws_f5a3cee.detail_line"
+        save_as: "line_2"
+        as_user: "base.user_admin"
+        values:
+          detail_id: "REC: detail.id"
+          name: "Data two"
+          complete_ok: false
+
+      - step: "Assert the detail is not completed while a line is open"
+        action: "assert"
+        target: "detail"
+        asserts:
+          complete_ok:
+            type: "value"
+            expected: false
+          line_count:
+            type: "value"
+            expected: 2
+          line_done_count:
+            type: "value"
+            expected: 1.0
+
+      - step: "Complete the second line"
+        action: "write"
+        target: "line_2"
+        as_user: "base.user_admin"
+        values:
+          complete_ok: true
+
+      - step: "Assert the detail is completed when all lines are"
+        action: "assert"
+        target: "detail"
+        asserts:
+          complete_ok:
+            type: "value"
+            expected: true
+
+  # ------------------------------------------------------------------
+  # data lines - duplicate guard
+  # ------------------------------------------------------------------
+  - name: "Worksheet f5a3cee - Duplicate data line is rejected"
+    steps:
+      - step: "Create worksheet"
+        action: "create"
+        model: "general_audit_ws_f5a3cee"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+
+      - step: "Create a detail"
+        action: "create"
+        model: "general_audit_ws_f5a3cee.detail"
+        save_as: "detail"
+        as_user: "base.user_admin"
+        values:
+          worksheet_id: "REC: worksheet.id"
+          account_client_type_id: "REC: account_type_a.id"
+
+      - step: "Get a seeded category"
+        action: "ref"
+        xml_id: "ssi_general_audit_worksheet_client_package.general_audit_data_collection_category_1_6c1e4a0b"
+        save_as: "category"
+
+      - step: "Create a master item"
+        action: "create"
+        model: "general_audit_data_collection"
+        save_as: "master"
+        as_user: "base.user_admin"
+        values:
+          name: "Master for duplicate check"
+          code: "/"
+          type: "account_type"
+          account_type_id: "REC: account_type_a.id"
+          category_id: "REC: category.id"
+
+      - step: "Create a line from the master item"
+        action: "create"
+        model: "general_audit_ws_f5a3cee.detail_line"
+        save_as: "line"
+        as_user: "base.user_admin"
+        values:
+          detail_id: "REC: detail.id"
+          data_collection_id: "REC: master.id"
+
+      - step: "Assert the line took its name and category from the master"
+        action: "assert"
+        target: "line"
+        asserts:
+          name:
+            type: "value"
+            expected: "Master for duplicate check"
+          category_id:
+            type: "m2o"
+            expected: "REC: category"
+
+      - step: "Same master item twice in one detail must be rejected"
+        action: "create"
+        model: "general_audit_ws_f5a3cee.detail_line"
+        as_user: "base.user_admin"
+        expect_error:
+          type: "ValidationError"
+          message_contains: "is already used for account type"
+        values:
+          detail_id: "REC: detail.id"
+          data_collection_id: "REC: master.id"
+          name: "Another name"
+
+      - step: "Same name twice in one detail must be rejected"
+        action: "create"
+        model: "general_audit_ws_f5a3cee.detail_line"
+        as_user: "base.user_admin"
+        expect_error:
+          type: "ValidationError"
+          message_contains: "is already used in this detail"
+        values:
+          detail_id: "REC: detail.id"
+          name: "master for duplicate check"
+
+  # ------------------------------------------------------------------
+  # details - one detail per account type
+  # ------------------------------------------------------------------
+  - name: "Worksheet f5a3cee - Duplicate account type detail is rejected"
+    steps:
+      - step: "Create worksheet"
+        action: "create"
+        model: "general_audit_ws_f5a3cee"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+
+      - step: "Create a detail for account type A"
+        action: "create"
+        model: "general_audit_ws_f5a3cee.detail"
+        as_user: "base.user_admin"
+        values:
+          worksheet_id: "REC: worksheet.id"
+          account_client_type_id: "REC: account_type_a.id"
+
+      - step: "A second detail for account type A must be rejected"
+        action: "create"
+        model: "general_audit_ws_f5a3cee.detail"
+        as_user: "base.user_admin"
+        expect_error:
+          type: "ValidationError"
+          message_contains: "is already used in this worksheet"
+        values:
+          worksheet_id: "REC: worksheet.id"
+          account_client_type_id: "REC: account_type_a.id"
+
+  # ------------------------------------------------------------------
+  # Upload attachment wizard
+  # ------------------------------------------------------------------
+  - name: "Worksheet f5a3cee - Upload attachment wizard (data line)"
+    steps:
+      - step: "Create worksheet"
+        action: "create"
+        model: "general_audit_ws_f5a3cee"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+
+      - step: "Create a detail"
+        action: "create"
+        model: "general_audit_ws_f5a3cee.detail"
+        save_as: "detail"
+        as_user: "base.user_admin"
+        values:
+          worksheet_id: "REC: worksheet.id"
+          account_client_type_id: "REC: account_type_a.id"
+
+      - step: "Create a data line"
+        action: "create"
+        model: "general_audit_ws_f5a3cee.detail_line"
+        save_as: "line"
+        as_user: "base.user_admin"
+        values:
+          detail_id: "REC: detail.id"
+          name: "Line with upload"
+
+      - step: "Create an uploaded file, not yet bound to any record"
+        action: "create"
+        model: "ir.attachment"
+        save_as: "att_up"
+        as_user: "base.user_admin"
+        values:
+          name: "Uploaded file"
+          type: "url"
+          url: "https://example.com/uploaded"
+
+      - step: "Submit the upload wizard from the data line"
+        action: "wizard"
+        model: "general_audit_ws_f5a3cee_attachment_upload"
+        target: "line"
+        as_user: "base.user_admin"
+        values:
+          attachment_ids: [[6, 0, ["REC: att_up.id"]]]
+        method: "action_submit"
+
+      - step: "Assert the file is bound to the worksheet record"
+        action: "assert"
+        target: "att_up"
+        asserts:
+          res_model:
+            type: "value"
+            expected: "general_audit_ws_f5a3cee"
+          res_id:
+            type: "value"
+            expected: "EVAL: registry['worksheet'].id"

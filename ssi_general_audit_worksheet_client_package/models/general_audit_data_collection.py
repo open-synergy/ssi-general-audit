@@ -51,6 +51,16 @@ class GeneralAuditDataCollection(models.Model):
         help="Category used to classify this data collection item.",
     )
 
+    def name_get(self):
+        """Show only the code when the context asks for it.
+
+        :return: list of ``(id, display name)`` pairs
+        :rtype: list
+        """
+        if self.env.context.get("data_collection_code_only"):
+            return [(record.id, record.code) for record in self]
+        return super().name_get()
+
     @api.constrains("type", "account_type_id")
     def _check_account_type_required(self):
         """Require an account type on items of type Account Type.
