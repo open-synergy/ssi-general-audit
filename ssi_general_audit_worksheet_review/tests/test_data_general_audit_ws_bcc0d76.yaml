@@ -296,7 +296,7 @@ scenarios:
 
   # ------------------------------------------------------------------
   # bcc0d76 - action_populate: empty / normal / dedup / idempotent /
-  # unlink orphan / referenced-detail preservation / cross-general_audit
+  # unlink orphan / referenced-detail removal / cross-general_audit
   # isolation, all combined into ONE scenario on purpose.
   #
   # GeneralAuditWSbcc0d76._populate() (models/ga_bcc0d76/
@@ -328,17 +328,13 @@ scenarios:
   # (the worksheet no longer appears in the qualifying search, so its
   # detail line is removed) without touching an FK-referenced record.
   #
-  # "Referenced-detail preservation" (type #4 vs type #5, issue #354) is
-  # the regression this scenario was extended for: a bcc0d76 detail line
-  # that is already referenced by a general_audit_ws_cae598e.detail
-  # (detail_id, ondelete="restrict") must survive _populate()'s cleanup
-  # even after its source worksheet is disqualified, because a plain
-  # chk.unlink() on it would raise the exact psycopg2.ForeignKeyViolation
-  # from HT/26/000748 instead of silently dropping the reference. Type #5
-  # is disqualified in the SAME action_populate call and has no cae598e
-  # reference, so it must still be unlinked — proving the fix only
-  # tightens the unlink condition and does not weaken the existing
-  # "unlink orphan" cleanup.
+  # "Referenced-detail removal" (type #4 vs type #5): a bcc0d76 detail
+  # line referenced by a general_audit_ws_cae598e.detail (detail_id,
+  # ondelete="restrict") is removed by _populate() once its source
+  # worksheet is disqualified; the referencing cae598e line is deleted
+  # first, so no psycopg2.ForeignKeyViolation (HT/26/000748,
+  # HT/26/000867) can occur. Type #5 has no cae598e reference and is
+  # removed in the same call.
   #
   # "Isolation" populates the OTHER general_audit's own worksheet, not
   # the first one, on purpose. general_audit_worksheet._order is
@@ -569,15 +565,14 @@ scenarios:
         expect_count: 0
 
       # --------------------------------------------------------------
-      # Regression for issue #354: a bcc0d76 detail line already
-      # referenced by a general_audit_ws_cae598e.detail (ondelete=
-      # "restrict") must be KEPT even when its source worksheet no
-      # longer qualifies, while a sibling unreferenced line (type #5)
-      # is still removed in the SAME action_populate call — proving
-      # the fix does not regress the existing "unlink orphan" cleanup.
+      # A bcc0d76 detail line already referenced by a
+      # general_audit_ws_cae598e.detail (ondelete="restrict") is removed
+      # together with that referencing line when its source worksheet no
+      # longer qualifies, in the SAME action_populate call that removes
+      # the unreferenced sibling line (type #5). This replaces the
+      # "keep referenced lines" behaviour introduced by issue #354.
       # --------------------------------------------------------------
-      - step:
-          "Create dedicated main worksheet type #4 (for referenced-detail preservation)"
+      - step: "Create dedicated main worksheet type #4 (for referenced-detail removal)"
         action: "create"
         model: "general_audit_worksheet_type"
         save_as: "main_type_4"
@@ -706,7 +701,7 @@ scenarios:
         as_user: "base.user_admin"
 
       - step:
-          "Assert the type #4 detail line is KEPT because it is referenced by cae598e"
+          "Assert the type #4 detail line is removed even though cae598e references it"
         action: "search"
         model: "general_audit_ws_bcc0d76.detail"
         domain:
@@ -715,7 +710,14 @@ scenarios:
             ["parent_type_id", "=", "REC: main_type_4.id"],
           ]
         save_as: "detail_type_4_after"
-        expect_count: 1
+        expect_count: 0
+
+      - step: "Assert the cae598e evaluation line referencing type #4 was removed too"
+        action: "search"
+        model: "general_audit_ws_cae598e.detail"
+        domain: [["worksheet_id", "=", "REC: worksheet_cae598e.id"]]
+        save_as: "evaluation_type_4_after"
+        expect_count: 0
 
       - step: "Assert the unreferenced type #5 detail line is still unlinked"
         action: "search"
