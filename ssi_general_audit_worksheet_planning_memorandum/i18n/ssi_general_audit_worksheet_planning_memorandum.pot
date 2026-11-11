@@ -315,6 +315,7 @@ msgstr ""
 
 #. module: ssi_general_audit_worksheet_planning_memorandum
 #: code:addons/ssi_general_audit_worksheet_planning_memorandum/models/ga_fbbe0f8/general_audit_ws_fbbe0f8.py:0
+#: model_terms:ir.ui.view,arch_db:ssi_general_audit_worksheet_planning_memorandum.general_audit_ws_fbbe0f8_view_form
 #, python-format
 msgid "Audit Working Plan"
 msgstr ""
@@ -342,6 +343,15 @@ msgstr ""
 #: model:ir.model.fields,help:ssi_general_audit_worksheet_planning_memorandum.field_general_audit_ws_a753ab9__date_start
 #: model:ir.model.fields,help:ssi_general_audit_worksheet_planning_memorandum.field_general_audit_ws_fbbe0f8__date_start
 msgid "Audit period start date."
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_planning_memorandum
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_planning_memorandum.field_general_audit_ws_a753ab9__category_id
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_planning_memorandum.field_general_audit_ws_fbbe0f8__category_id
+msgid ""
+"Audit phase category of this worksheet's type (PE/RA/RR/Windup & Reporting),"
+" mirrored from parent_type_id.category_id. Stored so it can be grouped by in"
+" list views."
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_planning_memorandum
@@ -451,6 +461,12 @@ msgid ""
 "Cancel policy\n"
 "\n"
 "* If active user can see and execute 'Cancel' button"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_planning_memorandum
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_planning_memorandum.field_general_audit_ws_a753ab9__category_id
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_planning_memorandum.field_general_audit_ws_fbbe0f8__category_id
+msgid "Category"
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_planning_memorandum
@@ -697,14 +713,26 @@ msgstr ""
 #. module: ssi_general_audit_worksheet_planning_memorandum
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_planning_memorandum.field_general_audit_ws_a753ab9__conclusion_id
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_planning_memorandum.field_general_audit_ws_fbbe0f8__conclusion_id
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_planning_memorandum.field_general_audit_ws_fbbe0f8__link_11_conclusion
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_planning_memorandum.field_general_audit_ws_fbbe0f8__link_12_conclusion
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_planning_memorandum.field_general_audit_ws_fbbe0f8__link_14_conclusion
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_planning_memorandum.field_general_audit_ws_fbbe0f8__link_15_conclusion
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_planning_memorandum.field_general_audit_ws_fbbe0f8__link_16_conclusion
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_planning_memorandum.field_general_audit_ws_fbbe0f8__link_17_conclusion
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_planning_memorandum.field_general_audit_ws_fbbe0f8__link_18_conclusion
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_planning_memorandum.field_general_audit_ws_fbbe0f8__link_19_conclusion
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_planning_memorandum.field_general_audit_ws_fbbe0f8__link_1_conclusion
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_planning_memorandum.field_general_audit_ws_fbbe0f8__link_20_conclusion
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_planning_memorandum.field_general_audit_ws_fbbe0f8__link_21_conclusion
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_planning_memorandum.field_general_audit_ws_fbbe0f8__link_22_conclusion
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_planning_memorandum.field_general_audit_ws_fbbe0f8__link_23_conclusion
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_planning_memorandum.field_general_audit_ws_fbbe0f8__link_24_conclusion
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_planning_memorandum.field_general_audit_ws_fbbe0f8__link_25_conclusion
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_planning_memorandum.field_general_audit_ws_fbbe0f8__link_26_conclusion
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_planning_memorandum.field_general_audit_ws_fbbe0f8__link_27_conclusion
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_planning_memorandum.field_general_audit_ws_fbbe0f8__link_28_conclusion
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_planning_memorandum.field_general_audit_ws_fbbe0f8__link_29_conclusion
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_planning_memorandum.field_general_audit_ws_fbbe0f8__link_2_conclusion
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_planning_memorandum.field_general_audit_ws_fbbe0f8__link_30_conclusion
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_planning_memorandum.field_general_audit_ws_fbbe0f8__link_31_conclusion
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_planning_memorandum.field_general_audit_ws_fbbe0f8__link_32_conclusion
@@ -715,7 +743,14 @@ msgstr ""
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_planning_memorandum.field_general_audit_ws_fbbe0f8__link_37_conclusion
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_planning_memorandum.field_general_audit_ws_fbbe0f8__link_38_conclusion
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_planning_memorandum.field_general_audit_ws_fbbe0f8__link_39_conclusion
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_planning_memorandum.field_general_audit_ws_fbbe0f8__link_3_conclusion
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_planning_memorandum.field_general_audit_ws_fbbe0f8__link_40_conclusion
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_planning_memorandum.field_general_audit_ws_fbbe0f8__link_41_conclusion
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_planning_memorandum.field_general_audit_ws_fbbe0f8__link_42_conclusion
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_planning_memorandum.field_general_audit_ws_fbbe0f8__link_43_conclusion
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_planning_memorandum.field_general_audit_ws_fbbe0f8__link_44_conclusion
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_planning_memorandum.field_general_audit_ws_fbbe0f8__link_4_conclusion
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_planning_memorandum.field_general_audit_ws_fbbe0f8__link_9_conclusion
 #: model_terms:ir.ui.view,arch_db:ssi_general_audit_worksheet_planning_memorandum.general_audit_ws_fbbe0f8_view_form
 msgid "Conclusion"
 msgstr ""
@@ -776,6 +811,10 @@ msgstr ""
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_planning_memorandum.field_general_audit_ws_fbbe0f8__link_38_conclusion_id
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_planning_memorandum.field_general_audit_ws_fbbe0f8__link_39_conclusion_id
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_planning_memorandum.field_general_audit_ws_fbbe0f8__link_40_conclusion_id
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_planning_memorandum.field_general_audit_ws_fbbe0f8__link_41_conclusion_id
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_planning_memorandum.field_general_audit_ws_fbbe0f8__link_42_conclusion_id
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_planning_memorandum.field_general_audit_ws_fbbe0f8__link_43_conclusion_id
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_planning_memorandum.field_general_audit_ws_fbbe0f8__link_44_conclusion_id
 msgid "Conclusion ID"
 msgstr ""
 
@@ -852,6 +891,13 @@ msgid ""
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_planning_memorandum
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_planning_memorandum.field_general_audit_ws_fbbe0f8__link_44_conclusion_id
+msgid ""
+"Conclusion from the Control Risk worksheet. Read-only, mirrors the linked "
+"record."
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_planning_memorandum
 #: model:ir.model.fields,help:ssi_general_audit_worksheet_planning_memorandum.field_general_audit_ws_fbbe0f8__link_19_conclusion_id
 msgid ""
 "Conclusion from the Engagement Letter worksheet. Read- only, mirrors the "
@@ -908,6 +954,13 @@ msgid ""
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_planning_memorandum
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_planning_memorandum.field_general_audit_ws_fbbe0f8__link_43_conclusion_id
+msgid ""
+"Conclusion from the Inherent Risk worksheet. Read-only, mirrors the linked "
+"record."
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_planning_memorandum
 #: model:ir.model.fields,help:ssi_general_audit_worksheet_planning_memorandum.field_general_audit_ws_fbbe0f8__link_7_conclusion_id
 msgid ""
 "Conclusion from the Main Business Activity Process worksheet. Read-only, "
@@ -919,6 +972,13 @@ msgstr ""
 msgid ""
 "Conclusion from the Preliminary Analytic Procedure worksheet. Read-only, "
 "mirrors the linked record."
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_planning_memorandum
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_planning_memorandum.field_general_audit_ws_fbbe0f8__link_41_conclusion_id
+msgid ""
+"Conclusion from the Preliminary Materiality worksheet. Read-only, mirrors "
+"the linked record."
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_planning_memorandum
@@ -977,6 +1037,13 @@ msgid ""
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_planning_memorandum
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_planning_memorandum.field_general_audit_ws_fbbe0f8__link_42_conclusion_id
+msgid ""
+"Conclusion from the Understanding of The Entity worksheet. Read-only, "
+"mirrors the linked record."
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_planning_memorandum
 #: model:ir.model.fields,help:ssi_general_audit_worksheet_planning_memorandum.field_general_audit_ws_fbbe0f8__link_40_conclusion_id
 msgid ""
 "Conclusion from the Use of Internal Auditor's Work Result worksheet. Read-"
@@ -1023,6 +1090,13 @@ msgstr ""
 msgid ""
 "Conclusion on the Control Risk Entity Level worksheet. Read-only, mirrors "
 "the linked record."
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_planning_memorandum
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_planning_memorandum.field_general_audit_ws_fbbe0f8__link_44_conclusion
+msgid ""
+"Conclusion on the Control Risk worksheet. Read-only, mirrors the linked "
+"record."
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_planning_memorandum
@@ -1082,6 +1156,13 @@ msgid ""
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_planning_memorandum
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_planning_memorandum.field_general_audit_ws_fbbe0f8__link_43_conclusion
+msgid ""
+"Conclusion on the Inherent Risk worksheet. Read-only, mirrors the linked "
+"record."
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_planning_memorandum
 #: model:ir.model.fields,help:ssi_general_audit_worksheet_planning_memorandum.field_general_audit_ws_fbbe0f8__link_7_conclusion
 msgid ""
 "Conclusion on the Main Business Activity Process worksheet. Read-only, "
@@ -1093,6 +1174,13 @@ msgstr ""
 msgid ""
 "Conclusion on the Preliminary Analytic Procedure worksheet. Read-only, "
 "mirrors the linked record."
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_planning_memorandum
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_planning_memorandum.field_general_audit_ws_fbbe0f8__link_41_conclusion
+msgid ""
+"Conclusion on the Preliminary Materiality worksheet. Read-only, mirrors the "
+"linked record."
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_planning_memorandum
@@ -1151,10 +1239,22 @@ msgid ""
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_planning_memorandum
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_planning_memorandum.field_general_audit_ws_fbbe0f8__link_42_conclusion
+msgid ""
+"Conclusion on the Understanding of The Entity worksheet. Read-only, mirrors "
+"the linked record."
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_planning_memorandum
 #: model:ir.model.fields,help:ssi_general_audit_worksheet_planning_memorandum.field_general_audit_ws_fbbe0f8__link_40_conclusion
 msgid ""
 "Conclusion on the Use of Internal Auditor's Work Result worksheet. Read-"
 "only, mirrors the linked record."
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_planning_memorandum
+#: model_terms:ir.ui.view,arch_db:ssi_general_audit_worksheet_planning_memorandum.general_audit_ws_fbbe0f8_view_form
+msgid "Conclusions"
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_planning_memorandum
@@ -1170,6 +1270,14 @@ msgid ""
 "Confirm policy\n"
 "\n"
 "* If active user can see and execute 'Confirm' button"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_planning_memorandum
+#: code:addons/ssi_general_audit_worksheet_planning_memorandum/models/ga_fbbe0f8/general_audit_ws_fbbe0f8.py:0
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_planning_memorandum.field_general_audit_ws_fbbe0f8__link_44_id
+#: model_terms:ir.ui.view,arch_db:ssi_general_audit_worksheet_planning_memorandum.general_audit_ws_fbbe0f8_view_form
+#, python-format
+msgid "Control Risk"
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_planning_memorandum
@@ -1495,6 +1603,111 @@ msgid "Fraud Factor Analysis"
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_planning_memorandum
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_planning_memorandum.field_general_audit_ws_fbbe0f8__link_11_conclusion
+msgid ""
+"Free-text conclusion summarising all worksheets in the link_11_ids group. "
+"Entered manually; it is not changed when the links are reloaded."
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_planning_memorandum
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_planning_memorandum.field_general_audit_ws_fbbe0f8__link_12_conclusion
+msgid ""
+"Free-text conclusion summarising all worksheets in the link_12_ids group. "
+"Entered manually; it is not changed when the links are reloaded."
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_planning_memorandum
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_planning_memorandum.field_general_audit_ws_fbbe0f8__link_14_conclusion
+msgid ""
+"Free-text conclusion summarising all worksheets in the link_14_ids group. "
+"Entered manually; it is not changed when the links are reloaded."
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_planning_memorandum
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_planning_memorandum.field_general_audit_ws_fbbe0f8__link_15_conclusion
+msgid ""
+"Free-text conclusion summarising all worksheets in the link_15_ids group. "
+"Entered manually; it is not changed when the links are reloaded."
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_planning_memorandum
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_planning_memorandum.field_general_audit_ws_fbbe0f8__link_16_conclusion
+msgid ""
+"Free-text conclusion summarising all worksheets in the link_16_ids group. "
+"Entered manually; it is not changed when the links are reloaded."
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_planning_memorandum
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_planning_memorandum.field_general_audit_ws_fbbe0f8__link_17_conclusion
+msgid ""
+"Free-text conclusion summarising all worksheets in the link_17_ids group. "
+"Entered manually; it is not changed when the links are reloaded."
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_planning_memorandum
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_planning_memorandum.field_general_audit_ws_fbbe0f8__link_18_conclusion
+msgid ""
+"Free-text conclusion summarising all worksheets in the link_18_ids group. "
+"Entered manually; it is not changed when the links are reloaded."
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_planning_memorandum
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_planning_memorandum.field_general_audit_ws_fbbe0f8__link_1_conclusion
+msgid ""
+"Free-text conclusion summarising all worksheets in the link_1_ids group. "
+"Entered manually; it is not changed when the links are reloaded."
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_planning_memorandum
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_planning_memorandum.field_general_audit_ws_fbbe0f8__link_23_conclusion
+msgid ""
+"Free-text conclusion summarising all worksheets in the link_23_ids group. "
+"Entered manually; it is not changed when the links are reloaded."
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_planning_memorandum
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_planning_memorandum.field_general_audit_ws_fbbe0f8__link_25_conclusion
+msgid ""
+"Free-text conclusion summarising all worksheets in the link_25_ids group. "
+"Entered manually; it is not changed when the links are reloaded."
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_planning_memorandum
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_planning_memorandum.field_general_audit_ws_fbbe0f8__link_26_conclusion
+msgid ""
+"Free-text conclusion summarising all worksheets in the link_26_ids group. "
+"Entered manually; it is not changed when the links are reloaded."
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_planning_memorandum
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_planning_memorandum.field_general_audit_ws_fbbe0f8__link_2_conclusion
+msgid ""
+"Free-text conclusion summarising all worksheets in the link_2_ids group. "
+"Entered manually; it is not changed when the links are reloaded."
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_planning_memorandum
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_planning_memorandum.field_general_audit_ws_fbbe0f8__link_3_conclusion
+msgid ""
+"Free-text conclusion summarising all worksheets in the link_3_ids group. "
+"Entered manually; it is not changed when the links are reloaded."
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_planning_memorandum
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_planning_memorandum.field_general_audit_ws_fbbe0f8__link_4_conclusion
+msgid ""
+"Free-text conclusion summarising all worksheets in the link_4_ids group. "
+"Entered manually; it is not changed when the links are reloaded."
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_planning_memorandum
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_planning_memorandum.field_general_audit_ws_fbbe0f8__link_9_conclusion
+msgid ""
+"Free-text conclusion summarising all worksheets in the link_9_ids group. "
+"Entered manually; it is not changed when the links are reloaded."
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_planning_memorandum
 #: model:ir.model.fields,help:ssi_general_audit_worksheet_planning_memorandum.field_general_audit_ws_a753ab9__general_audit_id
 #: model:ir.model.fields,help:ssi_general_audit_worksheet_planning_memorandum.field_general_audit_ws_fbbe0f8__general_audit_id
 msgid "General Audit to which this worksheet belongs."
@@ -1585,6 +1798,14 @@ msgstr ""
 #. module: ssi_general_audit_worksheet_planning_memorandum
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_planning_memorandum.field_general_audit_ws_fbbe0f8__industry_review
 msgid "Industry Review"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_planning_memorandum
+#: code:addons/ssi_general_audit_worksheet_planning_memorandum/models/ga_fbbe0f8/general_audit_ws_fbbe0f8.py:0
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_planning_memorandum.field_general_audit_ws_fbbe0f8__link_43_id
+#: model_terms:ir.ui.view,arch_db:ssi_general_audit_worksheet_planning_memorandum.general_audit_ws_fbbe0f8_view_form
+#, python-format
+msgid "Inherent Risk"
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_planning_memorandum
@@ -1734,6 +1955,13 @@ msgid ""
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_planning_memorandum
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_planning_memorandum.field_general_audit_ws_fbbe0f8__link_44_id
+msgid ""
+"Link to worksheet (Control Risk) for this General Audit. Automatically "
+"computed and stored."
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_planning_memorandum
 #: model:ir.model.fields,help:ssi_general_audit_worksheet_planning_memorandum.field_general_audit_ws_fbbe0f8__link_19_id
 msgid ""
 "Link to worksheet (Engagement Letter) for this General Audit. Automatically "
@@ -1783,9 +2011,23 @@ msgid ""
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_planning_memorandum
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_planning_memorandum.field_general_audit_ws_fbbe0f8__link_43_id
+msgid ""
+"Link to worksheet (Inherent Risk) for this General Audit. Automatically "
+"computed and stored."
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_planning_memorandum
 #: model:ir.model.fields,help:ssi_general_audit_worksheet_planning_memorandum.field_general_audit_ws_fbbe0f8__link_24_id
 msgid ""
 "Link to worksheet (Preliminary Analytic Procedure) for this General Audit. "
+"Automatically computed and stored."
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_planning_memorandum
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_planning_memorandum.field_general_audit_ws_fbbe0f8__link_41_id
+msgid ""
+"Link to worksheet (Preliminary Materiality) for this General Audit. "
 "Automatically computed and stored."
 msgstr ""
 
@@ -1839,6 +2081,13 @@ msgid ""
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_planning_memorandum
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_planning_memorandum.field_general_audit_ws_fbbe0f8__link_42_id
+msgid ""
+"Link to worksheet (Understanding of The Entity) for this General Audit. "
+"Automatically computed and stored."
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_planning_memorandum
 #: model:ir.model.fields,help:ssi_general_audit_worksheet_planning_memorandum.field_general_audit_ws_fbbe0f8__link_40_id
 msgid ""
 "Link to worksheet (Use of Internal Auditor's Work Result) for this General "
@@ -1878,11 +2127,6 @@ msgstr ""
 msgid ""
 "Link to worksheet Team Communication Pre-Engagement for this General Audit. "
 "Automatically computed and stored."
-msgstr ""
-
-#. module: ssi_general_audit_worksheet_planning_memorandum
-#: model_terms:ir.ui.view,arch_db:ssi_general_audit_worksheet_planning_memorandum.general_audit_ws_fbbe0f8_view_form
-msgid "Links"
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_planning_memorandum
@@ -2241,6 +2485,14 @@ msgid "Preliminary Analytic Procedure - Vertical & Horizontal Analysis"
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_planning_memorandum
+#: code:addons/ssi_general_audit_worksheet_planning_memorandum/models/ga_fbbe0f8/general_audit_ws_fbbe0f8.py:0
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_planning_memorandum.field_general_audit_ws_fbbe0f8__link_41_id
+#: model_terms:ir.ui.view,arch_db:ssi_general_audit_worksheet_planning_memorandum.general_audit_ws_fbbe0f8_view_form
+#, python-format
+msgid "Preliminary Materiality"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_planning_memorandum
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_planning_memorandum.field_general_audit_ws_a753ab9__preparation_date
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_planning_memorandum.field_general_audit_ws_fbbe0f8__preparation_date
 msgid "Preparation Date"
@@ -2575,6 +2827,11 @@ msgid "Significant Account"
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_planning_memorandum
+#: model_terms:ir.ui.view,arch_db:ssi_general_audit_worksheet_planning_memorandum.general_audit_ws_fbbe0f8_view_form
+msgid "Significant Account Internal Control"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_planning_memorandum
 #: model:ir.model.fields.selection,name:ssi_general_audit_worksheet_planning_memorandum.selection__general_audit_ws_a753ab9_item__checklist_type__significant
 #: model_terms:ir.ui.view,arch_db:ssi_general_audit_worksheet_planning_memorandum.general_audit_ws_fbbe0f8_view_form
 msgid "Significant Changes and Developments"
@@ -2658,6 +2915,10 @@ msgstr ""
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_planning_memorandum.field_general_audit_ws_fbbe0f8__link_38_state
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_planning_memorandum.field_general_audit_ws_fbbe0f8__link_39_state
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_planning_memorandum.field_general_audit_ws_fbbe0f8__link_40_state
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_planning_memorandum.field_general_audit_ws_fbbe0f8__link_41_state
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_planning_memorandum.field_general_audit_ws_fbbe0f8__link_42_state
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_planning_memorandum.field_general_audit_ws_fbbe0f8__link_43_state
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_planning_memorandum.field_general_audit_ws_fbbe0f8__link_44_state
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_planning_memorandum.field_general_audit_ws_fbbe0f8__state
 #: model_terms:ir.ui.view,arch_db:ssi_general_audit_worksheet_planning_memorandum.general_audit_ws_fbbe0f8_view_form
 msgid "State"
@@ -2865,6 +3126,18 @@ msgid "Understanding of The Business Environment"
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_planning_memorandum
+#: code:addons/ssi_general_audit_worksheet_planning_memorandum/models/ga_fbbe0f8/general_audit_ws_fbbe0f8.py:0
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_planning_memorandum.field_general_audit_ws_fbbe0f8__link_42_id
+#, python-format
+msgid "Understanding of The Entity"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_planning_memorandum
+#: model_terms:ir.ui.view,arch_db:ssi_general_audit_worksheet_planning_memorandum.general_audit_ws_fbbe0f8_view_form
+msgid "Understanding of The Entity and it's Environment"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_planning_memorandum
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_planning_memorandum.field_general_audit_ws_a753ab9__message_unread
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_planning_memorandum.field_general_audit_ws_a753ab9_item__message_unread
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_planning_memorandum.field_general_audit_ws_fbbe0f8__message_unread
@@ -3004,6 +3277,13 @@ msgid ""
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_planning_memorandum
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_planning_memorandum.field_general_audit_ws_fbbe0f8__link_44_state
+msgid ""
+"Workflow state of the linked Control Risk worksheet. Read-only and follows "
+"the linked record."
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_planning_memorandum
 #: model:ir.model.fields,help:ssi_general_audit_worksheet_planning_memorandum.field_general_audit_ws_fbbe0f8__link_19_state
 msgid ""
 "Workflow state of the linked Engagement Letter worksheet. Read-only and "
@@ -3060,6 +3340,13 @@ msgid ""
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_planning_memorandum
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_planning_memorandum.field_general_audit_ws_fbbe0f8__link_43_state
+msgid ""
+"Workflow state of the linked Inherent Risk worksheet. Read-only and follows "
+"the linked record."
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_planning_memorandum
 #: model:ir.model.fields,help:ssi_general_audit_worksheet_planning_memorandum.field_general_audit_ws_fbbe0f8__link_7_state
 msgid ""
 "Workflow state of the linked Main Business Activity Process worksheet. Read-"
@@ -3071,6 +3358,13 @@ msgstr ""
 msgid ""
 "Workflow state of the linked Preliminary Analytic Procedure worksheet. Read-"
 "only and follows the linked record."
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_planning_memorandum
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_planning_memorandum.field_general_audit_ws_fbbe0f8__link_41_state
+msgid ""
+"Workflow state of the linked Preliminary Materiality worksheet. Read-only "
+"and follows the linked record."
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_planning_memorandum
@@ -3127,6 +3421,13 @@ msgstr ""
 msgid ""
 "Workflow state of the linked Understanding of Relevant Regulation worksheet."
 " Read-only and follows the linked record."
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_planning_memorandum
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_planning_memorandum.field_general_audit_ws_fbbe0f8__link_42_state
+msgid ""
+"Workflow state of the linked Understanding of The Entity worksheet. Read-"
+"only and follows the linked record."
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_planning_memorandum
