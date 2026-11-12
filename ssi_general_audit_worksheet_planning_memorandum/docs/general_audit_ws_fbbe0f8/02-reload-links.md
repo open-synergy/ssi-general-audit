@@ -26,9 +26,13 @@
 
 ## Post-Condition
 
-- The **Conclusions** tab shows the worksheets of the same General Audit that this
-  memorandum summarises (for example business environment, preliminary materiality and
-  understanding of the entity).
-- Groups that list several worksheets have a **Conclusion** field below them. It is
-  typed by hand and is not changed by **Reload**.
+- The **Conclusions** tab lists one line per worksheet type that this memorandum
+  summarises (for example business environment, preliminary materiality and
+  understanding of the entity), for each type that has at least one worksheet that is
+  **On Progress** or **Done** in the same General Audit.
+- Each line shows the number of worksheets and the worksheets themselves. When a type
+  has exactly one worksheet, the **Conclusion Summary** follows that worksheet and
+  cannot be edited.
+- When a type has more than one worksheet, the **Conclusion Summary** is typed by hand.
+  **Reload** never changes it and never removes a line.
 - All other tabs are unaffected.

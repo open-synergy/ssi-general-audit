@@ -1303,15 +1303,12 @@ scenarios:
               - "REC: ws_bdcdfc5"
 
   # ------------------------------------------------------------------
-  # Free-text conclusions of the Many2many links are stored values:
-  # action_reload_links must never overwrite them. The four main-KKA
-  # links (link_41..link_44) stay empty until their worksheet is
-  # open/done, then follow it after action_reload_links.
+  # The four main-KKA links (link_41..link_44) stay empty until their
+  # worksheet is open/done, then follow it after action_reload_links.
   # ------------------------------------------------------------------
-  - name:
-      "link_1_conclusion survives reload and link_41..link_44 follow their worksheets"
+  - name: "link_41..link_44 follow their worksheets after reload"
     steps:
-      - step: "Create worksheet fbbe0f8 with a manual link_1 conclusion"
+      - step: "Create worksheet fbbe0f8"
         action: "create"
         model: "general_audit_ws_fbbe0f8"
         save_as: "worksheet"
@@ -1319,7 +1316,6 @@ scenarios:
         values:
           general_audit_id: "REC: audit.id"
           type_id: "REC: ws_type_fbbe0f8.id"
-          link_1_conclusion: "Manual conclusion for the business environment group."
 
       - step: "Assert link_41..link_44 are empty before their worksheets exist"
         action: "assert"
@@ -1404,13 +1400,10 @@ scenarios:
         method: "action_reload_links"
         as_user: "base.user_admin"
 
-      - step: "Assert the manual conclusion is kept and link_41..link_44 are linked"
+      - step: "Assert link_41..link_44 are linked"
         action: "assert"
         target: "worksheet"
         asserts:
-          link_1_conclusion:
-            type: "value"
-            expected: "Manual conclusion for the business environment group."
           link_41_id:
             type: "m2o"
             expected: "REC: ws_1d9338d"
@@ -1983,3 +1976,185 @@ scenarios:
             type: "m2m"
             check: "count"
             expected_count: 0
+
+  # ------------------------------------------------------------------
+  # Conclusions tab: one line per worksheet type. A type with exactly
+  # one open/done worksheet mirrors its conclusion and is locked.
+  # ------------------------------------------------------------------
+  - name: "Conclusion line mirrors the single worksheet of its type"
+    steps:
+      - step: "Create worksheet fbbe0f8"
+        action: "create"
+        model: "general_audit_ws_fbbe0f8"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_fbbe0f8.id"
+
+      - step: "Create worksheet 1d9338d for the same audit"
+        action: "create"
+        model: "general_audit_ws_1d9338d"
+        save_as: "ws_1d9338d"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_1d9338d.id"
+
+      - step: "Open worksheet 1d9338d"
+        action: "call"
+        target: "ws_1d9338d"
+        method: "action_open"
+        as_user: "base.user_admin"
+
+      - step: "Type a conclusion on worksheet 1d9338d"
+        action: "write"
+        target: "ws_1d9338d"
+        as_user: "base.user_admin"
+        values:
+          conclusion: "Materiality conclusion."
+
+      - step: "Reload links"
+        action: "call"
+        target: "worksheet"
+        method: "action_reload_links"
+        as_user: "base.user_admin"
+
+      - step: "Assert one line exists for the type"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          conclusion_line_ids:
+            type: "o2m"
+            check: "count"
+            expected_count: 1
+
+      - step: "Find the line of type 1d9338d"
+        action: "search"
+        model: "general_audit_ws_fbbe0f8.conclusion"
+        domain:
+          - ["worksheet_id", "=", "REC: worksheet.id"]
+          - ["type_id", "=", "REC: ws_type_1d9338d.id"]
+        save_as: "line"
+        limit: 1
+
+      - step: "Assert the line mirrors the worksheet and is locked"
+        action: "assert"
+        target: "line"
+        asserts:
+          worksheet_count:
+            type: "value"
+            expected: 1
+          locked_ok:
+            type: "value"
+            expected: true
+          conclusion:
+            type: "value"
+            expected: "Materiality conclusion."
+
+  # ------------------------------------------------------------------
+  # Several open/done worksheets of one type: the summary is typed by
+  # the user and survives every reload. Draft worksheets are ignored.
+  # ------------------------------------------------------------------
+  - name: "Typed conclusion survives reload when several worksheets exist"
+    steps:
+      - step: "Create worksheet fbbe0f8"
+        action: "create"
+        model: "general_audit_ws_fbbe0f8"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_fbbe0f8.id"
+
+      - step: "Create worksheet bdcdfc5 for the IT environment"
+        action: "create"
+        model: "general_audit_ws_bdcdfc5"
+        save_as: "ws_bdcdfc5_it"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_bdcdfc5.id"
+          business_environment_id: "REC: be_it.id"
+
+      - step: "Open worksheet bdcdfc5 (IT)"
+        action: "call"
+        target: "ws_bdcdfc5_it"
+        method: "action_open"
+        as_user: "base.user_admin"
+
+      - step: "Create worksheet bdcdfc5 for the industry environment"
+        action: "create"
+        model: "general_audit_ws_bdcdfc5"
+        save_as: "ws_bdcdfc5_industry"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_bdcdfc5.id"
+          business_environment_id: "REC: be_industry.id"
+
+      - step: "Open worksheet bdcdfc5 (industry)"
+        action: "call"
+        target: "ws_bdcdfc5_industry"
+        method: "action_open"
+        as_user: "base.user_admin"
+
+      - step: "Create a draft worksheet bdcdfc5 for the regulatory environment"
+        action: "create"
+        model: "general_audit_ws_bdcdfc5"
+        save_as: "ws_bdcdfc5_draft"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_bdcdfc5.id"
+          business_environment_id: "REC: be_regulatory.id"
+
+      - step: "Reload links"
+        action: "call"
+        target: "worksheet"
+        method: "action_reload_links"
+        as_user: "base.user_admin"
+
+      - step: "Find the line of type bdcdfc5"
+        action: "search"
+        model: "general_audit_ws_fbbe0f8.conclusion"
+        domain:
+          - ["worksheet_id", "=", "REC: worksheet.id"]
+          - ["type_id", "=", "REC: ws_type_bdcdfc5.id"]
+        save_as: "line"
+        limit: 1
+
+      - step: "Assert two worksheets are counted, the draft one is ignored"
+        action: "assert"
+        target: "line"
+        asserts:
+          worksheet_count:
+            type: "value"
+            expected: 2
+          locked_ok:
+            type: "value"
+            expected: false
+          conclusion:
+            type: "value"
+            operator: "is_falsy"
+
+      - step: "Type the summary"
+        action: "write"
+        target: "line"
+        as_user: "base.user_admin"
+        values:
+          conclusion: "Typed summary of the business environment."
+
+      - step: "Reload links again"
+        action: "call"
+        target: "worksheet"
+        method: "action_reload_links"
+        as_user: "base.user_admin"
+
+      - step: "Assert the typed summary is kept"
+        action: "assert"
+        target: "line"
+        asserts:
+          conclusion:
+            type: "value"
+            expected: "Typed summary of the business environment."

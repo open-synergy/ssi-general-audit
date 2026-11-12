@@ -45,10 +45,13 @@ class GeneralAuditWSfbbe0f8(models.Model):
     _description = "Audit Planning Memorandum - Detail (fbbe0f8)"
     _inherit = [
         "general_audit_worksheet_mixin",
+        "general_audit_conclusion_mixin",
     ]
     _type_xml_id = (
         "ssi_general_audit_worksheet_planning_memorandum." "worksheet_type_fbbe0f8"
     )
+    _conclusion_line_model = "general_audit_ws_fbbe0f8.conclusion"
+    _conclusion_line_owner_field = "worksheet_id"
     _label_exceptions = [
         "id",
         "create_uid",
@@ -3219,6 +3222,13 @@ class GeneralAuditWSfbbe0f8(models.Model):
         for record in self.sudo():
             record._reload_links()
 
+    conclusion_line_ids = fields.One2many(
+        string="Conclusions",
+        comodel_name="general_audit_ws_fbbe0f8.conclusion",
+        inverse_name="worksheet_id",
+        help="Conclusion summary per worksheet type. Created by Reload Links.",
+    )
+
     def _reload_links(self):
         self.ensure_one()
         self._compute_link_1_ids()
@@ -3265,6 +3275,7 @@ class GeneralAuditWSfbbe0f8(models.Model):
         self._compute_link_42_id()
         self._compute_link_43_id()
         self._compute_link_44_id()
+        self._reload_conclusion_lines()
 
     def _get_fields_required_before_confirm(self):
         _super = super(GeneralAuditWSfbbe0f8, self)
