@@ -14,6 +14,9 @@
         "ssi_web_widget_csv_table",
         "web_tour",
     ],
+    "external_dependencies": {
+        "python": ["openupgradelib"],
+    },
     "data": [
         "security/ir_module_category_data.xml",
         "security/ir_module_category/general_audit_ws_d209914.xml",
@@ -24,6 +27,8 @@
         "security/res_group/general_audit_ws_f5a3cee.xml",
         "security/res_group/general_audit_ws_d209914.xml",
         "security/res_group/general_audit_ws_b5e3d9f.xml",
+        "security/res_group/general_audit_data_collection_category.xml",
+        "security/res_group/general_audit_data_collection.xml",
         # ir.model.access
         "security/ir.model.access.csv",
         "security/ir_model_access/general_audit_ws_d209914.xml",
@@ -65,6 +70,9 @@
         "data/master/general_audit_worksheet_conclusion.xml",
         "data/master/general_audit_ws_e301171_item.xml",
         "data/master/general_audit_ws_abd82ed_item.xml",
+        "data/master/general_audit_data_collection_category.xml",
+        # wizards
+        "wizards/general_audit_ws_f5a3cee_attachment_upload.xml",
         # ir.ui.view
         "views/ga_abd82ed/general_audit_ws_abd82ed_views.xml",
         "views/ga_abd82ed/general_audit_ws_abd82ed_item_views.xml",
@@ -73,6 +81,8 @@
         "views/ga_f5a3cee/general_audit_ws_f5a3cee_views.xml",
         "views/general_audit_ws_d209914.xml",
         "views/general_audit_ws_b5e3d9f.xml",
+        "views/general_audit_data_collection_category.xml",
+        "views/general_audit_data_collection.xml",
         "views/assets.xml",
     ],
     "demo": [],

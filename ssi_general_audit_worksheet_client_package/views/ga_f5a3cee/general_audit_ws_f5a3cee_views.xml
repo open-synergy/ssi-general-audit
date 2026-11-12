@@ -59,14 +59,114 @@
                             name="detail_ids"
                             attrs="{'readonly': [('state', '!=', 'open')]}"
                         >
-                            <tree editable="top">
+                            <tree>
                                 <field name="worksheet_id" invisible="1" />
                                 <field name="account_client_type_id" />
-                                <field name="date" />
-                                <field name="attachment_ids" widget="many2many_tags" />
-                                <field name="complete_ok" widget="boolean_toggle" />
+                                <field name="line_count" invisible="1" />
+                                <field
+                                    name="line_done_count"
+                                    widget="progressbar"
+                                    string="Completed"
+                                    options="{'current_value': 'line_done_count', 'max_value': 'line_count'}"
+                                />
                                 <field name="state" invisible="1" />
                             </tree>
+                            <form>
+                                <sheet>
+                                    <group>
+                                        <field name="worksheet_id" invisible="1" />
+                                        <field name="id" invisible="1" />
+                                        <field
+                                            name="account_client_type_id"
+                                            attrs="{'readonly': [('id', '!=', False)]}"
+                                        />
+                                        <field name="line_count" invisible="1" />
+                                        <field
+                                            name="line_done_count"
+                                            widget="progressbar"
+                                            string="Completed"
+                                            options="{'current_value': 'line_done_count', 'max_value': 'line_count'}"
+                                        />
+                                        <field name="complete_ok" invisible="1" />
+                                        <field name="state" invisible="1" />
+                                    </group>
+                                    <group string="Data Collection">
+                                        <field
+                                            name="line_ids"
+                                            nolabel="1"
+                                            context="{'data_collection_code_only': True}"
+                                            attrs="{'readonly': [('state', '!=', 'open')]}"
+                                        >
+                                            <tree editable="bottom">
+                                                <field
+                                                    name="worksheet_id"
+                                                    invisible="1"
+                                                />
+                                                <field
+                                                    name="data_collection_id"
+                                                    width="80px"
+                                                    options="{'no_create': True, 'no_open': True}"
+                                                    context="{'data_collection_code_only': True}"
+                                                />
+                                                <field name="name" width="220px" />
+                                                <field
+                                                    name="category_id"
+                                                    width="130px"
+                                                    options="{'no_create': True, 'no_open': True}"
+                                                />
+                                                <field name="date" width="90px" />
+                                                <field
+                                                    name="attachment_ids"
+                                                    width="130px"
+                                                    widget="many2many_tags"
+                                                />
+                                                <field name="id" invisible="1" />
+                                                <button
+                                                    name="%(general_audit_ws_f5a3cee_attachment_upload_action)d"
+                                                    type="action"
+                                                    title="Upload Attachment"
+                                                    icon="fa-upload"
+                                                    attrs="{'invisible': ['|', ('id', '=', False), ('state', '!=', 'open')]}"
+                                                />
+                                                <field
+                                                    name="complete_ok"
+                                                    width="60px"
+                                                    widget="boolean_toggle"
+                                                />
+                                                <field name="state" invisible="1" />
+                                            </tree>
+                                            <form>
+                                                <group>
+                                                    <field
+                                                        name="worksheet_id"
+                                                        invisible="1"
+                                                    />
+                                                    <field
+                                                        name="data_collection_id"
+                                                        options="{'no_create': True, 'no_open': True}"
+                                                        context="{'data_collection_code_only': True}"
+                                                    />
+                                                    <field name="name" />
+                                                    <field
+                                                        name="category_id"
+                                                        options="{'no_create': True, 'no_open': True}"
+                                                    />
+                                                    <field name="date" />
+                                                    <field
+                                                        name="attachment_ids"
+                                                        widget="many2many_tags"
+                                                    />
+                                                    <field
+                                                        name="complete_ok"
+                                                        widget="boolean_toggle"
+                                                    />
+                                                    <field name="state" invisible="1" />
+                                                </group>
+                                            </form>
+                                        </field>
+                                    </group>
+                                </sheet>
+                            </form>
                         </field>
                     </page>
                     <page name="standard_audit" string="Relevant Audit Standard Items">
@@ -75,15 +175,60 @@
                 </xpath>
                 <xpath expr="//page[@name='details']" position="after">
                     <page name="others" string="Others">
-                        <group string="Reporting Timetable">
-                            <field
-                                name="reporting_timetable_ids"
-                                nolabel="1"
-                                attrs="{'readonly': [('state', '!=', 'open')]}"
-                            >
-                                <tree editable="top">
+                        <field
+                            name="reporting_timetable_ids"
+                            nolabel="1"
+                            context="{'data_collection_code_only': True}"
+                            attrs="{'readonly': [('state', '!=', 'open')]}"
+                        >
+                            <tree editable="bottom">
+                                <field name="worksheet_id" invisible="1" />
+                                <field
+                                    name="data_collection_id"
+                                    width="80px"
+                                    options="{'no_create': True, 'no_open': True}"
+                                    context="{'data_collection_code_only': True}"
+                                />
+                                <field name="description" string="Name" width="220px" />
+                                <field
+                                    name="category_id"
+                                    width="130px"
+                                    options="{'no_create': True, 'no_open': True}"
+                                />
+                                <field name="date" width="90px" />
+                                <field
+                                    name="attachment_ids"
+                                    width="130px"
+                                    widget="many2many_tags"
+                                />
+                                <field name="id" invisible="1" />
+                                <button
+                                    name="%(general_audit_ws_f5a3cee_attachment_upload_action)d"
+                                    type="action"
+                                    title="Upload Attachment"
+                                    icon="fa-upload"
+                                    attrs="{'invisible': ['|', ('id', '=', False), ('state', '!=', 'open')]}"
+                                />
+                                <field
+                                    name="complete_ok"
+                                    width="60px"
+                                    widget="boolean_toggle"
+                                />
+                                <field name="state" invisible="1" />
+                            </tree>
+                            <form>
+                                <group>
                                     <field name="worksheet_id" invisible="1" />
-                                    <field name="description" />
+                                    <field
+                                        name="data_collection_id"
+                                        options="{'no_create': True, 'no_open': True}"
+                                        context="{'data_collection_code_only': True}"
+                                    />
+                                    <field name="description" string="Name" />
+                                    <field
+                                        name="category_id"
+                                        options="{'no_create': True, 'no_open': True}"
+                                    />
                                     <field name="date" />
                                     <field
                                         name="attachment_ids"
@@ -91,27 +236,9 @@
                                     />
                                     <field name="complete_ok" widget="boolean_toggle" />
                                     <field name="state" invisible="1" />
-                                </tree>
-                                <form>
-                                    <sheet>
-                                        <group>
-                                            <field name="worksheet_id" invisible="1" />
-                                            <field name="description" />
-                                            <field name="date" />
-                                            <field
-                                                name="attachment_ids"
-                                                widget="many2many_tags"
-                                            />
-                                            <field
-                                                name="complete_ok"
-                                                widget="boolean_toggle"
-                                            />
-                                            <field name="state" invisible="1" />
-                                        </group>
-                                    </sheet>
-                                </form>
-                            </field>
-                        </group>
+                                </group>
+                            </form>
+                        </field>
                     </page>
                 </xpath>
             </data>

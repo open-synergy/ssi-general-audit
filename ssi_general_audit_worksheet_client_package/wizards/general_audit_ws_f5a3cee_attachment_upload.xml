@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!-- Copyright 2026 OpenSynergy Indonesia
+     Copyright 2026 PT. Simetri Sinergi Indonesia
+     License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl-3.0-standalone.html). -->
+<odoo>
+    <record
+        id="general_audit_ws_f5a3cee_attachment_upload_view_form"
+        model="ir.ui.view"
+    >
+        <field name="name">general_audit_ws_f5a3cee_attachment_upload form</field>
+        <field name="model">general_audit_ws_f5a3cee_attachment_upload</field>
+        <field name="arch" type="xml">
+            <form>
+                <group name="group_1" colspan="4" col="2">
+                    <field
+                        name="attachment_ids"
+                        widget="many2many_binary"
+                        string="Files"
+                    />
+                </group>
+                <footer>
+                    <button
+                        name="action_submit"
+                        type="object"
+                        string="Submit"
+                        class="btn-primary"
+                    />
+                    or
+                    <button special="cancel" string="Cancel" class="oe_link" />
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record
+        id="general_audit_ws_f5a3cee_attachment_upload_action"
+        model="ir.actions.act_window"
+    >
+        <field name="name">Upload Attachment</field>
+        <field name="res_model">general_audit_ws_f5a3cee_attachment_upload</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+</odoo>
