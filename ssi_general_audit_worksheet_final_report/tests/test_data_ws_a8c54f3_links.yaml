@@ -304,11 +304,33 @@ scenarios:
             type: "value"
             operator: "is_falsy"
 
-  # Positive: the manual link_1_conclusion is free text, not computed,
-  # so action_reload_links must leave it untouched.
-  - name: "link_1_conclusion survives action_reload_links"
+  # Conclusions tab: a type with exactly one open/done worksheet
+  # mirrors its conclusion and is locked.
+  - name: "Conclusion line mirrors the single worksheet of its type"
     steps:
-      - step: "Create worksheet a8c54f3 with a manual link_1 conclusion"
+      - step: "Create worksheet ab19fd4"
+        action: "create"
+        model: "general_audit_ws_ab19fd4"
+        save_as: "ws_ab19fd4"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_ab19fd4.id"
+
+      - step: "Open worksheet ab19fd4"
+        action: "call"
+        target: "ws_ab19fd4"
+        method: "action_open"
+        as_user: "base.user_admin"
+
+      - step: "Type a conclusion on worksheet ab19fd4"
+        action: "write"
+        target: "ws_ab19fd4"
+        as_user: "base.user_admin"
+        values:
+          conclusion: "Audit result conclusion."
+
+      - step: "Create worksheet a8c54f3"
         action: "create"
         model: "general_audit_ws_a8c54f3"
         save_as: "worksheet"
@@ -316,18 +338,134 @@ scenarios:
         values:
           general_audit_id: "REC: audit.id"
           type_id: "REC: ws_type_a8c54f3.id"
-          link_1_conclusion: "Manual conclusion for the general ledger group."
 
-      - step: "Call action_reload_links on a8c54f3"
+      - step: "Reload links"
         action: "call"
         target: "worksheet"
         method: "action_reload_links"
         as_user: "base.user_admin"
 
-      - step: "Assert link_1_conclusion keeps the manual text"
+      - step: "Find the line of type ab19fd4"
+        action: "search"
+        model: "general_audit_ws_a8c54f3.conclusion"
+        domain:
+          - ["worksheet_id", "=", "REC: worksheet.id"]
+          - ["type_id", "=", "REC: ws_type_ab19fd4.id"]
+        save_as: "line"
+        limit: 1
+
+      - step: "Assert the line mirrors the worksheet and is locked"
         action: "assert"
-        target: "worksheet"
+        target: "line"
         asserts:
-          link_1_conclusion:
+          worksheet_count:
             type: "value"
-            expected: "Manual conclusion for the general ledger group."
+            expected: 1
+          locked_ok:
+            type: "value"
+            expected: true
+          conclusion:
+            type: "value"
+            expected: "Audit result conclusion."
+
+  # Several open/done worksheets of one type: the summary is typed by
+  # the user and survives every reload. Draft worksheets are ignored.
+  - name: "Typed conclusion survives reload when several worksheets exist"
+    steps:
+      - step: "Create first worksheet d209914"
+        action: "create"
+        model: "general_audit_ws_d209914"
+        save_as: "ws_d209914"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_d209914.id"
+
+      - step: "Open first worksheet d209914"
+        action: "call"
+        target: "ws_d209914"
+        method: "action_open"
+        as_user: "base.user_admin"
+
+      - step: "Create second worksheet d209914"
+        action: "create"
+        model: "general_audit_ws_d209914"
+        save_as: "ws_d209914_second"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_d209914.id"
+
+      - step: "Open second worksheet d209914"
+        action: "call"
+        target: "ws_d209914_second"
+        method: "action_open"
+        as_user: "base.user_admin"
+
+      - step: "Create a third worksheet d209914 and leave it in draft"
+        action: "create"
+        model: "general_audit_ws_d209914"
+        save_as: "ws_d209914_draft"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_d209914.id"
+
+      - step: "Create worksheet a8c54f3"
+        action: "create"
+        model: "general_audit_ws_a8c54f3"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_a8c54f3.id"
+
+      - step: "Reload links"
+        action: "call"
+        target: "worksheet"
+        method: "action_reload_links"
+        as_user: "base.user_admin"
+
+      - step: "Find the line of type d209914"
+        action: "search"
+        model: "general_audit_ws_a8c54f3.conclusion"
+        domain:
+          - ["worksheet_id", "=", "REC: worksheet.id"]
+          - ["type_id", "=", "REC: ws_type_d209914.id"]
+        save_as: "line"
+        limit: 1
+
+      - step: "Assert two worksheets are counted, the draft one is ignored"
+        action: "assert"
+        target: "line"
+        asserts:
+          worksheet_count:
+            type: "value"
+            expected: 2
+          locked_ok:
+            type: "value"
+            expected: false
+          conclusion:
+            type: "value"
+            operator: "is_falsy"
+
+      - step: "Type the summary"
+        action: "write"
+        target: "line"
+        as_user: "base.user_admin"
+        values:
+          conclusion: "Typed summary of the general ledger."
+
+      - step: "Reload links again"
+        action: "call"
+        target: "worksheet"
+        method: "action_reload_links"
+        as_user: "base.user_admin"
+
+      - step: "Assert the typed summary is kept"
+        action: "assert"
+        target: "line"
+        asserts:
+          conclusion:
+            type: "value"
+            expected: "Typed summary of the general ledger."
