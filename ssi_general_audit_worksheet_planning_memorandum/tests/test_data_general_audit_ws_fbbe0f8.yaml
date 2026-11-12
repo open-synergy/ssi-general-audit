@@ -2158,3 +2158,98 @@ scenarios:
           conclusion:
             type: "value"
             expected: "Typed summary of the business environment."
+
+  # A mirrored conclusion is cleared when a second worksheet of the
+  # same type appears, so the user writes a summary of all of them.
+  - name: "Mirrored conclusion is cleared when a second worksheet appears"
+    steps:
+      - step: "Create worksheet general_audit_ws_fbbe0f8"
+        action: "create"
+        model: "general_audit_ws_fbbe0f8"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_fbbe0f8.id"
+
+      - step: "Create the first source worksheet"
+        action: "create"
+        model: "general_audit_ws_bdcdfc5"
+        save_as: "ws_first"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_bdcdfc5.id"
+          business_environment_id: "REC: be_it.id"
+
+      - step: "Open the first source worksheet"
+        action: "call"
+        target: "ws_first"
+        method: "action_open"
+        as_user: "base.user_admin"
+
+      - step: "Type a conclusion on the first source worksheet"
+        action: "write"
+        target: "ws_first"
+        as_user: "base.user_admin"
+        values:
+          conclusion: "Only worksheet conclusion."
+
+      - step: "Reload links"
+        action: "call"
+        target: "worksheet"
+        method: "action_reload_links"
+        as_user: "base.user_admin"
+
+      - step: "Find the line of the source type"
+        action: "search"
+        model: "general_audit_ws_fbbe0f8.conclusion"
+        domain:
+          - ["worksheet_id", "=", "REC: worksheet.id"]
+          - ["type_id", "=", "REC: ws_type_bdcdfc5.id"]
+        save_as: "line"
+        limit: 1
+
+      - step: "Assert the line mirrors the only worksheet"
+        action: "assert"
+        target: "line"
+        asserts:
+          conclusion:
+            type: "value"
+            expected: "Only worksheet conclusion."
+
+      - step: "Create the second source worksheet"
+        action: "create"
+        model: "general_audit_ws_bdcdfc5"
+        save_as: "ws_second"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_bdcdfc5.id"
+          business_environment_id: "REC: be_industry.id"
+
+      - step: "Open the second source worksheet"
+        action: "call"
+        target: "ws_second"
+        method: "action_open"
+        as_user: "base.user_admin"
+
+      - step: "Reload links again"
+        action: "call"
+        target: "worksheet"
+        method: "action_reload_links"
+        as_user: "base.user_admin"
+
+      - step: "Assert the copied conclusion is cleared and the line is open"
+        action: "assert"
+        target: "line"
+        asserts:
+          worksheet_count:
+            type: "value"
+            expected: 2
+          locked_ok:
+            type: "value"
+            expected: false
+          conclusion:
+            type: "value"
+            operator: "is_falsy"
