@@ -99,14 +99,19 @@ class GeneralAuditConclusionLineMixin(models.AbstractModel):
     def _compute_conclusion(self):
         """Mirror the worksheet conclusion when only one worksheet exists.
 
-        With exactly one worksheet the value is taken from it. In every other
-        case the stored value is kept, so text typed by the user is never
-        overwritten by a reload.
+        With exactly one worksheet the value is taken from it. When more
+        worksheets exist, a value that still equals the conclusion of one
+        of them is a leftover mirror and is cleared so that the user writes
+        a summary of all worksheets. Any other text is typed by the user
+        and is kept.
         """
         for record in self:
             result = record.conclusion
-            if len(record.worksheet_ids) == 1:
-                result = record.worksheet_ids.conclusion
+            worksheets = record.worksheet_ids
+            if len(worksheets) == 1:
+                result = worksheets.conclusion
+            elif len(worksheets) > 1 and result in worksheets.mapped("conclusion"):
+                result = False
             record.conclusion = result
 
     conclusion = fields.Text(
@@ -116,7 +121,8 @@ class GeneralAuditConclusionLineMixin(models.AbstractModel):
         readonly=False,
         compute_sudo=True,
         help="Summary of the conclusions of the worksheets of this type. "
-        "Follows the worksheet when only one exists, otherwise typed by hand.",
+        "Follows the worksheet when only one exists, otherwise typed by hand. "
+        "A copied conclusion is cleared when a second worksheet appears.",
     )
 
     def _get_worksheet_criteria(self):
