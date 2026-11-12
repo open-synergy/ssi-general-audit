@@ -205,3 +205,76 @@ scenarios:
           link_47_id:
             type: "value"
             operator: "is_falsy"
+
+  # Conclusions page: the be62e79 type has a line mirroring its single
+  # open worksheet after Reload, and the fc75636 type has none.
+  - name: "Reload creates a conclusion line for the be62e79 type only"
+    steps:
+      - step: "Create worksheet be62e79"
+        action: "create"
+        model: "general_audit_ws_be62e79"
+        save_as: "ws_be62e79"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_be62e79.id"
+
+      - step: "Open worksheet be62e79"
+        action: "call"
+        target: "ws_be62e79"
+        method: "action_open"
+        as_user: "base.user_admin"
+
+      - step: "Type a conclusion on worksheet be62e79"
+        action: "write"
+        target: "ws_be62e79"
+        as_user: "base.user_admin"
+        values:
+          conclusion: "Disclosure conclusion."
+
+      - step: "Create worksheet a8c54f3"
+        action: "create"
+        model: "general_audit_ws_a8c54f3"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_a8c54f3.id"
+
+      - step: "Reload links"
+        action: "call"
+        target: "worksheet"
+        method: "action_reload_links"
+        as_user: "base.user_admin"
+
+      - step: "Find the line of type be62e79"
+        action: "search"
+        model: "general_audit_ws_a8c54f3.conclusion"
+        domain:
+          - ["worksheet_id", "=", "REC: worksheet.id"]
+          - ["type_id", "=", "REC: ws_type_be62e79.id"]
+        save_as: "line"
+        limit: 1
+
+      - step: "Assert the line mirrors the worksheet and is locked"
+        action: "assert"
+        target: "line"
+        asserts:
+          worksheet_count:
+            type: "value"
+            expected: 1
+          locked_ok:
+            type: "value"
+            expected: true
+          conclusion:
+            type: "value"
+            expected: "Disclosure conclusion."
+
+      - step: "Assert only the be62e79 line exists, none for fc75636"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          conclusion_line_ids:
+            type: "o2m"
+            check: "count"
+            expected_count: 1

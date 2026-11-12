@@ -85,4 +85,25 @@
         ]"
         />
 </record>
+
+<!-- Adds the six review worksheet types to the Conclusions page of the
+     Audit Final Memorandum (record owned by
+     ssi_general_audit_worksheet_final_report). -->
+<record
+        id="ssi_general_audit_worksheet_final_report.worksheet_type_a8c54f3"
+        model="general_audit_worksheet_type"
+    >
+    <field
+            name="conclusion_source_type_ids"
+            eval="[
+        (4, ref('ssi_general_audit_worksheet_review.worksheet_type_be62e79')),
+        (4, ref('ssi_general_audit_worksheet_review.worksheet_type_a025441')),
+        (4, ref('ssi_general_audit_worksheet_review.worksheet_type_bcc0d76')),
+        (4, ref('ssi_general_audit_worksheet_review.worksheet_type_dae9f3c')),
+        (4, ref('ssi_general_audit_worksheet_review.worksheet_type_cae598e')),
+        (4, ref('ssi_general_audit_worksheet_review.worksheet_type_fc75636')),
+    ]"
+        />
+</record>
+
 </odoo>
