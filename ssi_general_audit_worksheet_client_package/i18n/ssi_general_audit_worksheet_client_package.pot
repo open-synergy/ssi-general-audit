@@ -14,6 +14,11 @@ msgstr ""
 "Plural-Forms: \n"
 
 #. module: ssi_general_audit_worksheet_client_package
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_client_package.field_general_audit_ws_f5a3cee_detail_line__detail_id
+msgid "# Detail"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_client_package
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_client_package.field_general_audit_ws_abd82ed__name
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_client_package.field_general_audit_ws_b5e3d9f__name
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_client_package.field_general_audit_ws_d209914__name
@@ -41,6 +46,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_client_package.field_general_audit_ws_e301171_checklist__worksheet_id
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_client_package.field_general_audit_ws_f5a3cee__worksheet_id
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_client_package.field_general_audit_ws_f5a3cee_detail__worksheet_id
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_client_package.field_general_audit_ws_f5a3cee_detail_line__worksheet_id
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_client_package.field_general_audit_ws_f5a3cee_reporting_timetable__worksheet_id
 msgid "# Worksheet"
 msgstr ""
@@ -69,8 +75,23 @@ msgid "Account Mode"
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_client_package
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_client_package.field_general_audit_data_collection__account_type_id
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_client_package.field_general_audit_ws_f5a3cee_detail__account_client_type_id
+#: model:ir.model.fields.selection,name:ssi_general_audit_worksheet_client_package.selection__general_audit_data_collection__type__account_type
 msgid "Account Type"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_client_package
+#: code:addons/ssi_general_audit_worksheet_client_package/models/general_audit_data_collection.py:0
+#, python-format
+msgid "Account Type is required when the type is Account Type."
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_client_package
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_client_package.field_general_audit_data_collection__type
+msgid ""
+"Account Type: the item belongs to one client account type. Others: the item "
+"is not tied to an account type."
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_client_package
@@ -90,6 +111,12 @@ msgstr ""
 #. module: ssi_general_audit_worksheet_client_package
 #: model:ir.model.fields,help:ssi_general_audit_worksheet_client_package.field_general_audit_ws_b5e3d9f__account_id
 msgid "Account related to this subledger entry."
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_client_package
+#: code:addons/ssi_general_audit_worksheet_client_package/models/ga_f5a3cee/general_audit_ws_f5a3cee_detail.py:0
+#, python-format
+msgid "Account type %s is already used in this worksheet."
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_client_package
@@ -139,6 +166,8 @@ msgid "Accountant responsible for the audit."
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_client_package
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_client_package.field_general_audit_data_collection__message_needaction
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_client_package.field_general_audit_data_collection_category__message_needaction
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_client_package.field_general_audit_ws_abd82ed__message_needaction
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_client_package.field_general_audit_ws_abd82ed_item__message_needaction
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_client_package.field_general_audit_ws_b5e3d9f__message_needaction
@@ -150,6 +179,8 @@ msgid "Action Needed"
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_client_package
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_client_package.field_general_audit_data_collection__active
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_client_package.field_general_audit_data_collection_category__active
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_client_package.field_general_audit_ws_abd82ed_item__active
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_client_package.field_general_audit_ws_e301171_item__active
 msgid "Active"
@@ -183,6 +214,8 @@ msgid "Active Users"
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_client_package
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_client_package.field_general_audit_data_collection__activity_ids
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_client_package.field_general_audit_data_collection_category__activity_ids
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_client_package.field_general_audit_ws_abd82ed__activity_ids
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_client_package.field_general_audit_ws_abd82ed_item__activity_ids
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_client_package.field_general_audit_ws_b5e3d9f__activity_ids
@@ -194,6 +227,8 @@ msgid "Activities"
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_client_package
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_client_package.field_general_audit_data_collection__activity_exception_decoration
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_client_package.field_general_audit_data_collection_category__activity_exception_decoration
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_client_package.field_general_audit_ws_abd82ed__activity_exception_decoration
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_client_package.field_general_audit_ws_abd82ed_item__activity_exception_decoration
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_client_package.field_general_audit_ws_b5e3d9f__activity_exception_decoration
@@ -205,6 +240,8 @@ msgid "Activity Exception Decoration"
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_client_package
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_client_package.field_general_audit_data_collection__activity_state
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_client_package.field_general_audit_data_collection_category__activity_state
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_client_package.field_general_audit_ws_abd82ed__activity_state
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_client_package.field_general_audit_ws_abd82ed_item__activity_state
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_client_package.field_general_audit_ws_b5e3d9f__activity_state
@@ -216,6 +253,8 @@ msgid "Activity State"
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_client_package
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_client_package.field_general_audit_data_collection__activity_type_icon
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_client_package.field_general_audit_data_collection_category__activity_type_icon
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_client_package.field_general_audit_ws_abd82ed__activity_type_icon
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_client_package.field_general_audit_ws_abd82ed_item__activity_type_icon
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_client_package.field_general_audit_ws_b5e3d9f__activity_type_icon
@@ -224,6 +263,11 @@ msgstr ""
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_client_package.field_general_audit_ws_e301171_item__activity_type_icon
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_client_package.field_general_audit_ws_f5a3cee__activity_type_icon
 msgid "Activity Type Icon"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_client_package
+#: model:general_audit_data_collection_category,name:ssi_general_audit_worksheet_client_package.general_audit_data_collection_category_3_3a8c5e27
+msgid "Additional / Analytical Data"
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_client_package
@@ -334,6 +378,8 @@ msgid "Assess Journal Entries"
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_client_package
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_client_package.field_general_audit_data_collection__message_attachment_count
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_client_package.field_general_audit_data_collection_category__message_attachment_count
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_client_package.field_general_audit_ws_abd82ed__message_attachment_count
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_client_package.field_general_audit_ws_abd82ed_item__message_attachment_count
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_client_package.field_general_audit_ws_b5e3d9f__message_attachment_count
@@ -345,7 +391,7 @@ msgid "Attachment Count"
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_client_package
-#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_client_package.field_general_audit_ws_f5a3cee_detail__attachment_ids
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_client_package.field_general_audit_ws_f5a3cee_detail_line__attachment_ids
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_client_package.field_general_audit_ws_f5a3cee_reporting_timetable__attachment_ids
 msgid "Attachments"
 msgstr ""
@@ -473,6 +519,11 @@ msgid "Can Start"
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_client_package
+#: model_terms:ir.ui.view,arch_db:ssi_general_audit_worksheet_client_package.general_audit_ws_f5a3cee_attachment_upload_view_form
+msgid "Cancel"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_client_package
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_client_package.field_general_audit_ws_abd82ed__cancel_reason_id
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_client_package.field_general_audit_ws_b5e3d9f__cancel_reason_id
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_client_package.field_general_audit_ws_d209914__cancel_reason_id
@@ -494,6 +545,26 @@ msgid ""
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_client_package
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_client_package.field_general_audit_data_collection__category_id
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_client_package.field_general_audit_ws_f5a3cee_detail_line__category_id
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_client_package.field_general_audit_ws_f5a3cee_reporting_timetable__category_id
+msgid "Category"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_client_package
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_client_package.field_general_audit_ws_f5a3cee_detail_line__category_id
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_client_package.field_general_audit_ws_f5a3cee_reporting_timetable__category_id
+msgid ""
+"Category of the requested data. Filled from the Data Collection item, and "
+"can be chosen manually."
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_client_package
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_client_package.field_general_audit_data_collection__category_id
+msgid "Category used to classify this data collection item."
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_client_package
 #: model:ir.model.fields,help:ssi_general_audit_worksheet_client_package.field_general_audit_ws_b5e3d9f__decimal_separator
 #: model:ir.model.fields,help:ssi_general_audit_worksheet_client_package.field_general_audit_ws_d209914__decimal_separator
 msgid "Character used as decimal separator in the CSV data"
@@ -503,6 +574,13 @@ msgstr ""
 #: model:ir.model.fields,help:ssi_general_audit_worksheet_client_package.field_general_audit_ws_b5e3d9f__thousand_separator
 #: model:ir.model.fields,help:ssi_general_audit_worksheet_client_package.field_general_audit_ws_d209914__thousand_separator
 msgid "Character used as thousand separator in the CSV data"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_client_package
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_client_package.field_general_audit_ws_f5a3cee_detail__complete_ok
+msgid ""
+"Checked automatically when the detail has data lines and all of them are "
+"completed."
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_client_package
@@ -577,8 +655,20 @@ msgid "Client Assistance Packages"
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_client_package
+#: model:general_audit_data_collection_category,name:ssi_general_audit_worksheet_client_package.general_audit_data_collection_category_1_6c1e4a0b
+msgid "Client Data (Internal)"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_client_package
 #: model:ir.model.fields,help:ssi_general_audit_worksheet_client_package.field_general_audit_ws_f5a3cee_detail__account_client_type_id
 msgid "Client account type that this detail line refers to."
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_client_package
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_client_package.field_general_audit_data_collection__account_type_id
+msgid ""
+"Client account type this item belongs to. Required when the type is Account "
+"Type; not used when the type is Others."
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_client_package
@@ -588,9 +678,17 @@ msgid "Client accounts included in this audit's detail lines."
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_client_package
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_client_package.field_general_audit_data_collection__code
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_client_package.field_general_audit_data_collection_category__code
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_client_package.field_general_audit_ws_abd82ed_item__code
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_client_package.field_general_audit_ws_e301171_item__code
 msgid "Code"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_client_package
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_client_package.field_general_audit_ws_f5a3cee_detail_line__data_collection_code
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_client_package.field_general_audit_ws_f5a3cee_reporting_timetable__data_collection_code
+msgid "Code of the Data Collection item, used to sort the lines."
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_client_package
@@ -682,8 +780,15 @@ msgstr ""
 
 #. module: ssi_general_audit_worksheet_client_package
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_client_package.field_general_audit_ws_f5a3cee_detail__complete_ok
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_client_package.field_general_audit_ws_f5a3cee_detail_line__complete_ok
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_client_package.field_general_audit_ws_f5a3cee_reporting_timetable__complete_ok
+#: model_terms:ir.ui.view,arch_db:ssi_general_audit_worksheet_client_package.general_audit_ws_f5a3cee_view_form
 msgid "Completed"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_client_package
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_client_package.field_general_audit_ws_f5a3cee_detail__line_done_count
+msgid "Completed Lines"
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_client_package
@@ -726,6 +831,8 @@ msgid ""
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_client_package
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_client_package.field_general_audit_data_collection__create_uid
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_client_package.field_general_audit_data_collection_category__create_uid
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_client_package.field_general_audit_ws_abd82ed__create_uid
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_client_package.field_general_audit_ws_abd82ed_checklist__create_uid
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_client_package.field_general_audit_ws_abd82ed_item__create_uid
@@ -736,12 +843,16 @@ msgstr ""
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_client_package.field_general_audit_ws_e301171_checklist__create_uid
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_client_package.field_general_audit_ws_e301171_item__create_uid
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_client_package.field_general_audit_ws_f5a3cee__create_uid
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_client_package.field_general_audit_ws_f5a3cee_attachment_upload__create_uid
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_client_package.field_general_audit_ws_f5a3cee_detail__create_uid
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_client_package.field_general_audit_ws_f5a3cee_detail_line__create_uid
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_client_package.field_general_audit_ws_f5a3cee_reporting_timetable__create_uid
 msgid "Created by"
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_client_package
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_client_package.field_general_audit_data_collection__create_date
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_client_package.field_general_audit_data_collection_category__create_date
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_client_package.field_general_audit_ws_abd82ed__create_date
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_client_package.field_general_audit_ws_abd82ed_checklist__create_date
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_client_package.field_general_audit_ws_abd82ed_item__create_date
@@ -752,7 +863,9 @@ msgstr ""
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_client_package.field_general_audit_ws_e301171_checklist__create_date
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_client_package.field_general_audit_ws_e301171_item__create_date
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_client_package.field_general_audit_ws_f5a3cee__create_date
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_client_package.field_general_audit_ws_f5a3cee_attachment_upload__create_date
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_client_package.field_general_audit_ws_f5a3cee_detail__create_date
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_client_package.field_general_audit_ws_f5a3cee_detail_line__create_date
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_client_package.field_general_audit_ws_f5a3cee_reporting_timetable__create_date
 msgid "Created on"
 msgstr ""
@@ -790,8 +903,24 @@ msgstr ""
 #. module: ssi_general_audit_worksheet_client_package
 #: model:general_audit_worksheet_type,name:ssi_general_audit_worksheet_client_package.worksheet_type_f5a3cee
 #: model:ir.actions.act_window,name:ssi_general_audit_worksheet_client_package.general_audit_ws_f5a3cee_action
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_client_package.field_general_audit_ws_f5a3cee_detail__line_ids
 #: model:ir.ui.menu,name:ssi_general_audit_worksheet_client_package.general_audit_ws_f5a3cee_menu
+#: model:res.groups,name:ssi_general_audit_worksheet_client_package.general_audit_data_collection_group
+#: model_terms:ir.ui.view,arch_db:ssi_general_audit_worksheet_client_package.general_audit_ws_f5a3cee_view_form
 msgid "Data Collection"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_client_package
+#: code:addons/ssi_general_audit_worksheet_client_package/models/ga_f5a3cee/general_audit_ws_f5a3cee_detail_line.py:0
+#, python-format
+msgid ""
+"Data Collection %(code)s is already used for account type %(account_type)s."
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_client_package
+#: code:addons/ssi_general_audit_worksheet_client_package/models/ga_f5a3cee/general_audit_ws_f5a3cee_reporting_timetable.py:0
+#, python-format
+msgid "Data Collection %s is already used in this worksheet."
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_client_package
@@ -807,6 +936,11 @@ msgid "Data Collection (f5a3cee) - Attachment Link Mixin"
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_client_package
+#: model:ir.model,name:ssi_general_audit_worksheet_client_package.model_general_audit_ws_f5a3cee_detail_line
+msgid "Data Collection (f5a3cee) - Detail Lines"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_client_package
 #: model:ir.model,name:ssi_general_audit_worksheet_client_package.model_general_audit_ws_f5a3cee_detail
 msgid "Data Collection (f5a3cee) - Details"
 msgstr ""
@@ -814,6 +948,34 @@ msgstr ""
 #. module: ssi_general_audit_worksheet_client_package
 #: model:ir.model,name:ssi_general_audit_worksheet_client_package.model_general_audit_ws_f5a3cee_reporting_timetable
 msgid "Data Collection (f5a3cee) - Reporting Timetable"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_client_package
+#: model:ir.model,name:ssi_general_audit_worksheet_client_package.model_general_audit_ws_f5a3cee_attachment_upload
+msgid "Data Collection (f5a3cee) - Upload Attachment"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_client_package
+#: model:ir.actions.act_window,name:ssi_general_audit_worksheet_client_package.general_audit_data_collection_category_action
+#: model:ir.ui.menu,name:ssi_general_audit_worksheet_client_package.general_audit_data_collection_category_menu
+msgid "Data Collection Categories"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_client_package
+#: model:res.groups,name:ssi_general_audit_worksheet_client_package.general_audit_data_collection_category_group
+msgid "Data Collection Category"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_client_package
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_client_package.field_general_audit_ws_f5a3cee_detail_line__data_collection_code
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_client_package.field_general_audit_ws_f5a3cee_reporting_timetable__data_collection_code
+msgid "Data Collection Code"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_client_package
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_client_package.field_general_audit_ws_f5a3cee_detail_line__data_collection_id
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_client_package.field_general_audit_ws_f5a3cee_reporting_timetable__data_collection_id
+msgid "Data Collection Item"
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_client_package
@@ -827,13 +989,35 @@ msgid "Data Collection is inadequate"
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_client_package
-#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_client_package.field_general_audit_ws_f5a3cee_detail__date
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_client_package.field_general_audit_ws_f5a3cee_reporting_timetable__data_collection_id
+msgid "Data Collection master item (type Others) of this line, if any."
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_client_package
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_client_package.field_general_audit_ws_f5a3cee_detail_line__data_collection_id
+msgid "Data Collection master item that this line refers to."
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_client_package
+#: model:ir.actions.act_window,name:ssi_general_audit_worksheet_client_package.general_audit_data_collection_action
+#: model:ir.ui.menu,name:ssi_general_audit_worksheet_client_package.general_audit_data_collection_menu
+#: model:ir.ui.menu,name:ssi_general_audit_worksheet_client_package.general_audit_data_collection_menu_root
+msgid "Data Collections"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_client_package
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_client_package.field_general_audit_ws_f5a3cee_detail__line_ids
+msgid "Data requested for this account type, taken from the master."
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_client_package
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_client_package.field_general_audit_ws_f5a3cee_detail_line__date
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_client_package.field_general_audit_ws_f5a3cee_reporting_timetable__date
 msgid "Date"
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_client_package
-#: model:ir.model.fields,help:ssi_general_audit_worksheet_client_package.field_general_audit_ws_f5a3cee_detail__date
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_client_package.field_general_audit_ws_f5a3cee_detail_line__date
 msgid "Date associated with the collected data or supporting documents."
 msgstr ""
 
@@ -931,6 +1115,8 @@ msgid "Determines whether to select by Account or Standard Account."
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_client_package
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_client_package.field_general_audit_data_collection__display_name
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_client_package.field_general_audit_data_collection_category__display_name
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_client_package.field_general_audit_ws_abd82ed__display_name
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_client_package.field_general_audit_ws_abd82ed_checklist__display_name
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_client_package.field_general_audit_ws_abd82ed_item__display_name
@@ -942,7 +1128,9 @@ msgstr ""
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_client_package.field_general_audit_ws_e301171_item__display_name
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_client_package.field_general_audit_ws_f5a3cee__display_name
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_client_package.field_general_audit_ws_f5a3cee_attachment_mixin__display_name
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_client_package.field_general_audit_ws_f5a3cee_attachment_upload__display_name
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_client_package.field_general_audit_ws_f5a3cee_detail__display_name
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_client_package.field_general_audit_ws_f5a3cee_detail_line__display_name
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_client_package.field_general_audit_ws_f5a3cee_reporting_timetable__display_name
 msgid "Display Name"
 msgstr ""
@@ -1036,7 +1224,13 @@ msgid "Ending Balance"
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_client_package
-#: model:ir.model.fields,help:ssi_general_audit_worksheet_client_package.field_general_audit_ws_f5a3cee_detail__attachment_ids
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_client_package.field_general_audit_ws_f5a3cee_attachment_upload__attachment_ids
+#: model_terms:ir.ui.view,arch_db:ssi_general_audit_worksheet_client_package.general_audit_ws_f5a3cee_attachment_upload_view_form
+msgid "Files"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_client_package
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_client_package.field_general_audit_ws_f5a3cee_detail_line__attachment_ids
 #: model:ir.model.fields,help:ssi_general_audit_worksheet_client_package.field_general_audit_ws_f5a3cee_reporting_timetable__attachment_ids
 msgid ""
 "Files attached as supporting evidence. Only attachments linked to this "
@@ -1044,6 +1238,13 @@ msgid ""
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_client_package
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_client_package.field_general_audit_ws_f5a3cee_attachment_upload__attachment_ids
+msgid "Files to attach to the line."
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_client_package
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_client_package.field_general_audit_data_collection__message_follower_ids
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_client_package.field_general_audit_data_collection_category__message_follower_ids
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_client_package.field_general_audit_ws_abd82ed__message_follower_ids
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_client_package.field_general_audit_ws_abd82ed_item__message_follower_ids
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_client_package.field_general_audit_ws_b5e3d9f__message_follower_ids
@@ -1055,6 +1256,8 @@ msgid "Followers"
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_client_package
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_client_package.field_general_audit_data_collection__message_channel_ids
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_client_package.field_general_audit_data_collection_category__message_channel_ids
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_client_package.field_general_audit_ws_abd82ed__message_channel_ids
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_client_package.field_general_audit_ws_abd82ed_item__message_channel_ids
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_client_package.field_general_audit_ws_b5e3d9f__message_channel_ids
@@ -1066,6 +1269,8 @@ msgid "Followers (Channels)"
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_client_package
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_client_package.field_general_audit_data_collection__message_partner_ids
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_client_package.field_general_audit_data_collection_category__message_partner_ids
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_client_package.field_general_audit_ws_abd82ed__message_partner_ids
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_client_package.field_general_audit_ws_abd82ed_item__message_partner_ids
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_client_package.field_general_audit_ws_b5e3d9f__message_partner_ids
@@ -1077,6 +1282,8 @@ msgid "Followers (Partners)"
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_client_package
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_client_package.field_general_audit_data_collection__activity_type_icon
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_client_package.field_general_audit_data_collection_category__activity_type_icon
 #: model:ir.model.fields,help:ssi_general_audit_worksheet_client_package.field_general_audit_ws_abd82ed__activity_type_icon
 #: model:ir.model.fields,help:ssi_general_audit_worksheet_client_package.field_general_audit_ws_abd82ed_item__activity_type_icon
 #: model:ir.model.fields,help:ssi_general_audit_worksheet_client_package.field_general_audit_ws_b5e3d9f__activity_type_icon
@@ -1090,6 +1297,16 @@ msgstr ""
 #. module: ssi_general_audit_worksheet_client_package
 #: model:ir.model.fields,help:ssi_general_audit_worksheet_client_package.field_general_audit_ws_f5a3cee_reporting_timetable__description
 msgid "Free-text description of the reporting deliverable."
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_client_package
+#: model:ir.model,name:ssi_general_audit_worksheet_client_package.model_general_audit_data_collection
+msgid "General Audit - Data Collection"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_client_package
+#: model:ir.model,name:ssi_general_audit_worksheet_client_package.model_general_audit_data_collection_category
+msgid "General Audit - Data Collection Category"
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_client_package
@@ -1127,6 +1344,8 @@ msgid "General Ledgers"
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_client_package
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_client_package.field_general_audit_data_collection__id
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_client_package.field_general_audit_data_collection_category__id
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_client_package.field_general_audit_ws_abd82ed__id
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_client_package.field_general_audit_ws_abd82ed_checklist__id
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_client_package.field_general_audit_ws_abd82ed_item__id
@@ -1138,12 +1357,16 @@ msgstr ""
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_client_package.field_general_audit_ws_e301171_item__id
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_client_package.field_general_audit_ws_f5a3cee__id
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_client_package.field_general_audit_ws_f5a3cee_attachment_mixin__id
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_client_package.field_general_audit_ws_f5a3cee_attachment_upload__id
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_client_package.field_general_audit_ws_f5a3cee_detail__id
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_client_package.field_general_audit_ws_f5a3cee_detail_line__id
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_client_package.field_general_audit_ws_f5a3cee_reporting_timetable__id
 msgid "ID"
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_client_package
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_client_package.field_general_audit_data_collection__activity_exception_icon
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_client_package.field_general_audit_data_collection_category__activity_exception_icon
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_client_package.field_general_audit_ws_abd82ed__activity_exception_icon
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_client_package.field_general_audit_ws_abd82ed_item__activity_exception_icon
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_client_package.field_general_audit_ws_b5e3d9f__activity_exception_icon
@@ -1155,6 +1378,8 @@ msgid "Icon"
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_client_package
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_client_package.field_general_audit_data_collection__activity_exception_icon
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_client_package.field_general_audit_data_collection_category__activity_exception_icon
 #: model:ir.model.fields,help:ssi_general_audit_worksheet_client_package.field_general_audit_ws_abd82ed__activity_exception_icon
 #: model:ir.model.fields,help:ssi_general_audit_worksheet_client_package.field_general_audit_ws_abd82ed_item__activity_exception_icon
 #: model:ir.model.fields,help:ssi_general_audit_worksheet_client_package.field_general_audit_ws_b5e3d9f__activity_exception_icon
@@ -1172,6 +1397,10 @@ msgid "Identifier Column Number"
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_client_package
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_client_package.field_general_audit_data_collection__message_needaction
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_client_package.field_general_audit_data_collection__message_unread
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_client_package.field_general_audit_data_collection_category__message_needaction
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_client_package.field_general_audit_data_collection_category__message_unread
 #: model:ir.model.fields,help:ssi_general_audit_worksheet_client_package.field_general_audit_ws_abd82ed__message_needaction
 #: model:ir.model.fields,help:ssi_general_audit_worksheet_client_package.field_general_audit_ws_abd82ed__message_unread
 #: model:ir.model.fields,help:ssi_general_audit_worksheet_client_package.field_general_audit_ws_abd82ed_item__message_needaction
@@ -1190,6 +1419,8 @@ msgid "If checked, new messages require your attention."
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_client_package
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_client_package.field_general_audit_data_collection__message_has_error
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_client_package.field_general_audit_data_collection_category__message_has_error
 #: model:ir.model.fields,help:ssi_general_audit_worksheet_client_package.field_general_audit_ws_abd82ed__message_has_error
 #: model:ir.model.fields,help:ssi_general_audit_worksheet_client_package.field_general_audit_ws_abd82ed_item__message_has_error
 #: model:ir.model.fields,help:ssi_general_audit_worksheet_client_package.field_general_audit_ws_b5e3d9f__message_has_error
@@ -1244,6 +1475,8 @@ msgid ""
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_client_package
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_client_package.field_general_audit_data_collection__message_is_follower
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_client_package.field_general_audit_data_collection_category__message_is_follower
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_client_package.field_general_audit_ws_abd82ed__message_is_follower
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_client_package.field_general_audit_ws_abd82ed_item__message_is_follower
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_client_package.field_general_audit_ws_b5e3d9f__message_is_follower
@@ -1315,6 +1548,8 @@ msgid "Label"
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_client_package
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_client_package.field_general_audit_data_collection____last_update
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_client_package.field_general_audit_data_collection_category____last_update
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_client_package.field_general_audit_ws_abd82ed____last_update
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_client_package.field_general_audit_ws_abd82ed_checklist____last_update
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_client_package.field_general_audit_ws_abd82ed_item____last_update
@@ -1326,12 +1561,16 @@ msgstr ""
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_client_package.field_general_audit_ws_e301171_item____last_update
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_client_package.field_general_audit_ws_f5a3cee____last_update
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_client_package.field_general_audit_ws_f5a3cee_attachment_mixin____last_update
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_client_package.field_general_audit_ws_f5a3cee_attachment_upload____last_update
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_client_package.field_general_audit_ws_f5a3cee_detail____last_update
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_client_package.field_general_audit_ws_f5a3cee_detail_line____last_update
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_client_package.field_general_audit_ws_f5a3cee_reporting_timetable____last_update
 msgid "Last Modified on"
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_client_package
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_client_package.field_general_audit_data_collection__write_uid
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_client_package.field_general_audit_data_collection_category__write_uid
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_client_package.field_general_audit_ws_abd82ed__write_uid
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_client_package.field_general_audit_ws_abd82ed_checklist__write_uid
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_client_package.field_general_audit_ws_abd82ed_item__write_uid
@@ -1342,12 +1581,16 @@ msgstr ""
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_client_package.field_general_audit_ws_e301171_checklist__write_uid
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_client_package.field_general_audit_ws_e301171_item__write_uid
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_client_package.field_general_audit_ws_f5a3cee__write_uid
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_client_package.field_general_audit_ws_f5a3cee_attachment_upload__write_uid
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_client_package.field_general_audit_ws_f5a3cee_detail__write_uid
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_client_package.field_general_audit_ws_f5a3cee_detail_line__write_uid
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_client_package.field_general_audit_ws_f5a3cee_reporting_timetable__write_uid
 msgid "Last Updated by"
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_client_package
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_client_package.field_general_audit_data_collection__write_date
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_client_package.field_general_audit_data_collection_category__write_date
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_client_package.field_general_audit_ws_abd82ed__write_date
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_client_package.field_general_audit_ws_abd82ed_checklist__write_date
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_client_package.field_general_audit_ws_abd82ed_item__write_date
@@ -1358,9 +1601,16 @@ msgstr ""
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_client_package.field_general_audit_ws_e301171_checklist__write_date
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_client_package.field_general_audit_ws_e301171_item__write_date
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_client_package.field_general_audit_ws_f5a3cee__write_date
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_client_package.field_general_audit_ws_f5a3cee_attachment_upload__write_date
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_client_package.field_general_audit_ws_f5a3cee_detail__write_date
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_client_package.field_general_audit_ws_f5a3cee_detail_line__write_date
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_client_package.field_general_audit_ws_f5a3cee_reporting_timetable__write_date
 msgid "Last Updated on"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_client_package
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_client_package.field_general_audit_ws_f5a3cee_detail__line_count
+msgid "Lines"
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_client_package
@@ -1370,6 +1620,8 @@ msgid "List of checklist values recorded for this worksheet."
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_client_package
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_client_package.field_general_audit_data_collection__message_main_attachment_id
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_client_package.field_general_audit_data_collection_category__message_main_attachment_id
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_client_package.field_general_audit_ws_abd82ed__message_main_attachment_id
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_client_package.field_general_audit_ws_abd82ed_item__message_main_attachment_id
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_client_package.field_general_audit_ws_b5e3d9f__message_main_attachment_id
@@ -1418,10 +1670,8 @@ msgid ""
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_client_package
-#: model:ir.model.fields,help:ssi_general_audit_worksheet_client_package.field_general_audit_ws_f5a3cee_detail__complete_ok
-msgid ""
-"Mark as completed once all required data for this account type has been "
-"collected and reviewed."
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_client_package.field_general_audit_ws_f5a3cee_detail_line__complete_ok
+msgid "Mark as completed once the data has been collected and reviewed."
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_client_package
@@ -1432,6 +1682,8 @@ msgid ""
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_client_package
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_client_package.field_general_audit_data_collection__active
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_client_package.field_general_audit_data_collection_category__active
 #: model:ir.model.fields,help:ssi_general_audit_worksheet_client_package.field_general_audit_ws_abd82ed_item__active
 #: model:ir.model.fields,help:ssi_general_audit_worksheet_client_package.field_general_audit_ws_e301171_item__active
 msgid ""
@@ -1444,6 +1696,20 @@ msgid ""
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_client_package
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_client_package.field_general_audit_data_collection__code
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_client_package.field_general_audit_data_collection_category__code
+msgid ""
+"Master data unique identifier.\n"
+"\n"
+"* Fill with '/' if You do not need unique identifier\n"
+"* Click 'Generate Code' button to automatically assign code.\n"
+"  Sequence template mush be set to perform this action\n"
+"  Only master data with '/' code will be assign automatic code"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_client_package
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_client_package.field_general_audit_data_collection__message_has_error
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_client_package.field_general_audit_data_collection_category__message_has_error
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_client_package.field_general_audit_ws_abd82ed__message_has_error
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_client_package.field_general_audit_ws_abd82ed_item__message_has_error
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_client_package.field_general_audit_ws_b5e3d9f__message_has_error
@@ -1455,6 +1721,8 @@ msgid "Message Delivery error"
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_client_package
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_client_package.field_general_audit_data_collection__message_ids
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_client_package.field_general_audit_data_collection_category__message_ids
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_client_package.field_general_audit_ws_abd82ed__message_ids
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_client_package.field_general_audit_ws_abd82ed_item__message_ids
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_client_package.field_general_audit_ws_b5e3d9f__message_ids
@@ -1466,6 +1734,8 @@ msgid "Messages"
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_client_package
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_client_package.field_general_audit_data_collection__my_activity_date_deadline
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_client_package.field_general_audit_data_collection_category__my_activity_date_deadline
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_client_package.field_general_audit_ws_abd82ed__my_activity_date_deadline
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_client_package.field_general_audit_ws_abd82ed_item__my_activity_date_deadline
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_client_package.field_general_audit_ws_b5e3d9f__my_activity_date_deadline
@@ -1477,9 +1747,28 @@ msgid "My Activity Deadline"
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_client_package
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_client_package.field_general_audit_data_collection__name
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_client_package.field_general_audit_data_collection_category__name
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_client_package.field_general_audit_ws_abd82ed_item__name
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_client_package.field_general_audit_ws_e301171_item__name
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_client_package.field_general_audit_ws_f5a3cee_detail_line__name
+#: model_terms:ir.ui.view,arch_db:ssi_general_audit_worksheet_client_package.general_audit_ws_f5a3cee_view_form
 msgid "Name"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_client_package
+#: code:addons/ssi_general_audit_worksheet_client_package/models/ga_f5a3cee/general_audit_ws_f5a3cee_detail_line.py:0
+#, python-format
+msgid ""
+"Name \"%(name)s\" is already used in this detail for account type "
+"%(account_type)s."
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_client_package
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_client_package.field_general_audit_ws_f5a3cee_detail_line__name
+msgid ""
+"Name of the requested data. Filled from the Data Collection item, or entered"
+" manually when there is none."
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_client_package
@@ -1501,6 +1790,8 @@ msgid "Need Validation"
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_client_package
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_client_package.field_general_audit_data_collection__activity_date_deadline
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_client_package.field_general_audit_data_collection_category__activity_date_deadline
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_client_package.field_general_audit_ws_abd82ed__activity_date_deadline
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_client_package.field_general_audit_ws_abd82ed_item__activity_date_deadline
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_client_package.field_general_audit_ws_b5e3d9f__activity_date_deadline
@@ -1512,6 +1803,8 @@ msgid "Next Activity Deadline"
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_client_package
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_client_package.field_general_audit_data_collection__activity_summary
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_client_package.field_general_audit_data_collection_category__activity_summary
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_client_package.field_general_audit_ws_abd82ed__activity_summary
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_client_package.field_general_audit_ws_abd82ed_item__activity_summary
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_client_package.field_general_audit_ws_b5e3d9f__activity_summary
@@ -1523,6 +1816,8 @@ msgid "Next Activity Summary"
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_client_package
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_client_package.field_general_audit_data_collection__activity_type_id
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_client_package.field_general_audit_data_collection_category__activity_type_id
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_client_package.field_general_audit_ws_abd82ed__activity_type_id
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_client_package.field_general_audit_ws_abd82ed_item__activity_type_id
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_client_package.field_general_audit_ws_b5e3d9f__activity_type_id
@@ -1543,6 +1838,8 @@ msgid "Next Approvals"
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_client_package
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_client_package.field_general_audit_data_collection__note
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_client_package.field_general_audit_data_collection_category__note
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_client_package.field_general_audit_ws_abd82ed__note
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_client_package.field_general_audit_ws_abd82ed_item__note
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_client_package.field_general_audit_ws_b5e3d9f__note
@@ -1563,6 +1860,8 @@ msgid "Notes and observations from the review of the worksheet."
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_client_package
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_client_package.field_general_audit_data_collection__message_needaction_counter
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_client_package.field_general_audit_data_collection_category__message_needaction_counter
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_client_package.field_general_audit_ws_abd82ed__message_needaction_counter
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_client_package.field_general_audit_ws_abd82ed_item__message_needaction_counter
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_client_package.field_general_audit_ws_b5e3d9f__message_needaction_counter
@@ -1574,6 +1873,18 @@ msgid "Number of Actions"
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_client_package
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_client_package.field_general_audit_ws_f5a3cee_detail__line_done_count
+msgid "Number of completed data lines of this detail."
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_client_package
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_client_package.field_general_audit_ws_f5a3cee_detail__line_count
+msgid "Number of data lines of this detail."
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_client_package
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_client_package.field_general_audit_data_collection__message_has_error_counter
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_client_package.field_general_audit_data_collection_category__message_has_error_counter
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_client_package.field_general_audit_ws_abd82ed__message_has_error_counter
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_client_package.field_general_audit_ws_abd82ed_item__message_has_error_counter
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_client_package.field_general_audit_ws_b5e3d9f__message_has_error_counter
@@ -1585,6 +1896,8 @@ msgid "Number of errors"
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_client_package
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_client_package.field_general_audit_data_collection__message_needaction_counter
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_client_package.field_general_audit_data_collection_category__message_needaction_counter
 #: model:ir.model.fields,help:ssi_general_audit_worksheet_client_package.field_general_audit_ws_abd82ed__message_needaction_counter
 #: model:ir.model.fields,help:ssi_general_audit_worksheet_client_package.field_general_audit_ws_abd82ed_item__message_needaction_counter
 #: model:ir.model.fields,help:ssi_general_audit_worksheet_client_package.field_general_audit_ws_b5e3d9f__message_needaction_counter
@@ -1596,6 +1909,8 @@ msgid "Number of messages which requires an action"
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_client_package
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_client_package.field_general_audit_data_collection__message_has_error_counter
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_client_package.field_general_audit_data_collection_category__message_has_error_counter
 #: model:ir.model.fields,help:ssi_general_audit_worksheet_client_package.field_general_audit_ws_abd82ed__message_has_error_counter
 #: model:ir.model.fields,help:ssi_general_audit_worksheet_client_package.field_general_audit_ws_abd82ed_item__message_has_error_counter
 #: model:ir.model.fields,help:ssi_general_audit_worksheet_client_package.field_general_audit_ws_b5e3d9f__message_has_error_counter
@@ -1607,6 +1922,8 @@ msgid "Number of messages with delivery error"
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_client_package
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_client_package.field_general_audit_data_collection__message_unread_counter
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_client_package.field_general_audit_data_collection_category__message_unread_counter
 #: model:ir.model.fields,help:ssi_general_audit_worksheet_client_package.field_general_audit_ws_abd82ed__message_unread_counter
 #: model:ir.model.fields,help:ssi_general_audit_worksheet_client_package.field_general_audit_ws_abd82ed_item__message_unread_counter
 #: model:ir.model.fields,help:ssi_general_audit_worksheet_client_package.field_general_audit_ws_b5e3d9f__message_unread_counter
@@ -1668,8 +1985,14 @@ msgid "Ordering number controlling the display order (lower comes first)."
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_client_package
+#: model:ir.model.fields.selection,name:ssi_general_audit_worksheet_client_package.selection__general_audit_data_collection__type__others
 #: model_terms:ir.ui.view,arch_db:ssi_general_audit_worksheet_client_package.general_audit_ws_f5a3cee_view_form
 msgid "Others"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_client_package
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_client_package.field_general_audit_ws_f5a3cee_detail_line__worksheet_id
+msgid "Parent Data Collection worksheet."
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_client_package
@@ -1679,6 +2002,11 @@ msgstr ""
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_client_package.field_general_audit_ws_e301171__parent_type_id
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_client_package.field_general_audit_ws_f5a3cee__parent_type_id
 msgid "Parent Type"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_client_package
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_client_package.field_general_audit_ws_f5a3cee_detail_line__detail_id
+msgid "Parent detail (account type). Deleting it removes its lines."
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_client_package
@@ -1842,15 +2170,15 @@ msgstr ""
 
 #. module: ssi_general_audit_worksheet_client_package
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_client_package.field_general_audit_ws_f5a3cee__reporting_timetable_ids
-#: model_terms:ir.ui.view,arch_db:ssi_general_audit_worksheet_client_package.general_audit_ws_f5a3cee_view_form
 msgid "Reporting Timetable"
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_client_package
 #: model:ir.model.fields,help:ssi_general_audit_worksheet_client_package.field_general_audit_ws_f5a3cee__reporting_timetable_ids
 msgid ""
-"Reporting deliverable lines entered manually by the user. Unlike "
-"``detail_ids``, these are not auto-populated."
+"Reporting deliverable and other data lines. Lines linked to a Data "
+"Collection master item are populated; the others are entered manually by the"
+" user."
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_client_package
@@ -1863,6 +2191,8 @@ msgid "Responsible"
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_client_package
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_client_package.field_general_audit_data_collection__activity_user_id
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_client_package.field_general_audit_data_collection_category__activity_user_id
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_client_package.field_general_audit_ws_abd82ed__activity_user_id
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_client_package.field_general_audit_ws_abd82ed_item__activity_user_id
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_client_package.field_general_audit_ws_b5e3d9f__activity_user_id
@@ -1931,6 +2261,12 @@ msgstr ""
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_client_package.field_general_audit_ws_e301171__reviewer_id
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_client_package.field_general_audit_ws_f5a3cee__reviewer_id
 msgid "Reviewer"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_client_package
+#: code:addons/ssi_general_audit_worksheet_client_package/wizards/general_audit_ws_f5a3cee_attachment_upload.py:0
+#, python-format
+msgid "Save the line first, then upload the files."
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_client_package
@@ -2052,17 +2388,21 @@ msgstr ""
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_client_package.field_general_audit_ws_e301171__state
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_client_package.field_general_audit_ws_f5a3cee__state
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_client_package.field_general_audit_ws_f5a3cee_detail__state
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_client_package.field_general_audit_ws_f5a3cee_detail_line__state
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_client_package.field_general_audit_ws_f5a3cee_reporting_timetable__state
 msgid "State"
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_client_package
 #: model:ir.model.fields,help:ssi_general_audit_worksheet_client_package.field_general_audit_ws_f5a3cee_detail__state
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_client_package.field_general_audit_ws_f5a3cee_detail_line__state
 #: model:ir.model.fields,help:ssi_general_audit_worksheet_client_package.field_general_audit_ws_f5a3cee_reporting_timetable__state
 msgid "State of the parent worksheet."
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_client_package
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_client_package.field_general_audit_data_collection__activity_state
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_client_package.field_general_audit_data_collection_category__activity_state
 #: model:ir.model.fields,help:ssi_general_audit_worksheet_client_package.field_general_audit_ws_abd82ed__activity_state
 #: model:ir.model.fields,help:ssi_general_audit_worksheet_client_package.field_general_audit_ws_abd82ed_item__activity_state
 #: model:ir.model.fields,help:ssi_general_audit_worksheet_client_package.field_general_audit_ws_b5e3d9f__activity_state
@@ -2101,6 +2441,11 @@ msgid "Subledgers"
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_client_package
+#: model_terms:ir.ui.view,arch_db:ssi_general_audit_worksheet_client_package.general_audit_ws_f5a3cee_attachment_upload_view_form
+msgid "Submit"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_client_package
 #: model:general_audit_ws_abd82ed.item,name:ssi_general_audit_worksheet_client_package.general_audit_ws_abd82ed_item_6_cce0dea4
 msgid "Target Date the Opinion Is Expected to Be Issued"
 msgstr ""
@@ -2115,6 +2460,17 @@ msgstr ""
 #. module: ssi_general_audit_worksheet_client_package
 #: model:general_audit_ws_e301171.item,name:ssi_general_audit_worksheet_client_package.general_audit_ws_e301171_item_1_b8f3f8a0
 msgid "Test Completeness of Journal-Entry Data-Recalcuting Trial Balance"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_client_package
+#: model:general_audit_data_collection_category,name:ssi_general_audit_worksheet_client_package.general_audit_data_collection_category_2_9d2f7b13
+msgid "Third-Party Data (External)"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_client_package
+#: code:addons/ssi_general_audit_worksheet_client_package/wizards/general_audit_ws_f5a3cee_attachment_upload.py:0
+#, python-format
+msgid "This wizard must be opened from a data line."
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_client_package
@@ -2164,6 +2520,7 @@ msgid ""
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_client_package
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_client_package.field_general_audit_data_collection__type
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_client_package.field_general_audit_ws_abd82ed__type_id
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_client_package.field_general_audit_ws_b5e3d9f__type_id
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_client_package.field_general_audit_ws_d209914__type_id
@@ -2173,6 +2530,8 @@ msgid "Type"
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_client_package
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_client_package.field_general_audit_data_collection__activity_exception_decoration
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_client_package.field_general_audit_data_collection_category__activity_exception_decoration
 #: model:ir.model.fields,help:ssi_general_audit_worksheet_client_package.field_general_audit_ws_abd82ed__activity_exception_decoration
 #: model:ir.model.fields,help:ssi_general_audit_worksheet_client_package.field_general_audit_ws_abd82ed_item__activity_exception_decoration
 #: model:ir.model.fields,help:ssi_general_audit_worksheet_client_package.field_general_audit_ws_b5e3d9f__activity_exception_decoration
@@ -2189,6 +2548,8 @@ msgid "Unpredictability in Journal-entry Testing"
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_client_package
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_client_package.field_general_audit_data_collection__message_unread
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_client_package.field_general_audit_data_collection_category__message_unread
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_client_package.field_general_audit_ws_abd82ed__message_unread
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_client_package.field_general_audit_ws_abd82ed_item__message_unread
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_client_package.field_general_audit_ws_b5e3d9f__message_unread
@@ -2200,6 +2561,8 @@ msgid "Unread Messages"
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_client_package
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_client_package.field_general_audit_data_collection__message_unread_counter
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_client_package.field_general_audit_data_collection_category__message_unread_counter
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_client_package.field_general_audit_ws_abd82ed__message_unread_counter
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_client_package.field_general_audit_ws_abd82ed_item__message_unread_counter
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_client_package.field_general_audit_ws_b5e3d9f__message_unread_counter
@@ -2208,6 +2571,12 @@ msgstr ""
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_client_package.field_general_audit_ws_e301171_item__message_unread_counter
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_client_package.field_general_audit_ws_f5a3cee__message_unread_counter
 msgid "Unread Messages Counter"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_client_package
+#: model:ir.actions.act_window,name:ssi_general_audit_worksheet_client_package.general_audit_ws_f5a3cee_attachment_upload_action
+#: model_terms:ir.ui.view,arch_db:ssi_general_audit_worksheet_client_package.general_audit_ws_f5a3cee_view_form
+msgid "Upload Attachment"
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_client_package
@@ -2273,6 +2642,8 @@ msgid "Viewer"
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_client_package
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_client_package.field_general_audit_data_collection__website_message_ids
+#: model:ir.model.fields,field_description:ssi_general_audit_worksheet_client_package.field_general_audit_data_collection_category__website_message_ids
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_client_package.field_general_audit_ws_abd82ed__website_message_ids
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_client_package.field_general_audit_ws_abd82ed_item__website_message_ids
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_client_package.field_general_audit_ws_b5e3d9f__website_message_ids
@@ -2284,6 +2655,8 @@ msgid "Website Messages"
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_client_package
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_client_package.field_general_audit_data_collection__website_message_ids
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_client_package.field_general_audit_data_collection_category__website_message_ids
 #: model:ir.model.fields,help:ssi_general_audit_worksheet_client_package.field_general_audit_ws_abd82ed__website_message_ids
 #: model:ir.model.fields,help:ssi_general_audit_worksheet_client_package.field_general_audit_ws_abd82ed_item__website_message_ids
 #: model:ir.model.fields,help:ssi_general_audit_worksheet_client_package.field_general_audit_ws_b5e3d9f__website_message_ids
@@ -2310,4 +2683,9 @@ msgstr ""
 #: model:ir.model.fields,help:ssi_general_audit_worksheet_client_package.field_general_audit_ws_e301171__type_id
 #: model:ir.model.fields,help:ssi_general_audit_worksheet_client_package.field_general_audit_ws_f5a3cee__type_id
 msgid "Worksheet type that determines behavior, items, and conclusions."
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_client_package
+#: model_terms:ir.ui.view,arch_db:ssi_general_audit_worksheet_client_package.general_audit_ws_f5a3cee_attachment_upload_view_form
+msgid "or"
 msgstr ""
