@@ -824,6 +824,15 @@ msgid "Fraud Risk x Significant Risk x ROMM Risk Initial"
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_romm
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_romm.field_general_audit_ws_c165170__note
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_romm.field_general_audit_ws_d66d87a__note
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_romm.field_general_audit_ws_de417a6__note
+msgid ""
+"Free-form note attached to the document, used for any additional remarks or "
+"information related to the transaction."
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_romm
 #: model_terms:ir.ui.view,arch_db:ssi_general_audit_worksheet_romm.res_config_settings_view_form
 msgid "General Audit"
 msgstr ""
@@ -1395,6 +1404,18 @@ msgstr ""
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_romm.field_general_audit_ws_d66d87a__partner_id
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_romm.field_general_audit_ws_de417a6__partner_id
 msgid "Partner"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_romm
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_romm.field_general_audit_ws_c165170__company_partner_id
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_romm.field_general_audit_ws_d66d87a__company_partner_id
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_romm.field_general_audit_ws_de417a6__company_partner_id
+msgid ""
+"Partner (res.partner) linked to the document's company\n"
+"\n"
+"* Automatically follows 'company_id.partner_id'.\n"
+"* Used for reporting/printing documents that require the company-level\n"
+"  partner instead of the responsible user's partner."
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_romm
@@ -2186,6 +2207,18 @@ msgstr ""
 #. module: ssi_general_audit_worksheet_romm
 #: model:ir.model.fields,help:ssi_general_audit_worksheet_romm.field_general_audit_romm_scoring_config__fr_weight_medium
 msgid "Weight applied when the account is not impacted by fraud risk."
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_romm
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_romm.field_general_audit_ws_c165170__state
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_romm.field_general_audit_ws_d66d87a__state
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_romm.field_general_audit_ws_de417a6__state
+msgid ""
+"Workflow status of the document\n"
+"\n"
+"* 'draft' is the only base state provided by this mixin.\n"
+"* Other states (e.g. confirmed, done, cancel) are added by derivative mixin\n"
+"  modules (such as confirm/done/cancel mixins) via 'selection_add'."
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_romm
