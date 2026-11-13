@@ -259,6 +259,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit_adjustment__general_audit_id
 #: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit_closing_line__general_audit_id
 #: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit_computation__general_audit_id
+#: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit_conclusion_line_mixin__general_audit_id
 #: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit_detail__general_audit_id
 #: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit_group_adjustment__general_audit_id
 #: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit_group_detail__general_audit_id
@@ -2153,6 +2154,13 @@ msgid ""
 msgstr ""
 
 #. module: ssi_general_audit
+#: model:ir.model.fields,help:ssi_general_audit.field_general_audit_conclusion_line_mixin__locked_ok
+msgid ""
+"Checked when fewer than two worksheets exist: the summary then follows the "
+"worksheet and cannot be edited."
+msgstr ""
+
+#. module: ssi_general_audit
 #: model:ir.model.fields,field_description:ssi_general_audit.field_mixin_checklist__checklist_ids
 #: model:ir.ui.menu,name:ssi_general_audit.menu_configuration_checklist
 #: model_terms:ir.ui.view,arch_db:ssi_general_audit.checklist_page
@@ -2689,6 +2697,21 @@ msgstr ""
 #: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit_worksheet__conclusion
 #: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit_worksheet_mixin__conclusion
 msgid "Conclusion Additional Explanation"
+msgstr ""
+
+#. module: ssi_general_audit
+#: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit_worksheet_type__conclusion_source_type_ids
+msgid "Conclusion Source Types"
+msgstr ""
+
+#. module: ssi_general_audit
+#: model_terms:ir.ui.view,arch_db:ssi_general_audit.general_audit_worksheet_type_view_form
+msgid "Conclusion Sources"
+msgstr ""
+
+#. module: ssi_general_audit
+#: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit_conclusion_line_mixin__conclusion
+msgid "Conclusion Summary"
 msgstr ""
 
 #. module: ssi_general_audit
@@ -3364,6 +3387,8 @@ msgstr ""
 #: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit_closing_type__display_name
 #: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit_closing_type_mapping__display_name
 #: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit_computation__display_name
+#: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit_conclusion_line_mixin__display_name
+#: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit_conclusion_mixin__display_name
 #: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit_detail__display_name
 #: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit_evidence__display_name
 #: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit_group_adjustment__display_name
@@ -4126,6 +4151,19 @@ msgid "Fraud"
 msgstr ""
 
 #. module: ssi_general_audit
+#: model:ir.model.fields,help:ssi_general_audit.field_client_account_mapping__note
+#: model:ir.model.fields,help:ssi_general_audit.field_client_adjusting_coa__note
+#: model:ir.model.fields,help:ssi_general_audit.field_client_adjustment_entry__note
+#: model:ir.model.fields,help:ssi_general_audit.field_client_trial_balance__note
+#: model:ir.model.fields,help:ssi_general_audit.field_general_audit__note
+#: model:ir.model.fields,help:ssi_general_audit.field_general_audit_worksheet__note
+#: model:ir.model.fields,help:ssi_general_audit.field_general_audit_worksheet_mixin__note
+msgid ""
+"Free-form note attached to the document, used for any additional remarks or "
+"information related to the transaction."
+msgstr ""
+
+#. module: ssi_general_audit
 #: model:ir.model.fields,help:ssi_general_audit.field_client_adjustment_entry_detail__name
 msgid "Free-text description of the adjustment line."
 msgstr ""
@@ -4169,6 +4207,16 @@ msgstr ""
 #. module: ssi_general_audit
 #: model:ir.model,name:ssi_general_audit.model_general_audit_closing_type_mapping
 msgid "General Audit Closing Type Mapping"
+msgstr ""
+
+#. module: ssi_general_audit
+#: model:ir.model,name:ssi_general_audit.model_general_audit_conclusion_line_mixin
+msgid "General Audit Conclusion Line Mixin"
+msgstr ""
+
+#. module: ssi_general_audit
+#: model:ir.model,name:ssi_general_audit.model_general_audit_conclusion_mixin
+msgid "General Audit Conclusion Mixin"
 msgstr ""
 
 #. module: ssi_general_audit
@@ -4282,6 +4330,11 @@ msgid "General Audit to which this worksheet belongs."
 msgstr ""
 
 #. module: ssi_general_audit
+#: model:ir.model.fields,help:ssi_general_audit.field_general_audit_conclusion_line_mixin__general_audit_id
+msgid "General Audit whose worksheets are summarised by this line."
+msgstr ""
+
+#. module: ssi_general_audit
 #: model:ir.actions.act_window,name:ssi_general_audit.general_audit_action
 #: model:ir.ui.menu,name:ssi_general_audit.general_audit_sub_menu
 msgid "General Audits"
@@ -4387,6 +4440,8 @@ msgstr ""
 #: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit_closing_type__id
 #: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit_closing_type_mapping__id
 #: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit_computation__id
+#: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit_conclusion_line_mixin__id
+#: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit_conclusion_mixin__id
 #: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit_detail__id
 #: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit_evidence__id
 #: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit_group_adjustment__id
@@ -5192,6 +5247,8 @@ msgstr ""
 #: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit_closing_type____last_update
 #: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit_closing_type_mapping____last_update
 #: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit_computation____last_update
+#: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit_conclusion_line_mixin____last_update
+#: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit_conclusion_mixin____last_update
 #: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit_detail____last_update
 #: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit_evidence____last_update
 #: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit_group_adjustment____last_update
@@ -6278,6 +6335,7 @@ msgid "Number of Finished Worksheets"
 msgstr ""
 
 #. module: ssi_general_audit
+#: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit_conclusion_line_mixin__worksheet_count
 #: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit_worksheet_summary__num_of_worksheet
 msgid "Number of Worksheets"
 msgstr ""
@@ -6391,6 +6449,11 @@ msgid "Number of messages with delivery error"
 msgstr ""
 
 #. module: ssi_general_audit
+#: model:ir.model.fields,help:ssi_general_audit.field_general_audit_conclusion_line_mixin__worksheet_count
+msgid "Number of open or done worksheets of this type."
+msgstr ""
+
+#. module: ssi_general_audit
 #: model:ir.model.fields,help:ssi_general_audit.field_checklist_option__message_unread_counter
 #: model:ir.model.fields,help:ssi_general_audit.field_checklist_option_set__message_unread_counter
 #: model:ir.model.fields,help:ssi_general_audit.field_client_account__message_unread_counter
@@ -6444,6 +6507,11 @@ msgstr ""
 #. module: ssi_general_audit
 #: model_terms:ir.ui.view,arch_db:ssi_general_audit.general_audit_view_form
 msgid "Open Worksheet"
+msgstr ""
+
+#. module: ssi_general_audit
+#: model:ir.model.fields,help:ssi_general_audit.field_general_audit_conclusion_line_mixin__worksheet_ids
+msgid "Open or done worksheets of this type in the same audit."
 msgstr ""
 
 #. module: ssi_general_audit
@@ -6884,6 +6952,22 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:ssi_general_audit.client_trial_balance_view_search
 #: model_terms:ir.ui.view,arch_db:ssi_general_audit.general_audit_worksheet_mixin_view_search
 msgid "Partner"
+msgstr ""
+
+#. module: ssi_general_audit
+#: model:ir.model.fields,help:ssi_general_audit.field_client_account_mapping__company_partner_id
+#: model:ir.model.fields,help:ssi_general_audit.field_client_adjusting_coa__company_partner_id
+#: model:ir.model.fields,help:ssi_general_audit.field_client_adjustment_entry__company_partner_id
+#: model:ir.model.fields,help:ssi_general_audit.field_client_trial_balance__company_partner_id
+#: model:ir.model.fields,help:ssi_general_audit.field_general_audit__company_partner_id
+#: model:ir.model.fields,help:ssi_general_audit.field_general_audit_worksheet__company_partner_id
+#: model:ir.model.fields,help:ssi_general_audit.field_general_audit_worksheet_mixin__company_partner_id
+msgid ""
+"Partner (res.partner) linked to the document's company\n"
+"\n"
+"* Automatically follows 'company_id.partner_id'.\n"
+"* Used for reporting/printing documents that require the company-level\n"
+"  partner instead of the responsible user's partner."
 msgstr ""
 
 #. module: ssi_general_audit
@@ -7711,6 +7795,11 @@ msgid "Sequence"
 msgstr ""
 
 #. module: ssi_general_audit
+#: model:ir.model.fields,help:ssi_general_audit.field_general_audit_conclusion_line_mixin__type_sequence
+msgid "Sequence of the worksheet type. Used to order the lines."
+msgstr ""
+
+#. module: ssi_general_audit
 #: model:ir.model.fields,help:ssi_general_audit.field_client_account_mapping_detail__sequence
 msgid "Sequence taken from the client account for ordering."
 msgstr ""
@@ -8018,6 +8107,11 @@ msgid "Sum of debit amounts from all linked adjustment entries."
 msgstr ""
 
 #. module: ssi_general_audit
+#: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit_conclusion_line_mixin__locked_ok
+msgid "Summary Locked"
+msgstr ""
+
+#. module: ssi_general_audit
 #: model:ir.model.fields,help:ssi_general_audit.field_general_audit__group_adjustment_ids
 msgid "Summary of adjustments by account group."
 msgstr ""
@@ -8030,6 +8124,14 @@ msgstr ""
 #. module: ssi_general_audit
 #: model:ir.model.fields,help:ssi_general_audit.field_general_audit__account_adjustment_ids
 msgid "Summary of adjustments by account."
+msgstr ""
+
+#. module: ssi_general_audit
+#: model:ir.model.fields,help:ssi_general_audit.field_general_audit_conclusion_line_mixin__conclusion
+msgid ""
+"Summary of the conclusions of the worksheets of this type. Follows the "
+"worksheet when only one exists, otherwise typed by hand. A copied conclusion"
+" is cleared when a second worksheet appears."
 msgstr ""
 
 #. module: ssi_general_audit
@@ -8583,6 +8685,11 @@ msgid "Type Of Misstatement"
 msgstr ""
 
 #. module: ssi_general_audit
+#: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit_conclusion_line_mixin__type_sequence
+msgid "Type Sequence"
+msgstr ""
+
+#. module: ssi_general_audit
 #: model:ir.model.fields,help:ssi_general_audit.field_client_adjustment_entry__adjustment_type
 msgid "Type of adjustment: proposed by auditor or booked by client."
 msgstr ""
@@ -8914,6 +9021,22 @@ msgid "Windup & Reporting"
 msgstr ""
 
 #. module: ssi_general_audit
+#: model:ir.model.fields,help:ssi_general_audit.field_client_account_mapping__state
+#: model:ir.model.fields,help:ssi_general_audit.field_client_adjusting_coa__state
+#: model:ir.model.fields,help:ssi_general_audit.field_client_adjustment_entry__state
+#: model:ir.model.fields,help:ssi_general_audit.field_client_trial_balance__state
+#: model:ir.model.fields,help:ssi_general_audit.field_general_audit__state
+#: model:ir.model.fields,help:ssi_general_audit.field_general_audit_worksheet__state
+#: model:ir.model.fields,help:ssi_general_audit.field_general_audit_worksheet_mixin__state
+msgid ""
+"Workflow status of the document\n"
+"\n"
+"* 'draft' is the only base state provided by this mixin.\n"
+"* Other states (e.g. confirmed, done, cancel) are added by derivative mixin\n"
+"  modules (such as confirm/done/cancel mixins) via 'selection_add'."
+msgstr ""
+
+#. module: ssi_general_audit
 #: model:trial_balance_computation_item,name:ssi_general_audit.trial_balance_computation_item_4_c118c3ed
 msgid "Working Capital"
 msgstr ""
@@ -8953,6 +9076,11 @@ msgid "Worksheet Summary"
 msgstr ""
 
 #. module: ssi_general_audit
+#: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit_conclusion_line_mixin__type_id
+msgid "Worksheet Type"
+msgstr ""
+
+#. module: ssi_general_audit
 #: model:ir.actions.act_window,name:ssi_general_audit.general_audit_worksheet_type_category_action
 msgid "Worksheet Type Categories"
 msgstr ""
@@ -8980,6 +9108,11 @@ msgid "Worksheet type category/group for this specific worksheet."
 msgstr ""
 
 #. module: ssi_general_audit
+#: model:ir.model.fields,help:ssi_general_audit.field_general_audit_conclusion_line_mixin__type_id
+msgid "Worksheet type summarised by this line."
+msgstr ""
+
+#. module: ssi_general_audit
 #: model:ir.model.fields,help:ssi_general_audit.field_general_audit_worksheet_mixin__type_id
 msgid "Worksheet type that determines behavior, items, and conclusions."
 msgstr ""
@@ -8987,6 +9120,13 @@ msgstr ""
 #. module: ssi_general_audit
 #: model:ir.model.fields,help:ssi_general_audit.field_general_audit_worksheet_conclusion__type_id
 msgid "Worksheet type that this conclusion applies to."
+msgstr ""
+
+#. module: ssi_general_audit
+#: model:ir.model.fields,help:ssi_general_audit.field_general_audit_worksheet_type__conclusion_source_type_ids
+msgid ""
+"Worksheet types summarised in the Conclusions tab of a memorandum of this "
+"type."
 msgstr ""
 
 #. module: ssi_general_audit
@@ -9011,6 +9151,7 @@ msgstr ""
 
 #. module: ssi_general_audit
 #: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit__worksheet_ids
+#: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit_conclusion_line_mixin__worksheet_ids
 #: model:ir.model.fields,field_description:ssi_general_audit.field_general_audit_worksheet_summary__worksheet_ids
 #: model_terms:ir.ui.view,arch_db:ssi_general_audit.general_audit_view_form
 #: model_terms:ir.ui.view,arch_db:ssi_general_audit.general_audit_worksheet_summary_view_form
