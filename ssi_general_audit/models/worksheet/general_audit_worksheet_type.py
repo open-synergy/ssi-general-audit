@@ -98,3 +98,12 @@ class GeneralAuditWorksheetType(models.Model):
         column2="type_id",
         help="Worksheet types that should follow this type in the audit process.",
     )
+    conclusion_source_type_ids = fields.Many2many(
+        string="Conclusion Source Types",
+        comodel_name="general_audit_worksheet_type",
+        relation="rel_worksheet_type_2_conclusion_source",
+        column1="type_id",
+        column2="source_type_id",
+        help="Worksheet types summarised in the Conclusions tab of a "
+        "memorandum of this type.",
+    )

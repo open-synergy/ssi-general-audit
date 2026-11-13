@@ -1,0 +1,70 @@
+options:
+  auto_refresh: true
+
+scenarios:
+  - name: "worksheet type - conclusion source types are stored"
+    steps:
+      - step: "Create the source worksheet type"
+        action: "create"
+        model: "general_audit_worksheet_type"
+        save_as: "source_type"
+        values:
+          name: "Test Conclusion Source Type"
+          code: "/"
+          model_name: "general_audit_worksheet_tester"
+
+      - step: "Create the memorandum worksheet type listing the source type"
+        action: "create"
+        model: "general_audit_worksheet_type"
+        save_as: "memo_type"
+        values:
+          name: "Test Conclusion Memorandum Type"
+          code: "/"
+          model_name: "general_audit_worksheet_tester"
+          conclusion_source_type_ids: "EVAL: [(6, 0, [registry['source_type'].id])]"
+
+      - step: "Assert the memorandum type lists exactly the source type"
+        action: "assert"
+        target: "memo_type"
+        asserts:
+          conclusion_source_type_ids:
+            type: "m2m"
+            check: "exact"
+            expected_records:
+              - "REC: source_type"
+
+  - name: "worksheet type - conclusion source types can be emptied"
+    steps:
+      - step: "Create the source worksheet type"
+        action: "create"
+        model: "general_audit_worksheet_type"
+        save_as: "source_type"
+        values:
+          name: "Test Conclusion Source Type"
+          code: "/"
+          model_name: "general_audit_worksheet_tester"
+
+      - step: "Create the memorandum worksheet type listing the source type"
+        action: "create"
+        model: "general_audit_worksheet_type"
+        save_as: "memo_type"
+        values:
+          name: "Test Conclusion Memorandum Type"
+          code: "/"
+          model_name: "general_audit_worksheet_tester"
+          conclusion_source_type_ids: "EVAL: [(6, 0, [registry['source_type'].id])]"
+
+      - step: "Clear the list"
+        action: "write"
+        target: "memo_type"
+        values:
+          conclusion_source_type_ids: "EVAL: [(5, 0, 0)]"
+
+      - step: "Assert the list is empty and the source type is untouched"
+        action: "assert"
+        target: "memo_type"
+        asserts:
+          conclusion_source_type_ids:
+            type: "m2m"
+            check: "count"
+            expected_count: 0

@@ -49,11 +49,14 @@ class GeneralAuditWSa8c54f3(models.Model):
     _description = "Audit Final Memorandum (a8c54f3)"
     _inherit = [
         "general_audit_worksheet_mixin",
+        "general_audit_conclusion_mixin",
         "mixin.checklist",
     ]
     _type_xml_id = "ssi_general_audit_worksheet_final_report." "worksheet_type_a8c54f3"
     _checklist_model_name = "general_audit_ws_a8c54f3.checklist"
     _item_model_name = "general_audit_ws_a8c54f3.item"
+    _conclusion_line_model = "general_audit_ws_a8c54f3.conclusion"
+    _conclusion_line_owner_field = "worksheet_id"
     _checklist_create_page = False
 
     checklist_ids = fields.One2many(
@@ -2459,6 +2462,13 @@ class GeneralAuditWSa8c54f3(models.Model):
         ),
     )
 
+    conclusion_line_ids = fields.One2many(
+        string="Conclusions",
+        comodel_name="general_audit_ws_a8c54f3.conclusion",
+        inverse_name="worksheet_id",
+        help="Conclusion summary per worksheet type. Created by Reload Links.",
+    )
+
     def action_reload_links(self):
         """Recompute every Link field (``link_N_id`` and ``link_N_ids``).
 
@@ -2525,6 +2535,7 @@ class GeneralAuditWSa8c54f3(models.Model):
         # method in ssi_general_audit_worksheet_review (which already
         # depends on this module) -- see that module's a8c54f3 extension.
         self._compute_link_48_id()
+        self._reload_conclusion_lines()
 
     def _get_custom_field_labels(self):
         """Map each Link field to its KKA (working paper) display name.
