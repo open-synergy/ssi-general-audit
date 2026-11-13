@@ -878,6 +878,15 @@ msgid "Fraud Risk"
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_inherent_risk
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_inherent_risk.field_general_audit_ws_a418d89__note
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_inherent_risk.field_general_audit_ws_bfb6dae__note
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_inherent_risk.field_general_audit_ws_c16abd7__note
+msgid ""
+"Free-form note attached to the document, used for any additional remarks or "
+"information related to the transaction."
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_inherent_risk
 #: model:ir.model,name:ssi_general_audit_worksheet_inherent_risk.model_general_audit
 msgid "General Audit"
 msgstr ""
@@ -1491,6 +1500,18 @@ msgid "Partner"
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_inherent_risk
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_inherent_risk.field_general_audit_ws_a418d89__company_partner_id
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_inherent_risk.field_general_audit_ws_bfb6dae__company_partner_id
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_inherent_risk.field_general_audit_ws_c16abd7__company_partner_id
+msgid ""
+"Partner (res.partner) linked to the document's company\n"
+"\n"
+"* Automatically follows 'company_id.partner_id'.\n"
+"* Used for reporting/printing documents that require the company-level\n"
+"  partner instead of the responsible user's partner."
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_inherent_risk
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_inherent_risk.field_general_audit_ws_bfb6dae_checklist__checklist_ok
 msgid "Passed?"
 msgstr ""
@@ -2045,6 +2066,18 @@ msgstr ""
 #: model:ir.model.fields,help:ssi_general_audit_worksheet_inherent_risk.field_general_audit_ws_bfb6dae_item__website_message_ids
 #: model:ir.model.fields,help:ssi_general_audit_worksheet_inherent_risk.field_general_audit_ws_c16abd7__website_message_ids
 msgid "Website communication history"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_inherent_risk
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_inherent_risk.field_general_audit_ws_a418d89__state
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_inherent_risk.field_general_audit_ws_bfb6dae__state
+#: model:ir.model.fields,help:ssi_general_audit_worksheet_inherent_risk.field_general_audit_ws_c16abd7__state
+msgid ""
+"Workflow status of the document\n"
+"\n"
+"* 'draft' is the only base state provided by this mixin.\n"
+"* Other states (e.g. confirmed, done, cancel) are added by derivative mixin\n"
+"  modules (such as confirm/done/cancel mixins) via 'selection_add'."
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_inherent_risk
