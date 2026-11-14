@@ -17,12 +17,13 @@ class GeneralAuditWsF5a3ceeReportingTimetable(models.Model):
     _name = "general_audit_ws_f5a3cee.reporting_timetable"
     _inherit = ["general_audit_ws_f5a3cee.attachment_mixin"]
     _description = "Data Collection (f5a3cee) - Reporting Timetable"
-    _order = "data_collection_code, id"
+    _order = "data_collection_code_sort, id"
 
     worksheet_id = fields.Many2one(
         string="# Worksheet",
         comodel_name="general_audit_ws_f5a3cee",
         required=True,
+        index=True,
         ondelete="cascade",
         help=(
             "Reference to the parent Data Collection worksheet. "
@@ -33,15 +34,29 @@ class GeneralAuditWsF5a3ceeReportingTimetable(models.Model):
     data_collection_id = fields.Many2one(
         string="Data Collection Item",
         comodel_name="general_audit_data_collection",
-        domain="[('type', '=', 'others')]",
+        domain="[('type', '!=', 'account_type')]",
         ondelete="restrict",
-        help="Data Collection master item (type Others) of this line, if any.",
+        help=(
+            "Data Collection master item (type Permanent File or Current "
+            "File) of this line, if any."
+        ),
     )
     data_collection_code = fields.Char(
         string="Data Collection Code",
         related="data_collection_id.code",
         store=True,
         help="Code of the Data Collection item, used to sort the lines.",
+    )
+    data_collection_code_sort = fields.Char(
+        string="Data Collection Code Sort Key",
+        related="data_collection_id.code_sort",
+        store=True,
+        help="Sort key of the Data Collection item code, used to sort the lines.",
+    )
+    data_collection_type = fields.Selection(
+        string="Data Collection Type",
+        related="data_collection_id.type",
+        help="Type of the Data Collection item of this line.",
     )
     category_id = fields.Many2one(
         string="Category",

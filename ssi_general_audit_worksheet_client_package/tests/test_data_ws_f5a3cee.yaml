@@ -1111,7 +1111,7 @@ scenarios:
 
       - step: "Get a seeded category"
         action: "ref"
-        xml_id: "ssi_general_audit_worksheet_client_package.general_audit_data_collection_category_1_6c1e4a0b"
+        xml_id: "ssi_general_audit_worksheet_client_package.general_audit_data_collection_category_1_ffbc1f1d"
         save_as: "category"
 
       - step: "Create master for type A (mapped)"
@@ -1138,7 +1138,7 @@ scenarios:
           account_type_id: "REC: account_type_b.id"
           category_id: "REC: category.id"
 
-      - step: "Create master of type Others"
+      - step: "Create master of type Permanent File"
         action: "create"
         model: "general_audit_data_collection"
         save_as: "master_o"
@@ -1146,7 +1146,7 @@ scenarios:
         values:
           name: "Master Others"
           code: "/"
-          type: "others"
+          type: "permanent_file"
           category_id: "REC: category.id"
 
       - step: "Create worksheet"
@@ -1226,6 +1226,7 @@ scenarios:
         model: "general_audit_ws_f5a3cee.reporting_timetable"
         domain:
           - ["worksheet_id", "=", "REC: worksheet.id"]
+          - ["data_collection_id", "=", "REC: master_o.id"]
         save_as: "found_3"
         expect_count: 1
 
@@ -1304,6 +1305,7 @@ scenarios:
         model: "general_audit_ws_f5a3cee.reporting_timetable"
         domain:
           - ["worksheet_id", "=", "REC: worksheet.id"]
+          - ["data_collection_id", "=", "REC: master_o.id"]
         save_as: "found_6"
         expect_count: 1
 
@@ -1412,7 +1414,7 @@ scenarios:
 
       - step: "Get a seeded category"
         action: "ref"
-        xml_id: "ssi_general_audit_worksheet_client_package.general_audit_data_collection_category_1_6c1e4a0b"
+        xml_id: "ssi_general_audit_worksheet_client_package.general_audit_data_collection_category_1_ffbc1f1d"
         save_as: "category"
 
       - step: "Create a master item"

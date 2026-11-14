@@ -11,7 +11,8 @@
   **Draft**.
 - **Data:** The client of the General Audit has an account mapping with account types.
   Data Collection master items exist (Configuration > Standard & Regulation > Data
-  Collections > Data Collections), each with type **Account Type** or **Others**.
+  Collections > Data Collections), each with type **Account Type**, **Permanent File**
+  or **Current File**.
 - **Access:** User is in group _Data Collection (f5a3cee) — User_ (or higher).
 
 ## Flow
@@ -41,7 +42,8 @@
 - A **Details** line is marked **Completed** automatically once all of its data lines
   are completed.
 - The **Others** tab has the same columns as the data lines, one line for every active
-  master item of type **Others**. Lines you added yourself are kept.
+  master item of type **Permanent File** or **Current File**. Lines you added yourself
+  are kept.
 - Lines you already filled in (date, attachments, completion) are not changed.
 - Data lines whose master item was deactivated or changed are removed.
 - Clicking **Populate** again does not duplicate lines.

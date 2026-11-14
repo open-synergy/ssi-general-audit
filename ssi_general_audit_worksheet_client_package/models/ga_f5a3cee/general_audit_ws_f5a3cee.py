@@ -128,14 +128,14 @@ class GeneralAuditWSf5a3cee(models.Model):
             obsolete.unlink()
 
     def _populate_other_lines(self):
-        """Sync the timetable lines with the master items of type others.
+        """Sync the timetable lines with the master items not of type account.
 
         Lines without a master item are never touched.
         """
         self.ensure_one()
         Master = self.env["general_audit_data_collection"]
         Timetable = self.env["general_audit_ws_f5a3cee.reporting_timetable"]
-        masters = Master.search([("type", "=", "others")])
+        masters = Master.search([("type", "!=", "account_type")])
         existing = self.reporting_timetable_ids.mapped("data_collection_id")
         for master in masters - existing:
             Timetable.create(

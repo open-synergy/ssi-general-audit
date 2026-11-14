@@ -22,10 +22,10 @@
 3. Fill in the required fields:
    - **Name**: name of the data to collect.
    - **Code**: unique identifier. Type `/` if no identifier is needed.
-   - **Type**: **Account Type** (default) or **Others**.
+   - **Type**: **Account Type** (default), **Permanent File** or **Current File**.
    - **Account Type**: select the client account type. It is shown and required only
      when **Type** is **Account Type**; it is cleared when **Type** is changed to
-     **Others**.
+     **Permanent File** or **Current File**.
    - **Category**: select the data collection category.
 4. Click **Save**.
 

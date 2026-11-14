@@ -15,12 +15,13 @@ class GeneralAuditWSf5a3ceeDetailLine(models.Model):
     _name = "general_audit_ws_f5a3cee.detail_line"
     _inherit = ["general_audit_ws_f5a3cee.attachment_mixin"]
     _description = "Data Collection (f5a3cee) - Detail Lines"
-    _order = "data_collection_code, id"
+    _order = "data_collection_code_sort, id"
 
     detail_id = fields.Many2one(
         string="# Detail",
         comodel_name="general_audit_ws_f5a3cee.detail",
         required=True,
+        index=True,
         ondelete="cascade",
         help="Parent detail (account type). Deleting it removes its lines.",
     )
@@ -50,6 +51,17 @@ class GeneralAuditWSf5a3ceeDetailLine(models.Model):
         related="data_collection_id.code",
         store=True,
         help="Code of the Data Collection item, used to sort the lines.",
+    )
+    data_collection_code_sort = fields.Char(
+        string="Data Collection Code Sort Key",
+        related="data_collection_id.code_sort",
+        store=True,
+        help="Sort key of the Data Collection item code, used to sort the lines.",
+    )
+    data_collection_type = fields.Selection(
+        string="Data Collection Type",
+        related="data_collection_id.type",
+        help="Type of the Data Collection item of this line.",
     )
     category_id = fields.Many2one(
         string="Category",
