@@ -11,6 +11,7 @@
     "installable": True,
     "depends": [
         "ssi_general_audit",
+        "ssi_web_list_drag_scroll",
         "ssi_web_widget_csv_table",
         "web_tour",
     ],
@@ -71,6 +72,7 @@
         "data/master/general_audit_ws_e301171_item.xml",
         "data/master/general_audit_ws_abd82ed_item.xml",
         "data/master/general_audit_data_collection_category.xml",
+        "data/master/general_audit_data_collection.xml",
         # wizards
         "wizards/general_audit_ws_f5a3cee_attachment_upload.xml",
         # ir.ui.view

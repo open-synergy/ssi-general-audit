@@ -50,7 +50,7 @@ scenarios:
           account_type_id: "REC: account_type.id"
           category_id: "REC: category.id"
 
-      - step: "Create item of type Others"
+      - step: "Create item of type Permanent File"
         action: "create"
         model: "general_audit_data_collection"
         save_as: "item_others"
@@ -58,7 +58,7 @@ scenarios:
         values:
           name: "Organization chart"
           code: "/"
-          type: "others"
+          type: "permanent_file"
           category_id: "REC: category.id"
 
       - step: "Assert the Account Type item keeps its account type"
@@ -69,7 +69,7 @@ scenarios:
             type: "m2o"
             expected: "REC: account_type"
 
-      - step: "Assert the Others item has no account type"
+      - step: "Assert the Permanent File item has no account type"
         action: "assert"
         target: "item_others"
         asserts:
@@ -105,25 +105,27 @@ scenarios:
         values:
           name: "Invalid item"
           code: "/"
-          type: "others"
+          type: "permanent_file"
 
-  # Positive: the three standard categories ship as master data.
+  # Positive: the standard categories ship as master data.
   - name: "Standard categories are installed"
     steps:
-      - step: "Search the three standard categories by name"
+      - step: "Search the standard categories by code"
         action: "search"
         model: "general_audit_data_collection_category"
         domain:
           [
             [
-              "name",
+              "code",
               "in",
               [
-                "Client Data (Internal)",
-                "Third-Party Data (External)",
-                "Additional / Analytical Data",
+                "DATA-CATEG-1",
+                "DATA-CATEG-2",
+                "DATA-CATEG-3",
+                "DATA-CATEG-4",
+                "DATA-CATEG-5",
               ],
             ],
           ]
         save_as: "standard_categories"
-        expect_count: 3
+        expect_count: 5

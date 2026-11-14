@@ -2,6 +2,8 @@
 # Copyright 2026 PT. Simetri Sinergi Indonesia
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl-3.0-standalone.html).
 
+import re
+
 from odoo import _, api, fields, models
 from odoo.exceptions import ValidationError
 
@@ -12,7 +14,8 @@ class GeneralAuditDataCollection(models.Model):
     Defines an item of data that the engagement team collects from the
     client. An item of type Account Type belongs to one client account type
     and fills the Details tab of the Data Collection worksheet; an item of
-    type Others is not tied to an account type and fills the Others tab.
+    type Permanent File or Current File is not tied to an account type and
+    fills the Others tab.
     """
 
     _name = "general_audit_data_collection"
@@ -25,13 +28,15 @@ class GeneralAuditDataCollection(models.Model):
         string="Type",
         selection=[
             ("account_type", "Account Type"),
-            ("others", "Others"),
+            ("permanent_file", "Permanent File"),
+            ("current_file", "Current File"),
         ],
         required=True,
         default="account_type",
         help=(
             "Account Type: the item belongs to one client account type. "
-            "Others: the item is not tied to an account type."
+            "Permanent File and Current File: the item is not tied to an "
+            "account type."
         ),
     )
     account_type_id = fields.Many2one(
@@ -40,7 +45,7 @@ class GeneralAuditDataCollection(models.Model):
         ondelete="restrict",
         help=(
             "Client account type this item belongs to. Required when the "
-            "type is Account Type; not used when the type is Others."
+            "type is Account Type; not used when the type is Permanent File or Current File."
         ),
     )
     category_id = fields.Many2one(
@@ -50,6 +55,25 @@ class GeneralAuditDataCollection(models.Model):
         ondelete="restrict",
         help="Category used to classify this data collection item.",
     )
+
+    code_sort = fields.Char(
+        string="Code Sort Key",
+        compute="_compute_code_sort",
+        store=True,
+        help=(
+            "Code with every number padded with zeros, so that the items "
+            "are sorted by their number (AT-2 before AT-10)."
+        ),
+    )
+
+    @api.depends("code")
+    def _compute_code_sort(self):
+        """Pad the numbers of the code so that it sorts naturally."""
+        for record in self:
+            result = re.sub(
+                r"\d+", lambda match: match.group().zfill(8), record.code or ""
+            )
+            record.code_sort = result
 
     def name_get(self):
         """Show only the code when the context asks for it.
