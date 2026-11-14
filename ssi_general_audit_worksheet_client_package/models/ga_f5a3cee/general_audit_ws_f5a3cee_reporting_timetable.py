@@ -53,6 +53,11 @@ class GeneralAuditWsF5a3ceeReportingTimetable(models.Model):
         store=True,
         help="Sort key of the Data Collection item code, used to sort the lines.",
     )
+    data_collection_type = fields.Selection(
+        string="Data Collection Type",
+        related="data_collection_id.type",
+        help="Type of the Data Collection item of this line.",
+    )
     category_id = fields.Many2one(
         string="Category",
         comodel_name="general_audit_data_collection_category",
