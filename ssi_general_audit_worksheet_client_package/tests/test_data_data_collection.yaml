@@ -78,7 +78,7 @@ scenarios:
             operator: "is_falsy"
 
   # Positive: the sort key starts with the type rank, so Permanent File
-  # sorts before Current File, and numbers still sort by value inside a type.
+  # sorts before Current File even when its code sorts after, and numbers still sort by value inside a type.
   - name: "Sort key ranks Permanent File before Current File"
     steps:
       - step: "Create Permanent File item 2"
@@ -88,7 +88,7 @@ scenarios:
         as_user: "base.user_admin"
         values:
           name: "Sort key permanent 2"
-          code: "ZT-2"
+          code: "ZP-2"
           type: "permanent_file"
           category_id: "REC: category.id"
 
@@ -99,7 +99,7 @@ scenarios:
         as_user: "base.user_admin"
         values:
           name: "Sort key permanent 10"
-          code: "ZT-10"
+          code: "ZP-10"
           type: "permanent_file"
           category_id: "REC: category.id"
 
@@ -110,7 +110,7 @@ scenarios:
         as_user: "base.user_admin"
         values:
           name: "Sort key current 2"
-          code: "ZT-2"
+          code: "ZC-2"
           type: "current_file"
           category_id: "REC: category.id"
 
@@ -120,7 +120,7 @@ scenarios:
         asserts:
           code_sort:
             type: "value"
-            expected: "1ZT-00000002"
+            expected: "1ZP-00000002"
 
       - step: "Assert the Permanent File item 10 key sorts by number"
         action: "assert"
@@ -128,7 +128,7 @@ scenarios:
         asserts:
           code_sort:
             type: "value"
-            expected: "1ZT-00000010"
+            expected: "1ZP-00000010"
 
       - step: "Assert the Current File item 2 key"
         action: "assert"
@@ -136,7 +136,7 @@ scenarios:
         asserts:
           code_sort:
             type: "value"
-            expected: "2ZT-00000002"
+            expected: "2ZC-00000002"
 
   # Negative: an Account Type item without an account type is rejected,
   # and an item without a category is rejected.

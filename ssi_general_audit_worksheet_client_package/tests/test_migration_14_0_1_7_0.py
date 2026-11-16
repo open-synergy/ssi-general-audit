@@ -27,7 +27,7 @@ class TestMigration14017(YamlTransactionCase):
         self.permanent = item_model.create(
             {
                 "name": "Migration permanent",
-                "code": "ZM-2",
+                "code": "ZP-2",
                 "type": "permanent_file",
                 "category_id": category.id,
             }
@@ -35,7 +35,7 @@ class TestMigration14017(YamlTransactionCase):
         self.current = item_model.create(
             {
                 "name": "Migration current",
-                "code": "ZM-2",
+                "code": "ZC-2",
                 "type": "current_file",
                 "category_id": category.id,
             }
@@ -79,7 +79,7 @@ class TestMigration14017(YamlTransactionCase):
         it, then the script is called with the cursor, as the decorator
         expects.
         """
-        stale = "ZM-00000002"
+        stale = "Z-00000002"
         self.env.cr.execute(
             "UPDATE general_audit_data_collection SET code_sort = %s WHERE id IN %s",
             (stale, tuple((self.permanent | self.current).ids)),
@@ -90,8 +90,8 @@ class TestMigration14017(YamlTransactionCase):
         script.migrate(self.env.cr, "14.0.1.7.0")
         self.permanent.invalidate_cache()
         self.current.invalidate_cache()
-        self.assertEqual(self.permanent.code_sort, "1ZM-00000002")
-        self.assertEqual(self.current.code_sort, "2ZM-00000002")
+        self.assertEqual(self.permanent.code_sort, "1ZP-00000002")
+        self.assertEqual(self.current.code_sort, "2ZC-00000002")
         script.migrate(self.env.cr, "14.0.1.7.0")
         self.permanent.invalidate_cache()
-        self.assertEqual(self.permanent.code_sort, "1ZM-00000002")
+        self.assertEqual(self.permanent.code_sort, "1ZP-00000002")
