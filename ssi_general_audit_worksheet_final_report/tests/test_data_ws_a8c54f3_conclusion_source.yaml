@@ -1,0 +1,37 @@
+scenarios:
+  # ------------------------------------------------------------------
+  # Installed data - worksheet_type_a8c54f3.conclusion_source_type_ids
+  # ------------------------------------------------------------------
+  - name:
+      "Audit Final Memorandum conclusion sources drop the Planning types and add
+      Uncorrected AJE Analysis"
+    steps:
+      - step: "Get worksheet type a8c54f3"
+        action: "ref"
+        xml_id: "ssi_general_audit_worksheet_final_report.worksheet_type_a8c54f3"
+        save_as: "type_a8c54f3"
+
+      - step: "Assert Uncorrected AJE Analysis is a conclusion source"
+        action: "assert"
+        target: "type_a8c54f3"
+        asserts:
+          conclusion_source_type_ids:
+            type: "m2m"
+            check: "contains_xml_ids"
+            expected_xml_ids:
+              - "ssi_general_audit_worksheet_uncorrected_aje_analysis.worksheet_type_c3b9e71"
+
+      - step: "Find the removed types among the conclusion sources"
+        action: "search"
+        model: "general_audit_worksheet_type"
+        domain:
+          [
+            ["id", "=", "REC: type_a8c54f3.id"],
+            [
+              "conclusion_source_type_ids.code",
+              "in",
+              ["B66777D", "D209914", "B5E3D9F", "E3F4A5B"],
+            ],
+          ]
+        save_as: "removed_sources"
+        expect_count: 0

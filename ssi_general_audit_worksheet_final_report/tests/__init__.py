@@ -8,3 +8,4 @@ from . import test_ws_a8c54f3_links
 from . import test_ws_a8c54f3_checklist
 from . import test_ui_general_audit_ws_a8c54f3
 from . import test_ui_general_audit_ws_f3ed115
+from . import test_migration_14_0_1_15_0
