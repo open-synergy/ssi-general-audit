@@ -61,19 +61,26 @@ class GeneralAuditDataCollection(models.Model):
         compute="_compute_code_sort",
         store=True,
         help=(
-            "Code with every number padded with zeros, so that the items "
-            "are sorted by their number (AT-2 before AT-10)."
+            "Type rank followed by the code with every number padded with "
+            "zeros, so that the items are sorted by type first (Permanent "
+            "File before Current File) and then by their number (AT-2 "
+            "before AT-10)."
         ),
     )
 
-    @api.depends("code")
+    @api.depends("code", "type")
     def _compute_code_sort(self):
-        """Pad the numbers of the code so that it sorts naturally."""
+        """Prefix the padded code with the rank of the item type.
+
+        Permanent File ranks before Current File. The Account Type rank
+        is arbitrary: those items never share a list with the others.
+        """
+        type_rank = {"account_type": "0", "permanent_file": "1", "current_file": "2"}
         for record in self:
             result = re.sub(
                 r"\d+", lambda match: match.group().zfill(8), record.code or ""
             )
-            record.code_sort = result
+            record.code_sort = type_rank.get(record.type, "9") + result
 
     def name_get(self):
         """Show only the code when the context asks for it.
