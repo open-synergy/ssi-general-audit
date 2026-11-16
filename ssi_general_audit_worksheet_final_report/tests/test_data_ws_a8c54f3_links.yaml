@@ -411,6 +411,13 @@ scenarios:
           general_audit_id: "REC: audit.id"
           type_id: "REC: ws_type_d209914.id"
 
+      - step:
+          "Add General Ledger to the memorandum conclusion sources for this scenario"
+        action: "write"
+        target: "ws_type_a8c54f3"
+        values:
+          conclusion_source_type_ids: "EVAL: [(4, registry['ws_type_d209914'].id)]"
+
       - step: "Create worksheet a8c54f3"
         action: "create"
         model: "general_audit_ws_a8c54f3"

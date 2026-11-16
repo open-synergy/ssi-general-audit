@@ -33,6 +33,7 @@
         "ssi_general_audit_worksheet_audit_result",
         "ssi_general_audit_worksheet_final_materiality",
         "ssi_general_audit_worksheet_draft_reporting",
+        "ssi_general_audit_worksheet_uncorrected_aje_analysis",
     ],
     "data": [
         "security/ir_module_category_data.xml",
