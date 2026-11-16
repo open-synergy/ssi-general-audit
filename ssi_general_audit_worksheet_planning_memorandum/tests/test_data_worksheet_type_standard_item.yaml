@@ -70,3 +70,27 @@ scenarios:
           ]
         save_as: "unrelated_standard_link_fbbe0f8"
         expect_count: 0
+
+  # ------------------------------------------------------------------
+  # Installed data - worksheet_type_fbbe0f8.conclusion_source_type_ids
+  # ------------------------------------------------------------------
+  - name:
+      "Worksheet type FBBE0F8 (Audit Planning Memorandum - Detail) -
+      conclusion_source_type_ids lists GL, SL and Test of Control"
+    steps:
+      - step: "Get worksheet type FBBE0F8"
+        action: "ref"
+        xml_id: "ssi_general_audit_worksheet_planning_memorandum.worksheet_type_fbbe0f8"
+        save_as: "type_fbbe0f8"
+
+      - step: "Assert General Ledger, Subsidiary Ledger and Test of Control are sources"
+        action: "assert"
+        target: "type_fbbe0f8"
+        asserts:
+          conclusion_source_type_ids:
+            type: "m2m"
+            check: "contains_xml_ids"
+            expected_xml_ids:
+              - "ssi_general_audit_worksheet_client_package.worksheet_type_d209914"
+              - "ssi_general_audit_worksheet_client_package.worksheet_type_b5e3d9f"
+              - "ssi_general_audit_worksheet_test_of_control.worksheet_type_e3f4a5b"
