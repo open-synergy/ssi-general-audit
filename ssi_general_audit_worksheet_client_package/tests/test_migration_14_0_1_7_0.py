@@ -80,6 +80,7 @@ class TestMigration14017(YamlTransactionCase):
         expects.
         """
         stale = "Z-00000002"
+        self.env["general_audit_data_collection"].flush()
         self.env.cr.execute(
             "UPDATE general_audit_data_collection SET code_sort = %s WHERE id IN %s",
             (stale, tuple((self.permanent | self.current).ids)),
