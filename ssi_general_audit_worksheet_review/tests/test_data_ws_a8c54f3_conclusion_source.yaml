@@ -1,0 +1,37 @@
+scenarios:
+  # ------------------------------------------------------------------
+  # Installed data - worksheet_type_a8c54f3.conclusion_source_type_ids
+  # ------------------------------------------------------------------
+  - name:
+      "Audit Final Memorandum conclusion sources keep the review types but not Proposed
+      Audit Opinion"
+    steps:
+      - step: "Get worksheet type a8c54f3"
+        action: "ref"
+        xml_id: "ssi_general_audit_worksheet_final_report.worksheet_type_a8c54f3"
+        save_as: "type_a8c54f3"
+
+      - step: "Assert the five other review types are still conclusion sources"
+        action: "assert"
+        target: "type_a8c54f3"
+        asserts:
+          conclusion_source_type_ids:
+            type: "m2m"
+            check: "contains_xml_ids"
+            expected_xml_ids:
+              - "ssi_general_audit_worksheet_review.worksheet_type_be62e79"
+              - "ssi_general_audit_worksheet_review.worksheet_type_a025441"
+              - "ssi_general_audit_worksheet_review.worksheet_type_bcc0d76"
+              - "ssi_general_audit_worksheet_review.worksheet_type_dae9f3c"
+              - "ssi_general_audit_worksheet_review.worksheet_type_cae598e"
+
+      - step: "Find Proposed Audit Opinion among the conclusion sources"
+        action: "search"
+        model: "general_audit_worksheet_type"
+        domain:
+          [
+            ["id", "=", "REC: type_a8c54f3.id"],
+            ["conclusion_source_type_ids.code", "=", "FC75636"],
+          ]
+        save_as: "removed_source"
+        expect_count: 0
