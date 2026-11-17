@@ -35,6 +35,7 @@ class GeneralAuditWsF5a3ceeReportingTimetable(models.Model):
         string="Data Collection Item",
         comodel_name="general_audit_data_collection",
         domain="[('type', '!=', 'account_type')]",
+        index=True,
         ondelete="restrict",
         help=(
             "Data Collection master item (type Permanent File or Current "

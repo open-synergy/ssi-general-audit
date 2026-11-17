@@ -42,6 +42,7 @@ class GeneralAuditDataCollection(models.Model):
     account_type_id = fields.Many2one(
         string="Account Type",
         comodel_name="client_account_type",
+        index=True,
         ondelete="restrict",
         help=(
             "Client account type this item belongs to. Required when the "

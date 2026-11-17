@@ -1505,6 +1505,50 @@ scenarios:
           worksheet_id: "REC: worksheet.id"
           account_client_type_id: "REC: account_type_a.id"
 
+  - name: "Worksheet f5a3cee - Lines created together are checked together"
+    steps:
+      - step: "Create worksheet"
+        action: "create"
+        model: "general_audit_ws_f5a3cee"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+
+      - step: "Create a detail with two lines of different names in one go"
+        action: "create"
+        model: "general_audit_ws_f5a3cee.detail"
+        save_as: "detail"
+        as_user: "base.user_admin"
+        values:
+          worksheet_id: "REC: worksheet.id"
+          account_client_type_id: "REC: account_type_a.id"
+          line_ids:
+            "EVAL: [(0, 0, {'name': 'First line'}), (0, 0, {'name': 'Second line'})]"
+
+      - step: "Assert both lines were created"
+        action: "assert"
+        target: "detail"
+        asserts:
+          line_ids:
+            type: "o2m"
+            check: "count"
+            expected_count: 2
+
+      - step: "Two lines with the same name in one go must be rejected"
+        action: "create"
+        model: "general_audit_ws_f5a3cee.detail"
+        as_user: "base.user_admin"
+        expect_error:
+          type: "ValidationError"
+          message_contains: "is already used in this detail"
+        values:
+          worksheet_id: "REC: worksheet.id"
+          account_client_type_id: "REC: account_type_b.id"
+          line_ids:
+            "EVAL: [(0, 0, {'name': 'Same name'}), (0, 0, {'name': ' same NAME '})]"
+
   # ------------------------------------------------------------------
   # Upload attachment wizard
   # ------------------------------------------------------------------

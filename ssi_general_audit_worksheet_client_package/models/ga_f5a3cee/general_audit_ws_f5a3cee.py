@@ -112,14 +112,17 @@ class GeneralAuditWSf5a3cee(models.Model):
                 ]
             )
             existing = detail.line_ids.mapped("data_collection_id")
-            for master in masters - existing:
-                Line.create(
-                    {
-                        "detail_id": detail.id,
-                        "data_collection_id": master.id,
-                        "name": master.name,
-                    }
-                )
+            vals_list = [
+                {
+                    "detail_id": detail.id,
+                    "data_collection_id": master.id,
+                    "name": master.name,
+                    "category_id": master.category_id.id,
+                }
+                for master in masters - existing
+            ]
+            if vals_list:
+                Line.create(vals_list)
             detail.line_ids._fill_from_master()
             obsolete = detail.line_ids.filtered(
                 lambda line: line.data_collection_id
@@ -137,15 +140,17 @@ class GeneralAuditWSf5a3cee(models.Model):
         Timetable = self.env["general_audit_ws_f5a3cee.reporting_timetable"]
         masters = Master.search([("type", "!=", "account_type")])
         existing = self.reporting_timetable_ids.mapped("data_collection_id")
-        for master in masters - existing:
-            Timetable.create(
-                {
-                    "worksheet_id": self.id,
-                    "data_collection_id": master.id,
-                    "description": master.name,
-                    "category_id": master.category_id.id,
-                }
-            )
+        vals_list = [
+            {
+                "worksheet_id": self.id,
+                "data_collection_id": master.id,
+                "description": master.name,
+                "category_id": master.category_id.id,
+            }
+            for master in masters - existing
+        ]
+        if vals_list:
+            Timetable.create(vals_list)
         self.reporting_timetable_ids._fill_from_master()
         self.reporting_timetable_ids.filtered(
             lambda line: line.data_collection_id
