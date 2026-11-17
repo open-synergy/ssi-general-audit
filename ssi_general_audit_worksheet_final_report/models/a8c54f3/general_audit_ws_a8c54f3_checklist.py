@@ -25,6 +25,7 @@ class GeneralAuditWsA8c54f3Checklist(models.Model):
         string="# Worksheet",
         comodel_name="general_audit_ws_a8c54f3",
         required=True,
+        index=True,
         ondelete="cascade",
         help=(
             "Reference to the parent Audit Final Memorandum "
