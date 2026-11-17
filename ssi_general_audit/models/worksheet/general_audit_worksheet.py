@@ -65,6 +65,7 @@ class GeneralAuditWorksheet(models.Model):
         comodel_name="general_audit",
         readonly=True,
         required=True,
+        index=True,
         ondelete="restrict",
         states={
             "draft": [
@@ -181,6 +182,7 @@ class GeneralAuditWorksheet(models.Model):
         string="Parent Type",
         comodel_name="general_audit_worksheet_type",
         required=False,
+        index=True,
         readonly=True,
         states={
             "draft": [
