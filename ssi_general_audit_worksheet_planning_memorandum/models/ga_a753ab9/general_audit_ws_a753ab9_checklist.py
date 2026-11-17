@@ -25,6 +25,7 @@ class GeneralAuditWSa753ab9Checklist(models.Model):
         string="# Worksheet",
         comodel_name="general_audit_ws_a753ab9",
         required=True,
+        index=True,
         ondelete="cascade",
     )
     item_id = fields.Many2one(
