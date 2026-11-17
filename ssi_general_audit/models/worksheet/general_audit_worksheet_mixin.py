@@ -92,6 +92,7 @@ class GeneralAuditWorksheetMixin(models.AbstractModel):
         comodel_name="general_audit_worksheet",
         required=True,
         readonly=True,
+        index=True,
         ondelete="cascade",
         help="Parent worksheet record that stores common fields.",
     )
@@ -199,22 +200,44 @@ class GeneralAuditWorksheetMixin(models.AbstractModel):
         worksheets.unlink()
 
     def write(self, values):
+        """Write the values and keep the parent worksheet in sync.
+
+        :param dict values: values to write
+        :return: result of the parent ``write``
+        :rtype: bool
+        """
         _super = super(GeneralAuditWorksheetMixin, self)
-        _super.write(values)
+        res = _super.write(values)
         for record in self.sudo():
             record._update_parent_worksheet()
+        return res
 
     def _update_parent_worksheet(self):
+        """Copy the shared fields to the parent worksheet if they differ.
+
+        Only the values that really differ are written, so a write that
+        does not change them (for example a recomputed link field) does
+        not trigger a write, and its dependency lookups, on the parent.
+        """
         self.ensure_one()
-        self.worksheet_id.write(
-            {
-                "name": self.name,
-                "user_id": self.user_id.id,
-                "reviewer_id": self.reviewer_id.id,
-                "state": self.state,
-                "parent_type_id": self.type_id.id,
-            }
-        )
+        parent = self.worksheet_id
+        wanted = {
+            "name": self.name,
+            "user_id": self.user_id.id,
+            "reviewer_id": self.reviewer_id.id,
+            "state": self.state,
+            "parent_type_id": self.type_id.id,
+        }
+        current = {
+            "name": parent.name,
+            "user_id": parent.user_id.id,
+            "reviewer_id": parent.reviewer_id.id,
+            "state": parent.state,
+            "parent_type_id": parent.parent_type_id.id,
+        }
+        vals = {key: val for key, val in wanted.items() if current[key] != val}
+        if vals:
+            parent.write(vals)
 
     @api.constrains(
         "general_audit_id",
