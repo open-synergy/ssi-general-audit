@@ -21,6 +21,7 @@ class GeneralAuditWSf5a3ceeDetail(models.Model):
         string="# Worksheet",
         comodel_name="general_audit_ws_f5a3cee",
         required=True,
+        index=True,
         ondelete="cascade",
         help=(
             "Reference to the parent Data Collection worksheet. "

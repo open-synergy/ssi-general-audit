@@ -43,6 +43,7 @@ class GeneralAuditWSf5a3ceeDetailLine(models.Model):
         comodel_name="general_audit_data_collection",
         domain="[('type', '=', 'account_type')]",
         required=False,
+        index=True,
         ondelete="restrict",
         help="Data Collection master item that this line refers to.",
     )
@@ -139,13 +140,28 @@ class GeneralAuditWSf5a3ceeDetailLine(models.Model):
             another line of the worksheet, or the name by another line of
             the same detail.
         """
+        by_master = {}
+        by_name = {}
         for record in self:
             detail = record.detail_id
+            worksheet = detail.worksheet_id
+            if worksheet.id not in by_master:
+                by_master[worksheet.id] = {}
+                for line in worksheet.detail_ids.line_ids:
+                    if line.data_collection_id:
+                        by_master[worksheet.id].setdefault(
+                            line.data_collection_id.id, []
+                        ).append(line)
+            if detail.id not in by_name:
+                by_name[detail.id] = {}
+                for line in detail.line_ids:
+                    key = (line.name or "").strip().lower()
+                    by_name[detail.id].setdefault(key, []).append(line)
             if record.data_collection_id:
-                used = (detail.worksheet_id.detail_ids.line_ids - record).filtered(
-                    lambda line: line.data_collection_id == record.data_collection_id
-                )[:1]
+                sharing = by_master[worksheet.id][record.data_collection_id.id]
+                used = [line for line in sharing if line != record][:1]
                 if used:
+                    other_type = used[0].detail_id.account_client_type_id
                     raise ValidationError(
                         _(
                             "Data Collection %(code)s is already used for "
@@ -153,14 +169,12 @@ class GeneralAuditWSf5a3ceeDetailLine(models.Model):
                         )
                         % {
                             "code": record.data_collection_id.code,
-                            "account_type": used.detail_id.account_client_type_id.name,
+                            "account_type": other_type.name,
                         }
                     )
             name = (record.name or "").strip().lower()
-            used = (detail.line_ids - record).filtered(
-                lambda line: (line.name or "").strip().lower() == name
-            )[:1]
-            if used:
+            sharing = by_name[detail.id].get(name, [])
+            if any(line != record for line in sharing):
                 raise ValidationError(
                     _(
                         'Name "%(name)s" is already used in this detail for '
