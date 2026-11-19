@@ -570,6 +570,60 @@ scenarios:
             expected: "no"
 
   # ------------------------------------------------------------------
+  # b59b886 - Fill deficiency fields through the form (open state)
+  # ------------------------------------------------------------------
+  - name: "Worksheet b59b886 - Fill deficiency fields via form"
+    steps:
+      - step: "Create worksheet b59b886"
+        action: "create"
+        model: "general_audit_ws_b59b886"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_b59b886.id"
+
+      - step: "Open worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_open"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after opening worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Assert worksheet open"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          state:
+            type: "value"
+            expected: "open"
+
+      - step: "Fill deficiency fields in the open worksheet form"
+        action: "form"
+        target: "worksheet"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          control_deficiency_identified: "yes"
+          significant_deficiency_identified: "no"
+        save: true
+
+      - step: "Assert deficiency values saved through the form"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          control_deficiency_identified:
+            type: "value"
+            expected: "yes"
+          significant_deficiency_identified:
+            type: "value"
+            expected: "no"
+
+  # ------------------------------------------------------------------
   # b59b886 - Workflow confirm to done
   # ------------------------------------------------------------------
   - name: "Worksheet b59b886 - Workflow confirm to done"
