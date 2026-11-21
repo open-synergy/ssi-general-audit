@@ -71,20 +71,18 @@
                             </div>
                             <field name="link_1_conclusion" string="Conclusion" />
                         </group>
-                        <group name="activity_2" string="Control Risk - Cycle Level">
-                            <field
-                                name="link_2_ids"
-                                widget="many2many_tree"
-                                nolabel="1"
-                            >
-                                <tree>
-                                    <field name="name" />
-                                    <field name="business_cycle_id" />
-                                    <field name="state" />
-                                    <field name="conclusion" string="Conclusion" />
-                                </tree>
-                            </field>
-                        </group>
+                        <separator
+                            name="activity_2"
+                            string="Control Risk - Cycle Level"
+                        />
+                        <field name="link_2_ids" widget="many2many_tree" nolabel="1">
+                            <tree>
+                                <field name="name" />
+                                <field name="business_cycle_id" />
+                                <field name="state" />
+                                <field name="conclusion" string="Conclusion" />
+                            </tree>
+                        </field>
                         <group name="activity_3" string="Significant Account">
                             <label for="link_3_id" string="# Worksheet" />
                             <div class="o_row">
