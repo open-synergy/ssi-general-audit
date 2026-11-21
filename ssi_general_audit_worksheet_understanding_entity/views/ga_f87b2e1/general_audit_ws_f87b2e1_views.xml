@@ -134,23 +134,18 @@
                             </div>
                             <field name="link_4_conclusion" string="Conclusion" />
                         </group>
-                        <group
+                        <separator
                             name="activity_5"
                             string="Understanding of The Business Environment"
-                        >
-                            <field
-                                name="link_5_ids"
-                                widget="many2many_tree"
-                                nolabel="1"
-                            >
-                                <tree>
-                                    <field name="name" />
-                                    <field name="business_environment_id" />
-                                    <field name="state" />
-                                    <field name="conclusion" string="Conclusion" />
-                                </tree>
-                            </field>
-                        </group>
+                        />
+                        <field name="link_5_ids" widget="many2many_tree" nolabel="1">
+                            <tree>
+                                <field name="name" />
+                                <field name="business_environment_id" />
+                                <field name="state" />
+                                <field name="conclusion" string="Conclusion" />
+                            </tree>
+                        </field>
                         <group name="activity_6" string="Going Concern Analysis">
                             <label for="link_6_id" string="# Worksheet" />
                             <div class="o_row">
