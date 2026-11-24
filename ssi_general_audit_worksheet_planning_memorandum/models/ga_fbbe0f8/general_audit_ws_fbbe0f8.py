@@ -7,6 +7,8 @@ from lxml import etree
 
 from odoo import _, api, fields, models
 
+from odoo.addons.ssi_decorator import ssi_decorator
+
 
 class GeneralAuditWSfbbe0f8(models.Model):
     """
@@ -84,22 +86,57 @@ class GeneralAuditWSfbbe0f8(models.Model):
         store=True,
     )
 
+    def _get_following_states(self):
+        """Return the states in which source worksheet data is followed.
+
+        While the worksheet is in one of these states, the data copied
+        from the linked worksheets follows their changes. In any other
+        state the copied data is kept as a snapshot.
+
+        :return: list of state codes
+        """
+        return ["draft", "open"]
+
+    @ssi_decorator.post_open_action()
+    def _10_refresh_source_links(self):
+        """Refresh every link to the source worksheets on start.
+
+        Worksheets created or opened after this one was drafted are
+        picked up, and the data copied from them is recomputed.
+
+        :return: nothing; marks the link fields to be recomputed
+        """
+        self.ensure_one()
+        self.modified(["general_audit_id"])
+
     @api.depends(
         "link_1_ids",
+        "link_1_ids.business_environment_id",
+        "link_1_ids.detail_ids",
+        "link_1_ids.review",
     )
     def _compute_it_detail_review_ids(self):
+        """Copy the IT environment details and review from RA.150.5.
+
+        Follows the source while the worksheet is draft or open and
+        keeps the stored values afterwards.
+        """
         for record in self:
-            result = review = False
-            if record.link_1_ids:
-                it_env_id = self.env.ref(
-                    "ssi_general_audit." "general_audit_business_environment_5_ffea3e57"
-                ).id
-                it_env = record.link_1_ids.filtered(
-                    lambda x: x.business_environment_id.id == it_env_id
-                )
-                if len(it_env) == 1:
-                    result = it_env.detail_ids.ids
-                    review = it_env.review
+            result = record.it_detail_ids.ids
+            review = record.it_review
+            if record.state in record._get_following_states():
+                result = review = False
+                if record.link_1_ids:
+                    it_env_id = self.env.ref(
+                        "ssi_general_audit."
+                        "general_audit_business_environment_5_ffea3e57"
+                    ).id
+                    it_env = record.link_1_ids.filtered(
+                        lambda x: x.business_environment_id.id == it_env_id
+                    )
+                    if len(it_env) == 1:
+                        result = it_env.detail_ids.ids
+                        review = it_env.review
             record.it_detail_ids = result
             record.it_review = review
 
@@ -117,19 +154,29 @@ class GeneralAuditWSfbbe0f8(models.Model):
 
     @api.depends(
         "link_1_ids",
+        "link_1_ids.business_environment_id",
+        "link_1_ids.review",
     )
     def _compute_industry_review(self):
+        """Copy the industry review from RA.150.5.
+
+        Follows the source while the worksheet is draft or open and
+        keeps the stored value afterwards.
+        """
         for record in self:
-            review = False
-            if record.link_1_ids:
-                env_id = self.env.ref(
-                    "ssi_general_audit." "general_audit_business_environment_1_297034dd"
-                ).id
-                it_env = record.link_1_ids.filtered(
-                    lambda x: x.business_environment_id.id == env_id
-                )
-                if len(it_env) == 1:
-                    review = it_env.review
+            review = record.industry_review
+            if record.state in record._get_following_states():
+                review = False
+                if record.link_1_ids:
+                    env_id = self.env.ref(
+                        "ssi_general_audit."
+                        "general_audit_business_environment_1_297034dd"
+                    ).id
+                    it_env = record.link_1_ids.filtered(
+                        lambda x: x.business_environment_id.id == env_id
+                    )
+                    if len(it_env) == 1:
+                        review = it_env.review
             record.industry_review = review
 
     industry_review = fields.Text(
@@ -211,19 +258,29 @@ class GeneralAuditWSfbbe0f8(models.Model):
 
     @api.depends(
         "link_1_ids",
+        "link_1_ids.business_environment_id",
+        "link_1_ids.review",
     )
     def _compute_amendment_review(self):
+        """Copy the amendment review from RA.150.5.
+
+        Follows the source while the worksheet is draft or open and
+        keeps the stored value afterwards.
+        """
         for record in self:
-            review = False
-            if record.link_1_ids:
-                env_id = self.env.ref(
-                    "ssi_general_audit." "general_audit_business_environment_3_bd6c9b55"
-                ).id
-                it_env = record.link_1_ids.filtered(
-                    lambda x: x.business_environment_id.id == env_id
-                )
-                if len(it_env) == 1:
-                    review = it_env.review
+            review = record.amendment_review
+            if record.state in record._get_following_states():
+                review = False
+                if record.link_1_ids:
+                    env_id = self.env.ref(
+                        "ssi_general_audit."
+                        "general_audit_business_environment_3_bd6c9b55"
+                    ).id
+                    it_env = record.link_1_ids.filtered(
+                        lambda x: x.business_environment_id.id == env_id
+                    )
+                    if len(it_env) == 1:
+                        review = it_env.review
             record.amendment_review = review
 
     amendment_review = fields.Text(
@@ -234,19 +291,29 @@ class GeneralAuditWSfbbe0f8(models.Model):
 
     @api.depends(
         "link_1_ids",
+        "link_1_ids.business_environment_id",
+        "link_1_ids.review",
     )
     def _compute_regulatory_review(self):
+        """Copy the regulatory review from RA.150.5.
+
+        Follows the source while the worksheet is draft or open and
+        keeps the stored value afterwards.
+        """
         for record in self:
-            review = False
-            if record.link_1_ids:
-                env_id = self.env.ref(
-                    "ssi_general_audit." "general_audit_business_environment_4_aaeebb37"
-                ).id
-                it_env = record.link_1_ids.filtered(
-                    lambda x: x.business_environment_id.id == env_id
-                )
-                if len(it_env) == 1:
-                    review = it_env.review
+            review = record.regulatory_review
+            if record.state in record._get_following_states():
+                review = False
+                if record.link_1_ids:
+                    env_id = self.env.ref(
+                        "ssi_general_audit."
+                        "general_audit_business_environment_4_aaeebb37"
+                    ).id
+                    it_env = record.link_1_ids.filtered(
+                        lambda x: x.business_environment_id.id == env_id
+                    )
+                    if len(it_env) == 1:
+                        review = it_env.review
             record.regulatory_review = review
 
     regulatory_review = fields.Text(
@@ -257,16 +324,25 @@ class GeneralAuditWSfbbe0f8(models.Model):
 
     @api.depends(
         "link_2_ids",
+        "link_2_ids.detail_ids",
+        "link_2_ids.detail_ids.need_unannounced_audit",
     )
     def _compute_unannounced_audit_ids(self):
+        """Copy the details that need an unannounced audit from RA.150.3.
+
+        Follows the source while the worksheet is draft or open and
+        keeps the stored value afterwards.
+        """
         for record in self:
-            result = False
-            if record.link_2_ids:
-                nannounced_audit = record.link_2_ids.detail_ids.filtered(
-                    lambda x: x.need_unannounced_audit
-                )
-                if nannounced_audit:
-                    result = nannounced_audit.ids
+            result = record.unannounced_audit_ids.ids
+            if record.state in record._get_following_states():
+                result = False
+                if record.link_2_ids:
+                    nannounced_audit = record.link_2_ids.detail_ids.filtered(
+                        lambda x: x.need_unannounced_audit
+                    )
+                    if nannounced_audit:
+                        result = nannounced_audit.ids
             record.unannounced_audit_ids = result
 
     unannounced_audit_ids = fields.Many2many(
@@ -278,16 +354,24 @@ class GeneralAuditWSfbbe0f8(models.Model):
 
     @api.depends(
         "link_2_ids",
+        "link_2_ids.assigned_team_member_ids",
     )
     def _compute_business_cycle_member_ids(self):
+        """Copy the RA.150.3 worksheets that have assigned team members.
+
+        Follows the source while the worksheet is draft or open and
+        keeps the stored value afterwards.
+        """
         for record in self:
-            result = False
-            if record.link_2_ids:
-                assigned_team_member_ids = record.link_2_ids.filtered(
-                    lambda y: y.assigned_team_member_ids
-                )
-                if assigned_team_member_ids:
-                    result = assigned_team_member_ids.ids
+            result = record.assigned_team_member_ids.ids
+            if record.state in record._get_following_states():
+                result = False
+                if record.link_2_ids:
+                    assigned_team_member_ids = record.link_2_ids.filtered(
+                        lambda y: y.assigned_team_member_ids
+                    )
+                    if assigned_team_member_ids:
+                        result = assigned_team_member_ids.ids
             record.assigned_team_member_ids = result
 
     assigned_team_member_ids = fields.Many2many(
@@ -300,16 +384,24 @@ class GeneralAuditWSfbbe0f8(models.Model):
 
     @api.depends(
         "link_2_ids",
+        "link_2_ids.estimated_transaction_volume",
     )
     def _compute_volume_transaction_ids(self):
+        """Copy the RA.150.3 worksheets that have a transaction volume.
+
+        Follows the source while the worksheet is draft or open and
+        keeps the stored value afterwards.
+        """
         for record in self:
-            result = False
-            if record.link_2_ids:
-                volume_transaction_ids = record.link_2_ids.filtered(
-                    lambda y: y.estimated_transaction_volume > 0
-                )
-                if volume_transaction_ids:
-                    result = volume_transaction_ids.ids
+            result = record.volume_transaction_ids.ids
+            if record.state in record._get_following_states():
+                result = False
+                if record.link_2_ids:
+                    volume_transaction_ids = record.link_2_ids.filtered(
+                        lambda y: y.estimated_transaction_volume > 0
+                    )
+                    if volume_transaction_ids:
+                        result = volume_transaction_ids.ids
             record.volume_transaction_ids = result
 
     volume_transaction_ids = fields.Many2many(
@@ -345,22 +437,34 @@ class GeneralAuditWSfbbe0f8(models.Model):
     @api.depends(
         "materiality_balance_type",
         "link_3_ids",
+        "link_3_ids.base_amount_source",
+        "link_3_ids.overall_materiality",
+        "link_3_ids.performance_materiality",
+        "link_3_ids.tolerable_misstatement",
     )
     def _compute_materiality(self):
-        for record in self:
-            overall = 0.0
-            performance = 0.0
-            tolerable = 0.0
+        """Copy the materiality amounts from the preliminary materiality.
 
-            if record.materiality_balance_type and record.link_3_ids:
-                ttype = record.materiality_balance_type
-                materiality = record.link_3_ids.filtered(
-                    lambda x: x.base_amount_source == ttype
-                )
-                if materiality:
-                    overall = materiality.overall_materiality
-                    performance = materiality.performance_materiality
-                    tolerable = materiality.tolerable_misstatement
+        Follows the source while the worksheet is draft or open and
+        keeps the stored values afterwards.
+        """
+        for record in self:
+            overall = record.overall_materiality
+            performance = record.performance_materiality
+            tolerable = record.tolerable_misstatement
+            if record.state in record._get_following_states():
+                overall = performance = tolerable = 0.0
+                if record.materiality_balance_type and record.link_3_ids:
+                    ttype = record.materiality_balance_type
+                    # More than one worksheet can share a balance type;
+                    # use the first one, like the other single links do.
+                    materiality = record.link_3_ids.filtered(
+                        lambda x: x.base_amount_source == ttype
+                    )[:1]
+                    if materiality:
+                        overall = materiality.overall_materiality
+                        performance = materiality.performance_materiality
+                        tolerable = materiality.tolerable_misstatement
             record.overall_materiality = overall
             record.performance_materiality = performance
             record.tolerable_misstatement = tolerable
@@ -384,21 +488,33 @@ class GeneralAuditWSfbbe0f8(models.Model):
     @api.depends(
         "materiality_balance_type",
         "link_4_ids",
+        "link_4_ids.base_amount_source",
+        "link_4_ids.materiality_mapping_ids",
+        "link_4_ids.materiality_mapping_ids.use_specific_materiality",
     )
     def _compute_specific_materiality_ids(self):
+        """Copy the specific materiality lines from the source worksheet.
+
+        Follows the source while the worksheet is draft or open and
+        keeps the stored value afterwards.
+        """
         for record in self:
-            result = False
-            if record.materiality_balance_type and record.link_4_ids:
-                ttype = record.materiality_balance_type
-                materiality = record.link_4_ids.filtered(
-                    lambda x: x.base_amount_source == ttype
-                )
-                if materiality:
-                    specific_materiality = materiality.materiality_mapping_ids.filtered(
-                        lambda y: y.use_specific_materiality
+            result = record.specific_materiality_ids.ids
+            if record.state in record._get_following_states():
+                result = False
+                if record.materiality_balance_type and record.link_4_ids:
+                    ttype = record.materiality_balance_type
+                    materiality = record.link_4_ids.filtered(
+                        lambda x: x.base_amount_source == ttype
                     )
-                    if specific_materiality:
-                        result = specific_materiality.ids
+                    if materiality:
+                        specific_materiality = (
+                            materiality.materiality_mapping_ids.filtered(
+                                lambda y: y.use_specific_materiality
+                            )
+                        )
+                        if specific_materiality:
+                            result = specific_materiality.ids
             record.specific_materiality_ids = result
 
     label_specific_materiality = fields.Char()
@@ -422,24 +538,38 @@ class GeneralAuditWSfbbe0f8(models.Model):
 
     @api.depends(
         "link_7_id",
+        "link_7_id.previous_audit_information_ids",
+        "link_7_id.other_provided_service_ids",
+        "link_7_id.previous_audit_evidence_ids",
+        "link_7_id.other_evidence_ids",
     )
     def _compute_main_business_activity(self):
+        """Copy the audit information and evidence from RA.150.3.1.
+
+        Follows the source while the worksheet is draft or open and
+        keeps the stored values afterwards.
+        """
         for record in self:
-            previous_auditor = other_provided = False
-            previous_audit_evidence = other_evidence = False
-            if record.link_7_id:
-                if record.link_7_id.previous_audit_information_ids:
-                    previous_auditor = (
-                        record.link_7_id.previous_audit_information_ids.ids
-                    )
-                if record.link_7_id.other_provided_service_ids:
-                    other_provided = record.link_7_id.other_provided_service_ids.ids
-                if record.link_7_id.previous_audit_evidence_ids:
-                    previous_audit_evidence = (
-                        record.link_7_id.previous_audit_evidence_ids.ids
-                    )
-                if record.link_7_id.other_evidence_ids:
-                    other_evidence = record.link_7_id.other_evidence_ids.ids
+            previous_auditor = record.previous_auditor_ids.ids
+            other_provided = record.other_provided_service_ids.ids
+            previous_audit_evidence = record.previous_audit_evidence_ids.ids
+            other_evidence = record.other_evidence_ids.ids
+            if record.state in record._get_following_states():
+                previous_auditor = other_provided = False
+                previous_audit_evidence = other_evidence = False
+                if record.link_7_id:
+                    if record.link_7_id.previous_audit_information_ids:
+                        previous_auditor = (
+                            record.link_7_id.previous_audit_information_ids.ids
+                        )
+                    if record.link_7_id.other_provided_service_ids:
+                        other_provided = record.link_7_id.other_provided_service_ids.ids
+                    if record.link_7_id.previous_audit_evidence_ids:
+                        previous_audit_evidence = (
+                            record.link_7_id.previous_audit_evidence_ids.ids
+                        )
+                    if record.link_7_id.other_evidence_ids:
+                        other_evidence = record.link_7_id.other_evidence_ids.ids
             record.previous_auditor_ids = previous_auditor
             record.other_provided_service_ids = other_provided
             record.previous_audit_evidence_ids = previous_audit_evidence
@@ -481,15 +611,24 @@ class GeneralAuditWSfbbe0f8(models.Model):
 
     @api.depends(
         "link_9_ids",
+        "link_9_ids.summary_ids",
+        "link_9_ids.summary_ids.select_team",
     )
     def _compute_assignment_team_ids(self):
+        """Copy the selected team summaries from the source worksheets.
+
+        Follows the source while the worksheet is draft or open and
+        keeps the stored value afterwards.
+        """
         for record in self:
-            result = False
-            summaries = record.link_9_ids.mapped("summary_ids")
-            if summaries:
-                summary = summaries.filtered(lambda y: y.select_team == "yes")
-                if summary:
-                    result = summary.ids
+            result = record.assignment_team_ids.ids
+            if record.state in record._get_following_states():
+                result = False
+                summaries = record.link_9_ids.mapped("summary_ids")
+                if summaries:
+                    summary = summaries.filtered(lambda y: y.select_team == "yes")
+                    if summary:
+                        result = summary.ids
             record.assignment_team_ids = result
 
     assignment_team_ids = fields.Many2many(
@@ -502,14 +641,25 @@ class GeneralAuditWSfbbe0f8(models.Model):
 
     @api.depends(
         "link_11_ids",
+        "link_11_ids.risk",
+        "link_11_ids.business_cycle_id",
     )
     def _compute_cycle_level_ids(self):
+        """Copy the high risk business cycles from the source worksheets.
+
+        Follows the source while the worksheet is draft or open and
+        keeps the stored value afterwards.
+        """
         for record in self:
-            result = False
-            if record.link_11_ids:
-                cycle_level = record.link_11_ids.filtered(lambda y: y.risk == "high")
-                if cycle_level:
-                    result = cycle_level.business_cycle_id.ids
+            result = record.cycle_level_ids.ids
+            if record.state in record._get_following_states():
+                result = False
+                if record.link_11_ids:
+                    cycle_level = record.link_11_ids.filtered(
+                        lambda y: y.risk == "high"
+                    )
+                    if cycle_level:
+                        result = cycle_level.business_cycle_id.ids
             record.cycle_level_ids = result
 
     cycle_level_ids = fields.Many2many(
@@ -522,16 +672,25 @@ class GeneralAuditWSfbbe0f8(models.Model):
 
     @api.depends(
         "link_12_ids",
+        "link_12_ids.risk",
+        "link_12_ids.account_type_id",
     )
     def _compute_significant_acc_ids(self):
+        """Copy the high risk account types from the source worksheets.
+
+        Follows the source while the worksheet is draft or open and
+        keeps the stored value afterwards.
+        """
         for record in self:
-            result = False
-            if record.link_12_ids:
-                significant_acc = record.link_12_ids.filtered(
-                    lambda y: y.risk == "high"
-                )
-                if significant_acc:
-                    result = significant_acc.account_type_id.ids
+            result = record.significant_acc_ids.ids
+            if record.state in record._get_following_states():
+                result = False
+                if record.link_12_ids:
+                    significant_acc = record.link_12_ids.filtered(
+                        lambda y: y.risk == "high"
+                    )
+                    if significant_acc:
+                        result = significant_acc.account_type_id.ids
             record.significant_acc_ids = result
 
     significant_acc_ids = fields.Many2many(
@@ -1221,6 +1380,7 @@ class GeneralAuditWSfbbe0f8(models.Model):
 
     @api.depends(
         "link_14_ids",
+        "link_14_ids.reporting_timetable_ids",
     )
     def _compute_reporting_timetable_ids(self):
         """Aggregate reporting timetable lines from ``link_14_ids``.
@@ -1228,15 +1388,19 @@ class GeneralAuditWSfbbe0f8(models.Model):
         Same aggregation pattern as ``_compute_unannounced_audit_ids``:
         gathers child records (``reporting_timetable_ids``) from every
         linked Data Collection worksheet into a single flat collection.
+        Follows the source while the worksheet is draft or open and
+        keeps the stored value afterwards.
         """
         for record in self:
-            result = False
-            if record.link_14_ids:
-                reporting_timetable_ids = record.link_14_ids.mapped(
-                    "reporting_timetable_ids"
-                )
-                if reporting_timetable_ids:
-                    result = reporting_timetable_ids.ids
+            result = record.reporting_timetable_ids.ids
+            if record.state in record._get_following_states():
+                result = False
+                if record.link_14_ids:
+                    reporting_timetable_ids = record.link_14_ids.mapped(
+                        "reporting_timetable_ids"
+                    )
+                    if reporting_timetable_ids:
+                        result = reporting_timetable_ids.ids
             record.reporting_timetable_ids = result
 
     reporting_timetable_ids = fields.Many2many(

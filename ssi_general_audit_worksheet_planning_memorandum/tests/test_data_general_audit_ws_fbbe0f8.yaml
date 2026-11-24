@@ -2253,3 +2253,156 @@ scenarios:
           conclusion:
             type: "value"
             operator: "is_falsy"
+
+  # ------------------------------------------------------------------
+  # Copied data follows the source while draft/open, frozen afterwards
+  # ------------------------------------------------------------------
+  - name: "Copied evidence follows ae11f7e while open and Start refreshes links"
+    steps:
+      - step: "Create client account group"
+        action: "create"
+        model: "client_account_group"
+        save_as: "account_group"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Account Group - fbbe0f8 Follow"
+          code: "/"
+
+      - step: "Create client account type"
+        action: "create"
+        model: "client_account_type"
+        save_as: "account_type"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Account Type - fbbe0f8 Follow"
+          code: "/"
+          group_id: "REC: account_group.id"
+
+      - step: "Create audit evidence type"
+        action: "create"
+        model: "general_audit_evidence"
+        save_as: "evidence"
+        as_user: "base.user_admin"
+        values:
+          name: "Test Evidence - fbbe0f8 Follow"
+
+      - step: "Create worksheet fbbe0f8 before its source exists (draft)"
+        action: "create"
+        model: "general_audit_ws_fbbe0f8"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_fbbe0f8.id"
+
+      - step: "Create source worksheet ae11f7e with one previous evidence line"
+        action: "create"
+        model: "general_audit_ws_ae11f7e"
+        save_as: "ws_ae11f7e"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_ae11f7e.id"
+          previous_audit_evidence_ids:
+            - - 0
+              - 0
+              - evidence_id: "REC: evidence.id"
+                related_account_type_ids: [[6, 0, ["REC: account_type.id"]]]
+
+      - step: "Open source worksheet ae11f7e"
+        action: "call"
+        target: "ws_ae11f7e"
+        method: "action_open"
+        as_user: "base.user_admin"
+
+      - step: "Assert the draft worksheet has not picked the source up yet"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          previous_audit_evidence_ids:
+            type: "m2m"
+            check: "count"
+            expected_count: 0
+
+      - step: "Start worksheet fbbe0f8 (refreshes every link)"
+        action: "call"
+        target: "worksheet"
+        method: "action_open"
+        as_user: "base.user_admin"
+
+      - step: "Invalidate cache after starting worksheet fbbe0f8"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Assert Start linked the source and copied its evidence"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          state:
+            type: "value"
+            expected: "open"
+          link_7_id:
+            type: "m2o"
+            expected: "REC: ws_ae11f7e"
+          previous_audit_evidence_ids:
+            type: "m2m"
+            check: "count"
+            expected_count: 1
+
+      - step: "Add a second previous evidence line to the source"
+        action: "write"
+        target: "ws_ae11f7e"
+        as_user: "base.user_admin"
+        values:
+          previous_audit_evidence_ids:
+            - - 0
+              - 0
+              - evidence_id: "REC: evidence.id"
+                related_account_type_ids: [[6, 0, ["REC: account_type.id"]]]
+
+      - step: "Invalidate cache after changing the source"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Assert the open worksheet follows the source"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          previous_audit_evidence_ids:
+            type: "m2m"
+            check: "count"
+            expected_count: 2
+
+      - step: "Move the worksheet to done (snapshot)"
+        action: "write"
+        target: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          state: "done"
+
+      - step: "Add a third previous evidence line to the source"
+        action: "write"
+        target: "ws_ae11f7e"
+        as_user: "base.user_admin"
+        values:
+          previous_audit_evidence_ids:
+            - - 0
+              - 0
+              - evidence_id: "REC: evidence.id"
+                related_account_type_ids: [[6, 0, ["REC: account_type.id"]]]
+
+      - step: "Invalidate cache after changing the source again"
+        action: "call"
+        target: "worksheet"
+        method: "invalidate_cache"
+
+      - step: "Assert the done worksheet keeps its snapshot"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          previous_audit_evidence_ids:
+            type: "m2m"
+            check: "count"
+            expected_count: 2
