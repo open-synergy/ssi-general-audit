@@ -7,6 +7,8 @@ from lxml import etree
 
 from odoo import _, api, fields, models
 
+from odoo.addons.ssi_decorator import ssi_decorator
+
 
 class GeneralAuditWSfbbe0f8(models.Model):
     """
@@ -66,6 +68,10 @@ class GeneralAuditWSfbbe0f8(models.Model):
         related="general_audit_id.financial_accounting_standard_id",
         compute_sudo=True,
         store=True,
+        help=(
+            "Taken from the audit engagement (General Audit) this "
+            "memorandum belongs to."
+        ),
     )
     other_report_ids = fields.Many2many(
         related="general_audit_id.other_report_ids",
@@ -74,6 +80,10 @@ class GeneralAuditWSfbbe0f8(models.Model):
         column1="ws_fbbe0f8_id",
         column2="other_report_id",
         store=True,
+        help=(
+            "Taken from the audit engagement (General Audit) this "
+            "memorandum belongs to."
+        ),
     )
     expert_type_ids = fields.Many2many(
         related="general_audit_id.expert_type_ids",
@@ -82,24 +92,63 @@ class GeneralAuditWSfbbe0f8(models.Model):
         column1="ws_fbbe0f8_id",
         column2="expert_type_id",
         store=True,
+        help=(
+            "Taken from the audit engagement (General Audit) this "
+            "memorandum belongs to."
+        ),
     )
+
+    def _get_following_states(self):
+        """Return the states in which source worksheet data is followed.
+
+        While the worksheet is in one of these states, the data copied
+        from the linked worksheets follows their changes. In any other
+        state the copied data is kept as a snapshot.
+
+        :return: list of state codes
+        """
+        return ["draft", "open"]
+
+    @ssi_decorator.post_open_action()
+    def _10_refresh_source_links(self):
+        """Refresh every link to the source worksheets on start.
+
+        Worksheets created or opened after this one was drafted are
+        picked up, and the data copied from them is recomputed.
+
+        :return: nothing; marks the link fields to be recomputed
+        """
+        self.ensure_one()
+        self.modified(["general_audit_id"])
 
     @api.depends(
         "link_1_ids",
+        "link_1_ids.business_environment_id",
+        "link_1_ids.detail_ids",
+        "link_1_ids.review",
     )
     def _compute_it_detail_review_ids(self):
+        """Copy the IT environment details and review from RA.150.5.
+
+        Follows the source while the worksheet is draft or open and
+        keeps the stored values afterwards.
+        """
         for record in self:
-            result = review = False
-            if record.link_1_ids:
-                it_env_id = self.env.ref(
-                    "ssi_general_audit." "general_audit_business_environment_5_ffea3e57"
-                ).id
-                it_env = record.link_1_ids.filtered(
-                    lambda x: x.business_environment_id.id == it_env_id
-                )
-                if len(it_env) == 1:
-                    result = it_env.detail_ids.ids
-                    review = it_env.review
+            result = record.it_detail_ids.ids
+            review = record.it_review
+            if record.state in record._get_following_states():
+                result = review = False
+                if record.link_1_ids:
+                    it_env_id = self.env.ref(
+                        "ssi_general_audit."
+                        "general_audit_business_environment_5_ffea3e57"
+                    ).id
+                    it_env = record.link_1_ids.filtered(
+                        lambda x: x.business_environment_id.id == it_env_id
+                    )
+                    if len(it_env) == 1:
+                        result = it_env.detail_ids.ids
+                        review = it_env.review
             record.it_detail_ids = result
             record.it_review = review
 
@@ -108,34 +157,59 @@ class GeneralAuditWSfbbe0f8(models.Model):
         compute_sudo=True,
         compute="_compute_it_detail_review_ids",
         store=True,
+        help=(
+            "Taken from the 'Understanding of the Business Environment' "
+            "worksheet, field 'Details', from the 'Technological "
+            "Developments' environment."
+        ),
     )
     it_review = fields.Text(
         compute_sudo=True,
         compute="_compute_it_detail_review_ids",
         store=True,
+        help=(
+            "Taken from the 'Understanding of the Business Environment' "
+            "worksheet, field 'Review Notes', from the 'Technological "
+            "Developments' environment."
+        ),
     )
 
     @api.depends(
         "link_1_ids",
+        "link_1_ids.business_environment_id",
+        "link_1_ids.review",
     )
     def _compute_industry_review(self):
+        """Copy the industry review from RA.150.5.
+
+        Follows the source while the worksheet is draft or open and
+        keeps the stored value afterwards.
+        """
         for record in self:
-            review = False
-            if record.link_1_ids:
-                env_id = self.env.ref(
-                    "ssi_general_audit." "general_audit_business_environment_1_297034dd"
-                ).id
-                it_env = record.link_1_ids.filtered(
-                    lambda x: x.business_environment_id.id == env_id
-                )
-                if len(it_env) == 1:
-                    review = it_env.review
+            review = record.industry_review
+            if record.state in record._get_following_states():
+                review = False
+                if record.link_1_ids:
+                    env_id = self.env.ref(
+                        "ssi_general_audit."
+                        "general_audit_business_environment_1_297034dd"
+                    ).id
+                    it_env = record.link_1_ids.filtered(
+                        lambda x: x.business_environment_id.id == env_id
+                    )
+                    if len(it_env) == 1:
+                        review = it_env.review
             record.industry_review = review
 
     industry_review = fields.Text(
         compute_sudo=True,
         compute="_compute_industry_review",
         store=True,
+        help=(
+            "Taken from the 'Understanding of the Business Environment' "
+            "worksheet, field 'Review Notes', from the 'Industry Trends' "
+            "environment."
+        ),
     )
     label_shedule_meeting_auditor = fields.Char()
     label_mgmt = fields.Char(
@@ -145,16 +219,28 @@ class GeneralAuditWSfbbe0f8(models.Model):
         related="link_10_id.mgmt_communication_planning_date",
         compute_sudo=True,
         store=True,
+        help=(
+            "Taken from the 'External Communication' worksheet, field 'Date "
+            "of Management Communication Planning'."
+        ),
     )
     mgmt_communication_date = fields.Date(
         related="link_10_id.mgmt_communication_date",
         compute_sudo=True,
         store=True,
+        help=(
+            "Taken from the 'External Communication' worksheet, field 'Date "
+            "of Management Communication'."
+        ),
     )
     mgmt_communication_reporting_date = fields.Date(
         related="link_10_id.mgmt_communication_reporting_date",
         compute_sudo=True,
         store=True,
+        help=(
+            "Taken from the 'External Communication' worksheet, field 'Date "
+            "of Management Communication Reporting'."
+        ),
     )
     label_tcwg = fields.Char(
         string="TCWG",
@@ -163,16 +249,28 @@ class GeneralAuditWSfbbe0f8(models.Model):
         related="link_10_id.tcwg_communication_planning_date",
         compute_sudo=True,
         store=True,
+        help=(
+            "Taken from the 'External Communication' worksheet, field 'Date "
+            "of TCWG Communication Planning'."
+        ),
     )
     tcwg_communication_date = fields.Date(
         related="link_10_id.tcwg_communication_date",
         compute_sudo=True,
         store=True,
+        help=(
+            "Taken from the 'External Communication' worksheet, field 'Date "
+            "of TCWG Communication'."
+        ),
     )
     tcwg_communication_reporting_date = fields.Date(
         related="link_10_id.tcwg_communication_reporting_date",
         compute_sudo=True,
         store=True,
+        help=(
+            "Taken from the 'External Communication' worksheet, field 'Date "
+            "of TCWG Communication Reporting'."
+        ),
     )
     label_internal_auditor = fields.Char(
         string="Internal Auditor",
@@ -181,92 +279,155 @@ class GeneralAuditWSfbbe0f8(models.Model):
         related="link_10_id.ia_communication_planning_date",
         compute_sudo=True,
         store=True,
+        help=(
+            "Taken from the 'External Communication' worksheet, field 'Date "
+            "of IA Communication Planning'."
+        ),
     )
     ia_communication_date = fields.Date(
         related="link_10_id.ia_communication_date",
         compute_sudo=True,
         store=True,
+        help=(
+            "Taken from the 'External Communication' worksheet, field 'Date "
+            "of IA Communication'."
+        ),
     )
     ia_communication_reporting_date = fields.Date(
         related="link_10_id.ia_communication_reporting_date",
         compute_sudo=True,
         store=True,
+        help=(
+            "Taken from the 'External Communication' worksheet, field 'Date "
+            "of IA Communication Reporting'."
+        ),
     )
     label_shedule_meeting_team = fields.Char()
     communication_planning_date = fields.Date(
         related="link_6_id.communication_planning_date",
         compute_sudo=True,
         store=True,
+        help=(
+            "Taken from the 'Team Communication - Pre-Engagement' "
+            "worksheet, field 'Communication Planning Date'."
+        ),
     )
     communication_date = fields.Date(
         related="link_6_id.communication_date",
         compute_sudo=True,
         store=True,
+        help=(
+            "Taken from the 'Team Communication - Pre-Engagement' "
+            "worksheet, field 'Communication Date'."
+        ),
     )
     communication_reporting_date = fields.Date(
         related="link_6_id.communication_reporting_date",
         compute_sudo=True,
         store=True,
+        help=(
+            "Taken from the 'Team Communication - Pre-Engagement' "
+            "worksheet, field 'Communication Reporting Date'."
+        ),
     )
 
     @api.depends(
         "link_1_ids",
+        "link_1_ids.business_environment_id",
+        "link_1_ids.review",
     )
     def _compute_amendment_review(self):
+        """Copy the amendment review from RA.150.5.
+
+        Follows the source while the worksheet is draft or open and
+        keeps the stored value afterwards.
+        """
         for record in self:
-            review = False
-            if record.link_1_ids:
-                env_id = self.env.ref(
-                    "ssi_general_audit." "general_audit_business_environment_3_bd6c9b55"
-                ).id
-                it_env = record.link_1_ids.filtered(
-                    lambda x: x.business_environment_id.id == env_id
-                )
-                if len(it_env) == 1:
-                    review = it_env.review
+            review = record.amendment_review
+            if record.state in record._get_following_states():
+                review = False
+                if record.link_1_ids:
+                    env_id = self.env.ref(
+                        "ssi_general_audit."
+                        "general_audit_business_environment_3_bd6c9b55"
+                    ).id
+                    it_env = record.link_1_ids.filtered(
+                        lambda x: x.business_environment_id.id == env_id
+                    )
+                    if len(it_env) == 1:
+                        review = it_env.review
             record.amendment_review = review
 
     amendment_review = fields.Text(
         compute_sudo=True,
         compute="_compute_amendment_review",
         store=True,
+        help=(
+            "Taken from the 'Understanding of the Business Environment' "
+            "worksheet, field 'Review Notes', from the 'Amendments or "
+            "Changes to Accounting Standards' environment."
+        ),
     )
 
     @api.depends(
         "link_1_ids",
+        "link_1_ids.business_environment_id",
+        "link_1_ids.review",
     )
     def _compute_regulatory_review(self):
+        """Copy the regulatory review from RA.150.5.
+
+        Follows the source while the worksheet is draft or open and
+        keeps the stored value afterwards.
+        """
         for record in self:
-            review = False
-            if record.link_1_ids:
-                env_id = self.env.ref(
-                    "ssi_general_audit." "general_audit_business_environment_4_aaeebb37"
-                ).id
-                it_env = record.link_1_ids.filtered(
-                    lambda x: x.business_environment_id.id == env_id
-                )
-                if len(it_env) == 1:
-                    review = it_env.review
+            review = record.regulatory_review
+            if record.state in record._get_following_states():
+                review = False
+                if record.link_1_ids:
+                    env_id = self.env.ref(
+                        "ssi_general_audit."
+                        "general_audit_business_environment_4_aaeebb37"
+                    ).id
+                    it_env = record.link_1_ids.filtered(
+                        lambda x: x.business_environment_id.id == env_id
+                    )
+                    if len(it_env) == 1:
+                        review = it_env.review
             record.regulatory_review = review
 
     regulatory_review = fields.Text(
         compute_sudo=True,
         compute="_compute_regulatory_review",
         store=True,
+        help=(
+            "Taken from the 'Understanding of the Business Environment' "
+            "worksheet, field 'Review Notes', from the 'Regulatory Changes' "
+            "environment."
+        ),
     )
 
     @api.depends(
         "link_2_ids",
+        "link_2_ids.detail_ids",
+        "link_2_ids.detail_ids.need_unannounced_audit",
     )
     def _compute_unannounced_audit_ids(self):
+        """Copy the details that need an unannounced audit from RA.150.3.
+
+        Follows the source while the worksheet is draft or open and
+        keeps the stored value afterwards.
+        """
         for record in self:
-            result = False
-            if record.link_2_ids:
-                nannounced_audit = record.link_2_ids.detail_ids.filtered(
-                    lambda x: x.need_unannounced_audit
-                )
-                if nannounced_audit:
-                    result = nannounced_audit.ids
+            result = record.unannounced_audit_ids.ids
+            if record.state in record._get_following_states():
+                result = False
+                if record.link_2_ids:
+                    nannounced_audit = record.link_2_ids.detail_ids.filtered(
+                        lambda x: x.need_unannounced_audit
+                    )
+                    if nannounced_audit:
+                        result = nannounced_audit.ids
             record.unannounced_audit_ids = result
 
     unannounced_audit_ids = fields.Many2many(
@@ -274,20 +435,33 @@ class GeneralAuditWSfbbe0f8(models.Model):
         compute_sudo=True,
         compute="_compute_unannounced_audit_ids",
         store=True,
+        help=(
+            "Taken from the 'Business Cycle Summaries' worksheet, field "
+            "'Details', only the lines where Need Unannounced Audit is "
+            "checked."
+        ),
     )
 
     @api.depends(
         "link_2_ids",
+        "link_2_ids.assigned_team_member_ids",
     )
     def _compute_business_cycle_member_ids(self):
+        """Copy the RA.150.3 worksheets that have assigned team members.
+
+        Follows the source while the worksheet is draft or open and
+        keeps the stored value afterwards.
+        """
         for record in self:
-            result = False
-            if record.link_2_ids:
-                assigned_team_member_ids = record.link_2_ids.filtered(
-                    lambda y: y.assigned_team_member_ids
-                )
-                if assigned_team_member_ids:
-                    result = assigned_team_member_ids.ids
+            result = record.assigned_team_member_ids.ids
+            if record.state in record._get_following_states():
+                result = False
+                if record.link_2_ids:
+                    assigned_team_member_ids = record.link_2_ids.filtered(
+                        lambda y: y.assigned_team_member_ids
+                    )
+                    if assigned_team_member_ids:
+                        result = assigned_team_member_ids.ids
             record.assigned_team_member_ids = result
 
     assigned_team_member_ids = fields.Many2many(
@@ -296,20 +470,33 @@ class GeneralAuditWSfbbe0f8(models.Model):
         compute="_compute_business_cycle_member_ids",
         relation="rel_ga_ws_fbbe0f8_2_assigned_team_member",
         store=True,
+        help=(
+            "Taken from the 'Business Cycle Summaries' worksheet, field "
+            "'Assigned Team Members', only the business cycles that have "
+            "assigned team members."
+        ),
     )
 
     @api.depends(
         "link_2_ids",
+        "link_2_ids.estimated_transaction_volume",
     )
     def _compute_volume_transaction_ids(self):
+        """Copy the RA.150.3 worksheets that have a transaction volume.
+
+        Follows the source while the worksheet is draft or open and
+        keeps the stored value afterwards.
+        """
         for record in self:
-            result = False
-            if record.link_2_ids:
-                volume_transaction_ids = record.link_2_ids.filtered(
-                    lambda y: y.estimated_transaction_volume > 0
-                )
-                if volume_transaction_ids:
-                    result = volume_transaction_ids.ids
+            result = record.volume_transaction_ids.ids
+            if record.state in record._get_following_states():
+                result = False
+                if record.link_2_ids:
+                    volume_transaction_ids = record.link_2_ids.filtered(
+                        lambda y: y.estimated_transaction_volume > 0
+                    )
+                    if volume_transaction_ids:
+                        result = volume_transaction_ids.ids
             record.volume_transaction_ids = result
 
     volume_transaction_ids = fields.Many2many(
@@ -318,6 +505,11 @@ class GeneralAuditWSfbbe0f8(models.Model):
         compute="_compute_volume_transaction_ids",
         relation="rel_ga_ws_fbbe0f8_2_volume_transaction",
         store=True,
+        help=(
+            "Taken from the 'Business Cycle Summaries' worksheet, field "
+            "'Estimated Transaction Volume', only the business cycles with "
+            "a volume above zero."
+        ),
     )
 
     label_materiality = fields.Char()
@@ -337,7 +529,7 @@ class GeneralAuditWSfbbe0f8(models.Model):
             ],
         },
         help=(
-            "Source of the base amount used in materiality computation: "
+            "Which balance is used as the base amount of the materiality: "
             "Extrapolation or End Period."
         ),
     )
@@ -345,22 +537,34 @@ class GeneralAuditWSfbbe0f8(models.Model):
     @api.depends(
         "materiality_balance_type",
         "link_3_ids",
+        "link_3_ids.base_amount_source",
+        "link_3_ids.overall_materiality",
+        "link_3_ids.performance_materiality",
+        "link_3_ids.tolerable_misstatement",
     )
     def _compute_materiality(self):
-        for record in self:
-            overall = 0.0
-            performance = 0.0
-            tolerable = 0.0
+        """Copy the materiality amounts from the preliminary materiality.
 
-            if record.materiality_balance_type and record.link_3_ids:
-                ttype = record.materiality_balance_type
-                materiality = record.link_3_ids.filtered(
-                    lambda x: x.base_amount_source == ttype
-                )
-                if materiality:
-                    overall = materiality.overall_materiality
-                    performance = materiality.performance_materiality
-                    tolerable = materiality.tolerable_misstatement
+        Follows the source while the worksheet is draft or open and
+        keeps the stored values afterwards.
+        """
+        for record in self:
+            overall = record.overall_materiality
+            performance = record.performance_materiality
+            tolerable = record.tolerable_misstatement
+            if record.state in record._get_following_states():
+                overall = performance = tolerable = 0.0
+                if record.materiality_balance_type and record.link_3_ids:
+                    ttype = record.materiality_balance_type
+                    # More than one worksheet can share a balance type;
+                    # use the first one, like the other single links do.
+                    materiality = record.link_3_ids.filtered(
+                        lambda x: x.base_amount_source == ttype
+                    )[:1]
+                    if materiality:
+                        overall = materiality.overall_materiality
+                        performance = materiality.performance_materiality
+                        tolerable = materiality.tolerable_misstatement
             record.overall_materiality = overall
             record.performance_materiality = performance
             record.tolerable_misstatement = tolerable
@@ -369,36 +573,65 @@ class GeneralAuditWSfbbe0f8(models.Model):
         compute_sudo=True,
         compute="_compute_materiality",
         store=True,
+        help=(
+            "Taken from the 'Materiality Computation' worksheet, field "
+            "'Overall Materiality', from the worksheet whose Balance Type "
+            "is the same as the Balance Type chosen in this memorandum."
+        ),
     )
     performance_materiality = fields.Monetary(
         compute_sudo=True,
         compute="_compute_materiality",
         store=True,
+        help=(
+            "Taken from the 'Materiality Computation' worksheet, field "
+            "'Performance Materiality', from the worksheet whose Balance "
+            "Type is the same as the Balance Type chosen in this "
+            "memorandum."
+        ),
     )
     tolerable_misstatement = fields.Monetary(
         compute_sudo=True,
         compute="_compute_materiality",
         store=True,
+        help=(
+            "Taken from the 'Materiality Computation' worksheet, field "
+            "'Tolerable Misstatement', from the worksheet whose Balance "
+            "Type is the same as the Balance Type chosen in this "
+            "memorandum."
+        ),
     )
 
     @api.depends(
         "materiality_balance_type",
         "link_4_ids",
+        "link_4_ids.base_amount_source",
+        "link_4_ids.materiality_mapping_ids",
+        "link_4_ids.materiality_mapping_ids.use_specific_materiality",
     )
     def _compute_specific_materiality_ids(self):
+        """Copy the specific materiality lines from the source worksheet.
+
+        Follows the source while the worksheet is draft or open and
+        keeps the stored value afterwards.
+        """
         for record in self:
-            result = False
-            if record.materiality_balance_type and record.link_4_ids:
-                ttype = record.materiality_balance_type
-                materiality = record.link_4_ids.filtered(
-                    lambda x: x.base_amount_source == ttype
-                )
-                if materiality:
-                    specific_materiality = materiality.materiality_mapping_ids.filtered(
-                        lambda y: y.use_specific_materiality
+            result = record.specific_materiality_ids.ids
+            if record.state in record._get_following_states():
+                result = False
+                if record.materiality_balance_type and record.link_4_ids:
+                    ttype = record.materiality_balance_type
+                    materiality = record.link_4_ids.filtered(
+                        lambda x: x.base_amount_source == ttype
                     )
-                    if specific_materiality:
-                        result = specific_materiality.ids
+                    if materiality:
+                        specific_materiality = (
+                            materiality.materiality_mapping_ids.filtered(
+                                lambda y: y.use_specific_materiality
+                            )
+                        )
+                        if specific_materiality:
+                            result = specific_materiality.ids
             record.specific_materiality_ids = result
 
     label_specific_materiality = fields.Char()
@@ -408,38 +641,66 @@ class GeneralAuditWSfbbe0f8(models.Model):
         compute="_compute_specific_materiality_ids",
         relation="rel_ga_ws_fbbe0f8_2_6dcda0e_materiality_mapping",
         store=True,
+        help=(
+            "Taken from the 'Specific Materiality' worksheet, field "
+            "'Materiality Mapping', only the lines where Use Specific "
+            "Materiality is checked, from the worksheet whose Balance Type "
+            "is the same as the Balance Type chosen in this memorandum."
+        ),
     )
 
     inherent_finance_review = fields.Text(
         related="link_5_id.review",
         store=True,
+        help=(
+            "Taken from the 'Financial Statement Level Inherent Risk' "
+            "worksheet, field 'Review Notes'."
+        ),
     )
 
     team_pe_review = fields.Text(
         related="link_6_id.review",
         store=True,
+        help=(
+            "Taken from the 'Team Communication - Pre-Engagement' "
+            "worksheet, field 'Review Notes'."
+        ),
     )
 
     @api.depends(
         "link_7_id",
+        "link_7_id.previous_audit_information_ids",
+        "link_7_id.other_provided_service_ids",
+        "link_7_id.previous_audit_evidence_ids",
+        "link_7_id.other_evidence_ids",
     )
     def _compute_main_business_activity(self):
+        """Copy the audit information and evidence from RA.150.3.1.
+
+        Follows the source while the worksheet is draft or open and
+        keeps the stored values afterwards.
+        """
         for record in self:
-            previous_auditor = other_provided = False
-            previous_audit_evidence = other_evidence = False
-            if record.link_7_id:
-                if record.link_7_id.previous_audit_information_ids:
-                    previous_auditor = (
-                        record.link_7_id.previous_audit_information_ids.ids
-                    )
-                if record.link_7_id.other_provided_service_ids:
-                    other_provided = record.link_7_id.other_provided_service_ids.ids
-                if record.link_7_id.previous_audit_evidence_ids:
-                    previous_audit_evidence = (
-                        record.link_7_id.previous_audit_evidence_ids.ids
-                    )
-                if record.link_7_id.other_evidence_ids:
-                    other_evidence = record.link_7_id.other_evidence_ids.ids
+            previous_auditor = record.previous_auditor_ids.ids
+            other_provided = record.other_provided_service_ids.ids
+            previous_audit_evidence = record.previous_audit_evidence_ids.ids
+            other_evidence = record.other_evidence_ids.ids
+            if record.state in record._get_following_states():
+                previous_auditor = other_provided = False
+                previous_audit_evidence = other_evidence = False
+                if record.link_7_id:
+                    if record.link_7_id.previous_audit_information_ids:
+                        previous_auditor = (
+                            record.link_7_id.previous_audit_information_ids.ids
+                        )
+                    if record.link_7_id.other_provided_service_ids:
+                        other_provided = record.link_7_id.other_provided_service_ids.ids
+                    if record.link_7_id.previous_audit_evidence_ids:
+                        previous_audit_evidence = (
+                            record.link_7_id.previous_audit_evidence_ids.ids
+                        )
+                    if record.link_7_id.other_evidence_ids:
+                        other_evidence = record.link_7_id.other_evidence_ids.ids
             record.previous_auditor_ids = previous_auditor
             record.other_provided_service_ids = other_provided
             record.previous_audit_evidence_ids = previous_audit_evidence
@@ -451,6 +712,10 @@ class GeneralAuditWSfbbe0f8(models.Model):
         compute="_compute_main_business_activity",
         relation="rel_ga_ws_fbbe0f8_2_ae11f7e_previous_audit",
         store=True,
+        help=(
+            "Taken from the 'Main Business Activity Processes' worksheet, "
+            "field 'Previous Significant Audit Information'."
+        ),
     )
     other_provided_service_ids = fields.Many2many(
         comodel_name=("general_audit_ws_ae11f7e." "other_provided_service"),
@@ -458,6 +723,10 @@ class GeneralAuditWSfbbe0f8(models.Model):
         compute="_compute_main_business_activity",
         relation="rel_ga_ws_fbbe0f8_2_ae11f7e_other_provided_service",
         store=True,
+        help=(
+            "Taken from the 'Main Business Activity Processes' worksheet, "
+            "field 'Other Provided Service'."
+        ),
     )
     previous_audit_evidence_ids = fields.Many2many(
         comodel_name=("general_audit_ws_ae11f7e." "previous_audit_evidence"),
@@ -465,6 +734,10 @@ class GeneralAuditWSfbbe0f8(models.Model):
         compute="_compute_main_business_activity",
         relation="rel_ga_ws_fbbe0f8_2_ae11f7e_previous_audit_evidence",
         store=True,
+        help=(
+            "Taken from the 'Main Business Activity Processes' worksheet, "
+            "field 'Previous Audit Evidence'."
+        ),
     )
     other_evidence_ids = fields.Many2many(
         comodel_name=("general_audit_ws_ae11f7e." "other_evidence"),
@@ -472,24 +745,41 @@ class GeneralAuditWSfbbe0f8(models.Model):
         compute="_compute_main_business_activity",
         relation="rel_ga_ws_fbbe0f8_2_ae11f7e_other_evidence",
         store=True,
+        help=(
+            "Taken from the 'Main Business Activity Processes' worksheet, "
+            "field 'Other Evidence'."
+        ),
     )
 
     control_entity_review = fields.Text(
         related="link_8_id.review",
         store=True,
+        help=(
+            "Taken from the 'Control Risk - Entity Level' worksheet, field "
+            "'Review Notes'."
+        ),
     )
 
     @api.depends(
         "link_9_ids",
+        "link_9_ids.summary_ids",
+        "link_9_ids.summary_ids.select_team",
     )
     def _compute_assignment_team_ids(self):
+        """Copy the selected team summaries from the source worksheets.
+
+        Follows the source while the worksheet is draft or open and
+        keeps the stored value afterwards.
+        """
         for record in self:
-            result = False
-            summaries = record.link_9_ids.mapped("summary_ids")
-            if summaries:
-                summary = summaries.filtered(lambda y: y.select_team == "yes")
-                if summary:
-                    result = summary.ids
+            result = record.assignment_team_ids.ids
+            if record.state in record._get_following_states():
+                result = False
+                summaries = record.link_9_ids.mapped("summary_ids")
+                if summaries:
+                    summary = summaries.filtered(lambda y: y.select_team == "yes")
+                    if summary:
+                        result = summary.ids
             record.assignment_team_ids = result
 
     assignment_team_ids = fields.Many2many(
@@ -498,18 +788,34 @@ class GeneralAuditWSfbbe0f8(models.Model):
         compute="_compute_assignment_team_ids",
         relation="rel_ga_ws_fbbe0f8_2_b9d8a5c_summary",
         store=True,
+        help=(
+            "Taken from the 'Competency, Availability and Independency Of "
+            "Assignment Team' worksheet, field 'Summary', only the lines "
+            "where Select As Team is Yes."
+        ),
     )
 
     @api.depends(
         "link_11_ids",
+        "link_11_ids.risk",
+        "link_11_ids.business_cycle_id",
     )
     def _compute_cycle_level_ids(self):
+        """Copy the high risk business cycles from the source worksheets.
+
+        Follows the source while the worksheet is draft or open and
+        keeps the stored value afterwards.
+        """
         for record in self:
-            result = False
-            if record.link_11_ids:
-                cycle_level = record.link_11_ids.filtered(lambda y: y.risk == "high")
-                if cycle_level:
-                    result = cycle_level.business_cycle_id.ids
+            result = record.cycle_level_ids.ids
+            if record.state in record._get_following_states():
+                result = False
+                if record.link_11_ids:
+                    cycle_level = record.link_11_ids.filtered(
+                        lambda y: y.risk == "high"
+                    )
+                    if cycle_level:
+                        result = cycle_level.business_cycle_id.ids
             record.cycle_level_ids = result
 
     cycle_level_ids = fields.Many2many(
@@ -518,20 +824,33 @@ class GeneralAuditWSfbbe0f8(models.Model):
         compute="_compute_cycle_level_ids",
         relation="rel_ga_ws_fbbe0f8_2_cycle_client_business",
         store=True,
+        help=(
+            "Taken from the 'Control Risk - Cycle Level' worksheet, field "
+            "'Business Cycle', only the lines where Risk is High."
+        ),
     )
 
     @api.depends(
         "link_12_ids",
+        "link_12_ids.risk",
+        "link_12_ids.account_type_id",
     )
     def _compute_significant_acc_ids(self):
+        """Copy the high risk account types from the source worksheets.
+
+        Follows the source while the worksheet is draft or open and
+        keeps the stored value afterwards.
+        """
         for record in self:
-            result = False
-            if record.link_12_ids:
-                significant_acc = record.link_12_ids.filtered(
-                    lambda y: y.risk == "high"
-                )
-                if significant_acc:
-                    result = significant_acc.account_type_id.ids
+            result = record.significant_acc_ids.ids
+            if record.state in record._get_following_states():
+                result = False
+                if record.link_12_ids:
+                    significant_acc = record.link_12_ids.filtered(
+                        lambda y: y.risk == "high"
+                    )
+                    if significant_acc:
+                        result = significant_acc.account_type_id.ids
             record.significant_acc_ids = result
 
     significant_acc_ids = fields.Many2many(
@@ -540,15 +859,25 @@ class GeneralAuditWSfbbe0f8(models.Model):
         compute="_compute_significant_acc_ids",
         relation="rel_ga_ws_fbbe0f8_2_significant_client_account",
         store=True,
+        help=(
+            "Taken from the 'Significant Account Internal Control' "
+            "worksheet, field 'Standard Account', only the lines where Risk "
+            "is High."
+        ),
     )
 
     allocation_total_hour_id = fields.Many2one(
         related="link_13_id.allocation_total_hour_id",
         store=True,
+        help=("Taken from the 'Audit Working Plan' worksheet, field 'Total " "Hour'."),
     )
     budget_plan_status = fields.Selection(
         related="link_13_id.budget_plan_status",
         store=True,
+        help=(
+            "Taken from the 'Audit Working Plan' worksheet, field 'Budget "
+            "Plan Status'."
+        ),
     )
 
     # Understanding of The Business Environment
@@ -576,9 +905,8 @@ class GeneralAuditWSfbbe0f8(models.Model):
         compute="_compute_link_1_ids",
         store=True,
         help=(
-            "Collection of all (Understanding of the Business Environment) "
-            "worksheets linked to this General Audit. Automatically computed; use it to "
-            "navigate to each detailed worksheet."
+            "All 'Understanding of the Business Environment' worksheets of "
+            "this audit engagement. Filled in automatically."
         ),
     )
 
@@ -607,9 +935,8 @@ class GeneralAuditWSfbbe0f8(models.Model):
         compute="_compute_link_2_ids",
         store=True,
         help=(
-            "Collection of all (Business Cycle Summaries) "
-            "worksheets linked to this General Audit. Automatically computed; use it to "
-            "navigate to each detailed worksheet."
+            "All 'Business Cycle Summaries' worksheets of this audit "
+            "engagement. Filled in automatically."
         ),
     )
 
@@ -638,9 +965,8 @@ class GeneralAuditWSfbbe0f8(models.Model):
         compute="_compute_link_3_ids",
         store=True,
         help=(
-            "Collection of all (Materiality Computation) "
-            "worksheets linked to this General Audit. Automatically computed; use it to "
-            "navigate to each detailed worksheet."
+            "All 'Materiality Computation' worksheets of this audit "
+            "engagement. Filled in automatically."
         ),
     )
 
@@ -669,9 +995,8 @@ class GeneralAuditWSfbbe0f8(models.Model):
         compute="_compute_link_4_ids",
         store=True,
         help=(
-            "Collection of all (Specific Materiality) "
-            "worksheets linked to this General Audit. Automatically computed; use it to "
-            "navigate to each detailed worksheet."
+            "All 'Specific Materiality' worksheets of this audit "
+            "engagement. Filled in automatically."
         ),
     )
 
@@ -710,35 +1035,32 @@ class GeneralAuditWSfbbe0f8(models.Model):
         compute="_compute_link_5_id",
         store=True,
         help=(
-            "Link to worksheet (Inherent Risk - Financial Statement Level) "
-            "for this General Audit. Automatically computed and stored."
+            "The 'Inherent Risk - Financial Statement Level' worksheet of "
+            "this audit engagement. Filled in automatically."
         ),
     )
     link_5_state = fields.Selection(
         string="State (RA.210.1)",
         related="link_5_id.state",
         help=(
-            "Workflow state of the linked Inherent Risk - "
-            "Financial Statement Level worksheet. "
-            "Read-only and follows the linked record."
+            "Status of the 'Inherent Risk - Financial Statement Level' "
+            "worksheet. Follows that worksheet and cannot be edited here."
         ),
     )
     link_5_conclusion_id = fields.Many2one(
         string="Conclusion ID (RA.210.1)",
         related="link_5_id.conclusion_id",
         help=(
-            "Conclusion from the Inherent Risk - "
-            "Financial Statement Level worksheet. "
-            "Read-only, mirrors the linked record."
+            "Conclusion chosen in the 'Inherent Risk - Financial Statement "
+            "Level' worksheet. Cannot be edited here."
         ),
     )
     link_5_conclusion = fields.Text(
         string="Conclusion (RA.210.1)",
         related="link_5_id.conclusion",
         help=(
-            "Conclusion on the Inherent Risk - "
-            "Financial Statement Level worksheet. "
-            "Read-only, mirrors the linked record."
+            "Conclusion written in the 'Inherent Risk - Financial Statement "
+            "Level' worksheet. Cannot be edited here."
         ),
     )
 
@@ -777,35 +1099,32 @@ class GeneralAuditWSfbbe0f8(models.Model):
         compute="_compute_link_6_id",
         store=True,
         help=(
-            "Link to worksheet Team Communication Pre-Engagement "
-            "for this General Audit. Automatically computed and stored."
+            "The 'Team Communication Pre-Engagement' worksheet of this "
+            "audit engagement. Filled in automatically."
         ),
     )
     link_6_state = fields.Selection(
         string="State (PE.160)",
         related="link_6_id.state",
         help=(
-            "Workflow state of the linked Team Communication "
-            "Pre-Engagement worksheet. "
-            "Read-only and follows the linked record."
+            "Status of the 'Team Communication Pre-Engagement' worksheet. "
+            "Follows that worksheet and cannot be edited here."
         ),
     )
     link_6_conclusion_id = fields.Many2one(
         string="Conclusion ID (PE.160)",
         related="link_6_id.conclusion_id",
         help=(
-            "Conclusion from the Team Communication "
-            "Pre-Engagement worksheet. "
-            "Read-only, mirrors the linked record."
+            "Conclusion chosen in the 'Team Communication Pre-Engagement' "
+            "worksheet. Cannot be edited here."
         ),
     )
     link_6_conclusion = fields.Text(
         string="Conclusion (PE.160)",
         related="link_6_id.conclusion",
         help=(
-            "Conclusion on the Team Communication "
-            "Pre-Engagement worksheet. "
-            "Read-only, mirrors the linked record."
+            "Conclusion written in the 'Team Communication Pre-Engagement' "
+            "worksheet. Cannot be edited here."
         ),
     )
 
@@ -844,35 +1163,32 @@ class GeneralAuditWSfbbe0f8(models.Model):
         compute="_compute_link_7_id",
         store=True,
         help=(
-            "Link to worksheet Main Business Activity Process "
-            "for this General Audit. Automatically computed and stored."
+            "The 'Main Business Activity Process' worksheet of this audit "
+            "engagement. Filled in automatically."
         ),
     )
     link_7_state = fields.Selection(
         string="State (PE.150.3)",
         related="link_7_id.state",
         help=(
-            "Workflow state of the linked Main Business "
-            "Activity Process worksheet. "
-            "Read-only and follows the linked record."
+            "Status of the 'Main Business Activity Process' worksheet. "
+            "Follows that worksheet and cannot be edited here."
         ),
     )
     link_7_conclusion_id = fields.Many2one(
         string="Conclusion ID (PE.150.3)",
         related="link_7_id.conclusion_id",
         help=(
-            "Conclusion from the Main Business "
-            "Activity Process worksheet. "
-            "Read-only, mirrors the linked record."
+            "Conclusion chosen in the 'Main Business Activity Process' "
+            "worksheet. Cannot be edited here."
         ),
     )
     link_7_conclusion = fields.Text(
         string="Conclusion (PE.150.3)",
         related="link_7_id.conclusion",
         help=(
-            "Conclusion on the Main Business "
-            "Activity Process worksheet. "
-            "Read-only, mirrors the linked record."
+            "Conclusion written in the 'Main Business Activity Process' "
+            "worksheet. Cannot be edited here."
         ),
     )
 
@@ -911,35 +1227,32 @@ class GeneralAuditWSfbbe0f8(models.Model):
         compute="_compute_link_8_id",
         store=True,
         help=(
-            "Link to worksheet Control Risk - Entity Level "
-            "for this General Audit. Automatically computed and stored."
+            "The 'Control Risk - Entity Level' worksheet of this audit "
+            "engagement. Filled in automatically."
         ),
     )
     link_8_state = fields.Selection(
         string="State (RA.220.1)",
         related="link_8_id.state",
         help=(
-            "Workflow state of the linked Control Risk "
-            "Entity Level worksheet. "
-            "Read-only and follows the linked record."
+            "Status of the 'Control Risk - Entity Level' worksheet. Follows "
+            "that worksheet and cannot be edited here."
         ),
     )
     link_8_conclusion_id = fields.Many2one(
         string="Conclusion ID (RA.220.1)",
         related="link_8_id.conclusion_id",
         help=(
-            "Conclusion from the Control Risk "
-            "Entity Level worksheet. "
-            "Read-only, mirrors the linked record."
+            "Conclusion chosen in the 'Control Risk - Entity Level' "
+            "worksheet. Cannot be edited here."
         ),
     )
     link_8_conclusion = fields.Text(
         string="Conclusion (RA.220.1)",
         related="link_8_id.conclusion",
         help=(
-            "Conclusion on the Control Risk "
-            "Entity Level worksheet. "
-            "Read-only, mirrors the linked record."
+            "Conclusion written in the 'Control Risk - Entity Level' "
+            "worksheet. Cannot be edited here."
         ),
     )
 
@@ -977,9 +1290,9 @@ class GeneralAuditWSfbbe0f8(models.Model):
         compute="_compute_link_9_ids",
         store=True,
         help=(
-            "Collection of all (Competency, availability, and "
-            "independency of assignment team) worksheets linked to this "
-            "General Audit. Automatically computed and stored."
+            "All 'Competency, availability, and independency of assignment "
+            "team' worksheets of this audit engagement. Filled in "
+            "automatically."
         ),
     )
 
@@ -1018,35 +1331,32 @@ class GeneralAuditWSfbbe0f8(models.Model):
         compute="_compute_link_10_id",
         store=True,
         help=(
-            "Link to worksheet External Communication "
-            "for this General Audit. Automatically computed and stored."
+            "The 'External Communication' worksheet of this audit "
+            "engagement. Filled in automatically."
         ),
     )
     link_10_state = fields.Selection(
         string="State (RA.330)",
         related="link_10_id.state",
         help=(
-            "Workflow state of the linked External Communication "
-            "worksheet. "
-            "Read-only and follows the linked record."
+            "Status of the 'External Communication' worksheet. Follows that "
+            "worksheet and cannot be edited here."
         ),
     )
     link_10_conclusion_id = fields.Many2one(
         string="Conclusion ID (RA.330)",
         related="link_10_id.conclusion_id",
         help=(
-            "Conclusion from the External Communication "
-            "worksheet. "
-            "Read-only, mirrors the linked record."
+            "Conclusion chosen in the 'External Communication' worksheet. "
+            "Cannot be edited here."
         ),
     )
     link_10_conclusion = fields.Text(
         string="Conclusion (RA.330)",
         related="link_10_id.conclusion",
         help=(
-            "Conclusion on the External Communication "
-            "worksheet. "
-            "Read-only, mirrors the linked record."
+            "Conclusion written in the 'External Communication' worksheet. "
+            "Cannot be edited here."
         ),
     )
 
@@ -1075,9 +1385,8 @@ class GeneralAuditWSfbbe0f8(models.Model):
         compute="_compute_link_11_ids",
         store=True,
         help=(
-            "Collection of all (Control Risk - Cycle Level) "
-            "worksheets linked to this General Audit. Automatically computed; use it to "
-            "navigate to each detailed worksheet."
+            "All 'Control Risk - Cycle Level' worksheets of this audit "
+            "engagement. Filled in automatically."
         ),
     )
 
@@ -1106,9 +1415,8 @@ class GeneralAuditWSfbbe0f8(models.Model):
         compute="_compute_link_12_ids",
         store=True,
         help=(
-            "Collection of all (Significant Account) "
-            "worksheets linked to this General Audit. Automatically computed; use it to "
-            "navigate to each detailed worksheet."
+            "All 'Significant Account' worksheets of this audit engagement. "
+            "Filled in automatically."
         ),
     )
 
@@ -1147,35 +1455,32 @@ class GeneralAuditWSfbbe0f8(models.Model):
         compute="_compute_link_13_id",
         store=True,
         help=(
-            "Link to worksheet Audit Working Plan "
-            "for this General Audit. Automatically computed and stored."
+            "The 'Audit Working Plan' worksheet of this audit engagement. "
+            "Filled in automatically."
         ),
     )
     link_13_state = fields.Selection(
         string="State (PE.120)",
         related="link_13_id.state",
         help=(
-            "Workflow state of the linked Audit Working Plan "
-            "worksheet. "
-            "Read-only and follows the linked record."
+            "Status of the 'Audit Working Plan' worksheet. Follows that "
+            "worksheet and cannot be edited here."
         ),
     )
     link_13_conclusion_id = fields.Many2one(
         string="Conclusion ID (PE.120)",
         related="link_13_id.conclusion_id",
         help=(
-            "Conclusion from the Audit Working Plan "
-            "worksheet. "
-            "Read-only, mirrors the linked record."
+            "Conclusion chosen in the 'Audit Working Plan' worksheet. "
+            "Cannot be edited here."
         ),
     )
     link_13_conclusion = fields.Text(
         string="Conclusion (PE.120)",
         related="link_13_id.conclusion",
         help=(
-            "Conclusion on the Audit Working Plan "
-            "worksheet. "
-            "Read-only, mirrors the linked record."
+            "Conclusion written in the 'Audit Working Plan' worksheet. "
+            "Cannot be edited here."
         ),
     )
 
@@ -1213,14 +1518,14 @@ class GeneralAuditWSfbbe0f8(models.Model):
         relation="rel_ga_ws_fbbe0f8_2_f5a3cee",
         store=True,
         help=(
-            "Collection of all (Data Collection) "
-            "worksheets linked to this General Audit. Automatically computed; use it to "
-            "navigate to each detailed worksheet."
+            "All 'Data Collection' worksheets of this audit engagement. "
+            "Filled in automatically."
         ),
     )
 
     @api.depends(
         "link_14_ids",
+        "link_14_ids.reporting_timetable_ids",
     )
     def _compute_reporting_timetable_ids(self):
         """Aggregate reporting timetable lines from ``link_14_ids``.
@@ -1228,15 +1533,19 @@ class GeneralAuditWSfbbe0f8(models.Model):
         Same aggregation pattern as ``_compute_unannounced_audit_ids``:
         gathers child records (``reporting_timetable_ids``) from every
         linked Data Collection worksheet into a single flat collection.
+        Follows the source while the worksheet is draft or open and
+        keeps the stored value afterwards.
         """
         for record in self:
-            result = False
-            if record.link_14_ids:
-                reporting_timetable_ids = record.link_14_ids.mapped(
-                    "reporting_timetable_ids"
-                )
-                if reporting_timetable_ids:
-                    result = reporting_timetable_ids.ids
+            result = record.reporting_timetable_ids.ids
+            if record.state in record._get_following_states():
+                result = False
+                if record.link_14_ids:
+                    reporting_timetable_ids = record.link_14_ids.mapped(
+                        "reporting_timetable_ids"
+                    )
+                    if reporting_timetable_ids:
+                        result = reporting_timetable_ids.ids
             record.reporting_timetable_ids = result
 
     reporting_timetable_ids = fields.Many2many(
@@ -1247,9 +1556,9 @@ class GeneralAuditWSfbbe0f8(models.Model):
         relation="rel_ga_ws_fbbe0f8_2_f5a3cee_reporting_timetable",
         store=True,
         help=(
-            "Reporting timetable lines aggregated from every linked "
-            "Data Collection worksheet (``link_14_ids``). Read-only "
-            "summary; edited from the Data Collection worksheet itself."
+            "Taken from the 'Data Collection' worksheet, field 'Reporting "
+            "Timetable'. Cannot be edited here; edit it in the Data "
+            "Collection worksheet."
         ),
     )
 
@@ -1286,9 +1595,9 @@ class GeneralAuditWSfbbe0f8(models.Model):
         compute="_compute_link_15_ids",
         store=True,
         help=(
-            "Collection of all (Acceptance and Continuance of Client "
-            "Relationships Analysis) worksheets linked to this General "
-            "Audit. Automatically computed and stored."
+            "All 'Acceptance and Continuance of Client Relationships "
+            "Analysis' worksheets of this audit engagement. Filled in "
+            "automatically."
         ),
     )
 
@@ -1325,9 +1634,8 @@ class GeneralAuditWSfbbe0f8(models.Model):
         compute="_compute_link_16_ids",
         store=True,
         help=(
-            "Collection of all (Previous Financial Reporting Issues) "
-            "worksheets linked to this General Audit. Automatically "
-            "computed and stored."
+            "All 'Previous Financial Reporting Issues' worksheets of this "
+            "audit engagement. Filled in automatically."
         ),
     )
 
@@ -1364,8 +1672,8 @@ class GeneralAuditWSfbbe0f8(models.Model):
         compute="_compute_link_17_ids",
         store=True,
         help=(
-            "Collection of all (Management Integrity) worksheets linked "
-            "to this General Audit. Automatically computed and stored."
+            "All 'Management Integrity' worksheets of this audit "
+            "engagement. Filled in automatically."
         ),
     )
 
@@ -1402,9 +1710,8 @@ class GeneralAuditWSfbbe0f8(models.Model):
         compute="_compute_link_18_ids",
         store=True,
         help=(
-            "Collection of all (Communication with Previous Auditor) "
-            "worksheets linked to this General Audit. Automatically "
-            "computed and stored."
+            "All 'Communication with Previous Auditor' worksheets of this "
+            "audit engagement. Filled in automatically."
         ),
     )
 
@@ -1442,32 +1749,32 @@ class GeneralAuditWSfbbe0f8(models.Model):
         compute="_compute_link_19_id",
         store=True,
         help=(
-            "Link to worksheet (Engagement Letter) for this General "
-            "Audit. Automatically computed and stored."
+            "The 'Engagement Letter' worksheet of this audit engagement. "
+            "Filled in automatically."
         ),
     )
     link_19_state = fields.Selection(
         string="State",
         related="link_19_id.state",
         help=(
-            "Workflow state of the linked Engagement Letter worksheet. "
-            "Read-only and follows the linked record."
+            "Status of the 'Engagement Letter' worksheet. Follows that "
+            "worksheet and cannot be edited here."
         ),
     )
     link_19_conclusion_id = fields.Many2one(
         string="Conclusion ID",
         related="link_19_id.conclusion_id",
         help=(
-            "Conclusion from the Engagement Letter worksheet. Read- "
-            "only, mirrors the linked record."
+            "Conclusion chosen in the 'Engagement Letter' worksheet. Cannot "
+            "be edited here."
         ),
     )
     link_19_conclusion = fields.Text(
         string="Conclusion",
         related="link_19_id.conclusion",
         help=(
-            "Conclusion on the Engagement Letter worksheet. Read-only, "
-            "mirrors the linked record."
+            "Conclusion written in the 'Engagement Letter' worksheet. "
+            "Cannot be edited here."
         ),
     )
 
@@ -1505,32 +1812,32 @@ class GeneralAuditWSfbbe0f8(models.Model):
         compute="_compute_link_20_id",
         store=True,
         help=(
-            "Link to worksheet (Assignment Letter) for this General "
-            "Audit. Automatically computed and stored."
+            "The 'Assignment Letter' worksheet of this audit engagement. "
+            "Filled in automatically."
         ),
     )
     link_20_state = fields.Selection(
         string="State",
         related="link_20_id.state",
         help=(
-            "Workflow state of the linked Assignment Letter worksheet. "
-            "Read-only and follows the linked record."
+            "Status of the 'Assignment Letter' worksheet. Follows that "
+            "worksheet and cannot be edited here."
         ),
     )
     link_20_conclusion_id = fields.Many2one(
         string="Conclusion ID",
         related="link_20_id.conclusion_id",
         help=(
-            "Conclusion from the Assignment Letter worksheet. Read- "
-            "only, mirrors the linked record."
+            "Conclusion chosen in the 'Assignment Letter' worksheet. Cannot "
+            "be edited here."
         ),
     )
     link_20_conclusion = fields.Text(
         string="Conclusion",
         related="link_20_id.conclusion",
         help=(
-            "Conclusion on the Assignment Letter worksheet. Read-only, "
-            "mirrors the linked record."
+            "Conclusion written in the 'Assignment Letter' worksheet. "
+            "Cannot be edited here."
         ),
     )
 
@@ -1569,32 +1876,32 @@ class GeneralAuditWSfbbe0f8(models.Model):
         compute="_compute_link_21_id",
         store=True,
         help=(
-            "Link to worksheet (Independence Statement) for this "
-            "General Audit. Automatically computed and stored."
+            "The 'Independence Statement' worksheet of this audit "
+            "engagement. Filled in automatically."
         ),
     )
     link_21_state = fields.Selection(
         string="State",
         related="link_21_id.state",
         help=(
-            "Workflow state of the linked Independence Statement "
-            "worksheet. Read-only and follows the linked record."
+            "Status of the 'Independence Statement' worksheet. Follows that "
+            "worksheet and cannot be edited here."
         ),
     )
     link_21_conclusion_id = fields.Many2one(
         string="Conclusion ID",
         related="link_21_id.conclusion_id",
         help=(
-            "Conclusion from the Independence Statement worksheet. "
-            "Read-only, mirrors the linked record."
+            "Conclusion chosen in the 'Independence Statement' worksheet. "
+            "Cannot be edited here."
         ),
     )
     link_21_conclusion = fields.Text(
         string="Conclusion",
         related="link_21_id.conclusion",
         help=(
-            "Conclusion on the Independence Statement worksheet. Read- "
-            "only, mirrors the linked record."
+            "Conclusion written in the 'Independence Statement' worksheet. "
+            "Cannot be edited here."
         ),
     )
 
@@ -1633,32 +1940,32 @@ class GeneralAuditWSfbbe0f8(models.Model):
         compute="_compute_link_22_id",
         store=True,
         help=(
-            "Link to worksheet (Client Assistance Package) for this "
-            "General Audit. Automatically computed and stored."
+            "The 'Client Assistance Package' worksheet of this audit "
+            "engagement. Filled in automatically."
         ),
     )
     link_22_state = fields.Selection(
         string="State",
         related="link_22_id.state",
         help=(
-            "Workflow state of the linked Client Assistance Package "
-            "worksheet. Read-only and follows the linked record."
+            "Status of the 'Client Assistance Package' worksheet. Follows "
+            "that worksheet and cannot be edited here."
         ),
     )
     link_22_conclusion_id = fields.Many2one(
         string="Conclusion ID",
         related="link_22_id.conclusion_id",
         help=(
-            "Conclusion from the Client Assistance Package worksheet. "
-            "Read-only, mirrors the linked record."
+            "Conclusion chosen in the 'Client Assistance Package' "
+            "worksheet. Cannot be edited here."
         ),
     )
     link_22_conclusion = fields.Text(
         string="Conclusion",
         related="link_22_id.conclusion",
         help=(
-            "Conclusion on the Client Assistance Package worksheet. "
-            "Read-only, mirrors the linked record."
+            "Conclusion written in the 'Client Assistance Package' "
+            "worksheet. Cannot be edited here."
         ),
     )
 
@@ -1695,8 +2002,8 @@ class GeneralAuditWSfbbe0f8(models.Model):
         compute="_compute_link_23_ids",
         store=True,
         help=(
-            "Collection of all (Trial Balance) worksheets linked to this "
-            "General Audit. Automatically computed and stored."
+            "All 'Trial Balance' worksheets of this audit engagement. "
+            "Filled in automatically."
         ),
     )
 
@@ -1735,33 +2042,32 @@ class GeneralAuditWSfbbe0f8(models.Model):
         compute="_compute_link_24_id",
         store=True,
         help=(
-            "Link to worksheet (Preliminary Analytic Procedure) for "
-            "this General Audit. Automatically computed and stored."
+            "The 'Preliminary Analytic Procedure' worksheet of this audit "
+            "engagement. Filled in automatically."
         ),
     )
     link_24_state = fields.Selection(
         string="State",
         related="link_24_id.state",
         help=(
-            "Workflow state of the linked Preliminary Analytic "
-            "Procedure worksheet. Read-only and follows the linked "
-            "record."
+            "Status of the 'Preliminary Analytic Procedure' worksheet. "
+            "Follows that worksheet and cannot be edited here."
         ),
     )
     link_24_conclusion_id = fields.Many2one(
         string="Conclusion ID",
         related="link_24_id.conclusion_id",
         help=(
-            "Conclusion from the Preliminary Analytic Procedure "
-            "worksheet. Read-only, mirrors the linked record."
+            "Conclusion chosen in the 'Preliminary Analytic Procedure' "
+            "worksheet. Cannot be edited here."
         ),
     )
     link_24_conclusion = fields.Text(
         string="Conclusion",
         related="link_24_id.conclusion",
         help=(
-            "Conclusion on the Preliminary Analytic Procedure "
-            "worksheet. Read-only, mirrors the linked record."
+            "Conclusion written in the 'Preliminary Analytic Procedure' "
+            "worksheet. Cannot be edited here."
         ),
     )
 
@@ -1798,9 +2104,9 @@ class GeneralAuditWSfbbe0f8(models.Model):
         compute="_compute_link_25_ids",
         store=True,
         help=(
-            "Collection of all (Preliminary Analytic Procedure - Vertical "
-            "& Horizontal Analysis) worksheets linked to this General "
-            "Audit. Automatically computed and stored."
+            "All 'Preliminary Analytic Procedure - Vertical & Horizontal "
+            "Analysis' worksheets of this audit engagement. Filled in "
+            "automatically."
         ),
     )
 
@@ -1837,9 +2143,8 @@ class GeneralAuditWSfbbe0f8(models.Model):
         compute="_compute_link_26_ids",
         store=True,
         help=(
-            "Collection of all (Preliminary Analytic Procedure - Ratio "
-            "Analysis) worksheets linked to this General Audit. "
-            "Automatically computed and stored."
+            "All 'Preliminary Analytic Procedure - Ratio Analysis' "
+            "worksheets of this audit engagement. Filled in automatically."
         ),
     )
 
@@ -1878,32 +2183,32 @@ class GeneralAuditWSfbbe0f8(models.Model):
         compute="_compute_link_27_id",
         store=True,
         help=(
-            "Link to worksheet (General Information and Legal Aspect) "
-            "for this General Audit. Automatically computed and stored."
+            "The 'General Information and Legal Aspect' worksheet of this "
+            "audit engagement. Filled in automatically."
         ),
     )
     link_27_state = fields.Selection(
         string="State",
         related="link_27_id.state",
         help=(
-            "Workflow state of the linked General Information and Legal "
-            "Aspect worksheet. Read-only and follows the linked record."
+            "Status of the 'General Information and Legal Aspect' "
+            "worksheet. Follows that worksheet and cannot be edited here."
         ),
     )
     link_27_conclusion_id = fields.Many2one(
         string="Conclusion ID",
         related="link_27_id.conclusion_id",
         help=(
-            "Conclusion from the General Information and Legal Aspect "
-            "worksheet. Read-only, mirrors the linked record."
+            "Conclusion chosen in the 'General Information and Legal "
+            "Aspect' worksheet. Cannot be edited here."
         ),
     )
     link_27_conclusion = fields.Text(
         string="Conclusion",
         related="link_27_id.conclusion",
         help=(
-            "Conclusion on the General Information and Legal Aspect "
-            "worksheet. Read-only, mirrors the linked record."
+            "Conclusion written in the 'General Information and Legal "
+            "Aspect' worksheet. Cannot be edited here."
         ),
     )
 
@@ -1942,36 +2247,32 @@ class GeneralAuditWSfbbe0f8(models.Model):
         compute="_compute_link_28_id",
         store=True,
         help=(
-            "Link to worksheet (Structure Organization and "
-            "Responsibility) for this General Audit. Automatically "
-            "computed and stored."
+            "The 'Structure Organization and Responsibility' worksheet of "
+            "this audit engagement. Filled in automatically."
         ),
     )
     link_28_state = fields.Selection(
         string="State",
         related="link_28_id.state",
         help=(
-            "Workflow state of the linked Structure Organization and "
-            "Responsibility worksheet. Read-only and follows the linked "
-            "record."
+            "Status of the 'Structure Organization and Responsibility' "
+            "worksheet. Follows that worksheet and cannot be edited here."
         ),
     )
     link_28_conclusion_id = fields.Many2one(
         string="Conclusion ID",
         related="link_28_id.conclusion_id",
         help=(
-            "Conclusion from the Structure Organization and "
-            "Responsibility worksheet. Read-only, mirrors the linked "
-            "record."
+            "Conclusion chosen in the 'Structure Organization and "
+            "Responsibility' worksheet. Cannot be edited here."
         ),
     )
     link_28_conclusion = fields.Text(
         string="Conclusion",
         related="link_28_id.conclusion",
         help=(
-            "Conclusion on the Structure Organization and "
-            "Responsibility worksheet. Read-only, mirrors the linked "
-            "record."
+            "Conclusion written in the 'Structure Organization and "
+            "Responsibility' worksheet. Cannot be edited here."
         ),
     )
 
@@ -2010,33 +2311,32 @@ class GeneralAuditWSfbbe0f8(models.Model):
         compute="_compute_link_29_id",
         store=True,
         help=(
-            "Link to worksheet (Understanding of Relevant Regulation) "
-            "for this General Audit. Automatically computed and stored."
+            "The 'Understanding of Relevant Regulation' worksheet of this "
+            "audit engagement. Filled in automatically."
         ),
     )
     link_29_state = fields.Selection(
         string="State",
         related="link_29_id.state",
         help=(
-            "Workflow state of the linked Understanding of Relevant "
-            "Regulation worksheet. Read-only and follows the linked "
-            "record."
+            "Status of the 'Understanding of Relevant Regulation' "
+            "worksheet. Follows that worksheet and cannot be edited here."
         ),
     )
     link_29_conclusion_id = fields.Many2one(
         string="Conclusion ID",
         related="link_29_id.conclusion_id",
         help=(
-            "Conclusion from the Understanding of Relevant Regulation "
-            "worksheet. Read-only, mirrors the linked record."
+            "Conclusion chosen in the 'Understanding of Relevant "
+            "Regulation' worksheet. Cannot be edited here."
         ),
     )
     link_29_conclusion = fields.Text(
         string="Conclusion",
         related="link_29_id.conclusion",
         help=(
-            "Conclusion on the Understanding of Relevant Regulation "
-            "worksheet. Read-only, mirrors the linked record."
+            "Conclusion written in the 'Understanding of Relevant "
+            "Regulation' worksheet. Cannot be edited here."
         ),
     )
 
@@ -2075,32 +2375,32 @@ class GeneralAuditWSfbbe0f8(models.Model):
         compute="_compute_link_30_id",
         store=True,
         help=(
-            "Link to worksheet (Going Concern Analysis) for this "
-            "General Audit. Automatically computed and stored."
+            "The 'Going Concern Analysis' worksheet of this audit "
+            "engagement. Filled in automatically."
         ),
     )
     link_30_state = fields.Selection(
         string="State",
         related="link_30_id.state",
         help=(
-            "Workflow state of the linked Going Concern Analysis "
-            "worksheet. Read-only and follows the linked record."
+            "Status of the 'Going Concern Analysis' worksheet. Follows that "
+            "worksheet and cannot be edited here."
         ),
     )
     link_30_conclusion_id = fields.Many2one(
         string="Conclusion ID",
         related="link_30_id.conclusion_id",
         help=(
-            "Conclusion from the Going Concern Analysis worksheet. "
-            "Read-only, mirrors the linked record."
+            "Conclusion chosen in the 'Going Concern Analysis' worksheet. "
+            "Cannot be edited here."
         ),
     )
     link_30_conclusion = fields.Text(
         string="Conclusion",
         related="link_30_id.conclusion",
         help=(
-            "Conclusion on the Going Concern Analysis worksheet. Read- "
-            "only, mirrors the linked record."
+            "Conclusion written in the 'Going Concern Analysis' worksheet. "
+            "Cannot be edited here."
         ),
     )
 
@@ -2139,36 +2439,33 @@ class GeneralAuditWSfbbe0f8(models.Model):
         compute="_compute_link_31_id",
         store=True,
         help=(
-            "Link to worksheet (Understanding of Preparation of "
-            "Financial Statement) for this General Audit. Automatically "
-            "computed and stored."
+            "The 'Understanding of Preparation of Financial Statement' "
+            "worksheet of this audit engagement. Filled in automatically."
         ),
     )
     link_31_state = fields.Selection(
         string="State",
         related="link_31_id.state",
         help=(
-            "Workflow state of the linked Understanding of Preparation "
-            "of Financial Statement worksheet. Read-only and follows "
-            "the linked record."
+            "Status of the 'Understanding of Preparation of Financial "
+            "Statement' worksheet. Follows that worksheet and cannot be "
+            "edited here."
         ),
     )
     link_31_conclusion_id = fields.Many2one(
         string="Conclusion ID",
         related="link_31_id.conclusion_id",
         help=(
-            "Conclusion from the Understanding of Preparation of "
-            "Financial Statement worksheet. Read-only, mirrors the "
-            "linked record."
+            "Conclusion chosen in the 'Understanding of Preparation of "
+            "Financial Statement' worksheet. Cannot be edited here."
         ),
     )
     link_31_conclusion = fields.Text(
         string="Conclusion",
         related="link_31_id.conclusion",
         help=(
-            "Conclusion on the Understanding of Preparation of "
-            "Financial Statement worksheet. Read-only, mirrors the "
-            "linked record."
+            "Conclusion written in the 'Understanding of Preparation of "
+            "Financial Statement' worksheet. Cannot be edited here."
         ),
     )
 
@@ -2207,32 +2504,32 @@ class GeneralAuditWSfbbe0f8(models.Model):
         compute="_compute_link_32_id",
         store=True,
         help=(
-            "Link to worksheet (Fraud Factor Analysis) for this General "
-            "Audit. Automatically computed and stored."
+            "The 'Fraud Factor Analysis' worksheet of this audit "
+            "engagement. Filled in automatically."
         ),
     )
     link_32_state = fields.Selection(
         string="State",
         related="link_32_id.state",
         help=(
-            "Workflow state of the linked Fraud Factor Analysis "
-            "worksheet. Read-only and follows the linked record."
+            "Status of the 'Fraud Factor Analysis' worksheet. Follows that "
+            "worksheet and cannot be edited here."
         ),
     )
     link_32_conclusion_id = fields.Many2one(
         string="Conclusion ID",
         related="link_32_id.conclusion_id",
         help=(
-            "Conclusion from the Fraud Factor Analysis worksheet. Read- "
-            "only, mirrors the linked record."
+            "Conclusion chosen in the 'Fraud Factor Analysis' worksheet. "
+            "Cannot be edited here."
         ),
     )
     link_32_conclusion = fields.Text(
         string="Conclusion",
         related="link_32_id.conclusion",
         help=(
-            "Conclusion on the Fraud Factor Analysis worksheet. Read- "
-            "only, mirrors the linked record."
+            "Conclusion written in the 'Fraud Factor Analysis' worksheet. "
+            "Cannot be edited here."
         ),
     )
 
@@ -2271,32 +2568,32 @@ class GeneralAuditWSfbbe0f8(models.Model):
         compute="_compute_link_33_id",
         store=True,
         help=(
-            "Link to worksheet (Inherent Risk - Account Level) for this "
-            "General Audit. Automatically computed and stored."
+            "The 'Inherent Risk - Account Level' worksheet of this audit "
+            "engagement. Filled in automatically."
         ),
     )
     link_33_state = fields.Selection(
         string="State",
         related="link_33_id.state",
         help=(
-            "Workflow state of the linked Inherent Risk - Account Level "
-            "worksheet. Read-only and follows the linked record."
+            "Status of the 'Inherent Risk - Account Level' worksheet. "
+            "Follows that worksheet and cannot be edited here."
         ),
     )
     link_33_conclusion_id = fields.Many2one(
         string="Conclusion ID",
         related="link_33_id.conclusion_id",
         help=(
-            "Conclusion from the Inherent Risk - Account Level "
-            "worksheet. Read-only, mirrors the linked record."
+            "Conclusion chosen in the 'Inherent Risk - Account Level' "
+            "worksheet. Cannot be edited here."
         ),
     )
     link_33_conclusion = fields.Text(
         string="Conclusion",
         related="link_33_id.conclusion",
         help=(
-            "Conclusion on the Inherent Risk - Account Level worksheet. "
-            "Read-only, mirrors the linked record."
+            "Conclusion written in the 'Inherent Risk - Account Level' "
+            "worksheet. Cannot be edited here."
         ),
     )
 
@@ -2334,32 +2631,26 @@ class GeneralAuditWSfbbe0f8(models.Model):
         compute="_compute_link_34_id",
         store=True,
         help=(
-            "Link to worksheet (ROMM) for this General Audit. "
-            "Automatically computed and stored."
+            "The 'ROMM' worksheet of this audit engagement. Filled in " "automatically."
         ),
     )
     link_34_state = fields.Selection(
         string="State",
         related="link_34_id.state",
         help=(
-            "Workflow state of the linked ROMM worksheet. Read-only and "
-            "follows the linked record."
+            "Status of the 'ROMM' worksheet. Follows that worksheet and "
+            "cannot be edited here."
         ),
     )
     link_34_conclusion_id = fields.Many2one(
         string="Conclusion ID",
         related="link_34_id.conclusion_id",
-        help=(
-            "Conclusion from the ROMM worksheet. Read-only, mirrors the "
-            "linked record."
-        ),
+        help=("Conclusion chosen in the 'ROMM' worksheet. Cannot be edited " "here."),
     )
     link_34_conclusion = fields.Text(
         string="Conclusion",
         related="link_34_id.conclusion",
-        help=(
-            "Conclusion on the ROMM worksheet. Read-only, mirrors the " "linked record."
-        ),
+        help=("Conclusion written in the 'ROMM' worksheet. Cannot be edited " "here."),
     )
 
     # ROMM - Financial Statement Level
@@ -2397,32 +2688,32 @@ class GeneralAuditWSfbbe0f8(models.Model):
         compute="_compute_link_35_id",
         store=True,
         help=(
-            "Link to worksheet (ROMM - Financial Statement Level) for "
-            "this General Audit. Automatically computed and stored."
+            "The 'ROMM - Financial Statement Level' worksheet of this audit "
+            "engagement. Filled in automatically."
         ),
     )
     link_35_state = fields.Selection(
         string="State",
         related="link_35_id.state",
         help=(
-            "Workflow state of the linked ROMM - Financial Statement "
-            "Level worksheet. Read-only and follows the linked record."
+            "Status of the 'ROMM - Financial Statement Level' worksheet. "
+            "Follows that worksheet and cannot be edited here."
         ),
     )
     link_35_conclusion_id = fields.Many2one(
         string="Conclusion ID",
         related="link_35_id.conclusion_id",
         help=(
-            "Conclusion from the ROMM - Financial Statement Level "
-            "worksheet. Read-only, mirrors the linked record."
+            "Conclusion chosen in the 'ROMM - Financial Statement Level' "
+            "worksheet. Cannot be edited here."
         ),
     )
     link_35_conclusion = fields.Text(
         string="Conclusion",
         related="link_35_id.conclusion",
         help=(
-            "Conclusion on the ROMM - Financial Statement Level "
-            "worksheet. Read-only, mirrors the linked record."
+            "Conclusion written in the 'ROMM - Financial Statement Level' "
+            "worksheet. Cannot be edited here."
         ),
     )
 
@@ -2461,32 +2752,32 @@ class GeneralAuditWSfbbe0f8(models.Model):
         compute="_compute_link_36_id",
         store=True,
         help=(
-            "Link to worksheet (ROMM - Account Level) for this General "
-            "Audit. Automatically computed and stored."
+            "The 'ROMM - Account Level' worksheet of this audit engagement. "
+            "Filled in automatically."
         ),
     )
     link_36_state = fields.Selection(
         string="State",
         related="link_36_id.state",
         help=(
-            "Workflow state of the linked ROMM - Account Level "
-            "worksheet. Read-only and follows the linked record."
+            "Status of the 'ROMM - Account Level' worksheet. Follows that "
+            "worksheet and cannot be edited here."
         ),
     )
     link_36_conclusion_id = fields.Many2one(
         string="Conclusion ID",
         related="link_36_id.conclusion_id",
         help=(
-            "Conclusion from the ROMM - Account Level worksheet. Read- "
-            "only, mirrors the linked record."
+            "Conclusion chosen in the 'ROMM - Account Level' worksheet. "
+            "Cannot be edited here."
         ),
     )
     link_36_conclusion = fields.Text(
         string="Conclusion",
         related="link_36_id.conclusion",
         help=(
-            "Conclusion on the ROMM - Account Level worksheet. Read- "
-            "only, mirrors the linked record."
+            "Conclusion written in the 'ROMM - Account Level' worksheet. "
+            "Cannot be edited here."
         ),
     )
 
@@ -2525,33 +2816,32 @@ class GeneralAuditWSfbbe0f8(models.Model):
         compute="_compute_link_37_id",
         store=True,
         help=(
-            "Link to worksheet (Team Communication - Risk Assessment) "
-            "for this General Audit. Automatically computed and stored."
+            "The 'Team Communication - Risk Assessment' worksheet of this "
+            "audit engagement. Filled in automatically."
         ),
     )
     link_37_state = fields.Selection(
         string="State",
         related="link_37_id.state",
         help=(
-            "Workflow state of the linked Team Communication - Risk "
-            "Assessment worksheet. Read-only and follows the linked "
-            "record."
+            "Status of the 'Team Communication - Risk Assessment' "
+            "worksheet. Follows that worksheet and cannot be edited here."
         ),
     )
     link_37_conclusion_id = fields.Many2one(
         string="Conclusion ID",
         related="link_37_id.conclusion_id",
         help=(
-            "Conclusion from the Team Communication - Risk Assessment "
-            "worksheet. Read-only, mirrors the linked record."
+            "Conclusion chosen in the 'Team Communication - Risk "
+            "Assessment' worksheet. Cannot be edited here."
         ),
     )
     link_37_conclusion = fields.Text(
         string="Conclusion",
         related="link_37_id.conclusion",
         help=(
-            "Conclusion on the Team Communication - Risk Assessment "
-            "worksheet. Read-only, mirrors the linked record."
+            "Conclusion written in the 'Team Communication - Risk "
+            "Assessment' worksheet. Cannot be edited here."
         ),
     )
 
@@ -2590,32 +2880,32 @@ class GeneralAuditWSfbbe0f8(models.Model):
         compute="_compute_link_38_id",
         store=True,
         help=(
-            "Link to worksheet (Communication with Management) for this "
-            "General Audit. Automatically computed and stored."
+            "The 'Communication with Management' worksheet of this audit "
+            "engagement. Filled in automatically."
         ),
     )
     link_38_state = fields.Selection(
         string="State",
         related="link_38_id.state",
         help=(
-            "Workflow state of the linked Communication with Management "
-            "worksheet. Read-only and follows the linked record."
+            "Status of the 'Communication with Management' worksheet. "
+            "Follows that worksheet and cannot be edited here."
         ),
     )
     link_38_conclusion_id = fields.Many2one(
         string="Conclusion ID",
         related="link_38_id.conclusion_id",
         help=(
-            "Conclusion from the Communication with Management "
-            "worksheet. Read-only, mirrors the linked record."
+            "Conclusion chosen in the 'Communication with Management' "
+            "worksheet. Cannot be edited here."
         ),
     )
     link_38_conclusion = fields.Text(
         string="Conclusion",
         related="link_38_id.conclusion",
         help=(
-            "Conclusion on the Communication with Management worksheet. "
-            "Read-only, mirrors the linked record."
+            "Conclusion written in the 'Communication with Management' "
+            "worksheet. Cannot be edited here."
         ),
     )
 
@@ -2654,32 +2944,32 @@ class GeneralAuditWSfbbe0f8(models.Model):
         compute="_compute_link_39_id",
         store=True,
         help=(
-            "Link to worksheet (Communication with TCWG) for this "
-            "General Audit. Automatically computed and stored."
+            "The 'Communication with TCWG' worksheet of this audit "
+            "engagement. Filled in automatically."
         ),
     )
     link_39_state = fields.Selection(
         string="State",
         related="link_39_id.state",
         help=(
-            "Workflow state of the linked Communication with TCWG "
-            "worksheet. Read-only and follows the linked record."
+            "Status of the 'Communication with TCWG' worksheet. Follows "
+            "that worksheet and cannot be edited here."
         ),
     )
     link_39_conclusion_id = fields.Many2one(
         string="Conclusion ID",
         related="link_39_id.conclusion_id",
         help=(
-            "Conclusion from the Communication with TCWG worksheet. "
-            "Read-only, mirrors the linked record."
+            "Conclusion chosen in the 'Communication with TCWG' worksheet. "
+            "Cannot be edited here."
         ),
     )
     link_39_conclusion = fields.Text(
         string="Conclusion",
         related="link_39_id.conclusion",
         help=(
-            "Conclusion on the Communication with TCWG worksheet. Read- "
-            "only, mirrors the linked record."
+            "Conclusion written in the 'Communication with TCWG' worksheet. "
+            "Cannot be edited here."
         ),
     )
 
@@ -2718,33 +3008,32 @@ class GeneralAuditWSfbbe0f8(models.Model):
         compute="_compute_link_40_id",
         store=True,
         help=(
-            "Link to worksheet (Use of Internal Auditor's Work Result) "
-            "for this General Audit. Automatically computed and stored."
+            "The 'Use of Internal Auditor's Work Result' worksheet of this "
+            "audit engagement. Filled in automatically."
         ),
     )
     link_40_state = fields.Selection(
         string="State",
         related="link_40_id.state",
         help=(
-            "Workflow state of the linked Use of Internal Auditor's "
-            "Work Result worksheet. Read-only and follows the linked "
-            "record."
+            "Status of the 'Use of Internal Auditor's Work Result' "
+            "worksheet. Follows that worksheet and cannot be edited here."
         ),
     )
     link_40_conclusion_id = fields.Many2one(
         string="Conclusion ID",
         related="link_40_id.conclusion_id",
         help=(
-            "Conclusion from the Use of Internal Auditor's Work Result "
-            "worksheet. Read-only, mirrors the linked record."
+            "Conclusion chosen in the 'Use of Internal Auditor's Work "
+            "Result' worksheet. Cannot be edited here."
         ),
     )
     link_40_conclusion = fields.Text(
         string="Conclusion",
         related="link_40_id.conclusion",
         help=(
-            "Conclusion on the Use of Internal Auditor's Work Result "
-            "worksheet. Read-only, mirrors the linked record."
+            "Conclusion written in the 'Use of Internal Auditor's Work "
+            "Result' worksheet. Cannot be edited here."
         ),
     )
 
@@ -2760,9 +3049,9 @@ class GeneralAuditWSfbbe0f8(models.Model):
             ],
         },
         help=(
-            "Free-text conclusion summarising all worksheets in the "
-            "link_1_ids group. Entered manually; it is not changed "
-            "when the links are reloaded."
+            "Your own overall conclusion on all 'Understanding of the "
+            "Business Environment' worksheets. Typed manually and not "
+            "changed when you click Reload."
         ),
     )
     link_2_conclusion = fields.Text(
@@ -2774,9 +3063,9 @@ class GeneralAuditWSfbbe0f8(models.Model):
             ],
         },
         help=(
-            "Free-text conclusion summarising all worksheets in the "
-            "link_2_ids group. Entered manually; it is not changed "
-            "when the links are reloaded."
+            "Your own overall conclusion on all 'Business Cycle Summaries' "
+            "worksheets. Typed manually and not changed when you click "
+            "Reload."
         ),
     )
     link_3_conclusion = fields.Text(
@@ -2788,9 +3077,9 @@ class GeneralAuditWSfbbe0f8(models.Model):
             ],
         },
         help=(
-            "Free-text conclusion summarising all worksheets in the "
-            "link_3_ids group. Entered manually; it is not changed "
-            "when the links are reloaded."
+            "Your own overall conclusion on all 'Materiality Computation' "
+            "worksheets. Typed manually and not changed when you click "
+            "Reload."
         ),
     )
     link_4_conclusion = fields.Text(
@@ -2802,9 +3091,9 @@ class GeneralAuditWSfbbe0f8(models.Model):
             ],
         },
         help=(
-            "Free-text conclusion summarising all worksheets in the "
-            "link_4_ids group. Entered manually; it is not changed "
-            "when the links are reloaded."
+            "Your own overall conclusion on all 'Specific Materiality' "
+            "worksheets. Typed manually and not changed when you click "
+            "Reload."
         ),
     )
     link_9_conclusion = fields.Text(
@@ -2816,9 +3105,9 @@ class GeneralAuditWSfbbe0f8(models.Model):
             ],
         },
         help=(
-            "Free-text conclusion summarising all worksheets in the "
-            "link_9_ids group. Entered manually; it is not changed "
-            "when the links are reloaded."
+            "Your own overall conclusion on all 'Competency, availability, "
+            "and independency of assignment team' worksheets. Typed "
+            "manually and not changed when you click Reload."
         ),
     )
     link_11_conclusion = fields.Text(
@@ -2830,9 +3119,9 @@ class GeneralAuditWSfbbe0f8(models.Model):
             ],
         },
         help=(
-            "Free-text conclusion summarising all worksheets in the "
-            "link_11_ids group. Entered manually; it is not changed "
-            "when the links are reloaded."
+            "Your own overall conclusion on all 'Control Risk - Cycle "
+            "Level' worksheets. Typed manually and not changed when you "
+            "click Reload."
         ),
     )
     link_12_conclusion = fields.Text(
@@ -2844,9 +3133,9 @@ class GeneralAuditWSfbbe0f8(models.Model):
             ],
         },
         help=(
-            "Free-text conclusion summarising all worksheets in the "
-            "link_12_ids group. Entered manually; it is not changed "
-            "when the links are reloaded."
+            "Your own overall conclusion on all 'Significant Account' "
+            "worksheets. Typed manually and not changed when you click "
+            "Reload."
         ),
     )
     link_14_conclusion = fields.Text(
@@ -2858,9 +3147,9 @@ class GeneralAuditWSfbbe0f8(models.Model):
             ],
         },
         help=(
-            "Free-text conclusion summarising all worksheets in the "
-            "link_14_ids group. Entered manually; it is not changed "
-            "when the links are reloaded."
+            "Your own overall conclusion on all 'Data Collection' "
+            "worksheets. Typed manually and not changed when you click "
+            "Reload."
         ),
     )
     link_15_conclusion = fields.Text(
@@ -2872,9 +3161,9 @@ class GeneralAuditWSfbbe0f8(models.Model):
             ],
         },
         help=(
-            "Free-text conclusion summarising all worksheets in the "
-            "link_15_ids group. Entered manually; it is not changed "
-            "when the links are reloaded."
+            "Your own overall conclusion on all 'Acceptance and Continuance "
+            "of Client Relationships Analysis' worksheets. Typed manually "
+            "and not changed when you click Reload."
         ),
     )
     link_16_conclusion = fields.Text(
@@ -2886,9 +3175,9 @@ class GeneralAuditWSfbbe0f8(models.Model):
             ],
         },
         help=(
-            "Free-text conclusion summarising all worksheets in the "
-            "link_16_ids group. Entered manually; it is not changed "
-            "when the links are reloaded."
+            "Your own overall conclusion on all 'Previous Financial "
+            "Reporting Issues' worksheets. Typed manually and not changed "
+            "when you click Reload."
         ),
     )
     link_17_conclusion = fields.Text(
@@ -2900,9 +3189,9 @@ class GeneralAuditWSfbbe0f8(models.Model):
             ],
         },
         help=(
-            "Free-text conclusion summarising all worksheets in the "
-            "link_17_ids group. Entered manually; it is not changed "
-            "when the links are reloaded."
+            "Your own overall conclusion on all 'Management Integrity' "
+            "worksheets. Typed manually and not changed when you click "
+            "Reload."
         ),
     )
     link_18_conclusion = fields.Text(
@@ -2914,9 +3203,9 @@ class GeneralAuditWSfbbe0f8(models.Model):
             ],
         },
         help=(
-            "Free-text conclusion summarising all worksheets in the "
-            "link_18_ids group. Entered manually; it is not changed "
-            "when the links are reloaded."
+            "Your own overall conclusion on all 'Communication with "
+            "Previous Auditor' worksheets. Typed manually and not changed "
+            "when you click Reload."
         ),
     )
     link_23_conclusion = fields.Text(
@@ -2928,9 +3217,8 @@ class GeneralAuditWSfbbe0f8(models.Model):
             ],
         },
         help=(
-            "Free-text conclusion summarising all worksheets in the "
-            "link_23_ids group. Entered manually; it is not changed "
-            "when the links are reloaded."
+            "Your own overall conclusion on all 'Trial Balance' worksheets. "
+            "Typed manually and not changed when you click Reload."
         ),
     )
     link_25_conclusion = fields.Text(
@@ -2942,9 +3230,9 @@ class GeneralAuditWSfbbe0f8(models.Model):
             ],
         },
         help=(
-            "Free-text conclusion summarising all worksheets in the "
-            "link_25_ids group. Entered manually; it is not changed "
-            "when the links are reloaded."
+            "Your own overall conclusion on all 'Preliminary Analytic "
+            "Procedure - Vertical & Horizontal Analysis' worksheets. Typed "
+            "manually and not changed when you click Reload."
         ),
     )
     link_26_conclusion = fields.Text(
@@ -2956,9 +3244,9 @@ class GeneralAuditWSfbbe0f8(models.Model):
             ],
         },
         help=(
-            "Free-text conclusion summarising all worksheets in the "
-            "link_26_ids group. Entered manually; it is not changed "
-            "when the links are reloaded."
+            "Your own overall conclusion on all 'Preliminary Analytic "
+            "Procedure - Ratio Analysis' worksheets. Typed manually and not "
+            "changed when you click Reload."
         ),
     )
 
@@ -2997,32 +3285,32 @@ class GeneralAuditWSfbbe0f8(models.Model):
         compute="_compute_link_41_id",
         store=True,
         help=(
-            "Link to worksheet (Preliminary Materiality) for this General Audit. "
-            "Automatically computed and stored."
+            "The 'Preliminary Materiality' worksheet of this audit "
+            "engagement. Filled in automatically."
         ),
     )
     link_41_state = fields.Selection(
         string="State",
         related="link_41_id.state",
         help=(
-            "Workflow state of the linked Preliminary Materiality worksheet. "
-            "Read-only and follows the linked record."
+            "Status of the 'Preliminary Materiality' worksheet. Follows "
+            "that worksheet and cannot be edited here."
         ),
     )
     link_41_conclusion_id = fields.Many2one(
         string="Conclusion ID",
         related="link_41_id.conclusion_id",
         help=(
-            "Conclusion from the Preliminary Materiality worksheet. "
-            "Read-only, mirrors the linked record."
+            "Conclusion chosen in the 'Preliminary Materiality' worksheet. "
+            "Cannot be edited here."
         ),
     )
     link_41_conclusion = fields.Text(
         string="Conclusion",
         related="link_41_id.conclusion",
         help=(
-            "Conclusion on the Preliminary Materiality worksheet. "
-            "Read-only, mirrors the linked record."
+            "Conclusion written in the 'Preliminary Materiality' worksheet. "
+            "Cannot be edited here."
         ),
     )
 
@@ -3061,32 +3349,32 @@ class GeneralAuditWSfbbe0f8(models.Model):
         compute="_compute_link_42_id",
         store=True,
         help=(
-            "Link to worksheet (Understanding of The Entity) for this General Audit. "
-            "Automatically computed and stored."
+            "The 'Understanding of The Entity' worksheet of this audit "
+            "engagement. Filled in automatically."
         ),
     )
     link_42_state = fields.Selection(
         string="State",
         related="link_42_id.state",
         help=(
-            "Workflow state of the linked Understanding of The Entity worksheet. "
-            "Read-only and follows the linked record."
+            "Status of the 'Understanding of The Entity' worksheet. Follows "
+            "that worksheet and cannot be edited here."
         ),
     )
     link_42_conclusion_id = fields.Many2one(
         string="Conclusion ID",
         related="link_42_id.conclusion_id",
         help=(
-            "Conclusion from the Understanding of The Entity worksheet. "
-            "Read-only, mirrors the linked record."
+            "Conclusion chosen in the 'Understanding of The Entity' "
+            "worksheet. Cannot be edited here."
         ),
     )
     link_42_conclusion = fields.Text(
         string="Conclusion",
         related="link_42_id.conclusion",
         help=(
-            "Conclusion on the Understanding of The Entity worksheet. "
-            "Read-only, mirrors the linked record."
+            "Conclusion written in the 'Understanding of The Entity' "
+            "worksheet. Cannot be edited here."
         ),
     )
 
@@ -3125,32 +3413,32 @@ class GeneralAuditWSfbbe0f8(models.Model):
         compute="_compute_link_43_id",
         store=True,
         help=(
-            "Link to worksheet (Inherent Risk) for this General Audit. "
-            "Automatically computed and stored."
+            "The 'Inherent Risk' worksheet of this audit engagement. Filled "
+            "in automatically."
         ),
     )
     link_43_state = fields.Selection(
         string="State",
         related="link_43_id.state",
         help=(
-            "Workflow state of the linked Inherent Risk worksheet. "
-            "Read-only and follows the linked record."
+            "Status of the 'Inherent Risk' worksheet. Follows that "
+            "worksheet and cannot be edited here."
         ),
     )
     link_43_conclusion_id = fields.Many2one(
         string="Conclusion ID",
         related="link_43_id.conclusion_id",
         help=(
-            "Conclusion from the Inherent Risk worksheet. "
-            "Read-only, mirrors the linked record."
+            "Conclusion chosen in the 'Inherent Risk' worksheet. Cannot be "
+            "edited here."
         ),
     )
     link_43_conclusion = fields.Text(
         string="Conclusion",
         related="link_43_id.conclusion",
         help=(
-            "Conclusion on the Inherent Risk worksheet. "
-            "Read-only, mirrors the linked record."
+            "Conclusion written in the 'Inherent Risk' worksheet. Cannot be "
+            "edited here."
         ),
     )
 
@@ -3189,32 +3477,32 @@ class GeneralAuditWSfbbe0f8(models.Model):
         compute="_compute_link_44_id",
         store=True,
         help=(
-            "Link to worksheet (Control Risk) for this General Audit. "
-            "Automatically computed and stored."
+            "The 'Control Risk' worksheet of this audit engagement. Filled "
+            "in automatically."
         ),
     )
     link_44_state = fields.Selection(
         string="State",
         related="link_44_id.state",
         help=(
-            "Workflow state of the linked Control Risk worksheet. "
-            "Read-only and follows the linked record."
+            "Status of the 'Control Risk' worksheet. Follows that worksheet "
+            "and cannot be edited here."
         ),
     )
     link_44_conclusion_id = fields.Many2one(
         string="Conclusion ID",
         related="link_44_id.conclusion_id",
         help=(
-            "Conclusion from the Control Risk worksheet. "
-            "Read-only, mirrors the linked record."
+            "Conclusion chosen in the 'Control Risk' worksheet. Cannot be "
+            "edited here."
         ),
     )
     link_44_conclusion = fields.Text(
         string="Conclusion",
         related="link_44_id.conclusion",
         help=(
-            "Conclusion on the Control Risk worksheet. "
-            "Read-only, mirrors the linked record."
+            "Conclusion written in the 'Control Risk' worksheet. Cannot be "
+            "edited here."
         ),
     )
 
@@ -3226,7 +3514,10 @@ class GeneralAuditWSfbbe0f8(models.Model):
         string="Conclusions",
         comodel_name="general_audit_ws_fbbe0f8.conclusion",
         inverse_name="worksheet_id",
-        help="Conclusion summary per worksheet type. Created by Reload Links.",
+        help=(
+            "Summary of the conclusion of each worksheet type. Filled in "
+            "when you click Reload."
+        ),
     )
 
     def _reload_links(self):
