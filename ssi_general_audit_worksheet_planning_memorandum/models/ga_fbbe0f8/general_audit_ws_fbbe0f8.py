@@ -1039,30 +1039,6 @@ class GeneralAuditWSfbbe0f8(models.Model):
             "this audit engagement. Filled in automatically."
         ),
     )
-    link_5_state = fields.Selection(
-        string="State (RA.210.1)",
-        related="link_5_id.state",
-        help=(
-            "Status of the 'Inherent Risk - Financial Statement Level' "
-            "worksheet. Follows that worksheet and cannot be edited here."
-        ),
-    )
-    link_5_conclusion_id = fields.Many2one(
-        string="Conclusion ID (RA.210.1)",
-        related="link_5_id.conclusion_id",
-        help=(
-            "Conclusion chosen in the 'Inherent Risk - Financial Statement "
-            "Level' worksheet. Cannot be edited here."
-        ),
-    )
-    link_5_conclusion = fields.Text(
-        string="Conclusion (RA.210.1)",
-        related="link_5_id.conclusion",
-        help=(
-            "Conclusion written in the 'Inherent Risk - Financial Statement "
-            "Level' worksheet. Cannot be edited here."
-        ),
-    )
 
     # Team Communication Pre-Engagement
     # LINK - 6 437fc8f (PE.160)
@@ -1101,30 +1077,6 @@ class GeneralAuditWSfbbe0f8(models.Model):
         help=(
             "The 'Team Communication Pre-Engagement' worksheet of this "
             "audit engagement. Filled in automatically."
-        ),
-    )
-    link_6_state = fields.Selection(
-        string="State (PE.160)",
-        related="link_6_id.state",
-        help=(
-            "Status of the 'Team Communication Pre-Engagement' worksheet. "
-            "Follows that worksheet and cannot be edited here."
-        ),
-    )
-    link_6_conclusion_id = fields.Many2one(
-        string="Conclusion ID (PE.160)",
-        related="link_6_id.conclusion_id",
-        help=(
-            "Conclusion chosen in the 'Team Communication Pre-Engagement' "
-            "worksheet. Cannot be edited here."
-        ),
-    )
-    link_6_conclusion = fields.Text(
-        string="Conclusion (PE.160)",
-        related="link_6_id.conclusion",
-        help=(
-            "Conclusion written in the 'Team Communication Pre-Engagement' "
-            "worksheet. Cannot be edited here."
         ),
     )
 
@@ -1167,30 +1119,6 @@ class GeneralAuditWSfbbe0f8(models.Model):
             "engagement. Filled in automatically."
         ),
     )
-    link_7_state = fields.Selection(
-        string="State (PE.150.3)",
-        related="link_7_id.state",
-        help=(
-            "Status of the 'Main Business Activity Process' worksheet. "
-            "Follows that worksheet and cannot be edited here."
-        ),
-    )
-    link_7_conclusion_id = fields.Many2one(
-        string="Conclusion ID (PE.150.3)",
-        related="link_7_id.conclusion_id",
-        help=(
-            "Conclusion chosen in the 'Main Business Activity Process' "
-            "worksheet. Cannot be edited here."
-        ),
-    )
-    link_7_conclusion = fields.Text(
-        string="Conclusion (PE.150.3)",
-        related="link_7_id.conclusion",
-        help=(
-            "Conclusion written in the 'Main Business Activity Process' "
-            "worksheet. Cannot be edited here."
-        ),
-    )
 
     # Control Risk - Entity Level
     # LINK - 8 b59b886 (RA.220.1)
@@ -1229,30 +1157,6 @@ class GeneralAuditWSfbbe0f8(models.Model):
         help=(
             "The 'Control Risk - Entity Level' worksheet of this audit "
             "engagement. Filled in automatically."
-        ),
-    )
-    link_8_state = fields.Selection(
-        string="State (RA.220.1)",
-        related="link_8_id.state",
-        help=(
-            "Status of the 'Control Risk - Entity Level' worksheet. Follows "
-            "that worksheet and cannot be edited here."
-        ),
-    )
-    link_8_conclusion_id = fields.Many2one(
-        string="Conclusion ID (RA.220.1)",
-        related="link_8_id.conclusion_id",
-        help=(
-            "Conclusion chosen in the 'Control Risk - Entity Level' "
-            "worksheet. Cannot be edited here."
-        ),
-    )
-    link_8_conclusion = fields.Text(
-        string="Conclusion (RA.220.1)",
-        related="link_8_id.conclusion",
-        help=(
-            "Conclusion written in the 'Control Risk - Entity Level' "
-            "worksheet. Cannot be edited here."
         ),
     )
 
@@ -1333,30 +1237,6 @@ class GeneralAuditWSfbbe0f8(models.Model):
         help=(
             "The 'External Communication' worksheet of this audit "
             "engagement. Filled in automatically."
-        ),
-    )
-    link_10_state = fields.Selection(
-        string="State (RA.330)",
-        related="link_10_id.state",
-        help=(
-            "Status of the 'External Communication' worksheet. Follows that "
-            "worksheet and cannot be edited here."
-        ),
-    )
-    link_10_conclusion_id = fields.Many2one(
-        string="Conclusion ID (RA.330)",
-        related="link_10_id.conclusion_id",
-        help=(
-            "Conclusion chosen in the 'External Communication' worksheet. "
-            "Cannot be edited here."
-        ),
-    )
-    link_10_conclusion = fields.Text(
-        string="Conclusion (RA.330)",
-        related="link_10_id.conclusion",
-        help=(
-            "Conclusion written in the 'External Communication' worksheet. "
-            "Cannot be edited here."
         ),
     )
 
@@ -1457,30 +1337,6 @@ class GeneralAuditWSfbbe0f8(models.Model):
         help=(
             "The 'Audit Working Plan' worksheet of this audit engagement. "
             "Filled in automatically."
-        ),
-    )
-    link_13_state = fields.Selection(
-        string="State (PE.120)",
-        related="link_13_id.state",
-        help=(
-            "Status of the 'Audit Working Plan' worksheet. Follows that "
-            "worksheet and cannot be edited here."
-        ),
-    )
-    link_13_conclusion_id = fields.Many2one(
-        string="Conclusion ID (PE.120)",
-        related="link_13_id.conclusion_id",
-        help=(
-            "Conclusion chosen in the 'Audit Working Plan' worksheet. "
-            "Cannot be edited here."
-        ),
-    )
-    link_13_conclusion = fields.Text(
-        string="Conclusion (PE.120)",
-        related="link_13_id.conclusion",
-        help=(
-            "Conclusion written in the 'Audit Working Plan' worksheet. "
-            "Cannot be edited here."
         ),
     )
 
@@ -1753,30 +1609,6 @@ class GeneralAuditWSfbbe0f8(models.Model):
             "Filled in automatically."
         ),
     )
-    link_19_state = fields.Selection(
-        string="State",
-        related="link_19_id.state",
-        help=(
-            "Status of the 'Engagement Letter' worksheet. Follows that "
-            "worksheet and cannot be edited here."
-        ),
-    )
-    link_19_conclusion_id = fields.Many2one(
-        string="Conclusion ID",
-        related="link_19_id.conclusion_id",
-        help=(
-            "Conclusion chosen in the 'Engagement Letter' worksheet. Cannot "
-            "be edited here."
-        ),
-    )
-    link_19_conclusion = fields.Text(
-        string="Conclusion",
-        related="link_19_id.conclusion",
-        help=(
-            "Conclusion written in the 'Engagement Letter' worksheet. "
-            "Cannot be edited here."
-        ),
-    )
 
     # Assignment Letter
     # LINK - 20 c435bcd
@@ -1814,30 +1646,6 @@ class GeneralAuditWSfbbe0f8(models.Model):
         help=(
             "The 'Assignment Letter' worksheet of this audit engagement. "
             "Filled in automatically."
-        ),
-    )
-    link_20_state = fields.Selection(
-        string="State",
-        related="link_20_id.state",
-        help=(
-            "Status of the 'Assignment Letter' worksheet. Follows that "
-            "worksheet and cannot be edited here."
-        ),
-    )
-    link_20_conclusion_id = fields.Many2one(
-        string="Conclusion ID",
-        related="link_20_id.conclusion_id",
-        help=(
-            "Conclusion chosen in the 'Assignment Letter' worksheet. Cannot "
-            "be edited here."
-        ),
-    )
-    link_20_conclusion = fields.Text(
-        string="Conclusion",
-        related="link_20_id.conclusion",
-        help=(
-            "Conclusion written in the 'Assignment Letter' worksheet. "
-            "Cannot be edited here."
         ),
     )
 
@@ -1880,30 +1688,6 @@ class GeneralAuditWSfbbe0f8(models.Model):
             "engagement. Filled in automatically."
         ),
     )
-    link_21_state = fields.Selection(
-        string="State",
-        related="link_21_id.state",
-        help=(
-            "Status of the 'Independence Statement' worksheet. Follows that "
-            "worksheet and cannot be edited here."
-        ),
-    )
-    link_21_conclusion_id = fields.Many2one(
-        string="Conclusion ID",
-        related="link_21_id.conclusion_id",
-        help=(
-            "Conclusion chosen in the 'Independence Statement' worksheet. "
-            "Cannot be edited here."
-        ),
-    )
-    link_21_conclusion = fields.Text(
-        string="Conclusion",
-        related="link_21_id.conclusion",
-        help=(
-            "Conclusion written in the 'Independence Statement' worksheet. "
-            "Cannot be edited here."
-        ),
-    )
 
     # Client Assistance Package
     # LINK - 22 abd82ed
@@ -1942,30 +1726,6 @@ class GeneralAuditWSfbbe0f8(models.Model):
         help=(
             "The 'Client Assistance Package' worksheet of this audit "
             "engagement. Filled in automatically."
-        ),
-    )
-    link_22_state = fields.Selection(
-        string="State",
-        related="link_22_id.state",
-        help=(
-            "Status of the 'Client Assistance Package' worksheet. Follows "
-            "that worksheet and cannot be edited here."
-        ),
-    )
-    link_22_conclusion_id = fields.Many2one(
-        string="Conclusion ID",
-        related="link_22_id.conclusion_id",
-        help=(
-            "Conclusion chosen in the 'Client Assistance Package' "
-            "worksheet. Cannot be edited here."
-        ),
-    )
-    link_22_conclusion = fields.Text(
-        string="Conclusion",
-        related="link_22_id.conclusion",
-        help=(
-            "Conclusion written in the 'Client Assistance Package' "
-            "worksheet. Cannot be edited here."
         ),
     )
 
@@ -2044,30 +1804,6 @@ class GeneralAuditWSfbbe0f8(models.Model):
         help=(
             "The 'Preliminary Analytic Procedure' worksheet of this audit "
             "engagement. Filled in automatically."
-        ),
-    )
-    link_24_state = fields.Selection(
-        string="State",
-        related="link_24_id.state",
-        help=(
-            "Status of the 'Preliminary Analytic Procedure' worksheet. "
-            "Follows that worksheet and cannot be edited here."
-        ),
-    )
-    link_24_conclusion_id = fields.Many2one(
-        string="Conclusion ID",
-        related="link_24_id.conclusion_id",
-        help=(
-            "Conclusion chosen in the 'Preliminary Analytic Procedure' "
-            "worksheet. Cannot be edited here."
-        ),
-    )
-    link_24_conclusion = fields.Text(
-        string="Conclusion",
-        related="link_24_id.conclusion",
-        help=(
-            "Conclusion written in the 'Preliminary Analytic Procedure' "
-            "worksheet. Cannot be edited here."
         ),
     )
 
@@ -2187,30 +1923,6 @@ class GeneralAuditWSfbbe0f8(models.Model):
             "audit engagement. Filled in automatically."
         ),
     )
-    link_27_state = fields.Selection(
-        string="State",
-        related="link_27_id.state",
-        help=(
-            "Status of the 'General Information and Legal Aspect' "
-            "worksheet. Follows that worksheet and cannot be edited here."
-        ),
-    )
-    link_27_conclusion_id = fields.Many2one(
-        string="Conclusion ID",
-        related="link_27_id.conclusion_id",
-        help=(
-            "Conclusion chosen in the 'General Information and Legal "
-            "Aspect' worksheet. Cannot be edited here."
-        ),
-    )
-    link_27_conclusion = fields.Text(
-        string="Conclusion",
-        related="link_27_id.conclusion",
-        help=(
-            "Conclusion written in the 'General Information and Legal "
-            "Aspect' worksheet. Cannot be edited here."
-        ),
-    )
 
     # Structure Organization and Responsibility
     # LINK - 28 e78a3c6
@@ -2249,30 +1961,6 @@ class GeneralAuditWSfbbe0f8(models.Model):
         help=(
             "The 'Structure Organization and Responsibility' worksheet of "
             "this audit engagement. Filled in automatically."
-        ),
-    )
-    link_28_state = fields.Selection(
-        string="State",
-        related="link_28_id.state",
-        help=(
-            "Status of the 'Structure Organization and Responsibility' "
-            "worksheet. Follows that worksheet and cannot be edited here."
-        ),
-    )
-    link_28_conclusion_id = fields.Many2one(
-        string="Conclusion ID",
-        related="link_28_id.conclusion_id",
-        help=(
-            "Conclusion chosen in the 'Structure Organization and "
-            "Responsibility' worksheet. Cannot be edited here."
-        ),
-    )
-    link_28_conclusion = fields.Text(
-        string="Conclusion",
-        related="link_28_id.conclusion",
-        help=(
-            "Conclusion written in the 'Structure Organization and "
-            "Responsibility' worksheet. Cannot be edited here."
         ),
     )
 
@@ -2315,30 +2003,6 @@ class GeneralAuditWSfbbe0f8(models.Model):
             "audit engagement. Filled in automatically."
         ),
     )
-    link_29_state = fields.Selection(
-        string="State",
-        related="link_29_id.state",
-        help=(
-            "Status of the 'Understanding of Relevant Regulation' "
-            "worksheet. Follows that worksheet and cannot be edited here."
-        ),
-    )
-    link_29_conclusion_id = fields.Many2one(
-        string="Conclusion ID",
-        related="link_29_id.conclusion_id",
-        help=(
-            "Conclusion chosen in the 'Understanding of Relevant "
-            "Regulation' worksheet. Cannot be edited here."
-        ),
-    )
-    link_29_conclusion = fields.Text(
-        string="Conclusion",
-        related="link_29_id.conclusion",
-        help=(
-            "Conclusion written in the 'Understanding of Relevant "
-            "Regulation' worksheet. Cannot be edited here."
-        ),
-    )
 
     # Going Concern Analysis
     # LINK - 30 c0d0898
@@ -2377,30 +2041,6 @@ class GeneralAuditWSfbbe0f8(models.Model):
         help=(
             "The 'Going Concern Analysis' worksheet of this audit "
             "engagement. Filled in automatically."
-        ),
-    )
-    link_30_state = fields.Selection(
-        string="State",
-        related="link_30_id.state",
-        help=(
-            "Status of the 'Going Concern Analysis' worksheet. Follows that "
-            "worksheet and cannot be edited here."
-        ),
-    )
-    link_30_conclusion_id = fields.Many2one(
-        string="Conclusion ID",
-        related="link_30_id.conclusion_id",
-        help=(
-            "Conclusion chosen in the 'Going Concern Analysis' worksheet. "
-            "Cannot be edited here."
-        ),
-    )
-    link_30_conclusion = fields.Text(
-        string="Conclusion",
-        related="link_30_id.conclusion",
-        help=(
-            "Conclusion written in the 'Going Concern Analysis' worksheet. "
-            "Cannot be edited here."
         ),
     )
 
@@ -2443,31 +2083,6 @@ class GeneralAuditWSfbbe0f8(models.Model):
             "worksheet of this audit engagement. Filled in automatically."
         ),
     )
-    link_31_state = fields.Selection(
-        string="State",
-        related="link_31_id.state",
-        help=(
-            "Status of the 'Understanding of Preparation of Financial "
-            "Statement' worksheet. Follows that worksheet and cannot be "
-            "edited here."
-        ),
-    )
-    link_31_conclusion_id = fields.Many2one(
-        string="Conclusion ID",
-        related="link_31_id.conclusion_id",
-        help=(
-            "Conclusion chosen in the 'Understanding of Preparation of "
-            "Financial Statement' worksheet. Cannot be edited here."
-        ),
-    )
-    link_31_conclusion = fields.Text(
-        string="Conclusion",
-        related="link_31_id.conclusion",
-        help=(
-            "Conclusion written in the 'Understanding of Preparation of "
-            "Financial Statement' worksheet. Cannot be edited here."
-        ),
-    )
 
     # Fraud Factor Analysis
     # LINK - 32 c0e0eec
@@ -2506,30 +2121,6 @@ class GeneralAuditWSfbbe0f8(models.Model):
         help=(
             "The 'Fraud Factor Analysis' worksheet of this audit "
             "engagement. Filled in automatically."
-        ),
-    )
-    link_32_state = fields.Selection(
-        string="State",
-        related="link_32_id.state",
-        help=(
-            "Status of the 'Fraud Factor Analysis' worksheet. Follows that "
-            "worksheet and cannot be edited here."
-        ),
-    )
-    link_32_conclusion_id = fields.Many2one(
-        string="Conclusion ID",
-        related="link_32_id.conclusion_id",
-        help=(
-            "Conclusion chosen in the 'Fraud Factor Analysis' worksheet. "
-            "Cannot be edited here."
-        ),
-    )
-    link_32_conclusion = fields.Text(
-        string="Conclusion",
-        related="link_32_id.conclusion",
-        help=(
-            "Conclusion written in the 'Fraud Factor Analysis' worksheet. "
-            "Cannot be edited here."
         ),
     )
 
@@ -2572,30 +2163,6 @@ class GeneralAuditWSfbbe0f8(models.Model):
             "engagement. Filled in automatically."
         ),
     )
-    link_33_state = fields.Selection(
-        string="State",
-        related="link_33_id.state",
-        help=(
-            "Status of the 'Inherent Risk - Account Level' worksheet. "
-            "Follows that worksheet and cannot be edited here."
-        ),
-    )
-    link_33_conclusion_id = fields.Many2one(
-        string="Conclusion ID",
-        related="link_33_id.conclusion_id",
-        help=(
-            "Conclusion chosen in the 'Inherent Risk - Account Level' "
-            "worksheet. Cannot be edited here."
-        ),
-    )
-    link_33_conclusion = fields.Text(
-        string="Conclusion",
-        related="link_33_id.conclusion",
-        help=(
-            "Conclusion written in the 'Inherent Risk - Account Level' "
-            "worksheet. Cannot be edited here."
-        ),
-    )
 
     # ROMM
     # LINK - 34 de417a6
@@ -2633,24 +2200,6 @@ class GeneralAuditWSfbbe0f8(models.Model):
         help=(
             "The 'ROMM' worksheet of this audit engagement. Filled in " "automatically."
         ),
-    )
-    link_34_state = fields.Selection(
-        string="State",
-        related="link_34_id.state",
-        help=(
-            "Status of the 'ROMM' worksheet. Follows that worksheet and "
-            "cannot be edited here."
-        ),
-    )
-    link_34_conclusion_id = fields.Many2one(
-        string="Conclusion ID",
-        related="link_34_id.conclusion_id",
-        help=("Conclusion chosen in the 'ROMM' worksheet. Cannot be edited " "here."),
-    )
-    link_34_conclusion = fields.Text(
-        string="Conclusion",
-        related="link_34_id.conclusion",
-        help=("Conclusion written in the 'ROMM' worksheet. Cannot be edited " "here."),
     )
 
     # ROMM - Financial Statement Level
@@ -2690,30 +2239,6 @@ class GeneralAuditWSfbbe0f8(models.Model):
         help=(
             "The 'ROMM - Financial Statement Level' worksheet of this audit "
             "engagement. Filled in automatically."
-        ),
-    )
-    link_35_state = fields.Selection(
-        string="State",
-        related="link_35_id.state",
-        help=(
-            "Status of the 'ROMM - Financial Statement Level' worksheet. "
-            "Follows that worksheet and cannot be edited here."
-        ),
-    )
-    link_35_conclusion_id = fields.Many2one(
-        string="Conclusion ID",
-        related="link_35_id.conclusion_id",
-        help=(
-            "Conclusion chosen in the 'ROMM - Financial Statement Level' "
-            "worksheet. Cannot be edited here."
-        ),
-    )
-    link_35_conclusion = fields.Text(
-        string="Conclusion",
-        related="link_35_id.conclusion",
-        help=(
-            "Conclusion written in the 'ROMM - Financial Statement Level' "
-            "worksheet. Cannot be edited here."
         ),
     )
 
@@ -2756,30 +2281,6 @@ class GeneralAuditWSfbbe0f8(models.Model):
             "Filled in automatically."
         ),
     )
-    link_36_state = fields.Selection(
-        string="State",
-        related="link_36_id.state",
-        help=(
-            "Status of the 'ROMM - Account Level' worksheet. Follows that "
-            "worksheet and cannot be edited here."
-        ),
-    )
-    link_36_conclusion_id = fields.Many2one(
-        string="Conclusion ID",
-        related="link_36_id.conclusion_id",
-        help=(
-            "Conclusion chosen in the 'ROMM - Account Level' worksheet. "
-            "Cannot be edited here."
-        ),
-    )
-    link_36_conclusion = fields.Text(
-        string="Conclusion",
-        related="link_36_id.conclusion",
-        help=(
-            "Conclusion written in the 'ROMM - Account Level' worksheet. "
-            "Cannot be edited here."
-        ),
-    )
 
     # Team Communication - Risk Assessment
     # LINK - 37 b1f820c
@@ -2818,30 +2319,6 @@ class GeneralAuditWSfbbe0f8(models.Model):
         help=(
             "The 'Team Communication - Risk Assessment' worksheet of this "
             "audit engagement. Filled in automatically."
-        ),
-    )
-    link_37_state = fields.Selection(
-        string="State",
-        related="link_37_id.state",
-        help=(
-            "Status of the 'Team Communication - Risk Assessment' "
-            "worksheet. Follows that worksheet and cannot be edited here."
-        ),
-    )
-    link_37_conclusion_id = fields.Many2one(
-        string="Conclusion ID",
-        related="link_37_id.conclusion_id",
-        help=(
-            "Conclusion chosen in the 'Team Communication - Risk "
-            "Assessment' worksheet. Cannot be edited here."
-        ),
-    )
-    link_37_conclusion = fields.Text(
-        string="Conclusion",
-        related="link_37_id.conclusion",
-        help=(
-            "Conclusion written in the 'Team Communication - Risk "
-            "Assessment' worksheet. Cannot be edited here."
         ),
     )
 
@@ -2884,30 +2361,6 @@ class GeneralAuditWSfbbe0f8(models.Model):
             "engagement. Filled in automatically."
         ),
     )
-    link_38_state = fields.Selection(
-        string="State",
-        related="link_38_id.state",
-        help=(
-            "Status of the 'Communication with Management' worksheet. "
-            "Follows that worksheet and cannot be edited here."
-        ),
-    )
-    link_38_conclusion_id = fields.Many2one(
-        string="Conclusion ID",
-        related="link_38_id.conclusion_id",
-        help=(
-            "Conclusion chosen in the 'Communication with Management' "
-            "worksheet. Cannot be edited here."
-        ),
-    )
-    link_38_conclusion = fields.Text(
-        string="Conclusion",
-        related="link_38_id.conclusion",
-        help=(
-            "Conclusion written in the 'Communication with Management' "
-            "worksheet. Cannot be edited here."
-        ),
-    )
 
     # Communication with TCWG
     # LINK - 39 c94e287
@@ -2948,30 +2401,6 @@ class GeneralAuditWSfbbe0f8(models.Model):
             "engagement. Filled in automatically."
         ),
     )
-    link_39_state = fields.Selection(
-        string="State",
-        related="link_39_id.state",
-        help=(
-            "Status of the 'Communication with TCWG' worksheet. Follows "
-            "that worksheet and cannot be edited here."
-        ),
-    )
-    link_39_conclusion_id = fields.Many2one(
-        string="Conclusion ID",
-        related="link_39_id.conclusion_id",
-        help=(
-            "Conclusion chosen in the 'Communication with TCWG' worksheet. "
-            "Cannot be edited here."
-        ),
-    )
-    link_39_conclusion = fields.Text(
-        string="Conclusion",
-        related="link_39_id.conclusion",
-        help=(
-            "Conclusion written in the 'Communication with TCWG' worksheet. "
-            "Cannot be edited here."
-        ),
-    )
 
     # Use of Internal Auditor's Work Result
     # LINK - 40 d133f46
@@ -3010,30 +2439,6 @@ class GeneralAuditWSfbbe0f8(models.Model):
         help=(
             "The 'Use of Internal Auditor's Work Result' worksheet of this "
             "audit engagement. Filled in automatically."
-        ),
-    )
-    link_40_state = fields.Selection(
-        string="State",
-        related="link_40_id.state",
-        help=(
-            "Status of the 'Use of Internal Auditor's Work Result' "
-            "worksheet. Follows that worksheet and cannot be edited here."
-        ),
-    )
-    link_40_conclusion_id = fields.Many2one(
-        string="Conclusion ID",
-        related="link_40_id.conclusion_id",
-        help=(
-            "Conclusion chosen in the 'Use of Internal Auditor's Work "
-            "Result' worksheet. Cannot be edited here."
-        ),
-    )
-    link_40_conclusion = fields.Text(
-        string="Conclusion",
-        related="link_40_id.conclusion",
-        help=(
-            "Conclusion written in the 'Use of Internal Auditor's Work "
-            "Result' worksheet. Cannot be edited here."
         ),
     )
 
@@ -3289,30 +2694,6 @@ class GeneralAuditWSfbbe0f8(models.Model):
             "engagement. Filled in automatically."
         ),
     )
-    link_41_state = fields.Selection(
-        string="State",
-        related="link_41_id.state",
-        help=(
-            "Status of the 'Preliminary Materiality' worksheet. Follows "
-            "that worksheet and cannot be edited here."
-        ),
-    )
-    link_41_conclusion_id = fields.Many2one(
-        string="Conclusion ID",
-        related="link_41_id.conclusion_id",
-        help=(
-            "Conclusion chosen in the 'Preliminary Materiality' worksheet. "
-            "Cannot be edited here."
-        ),
-    )
-    link_41_conclusion = fields.Text(
-        string="Conclusion",
-        related="link_41_id.conclusion",
-        help=(
-            "Conclusion written in the 'Preliminary Materiality' worksheet. "
-            "Cannot be edited here."
-        ),
-    )
 
     # Understanding of The Entity
     # LINK - 42 f87b2e1
@@ -3351,30 +2732,6 @@ class GeneralAuditWSfbbe0f8(models.Model):
         help=(
             "The 'Understanding of The Entity' worksheet of this audit "
             "engagement. Filled in automatically."
-        ),
-    )
-    link_42_state = fields.Selection(
-        string="State",
-        related="link_42_id.state",
-        help=(
-            "Status of the 'Understanding of The Entity' worksheet. Follows "
-            "that worksheet and cannot be edited here."
-        ),
-    )
-    link_42_conclusion_id = fields.Many2one(
-        string="Conclusion ID",
-        related="link_42_id.conclusion_id",
-        help=(
-            "Conclusion chosen in the 'Understanding of The Entity' "
-            "worksheet. Cannot be edited here."
-        ),
-    )
-    link_42_conclusion = fields.Text(
-        string="Conclusion",
-        related="link_42_id.conclusion",
-        help=(
-            "Conclusion written in the 'Understanding of The Entity' "
-            "worksheet. Cannot be edited here."
         ),
     )
 
@@ -3417,30 +2774,6 @@ class GeneralAuditWSfbbe0f8(models.Model):
             "in automatically."
         ),
     )
-    link_43_state = fields.Selection(
-        string="State",
-        related="link_43_id.state",
-        help=(
-            "Status of the 'Inherent Risk' worksheet. Follows that "
-            "worksheet and cannot be edited here."
-        ),
-    )
-    link_43_conclusion_id = fields.Many2one(
-        string="Conclusion ID",
-        related="link_43_id.conclusion_id",
-        help=(
-            "Conclusion chosen in the 'Inherent Risk' worksheet. Cannot be "
-            "edited here."
-        ),
-    )
-    link_43_conclusion = fields.Text(
-        string="Conclusion",
-        related="link_43_id.conclusion",
-        help=(
-            "Conclusion written in the 'Inherent Risk' worksheet. Cannot be "
-            "edited here."
-        ),
-    )
 
     # Control Risk
     # LINK - 44 a58e29c
@@ -3479,30 +2812,6 @@ class GeneralAuditWSfbbe0f8(models.Model):
         help=(
             "The 'Control Risk' worksheet of this audit engagement. Filled "
             "in automatically."
-        ),
-    )
-    link_44_state = fields.Selection(
-        string="State",
-        related="link_44_id.state",
-        help=(
-            "Status of the 'Control Risk' worksheet. Follows that worksheet "
-            "and cannot be edited here."
-        ),
-    )
-    link_44_conclusion_id = fields.Many2one(
-        string="Conclusion ID",
-        related="link_44_id.conclusion_id",
-        help=(
-            "Conclusion chosen in the 'Control Risk' worksheet. Cannot be "
-            "edited here."
-        ),
-    )
-    link_44_conclusion = fields.Text(
-        string="Conclusion",
-        related="link_44_id.conclusion",
-        help=(
-            "Conclusion written in the 'Control Risk' worksheet. Cannot be "
-            "edited here."
         ),
     )
 
