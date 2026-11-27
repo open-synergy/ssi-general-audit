@@ -134,6 +134,11 @@ setup:
       xml_id: "ssi_general_audit_worksheet_team_communication.worksheet_type_437fc8f"
       save_as: "ws_type_437fc8f"
 
+    - step: "Get worksheet type b1f820c"
+      action: "ref"
+      xml_id: "ssi_general_audit_worksheet_team_communication.worksheet_type_b1f820c"
+      save_as: "ws_type_b1f820c"
+
     - step: "Get worksheet type b59b886"
       action: "ref"
       xml_id: "ssi_general_audit_worksheet_control_risk.worksheet_type_b59b886"
@@ -448,6 +453,12 @@ scenarios:
           regulatory_review:
             type: "value"
             operator: "is_falsy"
+          team_pe_review:
+            type: "value"
+            operator: "is_falsy"
+          control_entity_review:
+            type: "value"
+            operator: "is_falsy"
 
   # ------------------------------------------------------------------
   # Normal condition - all 13 upstream worksheets present, plus full
@@ -522,6 +533,7 @@ scenarios:
           type_id: "REC: ws_type_bdcdfc5.id"
           business_environment_id: "REC: be_it.id"
           review: "IT review note."
+          conclusion: "IT conclusion note."
           detail_ids:
             - - 0
               - 0
@@ -546,6 +558,7 @@ scenarios:
           type_id: "REC: ws_type_bdcdfc5.id"
           business_environment_id: "REC: be_industry.id"
           review: "Industry review note."
+          conclusion: "Industry conclusion note."
 
       - step: "Open worksheet bdcdfc5 (Industry)"
         action: "call"
@@ -564,6 +577,7 @@ scenarios:
           type_id: "REC: ws_type_bdcdfc5.id"
           business_environment_id: "REC: be_amendment.id"
           review: "Amendment review note."
+          conclusion: "Amendment conclusion note."
 
       - step: "Open worksheet bdcdfc5 (Amendment)"
         action: "call"
@@ -583,6 +597,7 @@ scenarios:
           type_id: "REC: ws_type_bdcdfc5.id"
           business_environment_id: "REC: be_regulatory.id"
           review: "Regulatory review note."
+          conclusion: "Regulatory conclusion note."
 
       - step: "Open worksheet bdcdfc5 (Regulatory)"
         action: "call"
@@ -690,6 +705,23 @@ scenarios:
         method: "action_open"
         as_user: "base.user_admin"
 
+      # ---- LINK 37: general_audit_ws_b1f820c (team risk assessment) ----
+      - step: "Create worksheet b1f820c (link_37)"
+        action: "create"
+        model: "general_audit_ws_b1f820c"
+        save_as: "ws_b1f820c"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_b1f820c.id"
+          conclusion: "Team risk assessment conclusion note."
+
+      - step: "Open worksheet b1f820c"
+        action: "call"
+        target: "ws_b1f820c"
+        method: "action_open"
+        as_user: "base.user_admin"
+
       # ---- LINK 7: general_audit_ws_ae11f7e (main business activity process) ----
       - step: "Create worksheet ae11f7e (link_7)"
         action: "create"
@@ -739,6 +771,7 @@ scenarios:
           general_audit_id: "REC: audit.id"
           type_id: "REC: ws_type_b59b886.id"
           review: "Control risk entity level review note."
+          conclusion: "Control risk entity level conclusion note."
 
       - step: "Open worksheet b59b886"
         action: "call"
@@ -935,16 +968,16 @@ scenarios:
             expected_count: 1
           it_review:
             type: "value"
-            expected: "IT review note."
+            expected: "IT conclusion note."
           industry_review:
             type: "value"
-            expected: "Industry review note."
+            expected: "Industry conclusion note."
           amendment_review:
             type: "value"
-            expected: "Amendment review note."
+            expected: "Amendment conclusion note."
           regulatory_review:
             type: "value"
-            expected: "Regulatory review note."
+            expected: "Regulatory conclusion note."
 
       - step: "Assert derived fields from link_2 (a604795 business cycle summaries)"
         action: "assert"
@@ -998,13 +1031,15 @@ scenarios:
             type: "value"
             expected: "Inherent risk financial statement review note."
 
-      - step: "Assert team_pe_review and communication dates from link_6 (437fc8f)"
+      - step:
+          "Assert team_pe_review from link_37 (b1f820c) and communication dates from
+          link_6 (437fc8f)"
         action: "assert"
         target: "worksheet"
         asserts:
           team_pe_review:
             type: "value"
-            expected: "Team communication pre-engagement review note."
+            expected: "Team risk assessment conclusion note."
           communication_planning_date:
             type: "value"
             expected: 2026-02-01
@@ -1042,7 +1077,7 @@ scenarios:
         asserts:
           control_entity_review:
             type: "value"
-            expected: "Control risk entity level review note."
+            expected: "Control risk entity level conclusion note."
 
       - step: "Assert assignment_team_ids from link_9 (b9d8a5c)"
         action: "assert"
@@ -2406,3 +2441,558 @@ scenarios:
             type: "m2m"
             check: "count"
             expected_count: 2
+
+  # ------------------------------------------------------------------
+  # The six conclusion fields ignore the review notes of their sources.
+  # ------------------------------------------------------------------
+  - name: "Review notes of the sources do not fill the conclusion fields"
+    steps:
+      - step: "Create draft worksheet fbbe0f8"
+        action: "create"
+        model: "general_audit_ws_fbbe0f8"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_fbbe0f8.id"
+
+      - step: "Create source src_risk with only a review filled"
+        action: "create"
+        model: "general_audit_ws_b1f820c"
+        save_as: "src_risk"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_b1f820c.id"
+          review: "Team risk review only."
+
+      - step: "Open source src_risk"
+        action: "call"
+        target: "src_risk"
+        method: "action_open"
+        as_user: "base.user_admin"
+
+      - step: "Create source src_control with only a review filled"
+        action: "create"
+        model: "general_audit_ws_b59b886"
+        save_as: "src_control"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_b59b886.id"
+          review: "Control review only."
+
+      - step: "Open source src_control"
+        action: "call"
+        target: "src_control"
+        method: "action_open"
+        as_user: "base.user_admin"
+
+      - step: "Create source src_it with only a review filled"
+        action: "create"
+        model: "general_audit_ws_bdcdfc5"
+        save_as: "src_it"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_bdcdfc5.id"
+          business_environment_id: "REC: be_it.id"
+          review: "IT review only."
+
+      - step: "Open source src_it"
+        action: "call"
+        target: "src_it"
+        method: "action_open"
+        as_user: "base.user_admin"
+
+      - step: "Create source src_industry with only a review filled"
+        action: "create"
+        model: "general_audit_ws_bdcdfc5"
+        save_as: "src_industry"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_bdcdfc5.id"
+          business_environment_id: "REC: be_industry.id"
+          review: "Industry review only."
+
+      - step: "Open source src_industry"
+        action: "call"
+        target: "src_industry"
+        method: "action_open"
+        as_user: "base.user_admin"
+
+      - step: "Create source src_amendment with only a review filled"
+        action: "create"
+        model: "general_audit_ws_bdcdfc5"
+        save_as: "src_amendment"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_bdcdfc5.id"
+          business_environment_id: "REC: be_amendment.id"
+          review: "Amendment review only."
+
+      - step: "Open source src_amendment"
+        action: "call"
+        target: "src_amendment"
+        method: "action_open"
+        as_user: "base.user_admin"
+
+      - step: "Create source src_regulatory with only a review filled"
+        action: "create"
+        model: "general_audit_ws_bdcdfc5"
+        save_as: "src_regulatory"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_bdcdfc5.id"
+          business_environment_id: "REC: be_regulatory.id"
+          review: "Regulatory review only."
+
+      - step: "Open source src_regulatory"
+        action: "call"
+        target: "src_regulatory"
+        method: "action_open"
+        as_user: "base.user_admin"
+
+      - step: "Reload the links of the memorandum"
+        action: "call"
+        target: "worksheet"
+        method: "action_reload_links"
+        as_user: "base.user_admin"
+
+      - step: "Assert review notes do not fill the six fields"
+        action: "assert"
+        target: "worksheet"
+        refresh: true
+        asserts:
+          state:
+            type: "value"
+            expected: "draft"
+          team_pe_review:
+            type: "value"
+            operator: "is_falsy"
+          control_entity_review:
+            type: "value"
+            operator: "is_falsy"
+          it_review:
+            type: "value"
+            operator: "is_falsy"
+          industry_review:
+            type: "value"
+            operator: "is_falsy"
+          amendment_review:
+            type: "value"
+            operator: "is_falsy"
+          regulatory_review:
+            type: "value"
+            operator: "is_falsy"
+
+  # ------------------------------------------------------------------
+  # The six conclusion fields follow their sources while the memorandum
+  # is draft or open and are kept once it is confirmed or done.
+  # ------------------------------------------------------------------
+  - name: "Conclusion fields follow the sources until draft and open end"
+    steps:
+      - step: "Create draft worksheet fbbe0f8"
+        action: "create"
+        model: "general_audit_ws_fbbe0f8"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_fbbe0f8.id"
+
+      - step: "Create source src_risk with only a conclusion filled"
+        action: "create"
+        model: "general_audit_ws_b1f820c"
+        save_as: "src_risk"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_b1f820c.id"
+          conclusion: "Team risk first conclusion."
+
+      - step: "Open source src_risk"
+        action: "call"
+        target: "src_risk"
+        method: "action_open"
+        as_user: "base.user_admin"
+
+      - step: "Create source src_control with only a conclusion filled"
+        action: "create"
+        model: "general_audit_ws_b59b886"
+        save_as: "src_control"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_b59b886.id"
+          conclusion: "Control first conclusion."
+
+      - step: "Open source src_control"
+        action: "call"
+        target: "src_control"
+        method: "action_open"
+        as_user: "base.user_admin"
+
+      - step: "Create source src_it with only a conclusion filled"
+        action: "create"
+        model: "general_audit_ws_bdcdfc5"
+        save_as: "src_it"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_bdcdfc5.id"
+          business_environment_id: "REC: be_it.id"
+          conclusion: "IT first conclusion."
+
+      - step: "Open source src_it"
+        action: "call"
+        target: "src_it"
+        method: "action_open"
+        as_user: "base.user_admin"
+
+      - step: "Create source src_industry with only a conclusion filled"
+        action: "create"
+        model: "general_audit_ws_bdcdfc5"
+        save_as: "src_industry"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_bdcdfc5.id"
+          business_environment_id: "REC: be_industry.id"
+          conclusion: "Industry first conclusion."
+
+      - step: "Open source src_industry"
+        action: "call"
+        target: "src_industry"
+        method: "action_open"
+        as_user: "base.user_admin"
+
+      - step: "Create source src_amendment with only a conclusion filled"
+        action: "create"
+        model: "general_audit_ws_bdcdfc5"
+        save_as: "src_amendment"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_bdcdfc5.id"
+          business_environment_id: "REC: be_amendment.id"
+          conclusion: "Amendment first conclusion."
+
+      - step: "Open source src_amendment"
+        action: "call"
+        target: "src_amendment"
+        method: "action_open"
+        as_user: "base.user_admin"
+
+      - step: "Create source src_regulatory with only a conclusion filled"
+        action: "create"
+        model: "general_audit_ws_bdcdfc5"
+        save_as: "src_regulatory"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_bdcdfc5.id"
+          business_environment_id: "REC: be_regulatory.id"
+          conclusion: "Regulatory first conclusion."
+
+      - step: "Open source src_regulatory"
+        action: "call"
+        target: "src_regulatory"
+        method: "action_open"
+        as_user: "base.user_admin"
+
+      - step: "Reload the links of the memorandum"
+        action: "call"
+        target: "worksheet"
+        method: "action_reload_links"
+        as_user: "base.user_admin"
+
+      - step: "Assert the draft memorandum shows the source conclusions"
+        action: "assert"
+        target: "worksheet"
+        refresh: true
+        asserts:
+          state:
+            type: "value"
+            expected: "draft"
+          team_pe_review:
+            type: "value"
+            expected: "Team risk first conclusion."
+          control_entity_review:
+            type: "value"
+            expected: "Control first conclusion."
+          it_review:
+            type: "value"
+            expected: "IT first conclusion."
+          industry_review:
+            type: "value"
+            expected: "Industry first conclusion."
+          amendment_review:
+            type: "value"
+            expected: "Amendment first conclusion."
+          regulatory_review:
+            type: "value"
+            expected: "Regulatory first conclusion."
+
+      - step: "Start the memorandum"
+        action: "call"
+        target: "worksheet"
+        method: "action_open"
+        as_user: "base.user_admin"
+
+      - step: "Reload again the links of the memorandum"
+        action: "call"
+        target: "worksheet"
+        method: "action_reload_links"
+        as_user: "base.user_admin"
+
+      - step: "Assert the open memorandum shows the source conclusions"
+        action: "assert"
+        target: "worksheet"
+        refresh: true
+        asserts:
+          state:
+            type: "value"
+            expected: "open"
+          team_pe_review:
+            type: "value"
+            expected: "Team risk first conclusion."
+          control_entity_review:
+            type: "value"
+            expected: "Control first conclusion."
+          it_review:
+            type: "value"
+            expected: "IT first conclusion."
+          industry_review:
+            type: "value"
+            expected: "Industry first conclusion."
+          amendment_review:
+            type: "value"
+            expected: "Amendment first conclusion."
+          regulatory_review:
+            type: "value"
+            expected: "Regulatory first conclusion."
+
+      - step: "Write conclusion of src_risk while open"
+        action: "write"
+        target: "src_risk"
+        as_user: "base.user_admin"
+        values:
+          conclusion: "Team risk second conclusion."
+
+      - step: "Write conclusion of src_control while open"
+        action: "write"
+        target: "src_control"
+        as_user: "base.user_admin"
+        values:
+          conclusion: "Control second conclusion."
+
+      - step: "Write conclusion of src_it while open"
+        action: "write"
+        target: "src_it"
+        as_user: "base.user_admin"
+        values:
+          conclusion: "IT second conclusion."
+
+      - step: "Write conclusion of src_industry while open"
+        action: "write"
+        target: "src_industry"
+        as_user: "base.user_admin"
+        values:
+          conclusion: "Industry second conclusion."
+
+      - step: "Write conclusion of src_amendment while open"
+        action: "write"
+        target: "src_amendment"
+        as_user: "base.user_admin"
+        values:
+          conclusion: "Amendment second conclusion."
+
+      - step: "Write conclusion of src_regulatory while open"
+        action: "write"
+        target: "src_regulatory"
+        as_user: "base.user_admin"
+        values:
+          conclusion: "Regulatory second conclusion."
+
+      - step: "Assert the open memorandum follows the new conclusions"
+        action: "assert"
+        target: "worksheet"
+        refresh: true
+        asserts:
+          state:
+            type: "value"
+            expected: "open"
+          team_pe_review:
+            type: "value"
+            expected: "Team risk second conclusion."
+          control_entity_review:
+            type: "value"
+            expected: "Control second conclusion."
+          it_review:
+            type: "value"
+            expected: "IT second conclusion."
+          industry_review:
+            type: "value"
+            expected: "Industry second conclusion."
+          amendment_review:
+            type: "value"
+            expected: "Amendment second conclusion."
+          regulatory_review:
+            type: "value"
+            expected: "Regulatory second conclusion."
+
+      - step: "Move the memorandum to confirm (snapshot)"
+        action: "write"
+        target: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          state: "confirm"
+
+      - step: "Write conclusion of src_risk after confirm"
+        action: "write"
+        target: "src_risk"
+        as_user: "base.user_admin"
+        values:
+          conclusion: "Team risk third conclusion."
+
+      - step: "Write conclusion of src_control after confirm"
+        action: "write"
+        target: "src_control"
+        as_user: "base.user_admin"
+        values:
+          conclusion: "Control third conclusion."
+
+      - step: "Write conclusion of src_it after confirm"
+        action: "write"
+        target: "src_it"
+        as_user: "base.user_admin"
+        values:
+          conclusion: "IT third conclusion."
+
+      - step: "Write conclusion of src_industry after confirm"
+        action: "write"
+        target: "src_industry"
+        as_user: "base.user_admin"
+        values:
+          conclusion: "Industry third conclusion."
+
+      - step: "Write conclusion of src_amendment after confirm"
+        action: "write"
+        target: "src_amendment"
+        as_user: "base.user_admin"
+        values:
+          conclusion: "Amendment third conclusion."
+
+      - step: "Write conclusion of src_regulatory after confirm"
+        action: "write"
+        target: "src_regulatory"
+        as_user: "base.user_admin"
+        values:
+          conclusion: "Regulatory third conclusion."
+
+      - step: "Assert the confirmed memorandum keeps its snapshot"
+        action: "assert"
+        target: "worksheet"
+        refresh: true
+        asserts:
+          state:
+            type: "value"
+            expected: "confirm"
+          team_pe_review:
+            type: "value"
+            expected: "Team risk second conclusion."
+          control_entity_review:
+            type: "value"
+            expected: "Control second conclusion."
+          it_review:
+            type: "value"
+            expected: "IT second conclusion."
+          industry_review:
+            type: "value"
+            expected: "Industry second conclusion."
+          amendment_review:
+            type: "value"
+            expected: "Amendment second conclusion."
+          regulatory_review:
+            type: "value"
+            expected: "Regulatory second conclusion."
+
+      - step: "Move the memorandum to done (snapshot)"
+        action: "write"
+        target: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          state: "done"
+
+      - step: "Write conclusion of src_risk after done"
+        action: "write"
+        target: "src_risk"
+        as_user: "base.user_admin"
+        values:
+          conclusion: "Team risk fourth conclusion."
+
+      - step: "Write conclusion of src_control after done"
+        action: "write"
+        target: "src_control"
+        as_user: "base.user_admin"
+        values:
+          conclusion: "Control fourth conclusion."
+
+      - step: "Write conclusion of src_it after done"
+        action: "write"
+        target: "src_it"
+        as_user: "base.user_admin"
+        values:
+          conclusion: "IT fourth conclusion."
+
+      - step: "Write conclusion of src_industry after done"
+        action: "write"
+        target: "src_industry"
+        as_user: "base.user_admin"
+        values:
+          conclusion: "Industry fourth conclusion."
+
+      - step: "Write conclusion of src_amendment after done"
+        action: "write"
+        target: "src_amendment"
+        as_user: "base.user_admin"
+        values:
+          conclusion: "Amendment fourth conclusion."
+
+      - step: "Write conclusion of src_regulatory after done"
+        action: "write"
+        target: "src_regulatory"
+        as_user: "base.user_admin"
+        values:
+          conclusion: "Regulatory fourth conclusion."
+
+      - step: "Assert the done memorandum keeps its snapshot"
+        action: "assert"
+        target: "worksheet"
+        refresh: true
+        asserts:
+          state:
+            type: "value"
+            expected: "done"
+          team_pe_review:
+            type: "value"
+            expected: "Team risk second conclusion."
+          control_entity_review:
+            type: "value"
+            expected: "Control second conclusion."
+          it_review:
+            type: "value"
+            expected: "IT second conclusion."
+          industry_review:
+            type: "value"
+            expected: "Industry second conclusion."
+          amendment_review:
+            type: "value"
+            expected: "Amendment second conclusion."
+          regulatory_review:
+            type: "value"
+            expected: "Regulatory second conclusion."

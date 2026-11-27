@@ -22,9 +22,9 @@ class GeneralAuditWSfbbe0f8(models.Model):
 
     The following information is pulled from linked upstream worksheets:
 
-    * **Business environment** (``link_1_ids``) — IT environment details,
-      IT risk review, regulatory/legal environment review, and amendment
-      review notes.
+    * **Business environment** (``link_1_ids``) — IT environment details
+      and the conclusions of the IT, industry, regulatory, and amendment
+      environments.
     * **Business cycles** (``link_2_ids``) — Significant transaction cycles,
       assigned team members, estimated transaction volumes, and entities
       flagged for unannounced audit.
@@ -33,7 +33,11 @@ class GeneralAuditWSfbbe0f8(models.Model):
     * **Specific materiality** (``link_4_ids``) — Material account type
       mappings.
     * **Inherent risk finance** (``link_5_id``) — Review note.
-    * **Team preliminary engagement** (``link_6_id``) — Review note.
+    * **Team preliminary engagement** (``link_6_id``) — Communication
+      dates.
+    * **Team communication risk assessment** (``link_37_id``) —
+      Conclusion.
+    * **Control risk entity level** (``link_8_id``) — Conclusion.
     * **Understanding of the entity** (``link_7_id``) — Prior auditor history,
       other services provided, prior audit evidence, and other evidence.
 
@@ -125,10 +129,10 @@ class GeneralAuditWSfbbe0f8(models.Model):
         "link_1_ids",
         "link_1_ids.business_environment_id",
         "link_1_ids.detail_ids",
-        "link_1_ids.review",
+        "link_1_ids.conclusion",
     )
     def _compute_it_detail_review_ids(self):
-        """Copy the IT environment details and review from RA.150.5.
+        """Copy the IT environment details and conclusion from RA.150.5.
 
         Follows the source while the worksheet is draft or open and
         keeps the stored values afterwards.
@@ -148,7 +152,7 @@ class GeneralAuditWSfbbe0f8(models.Model):
                     )
                     if len(it_env) == 1:
                         result = it_env.detail_ids.ids
-                        review = it_env.review
+                        review = it_env.conclusion
             record.it_detail_ids = result
             record.it_review = review
 
@@ -169,18 +173,18 @@ class GeneralAuditWSfbbe0f8(models.Model):
         store=True,
         help=(
             "Taken from the 'Understanding of the Business Environment' "
-            "worksheet, field 'Review Notes', from the 'Technological "
-            "Developments' environment."
+            "worksheet, field 'Conclusion Additional Explanation', from "
+            "the 'Technological Developments' environment."
         ),
     )
 
     @api.depends(
         "link_1_ids",
         "link_1_ids.business_environment_id",
-        "link_1_ids.review",
+        "link_1_ids.conclusion",
     )
     def _compute_industry_review(self):
-        """Copy the industry review from RA.150.5.
+        """Copy the industry conclusion from RA.150.5.
 
         Follows the source while the worksheet is draft or open and
         keeps the stored value afterwards.
@@ -198,7 +202,7 @@ class GeneralAuditWSfbbe0f8(models.Model):
                         lambda x: x.business_environment_id.id == env_id
                     )
                     if len(it_env) == 1:
-                        review = it_env.review
+                        review = it_env.conclusion
             record.industry_review = review
 
     industry_review = fields.Text(
@@ -207,8 +211,8 @@ class GeneralAuditWSfbbe0f8(models.Model):
         store=True,
         help=(
             "Taken from the 'Understanding of the Business Environment' "
-            "worksheet, field 'Review Notes', from the 'Industry Trends' "
-            "environment."
+            "worksheet, field 'Conclusion Additional Explanation', from "
+            "the 'Industry Trends' environment."
         ),
     )
     label_shedule_meeting_auditor = fields.Char()
@@ -334,10 +338,10 @@ class GeneralAuditWSfbbe0f8(models.Model):
     @api.depends(
         "link_1_ids",
         "link_1_ids.business_environment_id",
-        "link_1_ids.review",
+        "link_1_ids.conclusion",
     )
     def _compute_amendment_review(self):
-        """Copy the amendment review from RA.150.5.
+        """Copy the amendment conclusion from RA.150.5.
 
         Follows the source while the worksheet is draft or open and
         keeps the stored value afterwards.
@@ -355,7 +359,7 @@ class GeneralAuditWSfbbe0f8(models.Model):
                         lambda x: x.business_environment_id.id == env_id
                     )
                     if len(it_env) == 1:
-                        review = it_env.review
+                        review = it_env.conclusion
             record.amendment_review = review
 
     amendment_review = fields.Text(
@@ -364,18 +368,19 @@ class GeneralAuditWSfbbe0f8(models.Model):
         store=True,
         help=(
             "Taken from the 'Understanding of the Business Environment' "
-            "worksheet, field 'Review Notes', from the 'Amendments or "
-            "Changes to Accounting Standards' environment."
+            "worksheet, field 'Conclusion Additional Explanation', from "
+            "the 'Amendments or Changes to Accounting Standards' "
+            "environment."
         ),
     )
 
     @api.depends(
         "link_1_ids",
         "link_1_ids.business_environment_id",
-        "link_1_ids.review",
+        "link_1_ids.conclusion",
     )
     def _compute_regulatory_review(self):
-        """Copy the regulatory review from RA.150.5.
+        """Copy the regulatory conclusion from RA.150.5.
 
         Follows the source while the worksheet is draft or open and
         keeps the stored value afterwards.
@@ -393,7 +398,7 @@ class GeneralAuditWSfbbe0f8(models.Model):
                         lambda x: x.business_environment_id.id == env_id
                     )
                     if len(it_env) == 1:
-                        review = it_env.review
+                        review = it_env.conclusion
             record.regulatory_review = review
 
     regulatory_review = fields.Text(
@@ -402,8 +407,8 @@ class GeneralAuditWSfbbe0f8(models.Model):
         store=True,
         help=(
             "Taken from the 'Understanding of the Business Environment' "
-            "worksheet, field 'Review Notes', from the 'Regulatory Changes' "
-            "environment."
+            "worksheet, field 'Conclusion Additional Explanation', from "
+            "the 'Regulatory Changes' environment."
         ),
     )
 
@@ -658,12 +663,32 @@ class GeneralAuditWSfbbe0f8(models.Model):
         ),
     )
 
+    @api.depends(
+        "link_37_id",
+        "link_37_id.conclusion",
+    )
+    def _compute_team_pe_review(self):
+        """Copy the conclusion of the team risk assessment communication.
+
+        Follows the source while the worksheet is draft or open and
+        keeps the stored value afterwards.
+        """
+        for record in self:
+            result = record.team_pe_review
+            if record.state in record._get_following_states():
+                result = False
+                if record.link_37_id:
+                    result = record.link_37_id.conclusion
+            record.team_pe_review = result
+
     team_pe_review = fields.Text(
-        related="link_6_id.review",
+        string="Review Notes",
+        compute_sudo=True,
+        compute="_compute_team_pe_review",
         store=True,
         help=(
-            "Taken from the 'Team Communication - Pre-Engagement' "
-            "worksheet, field 'Review Notes'."
+            "Taken from the 'Team Communication - Risk Assessment' "
+            "worksheet, field 'Conclusion Additional Explanation'."
         ),
     )
 
@@ -751,12 +776,32 @@ class GeneralAuditWSfbbe0f8(models.Model):
         ),
     )
 
+    @api.depends(
+        "link_8_id",
+        "link_8_id.conclusion",
+    )
+    def _compute_control_entity_review(self):
+        """Copy the conclusion of the entity level control risk.
+
+        Follows the source while the worksheet is draft or open and
+        keeps the stored value afterwards.
+        """
+        for record in self:
+            result = record.control_entity_review
+            if record.state in record._get_following_states():
+                result = False
+                if record.link_8_id:
+                    result = record.link_8_id.conclusion
+            record.control_entity_review = result
+
     control_entity_review = fields.Text(
-        related="link_8_id.review",
+        string="Review Notes",
+        compute_sudo=True,
+        compute="_compute_control_entity_review",
         store=True,
         help=(
             "Taken from the 'Control Risk - Entity Level' worksheet, field "
-            "'Review Notes'."
+            "'Conclusion Additional Explanation'."
         ),
     )
 
