@@ -9,9 +9,9 @@ from odoo.exceptions import UserError
 class GeneralAuditWSf5a3ceeAttachmentUpload(models.TransientModel):
     """Upload files to a line of the Data Collection worksheet (f5a3cee).
 
-    Opened from a button in the list of a data line or a reporting timetable
-    line.  Uploaded files are linked to the line and, through the attachment
-    mixin, to the worksheet record itself.
+    Opened from a button in the list of a data line, a Permanent File line
+    or a Current File line.  Uploaded files are linked to the line and,
+    through the attachment mixin, to the worksheet record itself.
     """
 
     _name = "general_audit_ws_f5a3cee_attachment_upload"
@@ -29,7 +29,7 @@ class GeneralAuditWSf5a3ceeAttachmentUpload(models.TransientModel):
     def _get_line(self):
         """Return the line the wizard was opened from.
 
-        :return: the data line or reporting timetable line
+        :return: the data line or file line
         :rtype: recordset
         :raises UserError: if the line is not saved yet
         """
@@ -39,7 +39,8 @@ class GeneralAuditWSf5a3ceeAttachmentUpload(models.TransientModel):
         res_id = context.get("active_id")
         if model not in (
             "general_audit_ws_f5a3cee.detail_line",
-            "general_audit_ws_f5a3cee.reporting_timetable",
+            "general_audit_ws_f5a3cee.permanent",
+            "general_audit_ws_f5a3cee.current",
         ):
             raise UserError(_("This wizard must be opened from a data line."))
         line = self.env[model].browse(res_id).exists()

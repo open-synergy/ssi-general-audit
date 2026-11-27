@@ -15,8 +15,8 @@ class GeneralAuditDataCollection(models.Model):
     client. An item of type Account Type belongs to one client account type
     and fills the Details tab of the Data Collection worksheet; an item of
     type Permanent File or Current File is not tied to an account type and
-    fills the Others tab. An item of type Primary has no account type and
-    no category, and fills neither tab.
+    fills the Permanent/Current tab. An item of type Primary has no account
+    type and no category, and fills neither tab.
     """
 
     _name = "general_audit_data_collection"

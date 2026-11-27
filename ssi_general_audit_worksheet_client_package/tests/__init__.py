@@ -6,6 +6,7 @@ from . import test_ws_b5e3d9f
 from . import test_ws_f5a3cee
 from . import test_data_collection
 from . import test_migration_14_0_1_7_0
+from . import test_migration_14_0_1_9_0
 from . import test_ws_checklist
 from . import ui_fixture
 from . import test_ui_general_audit_ws_abd82ed

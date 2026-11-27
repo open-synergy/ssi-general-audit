@@ -9,7 +9,8 @@ from openupgradelib import openupgrade
 _logger = logging.getLogger(__name__)
 
 LINE_MODELS = (
-    "general_audit_ws_f5a3cee.reporting_timetable",
+    "general_audit_ws_f5a3cee.permanent",
+    "general_audit_ws_f5a3cee.current",
     "general_audit_ws_f5a3cee.detail_line",
 )
 
@@ -23,6 +24,9 @@ def migrate(env, version):
     Data Collection worksheet, must be computed again. The recompute goes
     through ``add_to_compute`` and ``flush``, never through the compute
     method itself, so no ``write`` override runs during the update.
+    The ``permanent`` and ``current`` lines are still empty when upgrading
+    from this far back; migration 14.0.1.9.0 fills them with the sort key of
+    their master item.
 
     :param env: the migration environment
     :param str version: version being migrated to (unused)

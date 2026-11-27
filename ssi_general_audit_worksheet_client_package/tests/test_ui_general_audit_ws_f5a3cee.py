@@ -6,7 +6,7 @@
 # in setUpClass, and the Pre-Condition fixture below needs it there.
 from odoo.tests import HttpSavepointCase, tagged
 
-from .ui_fixture import create_open_general_audit
+from .ui_fixture import create_open_general_audit, create_populate_worksheet
 
 
 @tagged("post_install", "-at_install")
@@ -15,14 +15,16 @@ class TestUiGeneralAuditWsF5a3cee(HttpSavepointCase):
 
     @classmethod
     def setUpClass(cls):
-        """Create an open General Audit for the Create tour.
+        """Create the records of the Create and Populate Details tours.
 
-        The Create tour selects the audit by its fixed number
+        The Populate Details tour opens the worksheet of the General Audit
+        ``TOUR-F5A3CEE-POPULATE``.  The Create tour selects the audit by its fixed number
         ``TOUR-F5A3CEE-GA`` and creates its own worksheet against it, so the
         audit must not have a ``general_audit_ws_f5a3cee`` worksheet yet.
         """
         super().setUpClass()
         cls.audit = create_open_general_audit(cls.env, "TOUR-F5A3CEE-GA")
+        cls.worksheet = create_populate_worksheet(cls.env, "TOUR-F5A3CEE-POPULATE")
 
     def test_create(self):
         """Run the Create tour.
@@ -32,5 +34,16 @@ class TestUiGeneralAuditWsF5a3cee(HttpSavepointCase):
         self.start_tour(
             "/web",
             "ssi_general_audit_worksheet_client_package_f5a3cee_create",
+            login="admin",
+        )
+
+    def test_populate_details(self):
+        """Run the Populate Details tour.
+
+        IK: docs/general_audit_ws_f5a3cee/02-populate-details.md
+        """
+        self.start_tour(
+            "/web",
+            "ssi_general_audit_worksheet_client_package_f5a3cee_populate_details",
             login="admin",
         )

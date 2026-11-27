@@ -10,10 +10,11 @@ class GeneralAuditWSf5a3cee(models.Model):
     Tracks the receipt and completeness of client-provided data.  Details
     (``detail_ids``) are auto-populated via ``action_populate_details`` from
     the client's account mapping, one per account type, each holding the data
-    lines of the matching Data Collection master items.  ``reporting_timetable_ids``
-    also holds the master items that are not tied to an account type.  Each line is
-    marked complete once the data or supporting documents have been received
-    and attached.
+    lines of the matching Data Collection master items.  ``permanent_ids``
+    and ``current_ids`` hold the master items of type Permanent File and
+    Current File.  Each line is marked complete once the data or supporting
+    documents have been received and attached.  ``reporting_timetable_ids``
+    is the manually entered reporting timetable to be followed by the entity.
 
     This worksheet gives the engagement team a consolidated view of outstanding
     data requests and ensures no account type is overlooked before fieldwork
@@ -44,9 +45,28 @@ class GeneralAuditWSf5a3cee(models.Model):
         comodel_name="general_audit_ws_f5a3cee.reporting_timetable",
         inverse_name="worksheet_id",
         help=(
-            "Reporting deliverable and other data lines. Lines linked to a "
-            "Data Collection master item are populated; the others are "
-            "entered manually by the user."
+            "Reporting timetable to be followed by the entity, entered "
+            "manually by the user."
+        ),
+    )
+    permanent_ids = fields.One2many(
+        string="Permanent File",
+        comodel_name="general_audit_ws_f5a3cee.permanent",
+        inverse_name="worksheet_id",
+        help=(
+            "Permanent File lines. Lines linked to a Data Collection master "
+            "item of type Permanent File are populated; the others are entered "
+            "manually by the user."
+        ),
+    )
+    current_ids = fields.One2many(
+        string="Current File",
+        comodel_name="general_audit_ws_f5a3cee.current",
+        inverse_name="worksheet_id",
+        help=(
+            "Current File lines. Lines linked to a Data Collection master "
+            "item of type Current File are populated; the others are entered "
+            "manually by the user."
         ),
     )
 
@@ -66,11 +86,12 @@ class GeneralAuditWSf5a3cee(models.Model):
         return data
 
     def action_populate_details(self):
-        """Populate details, their data lines and the other data lines."""
+        """Populate details, their data lines and the file lines."""
         for record in self:
             record._create_details()
             record._populate_detail_lines()
-            record._populate_other_lines()
+            record._populate_file_lines("permanent_file", "permanent_ids")
+            record._populate_file_lines("current_file", "current_ids")
 
     def _create_details(self):
         """Create one detail per account type in the client's mapping."""
@@ -130,17 +151,19 @@ class GeneralAuditWSf5a3cee(models.Model):
             )
             obsolete.unlink()
 
-    def _populate_other_lines(self):
-        """Sync the timetable lines with the file master items.
+    def _populate_file_lines(self, item_type, field_name):
+        """Sync one list of file lines with the master items of one type.
 
-        Only master items of type Permanent File or Current File are used.
-        Lines without a master item are never touched.
+        Only active master items of ``item_type`` are used.  Lines without
+        a master item are never touched.
+
+        :param str item_type: type of the master items to use
+        :param str field_name: worksheet one2many that holds the lines
         """
         self.ensure_one()
         Master = self.env["general_audit_data_collection"]
-        Timetable = self.env["general_audit_ws_f5a3cee.reporting_timetable"]
-        masters = Master.search([("type", "in", ("permanent_file", "current_file"))])
-        existing = self.reporting_timetable_ids.mapped("data_collection_id")
+        masters = Master.search([("type", "=", item_type)])
+        existing = self[field_name].mapped("data_collection_id")
         vals_list = [
             {
                 "worksheet_id": self.id,
@@ -151,9 +174,9 @@ class GeneralAuditWSf5a3cee(models.Model):
             for master in masters - existing
         ]
         if vals_list:
-            Timetable.create(vals_list)
-        self.reporting_timetable_ids._fill_from_master()
-        self.reporting_timetable_ids.filtered(
+            self[field_name].create(vals_list)
+        self[field_name]._fill_from_master()
+        self[field_name].filtered(
             lambda line: line.data_collection_id
             and line.data_collection_id not in masters
         ).unlink()

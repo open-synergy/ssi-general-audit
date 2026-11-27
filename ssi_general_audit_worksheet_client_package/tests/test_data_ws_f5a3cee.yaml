@@ -704,9 +704,9 @@ scenarios:
             expected: 2026-06-30
 
   # ------------------------------------------------------------------
-  # reporting_timetable_ids - complete_ok toggled independently of detail_ids
+  # permanent_ids - complete_ok toggled independently of detail_ids
   # ------------------------------------------------------------------
-  - name: "Worksheet f5a3cee - Reporting timetable (complete_ok independent)"
+  - name: "Worksheet f5a3cee - Permanent File (complete_ok independent)"
     steps:
       - step: "Create worksheet for independence check"
         action: "create"
@@ -747,26 +747,26 @@ scenarios:
           name: "Manual data"
           complete_ok: false
 
-      - step: "Create a reporting timetable row, not completed"
+      - step: "Create a Permanent File row, not completed"
         action: "create"
-        model: "general_audit_ws_f5a3cee.reporting_timetable"
-        save_as: "timetable_line"
+        model: "general_audit_ws_f5a3cee.permanent"
+        save_as: "permanent_line"
         as_user: "base.user_admin"
         values:
           worksheet_id: "REC: worksheet.id"
           description: "Draft laporan keuangan"
           complete_ok: false
 
-      - step: "Toggle complete_ok only on the reporting timetable row"
+      - step: "Toggle complete_ok only on the Permanent File row"
         action: "write"
-        target: "timetable_line"
+        target: "permanent_line"
         as_user: "base.user_admin"
         values:
           complete_ok: true
 
-      - step: "Assert the reporting timetable row is now completed"
+      - step: "Assert the Permanent File row is now completed"
         action: "assert"
-        target: "timetable_line"
+        target: "permanent_line"
         asserts:
           complete_ok:
             type: "value"
@@ -925,9 +925,9 @@ scenarios:
             expected: "EVAL: registry['worksheet'].id"
 
   # ------------------------------------------------------------------
-  # Attachment link (reporting timetable, write)
+  # Attachment link (Permanent File, write)
   # ------------------------------------------------------------------
-  - name: "Worksheet f5a3cee - Attachment link (reporting timetable, write)"
+  - name: "Worksheet f5a3cee - Attachment link (Permanent File, write)"
     steps:
       - step: "Create worksheet"
         action: "create"
@@ -947,17 +947,17 @@ scenarios:
           name: "Evidence att_c"
           type: "url"
           url: "https://example.com/att_c"
-      - step: "Create timetable_line"
+      - step: "Create a Permanent File line"
         action: "create"
-        model: "general_audit_ws_f5a3cee.reporting_timetable"
-        save_as: "timetable_line"
+        model: "general_audit_ws_f5a3cee.permanent"
+        save_as: "permanent_line"
         as_user: "base.user_admin"
         values:
           worksheet_id: "REC: worksheet.id"
           description: "Draft report"
-      - step: "Add the orphan attachment to the timetable row"
+      - step: "Add the orphan attachment to the Permanent File row"
         action: "write"
-        target: "timetable_line"
+        target: "permanent_line"
         as_user: "base.user_admin"
         values:
           attachment_ids: [[6, 0, ["REC: att_c.id"]]]
@@ -974,9 +974,9 @@ scenarios:
             expected: "EVAL: registry['worksheet'].id"
 
   # ------------------------------------------------------------------
-  # Attachment link (reporting timetable, create)
+  # Attachment link (Permanent File, create)
   # ------------------------------------------------------------------
-  - name: "Worksheet f5a3cee - Attachment link (reporting timetable, create)"
+  - name: "Worksheet f5a3cee - Attachment link (Permanent File, create)"
     steps:
       - step: "Create worksheet"
         action: "create"
@@ -996,10 +996,10 @@ scenarios:
           name: "Evidence att_d"
           type: "url"
           url: "https://example.com/att_d"
-      - step: "Create timetable_line"
+      - step: "Create a Permanent File line"
         action: "create"
-        model: "general_audit_ws_f5a3cee.reporting_timetable"
-        save_as: "timetable_line"
+        model: "general_audit_ws_f5a3cee.permanent"
+        save_as: "permanent_line"
         as_user: "base.user_admin"
         values:
           worksheet_id: "REC: worksheet.id"
@@ -1067,10 +1067,10 @@ scenarios:
           detail_id: "REC: detail.id"
           name: "Manual data"
           attachment_ids: [[6, 0, ["REC: att_owned.id"]]]
-      - step: "Create timetable_line"
+      - step: "Create a Permanent File line"
         action: "create"
-        model: "general_audit_ws_f5a3cee.reporting_timetable"
-        save_as: "timetable_line"
+        model: "general_audit_ws_f5a3cee.permanent"
+        save_as: "permanent_line"
         as_user: "base.user_admin"
         values:
           worksheet_id: "REC: worksheet.id"
@@ -1088,7 +1088,7 @@ scenarios:
             expected: "EVAL: registry['other_partner'].id"
 
   # ------------------------------------------------------------------
-  # action_populate_details - data lines and other lines from the master
+  # action_populate_details - data lines and file lines from the master
   # ------------------------------------------------------------------
   - name: "Worksheet f5a3cee - Populate data lines from master"
     steps:
@@ -1141,12 +1141,23 @@ scenarios:
       - step: "Create master of type Permanent File"
         action: "create"
         model: "general_audit_data_collection"
-        save_as: "master_o"
+        save_as: "master_p"
         as_user: "base.user_admin"
         values:
-          name: "Master Others"
+          name: "Master Permanent"
           code: "/"
           type: "permanent_file"
+          category_id: "REC: category.id"
+
+      - step: "Create master of type Current File"
+        action: "create"
+        model: "general_audit_data_collection"
+        save_as: "master_c"
+        as_user: "base.user_admin"
+        values:
+          name: "Master Current"
+          code: "/"
+          type: "current_file"
           category_id: "REC: category.id"
 
       - step: "Create master of type Primary"
@@ -1174,22 +1185,22 @@ scenarios:
         method: "action_populate_details"
         as_user: "base.user_admin"
 
-      - step: "Assert no Others line from any Primary master"
+      - step: "Assert the Permanent File list holds only items of its type"
         action: "search"
-        model: "general_audit_ws_f5a3cee.reporting_timetable"
+        model: "general_audit_ws_f5a3cee.permanent"
         domain:
           - ["worksheet_id", "=", "REC: worksheet.id"]
-          - ["data_collection_id.type", "=", "primary"]
-        save_as: "other_primary"
+          - ["data_collection_id.type", "!=", "permanent_file"]
+        save_as: "permanent_wrong_type"
         expect_count: 0
 
-      - step: "Assert Others lines come from Permanent or Current File only"
+      - step: "Assert the Current File list holds only items of its type"
         action: "search"
-        model: "general_audit_ws_f5a3cee.reporting_timetable"
+        model: "general_audit_ws_f5a3cee.current"
         domain:
           - ["worksheet_id", "=", "REC: worksheet.id"]
-          - ["data_collection_id.type", "not in", ["permanent_file", "current_file"]]
-        save_as: "other_wrong_type"
+          - ["data_collection_id.type", "!=", "current_file"]
+        save_as: "current_wrong_type"
         expect_count: 0
 
       - step: "Assert one detail, for the mapped type only"
@@ -1218,13 +1229,30 @@ scenarios:
         save_as: "found_1"
         expect_count: 0
 
-      - step: "Assert one timetable line, from the Others master"
+      - step: "Assert Populate adds no reporting timetable row"
         action: "search"
         model: "general_audit_ws_f5a3cee.reporting_timetable"
         domain:
           - ["worksheet_id", "=", "REC: worksheet.id"]
-          - ["data_collection_id", "=", "REC: master_o.id"]
-        save_as: "other_o"
+        save_as: "timetable_rows"
+        expect_count: 0
+
+      - step: "Assert one Permanent File line, from its master"
+        action: "search"
+        model: "general_audit_ws_f5a3cee.permanent"
+        domain:
+          - ["worksheet_id", "=", "REC: worksheet.id"]
+          - ["data_collection_id", "=", "REC: master_p.id"]
+        save_as: "permanent_o"
+        expect_count: 1
+
+      - step: "Assert one Current File line, from its master"
+        action: "search"
+        model: "general_audit_ws_f5a3cee.current"
+        domain:
+          - ["worksheet_id", "=", "REC: worksheet.id"]
+          - ["data_collection_id", "=", "REC: master_c.id"]
+        save_as: "current_c"
         expect_count: 1
 
       - step: "Fill the date on the populated data line"
@@ -1249,13 +1277,22 @@ scenarios:
         save_as: "found_2"
         expect_count: 1
 
-      - step: "Assert no duplicated timetable line"
+      - step: "Assert no duplicated Permanent File line"
         action: "search"
-        model: "general_audit_ws_f5a3cee.reporting_timetable"
+        model: "general_audit_ws_f5a3cee.permanent"
         domain:
           - ["worksheet_id", "=", "REC: worksheet.id"]
-          - ["data_collection_id", "=", "REC: master_o.id"]
+          - ["data_collection_id", "=", "REC: master_p.id"]
         save_as: "found_3"
+        expect_count: 1
+
+      - step: "Assert no duplicated Current File line"
+        action: "search"
+        model: "general_audit_ws_f5a3cee.current"
+        domain:
+          - ["worksheet_id", "=", "REC: worksheet.id"]
+          - ["data_collection_id", "=", "REC: master_c.id"]
+        save_as: "found_current"
         expect_count: 1
 
       - step: "Assert the filled data line kept its date and completion"
@@ -1269,9 +1306,9 @@ scenarios:
             type: "value"
             expected: true
 
-      - step: "Clear the category of the populated timetable line"
+      - step: "Clear the category of the populated Permanent File line"
         action: "write"
-        target: "other_o"
+        target: "permanent_o"
         as_user: "base.user_admin"
         values:
           category_id: false
@@ -1284,7 +1321,7 @@ scenarios:
 
       - step: "Assert the category was refilled from the master"
         action: "assert"
-        target: "other_o"
+        target: "permanent_o"
         asserts:
           category_id:
             type: "m2o"
@@ -1328,12 +1365,12 @@ scenarios:
         save_as: "found_5"
         expect_count: 1
 
-      - step: "Assert the timetable line is untouched"
+      - step: "Assert the Permanent File line is untouched"
         action: "search"
-        model: "general_audit_ws_f5a3cee.reporting_timetable"
+        model: "general_audit_ws_f5a3cee.permanent"
         domain:
           - ["worksheet_id", "=", "REC: worksheet.id"]
-          - ["data_collection_id", "=", "REC: master_o.id"]
+          - ["data_collection_id", "=", "REC: master_p.id"]
         save_as: "found_6"
         expect_count: 1
 
@@ -1631,6 +1668,129 @@ scenarios:
       - step: "Assert the file is bound to the worksheet record"
         action: "assert"
         target: "att_up"
+        asserts:
+          res_model:
+            type: "value"
+            expected: "general_audit_ws_f5a3cee"
+          res_id:
+            type: "value"
+            expected: "EVAL: registry['worksheet'].id"
+
+  # ------------------------------------------------------------------
+  # permanent_ids - the same master item twice is rejected
+  # ------------------------------------------------------------------
+  - name: "Worksheet f5a3cee - Duplicate master item in Permanent File is rejected"
+    steps:
+      - step: "Create worksheet"
+        action: "create"
+        model: "general_audit_ws_f5a3cee"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+
+      - step: "Get a seeded category"
+        action: "ref"
+        xml_id: "ssi_general_audit_worksheet_client_package.general_audit_data_collection_category_1_ffbc1f1d"
+        save_as: "category"
+
+      - step: "Create a Permanent File master item"
+        action: "create"
+        model: "general_audit_data_collection"
+        save_as: "master"
+        as_user: "base.user_admin"
+        values:
+          name: "Master used twice"
+          code: "/"
+          type: "permanent_file"
+          category_id: "REC: category.id"
+
+      - step: "Create a Permanent File line from the master item"
+        action: "create"
+        model: "general_audit_ws_f5a3cee.permanent"
+        save_as: "permanent_line"
+        as_user: "base.user_admin"
+        values:
+          worksheet_id: "REC: worksheet.id"
+          data_collection_id: "REC: master.id"
+          description: "Master used twice"
+
+      - step: "Assert the line took its category from the master"
+        action: "assert"
+        target: "permanent_line"
+        asserts:
+          category_id:
+            type: "m2o"
+            expected: "REC: category"
+
+      - step: "Same master item twice in Permanent File must be rejected"
+        action: "create"
+        model: "general_audit_ws_f5a3cee.permanent"
+        as_user: "base.user_admin"
+        values:
+          worksheet_id: "REC: worksheet.id"
+          data_collection_id: "REC: master.id"
+          description: "Second use"
+        expect_error:
+          type: "ValidationError"
+          message_contains: "is already used in this worksheet"
+
+  # ------------------------------------------------------------------
+  # Upload attachment wizard - opened from a Permanent File line
+  # ------------------------------------------------------------------
+  - name: "Worksheet f5a3cee - Upload attachment wizard (Permanent File line)"
+    steps:
+      - step: "Create worksheet"
+        action: "create"
+        model: "general_audit_ws_f5a3cee"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+
+      - step: "Create a Permanent File line"
+        action: "create"
+        model: "general_audit_ws_f5a3cee.permanent"
+        save_as: "permanent_line"
+        as_user: "base.user_admin"
+        values:
+          worksheet_id: "REC: worksheet.id"
+          description: "Permanent File line with upload"
+
+      - step: "Create an uploaded file, not yet bound to any record"
+        action: "create"
+        model: "ir.attachment"
+        save_as: "att_permanent"
+        as_user: "base.user_admin"
+        values:
+          name: "Uploaded file for Permanent File"
+          type: "url"
+          url: "https://example.com/uploaded-permanent"
+
+      - step: "Submit the upload wizard from the Permanent File line"
+        action: "wizard"
+        model: "general_audit_ws_f5a3cee_attachment_upload"
+        target: "permanent_line"
+        as_user: "base.user_admin"
+        values:
+          attachment_ids: [[6, 0, ["REC: att_permanent.id"]]]
+        method: "action_submit"
+
+      - step: "Assert the file is attached to the Permanent File line"
+        action: "assert"
+        target: "permanent_line"
+        asserts:
+          attachment_ids:
+            type: "m2m"
+            check: "exact"
+            expected_records:
+              - "REC: att_permanent"
+
+      - step: "Assert the file is bound to the worksheet record"
+        action: "assert"
+        target: "att_permanent"
         asserts:
           res_model:
             type: "value"
