@@ -158,19 +158,47 @@
                                 <field name="need_unannounced_audit" />
                             </tree>
                         </field>
-                        <!-- Availability of client personnel and data (TODO) -->
-                        <div
-                            style="display: flex; align-items: flex-start; margin-bottom: 8px;"
-                        >
-                            <div
-                                class="o_form_label"
-                                style="font-weight: bold; white-space: normal; width: 600px;"
-                            >
+                        <!-- Availability of client personnel and data -->
+                        <div class="no-limit-label" colspan="2">
+                            <div class="o_form_label" style="font-weight: bold;">
                                 Availability of client personnel and data
                             </div>
-                            <span style="margin: 0 8px;font-weight: bold;">:</span>
-                            <!-- <field name="expert_type_ids" widget="many2many_tags" nolabel="1" style="flex: 1;"/> -->
                         </div>
+                        <div class="no-limit-label" colspan="2">
+                            <label
+                                for="team_counterpart_ids"
+                                style="font-weight: bold;"
+                            />
+                        </div>
+                        <field
+                            name="team_counterpart_ids"
+                            nolabel="1"
+                            readonly="1"
+                            style="margin-left: 20px; width: 100%;"
+                        >
+                            <tree>
+                                <field name="contact_name" />
+                                <field name="contact_position" />
+                                <field name="contact_email" />
+                            </tree>
+                        </field>
+                        <div class="no-limit-label" colspan="2">
+                            <label
+                                for="client_data_availability_ids"
+                                style="font-weight: bold;"
+                            />
+                        </div>
+                        <field
+                            name="client_data_availability_ids"
+                            nolabel="1"
+                            readonly="1"
+                            style="margin-left: 20px; width: 100%;"
+                        >
+                            <tree>
+                                <field name="data_collection_id" string="Document" />
+                                <field name="complete_ok" string="Complete" />
+                            </tree>
+                        </field>
                     </page>
 
                     <page name="report_obj" string="Reporting Objectives">

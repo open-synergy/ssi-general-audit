@@ -1463,6 +1463,38 @@ class GeneralAuditWSfbbe0f8(models.Model):
         ),
     )
 
+    @api.depends(
+        "link_14_ids",
+        "link_14_ids.primary_ids",
+    )
+    def _compute_client_data_availability_ids(self):
+        """Gather the Primary lines of every ``link_14_ids`` worksheet.
+
+        Follows the source while the worksheet is draft or open and
+        keeps the stored value afterwards.
+        """
+        for record in self:
+            result = record.client_data_availability_ids.ids
+            if record.state in record._get_following_states():
+                result = record.link_14_ids.primary_ids.ids
+            record.client_data_availability_ids = [(6, 0, result)]
+
+    client_data_availability_ids = fields.Many2many(
+        string="Client Data Availability",
+        comodel_name="general_audit_ws_f5a3cee.primary",
+        compute_sudo=True,
+        compute="_compute_client_data_availability_ids",
+        relation="rel_ga_ws_fbbe0f8_2_f5a3cee_primary",
+        column1="ws_fbbe0f8_id",
+        column2="f5a3cee_primary_id",
+        store=True,
+        help=(
+            "Taken from the 'Data Collection' worksheet, table 'Primary'. "
+            "Cannot be edited here; edit it in the Data Collection "
+            "worksheet."
+        ),
+    )
+
     # Acceptance and Continuance of Client Relationships Analysis
     # LINK - 15 806c4e1
     @api.depends(
@@ -1966,6 +1998,38 @@ class GeneralAuditWSfbbe0f8(models.Model):
         help=(
             "The 'General Information and Legal Aspect' worksheet of this "
             "audit engagement. Filled in automatically."
+        ),
+    )
+
+    @api.depends(
+        "link_27_id",
+        "link_27_id.client_contact_ids",
+    )
+    def _compute_team_counterpart_ids(self):
+        """Gather the client contacts of the ``link_27_id`` worksheet.
+
+        Follows the source while the worksheet is draft or open and
+        keeps the stored value afterwards.
+        """
+        for record in self:
+            result = record.team_counterpart_ids.ids
+            if record.state in record._get_following_states():
+                result = record.link_27_id.client_contact_ids.ids
+            record.team_counterpart_ids = [(6, 0, result)]
+
+    team_counterpart_ids = fields.Many2many(
+        string="Team Counterpart",
+        comodel_name="general_audit_ws_ddf034c.contact",
+        compute_sudo=True,
+        compute="_compute_team_counterpart_ids",
+        relation="rel_ga_ws_fbbe0f8_2_ddf034c_contact",
+        column1="ws_fbbe0f8_id",
+        column2="ddf034c_contact_id",
+        store=True,
+        help=(
+            "Taken from the 'General Information and Legal Aspect' worksheet, "
+            "tab 'Client Contacts'. Cannot be edited here; edit it in that "
+            "worksheet."
         ),
     )
 

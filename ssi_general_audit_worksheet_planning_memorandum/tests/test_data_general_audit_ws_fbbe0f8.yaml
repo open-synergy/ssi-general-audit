@@ -3318,3 +3318,351 @@ scenarios:
           regulatory_review:
             type: "value"
             expected: "Regulatory second conclusion."
+
+  # ------------------------------------------------------------------
+  # team_counterpart_ids / client_data_availability_ids - no sources
+  # ------------------------------------------------------------------
+  - name: "Client counterpart and data availability empty without sources"
+    steps:
+      - step: "Create worksheet fbbe0f8 without ddf034c and f5a3cee"
+        action: "create"
+        model: "general_audit_ws_fbbe0f8"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_fbbe0f8.id"
+
+      - step: "Reload links without sources"
+        action: "call"
+        target: "worksheet"
+        method: "action_reload_links"
+        as_user: "base.user_admin"
+
+      - step: "Assert both tables are empty"
+        action: "assert"
+        target: "worksheet"
+        refresh: true
+        asserts:
+          state:
+            type: "value"
+            expected: "draft"
+          team_counterpart_ids:
+            type: "m2m"
+            check: "count"
+            expected_count: 0
+          client_data_availability_ids:
+            type: "m2m"
+            check: "count"
+            expected_count: 0
+
+  # ------------------------------------------------------------------
+  # team_counterpart_ids / client_data_availability_ids - follow and
+  # keep the source rows
+  # ------------------------------------------------------------------
+  - name: "Client counterpart and data availability follow the sources"
+    steps:
+      - step: "Create worksheet fbbe0f8 before its sources"
+        action: "create"
+        model: "general_audit_ws_fbbe0f8"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_fbbe0f8.id"
+
+      - step: "Get worksheet type ddf034c"
+        action: "ref"
+        xml_id: "ssi_general_audit_worksheet_understanding_entity.worksheet_type_ddf034c"
+        save_as: "ws_type_ddf034c"
+
+      - step: "Create General Information worksheet ddf034c"
+        action: "create"
+        model: "general_audit_ws_ddf034c"
+        save_as: "src_info"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_ddf034c.id"
+
+      - step: "Create client contact 1"
+        action: "create"
+        model: "general_audit_ws_ddf034c.contact"
+        save_as: "contact_1"
+        as_user: "base.user_admin"
+        values:
+          worksheet_id: "REC: src_info.id"
+          contact_name: "Contact One"
+          contact_position: "Finance Manager"
+          contact_email: "contact1@example.com"
+
+      - step: "Create client contact 2"
+        action: "create"
+        model: "general_audit_ws_ddf034c.contact"
+        save_as: "contact_2"
+        as_user: "base.user_admin"
+        values:
+          worksheet_id: "REC: src_info.id"
+          contact_name: "Contact Two"
+          contact_position: "Accountant"
+          contact_email: "contact2@example.com"
+
+      - step: "Open General Information worksheet"
+        action: "call"
+        target: "src_info"
+        method: "action_open"
+        as_user: "base.user_admin"
+
+      - step: "Create Data Collection worksheet f5a3cee"
+        action: "create"
+        model: "general_audit_ws_f5a3cee"
+        save_as: "src_data"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type_f5a3cee.id"
+
+      - step: "Create Primary line 1"
+        action: "create"
+        model: "general_audit_ws_f5a3cee.primary"
+        save_as: "primary_1"
+        as_user: "base.user_admin"
+        values:
+          worksheet_id: "REC: src_data.id"
+          description: "Primary document 1"
+
+      - step: "Create Primary line 2"
+        action: "create"
+        model: "general_audit_ws_f5a3cee.primary"
+        save_as: "primary_2"
+        as_user: "base.user_admin"
+        values:
+          worksheet_id: "REC: src_data.id"
+          description: "Primary document 2"
+
+      - step: "Open Data Collection worksheet"
+        action: "call"
+        target: "src_data"
+        method: "action_open"
+        as_user: "base.user_admin"
+
+      - step: "Reload the links"
+        action: "call"
+        target: "worksheet"
+        method: "action_reload_links"
+        as_user: "base.user_admin"
+
+      - step: "Assert both tables list the source rows"
+        action: "assert"
+        target: "worksheet"
+        refresh: true
+        asserts:
+          state:
+            type: "value"
+            expected: "draft"
+          team_counterpart_ids:
+            type: "m2m"
+            check: "exact"
+            expected_records:
+              - "REC: contact_1"
+              - "REC: contact_2"
+          client_data_availability_ids:
+            type: "m2m"
+            check: "exact"
+            expected_records:
+              - "REC: primary_1"
+              - "REC: primary_2"
+
+      - step: "Assert the listed contact shows the source values"
+        action: "assert"
+        target: "contact_1"
+        asserts:
+          contact_name:
+            type: "value"
+            expected: "Contact One"
+          contact_position:
+            type: "value"
+            expected: "Finance Manager"
+          contact_email:
+            type: "value"
+            expected: "contact1@example.com"
+
+      - step: "No listed Primary line is complete yet"
+        action: "search"
+        model: "general_audit_ws_fbbe0f8"
+        domain:
+          - ["id", "=", "REC: worksheet.id"]
+          - ["client_data_availability_ids.complete_ok", "=", true]
+        save_as: "worksheet_complete"
+        expect_count: 0
+
+      - step: "Start the memorandum"
+        action: "call"
+        target: "worksheet"
+        method: "action_open"
+        as_user: "base.user_admin"
+
+      - step: "Mark Primary line 1 as completed"
+        action: "write"
+        target: "primary_1"
+        as_user: "base.user_admin"
+        values:
+          complete_ok: true
+
+      - step: "Open memorandum shows the completed Primary line"
+        action: "search"
+        model: "general_audit_ws_fbbe0f8"
+        domain:
+          - ["id", "=", "REC: worksheet.id"]
+          - ["client_data_availability_ids.complete_ok", "=", true]
+        save_as: "worksheet_complete"
+        expect_count: 1
+
+      - step: "Add a client contact while the memorandum is open"
+        action: "create"
+        model: "general_audit_ws_ddf034c.contact"
+        save_as: "contact_3"
+        as_user: "base.user_admin"
+        values:
+          worksheet_id: "REC: src_info.id"
+          contact_name: "Contact Three"
+
+      - step: "Add a Primary line while the memorandum is open"
+        action: "create"
+        model: "general_audit_ws_f5a3cee.primary"
+        save_as: "primary_3"
+        as_user: "base.user_admin"
+        values:
+          worksheet_id: "REC: src_data.id"
+          description: "Primary document 3"
+
+      - step: "Assert the open memorandum follows the new rows"
+        action: "assert"
+        target: "worksheet"
+        refresh: true
+        asserts:
+          state:
+            type: "value"
+            expected: "open"
+          team_counterpart_ids:
+            type: "m2m"
+            check: "exact"
+            expected_records:
+              - "REC: contact_1"
+              - "REC: contact_2"
+              - "REC: contact_3"
+          client_data_availability_ids:
+            type: "m2m"
+            check: "exact"
+            expected_records:
+              - "REC: primary_1"
+              - "REC: primary_2"
+              - "REC: primary_3"
+
+      - step: "Move the memorandum to confirm"
+        action: "write"
+        target: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          state: "confirm"
+
+      - step: "Add a client contact after confirm"
+        action: "create"
+        model: "general_audit_ws_ddf034c.contact"
+        save_as: "contact_after_confirm"
+        as_user: "base.user_admin"
+        values:
+          worksheet_id: "REC: src_info.id"
+          contact_name: "Contact after confirm"
+
+      - step: "Add a Primary line after confirm"
+        action: "create"
+        model: "general_audit_ws_f5a3cee.primary"
+        save_as: "primary_after_confirm"
+        as_user: "base.user_admin"
+        values:
+          worksheet_id: "REC: src_data.id"
+          description: "Primary after confirm"
+
+      - step: "Reload the links after confirm"
+        action: "call"
+        target: "worksheet"
+        method: "action_reload_links"
+        as_user: "base.user_admin"
+
+      - step: "Assert the confirm memorandum keeps its rows"
+        action: "assert"
+        target: "worksheet"
+        refresh: true
+        asserts:
+          state:
+            type: "value"
+            expected: "confirm"
+          team_counterpart_ids:
+            type: "m2m"
+            check: "exact"
+            expected_records:
+              - "REC: contact_1"
+              - "REC: contact_2"
+              - "REC: contact_3"
+          client_data_availability_ids:
+            type: "m2m"
+            check: "exact"
+            expected_records:
+              - "REC: primary_1"
+              - "REC: primary_2"
+              - "REC: primary_3"
+
+      - step: "Move the memorandum to done"
+        action: "write"
+        target: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          state: "done"
+
+      - step: "Add a client contact after done"
+        action: "create"
+        model: "general_audit_ws_ddf034c.contact"
+        save_as: "contact_after_done"
+        as_user: "base.user_admin"
+        values:
+          worksheet_id: "REC: src_info.id"
+          contact_name: "Contact after done"
+
+      - step: "Add a Primary line after done"
+        action: "create"
+        model: "general_audit_ws_f5a3cee.primary"
+        save_as: "primary_after_done"
+        as_user: "base.user_admin"
+        values:
+          worksheet_id: "REC: src_data.id"
+          description: "Primary after done"
+
+      - step: "Reload the links after done"
+        action: "call"
+        target: "worksheet"
+        method: "action_reload_links"
+        as_user: "base.user_admin"
+
+      - step: "Assert the done memorandum keeps its rows"
+        action: "assert"
+        target: "worksheet"
+        refresh: true
+        asserts:
+          state:
+            type: "value"
+            expected: "done"
+          team_counterpart_ids:
+            type: "m2m"
+            check: "exact"
+            expected_records:
+              - "REC: contact_1"
+              - "REC: contact_2"
+              - "REC: contact_3"
+          client_data_availability_ids:
+            type: "m2m"
+            check: "exact"
+            expected_records:
+              - "REC: primary_1"
+              - "REC: primary_2"
+              - "REC: primary_3"
