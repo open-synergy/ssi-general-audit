@@ -8,8 +8,8 @@
 
 ## Pre-Condition
 
-- **Data:** At least one **Data Collection Category** and one **Client Account Type**
-  exist.
+- **Data:** At least one **Data Collection Category** (not needed for type **Primary**)
+  and one **Client Account Type** (needed for type **Account Type**) exist.
 - **Access:** User is in group _Data Collection_.
 
 ## Flow
@@ -17,20 +17,24 @@
 1. Open the **Configuration > Standard & Regulation > Data Collections > Data
    Collections** menu. If **Standard & Regulation** is not visible in the top menu bar,
    click the **+** button at its right end first. The menu list that opens shows
-   **Standard & Regulation** with its entries below it.
+   **Standard & Regulation** with its entries below it. The list is grouped by **Type**
+   by default.
 2. Click the **Create** button. _(16.0 and later: "New")_
 3. Fill in the required fields:
    - **Name**: name of the data to collect.
    - **Code**: unique identifier. Type `/` if no identifier is needed.
-   - **Type**: **Account Type** (default), **Permanent File** or **Current File**.
+   - **Type**: **Account Type** (default), **Permanent File**, **Current File** or
+     **Primary**.
    - **Account Type**: select the client account type. It is shown and required only
      when **Type** is **Account Type**; it is cleared when **Type** is changed to
-     **Permanent File** or **Current File**.
-   - **Category**: select the data collection category.
+     another value.
+   - **Category**: select the data collection category. It is shown and required only
+     when **Type** is not **Primary**; it is cleared when **Type** is changed to
+     **Primary**.
 4. Click **Save**.
 
 ## Post-Condition
 
 - A new Data Collection is created and is **Active**.
 - The record shows the chosen **Type**, **Account Type** (for type **Account Type**) and
-  **Category**.
+  **Category** (for every type except **Primary**).

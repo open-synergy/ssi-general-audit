@@ -168,6 +168,113 @@ scenarios:
           code: "/"
           type: "permanent_file"
 
+  # Positive: a Primary item is saved without a category, and its sort key
+  # starts with the Primary rank.
+  - name: "Primary item is saved without a category"
+    steps:
+      - step: "Create item of type Primary without category"
+        action: "create"
+        model: "general_audit_data_collection"
+        save_as: "item_primary"
+        as_user: "base.user_admin"
+        values:
+          name: "Primary item"
+          code: "ZR-2"
+          type: "primary"
+
+      - step: "Assert the Primary item has no category and ranks last"
+        action: "assert"
+        target: "item_primary"
+        asserts:
+          category_id:
+            type: "value"
+            operator: "is_falsy"
+          code_sort:
+            type: "value"
+            expected: "3ZR-00000002"
+
+  # Positive: the form saves a Primary item and clears the chosen category.
+  - name: "Changing the type to Primary clears the category"
+    steps:
+      - step: "Choose a category, then change the type to Primary"
+        action: "form"
+        model: "general_audit_data_collection"
+        save_as: "item_form_primary"
+        as_user: "base.user_admin"
+        values:
+          name: "Primary item from form"
+          code: "/"
+          type: "permanent_file"
+          category_id: "REC: category"
+
+      - step: "Change the saved item to Primary"
+        action: "form"
+        target: "item_form_primary"
+        as_user: "base.user_admin"
+        values:
+          type: "primary"
+
+      - step: "Assert the category was cleared"
+        action: "assert"
+        target: "item_form_primary"
+        asserts:
+          category_id:
+            type: "value"
+            operator: "is_falsy"
+
+  # Negative: only Primary items may be saved without a category.
+  - name: "Current File item without category is rejected"
+    steps:
+      - step: "Item of type Current File without category must be rejected"
+        action: "create"
+        model: "general_audit_data_collection"
+        as_user: "base.user_admin"
+        expect_error:
+          type: "ValidationError"
+          message_contains: "Category is required when the type is not Primary."
+        values:
+          name: "Invalid current file item"
+          code: "/"
+          type: "current_file"
+
+  - name: "Removing the type Primary without category is rejected"
+    steps:
+      - step: "Create item of type Primary"
+        action: "create"
+        model: "general_audit_data_collection"
+        save_as: "item_primary_changed"
+        as_user: "base.user_admin"
+        values:
+          name: "Primary item to change"
+          code: "/"
+          type: "primary"
+
+      - step: "Changing the type without a category must be rejected"
+        action: "write"
+        target: "item_primary_changed"
+        as_user: "base.user_admin"
+        expect_error:
+          type: "ValidationError"
+          message_contains: "Category is required when the type is not Primary."
+        values:
+          type: "permanent_file"
+
+  # Positive: the five Primary items ship as master data.
+  - name: "Primary items are installed"
+    steps:
+      - step: "Search the Primary items without category"
+        action: "search"
+        model: "general_audit_data_collection"
+        domain:
+          [
+            ["code", "in", ["PRM-1", "PRM-2", "PRM-3", "PRM-4", "PRM-5"]],
+            ["type", "=", "primary"],
+            ["category_id", "=", false],
+            ["account_type_id", "=", false],
+          ]
+        save_as: "primary_items"
+        expect_count: 5
+
   # Positive: the standard categories ship as master data.
   - name: "Standard categories are installed"
     steps:
