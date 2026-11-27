@@ -44,8 +44,92 @@
             <data>
                 <xpath expr="//page[@name='standard_audit']" position="replace">
                 </xpath>
+                <xpath expr="//notebook" position="before">
+                    <button
+                        name="action_populate_details"
+                        string="Populate"
+                        type="object"
+                        icon="fa-refresh"
+                        class="oe_highlight"
+                        attrs="{'invisible': [('state', '=', 'draft')]}"
+                    />
+                </xpath>
                 <xpath expr="//page[@name='note']" position='before'>
                     <page name="primary" string="Primary">
+                        <group
+                            name="client_assistance_package"
+                            string="Client Assistance Package"
+                        >
+                            <field
+                                name="primary_ids"
+                                nolabel="1"
+                                colspan="2"
+                                context="{'data_collection_code_only': True}"
+                                attrs="{'readonly': [('state', '!=', 'open')]}"
+                            >
+                                <tree editable="bottom" js_class="drag_scroll_list">
+                                    <field name="worksheet_id" invisible="1" />
+                                    <field
+                                        name="data_collection_id"
+                                        string="Code"
+                                        width="80px"
+                                        options="{'no_create': True, 'no_open': True}"
+                                        context="{'data_collection_code_only': True}"
+                                    />
+                                    <field
+                                        name="description"
+                                        width="260px"
+                                        style="white-space: normal; word-wrap: break-word; overflow-wrap: break-word;"
+                                    />
+                                    <field
+                                        name="data_collection_type"
+                                        string="Type"
+                                        optional="hide"
+                                    />
+                                    <field name="date" width="80px" />
+                                    <field
+                                        name="attachment_ids"
+                                        width="100px"
+                                        widget="many2many_tags"
+                                    />
+                                    <field name="id" invisible="1" />
+                                    <button
+                                        name="%(general_audit_ws_f5a3cee_attachment_upload_action)d"
+                                        type="action"
+                                        title="Upload Attachment"
+                                        icon="fa-upload"
+                                        attrs="{'invisible': ['|', ('id', '=', False), ('state', '!=', 'open')]}"
+                                    />
+                                    <field
+                                        name="complete_ok"
+                                        width="60px"
+                                        widget="boolean_toggle"
+                                    />
+                                    <field name="state" invisible="1" />
+                                </tree>
+                                <form>
+                                    <group>
+                                        <field name="worksheet_id" invisible="1" />
+                                        <field
+                                            name="data_collection_id"
+                                            options="{'no_create': True, 'no_open': True}"
+                                            context="{'data_collection_code_only': True}"
+                                        />
+                                        <field name="description" />
+                                        <field name="date" />
+                                        <field
+                                            name="attachment_ids"
+                                            widget="many2many_tags"
+                                        />
+                                        <field
+                                            name="complete_ok"
+                                            widget="boolean_toggle"
+                                        />
+                                        <field name="state" invisible="1" />
+                                    </group>
+                                </form>
+                            </field>
+                        </group>
                         <group
                             name="reporting_timetable"
                             string="Reporting Timetable to be Followed by the Entity"
@@ -226,15 +310,6 @@
                         </group>
                     </page>
                     <page name="details" string="Details">
-                        <button
-                            name="action_populate_details"
-                            string="Populate"
-                            type="object"
-                            icon="fa-refresh"
-                            class="oe_highlight"
-                            style="margin-right:4px"
-                            attrs="{'invisible': [('state', '=', 'draft')]}"
-                        />
                         <field
                             name="detail_ids"
                             attrs="{'readonly': [('state', '!=', 'open')]}"

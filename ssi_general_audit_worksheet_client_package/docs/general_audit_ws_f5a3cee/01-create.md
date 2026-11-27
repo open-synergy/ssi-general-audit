@@ -30,5 +30,5 @@
 ## Post-Condition
 
 - A new record is created in **Draft** status.
-- The **Permanent/Current** and **Details** tabs can be filled with **Populate** (see
-  `02-populate-details`).
+- The **Primary**, **Permanent/Current** and **Details** tabs can be filled with
+  **Populate** (see `02-populate-details`).

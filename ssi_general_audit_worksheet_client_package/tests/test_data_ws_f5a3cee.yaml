@@ -1798,3 +1798,428 @@ scenarios:
           res_id:
             type: "value"
             expected: "EVAL: registry['worksheet'].id"
+
+  # ------------------------------------------------------------------
+  # primary_ids - Populate from the Primary master items
+  # ------------------------------------------------------------------
+  - name: "Worksheet f5a3cee - Populate Primary lines from master"
+    steps:
+      - step: "Get the seeded Primary item PRM-1"
+        action: "ref"
+        xml_id: "ssi_general_audit_worksheet_client_package.general_audit_data_collection_1155_9f4c2a17"
+        save_as: "seed_prm_1"
+
+      - step: "Get the seeded Primary item PRM-2"
+        action: "ref"
+        xml_id: "ssi_general_audit_worksheet_client_package.general_audit_data_collection_1156_3b8e6d52"
+        save_as: "seed_prm_2"
+
+      - step: "Get the seeded Primary item PRM-3"
+        action: "ref"
+        xml_id: "ssi_general_audit_worksheet_client_package.general_audit_data_collection_1157_c71a0f94"
+        save_as: "seed_prm_3"
+
+      - step: "Get the seeded Primary item PRM-4"
+        action: "ref"
+        xml_id: "ssi_general_audit_worksheet_client_package.general_audit_data_collection_1158_5e29b8c3"
+        save_as: "seed_prm_4"
+
+      - step: "Get the seeded Primary item PRM-5"
+        action: "ref"
+        xml_id: "ssi_general_audit_worksheet_client_package.general_audit_data_collection_1159_a04d7e6b"
+        save_as: "seed_prm_5"
+
+      - step: "Create master item: Primary populate item"
+        action: "create"
+        model: "general_audit_data_collection"
+        save_as: "master"
+        as_user: "base.user_admin"
+        values:
+          name: "Primary populate item"
+          code: "/"
+          type: "primary"
+
+      - step: "Create worksheet"
+        action: "create"
+        model: "general_audit_ws_f5a3cee"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+
+      - step: "Populate a new worksheet"
+        action: "call"
+        target: "worksheet"
+        method: "action_populate_details"
+        as_user: "base.user_admin"
+
+      - step: "Assert one line for each of the five seeded items"
+        action: "search"
+        model: "general_audit_ws_f5a3cee.primary"
+        domain:
+          - ["worksheet_id", "=", "REC: worksheet.id"]
+          - - "data_collection_id"
+            - "in"
+            - - "REC: seed_prm_1.id"
+              - "REC: seed_prm_2.id"
+              - "REC: seed_prm_3.id"
+              - "REC: seed_prm_4.id"
+              - "REC: seed_prm_5.id"
+        save_as: "seeded_lines"
+        expect_count: 5
+
+      - step: "Assert every line comes from a Primary master"
+        action: "search"
+        model: "general_audit_ws_f5a3cee.primary"
+        domain:
+          - ["worksheet_id", "=", "REC: worksheet.id"]
+          - ["data_collection_id.type", "!=", "primary"]
+        save_as: "wrong_type"
+        expect_count: 0
+
+      - step: "Find the line of the new master item"
+        action: "search"
+        model: "general_audit_ws_f5a3cee.primary"
+        domain:
+          - ["worksheet_id", "=", "REC: worksheet.id"]
+          - ["data_collection_id", "=", "REC: master.id"]
+        save_as: "line"
+        expect_count: 1
+
+      - step: "Assert the line took its name from the master"
+        action: "assert"
+        target: "line"
+        asserts:
+          description:
+            type: "value"
+            expected: "Primary populate item"
+          complete_ok:
+            type: "value"
+            expected: false
+
+      - step: "Fill the line like a user does"
+        action: "write"
+        target: "line"
+        as_user: "base.user_admin"
+        values:
+          description: "Name typed by the user"
+          date: 2026-03-31
+          complete_ok: true
+
+      - step: "Add a Primary line without master"
+        action: "create"
+        model: "general_audit_ws_f5a3cee.primary"
+        save_as: "manual_line"
+        as_user: "base.user_admin"
+        values:
+          worksheet_id: "REC: worksheet.id"
+          description: "Manual primary line"
+
+      - step: "Populate again"
+        action: "call"
+        target: "worksheet"
+        method: "action_populate_details"
+        as_user: "base.user_admin"
+
+      - step: "Assert the master item is not duplicated"
+        action: "search"
+        model: "general_audit_ws_f5a3cee.primary"
+        domain:
+          - ["worksheet_id", "=", "REC: worksheet.id"]
+          - ["data_collection_id", "=", "REC: master.id"]
+        save_as: "line_again"
+        expect_count: 1
+
+      - step: "Assert the user values are kept"
+        action: "assert"
+        target: "line_again"
+        asserts:
+          id:
+            type: "value"
+            expected: "EVAL: registry['line'].id"
+          description:
+            type: "value"
+            expected: "Name typed by the user"
+          date:
+            type: "value"
+            expected: "EVAL: date(2026, 3, 31)"
+          complete_ok:
+            type: "value"
+            expected: true
+
+      - step: "Assert the seeded items are not duplicated"
+        action: "search"
+        model: "general_audit_ws_f5a3cee.primary"
+        domain:
+          - ["worksheet_id", "=", "REC: worksheet.id"]
+          - - "data_collection_id"
+            - "in"
+            - - "REC: seed_prm_1.id"
+              - "REC: seed_prm_2.id"
+              - "REC: seed_prm_3.id"
+              - "REC: seed_prm_4.id"
+              - "REC: seed_prm_5.id"
+        save_as: "seeded_lines_again"
+        expect_count: 5
+
+      - step: "Empty the name of the line"
+        action: "write"
+        target: "line"
+        as_user: "base.user_admin"
+        values:
+          description: ""
+
+      - step: "Populate to refill the empty name"
+        action: "call"
+        target: "worksheet"
+        method: "action_populate_details"
+        as_user: "base.user_admin"
+
+      - step: "Assert the empty name was filled from the master"
+        action: "assert"
+        target: "line"
+        asserts:
+          description:
+            type: "value"
+            expected: "Primary populate item"
+
+      - step: "Assert the line without master is untouched"
+        action: "assert"
+        target: "manual_line"
+        asserts:
+          description:
+            type: "value"
+            expected: "Manual primary line"
+          data_collection_id:
+            type: "value"
+            operator: "is_falsy"
+
+  # ------------------------------------------------------------------
+  # primary_ids - obsolete master items are removed by Populate
+  # ------------------------------------------------------------------
+  - name: "Worksheet f5a3cee - Populate removes obsolete Primary lines"
+    steps:
+      - step: "Get a seeded category"
+        action: "ref"
+        xml_id: "ssi_general_audit_worksheet_client_package.general_audit_data_collection_category_1_ffbc1f1d"
+        save_as: "category"
+
+      - step: "Create master item: Primary item to archive"
+        action: "create"
+        model: "general_audit_data_collection"
+        save_as: "master_archived"
+        as_user: "base.user_admin"
+        values:
+          name: "Primary item to archive"
+          code: "/"
+          type: "primary"
+
+      - step: "Create master item: Primary item to move"
+        action: "create"
+        model: "general_audit_data_collection"
+        save_as: "master_moved"
+        as_user: "base.user_admin"
+        values:
+          name: "Primary item to move"
+          code: "/"
+          type: "primary"
+
+      - step: "Create worksheet"
+        action: "create"
+        model: "general_audit_ws_f5a3cee"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+
+      - step: "Populate"
+        action: "call"
+        target: "worksheet"
+        method: "action_populate_details"
+        as_user: "base.user_admin"
+
+      - step: "Find the line of the item to archive"
+        action: "search"
+        model: "general_audit_ws_f5a3cee.primary"
+        domain:
+          - ["worksheet_id", "=", "REC: worksheet.id"]
+          - ["data_collection_id", "=", "REC: master_archived.id"]
+        save_as: "line_archived"
+        expect_count: 1
+
+      - step: "Find the line of the item to move"
+        action: "search"
+        model: "general_audit_ws_f5a3cee.primary"
+        domain:
+          - ["worksheet_id", "=", "REC: worksheet.id"]
+          - ["data_collection_id", "=", "REC: master_moved.id"]
+        save_as: "line_moved"
+        expect_count: 1
+
+      - step: "Add a Primary line without master"
+        action: "create"
+        model: "general_audit_ws_f5a3cee.primary"
+        save_as: "manual_line"
+        as_user: "base.user_admin"
+        values:
+          worksheet_id: "REC: worksheet.id"
+          description: "Manual primary line kept"
+
+      - step: "Archive the first master item"
+        action: "write"
+        target: "master_archived"
+        as_user: "base.user_admin"
+        values:
+          active: false
+
+      - step: "Change the type of the second master item"
+        action: "write"
+        target: "master_moved"
+        as_user: "base.user_admin"
+        values:
+          type: "permanent_file"
+          category_id: "REC: category.id"
+
+      - step: "Populate after the master changes"
+        action: "call"
+        target: "worksheet"
+        method: "action_populate_details"
+        as_user: "base.user_admin"
+
+      - step: "Assert the line of the archived item is removed"
+        action: "search"
+        model: "general_audit_ws_f5a3cee.primary"
+        domain:
+          - ["worksheet_id", "=", "REC: worksheet.id"]
+          - ["data_collection_id", "=", "REC: master_archived.id"]
+        save_as: "gone_archived"
+        expect_count: 0
+
+      - step: "Assert the line of the moved item is removed"
+        action: "search"
+        model: "general_audit_ws_f5a3cee.primary"
+        domain:
+          - ["worksheet_id", "=", "REC: worksheet.id"]
+          - ["data_collection_id", "=", "REC: master_moved.id"]
+        save_as: "gone_moved"
+        expect_count: 0
+
+      - step: "Assert the line without master survived"
+        action: "search"
+        model: "general_audit_ws_f5a3cee.primary"
+        domain:
+          - ["worksheet_id", "=", "REC: worksheet.id"]
+          - ["data_collection_id", "=", false]
+        save_as: "manual_after"
+        expect_count: 1
+
+  # ------------------------------------------------------------------
+  # primary_ids - the same master item twice is rejected
+  # ------------------------------------------------------------------
+  - name: "Worksheet f5a3cee - Duplicate master item in Primary is rejected"
+    steps:
+      - step: "Create worksheet"
+        action: "create"
+        model: "general_audit_ws_f5a3cee"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+
+      - step: "Create master item: Primary item used twice"
+        action: "create"
+        model: "general_audit_data_collection"
+        save_as: "master"
+        as_user: "base.user_admin"
+        values:
+          name: "Primary item used twice"
+          code: "/"
+          type: "primary"
+
+      - step: "Create a Primary line from the master item"
+        action: "create"
+        model: "general_audit_ws_f5a3cee.primary"
+        save_as: "primary_line"
+        as_user: "base.user_admin"
+        values:
+          worksheet_id: "REC: worksheet.id"
+          data_collection_id: "REC: master.id"
+          description: "Primary item used twice"
+
+      - step: "Same master item twice in Primary must be rejected"
+        action: "create"
+        model: "general_audit_ws_f5a3cee.primary"
+        as_user: "base.user_admin"
+        values:
+          worksheet_id: "REC: worksheet.id"
+          data_collection_id: "REC: master.id"
+          description: "Second use"
+        expect_error:
+          type: "ValidationError"
+          message_contains: "is already used in this worksheet"
+
+  # ------------------------------------------------------------------
+  # Upload attachment wizard - opened from a Primary line
+  # ------------------------------------------------------------------
+  - name: "Worksheet f5a3cee - Upload attachment wizard (Primary line)"
+    steps:
+      - step: "Create worksheet"
+        action: "create"
+        model: "general_audit_ws_f5a3cee"
+        save_as: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          general_audit_id: "REC: audit.id"
+          type_id: "REC: ws_type.id"
+
+      - step: "Create a Primary line"
+        action: "create"
+        model: "general_audit_ws_f5a3cee.primary"
+        save_as: "primary_line"
+        as_user: "base.user_admin"
+        values:
+          worksheet_id: "REC: worksheet.id"
+          description: "Primary line with upload"
+
+      - step: "Create an uploaded file, not yet bound to any record"
+        action: "create"
+        model: "ir.attachment"
+        save_as: "att_primary"
+        as_user: "base.user_admin"
+        values:
+          name: "Uploaded file for Primary"
+          type: "url"
+          url: "https://example.com/uploaded-primary"
+
+      - step: "Submit the upload wizard from the Primary line"
+        action: "wizard"
+        model: "general_audit_ws_f5a3cee_attachment_upload"
+        target: "primary_line"
+        as_user: "base.user_admin"
+        values:
+          attachment_ids: [[6, 0, ["REC: att_primary.id"]]]
+        method: "action_submit"
+
+      - step: "Assert the file is attached to the Primary line"
+        action: "assert"
+        target: "primary_line"
+        asserts:
+          attachment_ids:
+            type: "m2m"
+            check: "exact"
+            expected_records:
+              - "REC: att_primary"
+
+      - step: "Assert the file is bound to the worksheet record"
+        action: "assert"
+        target: "att_primary"
+        asserts:
+          res_model:
+            type: "value"
+            expected: "general_audit_ws_f5a3cee"
+          res_id:
+            type: "value"
+            expected: "EVAL: registry['worksheet'].id"

@@ -12,7 +12,9 @@ class GeneralAuditWSf5a3cee(models.Model):
     the client's account mapping, one per account type, each holding the data
     lines of the matching Data Collection master items.  ``permanent_ids``
     and ``current_ids`` hold the master items of type Permanent File and
-    Current File.  Each line is marked complete once the data or supporting
+    Current File.  ``primary_ids``
+    is the Client Assistance Package, filled from the master items of type
+    Primary.  Each line is marked complete once the data or supporting
     documents have been received and attached.  ``reporting_timetable_ids``
     is the manually entered reporting timetable to be followed by the entity.
 
@@ -38,6 +40,16 @@ class GeneralAuditWSf5a3cee(models.Model):
         inverse_name="worksheet_id",
         help=(
             "Detail lines automatically populated from the client's " "account mapping."
+        ),
+    )
+    primary_ids = fields.One2many(
+        string="Primary",
+        comodel_name="general_audit_ws_f5a3cee.primary",
+        inverse_name="worksheet_id",
+        help=(
+            "Client Assistance Package lines. Lines linked to a Data "
+            "Collection master item of type Primary are populated; the "
+            "others are entered manually by the user."
         ),
     )
     reporting_timetable_ids = fields.One2many(
@@ -86,12 +98,13 @@ class GeneralAuditWSf5a3cee(models.Model):
         return data
 
     def action_populate_details(self):
-        """Populate details, their data lines and the file lines."""
+        """Populate details, their data lines, file lines and Primary lines."""
         for record in self:
             record._create_details()
             record._populate_detail_lines()
             record._populate_file_lines("permanent_file", "permanent_ids")
             record._populate_file_lines("current_file", "current_ids")
+            record._populate_primary_lines()
 
     def _create_details(self):
         """Create one detail per account type in the client's mapping."""
@@ -177,6 +190,33 @@ class GeneralAuditWSf5a3cee(models.Model):
             self[field_name].create(vals_list)
         self[field_name]._fill_from_master()
         self[field_name].filtered(
+            lambda line: line.data_collection_id
+            and line.data_collection_id not in masters
+        ).unlink()
+
+    def _populate_primary_lines(self):
+        """Sync the Primary lines with the Primary master items.
+
+        Only active master items of type Primary are used.  Lines without
+        a master item are never touched.
+        """
+        self.ensure_one()
+        Master = self.env["general_audit_data_collection"]
+        Primary = self.env["general_audit_ws_f5a3cee.primary"]
+        masters = Master.search([("type", "=", "primary")])
+        existing = self.primary_ids.mapped("data_collection_id")
+        vals_list = [
+            {
+                "worksheet_id": self.id,
+                "data_collection_id": master.id,
+                "description": master.name,
+            }
+            for master in masters - existing
+        ]
+        if vals_list:
+            Primary.create(vals_list)
+        self.primary_ids._fill_from_master()
+        self.primary_ids.filtered(
             lambda line: line.data_collection_id
             and line.data_collection_id not in masters
         ).unlink()

@@ -213,7 +213,13 @@ odoo.define(
                     },
                 },
 
-                // Flow 3 - Open the Details tab. The tabs are Primary,
+                // Flow 3 - Click the Populate button above the tabs.
+                {
+                    content: "Click Populate",
+                    trigger: "button[name='action_populate_details']",
+                },
+
+                // Flow 4 - Open the Details tab. The tabs are Primary,
                 // Permanent/Current and Details, in that order.
                 {
                     content:
@@ -221,12 +227,6 @@ odoo.define(
                     trigger:
                         ".o_notebook .nav-tabs li:first-child:contains(Primary)" +
                         " + li:contains(Permanent/Current) + li:contains(Details) a",
-                },
-
-                // Flow 4 - Click the Populate button.
-                {
-                    content: "Click Populate",
-                    trigger: ".tab-pane.active button[name='action_populate_details']",
                 },
 
                 // Flow 5 - Click a line in Details to review its data.
@@ -280,12 +280,37 @@ odoo.define(
                     },
                 },
 
-                // Post-Condition - the Primary tab holds the reporting
-                // timetable, which Populate does not fill.
+                // Flow 8 - Open the Primary tab.
                 {
                     content: "Open the Primary tab",
                     trigger: ".o_notebook .nav-tabs a:contains(Primary)",
                 },
+
+                // Post-Condition - Client Assistance Package holds the
+                // populated Primary items, above the reporting timetable.
+                {
+                    content: "The Primary item is listed",
+                    trigger:
+                        ".tab-pane.active .o_field_widget[name='primary_ids'] " +
+                        ".o_data_row:contains(Tour primary item)",
+                    run: function () {
+                        // Assertion only; do not trigger the default click action.
+                    },
+                },
+                {
+                    content: "Client Assistance Package is above the timetable",
+                    trigger:
+                        ".tab-pane.active " +
+                        ".o_inner_group:has(.o_field_widget[name='primary_ids'])" +
+                        " ~ .o_inner_group " +
+                        ".o_field_widget[name='reporting_timetable_ids']",
+                    run: function () {
+                        // Assertion only; do not trigger the default click action.
+                    },
+                },
+
+                // Post-Condition - Populate does not fill the reporting
+                // timetable.
                 {
                     content: "The reporting timetable is displayed without lines",
                     trigger:
