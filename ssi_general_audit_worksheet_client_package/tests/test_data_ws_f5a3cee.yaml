@@ -1149,6 +1149,16 @@ scenarios:
           type: "permanent_file"
           category_id: "REC: category.id"
 
+      - step: "Create master of type Primary"
+        action: "create"
+        model: "general_audit_data_collection"
+        save_as: "master_primary"
+        as_user: "base.user_admin"
+        values:
+          name: "Master Primary"
+          code: "/"
+          type: "primary"
+
       - step: "Create worksheet"
         action: "create"
         model: "general_audit_ws_f5a3cee"
@@ -1163,6 +1173,24 @@ scenarios:
         target: "worksheet"
         method: "action_populate_details"
         as_user: "base.user_admin"
+
+      - step: "Assert no Others line from any Primary master"
+        action: "search"
+        model: "general_audit_ws_f5a3cee.reporting_timetable"
+        domain:
+          - ["worksheet_id", "=", "REC: worksheet.id"]
+          - ["data_collection_id.type", "=", "primary"]
+        save_as: "other_primary"
+        expect_count: 0
+
+      - step: "Assert Others lines come from Permanent or Current File only"
+        action: "search"
+        model: "general_audit_ws_f5a3cee.reporting_timetable"
+        domain:
+          - ["worksheet_id", "=", "REC: worksheet.id"]
+          - ["data_collection_id.type", "not in", ["permanent_file", "current_file"]]
+        save_as: "other_wrong_type"
+        expect_count: 0
 
       - step: "Assert one detail, for the mapped type only"
         action: "search"

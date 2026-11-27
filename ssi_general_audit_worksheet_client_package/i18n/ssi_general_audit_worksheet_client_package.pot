@@ -91,7 +91,8 @@ msgstr ""
 #: model:ir.model.fields,help:ssi_general_audit_worksheet_client_package.field_general_audit_data_collection__type
 msgid ""
 "Account Type: the item belongs to one client account type. Permanent File "
-"and Current File: the item is not tied to an account type."
+"and Current File: the item is not tied to an account type. Primary: the item"
+" has neither an account type nor a category."
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_client_package
@@ -1701,7 +1702,9 @@ msgstr ""
 
 #. module: ssi_general_audit_worksheet_client_package
 #: model:ir.model.fields,help:ssi_general_audit_worksheet_client_package.field_general_audit_data_collection__category_id
-msgid "Category used to classify this data collection item."
+msgid ""
+"Category used to classify this data collection item. Required unless the "
+"type is Primary."
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_client_package
@@ -1913,7 +1916,7 @@ msgstr ""
 #: model:ir.model.fields,help:ssi_general_audit_worksheet_client_package.field_general_audit_data_collection__account_type_id
 msgid ""
 "Client account type this item belongs to. Required when the type is Account "
-"Type; not used when the type is Permanent File or Current File."
+"Type; not used for the other types."
 msgstr ""
 
 #. module: ssi_general_audit_worksheet_client_package
@@ -9538,6 +9541,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_client_package.field_general_audit_ws_e301171__type_id
 #: model:ir.model.fields,field_description:ssi_general_audit_worksheet_client_package.field_general_audit_ws_f5a3cee__type_id
 #: model_terms:ir.ui.view,arch_db:ssi_general_audit_worksheet_client_package.general_audit_ws_f5a3cee_view_form
+#: model_terms:ir.ui.view,arch_db:ssi_general_audit_worksheet_client_package.general_audit_data_collection_view_search
 msgid "Type"
 msgstr ""
 
@@ -9874,4 +9878,20 @@ msgstr ""
 #. module: ssi_general_audit_worksheet_client_package
 #: model_terms:ir.ui.view,arch_db:ssi_general_audit_worksheet_client_package.general_audit_ws_f5a3cee_attachment_upload_view_form
 msgid "or"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_client_package
+#: code:addons/ssi_general_audit_worksheet_client_package/models/general_audit_data_collection.py:0
+#, python-format
+msgid "Category is required when the type is not Primary."
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_client_package
+#: model:ir.model.fields.selection,name:ssi_general_audit_worksheet_client_package.selection__general_audit_data_collection__type__primary
+msgid "Primary"
+msgstr ""
+
+#. module: ssi_general_audit_worksheet_client_package
+#: model_terms:ir.ui.view,arch_db:ssi_general_audit_worksheet_client_package.general_audit_data_collection_view_search
+msgid "Group By"
 msgstr ""

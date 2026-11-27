@@ -88,7 +88,8 @@ odoo.define(
                     },
                 },
 
-                // Flow 3 - Fill in the required fields.
+                // Flow 3 - Fill in the required fields. Type keeps its default
+                // (Account Type), so Category is shown and required.
                 {
                     content: "Fill in the Name",
                     trigger: ".o_field_widget[name='name']",

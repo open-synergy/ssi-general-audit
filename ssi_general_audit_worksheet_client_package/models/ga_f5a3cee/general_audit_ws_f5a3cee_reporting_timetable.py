@@ -34,7 +34,7 @@ class GeneralAuditWsF5a3ceeReportingTimetable(models.Model):
     data_collection_id = fields.Many2one(
         string="Data Collection Item",
         comodel_name="general_audit_data_collection",
-        domain="[('type', '!=', 'account_type')]",
+        domain="[('type', 'in', ('permanent_file', 'current_file'))]",
         index=True,
         ondelete="restrict",
         help=(

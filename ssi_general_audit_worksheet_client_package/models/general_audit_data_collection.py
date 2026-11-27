@@ -15,7 +15,8 @@ class GeneralAuditDataCollection(models.Model):
     client. An item of type Account Type belongs to one client account type
     and fills the Details tab of the Data Collection worksheet; an item of
     type Permanent File or Current File is not tied to an account type and
-    fills the Others tab.
+    fills the Others tab. An item of type Primary has no account type and
+    no category, and fills neither tab.
     """
 
     _name = "general_audit_data_collection"
@@ -30,13 +31,15 @@ class GeneralAuditDataCollection(models.Model):
             ("account_type", "Account Type"),
             ("permanent_file", "Permanent File"),
             ("current_file", "Current File"),
+            ("primary", "Primary"),
         ],
         required=True,
         default="account_type",
         help=(
             "Account Type: the item belongs to one client account type. "
             "Permanent File and Current File: the item is not tied to an "
-            "account type."
+            "account type. Primary: the item has neither an account type "
+            "nor a category."
         ),
     )
     account_type_id = fields.Many2one(
@@ -46,15 +49,17 @@ class GeneralAuditDataCollection(models.Model):
         ondelete="restrict",
         help=(
             "Client account type this item belongs to. Required when the "
-            "type is Account Type; not used when the type is Permanent File or Current File."
+            "type is Account Type; not used for the other types."
         ),
     )
     category_id = fields.Many2one(
         string="Category",
         comodel_name="general_audit_data_collection_category",
-        required=True,
         ondelete="restrict",
-        help="Category used to classify this data collection item.",
+        help=(
+            "Category used to classify this data collection item. Required "
+            "unless the type is Primary."
+        ),
     )
 
     code_sort = fields.Char(
@@ -73,10 +78,16 @@ class GeneralAuditDataCollection(models.Model):
     def _compute_code_sort(self):
         """Prefix the padded code with the rank of the item type.
 
-        Permanent File ranks before Current File. The Account Type rank
-        is arbitrary: those items never share a list with the others.
+        Permanent File ranks before Current File. The Account Type and
+        Primary ranks are arbitrary: those items never share a list with
+        the others.
         """
-        type_rank = {"account_type": "0", "permanent_file": "1", "current_file": "2"}
+        type_rank = {
+            "account_type": "0",
+            "permanent_file": "1",
+            "current_file": "2",
+            "primary": "3",
+        }
         for record in self:
             result = re.sub(
                 r"\d+", lambda match: match.group().zfill(8), record.code or ""
@@ -106,8 +117,27 @@ class GeneralAuditDataCollection(models.Model):
                     _("Account Type is required when the type is Account Type.")
                 )
 
+    @api.constrains("type", "category_id")
+    def _check_category_required(self):
+        """Require a category on items that are not of type Primary.
+
+        :raises ValidationError: if an item of another type than Primary
+            has no category.
+        """
+        for record in self:
+            if record.type != "primary" and not record.category_id:
+                raise ValidationError(
+                    _("Category is required when the type is not Primary.")
+                )
+
     @api.onchange("type")
     def onchange_account_type_id(self):
         """Clear the account type when the type is not Account Type."""
         if self.type != "account_type":
             self.account_type_id = False
+
+    @api.onchange("type")
+    def onchange_category_id(self):
+        """Clear the category when the type is Primary."""
+        if self.type == "primary":
+            self.category_id = False

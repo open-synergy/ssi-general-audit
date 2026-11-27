@@ -42,8 +42,8 @@
 - A **Details** line is marked **Completed** automatically once all of its data lines
   are completed.
 - The **Others** tab has the same columns as the data lines, one line for every active
-  master item of type **Permanent File** or **Current File**. Lines you added yourself
-  are kept.
+  master item of type **Permanent File** or **Current File**. Items of type **Primary**
+  are not added. Lines you added yourself are kept.
 - Lines you already filled in (date, attachments, completion) are not changed.
 - Data lines whose master item was deactivated or changed are removed.
 - Clicking **Populate** again does not duplicate lines.
