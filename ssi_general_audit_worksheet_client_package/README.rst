@@ -51,6 +51,10 @@ tied to the relevant audit areas before fieldwork begins.  This module covers:
 - ``general_audit_ws_e301171.item``       — Checklist item master
 - ``general_audit_ws_f5a3cee``            — Data Collection tracker
 - ``general_audit_ws_f5a3cee.detail``     — Detail line per account type
+- ``general_audit_ws_f5a3cee.detail_line`` — Data requested per account type
+- ``general_audit_ws_f5a3cee.permanent``  — Permanent File line
+- ``general_audit_ws_f5a3cee.current``    — Current File line
+- ``general_audit_ws_f5a3cee.reporting_timetable`` — Reporting timetable line
 - ``general_audit_ws_b5e3d9f``            — Subledger data import
 - ``general_audit_ws_b5e3d9f.amount``     — Parsed amount line per subledger column
 - ``general_audit_ws_d209914``            — General Ledger data import

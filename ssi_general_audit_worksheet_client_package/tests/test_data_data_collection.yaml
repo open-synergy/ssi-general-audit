@@ -34,9 +34,9 @@ setup:
         code: "/"
 
 scenarios:
-  # Positive: an Account Type item keeps its account type, and an Others
+  # Positive: an Account Type item keeps its account type, and a file
   # item is saved without one.
-  - name: "Account Type and Others items are saved"
+  - name: "Account Type and file items are saved"
     steps:
       - step: "Create item of type Account Type"
         action: "create"
@@ -53,7 +53,7 @@ scenarios:
       - step: "Create item of type Permanent File"
         action: "create"
         model: "general_audit_data_collection"
-        save_as: "item_others"
+        save_as: "item_file"
         as_user: "base.user_admin"
         values:
           name: "Organization chart"
@@ -71,7 +71,7 @@ scenarios:
 
       - step: "Assert the Permanent File item has no account type"
         action: "assert"
-        target: "item_others"
+        target: "item_file"
         asserts:
           account_type_id:
             type: "value"

@@ -19,7 +19,8 @@
 
 1. Open the **Risk Assessment > Client Assistance Package > Data Collection** menu.
 2. Open the worksheet to work on.
-3. Open the **Details** tab.
+3. Open the **Details** tab. The tabs of the worksheet are **Primary**,
+   **Permanent/Current** and **Details**, in that order.
 4. Click the **Populate** button. The button is not visible while the status is
    **Draft**.
 5. Click a line in **Details** to open it and review the data requested for that account
@@ -28,7 +29,8 @@
    the line, choose the files and click **Submit**. The files are added to the line and
    kept as attachments of the worksheet. The button is shown for saved lines while the
    status is **On Progress**.
-7. Open the **Others** tab to review the data that is not tied to an account type.
+7. Open the **Permanent/Current** tab to review the data that is not tied to an account
+   type, listed under **Permanent File** and **Current File**.
 
 ## Post-Condition
 
@@ -41,9 +43,13 @@
   line yourself by typing its name. Data lines without a master item are kept.
 - A **Details** line is marked **Completed** automatically once all of its data lines
   are completed.
-- The **Others** tab has the same columns as the data lines, one line for every active
-  master item of type **Permanent File** or **Current File**. Items of type **Primary**
-  are not added. Lines you added yourself are kept.
+- The **Primary** tab holds **Reporting Timetable to be Followed by the Entity**, a list
+  with **Description** and **Date** that you fill in yourself while the status is **On
+  Progress**. Populate does not change it.
+- The **Permanent/Current** tab holds the **Permanent File** list above the **Current
+  File** list. Both have the same columns as the data lines. Each has one line for every
+  active master item of its own type. Items of type **Primary** are not added to them.
+  Lines you added yourself are kept.
 - Lines you already filled in (date, attachments, completion) are not changed.
 - Data lines whose master item was deactivated or changed are removed.
 - Clicking **Populate** again does not duplicate lines.

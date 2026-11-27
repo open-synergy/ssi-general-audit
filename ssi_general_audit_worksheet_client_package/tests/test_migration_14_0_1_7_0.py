@@ -18,7 +18,7 @@ class TestMigration14017(YamlTransactionCase):
     """Sort key rebuild of migration 14.0.1.7.0."""
 
     def setUp(self):
-        """Create one item of each Others type with the same number."""
+        """Create one item of each file type with the same number."""
         super().setUp()
         item_model = self.env["general_audit_data_collection"]
         category = self.env["general_audit_data_collection_category"].create(

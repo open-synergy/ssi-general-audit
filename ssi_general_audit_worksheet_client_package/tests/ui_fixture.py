@@ -100,3 +100,73 @@ def create_data_collection_refs(env, name):
         {"name": "Test Category - %s" % name, "code": "/"}
     )
     return account_type, category
+
+
+def create_populate_worksheet(env, number):
+    """Create an open Data Collection worksheet that can be populated.
+
+    The client of the audit gets an account mapping with one account type.
+    One master item of that account type and one Permanent File item are
+    created. Their codes sort before the seeded items, so the Permanent
+    File item is on the first page of the Others list.
+
+    :param env: environment used to create the fixture records.
+    :param str number: number of the General Audit of the worksheet.
+    :return: the opened ``general_audit_ws_f5a3cee`` record.
+    """
+    admin = env.ref("base.user_admin")
+    audit = create_open_general_audit(env, number)
+    account_type, category = create_data_collection_refs(env, number)
+    account = (
+        env["client_account"]
+        .with_user(admin)
+        .create(
+            {
+                "name": "Test Client Account - %s" % number,
+                "code": "ACC-%s" % number,
+                "partner_id": audit.partner_id.id,
+                "type_id": account_type.id,
+            }
+        )
+    )
+    mapping = (
+        env["client_account_mapping"]
+        .with_user(admin)
+        .create({"general_audit_id": audit.id})
+    )
+    env["client_account_mapping.detail"].with_user(admin).create(
+        {"mapping_id": mapping.id, "account_id": account.id}
+    )
+    item_model = env["general_audit_data_collection"]
+    item_model.create(
+        {
+            "name": "Tour account item",
+            "code": "0-TOUR-AT",
+            "type": "account_type",
+            "account_type_id": account_type.id,
+            "category_id": category.id,
+        }
+    )
+    item_model.create(
+        {
+            "name": "Tour permanent item",
+            "code": "0-TOUR-PF",
+            "type": "permanent_file",
+            "category_id": category.id,
+        }
+    )
+    worksheet = (
+        env["general_audit_ws_f5a3cee"]
+        .with_user(admin)
+        .create(
+            {
+                "general_audit_id": audit.id,
+                "type_id": env.ref(
+                    "ssi_general_audit_worksheet_client_package"
+                    ".worksheet_type_f5a3cee"
+                ).id,
+            }
+        )
+    )
+    worksheet.with_user(admin).action_open()
+    return worksheet
