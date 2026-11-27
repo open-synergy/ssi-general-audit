@@ -24,7 +24,9 @@ tied to the relevant audit areas before fieldwork begins.  This module covers:
    override of controls (ISA 240 / SA 240).
 3. **Data Collection (f5a3cee)** — Tracks the receipt status of data per client
    account type.  Detail lines are auto-populated from the client's account
-   mapping and include attachment evidence and a completion flag.
+   mapping and include attachment evidence and a completion flag.  Client
+   Assistance Package items are populated from the master items of type
+   Primary.
 4. **Subledger (b5e3d9f)** — Imports CSV subledger data for a specific client
    account; parsed amounts are stored in separate amount lines for audit trail
    and analytical procedures.
@@ -54,6 +56,7 @@ tied to the relevant audit areas before fieldwork begins.  This module covers:
 - ``general_audit_ws_f5a3cee.detail_line`` — Data requested per account type
 - ``general_audit_ws_f5a3cee.permanent``  — Permanent File line
 - ``general_audit_ws_f5a3cee.current``    — Current File line
+- ``general_audit_ws_f5a3cee.primary``     — Client Assistance Package item
 - ``general_audit_ws_f5a3cee.reporting_timetable`` — Reporting timetable line
 - ``general_audit_ws_b5e3d9f``            — Subledger data import
 - ``general_audit_ws_b5e3d9f.amount``     — Parsed amount line per subledger column

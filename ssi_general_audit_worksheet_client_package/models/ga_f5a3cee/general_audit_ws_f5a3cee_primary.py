@@ -1,0 +1,125 @@
+# Copyright 2026 OpenSynergy Indonesia
+# Copyright 2026 PT. Simetri Sinergi Indonesia
+# License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl-3.0-standalone.html).
+
+from odoo import _, api, fields, models
+from odoo.exceptions import ValidationError
+
+
+class GeneralAuditWsF5a3ceePrimary(models.Model):
+    """Primary line of the Data Collection worksheet (f5a3cee).
+
+    Tracks one item of the Client Assistance Package.  Rows are populated
+    from the Data Collection master items of type Primary, or added by the
+    user without a master item.  A line has no category.
+    """
+
+    _name = "general_audit_ws_f5a3cee.primary"
+    _inherit = ["general_audit_ws_f5a3cee.attachment_mixin"]
+    _description = "Data Collection (f5a3cee) - Primary"
+    _order = "data_collection_code_sort, id"
+
+    worksheet_id = fields.Many2one(
+        string="# Worksheet",
+        comodel_name="general_audit_ws_f5a3cee",
+        required=True,
+        index=True,
+        ondelete="cascade",
+        help=(
+            "Reference to the parent Data Collection worksheet. "
+            "Deleting the worksheet will remove its Primary lines."
+        ),
+    )
+    data_collection_id = fields.Many2one(
+        string="Data Collection Item",
+        comodel_name="general_audit_data_collection",
+        domain="[('type', '=', 'primary')]",
+        index=True,
+        ondelete="restrict",
+        help="Data Collection master item (type Primary) of this line, if any.",
+    )
+    data_collection_code = fields.Char(
+        string="Data Collection Code",
+        related="data_collection_id.code",
+        store=True,
+        help="Code of the Data Collection item, used to sort the lines.",
+    )
+    data_collection_code_sort = fields.Char(
+        string="Data Collection Code Sort Key",
+        related="data_collection_id.code_sort",
+        store=True,
+        help="Sort key of the Data Collection item code, used to sort the lines.",
+    )
+    data_collection_type = fields.Selection(
+        string="Data Collection Type",
+        related="data_collection_id.type",
+        help="Type of the Data Collection item of this line.",
+    )
+    description = fields.Char(
+        string="Name",
+        required=True,
+        help=(
+            "Name of the requested item. Filled from the Data Collection "
+            "item, or entered manually when there is none."
+        ),
+    )
+    date = fields.Date(
+        string="Date",
+        required=False,
+        help="Date associated with the item or its supporting documents.",
+    )
+    attachment_ids = fields.Many2many(
+        string="Attachments",
+        comodel_name="ir.attachment",
+        relation="rel_ga_f5a3cee_primary_2_attachment",
+        column1="f5a3cee_primary_id",
+        column2="attachment_id",
+        domain="[('res_model', '=', 'general_audit_ws_f5a3cee'), "
+        "('res_id', '=', worksheet_id)]",
+        help=(
+            "Files attached as supporting evidence. "
+            "Only attachments linked to this worksheet can be selected."
+        ),
+    )
+    complete_ok = fields.Boolean(
+        string="Completed",
+        default=False,
+        help=(
+            "Mark as completed once the item described by this line has "
+            "been received and reviewed."
+        ),
+    )
+    state = fields.Selection(
+        related="worksheet_id.state",
+        help="State of the parent worksheet.",
+    )
+
+    @api.onchange("data_collection_id")
+    def onchange_description(self):
+        """Fill the name from the selected Data Collection item."""
+        if self.data_collection_id:
+            self.description = self.data_collection_id.name
+
+    @api.constrains("worksheet_id", "data_collection_id")
+    def _check_duplicate_data_collection(self):
+        """Reject a repeated Data Collection item in one worksheet.
+
+        :raises ValidationError: if another line of the same worksheet has
+            the same Data Collection item.
+        """
+        for record in self.filtered("data_collection_id"):
+            siblings = record.worksheet_id.primary_ids - record
+            if record.data_collection_id in siblings.data_collection_id:
+                raise ValidationError(
+                    _("Data Collection %s is already used in this worksheet.")
+                    % record.data_collection_id.code
+                )
+
+    def _fill_from_master(self):
+        """Fill the empty name from the Data Collection item.
+
+        Values that are already filled are never overwritten.
+        """
+        for record in self.filtered("data_collection_id"):
+            if not record.description:
+                record.write({"description": record.data_collection_id.name})

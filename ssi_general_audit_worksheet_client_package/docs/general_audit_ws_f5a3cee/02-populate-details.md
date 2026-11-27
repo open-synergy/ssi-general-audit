@@ -11,18 +11,18 @@
   **Draft**.
 - **Data:** The client of the General Audit has an account mapping with account types.
   Data Collection master items exist (Configuration > Standard & Regulation > Data
-  Collections > Data Collections), each with type **Account Type**, **Permanent File**
-  or **Current File**.
+  Collections > Data Collections), each with type **Account Type**, **Permanent File**,
+  **Current File** or **Primary**.
 - **Access:** User is in group _Data Collection (f5a3cee) — User_ (or higher).
 
 ## Flow
 
 1. Open the **Risk Assessment > Client Assistance Package > Data Collection** menu.
 2. Open the worksheet to work on.
-3. Open the **Details** tab. The tabs of the worksheet are **Primary**,
+3. Click the **Populate** button above the tabs. The button is not visible while the
+   status is **Draft**.
+4. Open the **Details** tab. The tabs of the worksheet are **Primary**,
    **Permanent/Current** and **Details**, in that order.
-4. Click the **Populate** button. The button is not visible while the status is
-   **Draft**.
 5. Click a line in **Details** to open it and review the data requested for that account
    type.
 6. To attach files to a data line, click the **Upload Attachment** button at the end of
@@ -31,6 +31,9 @@
    status is **On Progress**.
 7. Open the **Permanent/Current** tab to review the data that is not tied to an account
    type, listed under **Permanent File** and **Current File**.
+8. Open the **Primary** tab to review **Client Assistance Package**. For each line, fill
+   in **Date**, attach files with the **Upload Attachment** button and switch
+   **Completed** on once the item has been received.
 
 ## Post-Condition
 
@@ -43,13 +46,20 @@
   line yourself by typing its name. Data lines without a master item are kept.
 - A **Details** line is marked **Completed** automatically once all of its data lines
   are completed.
-- The **Primary** tab holds **Reporting Timetable to be Followed by the Entity**, a list
-  with **Description** and **Date** that you fill in yourself while the status is **On
-  Progress**. Populate does not change it.
+- The **Primary** tab holds **Client Assistance Package** above **Reporting Timetable to
+  be Followed by the Entity**.
+- **Client Assistance Package** has the columns **Code**, **Name**, **Date**,
+  **Attachments** and **Completed**, one line for every active master item of type
+  **Primary**. An empty **Name** is filled from the master item. Lines you added
+  yourself are kept. The list can be edited while the status is **On Progress**.
+- **Reporting Timetable to be Followed by the Entity** is a list with **Description**
+  and **Date** that you fill in yourself while the status is **On Progress**. Populate
+  does not change it.
 - The **Permanent/Current** tab holds the **Permanent File** list above the **Current
   File** list. Both have the same columns as the data lines. Each has one line for every
   active master item of its own type. Items of type **Primary** are not added to them.
   Lines you added yourself are kept.
 - Lines you already filled in (date, attachments, completion) are not changed.
-- Data lines whose master item was deactivated or changed are removed.
+- Data lines and **Client Assistance Package** lines whose master item was deactivated
+  or changed to a type that no longer belongs there are removed.
 - Clicking **Populate** again does not duplicate lines.

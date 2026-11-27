@@ -106,9 +106,10 @@ def create_populate_worksheet(env, number):
     """Create an open Data Collection worksheet that can be populated.
 
     The client of the audit gets an account mapping with one account type.
-    One master item of that account type and one Permanent File item are
-    created. Their codes sort before the seeded items, so the Permanent
-    File item is on the first page of the Others list.
+    One master item of that account type, one Permanent File item and one
+    Primary item are created. Their codes sort before the seeded items, so
+    the Permanent File and Primary items are on the first page of their
+    lists.
 
     :param env: environment used to create the fixture records.
     :param str number: number of the General Audit of the worksheet.
@@ -153,6 +154,13 @@ def create_populate_worksheet(env, number):
             "code": "0-TOUR-PF",
             "type": "permanent_file",
             "category_id": category.id,
+        }
+    )
+    item_model.create(
+        {
+            "name": "Tour primary item",
+            "code": "0-TOUR-PRM",
+            "type": "primary",
         }
     )
     worksheet = (
