@@ -4,7 +4,7 @@
 # pylint: disable=locally-disabled, manifest-required-author
 {
     "name": "General Audit Worksheet - Planning Memorandum",
-    "version": "14.0.1.10.6",
+    "version": "14.0.1.10.5",
     "website": "https://simetri-sinergi.id",
     "author": "OpenSynergy Indonesia, PT. Simetri Sinergi Indonesia",
     "license": "AGPL-3",
