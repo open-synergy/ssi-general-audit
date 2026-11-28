@@ -50,3 +50,12 @@ class GeneralAuditWSabd82ed(models.Model):
             "or an interim period."
         ),
     )
+    financial_accounting_standard_implementation = fields.Html(
+        string="Financial Accounting Standard Implementations",
+        readonly=True,
+        states={"open": [("readonly", False)]},
+        help=(
+            "Narrative of how the client implements the financial accounting "
+            "standards, used for reporting."
+        ),
+    )

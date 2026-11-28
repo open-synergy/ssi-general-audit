@@ -169,6 +169,9 @@ scenarios:
           state:
             type: "value"
             expected: "draft"
+          financial_accounting_standard_implementation:
+            type: "value"
+            operator: "is_falsy"
 
       - step: "Create checklist row for the master item"
         action: "create"
@@ -240,6 +243,21 @@ scenarios:
           state:
             type: "value"
             expected: "open"
+
+      - step: "Write financial accounting standard implementation"
+        action: "write"
+        target: "worksheet"
+        as_user: "base.user_admin"
+        values:
+          financial_accounting_standard_implementation: "<p>PSAK applied</p>"
+
+      - step: "Assert financial accounting standard implementation saved"
+        action: "assert"
+        target: "worksheet"
+        asserts:
+          financial_accounting_standard_implementation:
+            type: "value"
+            expected: "<p>PSAK applied</p>"
 
       - step: "Fill required conclusion fields before confirm"
         action: "write"
